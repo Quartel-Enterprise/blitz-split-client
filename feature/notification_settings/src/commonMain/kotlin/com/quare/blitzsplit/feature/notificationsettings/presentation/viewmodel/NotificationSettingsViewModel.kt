@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -27,12 +29,13 @@ import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 
 /*
- * Why: only the choices and the system permission. Nothing sends a push or registers the device yet; that comes
- * with the push sender, which reads the synced choices.
+ * Why: the choices and the system permission, for the Push and In app channel of each row. The server reads the
+ * synced push choices to send; Activity reads the in-app ones for its bell. Opened from the profile and from Activity.
  */
 class NotificationSettingsViewModel(
     private val navigator: Navigator,
     private val updateNotificationPreference: UpdateNotificationPreference,
+    private val markActivityTypeRead: MarkActivityTypeRead,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
@@ -40,7 +43,7 @@ class NotificationSettingsViewModel(
     val uiState: StateFlow<NotificationSettingsUiState>
         field = MutableStateFlow(
             NotificationSettingsUiState(
-                enabledTypes = Loadable.Loading,
+                preferences = Loadable.Loading,
                 permission = null,
             ),
         )
@@ -53,8 +56,8 @@ class NotificationSettingsViewModel(
 
     init {
         combine(observeNotificationPreferences(), observeFirstDownload()) { preferences, firstDownload ->
-            if (firstDownload != null) Loadable.Loading else preferences.enabledTypes.toLoaded()
-        }.onEach { enabledTypes -> uiState.update { it.copy(enabledTypes = enabledTypes) } }
+            if (firstDownload != null) Loadable.Loading else preferences.toLoaded()
+        }.onEach { preferences -> uiState.update { it.copy(preferences = preferences) } }
             .launchIn(viewModelScope)
     }
 
@@ -68,7 +71,7 @@ class NotificationSettingsViewModel(
                 )
             }
 
-            is NotificationSettingsUiEvent.OnToggled -> toggle(event.type, event.isEnabled)
+            is NotificationSettingsUiEvent.OnToggled -> toggle(event.type, event.channel, event.isEnabled)
 
             NotificationSettingsUiEvent.OnOpenSettingsClicked -> emit(NotificationSettingsUiAction.OpenSystemSettings)
         }
@@ -80,24 +83,30 @@ class NotificationSettingsViewModel(
     }
 
     /*
-     * Why: the system is asked only once a notice is turned on, and only if it never was. With the permission
-     * denied or unknown, or the choices still loading, the toggles are disabled, so a tap that still arrives changes
-     * nothing.
+     * Why: the system is asked only once a push is turned on, and only if it never was; the bell needs no permission.
+     * With the choices still loading or the permission unknown (or, for a push, denied), the toggles are disabled,
+     * so a tap that still arrives changes nothing.
      */
     private fun toggle(
         type: NotificationType,
+        channel: NotificationChannel,
         isEnabled: Boolean,
     ) {
         val state = uiState.value
-        if (!state.areTogglesEnabled) return
-        trackEvent("notification_toggled", mapOf("type" to type, "is_enabled" to isEnabled))
+        if (!state.areTogglesEnabled(channel) || !state.hasToggle(type, channel)) return
+        trackEvent("notification_toggled", mapOf("type" to type, "channel" to channel, "is_enabled" to isEnabled))
         viewModelScope.launch {
+            // Why: what came while the bell was off stays read once it is back on, as it showed meanwhile.
+            if (channel == NotificationChannel.IN_APP && isEnabled) markActivityTypeRead(type)
             updateNotificationPreference(
                 type = type,
+                channel = channel,
                 isEnabled = isEnabled,
             )
         }
-        if (isEnabled && state.permission == NotificationPermission.NOT_DETERMINED) {
+        if (isEnabled && channel == NotificationChannel.PUSH &&
+            state.permission == NotificationPermission.NOT_DETERMINED
+        ) {
             emit(NotificationSettingsUiAction.RequestPermission)
         }
     }

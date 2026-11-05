@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.profile.domain
 
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdateNotificationPreferenceUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
@@ -17,12 +18,13 @@ class UpdateNotificationPreferenceUseCaseTest {
 
             // When
             useCase(
-                type = NotificationType.PAYMENT_MARKED,
+                type = NotificationType.PAYMENTS,
+                channel = NotificationChannel.PUSH,
                 isEnabled = false,
             )
 
             // Then
-            assertEquals(listOf(NotificationType.PAYMENT_MARKED to false), repository.updates)
+            assertEquals(listOf(Triple(NotificationType.PAYMENTS, NotificationChannel.PUSH, false)), repository.updates)
         }
 
     @Test
@@ -33,11 +35,15 @@ class UpdateNotificationPreferenceUseCaseTest {
 
         // When
         useCase(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
 
         // Then
-        assertEquals(listOf(NotificationType.INVITES to true), repository.updates)
+        assertEquals(
+            listOf(Triple(NotificationType.PEOPLE_AND_GROUPS, NotificationChannel.PUSH, true)),
+            repository.updates,
+        )
     }
 }

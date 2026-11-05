@@ -23,7 +23,8 @@ extension GroupsModel: SearchSource {
 /// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. An
 /// iPad shows it in the search tab and an iPhone in Groups' place, under a large title with the field and All / Groups /
 /// People / Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
-/// the members of the group they were found in, an expense its bill over the group. Always a list, even with the grid.
+/// once their profile and in each group that group's members, an expense its bill over the group. Always a list, even
+/// with the grid. Nothing holding what was typed but something close above it says "Did you mean “Larissa”?".
 struct GroupsSearchResultsList: View {
     let model: any SearchSource
 
@@ -55,6 +56,22 @@ struct GroupsSearchResultsList: View {
 
     private func resultsList(_ results: GroupsSearchResults) -> some View {
         List {
+            if model.search.showsSuggestion, let suggestion = results.suggestion {
+                Section {
+                    Button {
+                        model.sendSearch(SearchUiEventOnSuggestionClicked(suggestion: suggestion))
+                    } label: {
+                        Label {
+                            Text("Did you mean “\(Text(suggestion).bold().foregroundStyle(.tint))”?")
+                        } icon: {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundStyle(.secondary)
+                        }
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
             if !results.groups.isEmpty {
                 Section("Groups") {
                     ForEach(results.groups, id: \.group.id) { hit in
@@ -67,8 +84,16 @@ struct GroupsSearchResultsList: View {
                     }
                 }
             }
-            if !results.people.isEmpty {
+            if !results.contacts.isEmpty || !results.people.isEmpty {
                 Section("People") {
+                    ForEach(results.contacts, id: \.personKey) { hit in
+                        Button {
+                            model.sendSearch(SearchUiEventOnContactClicked(personKey: hit.personKey))
+                        } label: {
+                            SearchContactRow(hit: hit)
+                        }
+                        .buttonStyle(.plain)
+                    }
                     ForEach(results.people, id: \.self) { hit in
                         Button {
                             model.sendSearch(SearchUiEventOnPersonClicked(groupId: hit.groupId))
@@ -293,21 +318,64 @@ private struct SearchGroupRow: View {
     }
 }
 
+/// The person once, "Contact · 3 groups", opening their profile as Contacts does.
+private struct SearchContactRow: View {
+    let hit: SearchContactHit
+
+    var body: some View {
+        SearchAvatarRow(
+            initial: hit.initial,
+            color: hit.color,
+            photoUrl: hit.photoUrl,
+            name: GroupsSearchCopy.marked(hit.name, hit.nameMatch),
+            detail: String(localized: "Contact · \(Int(hit.groupCount)) groups"),
+            showsChevron: true
+        )
+    }
+}
+
 private struct SearchPersonRow: View {
     let hit: SearchPersonHit
 
     var body: some View {
+        SearchAvatarRow(
+            initial: hit.initial,
+            color: hit.color,
+            photoUrl: hit.photoUrl,
+            name: GroupsSearchCopy.marked(hit.name, hit.nameMatch),
+            detail: hit.groupName,
+            showsChevron: false
+        )
+    }
+}
+
+/// A person found, by their face, once as a contact or in one of their groups.
+private struct SearchAvatarRow: View {
+    let initial: String
+    let color: AvatarColor
+    let photoUrl: String?
+    let name: AttributedString
+    let detail: String
+    let showsChevron: Bool
+
+    var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: hit.initial, color: hit.color, photoUrl: hit.photoUrl, size: 36)
+            AvatarPhoto(initial: initial, color: color, photoUrl: photoUrl, size: 36)
             VStack(alignment: .leading, spacing: 2) {
-                Text(GroupsSearchCopy.marked(hit.name, hit.nameMatch))
+                Text(name)
                     .lineLimit(1)
-                Text(verbatim: hit.groupName)
+                Text(verbatim: detail)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
             Spacer(minLength: 8)
+            if showsChevron {
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
         }
         .contentShape(.rect)
     }

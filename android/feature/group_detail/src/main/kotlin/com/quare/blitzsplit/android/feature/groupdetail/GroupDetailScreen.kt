@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
@@ -48,6 +49,7 @@ fun GroupDetailScreen(
     val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val teachError = stringResource(R.string.group_detail_teach_error)
+    val billDeleteError = stringResource(DesignR.string.designsystem_delete_bill_error)
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
     LaunchedEffect(viewModel) {
@@ -57,6 +59,7 @@ fun GroupDetailScreen(
                 GroupDetailUiAction.ShowDeleteError -> showSnackbar(deleteError)
                 GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
                 GroupDetailUiAction.ShowTeachError -> showSnackbar(teachError)
+                GroupDetailUiAction.ShowBillDeleteError -> showSnackbar(billDeleteError)
             }
         }
     }
@@ -111,6 +114,18 @@ fun GroupDetailScreen(
     }
     if (state.paymentToDelete != null) {
         DeletePaymentDialog(onEvent = viewModel::onEvent)
+    }
+    // Why: a bill's ⋮ "Apagar" asks what Conta asks, in the same words.
+    state.billToDelete?.let { deletion ->
+        DeleteBillDialog(
+            description = deletion.description,
+            myBalanceMinor = deletion.myBalanceMinor,
+            settledPair = deletion.settledPair,
+            isDeleting = state.isDeletingBill,
+            money = rememberMoneyFormatter(state.header.currency),
+            onConfirm = { viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteConfirmed) },
+            onDismiss = { viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteDismissed) },
+        )
     }
     GroupExitAlertDialog(
         exit = state.exit,

@@ -187,7 +187,7 @@ class ProfileViewModel(
         }.onEach { keys -> uiState.update { it.copy(paymentKeys = keys) } }
             .launchIn(viewModelScope)
         combine(observeNotificationPreferences(), firstDownload) { preferences, download ->
-            if (download != null) Loadable.Loading else preferences.enabledTypes.size.toLoaded()
+            if (download != null) Loadable.Loading else preferences.push.size.toLoaded()
         }.onEach { count -> uiState.update { it.copy(activeNotificationCount = count) } }
             .launchIn(viewModelScope)
         providerConnector.connection

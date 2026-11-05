@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -48,9 +51,11 @@ import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRowDetail
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchContactHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
@@ -108,6 +113,15 @@ private fun LazyListScope.searchResultItems(
     onEvent: (SearchUiEvent) -> Unit,
 ) {
     val results = search.results
+    val suggestion = results.suggestion
+    if (search.showsSuggestion && suggestion != null) {
+        item(key = "suggestion") {
+            SearchSuggestionRow(
+                suggestion = suggestion,
+                onClick = { onEvent(SearchUiEvent.OnSuggestionClicked(suggestion)) },
+            )
+        }
+    }
     if (results.groups.isNotEmpty()) {
         item(key = "groups-header") { SearchSectionHeader(stringResource(R.string.groups_search_section_groups)) }
         itemsIndexed(results.groups, key = { _, hit -> "group-${hit.group.id}" }) { index, hit ->
@@ -118,12 +132,21 @@ private fun LazyListScope.searchResultItems(
             )
         }
     }
-    if (results.people.isNotEmpty()) {
+    // Why: each person once, opening their profile, then their row in each group, opening its Members.
+    val peopleCount = results.contacts.size + results.people.size
+    if (peopleCount > 0) {
         item(key = "people-header") { SearchSectionHeader(stringResource(R.string.groups_search_section_people)) }
+        itemsIndexed(results.contacts, key = { _, hit -> "contact-${hit.personKey}" }) { index, hit ->
+            SearchContactRow(
+                hit = hit,
+                shape = groupedRowShapeOf(index, peopleCount),
+                onClick = { onEvent(SearchUiEvent.OnContactClicked(hit.personKey)) },
+            )
+        }
         itemsIndexed(results.people, key = { _, hit -> "person-${hit.groupId}-${hit.memberId}" }) { index, hit ->
             SearchPersonRow(
                 hit = hit,
-                shape = groupedRowShapeOf(index, results.people.size),
+                shape = groupedRowShapeOf(results.contacts.size + index, peopleCount),
                 onClick = { onEvent(SearchUiEvent.OnPersonClicked(hit.groupId)) },
             )
         }
@@ -214,26 +237,119 @@ private fun SearchGroupRow(
     )
 }
 
+// Why: "Did you mean “Larissa”?" above what only comes close to the text typed, which a tap searches instead.
+@Composable
+private fun SearchSuggestionRow(
+    suggestion: String,
+    onClick: () -> Unit,
+) {
+    val template = stringResource(R.string.groups_search_suggestion)
+    val value = buildAnnotatedString {
+        withStyle(
+            SpanStyle(
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+            ),
+        ) { append(suggestion) }
+    }
+    Surface(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 14.dp,
+            ),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = templatedTextOf(template, value),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+    }
+}
+
+// Why: the person once, "Contact · 3 groups", opening their profile as Contacts does.
+@Composable
+private fun SearchContactRow(
+    hit: SearchContactHit,
+    shape: Shape,
+    onClick: () -> Unit,
+) {
+    SearchAvatarRow(
+        initial = hit.initial,
+        color = hit.color,
+        photoUrl = hit.photoUrl,
+        shape = shape,
+        onClick = onClick,
+        title = highlightedTextOf(hit.name, hit.nameMatch),
+        subtitle = pluralStringResource(R.plurals.groups_search_contact_meta, hit.groupCount, hit.groupCount),
+        trailing = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+    )
+}
+
 @Composable
 private fun SearchPersonRow(
     hit: SearchPersonHit,
     shape: Shape,
     onClick: () -> Unit,
 ) {
+    SearchAvatarRow(
+        initial = hit.initial,
+        color = hit.color,
+        photoUrl = hit.photoUrl,
+        shape = shape,
+        onClick = onClick,
+        title = highlightedTextOf(hit.name, hit.nameMatch),
+        subtitle = hit.groupName,
+        trailing = {},
+    )
+}
+
+// Why: a person found, by their face, once as a contact or in one of their groups.
+@Composable
+private fun SearchAvatarRow(
+    initial: String,
+    color: AvatarColor,
+    photoUrl: String?,
+    shape: Shape,
+    onClick: () -> Unit,
+    title: AnnotatedString,
+    subtitle: String,
+    trailing: @Composable () -> Unit,
+) {
     SearchResultRow(
         shape = shape,
         onClick = onClick,
         leading = {
             AvatarBadge(
-                initial = hit.initial,
-                color = hit.color,
-                photoUrl = hit.photoUrl,
+                initial = initial,
+                color = color,
+                photoUrl = photoUrl,
                 size = 48.dp,
             )
         },
-        title = highlightedTextOf(hit.name, hit.nameMatch),
-        subtitle = AnnotatedString(hit.groupName),
-        trailing = {},
+        title = title,
+        subtitle = AnnotatedString(subtitle),
+        trailing = trailing,
     )
 }
 

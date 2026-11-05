@@ -43,6 +43,15 @@ class SearchPresenter {
         viewModel.onEvent(SearchUiEvent.OnPersonClicked(groupId))
     }
 
+    fun openSearchedContact(personKey: String) {
+        viewModel.onEvent(SearchUiEvent.OnContactClicked(personKey))
+    }
+
+    // Why: "Did you mean “Larissa”?" searches the suggestion instead.
+    fun searchSuggestion(suggestion: String) {
+        viewModel.onEvent(SearchUiEvent.OnSuggestionClicked(suggestion))
+    }
+
     fun openSearchedBill(
         groupId: String,
         expenseId: String,

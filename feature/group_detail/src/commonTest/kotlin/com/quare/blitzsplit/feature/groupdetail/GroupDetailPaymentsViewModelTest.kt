@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
@@ -1303,6 +1304,7 @@ class GroupDetailPaymentsViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
+            deleteExpense = DeleteExpenseUseCase(expenses, deletedBills, currentTimeMillis = { nowMillis }),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
             observeAddPersonRequest = ObserveAddPersonRequest { flowOf(null) },
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),

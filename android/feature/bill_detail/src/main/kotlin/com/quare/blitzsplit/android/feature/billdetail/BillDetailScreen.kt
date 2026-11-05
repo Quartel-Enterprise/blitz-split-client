@@ -23,6 +23,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 @Composable
 fun BillDetailScreen(
@@ -44,7 +45,7 @@ fun BillDetailScreen(
                     null
                 }
 
-                BillDetailUiAction.ShowDeleteError -> R.string.bill_detail_delete_error
+                BillDetailUiAction.ShowDeleteError -> DesignR.string.designsystem_delete_bill_error
 
                 BillDetailUiAction.ShowCommentError -> R.string.bill_detail_comment_error
 

@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.core.activity.domain.model
 
+import com.quare.blitzsplit.core.model.NotificationType
+
 /*
  * Why: what happened, by the server's code of activity_events.kind, and the type "Filtrar" groups it under. A bill's
  * attachments and share link only make its history (7.3): Atividade leaves them out (isInFeed).
@@ -8,6 +10,8 @@ enum class ActivityKind(
     val code: String,
     val type: ActivityType,
     val isInFeed: Boolean = true,
+    // Why: the row of Notifications whose In app toggle marks it new, its filter type's unless a kind says otherwise.
+    val notificationType: NotificationType = type.notificationType,
 ) {
     BILL_CREATED("bill_created", ActivityType.BILLS),
     BILL_EDITED("bill_edited", ActivityType.BILLS),
@@ -26,7 +30,12 @@ enum class ActivityKind(
     MEMBER_RENAMED("member_renamed", ActivityType.PEOPLE_AND_GROUPS),
 
     // Why: "Ana ligou Simplificar dívidas em Viagem Floripa" (13.7), or desligou, by code ON or OFF.
-    SIMPLIFY_DEBTS_CHANGED("simplify_debts_changed", ActivityType.PEOPLE_AND_GROUPS),
+    // Why: it changes who pays whom, so its bell (and its push) sit with the payments rather than its filter's type.
+    SIMPLIFY_DEBTS_CHANGED(
+        "simplify_debts_changed",
+        ActivityType.PEOPLE_AND_GROUPS,
+        notificationType = NotificationType.PAYMENTS,
+    ),
     CHARGE_SENT("charge_sent", ActivityType.CHARGES),
     COMMENT_ADDED("comment_added", ActivityType.COMMENTS),
     ATTACHMENT_ADDED("attachment_added", ActivityType.BILLS, isInFeed = false),

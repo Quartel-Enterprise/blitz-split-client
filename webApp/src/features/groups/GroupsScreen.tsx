@@ -133,6 +133,8 @@ function searchActionsOf(presenter: GroupsPresenter): SearchActions {
     searchIn: (scope) => presenter.searchIn(scope),
     openSearchedGroup: (groupId) => pick(() => presenter.openSearchedGroup(groupId)),
     openSearchedPerson: (groupId) => pick(() => presenter.openSearchedPerson(groupId)),
+    openSearchedContact: (personKey) => pick(() => presenter.openSearchedContact(personKey)),
+    searchSuggestion: (suggestion) => presenter.searchSuggestion(suggestion),
     openSearchedBill: (groupId, expenseId) => pick(() => presenter.openSearchedBill(groupId, expenseId)),
   }
 }

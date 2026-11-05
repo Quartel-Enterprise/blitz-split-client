@@ -75,8 +75,8 @@ final class NotificationSettingsModel {
     }
 }
 
-/// "Notifications" (4.8), pushed from the profile on iPhone and iPad. The Mac shows the same sections
-/// inside its settings, as the canvas draws them.
+/// "Notifications" (4.8), pushed from the profile and from Activity on iPhone and iPad. The Mac shows the same
+/// sections inside its settings, which Activity opens on them.
 struct NotificationSettingsView: View {
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: NotificationSettingsModel?
@@ -102,7 +102,8 @@ struct NotificationSettingsView: View {
     }
 }
 
-/// The denied notice (4.8b) and the four toggles, for a Form of the screen or of the Mac's settings.
+/// The denied notice (4.8b), which only stops the pushes, and a row per kind of Activity (and the weekly reminder),
+/// each with a Push and an In app toggle under the column names, for a Form of the screen or of the Mac's settings.
 struct NotificationSettingsSections: View {
     let model: NotificationSettingsModel
 
@@ -117,54 +118,111 @@ struct NotificationSettingsSections: View {
                 }
             }
             Section {
-                if state.showsTogglesLoading {
-                    // The choices (a restored account's come with its first full sync) or the system's permission
-                    // not known yet: no toggle shows a default that a tap would save over the server's
-                    ForEach(state.types, id: \.self) { _ in
-                        HStack {
-                            VStack(alignment: .leading, spacing: 6) {
-                                ShimmerLine(width: 180, height: 12)
-                                ShimmerLine(width: 120, height: 10)
-                            }
-                            Spacer()
-                            ShimmerBlock(width: 50, height: 30, cornerRadius: 15)
-                        }
-                        .shimmering()
+                ForEach(state.types, id: \.self) { type in
+                    NotificationRow(type: type, state: state) { channel, isOn in
+                        model.send(NotificationSettingsUiEventOnToggled(type: type, channel: channel, isEnabled: isOn))
                     }
-                } else {
-                    toggles(state)
                 }
             } header: {
-                Group {
-                    #if os(macOS)
-                    Text("Notifications")
-                    #else
-                    Text("Notify me when")
-                    #endif
+                HStack(alignment: .bottom, spacing: NotificationRow.cellSpacing) {
+                    Group {
+                        #if os(macOS)
+                        Text("Notifications")
+                        #else
+                        Text("Notify me about")
+                        #endif
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(state.channels, id: \.self) { channel in
+                        Text(channel.title)
+                            .font(.caption2.weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .frame(width: NotificationRow.cellWidth)
+                    }
                 }
                 // On the one header always there: a Form hands a section's modifiers to each of its rows
                 .modifier(PermissionChecks(model: model))
             } footer: {
-                Text("Notices arrive when there's internet. To mute a group, use the menu inside it.")
-            }
-        }
-    }
-
-    private func toggles(_ state: NotificationSettingsUiState) -> some View {
-        ForEach(state.types, id: \.self) { type in
-            Toggle(isOn: Binding(
-                get: { state.isEnabled(type: type) },
-                set: { model.send(NotificationSettingsUiEventOnToggled(type: type, isEnabled: $0)) },
-            )) {
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(type.title)
-                    Text(type.detail)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Push sends a notification to this device. In app marks it new on the bell and in Activity; turned off, it still shows in Activity, already read.")
+                    Text("Notices arrive when there's internet. To mute a group, use the menu inside it.")
                 }
             }
         }
-        .disabled(!state.areTogglesEnabled)
+    }
+}
+
+/// One kind with its two toggles: an icon button each, filled when on and crossed out when off, so the state never
+/// rests on the color alone. Shimmers until the choices (a restored account's come with its first full sync) and the
+/// system's permission are known, so no toggle shows a default that a tap would save over the server's.
+private struct NotificationRow: View {
+    static let cellWidth: CGFloat = 52
+    static let cellSpacing: CGFloat = 4
+
+    let type: NotificationType
+    let state: NotificationSettingsUiState
+    let toggle: (NotificationChannel, Bool) -> Void
+
+    var body: some View {
+        HStack(spacing: Self.cellSpacing) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(type.title)
+                Text(type.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: Self.cellSpacing) {
+                ForEach(state.channels, id: \.self) { channel in
+                    cell(channel)
+                        .frame(width: Self.cellWidth)
+                }
+            }
+            // One shimmer for the row's cells, as the other lists load
+            .modifier(LoadingShimmer(isLoading: state.showsTogglesLoading))
+        }
+    }
+
+    @ViewBuilder
+    private func cell(_ channel: NotificationChannel) -> some View {
+        if !state.hasToggle(type: type, channel: channel) {
+            // The weekly reminder never shows in Activity, so it has no In app toggle
+            Color.clear.frame(height: 1)
+        } else if state.showsTogglesLoading {
+            ShimmerBlock(width: 36, height: 36, cornerRadius: 18)
+        } else {
+            let isOn = state.isEnabled(type: type, channel: channel)
+            Toggle(isOn: Binding(get: { isOn }, set: { toggle(channel, $0) })) {
+                Label {
+                    Text(channel.title)
+                } icon: {
+                    Image(systemName: channel.symbol(isOn: isOn))
+                        .contentTransition(.symbolEffect(.replace))
+                }
+                .labelStyle(.iconOnly)
+            }
+            .toggleStyle(.button)
+            // A Form row with two buttons of the automatic style fires both on a tap anywhere in it; a bordered one
+            // takes only its own taps, and draws the circle
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.circle)
+            .disabled(!state.areTogglesEnabled(channel: channel))
+            .accessibilityLabel(Text("\(Text(type.title)), \(Text(channel.title))"))
+        }
+    }
+}
+
+/// Shimmers its content only while it loads, so a loaded row draws no animation.
+private struct LoadingShimmer: ViewModifier {
+    let isLoading: Bool
+
+    func body(content: Content) -> some View {
+        if isLoading {
+            content.shimmering()
+        } else {
+            content
+        }
     }
 }
 
@@ -199,9 +257,9 @@ private struct PermissionDeniedNotice: View {
                     .frame(width: 30, height: 30)
                     .background(Palette.negative.opacity(0.12), in: .rect(cornerRadius: 8))
                 #if os(macOS)
-                Text("Blitz Split notifications are turned off in System Settings.")
+                Text("Blitz Split notifications are turned off in System Settings. The bell keeps working.")
                 #else
-                Text("Blitz Split notifications are turned off in the \(DeviceName.current) Settings.")
+                Text("Blitz Split notifications are turned off in the \(DeviceName.current) Settings. The bell keeps working.")
                 #endif
             }
             .accessibilityElement(children: .combine)
@@ -226,19 +284,45 @@ private struct PermissionDeniedNotice: View {
 private extension NotificationType {
     var title: LocalizedStringKey {
         switch self {
-        case .theNewExpense: "New expense in my groups"
-        case .paymentMarked: "Someone marked a payment to me"
-        case .settleReminders: "Settle-up reminders"
-        default: "Invites and new members"
+        case .bills: "Bills"
+        case .payments: "Payments and settle-ups"
+        case .comments: "Comments"
+        case .peopleAndGroups: "People and groups"
+        case .paymentRequests: "Payment requests"
+        default: "Open balance reminder"
         }
     }
 
     var detail: LocalizedStringKey {
         switch self {
-        case .theNewExpense: "When someone adds an expense with you"
-        case .paymentMarked: "When someone says they've paid you"
-        case .settleReminders: "Once a week, if there's an open balance"
-        default: "When someone joins one of your groups"
+        case .bills: "New, edited or deleted bills you're in"
+        case .payments: "Payments to or from you, and simplified debts"
+        case .comments: "On bills you're in and threads you wrote in"
+        case .peopleAndGroups: "Who joins or leaves your groups, and what changes in them"
+        case .paymentRequests: "When someone asks you to pay"
+        default: "Once a week, if there's an open balance"
+        }
+    }
+}
+
+private extension NotificationChannel {
+    var title: LocalizedStringKey {
+        switch self {
+        case .push: "Push"
+        default: "In app"
+        }
+    }
+
+    func symbol(isOn: Bool) -> String {
+        switch self {
+        case .push:
+            #if os(macOS)
+            isOn ? "laptopcomputer" : "laptopcomputer.slash"
+            #else
+            isOn ? "iphone" : "iphone.slash"
+            #endif
+        default:
+            isOn ? "bell.fill" : "bell.slash"
         }
     }
 }

@@ -40,9 +40,22 @@ sealed interface SearchUiEvent : UiEvent {
             ),
         )
 
+        is OnContactClicked -> EventAnalytics.Automatic(
+            "search_result_clicked",
+            mapOf(
+                "kind" to "contact",
+                "source" to source,
+            ),
+        )
+
         is OnBillClicked -> EventAnalytics.Automatic(
             "search_result_clicked",
             mapOf("kind" to "bill", "source" to source),
+        )
+
+        is OnSuggestionClicked -> EventAnalytics.Automatic(
+            "search_suggestion_clicked",
+            mapOf("source" to source),
         )
 
         // Why: a close, which each platform also does its own way: where it went is its screen view.
@@ -68,6 +81,16 @@ sealed interface SearchUiEvent : UiEvent {
     // Why: a person found opens the members of the group they were found in.
     data class OnPersonClicked(
         val groupId: String,
+    ) : SearchUiEvent
+
+    // Why: a person found once, above their rows in each group, opens their profile, as from Contacts.
+    data class OnContactClicked(
+        val personKey: String,
+    ) : SearchUiEvent
+
+    // Why: "Did you mean “Larissa”?" searches that instead of what was typed.
+    data class OnSuggestionClicked(
+        val suggestion: String,
     ) : SearchUiEvent
 
     // Why: a bill found opens over its group, so back goes to the group's bills, as from Despesas.

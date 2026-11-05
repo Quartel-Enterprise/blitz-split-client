@@ -576,23 +576,10 @@ private struct StatsOverTimeSection: View {
                     .font(.footnote)
                 }
                 if let average = state.chartAverageMinor {
-                    HStack(spacing: 4) {
-                        // The dashed line's key, as the chart draws it
-                        Path { path in
-                            path.move(to: CGPoint(x: 0, y: 1))
-                            path.addLine(to: CGPoint(x: 16, y: 1))
-                        }
-                        .stroke(Color.secondary, style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
-                        .frame(width: 16, height: 2)
-                        .padding(.trailing, 2)
-                        Text(verbatim: GroupStatsCopy.average(grain: state.grain))
-                            .foregroundStyle(.secondary)
-                        Text(verbatim: state.currency.format(Int64(truncating: average)))
-                            .fontWeight(.semibold)
-                            .monospacedDigit()
-                    }
-                    .font(.footnote)
-                    .accessibilityElement(children: .combine)
+                    StatsAverageLegend(
+                        label: GroupStatsCopy.average(grain: state.grain),
+                        amount: state.currency.format(Int64(truncating: average)),
+                    )
                 }
             }
             .padding(16)
@@ -825,6 +812,66 @@ private struct StatsDatesSheet: View {
         .presentationDetents([.medium])
         #else
         .frame(width: 360, height: 220)
+        #endif
+    }
+}
+
+/// The dashed average line's key before "Average per day: $405"; tapping it (or the pointer over it on the Mac) says
+/// what the dashed line is.
+private struct StatsAverageLegend: View {
+    let label: String
+    let amount: String
+    @State private var isHintShown = false
+    // A click keeps the hint open after the pointer leaves, until it is dismissed
+    @State private var isHintPinned = false
+    private let hint = String(localized: "The darker dashed line across the chart, like the one in this legend, is the average: the total spent divided by every period shown, the empty ones included.")
+
+    var body: some View {
+        Button {
+            // On the Mac the click dismisses the hover's popover first, so this pins it again
+            isHintPinned = !isHintShown
+            isHintShown = !isHintShown
+        } label: {
+            HStack(spacing: 4) {
+                // The dashed line's key, as the chart draws it
+                Path { path in
+                    path.move(to: CGPoint(x: 0, y: 1))
+                    path.addLine(to: CGPoint(x: 16, y: 1))
+                }
+                .stroke(Color.secondary, style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+                .frame(width: 16, height: 2)
+                .padding(.trailing, 2)
+                Text(verbatim: label)
+                    .foregroundStyle(.secondary)
+                Text(verbatim: amount)
+                    .fontWeight(.semibold)
+                    .monospacedDigit()
+            }
+            .font(.footnote)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(Text(verbatim: hint))
+        .popover(isPresented: $isHintShown, arrowEdge: .bottom) {
+            Text(verbatim: hint)
+                .font(.footnote)
+                .padding(12)
+                .frame(width: 240, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .presentationCompactAdaptation(.popover)
+        }
+        .onChange(of: isHintShown) { _, isShown in
+            if !isShown { isHintPinned = false }
+        }
+        #if os(macOS)
+        .onHover { isHovering in
+            if isHovering {
+                isHintShown = true
+            } else if !isHintPinned {
+                isHintShown = false
+            }
+        }
         #endif
     }
 }

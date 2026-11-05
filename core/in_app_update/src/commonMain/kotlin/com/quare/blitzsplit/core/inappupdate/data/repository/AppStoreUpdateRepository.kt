@@ -21,9 +21,10 @@ import kotlin.random.Random
 
 /*
  * Why: the App Store has no in-app update, so its listing's version is compared with the installed one, and the sheet
- * the shared code opens sends there. The lookup goes by bundle id, which needs no store id and finds nothing until the
- * app is published: no update then. The iPhone and Mac apps are one purchase with one listing, whose version the
- * lookup reports for both; they ship together from version.properties.
+ * the shared code opens sends there. The lookup goes by bundle id, which needs no store id and finds the legacy Blitz
+ * Split (2.4.0) until this app is published: lower than version.properties, so no update then. The iPhone and Mac
+ * apps are one purchase with one listing, whose version the lookup reports for both; they ship together from
+ * version.properties.
  */
 internal class AppStoreUpdateRepository(
     private val httpClient: HttpClient,

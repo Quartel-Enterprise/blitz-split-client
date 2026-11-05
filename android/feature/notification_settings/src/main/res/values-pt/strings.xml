@@ -2,16 +2,24 @@
 <resources>
     <string name="notification_settings_title">Notificações</string>
     <string name="notification_settings_denied_title">As notificações do Bora Rachar estão desativadas no Android.</string>
-    <string name="notification_settings_denied_body">Ative nas configurações do sistema para receber os avisos abaixo.</string>
+    <string name="notification_settings_denied_body">Ative nas configurações do sistema para receber os pushes abaixo. O sino continua funcionando.</string>
     <string name="notification_settings_open_settings">Abrir configurações</string>
-    <string name="notification_settings_section">Avisar quando</string>
-    <string name="notification_settings_new_expense">Nova despesa nos meus grupos</string>
-    <string name="notification_settings_new_expense_detail">Quando alguém lança uma despesa com você</string>
-    <string name="notification_settings_payment_marked">Alguém marcou um pagamento para mim</string>
-    <string name="notification_settings_payment_marked_detail">Quando alguém diz que já te pagou</string>
-    <string name="notification_settings_settle_reminders">Lembretes de acerto</string>
-    <string name="notification_settings_settle_reminders_detail">Uma vez por semana, se houver saldo em aberto</string>
-    <string name="notification_settings_invites">Convites e novos membros</string>
-    <string name="notification_settings_invites_detail">Quando alguém entra num grupo seu</string>
+    <string name="notification_settings_section">Avisar sobre</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">No app</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">O push manda uma notificação para este aparelho. No app marca como novo no sino e na Atividade; desligado, ainda aparece na Atividade, já lido.</string>
+    <string name="notification_settings_bills">Contas</string>
+    <string name="notification_settings_bills_detail">Contas novas, editadas ou apagadas em que você está</string>
+    <string name="notification_settings_payments">Pagamentos e acertos</string>
+    <string name="notification_settings_payments_detail">Pagamentos com você e dívidas simplificadas</string>
+    <string name="notification_settings_comments">Comentários</string>
+    <string name="notification_settings_comments_detail">Em contas suas e conversas em que você escreveu</string>
+    <string name="notification_settings_people_and_groups">Pessoas e grupos</string>
+    <string name="notification_settings_people_and_groups_detail">Quem entra ou sai dos seus grupos e o que muda neles</string>
+    <string name="notification_settings_payment_requests">Cobranças</string>
+    <string name="notification_settings_payment_requests_detail">Quando alguém te cobra</string>
+    <string name="notification_settings_balance_reminder">Lembrete de saldo em aberto</string>
+    <string name="notification_settings_balance_reminder_detail">Uma vez por semana, se houver saldo em aberto</string>
     <string name="notification_settings_footer">Os avisos chegam quando há internet. Para silenciar um grupo, use o menu dentro dele.</string>
 </resources>

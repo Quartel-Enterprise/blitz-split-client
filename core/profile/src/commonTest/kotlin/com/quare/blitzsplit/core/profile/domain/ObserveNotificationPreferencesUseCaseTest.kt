@@ -13,7 +13,11 @@ class ObserveNotificationPreferencesUseCaseTest {
     @Test
     fun `GIVEN only invites on WHEN observing THEN shows only invites enabled`() = runTest {
         // Given
-        val onlyInvites = NotificationPreferences(setOf(NotificationType.INVITES))
+        val onlyInvites =
+            NotificationPreferences(
+                push = setOf(NotificationType.PEOPLE_AND_GROUPS),
+                inApp = NotificationPreferences.DEFAULT.inApp,
+            )
         val repository = FakeNotificationPreferencesRepository(initialPreferences = onlyInvites)
         val useCase = ObserveNotificationPreferencesUseCase(repository)
 

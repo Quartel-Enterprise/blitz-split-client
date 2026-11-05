@@ -146,4 +146,5 @@
     <string name="activity_simplify_you_owe">você deve %s</string>
     <string name="activity_simplify_owes_nothing">não deve mais</string>
     <string name="activity_open_group_balances">Ver saldos do grupo</string>
+    <string name="activity_notification_settings">Configurar notificações</string>
 </resources>

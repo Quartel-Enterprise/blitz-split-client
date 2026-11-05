@@ -2,7 +2,6 @@ package com.quare.blitzsplit.android.feature.groups
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,15 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PersonAdd
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.RowMenuButton
+import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
@@ -61,54 +57,21 @@ internal fun GroupRowMenuButton(
     onEvent: (GroupsUiEvent) -> Unit,
 ) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { isOpen = true }) {
-            Icon(
-                imageVector = Icons.Outlined.MoreVert,
-                contentDescription = stringResource(R.string.groups_row_more, group.name),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+    RowMenuButton(
+        contentDescription = stringResource(R.string.groups_row_more, group.name),
+        items = groupActionItemsOf(group, isOnline).map { item ->
+            RowMenuItem(
+                label = item.label,
+                icon = item.icon,
+                hint = item.hint,
+                isEnabled = item.isEnabled,
+                isDestructive = item.isDestructive,
+                onClick = { onEvent(item.event) },
             )
-        }
-        DropdownMenu(
-            expanded = isOpen,
-            onDismissRequest = { isOpen = false },
-        ) {
-            groupActionItemsOf(group, isOnline).forEach { item ->
-                DropdownMenuItem(
-                    text = {
-                        Column {
-                            Text(item.label)
-                            item.hint?.let {
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
-                            }
-                        }
-                    },
-                    onClick = {
-                        isOpen = false
-                        onEvent(item.event)
-                    },
-                    enabled = item.isEnabled,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = item.icon,
-                            contentDescription = null,
-                        )
-                    },
-                    colors = if (item.isDestructive) {
-                        MenuDefaults.itemColors(
-                            textColor = MaterialTheme.colorScheme.error,
-                            leadingIconColor = MaterialTheme.colorScheme.error,
-                        )
-                    } else {
-                        MenuDefaults.itemColors()
-                    },
-                )
-            }
-        }
-    }
+        },
+        isOpen = isOpen,
+        onOpenChange = { isOpen = it },
+    )
 }
 
 // Why: the long press on a row (5.3): the group, its balance and the same three actions, in a bottom sheet.

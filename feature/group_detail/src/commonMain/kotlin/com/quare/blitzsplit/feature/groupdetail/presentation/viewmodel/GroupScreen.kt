@@ -176,13 +176,12 @@ internal class GroupScreen(
         if (isOnTop()) useCases.navigator.navigateBack()
     }
 
-    fun open(next: Route) {
-        useCases.navigator.openFromGroupScreen(
-            from = route,
-            groupId = groupId,
-            next = next,
-        )
-    }
+    // Why: whether it opened, since a native back may have closed the group meanwhile.
+    fun open(next: Route): Boolean = useCases.navigator.openFromGroupScreen(
+        from = route,
+        groupId = groupId,
+        next = next,
+    )
 
     // Why: a tab of the home's rail, which Android keeps beside a group drawn alone.
     fun openHomeTab(tab: HomeTab) {

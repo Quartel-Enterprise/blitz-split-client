@@ -35,7 +35,10 @@ interface NotificationPreferencesDao {
      */
     @Query(
         "UPDATE notification_preferences SET newExpense = :newExpense, paymentMarked = :paymentMarked, " +
-            "settleReminders = :settleReminders, invites = :invites, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "settleReminders = :settleReminders, invites = :invites, comments = :comments, " +
+            "paymentRequests = :paymentRequests, inAppBills = :inAppBills, inAppPayments = :inAppPayments, " +
+            "inAppComments = :inAppComments, inAppPeopleAndGroups = :inAppPeopleAndGroups, " +
+            "inAppPaymentRequests = :inAppPaymentRequests, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
             "WHERE id = '$SINGLE_ROW_ID' AND ownerUserId = :ownerUserId AND updatedAt < :remoteUpdatedAt",
     )
     suspend fun applyRemote(
@@ -43,6 +46,13 @@ interface NotificationPreferencesDao {
         paymentMarked: Boolean,
         settleReminders: Boolean,
         invites: Boolean,
+        comments: Boolean,
+        paymentRequests: Boolean,
+        inAppBills: Boolean,
+        inAppPayments: Boolean,
+        inAppComments: Boolean,
+        inAppPeopleAndGroups: Boolean,
+        inAppPaymentRequests: Boolean,
         remoteUpdatedAt: Long,
         ownerUserId: String,
     )

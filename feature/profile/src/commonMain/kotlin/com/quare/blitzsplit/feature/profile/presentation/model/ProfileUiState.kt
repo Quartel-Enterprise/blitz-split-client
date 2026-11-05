@@ -41,7 +41,7 @@ data class ProfileUiState(
     // Why: Preferências' "Bitcoin em satoshis", every bitcoin amount shown and typed in whole sats on this device.
     val showsBitcoinInSats: Boolean,
     /*
-     * Why: "3 ativas" under "Notificações"; the toggles themselves live on their own screen or section. Loading like
+     * Why: "5 active" under "Notifications", the rows whose push is on; the toggles live on their own screen or section. Loading like
      * the keys, since a restored account's choices only come with its first full sync.
      */
     val activeNotificationCount: Loadable<Int>,

@@ -202,7 +202,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
 | `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`) | Search opened: its navigation item (Android's bar or rail, the web's), iOS's search tab, the Mac's magnifier or field, or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
-| `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |
+| `search_result_clicked` | `kind` (`group`, `contact`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped: `contact` is the person's profile, `person` their row in a group | `:feature:groups` |
+| `search_suggestion_clicked` | `source` (`search`, `groups`) | "Did you mean “Larissa”?" tapped | `:feature:groups` |
 | `sync_retry_clicked` | `source` (`home`, `groups`, `profile`) | The sync chip's "try again" | `:feature:groups`, `:feature:profile` |
 | `pull_to_refresh` | `source` (`home`, `groups`, `activity`) | Pulled down on Android and iOS | `:feature:groups`, `:feature:activity` |
 | `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
@@ -238,7 +239,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_deleted_back_clicked` | none | "Back to Groups" on "Group deleted", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |
 | `settle_clicked` | `source` (`group_detail`, `global_balances`, `contact_profile`) | "Settle up" on "Your balance in this group", on a person of Balances, or on a contact | `:feature:group_detail`, `:feature:global_balances`, `:feature:contacts` |
 | `debt_clicked` | `source` (`group_detail`) | "Settle up", "Got paid" or "Already paid" on a pair of Balances | `:feature:group_detail` |
-| `payment_clicked` | `source` (`group_detail`) | A payment of Expenses, which asks "Delete this payment?" | `:feature:group_detail` |
+| `payment_clicked` | `source` (`group_detail`) | A payment of Expenses, or its ⋮ "Delete", which asks "Delete this payment?" | `:feature:group_detail` |
 | `payment_delete_confirmed` | none | "Delete this payment?" confirmed, while it was open | `:feature:group_detail` |
 | `payment_delete_cancelled` | none | "Delete this payment?" closed without confirming, while it was open | `:feature:group_detail` |
 | `category_teach_clicked` | none | "Teach" on "Teach the map?" | `:feature:group_detail` |
@@ -368,11 +369,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `receipt_removed` | none | × on "Receipt photo" | `:feature:split_bill` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
-| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`) | "Delete bill", when its question opens | `:feature:split_bill`, `:feature:bill_detail` |
-| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail` |
-| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail` |
-| `bill_edit_clicked` | none | Bill's "Edit bill", while it can edit | `:feature:bill_detail` |
-| `bill_share_clicked` | none | Bill's Share, which opens "Share bill" | `:feature:bill_detail` |
+| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete bill", when its question opens; `group_detail` is a bill's ⋮ "Delete" on Expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_edit_clicked` | `source` (`group_detail`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" on Expenses once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_share_clicked` | `source` (`group_detail`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" on Expenses once Share bill opened | `:feature:bill_detail`, `:feature:group_detail` |
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |
@@ -399,6 +400,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `activity_open_target_clicked` | `kind` | "Open bill", "Open group"… of the detail or the open changes, with Activity on top | `:feature:activity` |
 | `activity_changes_toggled` | `is_expanded` | "See changes" or "Hide changes" | `:feature:activity` |
 | `activity_mark_all_read_clicked` | none | "Mark all as read", while something is unread | `:feature:activity` |
+| `activity_notification_settings_clicked` | none | The bar's "Notification settings", which opens Notifications, with Activity on top | `:feature:activity` |
 | `activity_filter_group_picked` | `is_all` | A group, or "All groups", another than the one picked, in the sheet | `:feature:activity` |
 | `activity_filter_type_toggled` | `type`, `is_included` | A type in or out, in the sheet | `:feature:activity` |
 | `activity_filter_applied` | `has_group`, `types` (how many), `has_person` | "Show 4 results" | `:feature:activity` |
@@ -459,5 +461,5 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_profile_discard_clicked` | none | Cancel on the web's and the Mac's inline form, putting back what was saved | `:feature:edit_profile` |
 | `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |
 | `profile_saved` | `has_photo` | The profile saved | `:feature:edit_profile` |
-| `notification_toggled` | `type`, `is_enabled` | A toggle of Notifications, while the toggles take a change | `:feature:notification_settings` |
+| `notification_toggled` | `type` (`BILLS`, `PAYMENTS`, `COMMENTS`, `PEOPLE_AND_GROUPS`, `PAYMENT_REQUESTS`, `BALANCE_REMINDER`), `channel` (`PUSH`, `IN_APP`), `is_enabled` | A Push or In app toggle of Notifications, while its channel's toggles take a change | `:feature:notification_settings` |
 | `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |

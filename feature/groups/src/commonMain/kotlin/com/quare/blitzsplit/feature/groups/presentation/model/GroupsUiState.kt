@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupsDisplay
 import com.quare.blitzsplit.core.model.GroupsLayout
+import com.quare.blitzsplit.core.utils.TextFolding
 
 data class GroupsUiState(
     val displayName: String,
@@ -126,8 +127,8 @@ data class GroupsUiState(
     // Why: the query is folded once, not once per row.
     private val filteredGroups: List<GroupRow>
         get() {
-            val query = GroupNameFilter.toFolded(filterQuery.trim())
+            val query = TextFolding.toFolded(filterQuery.trim())
             if (query.isEmpty()) return groups
-            return groups.filter { GroupNameFilter.toFolded(it.name).contains(query) }
+            return groups.filter { TextFolding.toFolded(it.name).contains(query) }
         }
 }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.EditNotifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -81,6 +82,15 @@ fun ActivityContent(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                                 contentDescription = back,
+                            )
+                        }
+                    },
+                    // Why: the same Notifications as the profile's, where each row's bell is turned on or off.
+                    actions = {
+                        IconButton(onClick = { onEvent(ActivityUiEvent.OnNotificationSettingsClicked) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.EditNotifications,
+                                contentDescription = stringResource(R.string.activity_notification_settings),
                             )
                         }
                     },

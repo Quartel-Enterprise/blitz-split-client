@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
@@ -46,7 +47,7 @@ class ExportUserDataUseCaseTest {
 
         // Then
         assertEquals("blitz-split-user-data", export.getValue("format").jsonPrimitive.content)
-        assertEquals(2, export.getValue("version").jsonPrimitive.int)
+        assertEquals(3, export.getValue("version").jsonPrimitive.int)
     }
 
     @Test
@@ -314,7 +315,10 @@ class ExportUserDataUseCaseTest {
         val notifications = parse(useCase().getOrThrow()).getValue("notifications").jsonObject
 
         // Then
-        assertEquals(setOf("newExpense", "paymentMarked", "settleReminders", "invites"), notifications.keys)
+        assertEquals(
+            setOf("newExpense", "paymentMarked", "settleReminders", "invites", "comments", "paymentRequests", "inApp"),
+            notifications.keys,
+        )
         assertEquals(true, notifications.getValue("newExpense").jsonPrimitive.boolean)
         assertEquals(true, notifications.getValue("paymentMarked").jsonPrimitive.boolean)
         assertEquals(true, notifications.getValue("settleReminders").jsonPrimitive.boolean)
@@ -326,15 +330,18 @@ class ExportUserDataUseCaseTest {
         // Given
         prepareScenario()
         notificationPreferences.updatePreference(
-            type = NotificationType.NEW_EXPENSE,
+            type = NotificationType.BILLS,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
         notificationPreferences.updatePreference(
-            type = NotificationType.SETTLE_REMINDERS,
+            type = NotificationType.BALANCE_REMINDER,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
         notificationPreferences.updatePreference(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
 
@@ -351,7 +358,12 @@ class ExportUserDataUseCaseTest {
     @Test
     fun `GIVEN only the settle reminders on WHEN exporting THEN only the settle reminders are true`() = runTest {
         // Given
-        prepareScenario(storedPreferences = NotificationPreferences(setOf(NotificationType.SETTLE_REMINDERS)))
+        prepareScenario(
+            storedPreferences = NotificationPreferences(
+                push = setOf(NotificationType.BALANCE_REMINDER),
+                inApp = NotificationPreferences.DEFAULT.inApp,
+            ),
+        )
 
         // When
         val notifications = parse(useCase().getOrThrow()).getValue("notifications").jsonObject
@@ -370,7 +382,10 @@ class ExportUserDataUseCaseTest {
             prepareScenario(
                 status = AccountStatus.LocalOnly,
                 storedProfile = null,
-                storedPreferences = NotificationPreferences(setOf(NotificationType.PAYMENT_MARKED)),
+                storedPreferences = NotificationPreferences(
+                    push = setOf(NotificationType.PAYMENTS),
+                    inApp = NotificationPreferences.DEFAULT.inApp,
+                ),
             )
 
             // When

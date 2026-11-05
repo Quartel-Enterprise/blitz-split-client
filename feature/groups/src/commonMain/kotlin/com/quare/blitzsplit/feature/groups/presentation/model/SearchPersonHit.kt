@@ -5,6 +5,8 @@ import com.quare.blitzsplit.core.model.AvatarColor
 // Why: a member "Buscar" found, once per group they are in; this device's user never, who is in every group.
 data class SearchPersonHit(
     val memberId: String,
+    // Why: PeopleBalances.keyOf, which gathers the person's rows once under contacts.
+    val personKey: String,
     val name: String,
     val nameMatch: TextMatch,
     val initial: String,

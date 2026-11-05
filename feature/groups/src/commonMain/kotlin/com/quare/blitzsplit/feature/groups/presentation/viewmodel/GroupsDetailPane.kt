@@ -74,6 +74,16 @@ internal class GroupsDetailPane(
         navigator.openBesideGroups(groupRouteOf(groupId, tab))
     }
 
+    // Why: as a group's Despesas opens it, over the group, which takes the place of the group beside the list.
+    fun openBill(
+        groupId: String,
+        expenseId: String,
+    ) {
+        if (!isListShown) return
+        openGroup(groupId, GroupTab.EXPENSES)
+        navigator.navigate(Route.BillDetail(groupId, expenseId, focusCommentId = null))
+    }
+
     // Why: the sections show Grupos, then Pessoas, then Despesas.
     private fun firstResultRouteOf(results: GroupsSearchResults): Route? {
         results.groups.firstOrNull()?.let { return groupRouteOf(it.group.id, GroupTab.EXPENSES) }

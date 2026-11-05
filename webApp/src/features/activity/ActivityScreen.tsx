@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
+import { ArrowLeft, BellRing, CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
 import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRoute } from 'blitzsplit-shared'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -42,10 +42,18 @@ export function ActivityScreen({ route }: { route: JsRoute }) {
         <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
           <ArrowLeft />
         </Button>
-        <h1 className="text-lg font-semibold">{t('activity_title')}</h1>
+        <h1 className="flex-1 text-lg font-semibold">{t('activity_title')}</h1>
+        <Button variant="ghost" size="icon" aria-label={t('activity_notificationSettings')} onClick={() => presenter.openNotificationSettings()}>
+          <BellRing />
+        </Button>
       </header>
       <main className={cn(pageContentClass, 'gap-3 sm:gap-4', !isWide && 'max-w-3xl')}>
-        <h1 className="hidden text-2xl font-semibold tracking-tight md:block">{t('activity_title')}</h1>
+        <div className="hidden items-center justify-between gap-3 md:flex">
+          <h1 className="text-2xl font-semibold tracking-tight">{t('activity_title')}</h1>
+          <Button variant="outline" size="sm" onClick={() => presenter.openNotificationSettings()}>
+            <BellRing /> {t('activity_notificationSettings')}
+          </Button>
+        </div>
         {!state.isLoaded && <Placeholders isDelayed />}
         {state.isLoaded && (
           <>
