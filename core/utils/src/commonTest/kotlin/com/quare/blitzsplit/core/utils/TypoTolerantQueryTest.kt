@@ -381,7 +381,7 @@ class TypoTolerantQueryTest {
     @Test
     fun `GIVEN a query without typos WHEN searching a name one letter off THEN finds nothing`() {
         // Given
-        val query = TypoTolerantQuery.of("larisa").withoutTypos()
+        val query = TypoTolerantQuery.of("larisa").toExactOnly()
 
         // When
         val found = query.findIn("Larissa")
@@ -393,7 +393,7 @@ class TypoTolerantQueryTest {
     @Test
     fun `GIVEN a query without typos WHEN searching the words of a name in another order THEN still finds them`() {
         // Given
-        val query = TypoTolerantQuery.of("silva lari").withoutTypos()
+        val query = TypoTolerantQuery.of("silva lari").toExactOnly()
 
         // When
         val found = query.findIn("Larissa Silva")
@@ -404,6 +404,37 @@ class TypoTolerantQueryTest {
                 start = 0,
                 end = 13,
                 typos = 0,
+            ),
+            found,
+        )
+    }
+
+    @Test
+    fun `GIVEN 4 letters a typo from the start of a word WHEN searching a longer word THEN finds nothing`() {
+        // Given
+        val query = TypoTolerantQuery.of("mara")
+
+        // When
+        val found = listOf("Marcos", "Mariana", "Araújo").map(query::findIn)
+
+        // Then
+        assertEquals(listOf(null, null, null), found)
+    }
+
+    @Test
+    fun `GIVEN 5 letters a typo from the start of a word WHEN searching a longer word THEN finds it`() {
+        // Given
+        val query = TypoTolerantQuery.of("larsi")
+
+        // When
+        val found = query.findIn("Larissa Souza")
+
+        // Then
+        assertEquals(
+            TypoTolerantQuery.Found(
+                start = 0,
+                end = 7,
+                typos = 1,
             ),
             found,
         )

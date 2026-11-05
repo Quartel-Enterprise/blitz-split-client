@@ -1047,6 +1047,36 @@ class SearchViewModelTest {
         }
 
     @Test
+    fun `GIVEN a person also in a group this user left WHEN searching THEN counts only the groups in common`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, leftGroup))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("carla"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("aniversario", "ape", "left"), results.people.map { it.groupId })
+            assertEquals(2, results.contacts.single().groupCount)
+        }
+
+    @Test
+    fun `GIVEN a person only in a group this user left WHEN searching THEN shows their row but no contact`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, leftGroup))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("teodoro"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("Teodoro"), results.people.map { it.name })
+            assertTrue(results.contacts.isEmpty())
+        }
+
+    @Test
     fun `GIVEN an account found close in two groups WHEN searching THEN the contact shows its closest name`() =
         runTest(testDispatcher) {
             // Given
@@ -1279,10 +1309,18 @@ class SearchViewModelTest {
         ),
     )
 
+    // Why: a group still on the device that this user is no longer in, which Contacts doesn't count.
+    private val leftGroup = group(
+        id = "left",
+        name = "Antigo",
+        names = listOf("Carla", "Teodoro"),
+    ).let { group -> group.copy(members = group.members.map { it.copy(isMe = false) }) }
+
     private val larissaResults = GroupsSearchResults.none.copy(
         people = listOf(
             SearchPersonHit(
                 memberId = "viagem-Larissa",
+                personKey = "name:larissa",
                 name = "Larissa",
                 nameMatch = TextMatch(0, 7),
                 initial = "L",

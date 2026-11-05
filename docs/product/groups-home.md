@@ -58,8 +58,9 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     (`TypoTolerantQuery`, folded in memory over what Room holds, since SQLite's LIKE folds neither), and marks what it
     found. It forgives typos (Pierre's beta feedback: "Larisa" finds "Larissa"): a text holding what was typed, or
     each word typed starting one of its words in any order, is a match; only when nothing in the scope matches so, it
-    shows what comes close, every word typed starting a word of the text with one typo from 4 letters and two from 8
-    (a letter missing, extra, wrong or two swapped; none under 4 letters, where one typo finds half the names), the
+    shows what comes close, every word typed a typo from a word of the text, one from 4 letters and two from 8 (a
+    letter missing, extra, wrong or two swapped; none under 4 letters, where one typo finds half the names), against
+    the whole word or, from 5 letters, its start ("larsi" finds "Larissa", "mara" finds "Maria" but not "Marcos"), the
     closest first, under "Did you mean “Larissa”?" (the closest name or description as written), which a tap
     searches instead (`SearchUiEvent.OnSuggestionClicked`); close matches never mix with exact ones, so "churros"
     doesn't bring "Churrasco". It is the same search on all four tabs (Home, Groups, Balances, Contacts, Pierre's call; Activity, no tab
@@ -92,7 +93,8 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Settled up · expense “Churros”", as the design draws it), and "Expenses"
     lists it too. A group opens the group, a bill its Bill over the group. People list each person once first ("Contact · 2 groups",
-    Balances' person key `PeopleBalances.keyOf`, so a guest's same name in two groups is one person), opening their
+    the groups in common as Contacts counts them; Balances' person key `PeopleBalances.keyOf`, so a guest's same name
+    in two groups is one person; nobody only in groups this device's user left, whom Contacts doesn't list), opening their
     profile as Contacts does (`Route.ContactProfile`, `SearchUiEvent.OnContactClicked`; over Groups it opens over the
     search, so back comes to it, but for the web's dialog, which closes first as for every result), then the same person once per group they are in ("Larissa · Nosso Lar"), opening
     that group's Members (Pierre's beta feedback). Results are always a list, even with the grid; nothing typed says where it
@@ -101,7 +103,8 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     forgets the text; leaving iOS's search tab also goes back
     to the groups (`GroupsUiState.search`). The web's "Filter groups" stays, as the board draws it. Where the home
     draws its list and detail, the first result opens beside the results as it is typed: a group or a bill's group
-    as its Expenses, a person as the Members they were found in (a bill's detail waits for a tap), never over a result
+    as its Expenses, a person as the Members of their first group row, not their profile, which would leave the list's place (a bill's detail
+    waits for a tap), never over a result
     tapped since with the same first result.
   - The home's list and detail (5.1): an Android tablet lying down, an unfolded book (the tabletop alike) and an iPad
     lying down draw the list (with the rail on Android) and, beside it, the group tapped, its Expenses, Balances and

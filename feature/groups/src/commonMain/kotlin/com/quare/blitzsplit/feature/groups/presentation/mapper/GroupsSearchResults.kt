@@ -52,6 +52,7 @@ internal fun searchResultsOf(
     val billGroups = ordered
         .filter { (row, _) -> scope == SearchScope.BILLS || !row.isSettled }
         .map { (_, item) -> item }
+
     fun sectionsOf(pass: TypoTolerantQuery): SectionHits = SectionHits(
         groups = if (scope.isLookingAt(SearchScope.GROUPS)) groupHitsOf(ordered, pass) else emptyList(),
         people = if (scope.isLookingAt(SearchScope.PEOPLE)) personHitsOf(ordered, pass) else emptyList(),
@@ -59,12 +60,12 @@ internal fun searchResultsOf(
     )
 
     // Why: what holds the text typed is what was looked for; only when nothing does, what comes close, under "Did you mean".
-    val exact = sectionsOf(typed.withoutTypos())
+    val exact = sectionsOf(typed.toExactOnly())
     if (!exact.isEmpty) {
         return GroupsSearchResults(
             groups = exact.groups.map { it.hit },
             contacts = contactHitsOf(exact.people, ordered),
-            people = exact.people.map { it.hit.hit },
+            people = exact.people.map { it.hit },
             bills = exact.bills.map { it.hit },
             suggestion = null,
         )
@@ -75,7 +76,7 @@ internal fun searchResultsOf(
     return GroupsSearchResults(
         groups = close.groups.toClosestFirst(),
         contacts = contactHitsOf(people, ordered),
-        people = people.map { it.hit.hit },
+        people = people.map { it.hit },
         bills = close.bills.toClosestFirst(),
         suggestion = closeHits.minByOrNull { it.typos }?.foundText,
     )
@@ -84,7 +85,7 @@ internal fun searchResultsOf(
 // Why: each section's hits for one pass, the exact one or, when it finds nothing, the one forgiving typos.
 private class SectionHits(
     val groups: List<Searched<SearchGroupHit>>,
-    val people: List<Searched<PersonHit>>,
+    val people: List<Searched<SearchPersonHit>>,
     val bills: List<Searched<SearchBillHit>>,
 ) {
     val isEmpty: Boolean
@@ -165,34 +166,26 @@ private fun closestBillHitOf(
         )
     }
 
-// Why: each row with the person's key (PeopleBalances.keyOf), which gathers them once under contacts.
-private class PersonHit(
-    val hit: SearchPersonHit,
-    val personKey: String,
-)
-
 private fun personHitsOf(
     groups: List<Pair<GroupRow, GroupWithMoney>>,
     typed: TypoTolerantQuery,
-): List<Searched<PersonHit>> = groups.flatMap { (_, item) ->
+): List<Searched<SearchPersonHit>> = groups.flatMap { (_, item) ->
     val group = item.group
     group.members
         .filter { !it.isMe }
         .mapNotNull { member ->
             typed.findIn(member.name)?.let { found ->
                 searchedOf(
-                    hit = PersonHit(
-                        hit = SearchPersonHit(
-                            memberId = member.id,
-                            name = member.name,
-                            nameMatch = found.toTextMatch(),
-                            initial = Initials.firstOf(member.name),
-                            color = member.avatarColor,
-                            photoUrl = member.photoUrl,
-                            groupId = group.id,
-                            groupName = group.name,
-                        ),
+                    hit = SearchPersonHit(
+                        memberId = member.id,
                         personKey = PeopleBalances.keyOf(member),
+                        name = member.name,
+                        nameMatch = found.toTextMatch(),
+                        initial = Initials.firstOf(member.name),
+                        color = member.avatarColor,
+                        photoUrl = member.photoUrl,
+                        groupId = group.id,
+                        groupName = group.name,
                     ),
                     text = member.name,
                     found = found,
@@ -201,31 +194,36 @@ private fun personHitsOf(
         }
 }
 
-// Why: the person once, as their first row found them (the closest, people coming closest first), with their groups.
+/*
+ * Why: the person once, as their first row found them (the closest, people coming closest first), with their groups
+ * in common; nobody Contacts doesn't know (only in groups this device's user is no longer in), whose profile is none.
+ */
 private fun contactHitsOf(
-    people: List<Searched<PersonHit>>,
+    people: List<Searched<SearchPersonHit>>,
     groups: List<Pair<GroupRow, GroupWithMoney>>,
 ): List<SearchContactHit> {
     if (people.isEmpty()) return emptyList()
     val groupCounts = groupCountsOf(groups)
     return people
         .distinctBy { it.hit.personKey }
-        .map { row ->
-            val person = row.hit.hit
+        .mapNotNull { row ->
+            val person = row.hit
+            val groupCount = groupCounts[person.personKey] ?: return@mapNotNull null
             SearchContactHit(
-                personKey = row.hit.personKey,
+                personKey = person.personKey,
                 name = person.name,
                 nameMatch = person.nameMatch,
                 initial = person.initial,
                 color = person.color,
                 photoUrl = person.photoUrl,
-                groupCount = groupCounts[row.hit.personKey] ?: 1,
+                groupCount = groupCount,
             )
         }
 }
 
-// Why: the groups in common with each person, as their profile counts them, whatever name each group writes.
+// Why: the groups in common with each person as Contacts counts them (ContactBook): the ones this device's user is in.
 private fun groupCountsOf(groups: List<Pair<GroupRow, GroupWithMoney>>): Map<String, Int> = groups
+    .filter { (_, item) -> item.group.members.any { it.isMe } }
     .flatMap { (_, item) ->
         item.group.members
             .filter { !it.isMe }

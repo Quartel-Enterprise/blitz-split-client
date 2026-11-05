@@ -1,11 +1,15 @@
 package com.quare.blitzsplit.core.utils
 
+import kotlin.math.abs
+
 /*
  * Why: the home's "Search" finds "Larissa" from "Larisa" (Pierre's beta feedback), ignoring case and accents
  * (TextFolding). The text holding the query as typed is an exact find; failing that, every word typed must start one of
  * the text's words, in any order, with at most one typo from 4 letters and two from 8 (a letter missing, extra, wrong
- * or two swapped: Damerau-Levenshtein's optimal string alignment), so a word still being typed finds too ("larsi" finds
- * "Larissa"). Built once per query; finding is a few small tables per word, fast over a device's few thousand texts.
+ * or two swapped: Damerau-Levenshtein's optimal string alignment). Against the whole word, or from 5 letters against its
+ * start as long or a little longer, so a word still being typed finds too ("larsi" finds "Larissa") while a short one
+ * doesn't find every word sharing its first letters ("mara" finds "Maria", not "Marcos"). Built once per query;
+ * finding is a few small tables per word, fast over a device's few thousand texts.
  */
 class TypoTolerantQuery private constructor(
     private val folded: String,
@@ -27,7 +31,7 @@ class TypoTolerantQuery private constructor(
         get() = folded.isEmpty()
 
     // Why: only the exact finds, without the typo tables, so a search pays for typos only when nothing is exact.
-    fun withoutTypos(): TypoTolerantQuery = TypoTolerantQuery(folded, words, allowsTypos = false)
+    fun toExactOnly(): TypoTolerantQuery = TypoTolerantQuery(folded, words, allowsTypos = false)
 
     // Why: null when the query is empty or the text is too far from it.
     fun findIn(text: String): Found? {
@@ -78,6 +82,7 @@ class TypoTolerantQuery private constructor(
     companion object {
         private const val ONE_TYPO_FROM = 4
         private const val TWO_TYPOS_FROM = 8
+        private const val PREFIX_TYPOS_FROM = 5
 
         fun of(query: String): TypoTolerantQuery {
             val folded = TextFolding.toFolded(query.trim())
@@ -112,9 +117,10 @@ class TypoTolerantQuery private constructor(
         }
 
         /*
-         * Why: the fewest typos between the word typed and a start of the text's word as long, give or take the typos:
-         * the optimal string alignment table of the word against the longest such start, whose last row holds the
-         * distance to every shorter one, three rows at a time.
+         * Why: the fewest typos between the word typed and the text's word, whole (as long, give or take the typos) or,
+         * from 5 letters, its start as long as the word typed or a little longer: the optimal string alignment table of
+         * the word against the longest of those, whose last row holds the distance to every shorter one, three rows at
+         * a time.
          */
         private fun prefixTyposOf(
             word: String,
@@ -122,9 +128,14 @@ class TypoTolerantQuery private constructor(
             textWord: IntRange,
             allowed: Int,
         ): Int? {
-            val shortest = maxOf(1, word.length - allowed)
-            val longest = minOf(textWord.last + 1 - textWord.first, word.length + allowed)
-            if (longest < shortest) return null
+            val textLength = textWord.last + 1 - textWord.first
+            val lengths = buildSet {
+                if (word.length >= PREFIX_TYPOS_FROM && textLength >= word.length) {
+                    addAll(word.length..minOf(textLength, word.length + allowed))
+                }
+                if (abs(textLength - word.length) <= allowed) add(textLength)
+            }
+            val longest = lengths.maxOrNull() ?: return null
             val offset = textWord.first
             var beforePrevious = IntArray(longest + 1)
             var previous = IntArray(longest + 1) { it }
@@ -144,7 +155,7 @@ class TypoTolerantQuery private constructor(
                 previous = current
                 current = recycled
             }
-            val fewest = (shortest..longest).minOf { previous[it] }
+            val fewest = lengths.minOf { previous[it] }
             return fewest.takeIf { it <= allowed }
         }
     }
