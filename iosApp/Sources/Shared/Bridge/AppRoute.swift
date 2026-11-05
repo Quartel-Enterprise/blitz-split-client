@@ -131,10 +131,8 @@ enum AppRoute: Hashable, Identifiable {
     /// on the Mac, "Who are you" pushed inside it. Search over a tab other than Groups is a sheet on the Mac and pushed
     /// on an iPhone.
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
+        if isSheetEverywhere { return true }
         switch self {
-        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
-             .contactInvite, .shareBill, .inAppUpdate:
-            return true
         case .invite:
             #if os(macOS)
             return true
@@ -163,6 +161,25 @@ enum AppRoute: Hashable, Identifiable {
             #endif
         default:
             return false
+        }
+    }
+
+    /// The screens that are a sheet on every device and window size (the list `presentsAsSheet` opens with).
+    private var isSheetEverywhere: Bool {
+        switch self {
+        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
+             .contactInvite, .shareBill, .inAppUpdate: true
+        default: false
+        }
+    }
+
+    /// A screen no tab ever pushes as a page: a sheet everywhere, or the invite reader and the photo big, which cover
+    /// the whole screen on iPhone and iPad and are sheets on the Mac. Under a screen pushed over it (`AppModel.path`)
+    /// it hides instead of showing as a page.
+    var drawsOnlyAsModal: Bool {
+        switch self {
+        case .joinWithLink, .profilePhoto: true
+        default: isSheetEverywhere
         }
     }
 

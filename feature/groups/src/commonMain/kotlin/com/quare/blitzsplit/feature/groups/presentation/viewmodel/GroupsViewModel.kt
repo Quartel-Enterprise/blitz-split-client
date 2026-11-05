@@ -387,7 +387,8 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSearchOpened -> openSearch()
 
-            GroupsUiEvent.OnSearchTabClicked -> {
+            // Why: a tap that can't open the search (no group yet) leaves what is pushed where it is.
+            GroupsUiEvent.OnSearchTabClicked -> if (uiState.value.canSearch) {
                 if (!isListShown()) navigator.popToGroups()
                 openSearch()
             }

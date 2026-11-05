@@ -282,7 +282,7 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
       size.current = length
     } else if (length < size.current && size.current > floor.current) {
       const landing = Math.max(length, floor.current)
-      goBy.current(landing - size.current)
+      goBy.current(landing - size.current, size.current)
       size.current = landing
     } else {
       window.history.replaceState({ size: length }, '')
@@ -290,16 +290,21 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
       floor.current = Math.min(floor.current, length)
     }
   })
-  // Why: a traversal the browser drops (another one under way) ends with no popstate, so a moment later the history
-  // catches up anyway; a popstate coming after that finds the history already where it lands, and does nothing.
+  /*
+   * Why: a traversal the browser drops (another one under way) ends with no popstate. A moment later, if the history
+   * still stands on the entry it left from, it catches up from there; a traversal that is only slow has moved off it
+   * by then, and its popstate still ends it.
+   */
   const goings = useRef(0)
-  const goBy = useRef((delta: number) => {
+  const goBy = useRef((delta: number, from: number) => {
     isGoing.current = true
     const going = ++goings.current
     window.history.go(delta)
     window.setTimeout(() => {
       if (!isGoing.current || going !== goings.current) return
+      if ((window.history.state as { size?: number } | null)?.size !== from) return
       isGoing.current = false
+      size.current = from
       sync.current(latestSize.current)
     }, 1000)
   })
@@ -326,7 +331,7 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
         app.popTo(target)
       } else if (target > size.current) {
         // Why: the forward button names screens the stack no longer has.
-        goBy.current(size.current - target)
+        goBy.current(size.current - target, target)
       }
     }
     window.addEventListener('popstate', onPopState)

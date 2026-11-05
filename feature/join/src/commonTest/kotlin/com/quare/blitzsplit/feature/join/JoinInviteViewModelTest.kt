@@ -330,7 +330,7 @@ class JoinInviteViewModelTest {
             prepareScenario(
                 invite = trip.copy(isMember = true),
                 storedGroup = tripGroup,
-                under = listOf(Route.Home, Route.Groups, openGroup, Route.Invite(GROUP_ID, isNewGroup = false)),
+                under = listOf(Route.Home, Route.Groups, openGroup),
             )
 
             // When
@@ -338,6 +338,34 @@ class JoinInviteViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Home, Route.Groups, openGroup), backStack)
+        }
+
+    @Test
+    fun `GIVEN a bill being split over the group WHEN a member opens the link THEN the group opens over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            val openGroup = Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            )
+            val splitBill = Route.SplitBill(
+                GROUP_ID,
+                expenseId = null,
+                picksGroupFirst = false,
+                scansReceipt = false,
+            )
+            prepareScenario(
+                invite = trip.copy(isMember = true),
+                storedGroup = tripGroup,
+                under = listOf(Route.Home, Route.Groups, openGroup, splitBill),
+            )
+
+            // When
+            val backStack = navigator.backStack.value
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, openGroup, splitBill, openGroup), backStack)
         }
 
     @Test

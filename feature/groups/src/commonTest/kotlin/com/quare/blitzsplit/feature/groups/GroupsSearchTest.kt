@@ -542,6 +542,23 @@ class GroupsSearchTest {
         }
 
     @Test
+    fun `GIVEN no group yet and a screen over the list WHEN tapping the search tab THEN nothing moves`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                backStack = listOf(Route.Home, Route.Groups, Route.Profile),
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, Route.Profile), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.isSearching)
+        }
+
+    @Test
     fun `GIVEN the search open in the groups WHEN typing and closing it THEN tracks only the opening`() =
         runTest(testDispatcher) {
             // Given

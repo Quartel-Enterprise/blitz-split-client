@@ -188,14 +188,15 @@ class JoinInviteViewModel(
     }
 
     /*
-     * Why: the group's own link, tapped while the group is open under it, goes back to it: the group never stacks
-     * over itself, and back from it returns to what was under it.
+     * Why: the group's own link, tapped while the group is open right under it, goes back to it, so the group never
+     * stacks over itself. Under anything else (a half-typed bill over the group) the group takes the link's place, and
+     * what was under it stays.
      */
     private fun openGroupOnce(groupId: String) {
         val stack = navigator.backStack.value
-        val openIndex = stack.indexOfLast { groupScreenIdOrNull(it) == groupId }
-        if (openIndex >= 0) {
-            navigator.popTo(openIndex + 1)
+        val below = stack.getOrNull(stack.lastIndex - 1)
+        if (below != null && groupScreenIdOrNull(below) == groupId) {
+            navigator.navigateBack()
         } else {
             navigator.replaceTop(
                 Route.GroupDetail(
