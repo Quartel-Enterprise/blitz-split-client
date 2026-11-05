@@ -41,6 +41,9 @@ sealed interface ChargeUiEvent : UiEvent {
         val message: String,
     ) : ChargeUiEvent
 
-    // Why: ✕, a swipe down, Esc or a click outside.
+    /*
+     * Why: ✕ or Esc. A swipe down, the scrim and the back gesture pop the route through the platform instead; an
+     * Android dialog keeps an edited message on a stray tap outside, as every dialog route there does.
+     */
     data object OnDismissed : ChargeUiEvent
 }
