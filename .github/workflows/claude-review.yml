@@ -46,7 +46,7 @@ jobs:
       # commit the comments are anchored to. No persisted credentials: checkout keeps GITHUB_TOKEN's
       # header in a file of its own, which claude-code-action doesn't find when it swaps in the App's
       # token, so git would keep sending the read-only token and the fix push would be refused.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1

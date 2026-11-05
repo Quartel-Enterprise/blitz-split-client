@@ -41,10 +41,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -372,6 +374,14 @@ private fun ColumnScope.PhotoCropPanel(
     onEvent: (PhotoCropEvent) -> Unit,
 ) {
     val zoomDescription = stringResource(R.string.designsystem_photo_crop_zoom)
+    // Why: the zoom lives in the ViewModel, so the slider's state only mirrors it.
+    val zoomState = remember(crop.minZoom, crop.maxZoom) {
+        SliderState(
+            value = crop.zoom,
+            trackRange = crop.minZoom..crop.maxZoom,
+        )
+    }
+    zoomState.value = crop.zoom
     Row(
         modifier = Modifier.padding(
             start = 24.dp,
@@ -388,12 +398,11 @@ private fun ColumnScope.PhotoCropPanel(
             tint = secondaryContent,
         )
         Slider(
-            value = crop.zoom,
+            state = zoomState,
             onValueChange = { onEvent(PhotoCropEvent.OnZoomChanged(it)) },
             modifier = Modifier
                 .weight(1f)
                 .semantics { contentDescription = zoomDescription },
-            valueRange = crop.minZoom..crop.maxZoom,
             colors = SliderDefaults.colors(
                 thumbColor = Color.White,
                 activeTrackColor = Color.White,

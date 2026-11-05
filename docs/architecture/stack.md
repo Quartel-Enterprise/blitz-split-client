@@ -1,6 +1,8 @@
 ## Stack
 
-Versions live in `gradle/libs.versions.toml` and `webApp/package.json`; this is what each piece is for.
+Versions live in `gradle/libs.versions.toml`, `webApp/package.json` and the `packages:` of `iosApp/project.yml`; this
+is what each piece is for. The `bump-versions` skill updates them all, with the rules on pre-releases and on the
+versions that move together.
 
 ### Shared (Kotlin Multiplatform)
 
