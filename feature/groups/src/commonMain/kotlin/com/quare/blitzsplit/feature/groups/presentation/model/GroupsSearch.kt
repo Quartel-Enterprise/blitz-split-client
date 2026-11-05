@@ -17,6 +17,10 @@ data class GroupsSearch(
     val showsResults: Boolean
         get() = hasQuery && !results.isEmpty
 
+    // Why: "Did you mean “Larissa”?" above what comes close, when nothing holds the text typed.
+    val showsSuggestion: Boolean
+        get() = showsResults && results.suggestion != null
+
     // Why: "Nada com “pizza”".
     val showsNoResults: Boolean
         get() = hasQuery && results.isEmpty

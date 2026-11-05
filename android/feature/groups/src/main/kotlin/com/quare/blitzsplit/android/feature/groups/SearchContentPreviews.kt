@@ -14,11 +14,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SearchGroupHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
 
-private val noResults = GroupsSearchResults(
-    groups = emptyList(),
-    people = emptyList(),
-    bills = emptyList(),
-)
+private val noResults = GroupsSearchResults.none
 
 @DevicePreviews
 @Composable
@@ -85,6 +81,7 @@ internal fun buildPreviewSearch(): GroupsSearch {
                     billMatch = null,
                 ),
             ),
+            contacts = emptyList(),
             people = emptyList(),
             bills = listOf(
                 SearchBillHit(
@@ -99,6 +96,7 @@ internal fun buildPreviewSearch(): GroupsSearch {
                     spentAt = 0L,
                 ),
             ),
+            suggestion = null,
         ),
     )
 }

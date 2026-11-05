@@ -102,6 +102,11 @@
     <string name="groups_search_settled_bill">Settled up · expense “%s”</string>
     <string name="groups_search_bill_meta">%1$s · %2$s</string>
     <string name="groups_search_hint">Searches the groups, people and expenses on this device, settled groups included, even without internet.</string>
+    <string name="groups_search_suggestion">Did you mean “%s”?</string>
+    <plurals name="groups_search_contact_meta">
+        <item quantity="one">Contact · %d group</item>
+        <item quantity="other">Contact · %d groups</item>
+    </plurals>
     <string name="groups_search_none_title">Nothing for “%s”</string>
     <string name="groups_search_none_body">We searched the groups, people and expenses on this device, settled groups included.</string>
     <!-- The home on a Flip's cover screen -->

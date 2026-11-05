@@ -6739,6 +6739,58 @@
         }
       }
     },
+    "Contact · %lld groups" : {
+      "comment" : "Search: a person found once, opening their profile; in how many groups they were found",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Contact · %lld group"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Contact · %lld groups"
+                }
+              }
+            }
+          }
+        },
+        "pt-BR" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Contato · %lld grupo"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Contato · %lld grupos"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Did you mean “%@”?" : {
+      "comment" : "Search: nothing holds what was typed, but %@ comes close; a tap searches it",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você quis dizer “%@”?"
+          }
+        }
+      }
+    },
     "Nothing to get back" : {
       "comment" : "Home: the disabled \"Owe you\" button",
       "localizations" : {

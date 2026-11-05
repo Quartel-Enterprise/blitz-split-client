@@ -1,4 +1,4 @@
-import { ReceiptText, Search } from 'lucide-react'
+import { ChevronRight, ReceiptText, Search } from 'lucide-react'
 import { SearchPresenter, type JsGroupsSearch, type JsSearchBillHit, type JsSearchBillPayer, type JsTextMatch } from 'blitzsplit-shared'
 import { useEffect, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -24,6 +24,8 @@ export interface SearchActions {
   searchIn(scope: string): void
   openSearchedGroup(groupId: string): void
   openSearchedPerson(groupId: string): void
+  openSearchedContact(personKey: string): void
+  searchSuggestion(suggestion: string): void
   openSearchedBill(groupId: string, expenseId: string): void
 }
 
@@ -64,7 +66,8 @@ const scopes: { scope: string; label: MessageKey }[] = [
 
 interface SearchItem {
   key: string
-  section: MessageKey
+  // Why: null for "Did you mean “Larissa”?", which goes above the sections.
+  section: MessageKey | null
   open: () => void
   content: ReactNode
 }
@@ -73,7 +76,8 @@ interface SearchItem {
  * "Buscar" (⌘K): a command dialog over the home tab, near the top on desktop and tablet and across the top on a phone. It
  * looks in the groups, people and bills of this browser, the settled groups included, offline too, with Tudo, Grupos,
  * Pessoas and Despesas under the field. The arrows move through the results, Enter opens one, Esc closes. Picking a
- * result opens the group, the person's members or the bill over its group in the search's place.
+ * result opens the group, the person's profile (once) or members (in each group) or the bill over its group in the
+ * search's place. Nothing holding what was typed but something close puts "Did you mean “Larissa”?" first.
  */
 export function SearchDialog({ search, actions }: { search: JsGroupsSearch; actions: SearchActions }) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -151,7 +155,7 @@ export function SearchDialog({ search, actions }: { search: JsGroupsSearch; acti
             <div id="groups-search-results" role="listbox" aria-label={t('groups_search')} className="p-1">
               {items.map((item, index) => (
                 <div key={item.key}>
-                  {(index === 0 || items[index - 1].section !== item.section) && (
+                  {item.section != null && (index === 0 || items[index - 1].section !== item.section) && (
                     <>
                       {index > 0 && <div className="-mx-1 my-1 h-px bg-border" />}
                       <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground">{t(item.section)}</div>
@@ -162,6 +166,8 @@ export function SearchDialog({ search, actions }: { search: JsGroupsSearch; acti
                     role="option"
                     aria-selected={index === activeIndex}
                     onClick={item.open}
+                    // Why: the field keeps the focus, so typing goes on after "Did you mean", which keeps the dialog open.
+                    onMouseDown={(event) => event.preventDefault()}
                     onMouseMove={() => index !== activeIndex && setActive(index)}
                     className={cn('flex h-10 cursor-pointer items-center gap-2.5 rounded-md px-2 text-sm', index === activeIndex && 'bg-muted')}
                   >
@@ -177,8 +183,27 @@ export function SearchDialog({ search, actions }: { search: JsGroupsSearch; acti
   )
 }
 
-/** The results in the order the dialog lists them: the groups, the people, then the bills. */
+/** The results in the order the dialog lists them: "Did you mean", the groups, the people, then the bills. */
 function searchItemsOf(actions: SearchActions, search: JsGroupsSearch): SearchItem[] {
+  const suggestion = search.suggestion
+  const suggestions: SearchItem[] =
+    suggestion != null
+      ? [
+          {
+            key: 'suggestion',
+            section: null,
+            open: () => actions.searchSuggestion(suggestion),
+            content: (
+              <>
+                <Search aria-hidden className="mx-1 size-4 shrink-0 text-muted-foreground" />
+                <span className="min-w-0 flex-1 truncate">
+                  <Templated template={t('groups_searchSuggestion')} placeholder="{suggestion}" value={<strong className="font-semibold text-primary">{suggestion}</strong>} />
+                </span>
+              </>
+            ),
+          },
+        ]
+      : []
   const groups: SearchItem[] = search.groups.map((hit) => ({
     key: `group:${hit.group.id}`,
     section: 'groups_searchSectionGroups',
@@ -202,6 +227,24 @@ function searchItemsOf(actions: SearchActions, search: JsGroupsSearch): SearchIt
             {formatSignedMoney(hit.group.netMinor, hit.group.currency, hit.group.fractionDigits)}
           </span>
         )}
+      </>
+    ),
+  }))
+  const contacts: SearchItem[] = search.contacts.map((hit) => ({
+    key: `contact:${hit.personKey}`,
+    section: 'groups_searchSectionPeople',
+    open: () => actions.openSearchedContact(hit.personKey),
+    content: (
+      <>
+        <Avatar initial={hit.initial} color={hit.color} photoUrl={hit.photoUrl} className="size-6 shrink-0 text-[10px]" />
+        <span className="min-w-0 flex-1 truncate">
+          <Marked text={hit.name} match={hit.nameMatch} />
+          <span className="text-muted-foreground">
+            {' · '}
+            {t(hit.groupCount === 1 ? 'groups_searchContactOne' : 'groups_searchContactOther', { count: hit.groupCount })}
+          </span>
+        </span>
+        <ChevronRight aria-hidden className="size-4 shrink-0 text-muted-foreground" />
       </>
     ),
   }))
@@ -234,7 +277,7 @@ function searchItemsOf(actions: SearchActions, search: JsGroupsSearch): SearchIt
       </>
     ),
   }))
-  return [...groups, ...people, ...bills]
+  return [...suggestions, ...groups, ...contacts, ...people, ...bills]
 }
 
 /** "Churrasco de sábado · Bruno pagou", "· Você pagou", "· Ana e Bruno pagaram" or "· 3 pessoas pagaram". */
@@ -266,9 +309,9 @@ function Marked({ text, match, className }: { text: string; match: JsTextMatch |
   )
 }
 
-/** A translated sentence around a marked value: "despesa “{bill}”". */
-function Templated({ template, value }: { template: string; value: ReactNode }) {
-  const [before, after = ''] = template.split('{bill}')
+/** A translated sentence around a marked value: "despesa “{bill}”", "Você quis dizer “{suggestion}”?". */
+function Templated({ template, value, placeholder = '{bill}' }: { template: string; value: ReactNode; placeholder?: string }) {
+  const [before, after = ''] = template.split(placeholder)
   return (
     <>
       {before}

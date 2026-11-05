@@ -23,6 +23,10 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
+import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearchResults
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchContactHit
+import com.quare.blitzsplit.feature.groups.presentation.model.SearchPersonHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchScope
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.TextMatch
@@ -699,6 +703,492 @@ class SearchViewModelTest {
         assertEquals(List(events.size * 2) { EventAnalytics.NotTracked }, analytics)
     }
 
+    @Test
+    fun `GIVEN a name missing a letter WHEN searching it THEN finds the person and suggests the name as written`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, viagem))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("Larisa"))
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertEquals(listOf("Larissa"), search.results.people.map { it.name })
+            assertEquals(listOf("viagem"), search.results.people.map { it.groupId })
+            assertEquals("Larissa", search.results.suggestion)
+            assertTrue(search.showsSuggestion)
+            assertFalse(search.showsNoResults)
+        }
+
+    @Test
+    fun `GIVEN a text a bill holds and a group name comes close to WHEN searching THEN only what holds it shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("churros"))
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertEquals(listOf("aniversario"), search.results.groups.map { it.group.id })
+            assertTrue(search.results.bills.isEmpty())
+            assertTrue(search.results.people.isEmpty())
+            assertTrue(search.results.contacts.isEmpty())
+            assertNull(search.results.suggestion)
+            assertFalse(search.showsSuggestion)
+        }
+
+    @Test
+    fun `GIVEN only close matches WHEN searching THEN each section lists the closest first and suggests the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = storedBills + grill)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("churrasko"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("churrasco"), results.groups.map { it.group.id })
+            assertEquals(listOf("carne", "grill"), results.bills.map { it.id })
+            assertEquals("Churrasco", results.suggestion)
+        }
+
+    @Test
+    fun `GIVEN a bill holding the text and a person close to it WHEN searching everything THEN only the bill shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(churrasco, aniversario, ape, viagem),
+                storedExpenses = storedBills + presente,
+            )
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("larisa"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("presente"), results.bills.map { it.id })
+            assertTrue(results.people.isEmpty())
+            assertTrue(results.contacts.isEmpty())
+            assertNull(results.suggestion)
+        }
+
+    @Test
+    fun `GIVEN a bill holding the text and a person close to it WHEN picking Pessoas THEN the close person shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(churrasco, aniversario, ape, viagem),
+                storedExpenses = storedBills + presente,
+            )
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("larisa"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnScopeChanged(SearchScope.PEOPLE))
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertEquals(listOf("Larissa"), search.results.people.map { it.name })
+            assertEquals(listOf("name:larissa"), search.results.contacts.map { it.personKey })
+            assertTrue(search.results.bills.isEmpty())
+            assertEquals("Larissa", search.results.suggestion)
+            assertTrue(search.showsSuggestion)
+        }
+
+    @Test
+    fun `GIVEN a settled group with two bills close to the text WHEN searching THEN it comes by the closest bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = storedBills + brigadeiros)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("brigadeyros"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            val hit = results.groups.single()
+            assertEquals("aniversario", hit.group.id)
+            assertNull(hit.nameMatch)
+            assertEquals("Brigadeiros", hit.billDescription)
+            assertTrue(results.bills.isEmpty())
+            assertEquals("Brigadeiros", results.suggestion)
+        }
+
+    @Test
+    fun `GIVEN a settled group with two bills as close to the text WHEN searching THEN it comes by the most recent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = storedBills + brigadeiros)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("brigadeyro"))
+
+            // Then
+            val hit = viewModel.uiState.value.search.results.groups
+                .single()
+            assertEquals("aniversario", hit.group.id)
+            assertEquals("Brigadeiro", hit.billDescription)
+        }
+
+    @Test
+    fun `GIVEN a settled group named close to a text its bill holds WHEN searching THEN only what holds it shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    churrasco,
+                    group(
+                        id = "aniversario",
+                        name = "Churras da Ana",
+                        names = listOf("Pierre", "Ana", "Carla"),
+                    ),
+                    ape,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("churros"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("aniversario"), results.groups.map { it.group.id })
+            assertNull(results.suggestion)
+        }
+
+    @Test
+    fun `GIVEN a suggestion WHEN tapping it THEN searches it instead and finds it without a suggestion`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, viagem))
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("Larisa"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnSuggestionClicked("Larissa"))
+
+            // Then
+            val search = viewModel.uiState.value.search
+            assertEquals("Larissa", search.query)
+            assertEquals(listOf("Larissa"), search.results.people.map { it.name })
+            assertNull(search.results.suggestion)
+            assertFalse(search.showsSuggestion)
+            assertTrue(search.showsResults)
+        }
+
+    @Test
+    fun `GIVEN the search over a tab WHEN tapping a suggestion THEN tracks the suggestion from the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, viagem))
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("Larisa"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnSuggestionClicked("Larissa"))
+
+            // Then
+            assertEquals(
+                listOf("search_suggestion_clicked" to mapOf<String, Any>("source" to "search")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a suggestion but nothing typed WHEN reading the search THEN shows no suggestion`() {
+        // Given
+        val search = GroupsSearch.closed.copy(
+            isOpen = true,
+            query = "  ",
+            results = larissaResults,
+        )
+
+        // When
+        val showsSuggestion = search.showsSuggestion
+
+        // Then
+        assertFalse(showsSuggestion)
+    }
+
+    @Test
+    fun `GIVEN a suggestion but no result WHEN reading the search THEN shows no suggestion`() {
+        // Given
+        val search = GroupsSearch.closed.copy(
+            isOpen = true,
+            query = "Larisa",
+            results = GroupsSearchResults.none.copy(suggestion = "Larissa"),
+        )
+
+        // When
+        val showsSuggestion = search.showsSuggestion
+
+        // Then
+        assertFalse(showsSuggestion)
+    }
+
+    @Test
+    fun `GIVEN a guest in two groups WHEN searching their name THEN finds one contact counting both groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("carla"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(
+                listOf(
+                    SearchContactHit(
+                        personKey = "name:carla",
+                        name = "Carla",
+                        nameMatch = TextMatch(0, 5),
+                        initial = "C",
+                        color = AvatarColor.PEACH,
+                        photoUrl = null,
+                        groupCount = 2,
+                    ),
+                ),
+                results.contacts,
+            )
+            assertEquals(listOf("aniversario", "ape"), results.people.map { it.groupId })
+        }
+
+    @Test
+    fun `GIVEN people found in several groups WHEN searching THEN the contacts follow their first row`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("n"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("Ana", "Bruno", "Ana"), results.people.map { it.name })
+            assertEquals(listOf("name:ana", "name:bruno"), results.contacts.map { it.personKey })
+            assertEquals(listOf(2, 1), results.contacts.map { it.groupCount })
+        }
+
+    @Test
+    fun `GIVEN an account and a guest of the same name WHEN searching it THEN finds two contacts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "churrasco",
+                        name = "Churrasco de sábado",
+                        names = listOf("Pierre", "Ana", "Bruno"),
+                        userIds = mapOf("Ana" to "u-ana"),
+                    ),
+                    aniversario,
+                    ape,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("ana"))
+
+            // Then
+            val contacts = viewModel.uiState.value.search.results.contacts
+            assertEquals(listOf("user:u-ana", "name:ana"), contacts.map { it.personKey })
+            assertEquals(listOf(1, 1), contacts.map { it.groupCount })
+        }
+
+    @Test
+    fun `GIVEN an account named differently in two groups WHEN searching THEN finds one contact counting both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "churrasco",
+                        name = "Churrasco de sábado",
+                        names = listOf("Pierre", "Ana", "Bruno", "Bia"),
+                        userIds = mapOf("Bia" to "u-bia"),
+                    ),
+                    aniversario,
+                    group(
+                        id = "ape",
+                        name = "Apê 302",
+                        names = listOf("Pierre", "Carla", "Bia Souza"),
+                        userIds = mapOf("Bia Souza" to "u-bia"),
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("bia"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("Bia", "Bia Souza"), results.people.map { it.name })
+            val contact = results.contacts.single()
+            assertEquals("user:u-bia", contact.personKey)
+            assertEquals("Bia", contact.name)
+            assertEquals(2, contact.groupCount)
+        }
+
+    @Test
+    fun `GIVEN close people only WHEN searching THEN the contacts follow their first row among the closest`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = mariannes)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("marianne"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("Marianna", "Mariane", "Mariana"), results.people.map { it.name })
+            assertEquals(listOf("name:marianna", "user:u-mari"), results.contacts.map { it.personKey })
+            assertEquals("Marianna", results.suggestion)
+        }
+
+    @Test
+    fun `GIVEN a person also in a group this user left WHEN searching THEN counts only the groups in common`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, leftGroup))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("carla"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("aniversario", "ape", "left"), results.people.map { it.groupId })
+            assertEquals(2, results.contacts.single().groupCount)
+        }
+
+    @Test
+    fun `GIVEN a person only in a group this user left WHEN searching THEN shows their row but no contact`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(churrasco, aniversario, ape, leftGroup))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("teodoro"))
+
+            // Then
+            val results = viewModel.uiState.value.search.results
+            assertEquals(listOf("Teodoro"), results.people.map { it.name })
+            assertTrue(results.contacts.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an account found close in two groups WHEN searching THEN the contact shows its closest name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = mariannes)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("marianne"))
+
+            // Then
+            val contact = viewModel.uiState.value.search.results.contacts
+                .single { it.personKey == "user:u-mari" }
+            assertEquals("Mariane", contact.name)
+            assertEquals(TextMatch(0, 7), contact.nameMatch)
+            assertEquals(2, contact.groupCount)
+        }
+
+    @Test
+    fun `GIVEN a person found WHEN picking Grupos THEN no contact shows`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SearchUiEvent.OnQueryChanged("carla"))
+
+        // When
+        viewModel.onEvent(SearchUiEvent.OnScopeChanged(SearchScope.GROUPS))
+
+        // Then
+        assertTrue(
+            viewModel.uiState.value.search.results.contacts
+                .isEmpty(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a person found WHEN picking Pessoas THEN their contact shows`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SearchUiEvent.OnQueryChanged("carla"))
+
+        // When
+        viewModel.onEvent(SearchUiEvent.OnScopeChanged(SearchScope.PEOPLE))
+
+        // Then
+        assertEquals(
+            listOf("name:carla"),
+            viewModel.uiState.value.search.results.contacts
+                .map { it.personKey },
+        )
+    }
+
+    @Test
+    fun `GIVEN the search over Contatos WHEN tapping a contact THEN their profile takes the search place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Contacts)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnContactClicked("name:carla"))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile("name:carla")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search over Inicio WHEN tapping a contact THEN their profile opens right above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Home)
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnContactClicked("user:u-ana"))
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.ContactProfile("user:u-ana")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a group already opened from the search WHEN a late tap on a contact arrives THEN nothing else opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(tab = Route.Contacts)
+            viewModel.onEvent(SearchUiEvent.OnGroupClicked("churrasco"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnContactClicked("name:carla"))
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, expensesOf("churrasco")),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search over a tab WHEN tapping a contact found THEN tracks a contact result without the key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SearchUiEvent.OnQueryChanged("carla"))
+
+            // When
+            viewModel.onEvent(SearchUiEvent.OnContactClicked("name:carla"))
+
+            // Then
+            assertEquals(
+                listOf("search_result_clicked" to mapOf<String, Any>("kind" to "contact", "source" to "search")),
+                trackedEvents,
+            )
+        }
+
     private val balances = Route.GlobalBalances(BalancesFilter.ALL)
 
     private val activity = Route.Activity(personKey = null)
@@ -749,6 +1239,100 @@ class SearchViewModelTest {
         ),
     )
 
+    // Why: no bill yet, so it comes last in the home's order.
+    private val viagem = group(
+        id = "viagem",
+        name = "Viagem a Paraty",
+        names = listOf("Pierre", "Larissa", "Bruno"),
+    )
+
+    private val presente = bill(
+        id = "presente",
+        groupId = "viagem",
+        description = "Presente da Larisa",
+        paidBy = "Bruno",
+        splitOver = listOf("Pierre", "Bruno"),
+        updatedAt = 500L,
+    )
+
+    // Why: the most recent bill, though further from "churrasko" than the churrasco's one.
+    private val grill = bill(
+        id = "grill",
+        groupId = "ape",
+        description = "Churrasqueira",
+        paidBy = "Carla",
+        splitOver = listOf("Pierre", "Carla"),
+        updatedAt = 4_000L,
+    )
+
+    // Why: two more of Ana's own bills, so the birthday stays settled; the older one is the closer to "brigadeyros".
+    private val brigadeiros = listOf(
+        bill(
+            id = "brigadeiros",
+            groupId = "aniversario",
+            description = "Brigadeiros",
+            paidBy = "Ana",
+            splitOver = listOf("Ana"),
+            updatedAt = 1_500L,
+        ),
+        bill(
+            id = "brigadeiro",
+            groupId = "aniversario",
+            description = "Brigadeiro",
+            paidBy = "Ana",
+            splitOver = listOf("Ana"),
+            updatedAt = 2_500L,
+        ),
+    )
+
+    /*
+     * Why: an account named "Mariana" in the churrasco and "Mariane" in the apê, and a guest "Marianna" in the birthday:
+     * "marianne" is two typos from the first and one from the other two.
+     */
+    private val mariannes = listOf(
+        group(
+            id = "churrasco",
+            name = "Churrasco de sábado",
+            names = listOf("Pierre", "Ana", "Bruno", "Mariana"),
+            userIds = mapOf("Mariana" to "u-mari"),
+        ),
+        group(
+            id = "aniversario",
+            name = "Aniversário da Ana",
+            names = listOf("Pierre", "Ana", "Carla", "Marianna"),
+        ),
+        group(
+            id = "ape",
+            name = "Apê 302",
+            names = listOf("Pierre", "Carla", "Mariane"),
+            userIds = mapOf("Mariane" to "u-mari"),
+        ),
+    )
+
+    // Why: a group still on the device that this user is no longer in, which Contacts doesn't count.
+    private val leftGroup = group(
+        id = "left",
+        name = "Antigo",
+        names = listOf("Carla", "Teodoro"),
+    ).let { group -> group.copy(members = group.members.map { it.copy(isMe = false) }) }
+
+    private val larissaResults = GroupsSearchResults.none.copy(
+        people = listOf(
+            SearchPersonHit(
+                memberId = "viagem-Larissa",
+                personKey = "name:larissa",
+                name = "Larissa",
+                nameMatch = TextMatch(0, 7),
+                initial = "L",
+                color = AvatarColor.PEACH,
+                photoUrl = null,
+                groupId = "viagem",
+                groupName = "Viagem a Paraty",
+            ),
+        ),
+        suggestion = "Larissa",
+    )
+
     private fun expensesOf(groupId: String): Route = Route.GroupDetail(
         groupId,
         joinedAs = null,
@@ -760,6 +1344,7 @@ class SearchViewModelTest {
         id: String,
         name: String,
         names: List<String>,
+        userIds: Map<String, String> = emptyMap(),
     ): Group = Group(
         id = id,
         name = name,
@@ -775,7 +1360,7 @@ class SearchViewModelTest {
                 avatarColor = AvatarColor.PEACH,
                 isMe = index == 0,
                 hasJoined = false,
-                userId = null,
+                userId = userIds[memberName],
                 inviteCode = null,
                 photoUrl = null,
             )
@@ -815,9 +1400,13 @@ class SearchViewModelTest {
     )
 
     // Why: the search opens over the tab it was asked from, right above Início unless it is Início itself.
-    private fun prepareScenario(tab: Route = Route.Contacts) {
-        expenses = FakeExpenseRepository(initialExpenses = storedBills)
-        groups = FakeGroupRepository(initialGroups = listOf(churrasco, aniversario, ape))
+    private fun prepareScenario(
+        tab: Route = Route.Contacts,
+        storedGroups: List<Group> = listOf(churrasco, aniversario, ape),
+        storedExpenses: List<Expense> = storedBills,
+    ) {
+        expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        groups = FakeGroupRepository(initialGroups = storedGroups)
         navigator = BackStackNavigator(startRoute = Route.Home).also {
             if (tab != Route.Home) it.navigate(tab)
             it.navigate(Route.Search)

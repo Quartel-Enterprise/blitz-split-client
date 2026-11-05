@@ -202,7 +202,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
 | `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`) | Search opened: its navigation item (Android's bar or rail, the web's), iOS's search tab, the Mac's magnifier or field, or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
-| `search_result_clicked` | `kind` (`group`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped | `:feature:groups` |
+| `search_result_clicked` | `kind` (`group`, `contact`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped: `contact` is the person's profile, `person` their row in a group | `:feature:groups` |
+| `search_suggestion_clicked` | `source` (`search`, `groups`) | "Did you mean “Larissa”?" tapped | `:feature:groups` |
 | `sync_retry_clicked` | `source` (`home`, `groups`, `profile`) | The sync chip's "try again" | `:feature:groups`, `:feature:profile` |
 | `pull_to_refresh` | `source` (`home`, `groups`, `activity`) | Pulled down on Android and iOS | `:feature:groups`, `:feature:activity` |
 | `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
