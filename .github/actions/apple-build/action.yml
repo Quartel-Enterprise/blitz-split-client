@@ -1,0 +1,116 @@
+name: 'Build an Apple app for TestFlight'
+description: >-
+  Archives and exports one scheme of the Apple app, signed by Xcode with the App Store Connect API key. The iOS and
+  the macOS beta jobs of release-beta.yml differ only in these inputs.
+
+inputs:
+  scheme:
+    description: 'The Xcode scheme: BoraRachar-iOS or BoraRachar-macOS'
+    required: true
+  destination:
+    description: "The xcodebuild destination: 'generic/platform=iOS' or 'generic/platform=macOS'"
+    required: true
+  export-path:
+    description: 'Where the exported IPA or package lands'
+    required: true
+  version:
+    description: 'The versionName: Apple refuses a suffix, so the plain X.Y.Z'
+    required: true
+  version-code:
+    description: 'The build number'
+    required: true
+  google-service-info-plist:
+    description: 'GoogleService-Info.plist, base64 encoded'
+    required: true
+  key-id:
+    description: 'The App Store Connect API key id'
+    required: true
+  key-issuer-id:
+    description: 'The App Store Connect API issuer id'
+    required: true
+  key-p8:
+    description: 'The text of the API key (.p8)'
+    required: true
+  cache-encryption-key:
+    description: 'Passed to the Gradle action'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    # An empty plist decodes to an empty file, and the app starts Firebase whenever the file exists; an empty key
+    # only fails inside xcodebuild, after the Kotlin/Native compile.
+    - name: Check the secrets
+      shell: bash
+      env:
+        GOOGLE_SERVICE_INFO_PLIST: ${{ inputs.google-service-info-plist }}
+        APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
+        APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
+      run: |
+        for name in GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8; do
+          if [ -z "${!name}" ]; then
+            echo "::error::The $name secret is empty. See docs/release-process.md#secrets."
+            exit 1
+          fi
+        done
+
+    # Apple refuses a suffixed version string, so the Apple apps carry the plain X.Y.Z and tell the betas apart by
+    # the build number.
+    - name: Bump version
+      shell: bash
+      run: ./scripts/release/bump-version.sh "${{ inputs.version }}" "${{ inputs.version-code }}"
+
+    - name: Setup Gradle
+      uses: ./.github/actions/gradle
+      with:
+        cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        kotlin-native: 'true'
+        cache-read-only: 'true'
+
+    - name: Install XcodeGen
+      shell: bash
+      run: brew install xcodegen
+
+    - name: Generate the Xcode project
+      shell: bash
+      run: ./iosApp/generate-project.sh
+
+    - name: Decode the Firebase config and the App Store Connect key
+      shell: bash
+      env:
+        GOOGLE_SERVICE_INFO_PLIST: ${{ inputs.google-service-info-plist }}
+        APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
+        APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
+      run: |
+        echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/Resources/GoogleService-Info.plist
+        mkdir -p "$HOME/.appstoreconnect/private_keys"
+        key_path="$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+        printf '%s\n' "$APP_STORE_CONNECT_API_KEY_P8" > "$key_path"
+        echo "KEY_PATH=$key_path" >> "$GITHUB_ENV"
+
+    # -allowProvisioningUpdates with the API key lets Xcode create the cloud-managed distribution certificate and the
+    # profile itself, so there is no certificates repository to keep.
+    - name: Archive the app
+      shell: bash
+      env:
+        KEY_ID: ${{ inputs.key-id }}
+        ISSUER_ID: ${{ inputs.key-issuer-id }}
+      run: >-
+        xcodebuild archive -project iosApp/BoraRachar.xcodeproj -scheme "${{ inputs.scheme }}"
+        -destination "${{ inputs.destination }}" -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
+        -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages
+        -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH"
+        -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" -quiet
+
+    - name: Export the app
+      shell: bash
+      env:
+        KEY_ID: ${{ inputs.key-id }}
+        ISSUER_ID: ${{ inputs.key-issuer-id }}
+      run: >-
+        xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
+        -exportPath "${{ inputs.export-path }}" -exportOptionsPlist iosApp/ExportOptions.plist
+        -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH"
+        -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID"
