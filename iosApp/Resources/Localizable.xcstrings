@@ -965,6 +965,17 @@
         }
       }
     },
+    "Expenses by category" : {
+      "comment" : "The statistics: the title of a category's bills, opened from By category",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Despesas por categoria"
+          }
+        }
+      }
+    },
     "Gallery" : {
       "comment" : "The profile photo viewer: choose a photo",
       "localizations" : {
@@ -1641,6 +1652,28 @@
         }
       }
     },
+    "No expenses in these categories" : {
+      "comment" : "A category's bills from the statistics: none left in the categories picked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa nessas categorias"
+          }
+        }
+      }
+    },
+    "No expenses in this period" : {
+      "comment" : "A category's bills from the statistics: nothing picked and no bill in the period",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa neste período"
+          }
+        }
+      }
+    },
     "No internet" : {
       "comment" : "A comment's link couldn't be checked offline",
       "localizations" : {
@@ -1885,6 +1918,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Foto %1$lld de %2$lld"
+          }
+        }
+      }
+    },
+    "Pick other categories above, or clear them to see every expense of the period." : {
+      "comment" : "A category's bills from the statistics: under No expenses in these categories",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escolha outras categorias acima, ou limpe para ver todas as despesas do período."
           }
         }
       }
@@ -2219,6 +2263,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Girar"
+          }
+        }
+      }
+    },
+    "See expenses" : {
+      "comment" : "The statistics: what a category's row of By category does, read by VoiceOver",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver despesas"
           }
         }
       }

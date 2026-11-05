@@ -475,9 +475,9 @@ When the command exits, or a PR event says the same:
     locally, and fix it as above; the label stays on, so the green checks of the fix commit merge
     the pull request. Reproduce it with that area's step 8 check or, for a check step 8 leaves to
     CI, on the failing module or scheme alone, through `heavy-check.sh`: `:<module>:jsTest` for
-    `js-tests`, `:<module>:iosSimulatorArm64Test` or `:<module>:macosArm64Test` for `apple-tests`,
-    `:android:<module>:lintDebug` for lint, `:androidApp:assembleRelease` for the release APK (R8 runs
-only there), the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
+    a `js-tests` shard, `:<module>:iosSimulatorArm64Test` or `:<module>:macosArm64Test` for `apple-tests`,
+    `:android:<module>:lintDebug` for `android-lint`, `:androidApp:assembleRelease` for `android` (the
+    release APK, the only build R8 runs on), the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
     runner, the network, a cancelled run), re-run it once (`gh run rerun <run> --failed`) and wait
     again instead. Report it and stop, with the label still on, when it can't be reproduced, needs
     a product choice nobody wrote down yet, or the same check still fails after two fixes.

@@ -40,6 +40,9 @@ sealed interface GroupStatsUiEvent : UiEvent {
 
             OnBiggestExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
 
+            // Why: only a tap that opens the category's bills, never a late one or one on a category a sync took away.
+            is OnCategoryClicked -> EventAnalytics.Manual("stats_category_clicked")
+
             OnSplitBillClicked -> EventAnalytics.Automatic("split_bill_clicked", mapOf("source" to SOURCE))
 
             OnWholePeriodClicked -> EventAnalytics.Automatic("stats_whole_period_clicked")
@@ -88,6 +91,12 @@ sealed interface GroupStatsUiEvent : UiEvent {
 
     // Why: "Maior despesa", which opens the bill.
     data object OnBiggestExpenseClicked : GroupStatsUiEvent
+
+    // Why: a main category of "By category" (its slice, legend line or row), which opens its bills of the period.
+    data class OnCategoryClicked(
+        val categoryId: String,
+        val target: StatsCategoryTarget,
+    ) : GroupStatsUiEvent
 
     // Why: "Rachar conta" of a group without bills.
     data object OnSplitBillClicked : GroupStatsUiEvent
