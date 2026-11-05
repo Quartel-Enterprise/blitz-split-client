@@ -48,7 +48,6 @@ import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.groups.HomeScreen
-import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.android.feature.groups.SearchScreen
 import com.quare.blitzsplit.android.feature.groupstats.GroupStatsScreen
 import com.quare.blitzsplit.android.feature.invite.InviteScreen
@@ -70,6 +69,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
+import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel

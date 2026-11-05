@@ -2,10 +2,12 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
+import com.quare.blitzsplit.feature.groups.presentation.model.NotificationPrompt
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
@@ -256,6 +258,102 @@ class HomeUiStateTest {
         assertNull(onlyPersonToPay)
     }
 
+    @Test
+    fun `GIVEN a group and each notification permission WHEN Inicio draws THEN picks the card that permission needs`() {
+        // Given
+        val permissions = listOf(
+            NotificationPermission.NOT_DETERMINED,
+            NotificationPermission.REFUSED_ONCE,
+            NotificationPermission.DENIED,
+            NotificationPermission.GRANTED,
+            null,
+        )
+
+        // When
+        val prompts = permissions.map { state(notificationPermission = it).notificationPrompt }
+
+        // Then
+        assertEquals(
+            listOf(NotificationPrompt.SOFT_ASK, NotificationPrompt.ASK_AGAIN, NotificationPrompt.BLOCKED, null, null),
+            prompts,
+        )
+    }
+
+    @Test
+    fun `GIVEN the first use with no group WHEN notifications were never asked THEN shows no notification card`() {
+        // Given
+        val state = state(
+            groupCount = 0,
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertNull(prompt)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN notifications were never asked THEN shows no notification card`() {
+        // Given
+        val state = state(
+            isLoaded = false,
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertNull(prompt)
+    }
+
+    @Test
+    fun `GIVEN a first download with a group already down WHEN notifications were never asked THEN shows no card`() {
+        // Given
+        val state = state(
+            isFirstDownload = true,
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertNull(prompt)
+    }
+
+    @Test
+    fun `GIVEN the recovery code card WHEN notifications were never asked THEN shows no notification card`() {
+        // Given
+        val state = state(
+            showsRecoveryCodeCard = true,
+            notificationPermission = NotificationPermission.NOT_DETERMINED,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertNull(prompt)
+    }
+
+    @Test
+    fun `GIVEN the card snoozed WHEN notifications are blocked THEN shows no notification card`() {
+        // Given
+        val state = state(
+            isNotificationPromptSnoozed = true,
+            notificationPermission = NotificationPermission.DENIED,
+        )
+
+        // When
+        val prompt = state.notificationPrompt
+
+        // Then
+        assertNull(prompt)
+    }
+
     private fun person(
         key: String,
         netMinor: Long,
@@ -278,6 +376,9 @@ class HomeUiStateTest {
         syncBadge: SyncBadge? = null,
         people: List<HomePerson> = emptyList(),
         peopleRead: Boolean = true,
+        showsRecoveryCodeCard: Boolean = false,
+        notificationPermission: NotificationPermission? = null,
+        isNotificationPromptSnoozed: Boolean = false,
     ): HomeUiState = HomeUiState(
         displayName = "Pierre",
         avatarInitial = "P",
@@ -298,13 +399,13 @@ class HomeUiStateTest {
         summary = if (peopleRead) HomeSummary(totals = emptyList()).toLoaded() else Loadable.Loading,
         groups = emptyList(),
         billDays = emptyList(),
-        showsRecoveryCodeCard = false,
+        showsRecoveryCodeCard = showsRecoveryCodeCard,
         showsRecoveryCodePrompt = false,
         recordedPayment = null,
         deletedGroupNotice = null,
         isRefreshing = false,
         activityUnreadCount = 0,
-        notificationPermission = null,
-        isNotificationPromptSnoozed = false,
+        notificationPermission = notificationPermission,
+        isNotificationPromptSnoozed = isNotificationPromptSnoozed,
     )
 }

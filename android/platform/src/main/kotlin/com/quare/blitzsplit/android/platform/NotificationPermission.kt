@@ -54,9 +54,7 @@ class NotificationPermissionAccess internal constructor(
 
 // Why: onResult gets the permission as read right after the person answers the system dialog.
 @Composable
-fun rememberNotificationPermissionAccess(
-    onResult: (NotificationPermission) -> Unit,
-): NotificationPermissionAccess {
+fun rememberNotificationPermissionAccess(onResult: (NotificationPermission) -> Unit): NotificationPermissionAccess {
     val activity = requireNotNull(LocalActivity.current)
     // Why: saved, since the activity may be recreated (a rotation) while the system dialog is on top of it.
     val askMemory = rememberSaveable(saver = AskMemory.Saver) { AskMemory() }
