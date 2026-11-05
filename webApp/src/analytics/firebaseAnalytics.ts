@@ -15,10 +15,10 @@ const config = {
 }
 
 /**
- * Firebase Analytics collects nothing yet: whether the app asks first is Pierre's call, still open
- * (docs/analytics/README.md#consent). Once it is settled, this turns it on for production builds.
+ * Firebase Analytics collects in production builds, so the consent decision (#184) has to be settled before the web
+ * app is served to the public (docs/analytics/README.md#consent).
  */
-const collectsAnalytics = false
+const collectsAnalytics = true
 
 export async function startAnalytics(): Promise<void> {
   if (!collectsAnalytics || import.meta.env.DEV || Object.values(config).some((value) => value === '')) return

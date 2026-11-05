@@ -11,9 +11,9 @@ enum FirebaseSetup {
     private static let isDebug = false
     #endif
 
-    /// Firebase Analytics collects nothing yet, in any build: whether the app asks first is Pierre's call, still
-    /// open (docs/analytics/README.md#consent). Once it is settled, this turns collection on for release builds.
-    private static let collectsAnalytics = false
+    /// Firebase Analytics collects in release builds, so the consent decision (#184) has to be settled before any
+    /// build reaches testers or the stores (docs/analytics/README.md#consent).
+    private static let collectsAnalytics = true
 
     private static var isConfigured: Bool {
         Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil
