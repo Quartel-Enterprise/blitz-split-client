@@ -92,9 +92,13 @@ export function formatMoney(minor: number, currency: string, fractionDigits: num
 export function formatCompactMoney(minor: number, currency: string, fractionDigits: number): string {
   if (currency in cryptoSymbols) return formatMoney(minor, currency, fractionDigits)
   try {
-    return new Intl.NumberFormat(uiTag, { style: 'currency', currency, notation: 'compact', maximumSignificantDigits: 2 }).format(
-      minor / 10 ** fractionDigits,
-    )
+    const key = `compact:${currency}`
+    let format = formatters.get(key)
+    if (!format) {
+      format = new Intl.NumberFormat(uiTag, { style: 'currency', currency, notation: 'compact', maximumSignificantDigits: 2 })
+      formatters.set(key, format)
+    }
+    return format.format(minor / 10 ** fractionDigits)
   } catch {
     return formatMoney(minor, currency, fractionDigits)
   }

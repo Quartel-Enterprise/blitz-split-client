@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import type { JsGroupStatsState } from 'blitzsplit-shared'
 import { t } from '@/i18n'
-import { formatCompactMoney, formatMoney } from '@/lib/money'
+import { formatCompactMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { barLabel, barName, calloutCount, chartAria } from './statsFormat'
 import { useReplay } from './useReplay'
@@ -19,11 +19,10 @@ const dragSlop = 8
  * on it, or the arrow keys pick it, showing its period, amount and bills in a callout over it; a tap keeps it until a
  * second one.
  */
-export function StatsChart({ state }: { state: JsGroupStatsState }) {
+export function StatsChart({ state, money }: { state: JsGroupStatsState; money: (minor: number) => string }) {
   const bars = state.bars
   const count = bars.length
   const top = Math.max(1, state.chartTopMinor)
-  const money = (minor: number) => formatMoney(minor, state.currency, state.fractionDigits)
   const ticks = Array.from(state.chartTicksMinor).filter((tick) => tick > 0)
   const tickTexts = ticks.map((tick) => formatCompactMoney(tick, state.currency, state.fractionDigits))
   const widestTick = tickTexts.reduce((widest, text) => (text.length > widest.length ? text : widest), '')

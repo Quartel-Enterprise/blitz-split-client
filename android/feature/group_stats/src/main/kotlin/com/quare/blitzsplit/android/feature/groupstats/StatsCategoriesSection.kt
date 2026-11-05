@@ -71,7 +71,8 @@ private val popOut = 6.dp
 private class CategoryPick(
     private val state: State<Int?>,
     private val count: Int,
-    val onPick: (Int?) -> Unit,
+    // Why: the index, or null to let go, and whether a touch made it, which alone ticks the haptics.
+    val onPick: (index: Int?, buzzes: Boolean) -> Unit,
 ) {
     val selected: Int?
         get() = state.value?.takeIf { it in 0 until count }
@@ -91,10 +92,15 @@ internal fun StatsCategoriesSection(
     val rows = state.categories
     if (rows.isEmpty()) return
     val selectedState = remember { mutableStateOf<Int?>(null) }
-    LaunchedEffect(rows) { selectedState.value = null }
+    // Why: the same keys as iOS and the web: the period and each category's share.
+    LaunchedEffect(state.periodStartMillis, state.periodEndMillis, rows.map { it.category.id to it.percent }) {
+        selectedState.value = null
+    }
     val haptics = LocalHapticFeedback.current
-    val pick = CategoryPick(selectedState, rows.size) { index ->
-        if (index != null && index != selectedState.value) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+    val pick = CategoryPick(selectedState, rows.size) { index, buzzes ->
+        if (buzzes && index != null && index != selectedState.value) {
+            haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+        }
         selectedState.value = index
     }
     Column(modifier = modifier) {
@@ -185,13 +191,14 @@ private fun CategoryPieDisplay(
                 .size(size)
                 .pointerInput(rows) {
                     detectPickTaps { offset, isMouse ->
-                        val index = findSliceAt(offset, size.width.toFloat(), rows)
-                        pick.onPick(if (!isMouse && index == pick.selected) null else index)
+                        // Why: this.size is the pointer area's, in pixels; a bare size is the ring's Dp parameter.
+                        val index = findSliceAt(offset, this.size.width.toFloat(), rows)
+                        pick.onPick(if (!isMouse && index == pick.selected) null else index, !isMouse)
                     }
                 }.onMouseHover(
                     key = rows,
-                    onMove = { position -> pick.onPick(findSliceAt(position, size.width.toFloat(), rows)) },
-                    onExit = { pick.onPick(null) },
+                    onMove = { position -> pick.onPick(findSliceAt(position, this.size.width.toFloat(), rows), false) },
+                    onExit = { pick.onPick(null, false) },
                 ),
         ) {
             val margin = popOut.toPx()
@@ -285,16 +292,16 @@ private fun LegendLine(
                 selected = isSelected,
                 role = Role.Button,
                 // Why: a click keeps what hovering the line picked; a tap of a finger picks or lets go.
-                onClick = { pick.onPick(if (isSelected && !isHovered) null else index) },
+                onClick = { pick.onPick(if (isSelected && !isHovered) null else index, !isHovered) },
             ).onMouseHover(
                 key = index,
                 onMove = {
                     isHovered = true
-                    pick.onPick(index)
+                    pick.onPick(index, false)
                 },
                 onExit = {
                     isHovered = false
-                    pick.onPick(null)
+                    pick.onPick(null, false)
                 },
             ).alpha(if (pick.selected == null || isSelected) 1f else DIMMED_ALPHA)
             .padding(

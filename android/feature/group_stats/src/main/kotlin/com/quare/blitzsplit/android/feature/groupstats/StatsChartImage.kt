@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.groupstats
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
@@ -101,13 +103,16 @@ internal fun StatsChartImage(
     val measurer = rememberTextMeasurer()
     val tickStyle = MaterialTheme.typography.labelSmall.copy(color = colors.onSurfaceVariant)
     val ticks = state.chartTicksMinor.filter { it > 0 }
-    val tickTexts = remember(ticks, money, tickStyle) {
+    val tickTexts = remember(ticks, money, tickStyle, measurer) {
         ticks.map { measurer.measure(money.toCompactText(it), tickStyle) }
     }
     val top = state.chartTopMinor.toFloat()
     // Why: one state for the chart's whole life, so the pointer handlers, kept across compositions, always write to it.
     val selectedState = remember { mutableStateOf<Int?>(null) }
-    LaunchedEffect(bars) { selectedState.value = null }
+    // Why: the same keys as iOS and the web, so a sync that moves one amount keeps the callout open on every platform.
+    LaunchedEffect(state.grain, state.periodStartMillis, state.periodEndMillis, state.chartType, bars.size) {
+        selectedState.value = null
+    }
     val selected = selectedState.value?.takeIf { it in bars.indices }
     val pick: (Int?, Boolean) -> Unit = { index, buzzes ->
         if (index != selectedState.value && index != null && buzzes) {
@@ -150,21 +155,29 @@ internal fun StatsChartImage(
                         }
                         true
                     }.pointerInput(bars.size, gutterWidth) {
-                        val plot = size.width - gutterWidth.toPx()
+                        // Why: the width is read on each event, so a fold, a rotation or a resized window picks right.
                         detectPickTaps { offset, isMouse ->
-                            val index = findIndexAt(offset.x, plot, bars.size)
-                            pick(if (!isMouse && index == selectedState.value) null else index, !isMouse)
+                            val index = findIndexAt(offset.x, size.width - gutterWidth.toPx(), bars.size)
+                            if (index != null) {
+                                pick(if (!isMouse && index == selectedState.value) null else index, !isMouse)
+                            }
                         }
                     }.pointerInput(bars.size, gutterWidth) {
-                        val plot = size.width - gutterWidth.toPx()
                         detectHorizontalDragGestures(
-                            onDragStart = { pick(findIndexAt(it.x, plot, bars.size), true) },
-                        ) { change, _ -> pick(findIndexAt(change.position.x, plot, bars.size), true) }
+                            onDragStart = { start ->
+                                findIndexAt(start.x, size.width - gutterWidth.toPx(), bars.size)?.let { pick(it, true) }
+                            },
+                        ) { change, _ ->
+                            findIndexAt(
+                                change.position.x,
+                                size.width - gutterWidth.toPx(),
+                                bars.size,
+                            )?.let { pick(it, true) }
+                        }
                     }.onMouseHover(
                         key = bars.size to gutterWidth,
                         onMove = { position ->
-                            val plot = size.width - gutterWidth.toPx()
-                            pick(findIndexAt(position.x, plot, bars.size), false)
+                            findIndexAt(position.x, size.width - gutterWidth.toPx(), bars.size)?.let { pick(it, false) }
                         },
                         onExit = { pick(null, false) },
                     ),
@@ -288,11 +301,15 @@ internal fun StatsChartImage(
     }
 }
 
+// Why: the bar under a point of the plot; null while there are no bars or the plot has no width yet.
 private fun findIndexAt(
     x: Float,
     plotWidth: Float,
     count: Int,
-): Int = (x / (plotWidth / count)).toInt().coerceIn(0, count - 1)
+): Int? {
+    if (count <= 0 || plotWidth <= 0f) return null
+    return (x / (plotWidth / count)).toInt().coerceIn(0, count - 1)
+}
 
 // Why: a faint line at the base and a dashed one at each value, its short amount in the end gutter.
 private fun DrawScope.drawGrid(
@@ -398,26 +415,34 @@ private fun StatsChartCalloutBubble(
     Layout(
         modifier = Modifier.fillMaxSize(),
         content = {
-            Surface(
-                shape = RoundedCornerShape(10.dp),
-                color = MaterialTheme.colorScheme.inverseSurface,
-                contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                shadowElevation = 2.dp,
-            ) {
-                Column(
-                    modifier = Modifier.padding(
+            // Why: no Surface, which would take the pointer and make a hovering mouse leave the chart under it.
+            val shape = RoundedCornerShape(10.dp)
+            val textColor = MaterialTheme.colorScheme.inverseOnSurface
+            Column(
+                modifier = Modifier
+                    .shadow(2.dp, shape)
+                    .background(MaterialTheme.colorScheme.inverseSurface, shape)
+                    .padding(
                         horizontal = 10.dp,
                         vertical = 6.dp,
                     ),
-                ) {
-                    Text(name, style = MaterialTheme.typography.labelSmall)
-                    Text(
-                        amount,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(countText, style = MaterialTheme.typography.labelSmall)
-                }
+            ) {
+                Text(
+                    name,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = textColor,
+                )
+                Text(
+                    amount,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor,
+                )
+                Text(
+                    countText,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = textColor,
+                )
             }
         },
     ) { measurables, constraints ->

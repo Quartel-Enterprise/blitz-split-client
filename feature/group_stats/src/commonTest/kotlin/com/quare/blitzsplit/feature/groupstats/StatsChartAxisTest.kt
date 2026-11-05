@@ -200,7 +200,7 @@ class StatsChartAxisTest {
     }
 
     @Test
-    fun `GIVEN a mean under half a minor unit WHEN averaging THEN rounds down`() {
+    fun `GIVEN a mean a quarter past a minor unit WHEN averaging THEN rounds down`() {
         // Given
         val bars = bars(5, 0, 0, 0)
 
@@ -306,5 +306,17 @@ class StatsChartAxisTest {
 
         // Then
         assertEquals(listOf(0L, Long.MAX_VALUE / 2), ticks)
+    }
+
+    @Test
+    fun `GIVEN two amounts near the largest Long WHEN averaging THEN the mean does not overflow`() {
+        // Given
+        val bars = bars(Long.MAX_VALUE - 1, Long.MAX_VALUE - 1)
+
+        // When
+        val average = StatsChartAxis.createAverageOrNull(bars)
+
+        // Then
+        assertEquals(Long.MAX_VALUE - 1, average)
     }
 }

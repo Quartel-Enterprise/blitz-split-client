@@ -33,8 +33,11 @@ internal object StatsChartAxis {
      */
     fun createAverageOrNull(bars: List<StatsBar>): Long? {
         if (bars.size < 2) return null
-        val total = bars.sumOf { it.amountMinor }
-        return ((total + bars.size / 2) / bars.size).takeIf { it > 0L }
+        // Why: each amount's quotient and remainder add up apart, so huge amounts never overflow the sum.
+        val count = bars.size.toLong()
+        val quotients = bars.sumOf { it.amountMinor / count }
+        val remainders = bars.sumOf { it.amountMinor % count }
+        return (quotients + (remainders + count / 2) / count).takeIf { it > 0L }
     }
 
     private fun findStep(largest: Long): Long {

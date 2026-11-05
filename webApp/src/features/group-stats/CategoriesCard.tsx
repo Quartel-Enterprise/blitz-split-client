@@ -48,6 +48,10 @@ export function CategoriesCard({ state, money, className }: { state: JsGroupStat
             onPointerLeave={(event) => {
               if (event.pointerType === 'mouse') setSelected(null)
             }}
+            onPointerMove={(event) => {
+              // Why: the mouse in the hole lets go, as on Android and Apple; a slice under it is the event's target.
+              if (event.pointerType === 'mouse' && event.target === event.currentTarget) setSelected(null)
+            }}
             onClick={(event) => {
               // Why: a tap in the hole lets go, as on Android and Apple.
               if (event.target === event.currentTarget) setSelected(null)

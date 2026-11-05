@@ -55,7 +55,7 @@ data class GroupStatsUiState(
      * the top of its scale, so a bar's height reads against them; empty while nothing was spent.
      */
     val chartTicksMinor: List<Long>,
-    // Why: the dashed "Average per day" line, the bars' mean, empty ones too; null with one bar or a mean under one unit.
+    // Why: the dashed "Average per day" line, the bars' mean, empty ones too; null with one bar or a mean that rounds to 0.
     val chartAverageMinor: Long?,
     val grainNotes: List<StatsGrainNote>,
     val biggestExpense: StatsBiggestExpense?,

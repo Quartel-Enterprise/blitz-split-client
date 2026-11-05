@@ -484,7 +484,7 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
           </button>
         ))}
       </div>
-      <StatsChart state={state} />
+      <StatsChart state={state} money={money} />
       <div className="flex flex-col gap-1">
         {peak && (
           <span className="text-[13px] text-muted-foreground">
