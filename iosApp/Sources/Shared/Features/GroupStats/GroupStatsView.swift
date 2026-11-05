@@ -167,7 +167,7 @@ private struct StatsScroll: View {
                 VStack(alignment: .leading, spacing: 0) {
                     StatsCategoriesSection(state: model.state)
                     StatsPeopleSection(model: model)
-                    StatsSettlingSection(state: model.state)
+                    StatsSettlingSection(model: model)
                     StatsBiggestSection(model: model)
                 }
                 .padding(.horizontal, 16)
@@ -208,14 +208,14 @@ private struct StatsScroll: View {
                                 StatsCategoriesSection(state: state, pieSize: 112)
                                 #if os(macOS)
                                 StatsPeopleSection(model: model)
-                                StatsSettlingSection(state: state)
+                                StatsSettlingSection(model: model)
                                 #endif
                             }
                         } second: {
                             VStack(alignment: .leading, spacing: 0) {
                                 #if os(iOS)
                                 StatsPeopleSection(model: model)
-                                StatsSettlingSection(state: state)
+                                StatsSettlingSection(model: model)
                                 #endif
                                 StatsOverTimeSection(model: model)
                                 StatsBiggestSection(model: model)
@@ -229,7 +229,7 @@ private struct StatsScroll: View {
                         #endif
                         StatsCategoriesSection(state: state)
                         StatsPeopleSection(model: model)
-                        StatsSettlingSection(state: state)
+                        StatsSettlingSection(model: model)
                         StatsOverTimeSection(model: model)
                         StatsBiggestSection(model: model)
                     }

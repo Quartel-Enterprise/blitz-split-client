@@ -387,11 +387,34 @@ private fun StatsPersonRowItem(
     }
 }
 
+// Why: the two person boards stacked, as every layout but the phone's list draws them.
+@Composable
+internal fun StatsPeopleAndSettlingColumn(
+    state: GroupStatsUiState,
+    money: MoneyFormatter,
+    onEvent: (GroupStatsUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        StatsPeopleSection(
+            state = state,
+            money = money,
+            onEvent = onEvent,
+        )
+        StatsSettlingSection(
+            state = state,
+            money = money,
+            onEvent = onEvent,
+        )
+    }
+}
+
 // Why: "Acertos": who settles their share of the period's bills fastest and slowest, once two people had one.
 @Composable
 internal fun StatsSettlingSection(
     state: GroupStatsUiState,
     money: MoneyFormatter,
+    onEvent: (GroupStatsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val settling = state.settling ?: return
@@ -402,14 +425,15 @@ internal fun StatsSettlingSection(
                 R.string.group_stats_settles_fastest to settling.fastest,
                 R.string.group_stats_settles_slowest to settling.slowest,
             ).forEachIndexed { index, (label, settler) ->
+                val shape = groupedRowShapeOf(index, 2)
                 StatsSettlerRow(
                     label = stringResource(label),
                     settler = settler,
                     money = money,
-                    modifier = Modifier.background(
-                        MaterialTheme.colorScheme.surfaceContainerLowest,
-                        groupedRowShapeOf(index, 2),
-                    ),
+                    modifier = Modifier
+                        .clip(shape)
+                        .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
+                        .opensProfile { onEvent(GroupStatsUiEvent.OnPersonClicked(settler.memberId)) },
                 )
             }
         }

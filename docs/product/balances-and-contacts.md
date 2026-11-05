@@ -28,7 +28,7 @@ The global balances, a person's profile and Contacts.
     call, beta feedback 18, `Route.ContactProfile` by Balances' person key, `openPersonProfile`): Bill's split rows,
     its lone payer ("Ana paid"; several payers each have their row), a comment's author and a History line's
     face, Members' rows, Balances' people, Activity's actor face (the rest of the row still opens the item; VoiceOver
-    has it as the row's action), Statistics' "By person", and Record payment's two faces (whoever paid →
+    has it as the row's action), Statistics' "By person" and "Settling up", and Record payment's two faces (whoever paid →
     whoever received, and "Pay Ana"'s, `RegisterPaymentUiEvent.OnPersonClicked`), over the form, which back finds
     again. This device's own user opens Profile (the Mac's Settings); someone no longer in the group opens nothing.
     Home's faces, the group's Balances pairs and Expenses' rows stay as they were (whatever opened `Route.SettleUp`
