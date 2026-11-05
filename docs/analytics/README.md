@@ -431,9 +431,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `privacy_policy_clicked` | none | "Privacy policy" | `:feature:profile` |
 | `terms_clicked` | none | "Terms of use" | `:feature:profile` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
-| `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Erase the profile from this browser?" | `:feature:profile` |
+| `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Erase the profile from this device?" | `:feature:profile` |
 | `profile_visibility_info_clicked` | none | "Who sees your profile", when it opens | `:feature:profile` |
-| `profile_dialog_cancelled` | `dialog` (`visibility_info`, `sign_out`, `sign_out_pending`, `erase_profile`, `unlink_account`, `appearance`, `dynamic_colors_info`) | A dialog or sheet of Profile closed without its main button, while nothing signs out or unlinks | `:feature:profile` |
+| `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`, `unlink_account`) | A confirmation of Profile (sign out, erase, disconnect) closed without its main button, while nothing signs out or unlinks | `:feature:profile` |
 | `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
 | `payment_key_add_clicked` | `method` (`pix`, `bitcoin`) | "Add a Pix or Bitcoin key", while a key can be added | `:feature:profile` |
 | `payment_key_clicked` | `method` | A key of "Keys to receive payments" | `:feature:profile` |
@@ -449,7 +449,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `sign_out_confirmed` | none | "Sign out" on "Sign out?", when the sign out starts | `:feature:profile` |
 | `sign_out_when_synced_clicked` | none | "Sign out once synced" | `:feature:profile` |
 | `sign_out_now_clicked` | none | "Sign out now and lose the changes", when the sign out starts | `:feature:profile` |
-| `erase_code_copy_clicked` | none | Copy of the recovery code on "Erase the profile from this browser?" | `:feature:profile` |
+| `erase_code_copy_clicked` | none | Copy of the recovery code on "Erase the profile from this device?" | `:feature:profile` |
 | `erase_connect_instead_clicked` | none | "Connect Google or Apple instead" there, while it can connect | `:feature:profile` |
 | `profile_erase_confirmed` | none | "Erase and sign out", when the erase starts | `:feature:profile` |
 | `account_photo_selected` | `source` (`edit_profile`, `profile_photo`) | "Use Google account photo" or Apple's, while the account has one | `:feature:edit_profile` |

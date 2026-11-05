@@ -7,14 +7,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 /*
- * Why: Perfil's dialogs and sheets (who sees the name, Aparência, Desconectar, Sair or Apagar perfil e sair). A sign
- * out or unlink under way keeps its dialog, which shows how it ends, so none opens or closes then; each tap that
- * opens one counts only once it opened.
+ * Why: Profile's dialogs and sheets (who sees the profile, Appearance, Disconnect, Sign out or Erase profile and sign
+ * out). A sign out or unlink under way keeps its dialog, which shows how it ends, so none opens or closes then; each
+ * tap that opens one counts only once it opened.
  */
 internal class ProfileDialogs(
     private val uiState: MutableStateFlow<ProfileUiState>,
     private val trackEvent: TrackEvent,
 ) {
+    // Why: the dialogs that ask before signing out, erasing or disconnecting, whose close is an answer.
+    private val confirmations = setOf(
+        ProfileDialog.SIGN_OUT,
+        ProfileDialog.SIGN_OUT_PENDING,
+        ProfileDialog.ERASE_PROFILE,
+        ProfileDialog.UNLINK_ACCOUNT,
+    )
+
     fun openVisibilityInfo() {
         if (show(ProfileDialog.VISIBILITY_INFO)) trackEvent("profile_visibility_info_clicked", emptyMap())
     }
@@ -26,7 +34,7 @@ internal class ProfileDialogs(
         }
     }
 
-    // Why: only where the switch it explains shows, and over Aparência, where its button is.
+    // Why: only where the switch it explains shows, and over Appearance, where its button is.
     fun openDynamicColorsInfo() {
         val state = uiState.value
         if (state.showsDynamicColors && state.dialog == ProfileDialog.APPEARANCE &&
@@ -51,10 +59,15 @@ internal class ProfileDialogs(
         if (show(dialog)) trackEvent("sign_out_clicked", mapOf("dialog" to dialog))
     }
 
-    // Why: the info over Aparência goes back to it; any other closes to the profile.
+    /*
+     * Why: the info over Appearance goes back to it; any other closes to the profile. Only a confirmation's close
+     * counts as cancelled: the info dialogs close with their only button and Appearance has none.
+     */
     fun close() {
         if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
-        uiState.value.dialog?.let { trackEvent("profile_dialog_cancelled", mapOf("dialog" to it)) }
+        uiState.value.dialog?.takeIf { it in confirmations }?.let {
+            trackEvent("profile_dialog_cancelled", mapOf("dialog" to it))
+        }
         uiState.update {
             it.copy(
                 dialog = if (it.dialog == ProfileDialog.DYNAMIC_COLORS_INFO) ProfileDialog.APPEARANCE else null,

@@ -143,7 +143,7 @@ class ProfileViewModel(
             ),
         )
 
-    // Why: Perfil's dialogs and sheets, which open only while nothing signs out or unlinks.
+    // Why: Profile's dialogs and sheets, which open only while nothing signs out or unlinks.
     private val dialogs = ProfileDialogs(uiState, trackEvent)
 
     val uiAction: SharedFlow<ProfileUiAction>
@@ -279,10 +279,9 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
 
-            ProfileUiEvent.OnEraseConfirmed -> if (uiState.value.dialog == ProfileDialog.ERASE_PROFILE &&
-                startErasing()
-            ) {
-                trackEvent("profile_erase_confirmed", emptyMap())
+            ProfileUiEvent.OnEraseConfirmed -> {
+                val isErasing = uiState.value.dialog == ProfileDialog.ERASE_PROFILE && startErasing()
+                if (isErasing) trackEvent("profile_erase_confirmed", emptyMap())
             }
         }
     }
@@ -335,7 +334,6 @@ class ProfileViewModel(
         }
     }
 
-    // Why: SYNCED draws nothing; PENDING waits for the connection, or for the next sync, which is imminent online.
     private fun addPaymentKey(method: PaymentMethod) {
         if (!uiState.value.canAddPaymentKey) return
         trackEvent("payment_key_add_clicked", mapOf("method" to method))
@@ -438,7 +436,6 @@ class ProfileViewModel(
         providerConnector.expand()
     }
 
-    // Why: the dynamic colors' explanation opens over Aparência, so closing it leaves Aparência open.
     // Why: an unlink or sign out under way, or one scheduled, changes the account the deletion would name.
     private fun openDeleteAccount() {
         val state = uiState.value

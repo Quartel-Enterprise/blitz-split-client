@@ -5119,43 +5119,38 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `GIVEN who sees your profile open WHEN dismissing it THEN sends it cancelled`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
-
-        // Then
-        assertEquals(
-            listOf("profile_dialog_cancelled" to mapOf<String, Any>("dialog" to ProfileDialog.VISIBILITY_INFO)),
-            trackedEvents,
-        )
-    }
-
-    @Test
-    fun `GIVEN the dynamic colors info over Appearance WHEN dismissing it THEN sends the info cancelled`() =
+    fun `GIVEN who sees your profile open WHEN dismissing it THEN sends nothing as it is no confirmation`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(supportsDynamicColors = true)
-            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
-            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
             trackedEvents.clear()
 
             // When
             viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
 
             // Then
-            assertEquals(
-                listOf("profile_dialog_cancelled" to mapOf<String, Any>("dialog" to ProfileDialog.DYNAMIC_COLORS_INFO)),
-                trackedEvents,
-            )
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test
-    fun `GIVEN back on Appearance from the dynamic colors info WHEN dismissing it THEN sends Appearance cancelled`() =
+    fun `GIVEN the dynamic colors info over Appearance WHEN dismissing it THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(supportsDynamicColors = true)
+            viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN back on Appearance from the dynamic colors info WHEN dismissing it THEN sends nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(supportsDynamicColors = true)
@@ -5168,10 +5163,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
 
             // Then
-            assertEquals(
-                listOf("profile_dialog_cancelled" to mapOf<String, Any>("dialog" to ProfileDialog.APPEARANCE)),
-                trackedEvents,
-            )
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test

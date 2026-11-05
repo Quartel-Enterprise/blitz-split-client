@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 
-// Why: "Conta e sincronização"'s status and what still waits to go up, as each source answers.
+// Why: "Account and sync"'s status and what still waits to go up, as each source answers.
 internal fun MutableStateFlow<ProfileUiState>.observeSyncSummary(
     syncState: Flow<SyncState>,
     hasPendingProfile: Flow<Boolean>,
@@ -36,6 +36,7 @@ internal fun MutableStateFlow<ProfileUiState>.observeSyncSummary(
     }
 }
 
+// Why: SYNCED draws nothing; PENDING waits for the connection, or for the next sync, which is imminent online.
 private fun syncStatusOf(syncState: SyncState): ProfileSyncStatus? = when (syncState) {
     SyncState.SYNCED -> null
     SyncState.PENDING -> ProfileSyncStatus.WAITING
