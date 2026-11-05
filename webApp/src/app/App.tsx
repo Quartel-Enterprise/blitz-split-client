@@ -32,6 +32,7 @@ import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
 import { ProfilePhotoDialog } from '@/features/profile/ProfilePhotoDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { CategoryMapScreen } from '@/features/category-map/CategoryMapScreen'
+import { NotificationSettingsDialog } from '@/features/notification-settings/NotificationSettingsCard'
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog'
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
@@ -149,7 +150,10 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   const isRegisterPayment = top.name === 'register-payment' || top.name === 'settle-up'
   // Why: Início's "Registrar pagamento" asks who paid whom first, over Início, then gives Registrar pagamento its place.
   const isPickPayment = top.name === 'pick-payment'
+  // Why: Atividade's "Notification settings" over Atividade; the profile shows the same settings inline.
+  const isNotificationSettings = top.name === 'notification-settings'
   const isDialog =
+    isNotificationSettings ||
     isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
@@ -184,6 +188,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       {isShareBill && <ShareBillDialog key={`${top.groupId}/${top.expenseId}`} route={top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
+      {isNotificationSettings && <NotificationSettingsDialog />}
       {isProfilePhoto && <ProfilePhotoDialog />}
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}

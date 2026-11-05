@@ -18,6 +18,8 @@ import com.quare.blitzsplit.core.activity.domain.model.ChargeSent
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityUnreadCountUseCase
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
+import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
 import com.quare.blitzsplit.core.provider.room.entity.ChangedCommentRow
@@ -971,6 +973,9 @@ class ActivityRepositoryImplTest {
                         AccountProvider.GOOGLE,
                     ),
                 ),
+            ),
+            observeNotificationPreferences = ObserveNotificationPreferencesUseCase(
+                FakeNotificationPreferencesRepository(),
             ),
         )
 

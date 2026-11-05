@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.sync.data.dto.AccountExportDto
+import com.quare.blitzsplit.core.sync.data.dto.InAppNotificationsExportDto
 import com.quare.blitzsplit.core.sync.data.dto.NotificationPreferencesExportDto
 import com.quare.blitzsplit.core.sync.data.dto.PaymentKeyExportDto
 import com.quare.blitzsplit.core.sync.data.dto.ProfileExportDto
@@ -53,10 +54,19 @@ class UserDataExportMapperImpl : UserDataExportMapper {
 
     override fun toDto(preferences: NotificationPreferences): NotificationPreferencesExportDto =
         NotificationPreferencesExportDto(
-            newExpense = NotificationType.NEW_EXPENSE in preferences.enabledTypes,
-            paymentMarked = NotificationType.PAYMENT_MARKED in preferences.enabledTypes,
-            settleReminders = NotificationType.SETTLE_REMINDERS in preferences.enabledTypes,
-            invites = NotificationType.INVITES in preferences.enabledTypes,
+            newExpense = NotificationType.BILLS in preferences.push,
+            paymentMarked = NotificationType.PAYMENTS in preferences.push,
+            settleReminders = NotificationType.BALANCE_REMINDER in preferences.push,
+            invites = NotificationType.PEOPLE_AND_GROUPS in preferences.push,
+            comments = NotificationType.COMMENTS in preferences.push,
+            paymentRequests = NotificationType.PAYMENT_REQUESTS in preferences.push,
+            inApp = InAppNotificationsExportDto(
+                bills = NotificationType.BILLS in preferences.inApp,
+                payments = NotificationType.PAYMENTS in preferences.inApp,
+                comments = NotificationType.COMMENTS in preferences.inApp,
+                peopleAndGroups = NotificationType.PEOPLE_AND_GROUPS in preferences.inApp,
+                paymentRequests = NotificationType.PAYMENT_REQUESTS in preferences.inApp,
+            ),
         )
 
     override fun toIsoInstant(epochMillis: Long): String = Instant.fromEpochMilliseconds(epochMillis).toString()

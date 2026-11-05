@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChange
@@ -1618,6 +1619,7 @@ class ActivityItemsTest {
         ),
         myUserId = "pierre",
         hasOlder = false,
+        inAppTypes = NotificationPreferences.DEFAULT.inApp,
     )
 
     private fun event(

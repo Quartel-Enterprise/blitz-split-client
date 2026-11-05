@@ -146,4 +146,5 @@
     <string name="activity_simplify_you_owe">you owe %s</string>
     <string name="activity_simplify_owes_nothing">owes nothing now</string>
     <string name="activity_open_group_balances">See group balances</string>
+    <string name="activity_notification_settings">Notification settings</string>
 </resources>

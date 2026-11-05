@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.profile.domain.repository
 
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,7 @@ interface NotificationPreferencesRepository {
 
     suspend fun updatePreference(
         type: NotificationType,
+        channel: NotificationChannel,
         isEnabled: Boolean,
     )
 

@@ -121,6 +121,16 @@ struct ActivityView: View {
             model?.send(ActivityUiEventOnDetailPaneChanged(isShown: isShown))
         }
         .navigationTitle("Activity")
+        // The same Notifications as the profile's: pushed over Activity on iPhone and iPad, Ajustes' section on the
+        // Mac (`AppModel`), there whether or not the feed has anything to filter
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Notification settings", systemImage: "bell.badge") {
+                    model?.send(ActivityUiEventOnNotificationSettingsClicked.shared)
+                }
+                .help(Text("Notification settings"))
+            }
+        }
         #if os(iOS)
         // Why: pushed over Home by its bell, the bar names it beside the back button.
         .toolbarTitleDisplayMode(.inline)

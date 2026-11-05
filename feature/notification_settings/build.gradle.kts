@@ -7,6 +7,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.presentation)
             api(projects.core.model)
+            implementation(projects.core.activity)
             implementation(projects.core.navigation)
             implementation(projects.core.profile)
             implementation(projects.core.sync)
@@ -17,6 +18,8 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.profile.testing)
+            implementation(projects.core.activity.testing)
+            implementation(projects.core.account.testing)
         }
     }
 }

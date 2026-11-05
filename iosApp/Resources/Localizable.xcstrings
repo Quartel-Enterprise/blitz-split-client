@@ -373,6 +373,10 @@
         }
       }
     },
+    "%@, %@" : {
+      "comment" : "A toggle of Notifications for VoiceOver: the kind and the channel, \"Bills, Push\"",
+      "shouldTranslate" : false
+    },
     "%lld days on average" : {
       "comment" : "The group statistics: Settling up, how many days someone takes on average to settle their share",
       "localizations" : {
@@ -635,6 +639,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bitcoin em satoshis"
+          }
+        }
+      }
+    },
+    "Blitz Split notifications are turned off in System Settings. The bell keeps working." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações do Bora Rachar estão desativadas nos Ajustes do Sistema. O sino continua funcionando."
+          }
+        }
+      }
+    },
+    "Blitz Split notifications are turned off in the %@ Settings. The bell keeps working." : {
+      "comment" : "%@ is the device: iPhone or iPad",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações do Bora Rachar estão desativadas nos Ajustes do %@. O sino continua funcionando."
           }
         }
       }
@@ -1314,6 +1339,17 @@
         }
       }
     },
+    "In app" : {
+      "comment" : "The Notifications column of the bell: Activity's blue dot and badge",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No app"
+          }
+        }
+      }
+    },
     "It already comes with %@." : {
       "comment" : "Pay with a key (4.5): the amount inside the Pix code",
       "localizations" : {
@@ -1585,6 +1621,16 @@
         }
       }
     },
+    "New, edited or deleted bills you're in" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contas novas, editadas ou apagadas em que você está"
+          }
+        }
+      }
+    },
     "Next" : {
       "localizations" : {
         "pt-BR" : {
@@ -1638,6 +1684,37 @@
         }
       }
     },
+    "Notification settings" : {
+      "comment" : "Activity's button that opens Notifications",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurar notificações"
+          }
+        }
+      }
+    },
+    "Notify me about" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avisar sobre"
+          }
+        }
+      }
+    },
+    "On bills you're in and threads you wrote in" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Em contas suas e conversas em que você escreveu"
+          }
+        }
+      }
+    },
     "On-chain" : {
       "comment" : "Pay with a key (4.5): a Bitcoin key type",
       "localizations" : {
@@ -1645,6 +1722,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "On-chain"
+          }
+        }
+      }
+    },
+    "Open balance reminder" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lembrete de saldo em aberto"
           }
         }
       }
@@ -1711,6 +1798,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Forma de pagamento"
+          }
+        }
+      }
+    },
+    "Payment requests" : {
+      "comment" : "The Notifications row of requests to pay",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cobranças"
+          }
+        }
+      }
+    },
+    "Payments and settle-ups" : {
+      "comment" : "The Notifications row of payments",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamentos e acertos"
+          }
+        }
+      }
+    },
+    "Payments to or from you, and simplified debts" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagamentos com você e dívidas simplificadas"
           }
         }
       }
@@ -2072,6 +2191,27 @@
         }
       }
     },
+    "Push" : {
+      "comment" : "The Notifications column of the system's notifications",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push"
+          }
+        }
+      }
+    },
+    "Push sends a notification to this device. In app marks it new on the bell and in Activity; turned off, it still shows in Activity, already read." : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O push manda uma notificação para este aparelho. No app marca como novo no sino e na Atividade; desligado, ainda aparece na Atividade, já lido."
+          }
+        }
+      }
+    },
     "Rotate" : {
       "comment" : "Photo editor: turns the photo 90 degrees clockwise",
       "localizations" : {
@@ -2123,6 +2263,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Descurtir"
+          }
+        }
+      }
+    },
+    "When someone asks you to pay" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando alguém te cobra"
+          }
+        }
+      }
+    },
+    "Who joins or leaves your groups, and what changes in them" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem entra ou sai dos seus grupos e o que muda neles"
           }
         }
       }
@@ -8544,27 +8704,6 @@
         }
       }
     },
-    "Blitz Split notifications are turned off in System Settings." : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As notificações do Bora Rachar estão desativadas nos Ajustes do Sistema."
-          }
-        }
-      }
-    },
-    "Blitz Split notifications are turned off in the %@ Settings." : {
-      "comment" : "%@ is the device: iPhone or iPad",
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As notificações do Bora Rachar estão desativadas nos Ajustes do %@."
-          }
-        }
-      }
-    },
     "Blitz Split · recovery code" : {
       "comment" : "The recovery code's entry in the Passwords app",
       "localizations" : {
@@ -10393,16 +10532,6 @@
         }
       }
     },
-    "Invites and new members" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Convites e novos membros"
-          }
-        }
-      }
-    },
     "At least 2 letters, and not a name already in the group." : {
       "localizations" : {
         "pt-BR" : {
@@ -10842,16 +10971,6 @@
         }
       }
     },
-    "New expense in my groups" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nova despesa nos meus grupos"
-          }
-        }
-      }
-    },
     "New group" : {
       "comment" : "The title of the new group sheet, and the home's button that opens it",
       "localizations" : {
@@ -11143,16 +11262,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Notificações"
-          }
-        }
-      }
-    },
-    "Notify me when" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avisar quando"
           }
         }
       }
@@ -11880,16 +11989,6 @@
         }
       }
     },
-    "Settle-up reminders" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lembretes de acerto"
-          }
-        }
-      }
-    },
     "Share" : {
       "comment" : "Opens the invite screen from the members screen",
       "localizations" : {
@@ -12094,16 +12193,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alguém mudou esta conta %@."
-          }
-        }
-      }
-    },
-    "Someone marked a payment to me" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alguém marcou um pagamento para mim"
           }
         }
       }
@@ -12848,36 +12937,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No acerto, mostramos o valor em sats pela cotação do momento. É só uma estimativa: quem paga confirma o valor na carteira."
-          }
-        }
-      }
-    },
-    "When someone adds an expense with you" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quando alguém lança uma despesa com você"
-          }
-        }
-      }
-    },
-    "When someone joins one of your groups" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quando alguém entra num grupo seu"
-          }
-        }
-      }
-    },
-    "When someone says they've paid you" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quando alguém diz que já te pagou"
           }
         }
       }

@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.notificationsettings
 
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -39,6 +41,7 @@ class NotificationSettingsViewModelTest {
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private lateinit var viewModel: NotificationSettingsViewModel
     private val actions = mutableListOf<NotificationSettingsUiAction>()
+    private val markedReadTypes = mutableListOf<NotificationType>()
 
     @BeforeTest
     fun setUp() {
@@ -62,13 +65,15 @@ class NotificationSettingsViewModelTest {
             // Then
             assertEquals(
                 setOf(
-                    NotificationType.NEW_EXPENSE,
-                    NotificationType.PAYMENT_MARKED,
-                    NotificationType.SETTLE_REMINDERS,
+                    NotificationType.BILLS,
+                    NotificationType.PAYMENTS,
+                    NotificationType.COMMENTS,
+                    NotificationType.PAYMENT_REQUESTS,
+                    NotificationType.BALANCE_REMINDER,
                 ),
-                state.types.filter(state::isEnabled).toSet(),
+                state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) }.toSet(),
             )
-            assertFalse(state.isEnabled(NotificationType.INVITES))
+            assertFalse(state.isEnabled(NotificationType.PEOPLE_AND_GROUPS, NotificationChannel.PUSH))
         }
 
     @Test
@@ -83,7 +88,7 @@ class NotificationSettingsViewModelTest {
             // Then
             assertNull(state.permission)
             assertTrue(state.showsTogglesLoading)
-            assertFalse(state.areTogglesEnabled)
+            assertFalse(state.arePushTogglesEnabled)
             assertFalse(state.showsPermissionDenied)
         }
 
@@ -97,9 +102,9 @@ class NotificationSettingsViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(Loadable.Loading, state.enabledTypes)
+            assertEquals(Loadable.Loading, state.preferences)
             assertTrue(state.showsTogglesLoading)
-            assertFalse(state.isEnabled(NotificationType.NEW_EXPENSE))
+            assertFalse(state.isEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
         }
 
     @Test
@@ -107,7 +112,11 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(firstDownload = pendingDownload)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // When
             viewModel.onEvent(toggled)
@@ -121,7 +130,7 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                saved = setOf(NotificationType.INVITES),
+                saved = setOf(NotificationType.PEOPLE_AND_GROUPS),
                 firstDownload = pendingDownload,
             )
 
@@ -131,34 +140,48 @@ class NotificationSettingsViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertFalse(state.showsTogglesLoading)
-            assertEquals(listOf(NotificationType.INVITES), state.types.filter(state::isEnabled))
+            assertEquals(
+                listOf(NotificationType.PEOPLE_AND_GROUPS),
+                state.types.filter {
+                    state.isEnabled(it, NotificationChannel.PUSH)
+                },
+            )
         }
 
     @Test
     fun `GIVEN saved choices WHEN the screen opens THEN shows them`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(saved = setOf(NotificationType.INVITES))
+        prepareScenario(saved = setOf(NotificationType.PEOPLE_AND_GROUPS))
 
         // When
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(listOf(NotificationType.INVITES), state.types.filter(state::isEnabled))
+        assertEquals(
+            listOf(NotificationType.PEOPLE_AND_GROUPS),
+            state.types.filter {
+                state.isEnabled(it, NotificationChannel.PUSH)
+            },
+        )
     }
 
     @Test
     fun `GIVEN the screen open WHEN the saved choices change THEN shows the new ones`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        val synced = NotificationPreferences(setOf(NotificationType.PAYMENT_MARKED, NotificationType.INVITES))
+        val synced =
+            NotificationPreferences(
+                push = setOf(NotificationType.PAYMENTS, NotificationType.PEOPLE_AND_GROUPS),
+                inApp = NotificationPreferences.DEFAULT.inApp,
+            )
 
         // When
         preferences.preferences.value = synced
 
         // Then
         assertEquals(
-            synced.enabledTypes,
-            viewModel.uiState.value.enabledTypes
+            synced,
+            viewModel.uiState.value.preferences
                 .valueOrNull(),
         )
     }
@@ -181,15 +204,22 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.GRANTED)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.PAYMENT_MARKED, isEnabled = false)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PAYMENTS,
+                NotificationChannel.PUSH,
+                isEnabled = false,
+            )
 
             // When
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(listOf(NotificationType.PAYMENT_MARKED to false), preferences.updates)
-            assertFalse(viewModel.uiState.value.isEnabled(NotificationType.PAYMENT_MARKED))
-            assertTrue(viewModel.uiState.value.isEnabled(NotificationType.NEW_EXPENSE))
+            assertEquals(
+                listOf(Triple(NotificationType.PAYMENTS, NotificationChannel.PUSH, false)),
+                preferences.updates,
+            )
+            assertFalse(viewModel.uiState.value.isEnabled(NotificationType.PAYMENTS, NotificationChannel.PUSH))
+            assertTrue(viewModel.uiState.value.isEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
             assertTrue(actions.isEmpty())
         }
 
@@ -198,14 +228,21 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.GRANTED)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // When
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(listOf(NotificationType.INVITES to true), preferences.updates)
-            assertTrue(viewModel.uiState.value.isEnabled(NotificationType.INVITES))
+            assertEquals(
+                listOf(Triple(NotificationType.PEOPLE_AND_GROUPS, NotificationChannel.PUSH, true)),
+                preferences.updates,
+            )
+            assertTrue(viewModel.uiState.value.isEnabled(NotificationType.PEOPLE_AND_GROUPS, NotificationChannel.PUSH))
             assertTrue(actions.isEmpty())
         }
 
@@ -214,13 +251,20 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // When
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(listOf(NotificationType.INVITES to true), preferences.updates)
+            assertEquals(
+                listOf(Triple(NotificationType.PEOPLE_AND_GROUPS, NotificationChannel.PUSH, true)),
+                preferences.updates,
+            )
             assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
         }
 
@@ -229,13 +273,17 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.NEW_EXPENSE, isEnabled = false)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.PUSH,
+                isEnabled = false,
+            )
 
             // When
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(listOf(NotificationType.NEW_EXPENSE to false), preferences.updates)
+            assertEquals(listOf(Triple(NotificationType.BILLS, NotificationChannel.PUSH, false)), preferences.updates)
             assertTrue(actions.isEmpty())
         }
 
@@ -244,7 +292,11 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = null)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // When
             viewModel.onEvent(toggled)
@@ -267,9 +319,9 @@ class NotificationSettingsViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertTrue(state.showsPermissionDenied)
-            assertFalse(state.areTogglesEnabled)
-            assertTrue(state.types.none(state::isEnabled))
-            assertEquals(NotificationPreferences.DEFAULT.enabledTypes, state.enabledTypes.valueOrNull())
+            assertFalse(state.arePushTogglesEnabled)
+            assertTrue(state.types.none { state.isEnabled(it, NotificationChannel.PUSH) })
+            assertEquals(NotificationPreferences.DEFAULT.push, state.preferences.valueOrNull()?.push)
             assertEquals(NotificationPreferences.DEFAULT, preferences.preferences.value)
             assertTrue(preferences.updates.isEmpty())
         }
@@ -279,7 +331,11 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.DENIED)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // When
             viewModel.onEvent(toggled)
@@ -294,7 +350,11 @@ class NotificationSettingsViewModelTest {
     fun `GIVEN the permission denied WHEN a notice is turned off THEN saves nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(permission = NotificationPermission.DENIED)
-        val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.NEW_EXPENSE, isEnabled = false)
+        val toggled = NotificationSettingsUiEvent.OnToggled(
+            NotificationType.BILLS,
+            NotificationChannel.PUSH,
+            isEnabled = false,
+        )
 
         // When
         viewModel.onEvent(toggled)
@@ -310,7 +370,7 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                saved = setOf(NotificationType.NEW_EXPENSE, NotificationType.INVITES),
+                saved = setOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS),
                 permission = NotificationPermission.DENIED,
             )
             val reported = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
@@ -321,10 +381,10 @@ class NotificationSettingsViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertFalse(state.showsPermissionDenied)
-            assertTrue(state.areTogglesEnabled)
+            assertTrue(state.arePushTogglesEnabled)
             assertEquals(
-                listOf(NotificationType.NEW_EXPENSE, NotificationType.INVITES),
-                state.types.filter(state::isEnabled),
+                listOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS),
+                state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) },
             )
         }
 
@@ -378,7 +438,11 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.GRANTED)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.PAYMENT_MARKED, isEnabled = false)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PAYMENTS,
+                NotificationChannel.PUSH,
+                isEnabled = false,
+            )
 
             // When
             viewModel.onEvent(toggled)
@@ -387,7 +451,8 @@ class NotificationSettingsViewModelTest {
             assertEquals(
                 listOf(
                     "notification_toggled" to mapOf<String, Any>(
-                        "type" to NotificationType.PAYMENT_MARKED,
+                        "type" to NotificationType.PAYMENTS,
+                        "channel" to NotificationChannel.PUSH,
                         "is_enabled" to false,
                     ),
                 ),
@@ -400,7 +465,11 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // When
             viewModel.onEvent(toggled)
@@ -409,7 +478,8 @@ class NotificationSettingsViewModelTest {
             assertEquals(
                 listOf(
                     "notification_toggled" to mapOf<String, Any>(
-                        "type" to NotificationType.INVITES,
+                        "type" to NotificationType.PEOPLE_AND_GROUPS,
+                        "channel" to NotificationChannel.PUSH,
                         "is_enabled" to true,
                     ),
                 ),
@@ -421,7 +491,11 @@ class NotificationSettingsViewModelTest {
     fun `GIVEN the permission not read yet WHEN a notice is toggled THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(permission = null)
-        val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+        val toggled = NotificationSettingsUiEvent.OnToggled(
+            NotificationType.PEOPLE_AND_GROUPS,
+            NotificationChannel.PUSH,
+            isEnabled = true,
+        )
 
         // When
         viewModel.onEvent(toggled)
@@ -434,7 +508,11 @@ class NotificationSettingsViewModelTest {
     fun `GIVEN the permission denied WHEN a notice is toggled THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(permission = NotificationPermission.DENIED)
-        val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.NEW_EXPENSE, isEnabled = false)
+        val toggled = NotificationSettingsUiEvent.OnToggled(
+            NotificationType.BILLS,
+            NotificationChannel.PUSH,
+            isEnabled = false,
+        )
 
         // When
         viewModel.onEvent(toggled)
@@ -448,7 +526,11 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(firstDownload = pendingDownload)
-            val toggled = NotificationSettingsUiEvent.OnToggled(NotificationType.INVITES, isEnabled = true)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // When
             viewModel.onEvent(toggled)
@@ -504,20 +586,300 @@ class NotificationSettingsViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN the permission denied WHEN an In app notice is turned off THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(listOf(Triple(NotificationType.BILLS, NotificationChannel.IN_APP, false)), preferences.updates)
+            assertFalse(viewModel.uiState.value.isEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+            assertTrue(viewModel.uiState.value.isEnabled(NotificationType.PAYMENTS, NotificationChannel.IN_APP))
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission denied WHEN an In app notice is turned on THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.DENIED,
+                savedInApp = emptySet(),
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.COMMENTS,
+                NotificationChannel.IN_APP,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(Triple(NotificationType.COMMENTS, NotificationChannel.IN_APP, true)),
+                preferences.updates,
+            )
+            assertTrue(viewModel.uiState.value.isEnabled(NotificationType.COMMENTS, NotificationChannel.IN_APP))
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission denied WHEN an In app notice is toggled THEN sends its type channel and choice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_toggled" to mapOf<String, Any>(
+                        "type" to NotificationType.BILLS,
+                        "channel" to NotificationChannel.IN_APP,
+                        "is_enabled" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the permission never asked WHEN an In app notice is turned on THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.NOT_DETERMINED,
+                savedInApp = emptySet(),
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PAYMENTS,
+                NotificationChannel.IN_APP,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(Triple(NotificationType.PAYMENTS, NotificationChannel.IN_APP, true)),
+                preferences.updates,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission granted WHEN an In app notice is turned off THEN keeps its Push on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+            assertTrue(state.isEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
+            assertEquals(NotificationPreferences.DEFAULT.push, preferences.preferences.value.push)
+        }
+
+    @Test
+    fun `GIVEN the permission granted WHEN the weekly reminder In app cell is turned on THEN ignores it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BALANCE_REMINDER,
+                NotificationChannel.IN_APP,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission never asked WHEN the weekly reminder In app cell is turned on THEN asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BALANCE_REMINDER,
+                NotificationChannel.IN_APP,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN an In app notice is toggled THEN saves nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = null)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN an In app notice is toggled THEN ignores it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.DENIED,
+                firstDownload = pendingDownload,
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Push refused under a denied permission WHEN the same In app notice is turned off THEN takes it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(
+                    NotificationType.BILLS,
+                    NotificationChannel.PUSH,
+                    isEnabled = false,
+                ),
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(listOf(Triple(NotificationType.BILLS, NotificationChannel.IN_APP, false)), preferences.updates)
+            assertEquals(
+                listOf(NotificationChannel.IN_APP),
+                trackedEvents.map { (_, params) -> params["channel"] },
+            )
+            assertEquals(NotificationPreferences.DEFAULT.push, preferences.preferences.value.push)
+        }
+
     private val pendingDownload = FirstDownloadProgress(
         arrivedGroupCount = 0,
         groupCount = null,
         isWaitingForInternet = false,
     )
 
+    @Test
+    fun `GIVEN the in-app of comments off WHEN turning it back on THEN saves its events read before turning it on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(NotificationType.COMMENTS, NotificationChannel.IN_APP, false),
+            )
+
+            // When
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(NotificationType.COMMENTS, NotificationChannel.IN_APP, true),
+            )
+
+            // Then
+            assertEquals(listOf(NotificationType.COMMENTS), markedReadTypes)
+            assertTrue(NotificationType.COMMENTS in preferences.preferences.value.inApp)
+        }
+
+    @Test
+    fun `GIVEN the permission granted WHEN turning a push on or an in-app off THEN marks nothing read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(
+                    NotificationType.PEOPLE_AND_GROUPS,
+                    NotificationChannel.PUSH,
+                    true,
+                ),
+            )
+            viewModel.onEvent(
+                NotificationSettingsUiEvent.OnToggled(NotificationType.BILLS, NotificationChannel.IN_APP, false),
+            )
+
+            // Then
+            assertTrue(markedReadTypes.isEmpty())
+        }
+
     private fun TestScope.prepareScenario(
-        saved: Set<NotificationType> = NotificationPreferences.DEFAULT.enabledTypes,
+        saved: Set<NotificationType> = NotificationPreferences.DEFAULT.push,
+        savedInApp: Set<NotificationType> = NotificationPreferences.DEFAULT.inApp,
         permission: NotificationPermission? = NotificationPermission.GRANTED,
         insideProfile: Boolean = false,
         firstDownload: FirstDownloadProgress? = null,
     ) {
         this@NotificationSettingsViewModelTest.firstDownload = MutableStateFlow(firstDownload)
-        preferences = FakeNotificationPreferencesRepository(initialPreferences = NotificationPreferences(saved))
+        preferences =
+            FakeNotificationPreferencesRepository(
+                initialPreferences = NotificationPreferences(
+                    push = saved,
+                    inApp = savedInApp,
+                ),
+            )
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(Route.Profile)
             if (!insideProfile) it.navigate(Route.NotificationSettings)
@@ -526,6 +888,10 @@ class NotificationSettingsViewModelTest {
             trackEvent = { name, params -> trackedEvents += name to params },
             navigator = navigator,
             updateNotificationPreference = UpdateNotificationPreferenceUseCase(preferences),
+            markActivityTypeRead = MarkActivityTypeRead { type ->
+                markedReadTypes += type
+                Result.success(Unit)
+            },
             observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),
             observeFirstDownload = ObserveFirstDownload { this@NotificationSettingsViewModelTest.firstDownload },
         )

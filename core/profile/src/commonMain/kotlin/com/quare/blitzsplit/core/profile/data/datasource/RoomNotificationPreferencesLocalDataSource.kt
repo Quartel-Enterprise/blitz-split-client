@@ -27,6 +27,13 @@ class RoomNotificationPreferencesLocalDataSource(
             paymentMarked = entity.paymentMarked,
             settleReminders = entity.settleReminders,
             invites = entity.invites,
+            comments = entity.comments,
+            paymentRequests = entity.paymentRequests,
+            inAppBills = entity.inAppBills,
+            inAppPayments = entity.inAppPayments,
+            inAppComments = entity.inAppComments,
+            inAppPeopleAndGroups = entity.inAppPeopleAndGroups,
+            inAppPaymentRequests = entity.inAppPaymentRequests,
             remoteUpdatedAt = entity.updatedAt,
             ownerUserId = requireNotNull(entity.ownerUserId),
         )

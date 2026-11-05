@@ -26,6 +26,8 @@ sealed interface ActivityUiEvent : UiEvent {
              */
             OnFilterClicked -> EventAnalytics.Manual("activity_filter_clicked")
 
+            OnNotificationSettingsClicked -> EventAnalytics.Manual("activity_notification_settings_clicked")
+
             is OnItemClicked -> EventAnalytics.Manual("activity_item_clicked")
 
             is OnOpenTargetClicked -> EventAnalytics.Manual("activity_open_target_clicked")
@@ -63,6 +65,9 @@ sealed interface ActivityUiEvent : UiEvent {
     data class OnDetailPaneChanged(
         val isShown: Boolean,
     ) : ActivityUiEvent
+
+    // Why: the bar's "Notification settings", the same screen as the profile's Notifications.
+    data object OnNotificationSettingsClicked : ActivityUiEvent
 
     // Why: marks it read, then opens what it is about, or picks it beside the list.
     data class OnItemClicked(

@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
@@ -3102,7 +3103,8 @@ class SyncCoordinatorTest {
             coordinator.start()
             runCurrent()
             notificationPreferences.updatePreference(
-                type = NotificationType.INVITES,
+                type = NotificationType.PEOPLE_AND_GROUPS,
+                channel = NotificationChannel.PUSH,
                 isEnabled = true,
             )
             runCurrent()
@@ -3173,7 +3175,8 @@ class SyncCoordinatorTest {
 
         // When
         notificationPreferences.updatePreference(
-            type = NotificationType.NEW_EXPENSE,
+            type = NotificationType.BILLS,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
         runCurrent()
@@ -3194,7 +3197,8 @@ class SyncCoordinatorTest {
             runCurrent()
             notificationPreferences.pushError = IllegalStateException("no answer")
             notificationPreferences.updatePreference(
-                type = NotificationType.INVITES,
+                type = NotificationType.PEOPLE_AND_GROUPS,
+                channel = NotificationChannel.PUSH,
                 isEnabled = true,
             )
             runCurrent()
@@ -3203,7 +3207,8 @@ class SyncCoordinatorTest {
 
             // When
             notificationPreferences.updatePreference(
-                type = NotificationType.SETTLE_REMINDERS,
+                type = NotificationType.BALANCE_REMINDER,
+                channel = NotificationChannel.PUSH,
                 isEnabled = false,
             )
             runCurrent()
@@ -3224,7 +3229,8 @@ class SyncCoordinatorTest {
         coordinator.start()
         runCurrent()
         notificationPreferences.updatePreference(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
         runCurrent()
@@ -3250,7 +3256,8 @@ class SyncCoordinatorTest {
 
         // When
         notificationPreferences.updatePreference(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
         runCurrent()
@@ -3270,7 +3277,8 @@ class SyncCoordinatorTest {
 
         // When
         notificationPreferences.updatePreference(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
         runCurrent()
@@ -6953,7 +6961,11 @@ class SyncCoordinatorTest {
         addedAt = 2L,
     )
 
-    private val invitesOnly = NotificationPreferences(setOf(NotificationType.INVITES))
+    private val invitesOnly =
+        NotificationPreferences(
+            push = setOf(NotificationType.PEOPLE_AND_GROUPS),
+            inApp = NotificationPreferences.DEFAULT.inApp,
+        )
 
     private val trip = group(
         id = "trip",

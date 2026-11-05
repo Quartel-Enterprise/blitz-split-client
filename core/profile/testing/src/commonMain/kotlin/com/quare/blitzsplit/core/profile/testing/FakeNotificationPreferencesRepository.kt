@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.profile.testing
 
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
@@ -13,7 +14,7 @@ class FakeNotificationPreferencesRepository(
 ) : NotificationPreferencesRepository {
     val preferences = MutableStateFlow(initialPreferences)
     val hasPendingChanges = MutableStateFlow(false)
-    val updates = mutableListOf<Pair<NotificationType, Boolean>>()
+    val updates = mutableListOf<Triple<NotificationType, NotificationChannel, Boolean>>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var pushError: Throwable? = null
@@ -27,11 +28,11 @@ class FakeNotificationPreferencesRepository(
 
     override suspend fun updatePreference(
         type: NotificationType,
+        channel: NotificationChannel,
         isEnabled: Boolean,
     ) {
-        updates += type to isEnabled
-        val current = preferences.value.enabledTypes
-        preferences.value = NotificationPreferences(if (isEnabled) current + type else current - type)
+        updates += Triple(type, channel, isEnabled)
+        preferences.value = preferences.value.with(type, channel, isEnabled)
         hasPendingChanges.value = true
     }
 
