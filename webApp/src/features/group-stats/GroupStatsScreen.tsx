@@ -1,6 +1,6 @@
 import { ArrowLeft, BarChart3, CalendarDays, Check, ChevronDown, ChevronRight, LineChart, ReceiptText } from 'lucide-react'
 import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption, type JsStatsSettling } from 'blitzsplit-shared'
-import { useId, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, PersonButton, segmentClass } from '@/components/common'
 import { controlClass } from '@/components/fields'
@@ -502,25 +502,38 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
   )
 }
 
-/** The dashed line's legend: hovering or tapping it explains what the line is. */
+/** The dashed line's legend: the pointer over it, or a click, explains what the line is. */
 function AverageLegend({ label, amount }: { label: string; amount: string }) {
   // Why: a click pins the hint, so the pointer leaving the row doesn't close what it opened.
   const [mode, setMode] = useState<'closed' | 'hovered' | 'pinned'>('closed')
   const hintId = useId()
+  const hint = t('stats_averageHint')
+  const closeTimer = useRef<number | undefined>(undefined)
+  const keepOpen = () => window.clearTimeout(closeTimer.current)
+  // Why: a short grace lets the pointer cross the gap to the hint and rest on it, to select its text.
+  const closeHoverSoon = () => {
+    keepOpen()
+    closeTimer.current = window.setTimeout(() => setMode((current) => (current === 'hovered' ? 'closed' : current)), 150)
+  }
+  useEffect(() => keepOpen, [])
   return (
-    <Popover open={mode !== 'closed'} onOpenChange={(next) => setMode(next ? 'pinned' : 'closed')}>
+    <Popover open={mode !== 'closed'} onOpenChange={(next) => !next && setMode('closed')}>
       <PopoverTrigger asChild>
         <button
           type="button"
           // Why: the focus stays on the row, so a screen reader hears the hint as its description.
           aria-describedby={hintId}
-          // Why: the hover already opened it, so a click keeps it open instead of toggling it shut.
+          // Why: the hover already opened it, so a click pins it, and a click on a pinned one closes it.
           onClick={(event) => {
             event.preventDefault()
-            setMode('pinned')
+            keepOpen()
+            setMode((current) => (current === 'pinned' ? 'closed' : 'pinned'))
           }}
-          onMouseEnter={() => setMode((current) => (current === 'closed' ? 'hovered' : current))}
-          onMouseLeave={() => setMode((current) => (current === 'hovered' ? 'closed' : current))}
+          onMouseEnter={() => {
+            keepOpen()
+            setMode((current) => (current === 'closed' ? 'hovered' : current))
+          }}
+          onMouseLeave={closeHoverSoon}
           className="flex w-fit cursor-pointer items-center gap-1 rounded-sm text-[13px] text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           <span aria-hidden className="mr-0.5 w-4 border-t-2 border-dashed border-muted-foreground" />
@@ -528,15 +541,19 @@ function AverageLegend({ label, amount }: { label: string; amount: string }) {
         </button>
       </PopoverTrigger>
       <span id={hintId} hidden>
-        {t('stats_averageHint')}
+        {hint}
       </span>
       <PopoverContent
         align="start"
         aria-label={label}
         className="w-64 p-3 text-xs leading-normal"
         onOpenAutoFocus={(event) => event.preventDefault()}
+        // Why: closing by hover must not pull the keyboard focus from wherever the user was to this row.
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        onMouseEnter={keepOpen}
+        onMouseLeave={closeHoverSoon}
       >
-        {t('stats_averageHint')}
+        {hint}
       </PopoverContent>
     </Popover>
   )

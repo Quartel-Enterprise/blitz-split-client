@@ -42,7 +42,7 @@
     <string name="group_stats_average_week">Average per week:</string>
     <string name="group_stats_average_month">Average per month:</string>
     <string name="group_stats_average_year">Average per year:</string>
-    <string name="group_stats_average_hint">The dashed line on the chart is the average: the total spent divided by every period shown, the empty ones included.</string>
+    <string name="group_stats_average_hint">The darker dashed line across the chart, like the one in this legend, is the average: the total spent divided by every period shown, the empty ones included.</string>
     <string name="group_stats_callout_none">No expenses</string>
     <string name="group_stats_today">today</string>
     <string name="group_stats_aria_day">Spending by day: %s</string>

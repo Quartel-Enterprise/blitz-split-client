@@ -1168,7 +1168,7 @@ export const en = {
   stats_averageWeek: 'Average per week:',
   stats_averageMonth: 'Average per month:',
   stats_averageYear: 'Average per year:',
-  stats_averageHint: 'The dashed line on the chart is the average: the total spent divided by every period shown, the empty ones included.',
+  stats_averageHint: 'The darker dashed line across the chart, like the one in this legend, is the average: the total spent divided by every period shown, the empty ones included.',
   stats_calloutNone: 'No expenses',
   stats_chartKeys: 'Arrow keys read each bar.',
   stats_ariaNothing: 'nothing',

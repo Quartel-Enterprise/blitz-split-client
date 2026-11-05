@@ -95,10 +95,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     The chart reads against up to three dashed value lines at round steps from 0 ("R$ 500", "R$ 1 mil", "R$ 1,5 mil",
     `GroupStatsUiState.chartTicksMinor`), their short amounts on the end side, the top one being the scale's top, and
     a dashed "Average per day" (week, month, year) line: the mean of every bar, the empty ones too
-    (`chartAverageMinor`), named with its amount under the chart, after the most expensive one. Hovering that legend row (the pointer over it on the
-    web and the Mac; tapping or clicking it on every platform, a long press too on Android) opens a hint saying the
-    dashed line is the average of every period shown, the empty ones included; the line on the chart stays
-    non-interactive so it never blocks picking a bar. A bar or point picked
+    (`chartAverageMinor`), named with its amount under the chart, after the most expensive one. The pointer over that
+    legend row (the web, the Mac), or tapping or clicking it (a long press too on Android), opens a hint saying
+    the darker dashed line across the chart is the average of every period shown, the empty ones included. A click or
+    tap keeps the hint open until it is dismissed (a click on the row again, or one elsewhere), and the pointer leaving only closes a hint it opened by hovering;
+    the line on the chart stays non-interactive so it never blocks picking a bar. A bar or point picked
     shows a callout over it with its period, amount and bills ("Oct 28", "R$ 1,458", "3 expenses", or "No
     expenses"), the other bars fading and the line drawing a rule and a bigger point: the mouse or trackpad over it
     (the web, the Mac, Android and iPad with a pointer; a click keeps what hovering picked), a tap that keeps it until

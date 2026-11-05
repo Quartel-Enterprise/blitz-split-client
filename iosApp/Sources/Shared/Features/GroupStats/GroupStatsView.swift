@@ -822,12 +822,15 @@ private struct StatsAverageLegend: View {
     let label: String
     let amount: String
     @State private var isHintShown = false
-    private let hint = String(localized: "The dashed line on the chart is the average: the total spent divided by every period shown, the empty ones included.")
+    // A click keeps the hint open after the pointer leaves, until it is dismissed
+    @State private var isHintPinned = false
+    private let hint = String(localized: "The darker dashed line across the chart, like the one in this legend, is the average: the total spent divided by every period shown, the empty ones included.")
 
     var body: some View {
         Button {
-            // The pointer over it on the Mac already opened it, so a click keeps it open
-            isHintShown = true
+            // On the Mac the click dismisses the hover's popover first, so this pins it again
+            isHintPinned = !isHintShown
+            isHintShown = !isHintShown
         } label: {
             HStack(spacing: 4) {
                 // The dashed line's key, as the chart draws it
@@ -858,9 +861,16 @@ private struct StatsAverageLegend: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .presentationCompactAdaptation(.popover)
         }
+        .onChange(of: isHintShown) { _, isShown in
+            if !isShown { isHintPinned = false }
+        }
         #if os(macOS)
         .onHover { isHovering in
-            isHintShown = isHovering
+            if isHovering {
+                isHintShown = true
+            } else if !isHintPinned {
+                isHintShown = false
+            }
         }
         #endif
     }

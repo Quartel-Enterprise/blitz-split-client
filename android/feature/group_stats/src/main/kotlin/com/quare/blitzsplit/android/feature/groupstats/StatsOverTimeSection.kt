@@ -161,7 +161,7 @@ internal fun StatsOverTimeSection(
 
 /*
  * Why: the dashed average line's key, a short dash in its color before "Average per day: R$ 405". Pointing at it
- * (long press on a touch screen) or tapping it says what the dashed line is.
+ * (long press on a touch screen) or tapping it says what the dashed line is, and it stays until tapped elsewhere.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -170,10 +170,10 @@ private fun StatsAverageLegendRow(
     amount: String,
 ) {
     val color = MaterialTheme.colorScheme.onSurfaceVariant
-    val tooltipState = rememberTooltipState()
+    val tooltipState = rememberTooltipState(isPersistent = true)
     val scope = rememberCoroutineScope()
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below),
         tooltip = { PlainTooltip { Text(stringResource(R.string.group_stats_average_hint)) } },
         state = tooltipState,
     ) {
