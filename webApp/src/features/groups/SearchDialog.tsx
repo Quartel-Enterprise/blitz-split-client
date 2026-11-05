@@ -166,6 +166,8 @@ export function SearchDialog({ search, actions }: { search: JsGroupsSearch; acti
                     role="option"
                     aria-selected={index === activeIndex}
                     onClick={item.open}
+                    // Why: the field keeps the focus, so typing goes on after "Did you mean", which keeps the dialog open.
+                    onMouseDown={(event) => event.preventDefault()}
                     onMouseMove={() => index !== activeIndex && setActive(index)}
                     className={cn('flex h-10 cursor-pointer items-center gap-2.5 rounded-md px-2 text-sm', index === activeIndex && 'bg-muted')}
                   >

@@ -377,4 +377,35 @@ class TypoTolerantQueryTest {
             found,
         )
     }
+
+    @Test
+    fun `GIVEN a query without typos WHEN searching a name one letter off THEN finds nothing`() {
+        // Given
+        val query = TypoTolerantQuery.of("larisa").withoutTypos()
+
+        // When
+        val found = query.findIn("Larissa")
+
+        // Then
+        assertNull(found)
+    }
+
+    @Test
+    fun `GIVEN a query without typos WHEN searching the words of a name in another order THEN still finds them`() {
+        // Given
+        val query = TypoTolerantQuery.of("silva lari").withoutTypos()
+
+        // When
+        val found = query.findIn("Larissa Silva")
+
+        // Then
+        assertEquals(
+            TypoTolerantQuery.Found(
+                start = 0,
+                end = 13,
+                typos = 0,
+            ),
+            found,
+        )
+    }
 }

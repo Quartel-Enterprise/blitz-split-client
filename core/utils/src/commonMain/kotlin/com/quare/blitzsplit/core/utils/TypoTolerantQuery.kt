@@ -10,6 +10,7 @@ package com.quare.blitzsplit.core.utils
 class TypoTolerantQuery private constructor(
     private val folded: String,
     private val words: List<String>,
+    private val allowsTypos: Boolean,
 ) {
     // Why: where the text matched, end excluded, at the same place in the text shown since folding keeps the length.
     data class Found(
@@ -24,6 +25,9 @@ class TypoTolerantQuery private constructor(
 
     val isEmpty: Boolean
         get() = folded.isEmpty()
+
+    // Why: only the exact finds, without the typo tables, so a search pays for typos only when nothing is exact.
+    fun withoutTypos(): TypoTolerantQuery = TypoTolerantQuery(folded, words, allowsTypos = false)
 
     // Why: null when the query is empty or the text is too far from it.
     fun findIn(text: String): Found? {
@@ -55,7 +59,7 @@ class TypoTolerantQuery private constructor(
         text: String,
         textWords: List<IntRange>,
     ): Found? {
-        val allowed = allowedTyposOf(word.length)
+        val allowed = if (allowsTypos) allowedTyposOf(word.length) else 0
         var closest: Found? = null
         for (range in textWords) {
             val startsWithWord = range.last + 1 - range.first >= word.length &&
@@ -80,6 +84,7 @@ class TypoTolerantQuery private constructor(
             return TypoTolerantQuery(
                 folded = folded,
                 words = wordRangesOf(folded).map { folded.substring(it.first, it.last + 1) },
+                allowsTypos = true,
             )
         }
 

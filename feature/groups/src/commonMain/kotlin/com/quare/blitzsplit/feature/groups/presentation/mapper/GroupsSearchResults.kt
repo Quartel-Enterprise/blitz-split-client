@@ -52,29 +52,43 @@ internal fun searchResultsOf(
     val billGroups = ordered
         .filter { (row, _) -> scope == SearchScope.BILLS || !row.isSettled }
         .map { (_, item) -> item }
-    val groupHits = if (scope.isLookingAt(SearchScope.GROUPS)) groupHitsOf(ordered, typed) else emptyList()
-    val personHits = if (scope.isLookingAt(SearchScope.PEOPLE)) personHitsOf(ordered, typed) else emptyList()
-    val billHits = if (scope.isLookingAt(SearchScope.BILLS)) billHitsOf(billGroups, typed) else emptyList()
-    val found: List<Searched<*>> = groupHits + personHits + billHits
+    fun sectionsOf(pass: TypoTolerantQuery): SectionHits = SectionHits(
+        groups = if (scope.isLookingAt(SearchScope.GROUPS)) groupHitsOf(ordered, pass) else emptyList(),
+        people = if (scope.isLookingAt(SearchScope.PEOPLE)) personHitsOf(ordered, pass) else emptyList(),
+        bills = if (scope.isLookingAt(SearchScope.BILLS)) billHitsOf(billGroups, pass) else emptyList(),
+    )
+
     // Why: what holds the text typed is what was looked for; only when nothing does, what comes close, under "Did you mean".
-    if (found.any { it.isExact }) {
-        val people = personHits.filter { it.isExact }
+    val exact = sectionsOf(typed.withoutTypos())
+    if (!exact.isEmpty) {
         return GroupsSearchResults(
-            groups = groupHits.filter { it.isExact }.map { it.hit },
-            contacts = contactHitsOf(people, ordered),
-            people = people.map { it.hit.hit },
-            bills = billHits.filter { it.isExact }.map { it.hit },
+            groups = exact.groups.map { it.hit },
+            contacts = contactHitsOf(exact.people, ordered),
+            people = exact.people.map { it.hit.hit },
+            bills = exact.bills.map { it.hit },
             suggestion = null,
         )
     }
-    val people = personHits.sortedBy { it.typos }
+    val close = sectionsOf(typed)
+    val closeHits: List<Searched<*>> = close.groups + close.people + close.bills
+    val people = close.people.sortedBy { it.typos }
     return GroupsSearchResults(
-        groups = groupHits.toClosestFirst(),
+        groups = close.groups.toClosestFirst(),
         contacts = contactHitsOf(people, ordered),
         people = people.map { it.hit.hit },
-        bills = billHits.toClosestFirst(),
-        suggestion = found.minByOrNull { it.typos }?.foundText,
+        bills = close.bills.toClosestFirst(),
+        suggestion = closeHits.minByOrNull { it.typos }?.foundText,
     )
+}
+
+// Why: each section's hits for one pass, the exact one or, when it finds nothing, the one forgiving typos.
+private class SectionHits(
+    val groups: List<Searched<SearchGroupHit>>,
+    val people: List<Searched<PersonHit>>,
+    val bills: List<Searched<SearchBillHit>>,
+) {
+    val isEmpty: Boolean
+        get() = groups.isEmpty() && people.isEmpty() && bills.isEmpty()
 }
 
 private fun SearchScope.isLookingAt(section: SearchScope): Boolean = this == SearchScope.ALL || this == section
@@ -134,10 +148,11 @@ private fun closestBillHitOf(
     item: GroupWithMoney,
     typed: TypoTolerantQuery,
 ): Searched<SearchGroupHit>? = item.expenses
-    .sortedByDescending { it.spentAt }
     .mapNotNull { expense -> typed.findIn(expense.description)?.let { expense to it } }
-    .minByOrNull { (_, found) -> found.typos }
-    ?.let { (expense, found) ->
+    .minWithOrNull(
+        compareBy<Pair<Expense, TypoTolerantQuery.Found>> { (_, found) -> found.typos }
+            .thenByDescending { (expense, _) -> expense.spentAt },
+    )?.let { (expense, found) ->
         searchedOf(
             hit = SearchGroupHit(
                 group = row,
