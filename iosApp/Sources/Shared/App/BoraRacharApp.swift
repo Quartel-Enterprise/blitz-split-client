@@ -34,7 +34,7 @@ struct BoraRacharApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(app: app)
-                .environment(\.locale, AppLocale.of(app.language))
+                .appLocale(app.language)
                 // Drawn again in a language picked, as Android opens its activity again: titles and the strings
                 // views read once take it too, and the shared back stack puts back where the person was
                 .id(app.language)
@@ -67,7 +67,7 @@ struct BoraRacharApp: App {
         // Ajustes (⌘,): the profile, as the canvas draws it on the Mac, and Categories, the category map (9.1)
         Settings {
             SettingsView(app: app)
-                .environment(\.locale, AppLocale.of(app.language))
+                .appLocale(app.language)
                 .id(app.language)
         }
         #endif

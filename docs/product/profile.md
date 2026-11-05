@@ -63,7 +63,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     under it) and a radio, a bottom sheet on a phone, a 560 dp dialog anywhere wider, a book's right half; a pick
     closes it and the app draws again in it (Android 13 and later on their own, the activity opening again before).
     The Apple apps pick it in Preferences' menu, Settings on the Mac, and every window redraws in it at once
-    (`AppLocale`); what the system formats itself (dates, amounts) follows at the next launch. The web picks it in
+    (`AppLocale`, and every `String(localized:)` reading `bundle: .appLanguage`); what the system formats itself
+    (dates, amounts) and Spain's own words in SwiftUI's literals follow at the next launch. The web picks it in
     the Appearance card's segments and reloads the page in it.
   - "Dynamic colors" (Material You) shows in Appearance only where the platform draws a scheme from the wallpaper,
     Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off by default, it swaps the

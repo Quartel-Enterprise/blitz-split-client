@@ -1,5 +1,6 @@
 import Foundation
 import Shared
+import SwiftUI
 
 /// Profile › Language on the Apple apps. The shared code keeps the pick in the app's own AppleLanguages, which the
 /// system only reads at the next launch, so the app also draws in it at once: SwiftUI's literals through the windows'
@@ -8,8 +9,15 @@ enum AppLocale {
     /// The `.lproj` of the language picked; nil before the first `apply`.
     nonisolated(unsafe) fileprivate static var strings: Bundle?
 
-    static func of(_ language: AppLanguage) -> Locale {
-        Locale(identifier: identifier(of: language))
+    /// Nil for the language the app launched in, whose lookup the system does itself, reading a variant (es-ES) over
+    /// its language (es): an explicit locale, even that one, makes SwiftUI read its `.lproj` alone, English for every
+    /// word a variant doesn't override. A variant picked since draws its language's words until the next launch.
+    static func of(_ language: AppLanguage) -> Locale? {
+        let identifier = identifier(of: language)
+        if identifier == Bundle.main.preferredLocalizations.first { return nil }
+        let base = String(identifier.prefix { $0 != "-" })
+        let hasBase = base != identifier && Bundle.main.url(forResource: base, withExtension: "lproj") != nil
+        return Locale(identifier: hasBase ? base : identifier)
     }
 
     /// Called before the windows draw in `language`, at launch and on each pick.
@@ -65,6 +73,18 @@ enum AppLocale {
     private static func dictionary(at url: URL) -> [String: Any] {
         guard let data = try? Data(contentsOf: url) else { return [:] }
         return (try? PropertyListSerialization.propertyList(from: data, format: nil)) as? [String: Any] ?? [:]
+    }
+}
+
+extension View {
+    /// The windows' `locale` for Profile › Language, left as the system's for the language the app launched in.
+    @ViewBuilder
+    func appLocale(_ language: AppLanguage) -> some View {
+        if let locale = AppLocale.of(language) {
+            environment(\.locale, locale)
+        } else {
+            self
+        }
     }
 }
 
