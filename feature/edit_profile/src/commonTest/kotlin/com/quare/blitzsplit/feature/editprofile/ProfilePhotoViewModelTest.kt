@@ -196,6 +196,20 @@ class ProfilePhotoViewModelTest {
         }
 
     @Test
+    fun `GIVEN the viewer WHEN the backdrop and the close button both dismiss it THEN only the viewer closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ProfilePhotoUiEvent.OnDismissed)
+            viewModel.onEvent(ProfilePhotoUiEvent.OnDismissed)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the viewer WHEN dismissing THEN goes back to the profile`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

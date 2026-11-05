@@ -35,7 +35,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     scrolled to the comment and highlighted, after a sync of a few seconds as a push notification's tap
     (`Route.BillDetail.focusCommentId`); a deleted comment opens Bill with "That comment was deleted.", a deleted
     bill its group's Expenses with "This bill was deleted", and someone outside the group (or without a profile)
-    gets "You're not in this group" with "Go to home" (offline: "No internet", `BillLinkNotice`). A comment's
+    gets "You're not in this group" with "Go to home" (offline: "No internet", `BillLinkNotice`). Once the person has moved
+    on from Groups while the link was being checked, it opens and says nothing, so nothing covers what they opened. A comment's
     tap in Activity scrolls Bill to it too. "History" lists what was done to the bill, by day,
     the most recent first, never the comments: created ("Equally among 5 · R$ 312", "created the bill offline"
     while it waits to go up), each edit's first change with the others under it ("changed the category", "changed the

@@ -129,15 +129,27 @@ final class AppModel {
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
         get {
-            pathEntries.filter { !isHiddenUnderScreen($0) }
+            let entries = pathEntries
+            let hidden = hiddenUnderScreen(entries)
+            return entries.indices.filter { !hidden[$0] }.map { entries[$0] }
         }
         set {
-            guard newValue.count < path.count else { return }
+            let hidden = hiddenUnderScreen(pathEntries)
+            let visible = hidden.indices.filter { !hidden[$0] }
+            guard newValue.count < visible.count else { return }
             // Keeps a hidden bill or payment right under the first entry popped, so it shows again
-            let entries = pathEntries
-            let visible = entries.indices.filter { !isHiddenUnderScreen(entries[$0]) }
             holder.viewModel.navigator.popTo(size: Int32(visible[newValue.count] + 1))
         }
+    }
+
+    /// Which entries `isHiddenUnderScreen` leaves out of the path, with what is pushed inside a sheet left out: the
+    /// category map inside Split a bill's sheet hides with it, rather than drawing as a page of its own.
+    private func hiddenUnderScreen(_ entries: [AppRoute]) -> [Bool] {
+        var hidden: [Bool] = []
+        for route in entries {
+            hidden.append(isHiddenUnderScreen(route) || (route.pushesInSheet && hidden.last == true))
+        }
+        return hidden
     }
 
     private var pathEntries: [AppRoute] {
@@ -149,7 +161,10 @@ final class AppModel {
     /// A bill drawn outside the window's stack (a sheet with an iPad's room, the Mac's inspector) or Record payment's
     /// sheet under a screen it opened (a person's profile, item 18): it is never pushed as a page, so it closes while
     /// that screen shows, with whatever sheet that screen opens over the window, and opens again once it is popped. An
-    /// iPhone pushes the bill. Any other sheet keeps its own way under a pushed screen.
+    /// iPhone pushes the bill. So does any screen that only ever draws as a sheet or over the whole screen
+    /// (`AppRoute.drawsOnlyAsModal`: Edit group, the invite reader…), which a link or the update prompt opened over: no
+    /// tab can push it as a page. A key and the profile's editor, sheets with an iPad's room, keep their page under a
+    /// pushed screen.
     private func isHiddenUnderScreen(_ route: AppRoute) -> Bool {
         switch route {
         case .billDetail:
@@ -158,10 +173,8 @@ final class AppModel {
             #else
             return presentsAsSheet(route)
             #endif
-        case .registerPayment, .settleUp:
-            return presentsAsSheet(route)
         default:
-            return false
+            return route.drawsOnlyAsModal
         }
     }
 

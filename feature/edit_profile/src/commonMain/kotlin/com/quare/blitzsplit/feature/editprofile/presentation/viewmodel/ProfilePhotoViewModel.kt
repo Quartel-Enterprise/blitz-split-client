@@ -8,6 +8,8 @@ import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
@@ -135,7 +137,8 @@ class ProfilePhotoViewModel(
                 trackEvent("photo_removed", mapOf("source" to PROFILE_PHOTO_SOURCE))
             }
 
-            ProfilePhotoUiEvent.OnDismissed -> navigator.navigateBack()
+            // Why: the backdrop and the close button both dismiss it, and only the first closes it.
+            ProfilePhotoUiEvent.OnDismissed -> navigator.navigateBackFrom(Route.ProfilePhoto)
         }
     }
 

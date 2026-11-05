@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
@@ -182,6 +183,21 @@ class JoinInviteViewModel(
         if (observeGroup(groupId).first() == null) {
             showUnreachable()
         } else if (isOnTop()) {
+            openGroupOnce(groupId)
+        }
+    }
+
+    /*
+     * Why: the group's own link, tapped while the group is open right under it, goes back to it, so the group never
+     * stacks over itself. Under anything else (a half-typed bill over the group) the group takes the link's place, and
+     * what was under it stays.
+     */
+    private fun openGroupOnce(groupId: String) {
+        val stack = navigator.backStack.value
+        val below = stack.getOrNull(stack.lastIndex - 1)
+        if (below != null && groupScreenIdOrNull(below) == groupId) {
+            navigator.navigateBack()
+        } else {
             navigator.replaceTop(
                 Route.GroupDetail(
                     groupId,

@@ -41,8 +41,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        // Why: a recreated activity keeps the intent that launched it, an old callback or link by now.
-        if (savedInstanceState == null) handleLink(intent)
+        /*
+         * Why: a recreated activity keeps the intent that launched it, an old callback or link by now, and so does
+         * one Recents starts again after back closed it.
+         */
+        val isFromRecents = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0
+        if (savedInstanceState == null && !isFromRecents) handleLink(intent)
         setContent {
             val appViewModel: AppViewModel = koinViewModel()
             val theme by appViewModel.theme.collectAsStateWithLifecycle()

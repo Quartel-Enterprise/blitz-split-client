@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import org.koin.mp.KoinPlatform
 
 // Why: "5 pagamentos em vez de 7" (13.1, 13.4), while the group's "Simplificar dívidas" is on.
@@ -49,13 +50,13 @@ internal fun toJsSimplifyConflict(notice: SimplifyDebtsConflictNotice): JsSimpli
 class SimplifyDebtsInfoPresenter(
     route: JsRoute,
 ) {
-    private val currencyOfRoute = (route.route as Route.SimplifyDebtsInfo).currency
+    private val infoRoute = route.route as Route.SimplifyDebtsInfo
 
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator, which the example's amounts take.
-    val currency: String = currencyOfRoute.code
-    val fractionDigits: Int = currencyOfRoute.fractionDigits
+    val currency: String = infoRoute.currency.code
+    val fractionDigits: Int = infoRoute.currency.fractionDigits
 
     fun close() {
-        KoinPlatform.getKoin().get<Navigator>().navigateBack()
+        KoinPlatform.getKoin().get<Navigator>().navigateBackFrom(infoRoute)
     }
 }

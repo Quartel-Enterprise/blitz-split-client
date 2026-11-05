@@ -7,12 +7,12 @@ import {
   type JsPaymentRow,
   type JsRoute,
 } from 'blitzsplit-shared'
-import { useEffect, type ReactNode } from 'react'
+import { useContext, useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
-import type { HomeTab } from '@/components/HomeShell'
+import { PageKeyContext, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils'
 import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
 import { GroupPage, GroupPageSkeleton } from './GroupPage'
+import { pickedTabOf, rememberPickedTab } from './pickedTabs'
 import { PendingDot, pendingSurfaceClass } from '@/components/common'
 
 // Why: the canvas's columns, the bill, its total and what it does to your balance; the phone folds the total into the meta.
@@ -44,6 +45,16 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const members = useMembers(route)
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
+  // Why: back from a page the group opened draws the group anew, on the tab picked before it.
+  const pageKey = useContext(PageKeyContext)
+  useEffect(() => {
+    const picked = pickedTabOf(pageKey)
+    if (presenter && picked && picked !== route.groupTab) presenter.restoreTab(picked)
+  }, [presenter, pageKey, route.groupTab])
+  const pickedTab = state?.tab
+  useEffect(() => {
+    if (pickedTab) rememberPickedTab(pageKey, pickedTab)
+  }, [pageKey, pickedTab])
   // Why: state, not an action, so it waits for this screen while the bill's panel still covers it.
   const showsBillDeletedNotice = state?.showsBillDeletedNotice === true
   useEffect(() => {

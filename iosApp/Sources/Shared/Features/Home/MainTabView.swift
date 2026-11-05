@@ -179,7 +179,7 @@ struct MainTabView: View {
         case .home: model.send(GroupsUiEventOnHomeTabClicked.shared)
         case .balances: model.send(GroupsUiEventOnBalancesTabClicked.shared)
         case .contacts: model.send(GroupsUiEventOnContactsTabClicked.shared)
-        case .search: model.send(GroupsUiEventOnSearchOpened.shared)
+        case .search: model.send(GroupsUiEventOnSearchTabClicked.shared)
         case .groups:
             if showsSearchTab {
                 model.send(GroupsUiEventOnSearchTabLeft.shared)

@@ -1232,6 +1232,22 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN the page drawn anew WHEN the tab picked before comes back THEN picks it and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnTabRestored(GroupTab.BALANCES))
+
+            // Then
+            assertEquals(GroupTab.BALANCES, viewModel.uiState.value.tab)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN Saldos picked WHEN tapping back THEN leaves the group`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

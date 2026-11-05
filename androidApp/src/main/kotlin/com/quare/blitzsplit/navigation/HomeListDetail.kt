@@ -91,11 +91,11 @@ internal fun homeListDetailOf(
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 internal fun homeListPaneMetadataOf(
     listDetail: ListDetailLayout?,
-    isHomeEmpty: Boolean,
+    isHomeEmpty: () -> Boolean,
 ): Map<String, Any> {
     val listPane = ListDetailSceneStrategy.listPane(
         detailPlaceholder = {
-            if (isHomeEmpty) NoGroupOpenPane() else DetailPlaceholderPane()
+            if (isHomeEmpty()) NoGroupOpenPane() else DetailPlaceholderPane()
         },
     ) + metadata { put(HomeListPaneKey, true) }
     if (listDetail == null) return listPane

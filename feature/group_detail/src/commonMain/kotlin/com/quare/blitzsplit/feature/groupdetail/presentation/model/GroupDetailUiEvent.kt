@@ -22,6 +22,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             is OnTabSelected -> EventAnalytics.Automatic("group_tab_clicked", mapOf("tab" to tab))
 
+            // Why: no tap, the tab already picked coming back with the page.
+            is OnTabRestored -> EventAnalytics.NotTracked
+
             /*
              * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
              * where it went is its screen view.
@@ -105,6 +108,14 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: Despesas, Saldos or Membros under the header, and the faces under the name (Membros).
     data class OnTabSelected(
+        val tab: GroupTab,
+    ) : GroupDetailUiEvent
+
+    /*
+     * Why: the web draws only the top page, so a page the group opens (Estatísticas, a person's profile) drops the
+     * group's, and back draws it anew: the tab picked before comes back with it.
+     */
+    data class OnTabRestored(
         val tab: GroupTab,
     ) : GroupDetailUiEvent
 

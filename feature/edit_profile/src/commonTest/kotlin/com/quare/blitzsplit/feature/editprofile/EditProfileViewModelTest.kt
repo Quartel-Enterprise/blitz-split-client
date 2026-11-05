@@ -983,6 +983,20 @@ class EditProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN the editor pushed on a phone WHEN going back twice THEN only the editor closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the editor pushed on a phone WHEN going back THEN returns to the profile`() = runTest(testDispatcher) {
         // Given
         prepareScenario(pushed = true)

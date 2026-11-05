@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
@@ -206,7 +207,7 @@ class ProfileViewModel(
 
     override fun handleEvent(event: ProfileUiEvent) {
         when (event) {
-            ProfileUiEvent.OnBackClicked -> navigator.navigateBack()
+            ProfileUiEvent.OnBackClicked -> navigator.navigateBackFrom(Route.Profile)
 
             ProfileUiEvent.OnEditClicked -> navigator.navigate(Route.EditProfile)
 

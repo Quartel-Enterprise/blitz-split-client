@@ -319,6 +319,56 @@ class JoinInviteViewModelTest {
         }
 
     @Test
+    fun `GIVEN the group open under the link WHEN a member opens it THEN goes back to the group`() =
+        runTest(testDispatcher) {
+            // Given
+            val openGroup = Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.MEMBERS,
+            )
+            prepareScenario(
+                invite = trip.copy(isMember = true),
+                storedGroup = tripGroup,
+                under = listOf(Route.Home, Route.Groups, openGroup),
+            )
+
+            // When
+            val backStack = navigator.backStack.value
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, openGroup), backStack)
+        }
+
+    @Test
+    fun `GIVEN a bill being split over the group WHEN a member opens the link THEN the group opens over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            val openGroup = Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+            )
+            val splitBill = Route.SplitBill(
+                GROUP_ID,
+                expenseId = null,
+                picksGroupFirst = false,
+                scansReceipt = false,
+            )
+            prepareScenario(
+                invite = trip.copy(isMember = true),
+                storedGroup = tripGroup,
+                under = listOf(Route.Home, Route.Groups, openGroup, splitBill),
+            )
+
+            // When
+            val backStack = navigator.backStack.value
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, openGroup, splitBill, openGroup), backStack)
+        }
+
+    @Test
     fun `GIVEN this account already joined from another device WHEN the link opens THEN syncs then opens the group`() =
         runTest(testDispatcher) {
             // Given

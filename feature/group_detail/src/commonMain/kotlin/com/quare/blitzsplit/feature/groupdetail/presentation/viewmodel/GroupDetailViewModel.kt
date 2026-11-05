@@ -214,6 +214,8 @@ class GroupDetailViewModel(
 
             is GroupDetailUiEvent.OnTabSelected -> selectTab(event.tab)
 
+            is GroupDetailUiEvent.OnTabRestored -> selectTab(event.tab)
+
             is GroupDetailUiEvent.OnRailTabClicked -> screen.openHomeTab(event.tab)
 
             GroupDetailUiEvent.OnRailSearchClicked -> if (screen.openSearch()) {
