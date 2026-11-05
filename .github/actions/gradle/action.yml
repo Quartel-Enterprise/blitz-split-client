@@ -8,6 +8,12 @@ inputs:
       configuration cache is discarded between runs, so every job pays full configuration time.
     required: false
     default: ''
+  kotlin-native:
+    description: >-
+      'true' for a job that compiles Kotlin/Native: caches the Kotlin/Native toolchain (~/.konan) and
+      fits the Gradle and Kotlin daemons' heaps to a macOS runner.
+    required: false
+    default: 'false'
 
 runs:
   using: "composite"
@@ -29,3 +35,37 @@ runs:
     - name: Make gradlew executable
       shell: bash
       run: chmod +x ./gradlew
+
+    # A hosted macOS runner has 7 GB of memory, less than gradle.properties' 8 GB Gradle heap and 4 GB
+    # Kotlin daemon: at full size, linking the Kotlin/Native binaries swaps or gets the daemon killed.
+    # ~/.gradle/gradle.properties wins over the project's, and the Gradle run of Xcode's build phase
+    # reads it too.
+    - name: Fit the Gradle heaps to the runner
+      if: inputs.kotlin-native == 'true' && runner.os == 'macOS'
+      shell: bash
+      run: |
+        mkdir -p ~/.gradle
+        printf 'org.gradle.jvmargs=-Xmx3g -Dfile.encoding=UTF-8\nkotlin.daemon.jvmargs=-Xmx2g\n' >> ~/.gradle/gradle.properties
+
+    # The toolchain only changes with the Kotlin version, so that is the key. As with Gradle's cache,
+    # only main saves it: an entry a pull request saves is readable by that branch alone, and a
+    # gigabyte each would push main's entries out of the repository's cache.
+    - name: Read the Kotlin version
+      id: kotlin
+      if: inputs.kotlin-native == 'true'
+      shell: bash
+      run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache the Kotlin/Native toolchain
+      if: inputs.kotlin-native == 'true' && github.ref == 'refs/heads/main'
+      uses: actions/cache@v5
+      with:
+        path: ~/.konan
+        key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
+
+    - name: Restore the Kotlin/Native toolchain
+      if: inputs.kotlin-native == 'true' && github.ref != 'refs/heads/main'
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.konan
+        key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
