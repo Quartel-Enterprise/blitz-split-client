@@ -38,6 +38,7 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 | `activity` | `is_person` (one person's history) |
 | `join_invite` | `is_personal` (a personal link) |
 | `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
+| `category_expenses` | `has_period` (the statistics showed a period other than the whole history) |
 | Every other route (`home`, `groups`, `group_detail`, `bill_detail`…) | none |
 
 ## What is never sent
@@ -183,6 +184,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_pick_not_in_list_clicked` | none | "I'm not on the list" | `:feature:join` |
 | `join_pick_new_member_confirmed` | none | "Join group" with a new name | `:feature:join` |
 | `camera_settings_clicked` | `source` (`join_with_link`) | "Open settings" with the camera denied | `:feature:join` |
+| `join_with_link_open_camera_clicked` | none | "Open camera", the only tap that asks for the camera and starts it; a tap once it was asked, or on a device with no camera, doesn't count | `:feature:join` |
 | `join_with_link_torch_toggled` | `is_on` | The reader's flashlight, with where it ended up | `:feature:join` |
 | `join_with_link_paste_clicked` | none | The reader's Paste, also with an empty clipboard or one the browser won't read | `:feature:join` |
 | `join_with_link_clear_clicked` | none | The link field cleared | `:feature:join` |
@@ -200,7 +202,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `update_dismissed` | `source` (`startup`, `manual`) | "Not now" or Esc on "Update available" (iOS, macOS) | `in_app_update` |
 | `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
 | `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
-| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`) | Search opened: its navigation item (Android's bar or rail, the web's), iOS's search tab, the Mac's magnifier or field, or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
+| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`, `category_expenses`) | Search opened: its navigation item (Android's bar or rail, the web's), iOS's search tab, the Mac's magnifier or field, or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `contact`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped: `contact` is the person's profile, `person` their row in a group | `:feature:groups` |
 | `search_suggestion_clicked` | `source` (`search`, `groups`) | "Did you mean “Larissa”?" tapped | `:feature:groups` |
@@ -226,12 +228,16 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Scan receipt" | `:feature:groups`, `:feature:split_bill` |
 | `record_payment_clicked` | `source` (`home`) | Home's "Record a payment" | `:feature:groups` |
 | `home_see_all_groups_clicked` | none | "See all" over "Your groups" | `:feature:groups` |
-| `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
+| `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`, `category_expenses`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `home_see_all_bills_clicked` | none | "See all" over "Latest expenses" | `:feature:groups` |
 | `activity_bell_clicked` | none | The bell in Home's bar, which opens Activity over Home | `:feature:groups` |
 | `recovery_code_card_show_clicked` | none | "See code" on "Save your recovery code" | `:feature:groups` |
 | `recovery_code_card_connect_clicked` | none | "Connect account" on that card | `:feature:groups` |
 | `recovery_code_card_dismissed` | none | That card's ✕ | `:feature:groups` |
+| `notification_prompt_shown` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | Home's notification card comes up, whatever brought it (a group, the permission read, three weeks gone), once Home is on top to draw it: once per showing, decided by the ViewModel, never behind another tab or screen, on a redraw nor on each return to Home | `:feature:groups` |
+| `notification_prompt_turn_on_clicked` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | "Turn on" on Home's notification card, while it shows: the system's prompt, or its settings once blocked | `:feature:groups` |
+| `notification_prompt_dismissed` | `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | "Not now" on that card, while it shows | `:feature:groups` |
+| `notification_permission_answered` | `source` (`home`, `notification_settings`), `is_granted`, and from Home `prompt` (`soft_ask`, `ask_again`, `blocked`, `quiet`) | The system's answer after the app asked: on Home, the first check after "Turn on" (the system's prompt, or back from its settings); on Notifications, the read each platform reports right after its prompt (a Push turned on while never asked or quiet, "Turn on" on its notice), never a read already under way. It ends the funnel the tap began; `is_granted` is false for a refusal, a dialog dismissed and Apple's quiet delivery alike | `:feature:groups`, `:feature:notification_settings` |
 | `group_stats_clicked` | none | The group's Statistics | `:feature:group_detail` |
 | `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Expenses, Balances or Members | `:feature:group_detail` |
 | `edit_group_clicked` | none | "Edit group" | `:feature:group_detail` |
@@ -304,6 +310,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `stats_chart_type_selected` | `chart_type` | Bars or Line, another than the one showing | `:feature:group_stats` |
 | `stats_grain_selected` | `grain` | Day, Week, Month or Year, another than the one showing or one that switches the period to the whole one | `:feature:group_stats` |
 | `stats_whole_period_clicked` | none | "See the whole trip" of a period without bills | `:feature:group_stats` |
+| `stats_category_clicked` | `target` (`ring`, `legend`, `row`) | A category of "By category" (its slice, legend line or row), which opens "Expenses by category" | `:feature:group_stats` |
+| `category_filter_toggled` | `is_selected` | A chip of "Expenses by category", picked or let go | `:feature:group_stats` |
+| `category_filter_cleared` | `count` (chips picked) | "Clear" of "Expenses by category", while a chip is picked | `:feature:group_stats` |
 | `category_map_profile_clicked` | none | "Open Profile" on "Your map stays on this device only" | `:feature:category_map` |
 | `category_map_section_selected` | none | Another category picked beside its terms | `:feature:category_map` |
 | `category_term_add_clicked` | `entry` (`map`, `category`, `search`) | "Add term", "Add term in Transport" or "Add “pizzaria”", once the map is read | `:feature:category_map` |
@@ -337,6 +346,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Done" on "Several people paid", once the amounts add up | `:feature:split_bill` |
 | `split_bill_date_clicked` | none | "When", opening its picker | `:feature:split_bill` |
 | `split_bill_split_clicked` | none | "Split", which opens Split | `:feature:split_bill` |
+| `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose File…" (Mac) or "Choose photo" (web); not sent where no camera leaves anything to choose | `:feature:split_bill` |
 | `receipt_items_clicked` | none | "14 items" beside "Read from the receipt", which opens Items, while the receipt's items are there in the bill's currency | `:feature:split_bill` |
 | `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`) | Equal, Amounts, %, Shares or Items, another than the one picked | `:feature:split_bill` |
 | `split_bill_person_toggled` | `is_included` | A person in or out of Equal, with where they ended up | `:feature:split_bill` |
@@ -400,6 +410,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `activity_open_target_clicked` | `kind` | "Open bill", "Open group"… of the detail or the open changes, with Activity on top | `:feature:activity` |
 | `activity_changes_toggled` | `is_expanded` | "See changes" or "Hide changes" | `:feature:activity` |
 | `activity_mark_all_read_clicked` | none | "Mark all as read", while something is unread | `:feature:activity` |
+| `activity_notification_settings_clicked` | none | The bar's "Notification settings", which opens Notifications, with Activity on top | `:feature:activity` |
 | `activity_filter_group_picked` | `is_all` | A group, or "All groups", another than the one picked, in the sheet | `:feature:activity` |
 | `activity_filter_type_toggled` | `type`, `is_included` | A type in or out, in the sheet | `:feature:activity` |
 | `activity_filter_applied` | `has_group`, `types` (how many), `has_person` | "Show 4 results" | `:feature:activity` |
@@ -460,5 +471,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_profile_discard_clicked` | none | Cancel on the web's and the Mac's inline form, putting back what was saved | `:feature:edit_profile` |
 | `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |
 | `profile_saved` | `has_photo` | The profile saved | `:feature:edit_profile` |
-| `notification_toggled` | `type`, `is_enabled` | A toggle of Notifications, while the toggles take a change | `:feature:notification_settings` |
+| `notification_toggled` | `type` (`BILLS`, `PAYMENTS`, `COMMENTS`, `PEOPLE_AND_GROUPS`, `PAYMENT_REQUESTS`, `BALANCE_REMINDER`), `channel` (`PUSH`, `IN_APP`), `is_enabled` | A Push or In app toggle of Notifications, while its channel's toggles take a change | `:feature:notification_settings` |
 | `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |
+| `notification_ask_again_clicked` | none | The notice's "Turn on" on Android after a first refusal, which shows the system's dialog once more | `:feature:notification_settings` |
+| `notification_quiet_turn_on_clicked` | none | The notice's "Turn on" while Apple delivers quietly, which shows its full prompt for banners and sounds | `:feature:notification_settings` |
+| `notification_channel_settings_clicked` | `type` (`bills`, `payments`, `comments`, `people_and_groups`, `payment_requests`, `balance_reminder`) | "Open settings" on a row whose channel Android silenced, which opens that channel's settings | `:feature:notification_settings` |

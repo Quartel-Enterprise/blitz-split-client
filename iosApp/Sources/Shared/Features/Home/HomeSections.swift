@@ -299,42 +299,107 @@ struct HomeRecoveryCard: View {
     let send: (any HomeUiEvent) -> Void
 
     var body: some View {
+        HomeActionCard(
+            systemImage: "key.horizontal",
+            title: "Save your recovery code",
+            message: HomeCopy.recoveryMessage,
+            secondary: "Connect account",
+            primary: "See code",
+            onSecondary: { send(HomeUiEventOnConnectAccountClicked.shared) },
+            onPrimary: { send(HomeUiEventOnShowRecoveryCodeClicked.shared) },
+            onDismiss: { send(HomeUiEventOnRecoveryCodeCardDismissed.shared) },
+        )
+    }
+}
+
+/// The soft ask before the system's prompt, once there is a group, so "Not now" never spends the system's one chance;
+/// once refused it says where to allow them, and "Turn on" opens the app's notification settings.
+struct HomeNotificationCard: View {
+    let prompt: NotificationPrompt
+    let send: (any HomeUiEvent) -> Void
+
+    var body: some View {
+        HomeActionCard(
+            systemImage: symbol,
+            title: title,
+            message: message,
+            secondary: "Not now",
+            primary: "Turn on",
+            onSecondary: { send(HomeUiEventOnNotificationPromptDismissed.shared) },
+            onPrimary: { send(HomeUiEventOnNotificationPromptTurnOnClicked.shared) },
+        )
+    }
+
+    private var symbol: String {
+        switch prompt {
+        case .blocked: "bell.slash"
+        case .quiet: "bell"
+        default: "bell.badge"
+        }
+    }
+
+    private var title: LocalizedStringKey {
+        switch prompt {
+        case .blocked: "Notifications are off"
+        case .quiet: "Notifications arrive quietly"
+        default: "Know when a bill comes in"
+        }
+    }
+
+    /// Quiet: delivered to Notification Center with no prompt, where "Turn on" asks for banners and sounds.
+    private var message: String {
+        switch prompt {
+        case .blocked: HomeCopy.notificationsOffMessage
+        case .quiet: String(localized: "They go to Notification Center without a sound or banner. Turn them on to see bills as they come in.")
+        default: String(localized: "Get notified when someone adds a bill with you or marks a payment to you.")
+        }
+    }
+}
+
+/// A card of Home that asks for something: its icon, title and message, ✕ when it has one, and its two answers.
+struct HomeActionCard: View {
+    let systemImage: String
+    let title: LocalizedStringKey
+    let message: String
+    let secondary: LocalizedStringKey
+    let primary: LocalizedStringKey
+    let onSecondary: () -> Void
+    let onPrimary: () -> Void
+    var onDismiss: (() -> Void)?
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "key.horizontal")
+                Image(systemName: systemImage)
                     .foregroundStyle(Palette.accent)
                     .frame(width: 36, height: 36)
                     .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Save your recovery code")
+                    Text(title)
                         .font(.headline)
-                    Text(verbatim: HomeCopy.recoveryMessage)
+                    Text(verbatim: message)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .accessibilityElement(children: .combine)
                 Spacer(minLength: 0)
-                Button("Dismiss", systemImage: "xmark") {
-                    send(HomeUiEventOnRecoveryCodeCardDismissed.shared)
+                if let onDismiss {
+                    Button("Dismiss", systemImage: "xmark", action: onDismiss)
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.circle)
+                        .controlSize(.small)
                 }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.circle)
-                .controlSize(.small)
             }
             HStack(spacing: 8) {
-                Button {
-                    send(HomeUiEventOnConnectAccountClicked.shared)
-                } label: {
-                    Text("Connect account").frame(maxWidth: .infinity)
+                Button(action: onSecondary) {
+                    Text(secondary).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
-                Button {
-                    send(HomeUiEventOnShowRecoveryCodeClicked.shared)
-                } label: {
-                    Text("See code").frame(maxWidth: .infinity)
+                Button(action: onPrimary) {
+                    Text(primary).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .prominentLabel()

@@ -31,7 +31,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.model.HomeTab
 
-// Why: the words and icons of the home's four tabs, Início first, which each tab draws with its own tab selected.
+// Why: the words and icons of the home's four tabs, Início first, which the one bar draws with the tab in front selected.
 private val HomeTab.label: Int
     @StringRes get() = when (this) {
         HomeTab.HOME -> R.string.designsystem_tab_home
@@ -57,9 +57,10 @@ private val HomeTab.icon: ImageVector
 fun HomeNavigationBar(
     selected: HomeTab?,
     onTabClick: (HomeTab) -> Unit,
+    modifier: Modifier = Modifier,
     onSearchClick: (() -> Unit)? = null,
 ) {
-    NavigationBar {
+    NavigationBar(modifier = modifier) {
         HomeTab.entries.forEach { tab ->
             NavigationBarItem(
                 selected = tab == selected,
@@ -99,6 +100,7 @@ fun HomeNavigationBar(
 fun HomeNavigationRail(
     selected: HomeTab?,
     onTabClick: (HomeTab) -> Unit,
+    modifier: Modifier = Modifier,
     // Why: "Buscar" as the rail's last item, as on the bar; null hides it, unless the search is in front (selected null).
     onSearchClick: (() -> Unit)? = null,
     // Why: beside a screen the selected tab opened (a group's), that tab goes back to it.
@@ -108,7 +110,7 @@ fun HomeNavigationRail(
     val formFactor = rememberFoldLayout().formFactor
     val isShort = formFactor == FormFactor.PhoneLandscape || formFactor == FormFactor.Tabletop
     NavigationRail(
-        modifier = Modifier.fillMaxHeight(),
+        modifier = modifier.fillMaxHeight(),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         header = { header(isShort) },
     ) {

@@ -111,6 +111,7 @@ class ActivityViewModel(
         ),
         myUserId = null,
         hasOlder = false,
+        inAppTypes = emptySet(),
     )
     private var groups = emptyList<Group>()
     private var entries = emptyList<FeedEntry>()
@@ -198,6 +199,12 @@ class ActivityViewModel(
             ActivityUiEvent.OnMarkAllReadClicked -> if (uiState.value.canMarkAllRead) {
                 trackEvent("activity_mark_all_read_clicked", emptyMap())
                 viewModelScope.launch { markAllActivityRead() }
+            }
+
+            // Why: a late tap, with another screen already over Atividade, opens nothing.
+            ActivityUiEvent.OnNotificationSettingsClicked -> if (isOnTop()) {
+                trackEvent("activity_notification_settings_clicked", emptyMap())
+                navigator.navigate(Route.NotificationSettings)
             }
 
             // Why: only a sheet that opens, Atividade on top and the sheet not open yet.

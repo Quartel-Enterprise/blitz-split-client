@@ -52,7 +52,7 @@ internal fun entriesOf(
         eventEntryOf(
             event = event,
             group = groupsById[event.groupId],
-            isUnread = feed.readState.isUnread(event, feed.myUserId),
+            isUnread = feed.isUnread(event),
             myUserId = feed.myUserId,
             deletions = deletions,
             categories = categories,

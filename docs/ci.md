@@ -5,7 +5,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
-| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest`, `:androidApp:assembleRelease` and `lintDebug`, `npm --prefix webApp run build` |
+| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug`, `npm --prefix webApp run build`, each in a job of its own |
 | `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test` and `compileKotlinIosArm64`; both schemes of the Apple app, which link the `Shared` framework |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
@@ -14,7 +14,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
 | `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
-| `merge-when-green` | The `merge-when-green` label, and each pull request workflow that completes | Squash merges the pull request once every check passed and every conversation is resolved |
+| `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every 15 minutes, and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
 | `release-beta` | By hand, with `./scripts/release/release-beta.sh` | Ships a beta to the closed group: Android on Firebase App Distribution, the web on Cloudflare Pages, iOS and macOS on TestFlight. Merges the versionCode back into `main` and publishes the `X.Y.Z-beta_N` GitHub pre-release; see [release-process.md](release-process.md) |
 
 Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
@@ -22,6 +22,27 @@ coverage, a compile of the shared code for the iOS simulator and JS, the debug A
 web build, or the Xcode scheme a change to `iosApp` reaches). The tests on the JS, iOS simulator and macOS targets, Android
 lint, the release APK and the other Apple scheme are left to these workflows, and `merge-when-green` waits for them:
 on one Mac, queued behind the other worktrees' builds, they were what made a branch slow to open.
+
+## Speed and timeouts
+
+`build-and-test` runs its jobs side by side, so its wall time is its slowest job's. Two of them are split to keep that
+short:
+
+- `js-tests` is the slowest: each module with tests links a test executable of its own and runs it in its own Karma
+  and headless Chrome, and a change to a core module recompiles every module after it. Its matrix splits the modules
+  across its shards, dealt round-robin from the sorted list of the modules that have `commonTest` or `jsTest` sources,
+  found when the job runs, so a new module joins a shard on its own. Each shard compiles the modules its own depend on again, side by
+  side with the others. Adding a shard is adding a number to the matrix.
+- `android` builds the release APK (R8 runs only there) and `android-lint` runs `lintDebug`. They compile different
+  variants and share no work, so in one job they ran one after the other.
+
+Every job has a `timeout-minutes`; the ones that build get about three times what they take on a pull request that
+recompiles everything. A runner that hangs then fails its check instead of holding it, and `merge-when-green` with it, for GitHub's
+default of six hours.
+
+Only `main` saves the Gradle caches, one set per job and shard, and pull requests read them. The repository's Actions
+cache has 10 GB and drops the least recently used entries first, so it keeps the newest `main` commits' entries, the
+ones pull requests read.
 
 The `apple` jobs run on `xcode-27`, GitHub's macOS image with Xcode 27 (a public preview, since the app uses the iOS 27
 SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and its app build are
@@ -120,19 +141,28 @@ every check on its head commit has passed, then remove the label. GitHub's own a
 only for the required checks, and none is required here (see [Setup](#setup)).
 
 The workflow runs when the label is added and each time a pull request workflow completes, so the last check to
-finish is the one that triggers the merge. A push to the pull request moves its head commit, and the new checks have
+finish is the one that triggers the merge. GitHub loses some of those events: a run of this workflow that fails to start
+(`startup_failure`), or a `workflow_run` never sent. So it also runs every 15 minutes, and its `sweep` job lists the open
+pull requests with the label (drafts and forks left out) and checks each one the same way. To check them right away, run
+the workflow by hand (**Actions**, `merge-when-green`, **Run workflow**), with a pull request number to check only that
+one. The sweep only sees pull requests that still have the label: one it removed for an unresolved conversation needs
+the label added again, as below. A push to the pull request moves its head commit, and the new checks have
 to pass again. A failed check leaves the pull request open with the label on; re-running the check and getting it
 green merges it. The pull request's current head is the one judged, whichever commit's run started the workflow, so
 a pull request whose changes run no check workflow (docs only, `iosApp` only) merges once the review ends, even after
-the review pushed its fix commit. No workflow runs on every push here, so a label added right after a push waits 30
-seconds first, for the push's workflows to register their runs. Drafts wait until they are marked ready, and pull
-requests from forks are never merged: their author could push after a maintainer added the label.
+the review pushed its fix commit. No workflow runs on every push here, so a label added, or a sweep run, right after a
+push waits 30 seconds first, for the push's workflows to register their runs. Drafts wait until they are marked
+ready, and pull requests from forks are never merged: their author could push after a maintainer added the label.
 
 A job waiting on another has no check until it starts, so while `review-gate` waits for the review, or right after it
 passes, every check of a pull request can be green while its workflows still have jobs to start. Every run of the
 head commit therefore counts as unfinished until it completes, and its completion starts `merge-when-green` again. So
 does a `claude-review` run of an earlier commit, which ends on the opening commit after pushing its fix commit. Only the
 runs a label starts (`claude-review-on-request`, `run-checks`, `merge-when-green`) don't count.
+
+GitHub sometimes leaves a job's check in progress after its workflow run completed: the job has no steps and never
+ends. A check still pending in a completed run takes the run's conclusion instead (a run succeeds only when every job of
+it did), with a warning on the `merge-when-green` run that names the run.
 
 The `Main rules` ruleset requires every review conversation to be resolved before a pull request merges into `main`,
 with no bypass, admins included, and `merge-when-green` never merges with `--admin`. When everything else is green
@@ -162,6 +192,7 @@ nothing.
 ## Adding a workflow
 
 - Scope it with `paths` or `paths-ignore`, so a docs-only change doesn't run a build.
+- Give every job a `timeout-minutes` (see [Speed and timeouts](#speed-and-timeouts)).
 - Use per-commit `concurrency` groups on `main` if it writes a Gradle cache, per-ref otherwise: a cancelled run saves
   no cache.
 - If it checks the app on pull requests, start it with the `review-gate` job, with the same `pull_request` types

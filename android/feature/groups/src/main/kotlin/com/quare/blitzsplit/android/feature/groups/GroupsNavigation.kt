@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.HomeBars
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
@@ -29,64 +29,46 @@ private fun eventOf(
     HomeTab.CONTACTS -> GroupsUiEvent.OnContactsTabClicked
 }
 
-@Composable
-internal fun GroupsNavigationBar(
+// Why: Grupos' bar or rail, the rail with "Rachar conta" on top.
+internal fun groupsBarsOf(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
-) {
-    HomeNavigationBar(
+    usesRail: Boolean,
+): HomeBars {
+    val onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
+    return HomeBars(
+        kind = homeBarsKindOf(usesRail),
         selected = HomeTab.GROUPS.takeUnless { state.isSearching },
         onTabClick = { tab -> eventOf(tab, state.isSearching)?.let(onEvent) },
         onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) }.takeIf { state.canSearch },
-    )
-}
-
-@Composable
-internal fun GroupsNavigationRail(
-    state: GroupsUiState,
-    onEvent: (GroupsUiEvent) -> Unit,
-) {
-    SplitBillNavigationRail(
-        selected = HomeTab.GROUPS.takeUnless { state.isSearching },
-        onTabClick = { tab -> eventOf(tab, state.isSearching)?.let(onEvent) },
-        onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) }.takeIf { state.canSearch },
-        onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton },
+        railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
     )
 }
 
 // Why: Grupos and Início put "Rachar conta" at the top of the rail; Início's first use has none (null).
 @Composable
-internal fun SplitBillNavigationRail(
-    selected: HomeTab?,
-    onTabClick: (HomeTab) -> Unit,
-    onSearchClick: (() -> Unit)?,
+internal fun SplitBillRailHeader(
+    isShort: Boolean,
     onSplitBillClick: (() -> Unit)?,
 ) {
-    HomeNavigationRail(
-        selected = selected,
-        onTabClick = onTabClick,
-        onSearchClick = onSearchClick,
-        header = { isShort ->
-            if (onSplitBillClick == null) return@HomeNavigationRail
-            val icon: @Composable () -> Unit = {
-                Icon(
-                    imageVector = splitBillIcon(),
-                    contentDescription = stringResource(R.string.groups_split_bill),
-                )
-            }
-            // Why: a phone lying down has the height of the four tabs and Search only beside a small one.
-            if (isShort) {
-                SmallFloatingActionButton(
-                    onClick = onSplitBillClick,
-                    content = icon,
-                )
-            } else {
-                FloatingActionButton(
-                    onClick = onSplitBillClick,
-                    modifier = Modifier.padding(top = 16.dp),
-                    content = icon,
-                )
-            }
-        },
-    )
+    if (onSplitBillClick == null) return
+    val icon: @Composable () -> Unit = {
+        Icon(
+            imageVector = splitBillIcon(),
+            contentDescription = stringResource(R.string.groups_split_bill),
+        )
+    }
+    // Why: a phone lying down has the height of the four tabs and Search only beside a small one.
+    if (isShort) {
+        SmallFloatingActionButton(
+            onClick = onSplitBillClick,
+            content = icon,
+        )
+    } else {
+        FloatingActionButton(
+            onClick = onSplitBillClick,
+            modifier = Modifier.padding(top = 16.dp),
+            content = icon,
+        )
+    }
 }

@@ -23,7 +23,11 @@ import kotlinx.coroutines.launch
 class PhotoPickers(
     val onTakePhotoClick: (() -> Unit)?,
     val onChoosePhotoClick: () -> Unit,
-)
+) {
+    // Why: a device with a camera to take the photo with, which a screen with its own camera asks too.
+    val hasCamera: Boolean
+        get() = onTakePhotoClick != null
+}
 
 /*
  * Why: Editar perfil's photo and a bill's "Adicionar foto" pick one the same way: the system photo picker, which needs
@@ -89,8 +93,13 @@ fun rememberPhotoPickers(
         } else {
             null
         },
+        // Why: a build with neither the Photo Picker nor a documents app to fall back on reads as an unreadable photo.
         onChoosePhotoClick = {
-            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            try {
+                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            } catch (_: ActivityNotFoundException) {
+                onPhotoUnreadable()
+            }
         },
     )
 }

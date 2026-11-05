@@ -11,8 +11,11 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
@@ -692,50 +695,159 @@ class SplitBillUiStateTest {
     }
 
     @Test
-    fun `GIVEN the camera asked for in reais WHEN reading the camera THEN it opens`() {
+    fun `GIVEN the source asked for in reais WHEN reading the choice THEN it opens`() {
         // Given
         val state = state(
-            isReceiptCameraRequested = true,
+            isReceiptSourceRequested = true,
             groups = listOf(billGroup),
         )
 
         // When
-        val showsCamera = state.showsReceiptCamera
+        val showsChoice = state.showsReceiptSourceChoice
 
         // Then
-        assertTrue(showsCamera)
+        assertTrue(showsChoice)
     }
 
     @Test
-    fun `GIVEN the camera asked for in bitcoin WHEN reading the camera THEN it does not open`() {
+    fun `GIVEN the source asked for in bitcoin WHEN reading the choice THEN it does not open`() {
         // Given
         val state = state(
-            isReceiptCameraRequested = true,
+            isReceiptSourceRequested = true,
             groups = listOf(billGroup),
             currency = GroupCurrency.BTC,
         )
 
         // When
-        val showsCamera = state.showsReceiptCamera
+        val showsChoice = state.showsReceiptSourceChoice
 
         // Then
-        assertFalse(showsCamera)
+        assertFalse(showsChoice)
     }
 
     @Test
-    fun `GIVEN the camera asked for in ether WHEN reading the camera THEN it does not open`() {
+    fun `GIVEN the source asked for in ether WHEN reading the choice THEN it does not open`() {
         // Given
         val state = state(
-            isReceiptCameraRequested = true,
+            isReceiptSourceRequested = true,
             groups = listOf(billGroup),
             currency = GroupCurrency.ETH,
         )
 
         // When
-        val showsCamera = state.showsReceiptCamera
+        val showsChoice = state.showsReceiptSourceChoice
 
         // Then
-        assertFalse(showsCamera)
+        assertFalse(showsChoice)
+    }
+
+    @Test
+    fun `GIVEN the camera picked in reais WHEN reading the source shown THEN the camera opens`() {
+        // Given
+        val state = state(
+            receiptSource = ReceiptPhotoSource.CAMERA,
+            groups = listOf(billGroup),
+        )
+
+        // When
+        val shown = state.shownReceiptSource
+
+        // Then
+        assertEquals(ReceiptPhotoSource.CAMERA, shown)
+    }
+
+    @Test
+    fun `GIVEN the camera picked and a save in flight WHEN reading the source shown THEN none opens`() {
+        // Given
+        val state = state(
+            receiptSource = ReceiptPhotoSource.CAMERA,
+            groups = listOf(billGroup),
+            isSaving = true,
+        )
+
+        // When
+        val shown = state.shownReceiptSource
+
+        // Then
+        assertNull(shown)
+    }
+
+    @Test
+    fun `GIVEN the camera picked in bitcoin WHEN reading the source shown THEN none opens`() {
+        // Given
+        val state = state(
+            receiptSource = ReceiptPhotoSource.CAMERA,
+            groups = listOf(billGroup),
+            currency = GroupCurrency.BTC,
+        )
+
+        // When
+        val shown = state.shownReceiptSource
+
+        // Then
+        assertNull(shown)
+    }
+
+    @Test
+    fun `GIVEN the camera picked and Rachar em qual grupo open WHEN reading the source shown THEN none opens`() {
+        // Given
+        val state = state(
+            receiptSource = ReceiptPhotoSource.CAMERA,
+            groups = listOf(billGroup),
+            groupSelection = GroupSelection(groupId = "group-1"),
+        )
+
+        // When
+        val shown = state.shownReceiptSource
+
+        // Then
+        assertNull(shown)
+    }
+
+    @Test
+    fun `GIVEN the camera picked and the group picked still read WHEN reading the source shown THEN none opens`() {
+        // Given
+        val state = state(
+            receiptSource = ReceiptPhotoSource.CAMERA,
+            groups = listOf(billGroup),
+            pickedGroupId = "group-2",
+        )
+
+        // When
+        val shown = state.shownReceiptSource
+
+        // Then
+        assertNull(shown)
+    }
+
+    @Test
+    fun `GIVEN the camera picked before the groups are read WHEN reading the source shown THEN none opens`() {
+        // Given
+        val state = state(
+            receiptSource = ReceiptPhotoSource.CAMERA,
+        )
+
+        // When
+        val shown = state.shownReceiptSource
+
+        // Then
+        assertNull(shown)
+    }
+
+    @Test
+    fun `GIVEN the camera picked before the bill is loaded WHEN reading the source shown THEN none opens`() {
+        // Given
+        val state = state(
+            receiptSource = ReceiptPhotoSource.CAMERA,
+            groups = listOf(billGroup),
+            isLoaded = false,
+        )
+
+        // When
+        val shown = state.shownReceiptSource
+
+        // Then
+        assertNull(shown)
     }
 
     private val billGroup = BillGroup(
@@ -788,18 +900,21 @@ class SplitBillUiStateTest {
         groups: List<BillGroup> = emptyList(),
         currency: GroupCurrency = GroupCurrency.BRL,
         showsSats: Boolean = false,
-        isReceiptCameraRequested: Boolean = false,
+        isReceiptSourceRequested: Boolean = false,
+        receiptSource: ReceiptPhotoSource? = null,
+        groupSelection: GroupSelection? = null,
+        pickedGroupId: String = "group-1",
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
         groupId = "group-1",
-        pickedGroupId = "group-1",
+        pickedGroupId = pickedGroupId,
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
         groupShape = GroupShape.COOKIE,
         groupPhotoUrl = null,
         groups = groups,
-        groupSelection = null,
+        groupSelection = groupSelection,
         currency = currency,
         showsSats = showsSats,
         people = people,
@@ -850,7 +965,8 @@ class SplitBillUiStateTest {
         categoryDeletion = null,
         receipt = null,
         receiptCategoryId = null,
-        isReceiptCameraRequested = isReceiptCameraRequested,
+        receiptRequest = receiptSource?.let(ReceiptRequest::Open)
+            ?: ReceiptRequest.Choice.takeIf { isReceiptSourceRequested },
         conflict = conflict,
         settledPair = settledPair,
         deletion = null,

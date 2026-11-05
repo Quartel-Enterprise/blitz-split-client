@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.profile.data
 
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferencesLocalDataSource
@@ -58,8 +59,13 @@ class NotificationPreferencesRepositoryImplTest {
 
         // Then
         assertEquals(
-            setOf(NotificationType.PAYMENT_MARKED, NotificationType.INVITES),
-            preferences.enabledTypes,
+            setOf(
+                NotificationType.PAYMENTS,
+                NotificationType.COMMENTS,
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationType.PAYMENT_REQUESTS,
+            ),
+            preferences.push,
         )
     }
 
@@ -111,7 +117,8 @@ class NotificationPreferencesRepositoryImplTest {
 
             // When
             repository.updatePreference(
-                type = NotificationType.NEW_EXPENSE,
+                type = NotificationType.BILLS,
+                channel = NotificationChannel.PUSH,
                 isEnabled = false,
             )
 
@@ -140,14 +147,15 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
 
         // Then
         assertEquals(
             NotificationType.entries.toSet(),
-            repository.observePreferences().first().enabledTypes,
+            repository.observePreferences().first().push,
         )
         assertEquals(true, local.row.value?.pendingSync)
     }
@@ -163,13 +171,15 @@ class NotificationPreferencesRepositoryImplTest {
         // When
         launch {
             repository.updatePreference(
-                type = NotificationType.NEW_EXPENSE,
+                type = NotificationType.BILLS,
+                channel = NotificationChannel.PUSH,
                 isEnabled = false,
             )
         }
         launch {
             repository.updatePreference(
-                type = NotificationType.INVITES,
+                type = NotificationType.PEOPLE_AND_GROUPS,
+                channel = NotificationChannel.PUSH,
                 isEnabled = true,
             )
         }
@@ -178,11 +188,13 @@ class NotificationPreferencesRepositoryImplTest {
         // Then
         assertEquals(
             setOf(
-                NotificationType.PAYMENT_MARKED,
-                NotificationType.SETTLE_REMINDERS,
-                NotificationType.INVITES,
+                NotificationType.PAYMENTS,
+                NotificationType.COMMENTS,
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationType.PAYMENT_REQUESTS,
+                NotificationType.BALANCE_REMINDER,
             ),
-            repository.observePreferences().first().enabledTypes,
+            repository.observePreferences().first().push,
         )
     }
 
@@ -196,7 +208,8 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.SETTLE_REMINDERS,
+            type = NotificationType.BALANCE_REMINDER,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
 
@@ -215,7 +228,8 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.SETTLE_REMINDERS,
+            type = NotificationType.BALANCE_REMINDER,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
 
@@ -231,7 +245,8 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.NEW_EXPENSE,
+            type = NotificationType.BILLS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
 
@@ -247,7 +262,8 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
 
@@ -271,7 +287,8 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.PAYMENT_MARKED,
+            type = NotificationType.PAYMENTS,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
 
@@ -298,7 +315,8 @@ class NotificationPreferencesRepositoryImplTest {
 
             // When
             repository.updatePreference(
-                type = NotificationType.SETTLE_REMINDERS,
+                type = NotificationType.BALANCE_REMINDER,
+                channel = NotificationChannel.PUSH,
                 isEnabled = true,
             )
 
@@ -329,7 +347,8 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.INVITES,
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.PUSH,
             isEnabled = true,
         )
 
@@ -347,7 +366,8 @@ class NotificationPreferencesRepositoryImplTest {
 
         // When
         repository.updatePreference(
-            type = NotificationType.NEW_EXPENSE,
+            type = NotificationType.BILLS,
+            channel = NotificationChannel.PUSH,
             isEnabled = false,
         )
 
@@ -383,6 +403,13 @@ class NotificationPreferencesRepositoryImplTest {
                     paymentMarked = true,
                     settleReminders = false,
                     invites = true,
+                    comments = true,
+                    paymentRequests = true,
+                    inAppBills = true,
+                    inAppPayments = true,
+                    inAppComments = true,
+                    inAppPeopleAndGroups = true,
+                    inAppPaymentRequests = true,
                     updatedAt = 42L,
                 ),
             ),
@@ -839,11 +866,427 @@ class NotificationPreferencesRepositoryImplTest {
         assertFalse(repository.observeHasPendingChanges().first())
     }
 
+    @Test
+    fun `GIVEN synced preferences WHEN turning off the in-app of comments THEN stores it pending and keeps its push`() =
+        runTest {
+            // Given
+            prepareScenario(
+                now = 2_000L,
+                stored = entity(
+                    updatedAt = 42L,
+                    pendingSync = false,
+                ),
+            )
+
+            // When
+            repository.updatePreference(
+                type = NotificationType.COMMENTS,
+                channel = NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // Then
+            assertEquals(
+                entity(
+                    comments = true,
+                    inAppComments = false,
+                    updatedAt = 2_000L,
+                    pendingSync = true,
+                ),
+                local.row.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN no toggle ever changed WHEN turning off only an in-app THEN stores the defaults with that one change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                now = 1_000L,
+                stored = null,
+                profileOwner = "user-1",
+            )
+
+            // When
+            repository.updatePreference(
+                type = NotificationType.PAYMENTS,
+                channel = NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // Then
+            assertEquals(
+                entity(
+                    inAppPayments = false,
+                    updatedAt = 1_000L,
+                    pendingSync = true,
+                    ownerUserId = "user-1",
+                ),
+                local.row.value,
+            )
+            assertEquals(
+                NotificationPreferences.DEFAULT.copy(
+                    inApp = NotificationPreferences.DEFAULT.inApp - NotificationType.PAYMENTS,
+                ),
+                repository.observePreferences().first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the defaults WHEN turning on an in-app already on THEN writes nothing`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        repository.updatePreference(
+            type = NotificationType.PAYMENT_REQUESTS,
+            channel = NotificationChannel.IN_APP,
+            isEnabled = true,
+        )
+
+        // Then
+        assertTrue(local.upserts.isEmpty())
+        assertNull(local.row.value)
+    }
+
+    @Test
+    fun `GIVEN synced preferences WHEN turning off an in-app already off THEN writes nothing`() = runTest {
+        // Given
+        val stored = entity(
+            inAppPeopleAndGroups = false,
+            updatedAt = 42L,
+            pendingSync = false,
+        )
+        prepareScenario(
+            now = 1_000L,
+            stored = stored,
+        )
+
+        // When
+        repository.updatePreference(
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.IN_APP,
+            isEnabled = false,
+        )
+
+        // Then
+        assertTrue(local.upserts.isEmpty())
+        assertEquals(stored, local.row.value)
+    }
+
+    @Test
+    fun `GIVEN the defaults WHEN turning on the in-app of the balance reminder THEN writes nothing`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        repository.updatePreference(
+            type = NotificationType.BALANCE_REMINDER,
+            channel = NotificationChannel.IN_APP,
+            isEnabled = true,
+        )
+
+        // Then
+        assertTrue(local.upserts.isEmpty())
+        assertNull(local.row.value)
+    }
+
+    @Test
+    fun `GIVEN synced preferences WHEN turning off the push of payment requests THEN stores it and keeps its in-app`() =
+        runTest {
+            // Given
+            prepareScenario(
+                now = 2_000L,
+                stored = entity(
+                    updatedAt = 42L,
+                    pendingSync = false,
+                ),
+            )
+
+            // When
+            repository.updatePreference(
+                type = NotificationType.PAYMENT_REQUESTS,
+                channel = NotificationChannel.PUSH,
+                isEnabled = false,
+            )
+
+            // Then
+            assertEquals(
+                entity(
+                    paymentRequests = false,
+                    inAppPaymentRequests = true,
+                    updatedAt = 2_000L,
+                    pendingSync = true,
+                ),
+                local.row.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the defaults WHEN two quick taps change both channels of bills THEN stores both changes`() = runTest {
+        // Given
+        prepareScenario(
+            now = 1_000L,
+            stored = null,
+        )
+
+        // When
+        launch {
+            repository.updatePreference(
+                type = NotificationType.BILLS,
+                channel = NotificationChannel.PUSH,
+                isEnabled = false,
+            )
+        }
+        launch {
+            repository.updatePreference(
+                type = NotificationType.BILLS,
+                channel = NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+        }
+        testScheduler.advanceUntilIdle()
+
+        // Then
+        val preferences = repository.observePreferences().first()
+        assertFalse(preferences.isEnabled(NotificationType.BILLS, NotificationChannel.PUSH))
+        assertFalse(preferences.isEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+        assertEquals(
+            NotificationPreferences(
+                push = NotificationPreferences.DEFAULT.push - NotificationType.BILLS,
+                inApp = NotificationPreferences.DEFAULT.inApp - NotificationType.BILLS,
+            ),
+            preferences,
+        )
+    }
+
+    @Test
+    fun `GIVEN the same millisecond WHEN two in-app toggles change in a row THEN the second is newer`() = runTest {
+        // Given
+        prepareScenario(
+            now = 1_000L,
+            stored = null,
+        )
+        repository.updatePreference(
+            type = NotificationType.COMMENTS,
+            channel = NotificationChannel.IN_APP,
+            isEnabled = false,
+        )
+
+        // When
+        repository.updatePreference(
+            type = NotificationType.PAYMENTS,
+            channel = NotificationChannel.IN_APP,
+            isEnabled = false,
+        )
+
+        // Then
+        assertEquals(listOf(1_000L, 1_001L), local.upserts.map { it.updatedAt })
+    }
+
+    @Test
+    fun `GIVEN pending in-app and new push choices WHEN pushing THEN sends each of them in its server column`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    comments = false,
+                    paymentRequests = true,
+                    inAppBills = false,
+                    inAppPayments = true,
+                    inAppComments = false,
+                    inAppPeopleAndGroups = true,
+                    inAppPaymentRequests = false,
+                    updatedAt = 42L,
+                    pendingSync = true,
+                ),
+            )
+
+            // When
+            val result = repository.uploadPendingPreferences(userId = "user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(
+                    dto(
+                        comments = false,
+                        paymentRequests = true,
+                        inAppBills = false,
+                        inAppPayments = true,
+                        inAppComments = false,
+                        inAppPeopleAndGroups = true,
+                        inAppPaymentRequests = false,
+                        updatedAt = 42L,
+                    ),
+                ),
+                remote.upserted,
+            )
+        }
+
+    @Test
+    fun `GIVEN an in-app turned off WHEN pushing THEN sends that in-app off`() = runTest {
+        // Given
+        prepareScenario(
+            now = 1_000L,
+            stored = null,
+            profileOwner = "user-1",
+        )
+        repository.updatePreference(
+            type = NotificationType.PEOPLE_AND_GROUPS,
+            channel = NotificationChannel.IN_APP,
+            isEnabled = false,
+        )
+
+        // When
+        repository.uploadPendingPreferences(userId = "user-1")
+
+        // Then
+        assertEquals(
+            listOf(
+                dto(
+                    inAppPeopleAndGroups = false,
+                    updatedAt = 1_000L,
+                ),
+            ),
+            remote.upserted,
+        )
+        assertEquals(false, local.row.value?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN an older synced copy WHEN pulling a newer one with in-app off THEN applies the server in-app`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    updatedAt = 42L,
+                    pendingSync = false,
+                ),
+                remotePreferences = dto(
+                    comments = false,
+                    inAppBills = false,
+                    inAppPaymentRequests = false,
+                    updatedAt = 100L,
+                ),
+            )
+
+            // When
+            repository.downloadPreferences(userId = "user-1")
+
+            // Then
+            assertEquals(
+                entity(
+                    comments = false,
+                    inAppBills = false,
+                    inAppPaymentRequests = false,
+                    updatedAt = 100L,
+                    pendingSync = false,
+                ),
+                local.row.value,
+            )
+            assertEquals(
+                NotificationPreferences.DEFAULT.inApp - NotificationType.BILLS - NotificationType.PAYMENT_REQUESTS,
+                repository.observePreferences().first().inApp,
+            )
+        }
+
+    @Test
+    fun `GIVEN an in-app changed offline WHEN pulling a newer server value THEN the server value wins`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                inAppComments = false,
+                updatedAt = 42L,
+                pendingSync = true,
+            ),
+            remotePreferences = dto(
+                inAppComments = true,
+                updatedAt = 100L,
+            ),
+        )
+
+        // When
+        repository.downloadPreferences(userId = "user-1")
+
+        // Then
+        assertEquals(
+            entity(
+                inAppComments = true,
+                updatedAt = 100L,
+                pendingSync = false,
+            ),
+            local.row.value,
+        )
+        assertFalse(repository.observeHasPendingChanges().first())
+    }
+
+    @Test
+    fun `GIVEN an in-app changed offline WHEN pulling an older server value THEN the change is kept pending`() =
+        runTest {
+            // Given
+            val stored = entity(
+                inAppComments = false,
+                updatedAt = 100L,
+                pendingSync = true,
+            )
+            prepareScenario(
+                stored = stored,
+                remotePreferences = dto(
+                    inAppComments = true,
+                    updatedAt = 42L,
+                ),
+            )
+
+            // When
+            repository.downloadPreferences(userId = "user-1")
+
+            // Then
+            assertEquals(stored, local.row.value)
+            assertTrue(repository.observeHasPendingChanges().first())
+        }
+
+    @Test
+    fun `GIVEN in-app choices only the server has WHEN pulling THEN shows them`() = runTest {
+        // Given
+        prepareScenario(
+            stored = null,
+            remotePreferences = dto(
+                inAppPayments = false,
+                inAppPeopleAndGroups = false,
+                updatedAt = 100L,
+            ),
+        )
+
+        // When
+        repository.downloadPreferences(userId = "user-1")
+
+        // Then
+        assertEquals(
+            NotificationPreferences(
+                push = NotificationPreferences.DEFAULT.push,
+                inApp = setOf(
+                    NotificationType.BILLS,
+                    NotificationType.COMMENTS,
+                    NotificationType.PAYMENT_REQUESTS,
+                ),
+            ),
+            repository.observePreferences().first(),
+        )
+    }
+
     private fun entity(
         newExpense: Boolean = true,
         paymentMarked: Boolean = true,
         settleReminders: Boolean = true,
         invites: Boolean = false,
+        comments: Boolean = true,
+        paymentRequests: Boolean = true,
+        inAppBills: Boolean = true,
+        inAppPayments: Boolean = true,
+        inAppComments: Boolean = true,
+        inAppPeopleAndGroups: Boolean = true,
+        inAppPaymentRequests: Boolean = true,
         updatedAt: Long = 1L,
         pendingSync: Boolean = false,
         ownerUserId: String? = "user-1",
@@ -853,6 +1296,13 @@ class NotificationPreferencesRepositoryImplTest {
         paymentMarked = paymentMarked,
         settleReminders = settleReminders,
         invites = invites,
+        comments = comments,
+        paymentRequests = paymentRequests,
+        inAppBills = inAppBills,
+        inAppPayments = inAppPayments,
+        inAppComments = inAppComments,
+        inAppPeopleAndGroups = inAppPeopleAndGroups,
+        inAppPaymentRequests = inAppPaymentRequests,
         updatedAt = updatedAt,
         pendingSync = pendingSync,
         ownerUserId = ownerUserId,
@@ -863,6 +1313,13 @@ class NotificationPreferencesRepositoryImplTest {
         paymentMarked: Boolean = true,
         settleReminders: Boolean = true,
         invites: Boolean = false,
+        comments: Boolean = true,
+        paymentRequests: Boolean = true,
+        inAppBills: Boolean = true,
+        inAppPayments: Boolean = true,
+        inAppComments: Boolean = true,
+        inAppPeopleAndGroups: Boolean = true,
+        inAppPaymentRequests: Boolean = true,
         updatedAt: Long,
     ): NotificationPreferencesDto = NotificationPreferencesDto(
         userId = "user-1",
@@ -870,6 +1327,13 @@ class NotificationPreferencesRepositoryImplTest {
         paymentMarked = paymentMarked,
         settleReminders = settleReminders,
         invites = invites,
+        comments = comments,
+        paymentRequests = paymentRequests,
+        inAppBills = inAppBills,
+        inAppPayments = inAppPayments,
+        inAppComments = inAppComments,
+        inAppPeopleAndGroups = inAppPeopleAndGroups,
+        inAppPaymentRequests = inAppPaymentRequests,
         updatedAt = updatedAt,
     )
 

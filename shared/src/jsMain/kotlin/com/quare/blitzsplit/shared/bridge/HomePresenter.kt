@@ -4,6 +4,7 @@ package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBill
@@ -15,6 +16,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.koin.mp.KoinPlatform
 import software.quare.loadable.valueOrNull
 
@@ -129,6 +131,8 @@ class JsHomeState(
     val activityUnreadCount: Int,
     // Why: "Buscar…" and ⌘K only once there is a group to look in.
     val canSearch: Boolean,
+    // Why: NotificationPrompt's name, "SOFT_ASK" or "BLOCKED" (the web never refuses once), or null with no card.
+    val notificationPrompt: String?,
 )
 
 class HomePresenter {
@@ -170,17 +174,28 @@ class HomePresenter {
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
                 activityUnreadCount = state.activityUnreadCount,
                 canSearch = state.canSearch,
+                notificationPrompt = state.notificationPrompt?.name,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
         return JsWatch(watch::cancel)
     }
 
-    // Why: "change-error", a toast in the page's words.
+    /*
+     * Why: "change-error" and "notifications-on", toasts in the page's words; "request-notification-permission", the
+     * browser's prompt. A browser can't open its own settings, so the blocked card only says where.
+     */
     fun observeActions(onAction: (String) -> Unit): JsWatch {
-        val actions = viewModel.uiAction.map { action ->
+        val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 HomeUiAction.ShowChangeError -> "change-error"
+
+                HomeUiAction.ShowNotificationsOn -> "notifications-on"
+
+                HomeUiAction.RequestNotificationPermission -> "request-notification-permission"
+
+                // Why: Apple's quiet delivery: a browser has none, and never reports it can ask quietly.
+                HomeUiAction.OpenNotificationSettings, HomeUiAction.RequestQuietNotifications -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -277,6 +292,21 @@ class HomePresenter {
 
     fun dismissRecoveryCodeCard() {
         viewModel.onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed)
+    }
+
+    // Why: the NotificationPermission's name, read from the browser's Notification.permission.
+    fun notificationPermissionChecked(permissionName: String) {
+        val permission = NotificationPermission.entries.firstOrNull { it.name == permissionName } ?: return
+        viewModel.onEvent(HomeUiEvent.OnNotificationPermissionChecked(permission, canAskQuietly = false))
+    }
+
+    // Why: the notification card: "Turn on" and "Not now".
+    fun turnOnNotifications() {
+        viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+    }
+
+    fun dismissNotificationPrompt() {
+        viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
     }
 
     // Why: "Desfazer" on the notice of a payment just recorded.

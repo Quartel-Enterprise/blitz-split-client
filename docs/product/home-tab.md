@@ -11,8 +11,9 @@ The home tab, its shortcuts and pinned groups.
     `HomeSummary.main` and `others`), with "Owed to you" and "You owe", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Balances filtered (You owe straight to settling up while only
     one person is in it), disabled at zero. Three shortcuts: "Scan receipt", which opens Split a bill as
-    "Split a bill" does (asking the group first) and its camera at once (7.1e, `Route.SplitBill.scansReceipt`;
-    offline disabled with "Needs internet"),
+    "Split a bill" does (asking the group first) and asks at once where the receipt's photo comes from, "Take photo"
+    or the gallery, as the form's "Scan receipt" does (7.1e, `Route.SplitBill.scansReceipt`; offline disabled with
+    "Needs internet"),
     "Record payment", which asks "Who paid whom?" first (`Route.PickPayment`: every open pair of every
     group, the most recent group first, pairs with you first; the pair opens Record payment in its place), and
     "New group". "Your groups": up to three open groups, the pinned first, then the latest activity, as Groups draws
@@ -32,7 +33,9 @@ The home tab, its shortcuts and pinned groups.
     "so far · the rest is on its way"; offline the skeletons stay with "No internet. Your groups show up once you're back
     online." (Mac: the window's subtitle); the sync chip as Groups'; an account with
     neither Google nor Apple shows "Save your recovery code" once the code was snoozed ("Remind me later"), ✕
-    hiding it until the next launch. A Flip's cover screen shows only Overall balance, the latest bill and "Open the phone to see everything".
+    hiding it until the next launch; otherwise, once there is a group, the notification card while the system doesn't
+    allow them ("Know when a bill comes in", or on Apple "Notifications arrive quietly" while it delivers quietly, in
+    [activity-and-push.md](activity-and-push.md)). A Flip's cover screen shows only Overall balance, the latest bill and "Open the phone to see everything".
   - "Pin to Home" (the group's ⋮/⋯ menu on Expenses and Balances, "Unpin from Home" once pinned) is each
     user's own, synced with their account and never shown to other members (`group_pins`, `GroupPinRepository`), works
     offline, and only orders Home's "Your groups" (Groups keeps its order). A settled group stays out of Home

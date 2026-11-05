@@ -2,16 +2,31 @@
 <resources>
     <string name="notification_settings_title">Notifications</string>
     <string name="notification_settings_denied_title">Blitz Split notifications are turned off on Android.</string>
-    <string name="notification_settings_denied_body">Turn them on in the system settings to get the notices below.</string>
+    <string name="notification_settings_denied_body">Turn them on in the system settings to get the pushes below. The bell keeps working.</string>
     <string name="notification_settings_open_settings">Open settings</string>
-    <string name="notification_settings_section">Notify me when</string>
-    <string name="notification_settings_new_expense">New expense in my groups</string>
-    <string name="notification_settings_new_expense_detail">When someone adds an expense with you</string>
-    <string name="notification_settings_payment_marked">Someone marked a payment to me</string>
-    <string name="notification_settings_payment_marked_detail">When someone says they\'ve paid you</string>
-    <string name="notification_settings_settle_reminders">Settle-up reminders</string>
-    <string name="notification_settings_settle_reminders_detail">Once a week, if there\'s an open balance</string>
-    <string name="notification_settings_invites">Invites and new members</string>
-    <string name="notification_settings_invites_detail">When someone joins one of your groups</string>
+    <string name="notification_settings_refused_body">Android lets you allow them once more to get the pushes below. The bell keeps working.</string>
+    <string name="notification_settings_turn_on">Turn on</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Blocked in Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Open Android settings for %1$s</string>
+    <string name="notification_settings_section">Notify me about</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">In app</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push sends a notification to this device. In app marks it new on the bell and in Activity; turned off, it still shows in Activity, already read.</string>
+    <string name="notification_settings_bills">Bills</string>
+    <string name="notification_settings_bills_detail">New, edited or deleted bills you\'re in</string>
+    <string name="notification_settings_payments">Payments and settle-ups</string>
+    <string name="notification_settings_payments_detail">Payments to or from you, and simplified debts</string>
+    <string name="notification_settings_comments">Comments</string>
+    <string name="notification_settings_comments_detail">On bills you\'re in and threads you wrote in</string>
+    <string name="notification_settings_people_and_groups">People and groups</string>
+    <string name="notification_settings_people_and_groups_detail">Who joins or leaves your groups, and what changes in them</string>
+    <string name="notification_settings_payment_requests">Payment requests</string>
+    <string name="notification_settings_payment_requests_detail">When someone asks you to pay</string>
+    <string name="notification_settings_balance_reminder">Open balance reminder</string>
+    <string name="notification_settings_balance_reminder_detail">Once a week, if there\'s an open balance</string>
     <string name="notification_settings_footer">Notices arrive when there\'s internet. To mute a group, use the menu inside it.</string>
 </resources>

@@ -28,6 +28,10 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.NoPhotography
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,6 +50,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,7 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.feature.join.presentation.model.CameraAccess
+import com.quare.blitzsplit.feature.join.presentation.model.CameraStage
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinWithLinkUiState
 
@@ -74,7 +79,7 @@ internal fun CameraPane(
 ) {
     BlitzSplitTheme(isDark = true) {
         Box(modifier = modifier) {
-            if (state.cameraAccess == CameraAccess.GRANTED) camera(Modifier.fillMaxSize())
+            if (state.showsCameraPreview) camera(Modifier.fillMaxSize())
             // Why: the design's scrim, dark toward the edges, so the white marks and text read over a bright room.
             Box(
                 modifier = Modifier
@@ -107,20 +112,30 @@ internal fun CameraPane(
                         modifier = Modifier.verticalScroll(rememberScrollState()),
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (state.cameraAccess == CameraAccess.DENIED) {
-                            CameraProblemMessage(
+                        when (state.cameraStage) {
+                            CameraStage.PROMPT -> CameraPromptMessage(
+                                onOpenCamera = { onEvent(JoinWithLinkUiEvent.OnOpenCameraClicked) },
+                            )
+
+                            CameraStage.NO_CAMERA -> CameraProblemMessage(
+                                title = null,
+                                message = stringResource(R.string.join_scan_no_camera),
+                                onOpenSettings = null,
+                            )
+
+                            CameraStage.DENIED -> CameraProblemMessage(
                                 title = stringResource(R.string.join_scan_denied_title),
                                 message = stringResource(R.string.join_scan_denied_message),
                                 onOpenSettings = { onEvent(JoinWithLinkUiEvent.OnOpenSettingsClicked) },
                             )
-                        } else if (state.isCameraUnavailable) {
-                            CameraProblemMessage(
+
+                            CameraStage.FAILED -> CameraProblemMessage(
                                 title = null,
                                 message = stringResource(R.string.join_scan_camera_failed),
                                 onOpenSettings = null,
                             )
-                        } else {
-                            ViewfinderOverlay(
+
+                            CameraStage.VIEWFINDER -> ViewfinderOverlay(
                                 state = state,
                                 size = viewfinderSize,
                             )
@@ -251,11 +266,58 @@ private fun InvalidQrBanner() {
     }
 }
 
+// Why: in the camera's place until "Open camera", the only tap that asks for the camera and opens it.
+@Composable
+private fun CameraPromptMessage(onOpenCamera: () -> Unit) {
+    CameraMessage(
+        icon = Icons.Outlined.QrCodeScanner,
+        title = stringResource(R.string.join_scan_prompt_title),
+        message = stringResource(R.string.join_scan_prompt_message),
+    ) {
+        Button(
+            onClick = onOpenCamera,
+            modifier = Modifier.heightIn(min = 48.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.PhotoCamera,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            Text(stringResource(R.string.join_scan_open_camera))
+        }
+    }
+}
+
 @Composable
 private fun CameraProblemMessage(
     title: String?,
     message: String,
     onOpenSettings: (() -> Unit)?,
+) {
+    CameraMessage(
+        icon = Icons.Outlined.NoPhotography,
+        title = title,
+        message = message,
+    ) {
+        if (onOpenSettings != null) {
+            FilledTonalButton(
+                onClick = onOpenSettings,
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) {
+                Text(stringResource(R.string.join_scan_open_settings))
+            }
+        }
+    }
+}
+
+// Why: what the camera's place says instead of the camera: an icon, the words and what can be done.
+@Composable
+private fun CameraMessage(
+    icon: ImageVector,
+    title: String?,
+    message: String,
+    action: @Composable () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -271,7 +333,7 @@ private fun CameraProblemMessage(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Outlined.NoPhotography,
+                imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(44.dp),
                 tint = onCamera,
@@ -292,14 +354,7 @@ private fun CameraProblemMessage(
             color = onCamera,
             textAlign = TextAlign.Center,
         )
-        if (onOpenSettings != null) {
-            FilledTonalButton(
-                onClick = onOpenSettings,
-                modifier = Modifier.heightIn(min = 48.dp),
-            ) {
-                Text(stringResource(R.string.join_scan_open_settings))
-            }
-        }
+        action()
     }
 }
 

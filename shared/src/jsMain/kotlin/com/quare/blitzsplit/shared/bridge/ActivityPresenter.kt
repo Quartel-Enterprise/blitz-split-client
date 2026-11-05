@@ -292,6 +292,10 @@ class ActivityPresenter(
         viewModel.onEvent(ActivityUiEvent.OnMarkAllReadClicked)
     }
 
+    fun openNotificationSettings() {
+        viewModel.onEvent(ActivityUiEvent.OnNotificationSettingsClicked)
+    }
+
     fun openFilter() {
         viewModel.onEvent(ActivityUiEvent.OnFilterClicked)
     }

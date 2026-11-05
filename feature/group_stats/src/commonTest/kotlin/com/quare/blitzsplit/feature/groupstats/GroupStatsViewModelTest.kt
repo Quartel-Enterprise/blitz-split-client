@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryTarget
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainNote
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPayer
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
@@ -1827,6 +1828,195 @@ class GroupStatsViewModelTest {
             // Then
             assertEquals(100, percents.sum())
         }
+
+    @Test
+    fun `GIVEN the whole trip WHEN tapping Food THEN opens its bills of the whole history`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stored = categorizedTripBills)
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.ROW))
+
+        // Then
+        assertEquals(
+            statsStack + Route.CategoryExpenses(
+                GROUP_ID,
+                AppCategory.FOOD.key,
+                periodStartMillis = null,
+                periodEndMillis = null,
+                isMonthPeriod = false,
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN this month WHEN tapping Food THEN opens its bills from the first of the month to today`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.RING))
+
+            // Then
+            assertEquals(
+                statsStack + Route.CategoryExpenses(
+                    GROUP_ID,
+                    AppCategory.FOOD.key,
+                    periodStartMillis = millisOf("2026-10-01T00:00:00Z"),
+                    periodEndMillis = millisOf("2026-10-29T00:00:00Z"),
+                    isMonthPeriod = true,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN picked dates WHEN tapping Food THEN opens its bills from the first to the last day picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+            viewModel.onEvent(
+                GroupStatsUiEvent.OnCustomPeriodPicked(
+                    startMillis = millisOf("2026-10-24T12:00:00Z"),
+                    endMillis = millisOf("2026-10-26T12:00:00Z"),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.LEGEND))
+
+            // Then
+            assertEquals(
+                statsStack + Route.CategoryExpenses(
+                    GROUP_ID,
+                    AppCategory.FOOD.key,
+                    periodStartMillis = millisOf("2026-10-24T00:00:00Z"),
+                    periodEndMillis = millisOf("2026-10-26T00:00:00Z"),
+                    isMonthPeriod = false,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN picked dates without Travel WHEN tapping Travel THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stored = categorizedTripBills)
+        viewModel.onEvent(
+            GroupStatsUiEvent.OnCustomPeriodPicked(
+                startMillis = millisOf("2026-10-24T12:00:00Z"),
+                endMillis = millisOf("2026-10-26T12:00:00Z"),
+            ),
+        )
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.TRAVEL.key, StatsCategoryTarget.ROW))
+
+        // Then
+        assertEquals(statsStack, navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN By category WHEN tapping a category nobody spent on THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stored = categorizedTripBills)
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.HEALTH.key, StatsCategoryTarget.ROW))
+
+        // Then
+        assertEquals(statsStack, navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the biggest bill beside the statistics WHEN tapping a category THEN its bills replace it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+            viewModel.onEvent(GroupStatsUiEvent.OnBiggestExpenseClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.ROW))
+
+            // Then
+            assertEquals(
+                statsStack + Route.CategoryExpenses(
+                    GROUP_ID,
+                    AppCategory.FOOD.key,
+                    periodStartMillis = null,
+                    periodEndMillis = null,
+                    isMonthPeriod = false,
+                ),
+                navigator.backStack.value,
+            )
+            assertEquals(listOf("stats_category_clicked" to mapOf<String, Any>("target" to "row")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a profile over the statistics WHEN a late category tap arrives THEN nothing opens nor is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+            navigator.navigate(Route.Profile)
+            val stack = navigator.backStack.value
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.RING))
+
+            // Then
+            assertEquals(stack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN By category WHEN tapping a slice of its ring THEN sends the category clicked from the ring`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.RING))
+
+            // Then
+            assertEquals(listOf("stats_category_clicked" to mapOf<String, Any>("target" to "ring")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN By category WHEN tapping a line of its legend THEN sends the category clicked from the legend`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.LEGEND))
+
+            // Then
+            assertEquals(listOf("stats_category_clicked" to mapOf<String, Any>("target" to "legend")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN By category WHEN tapping a row THEN sends the category clicked from the row`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.TRAVEL.key, StatsCategoryTarget.ROW))
+
+            // Then
+            assertEquals(listOf("stats_category_clicked" to mapOf<String, Any>("target" to "row")), trackedEvents)
+        }
+
+    // Why: the trip's dinner at a restaurant, under Food, and its boat tour, under Travel.
+    private val categorizedTripBills: List<Expense>
+        get() = listOf(
+            tripBills[0].copy(categoryId = AppCategory.FOOD_RESTAURANT.key),
+            tripBills[1].copy(categoryId = AppCategory.TRAVEL_TOURS.key),
+        )
 
     private fun paid(
         memberId: String,

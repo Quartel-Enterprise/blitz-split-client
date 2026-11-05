@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationPermission
 import software.quare.loadable.Loadable
 import software.quare.loadable.valueOrNull
 
@@ -52,6 +53,14 @@ data class HomeUiState(
     val isRefreshing: Boolean,
     // Why: the count on Início's bell, every unread event of Atividade whatever its filters.
     val activityUnreadCount: Int,
+    // Why: the system's, as the platform read it on appear and on each return to the app; null until then or without push.
+    val notificationPermission: NotificationPermission?,
+    // Why: Apple: the system can deliver quietly (provisional) with no prompt, as the platform said with the permission.
+    val canAskQuietly: Boolean,
+    // Why: this Home already asked to deliver quietly, so a request that changed nothing falls back to the soft ask.
+    val hasAskedQuietly: Boolean,
+    // Why: the card was answered less than three weeks ago; true until the device's settings are read, so it never flashes.
+    val isNotificationPromptSnoozed: Boolean,
 ) {
     val isFirstDownload: Boolean
         get() = firstDownload != null
@@ -95,4 +104,38 @@ data class HomeUiState(
 
     val canRetrySync: Boolean
         get() = syncBadge == SyncBadge.FAILED
+
+    /*
+     * Why: once there is a group to be notified about, Apple delivers quietly with no prompt, as the card would come; its
+     * card then offers banners and sounds. Never asked again by this Home, whatever the request changed.
+     */
+    val shouldAskQuietly: Boolean
+        get() = hasGroups && canAskQuietly && !hasAskedQuietly &&
+            notificationPermission == NotificationPermission.NOT_DETERMINED
+
+    /*
+     * Why: the notification card, once there is a group to be notified about (one created or joined), never over the
+     * first use, the first download nor the recovery code's card or sheet, and only while the system doesn't allow them.
+     */
+    val notificationPrompt: NotificationPrompt?
+        get() {
+            if (!hasGroups || isFirstDownload || showsRecoveryCodeCard || showsRecoveryCodePrompt) return null
+            if (isNotificationPromptSnoozed) return null
+            return when (notificationPermission) {
+                // Why: Apple delivers quietly first, so the soft ask only comes if that request changed nothing.
+                NotificationPermission.NOT_DETERMINED -> if (canAskQuietly && !hasAskedQuietly) {
+                    null
+                } else {
+                    NotificationPrompt.SOFT_ASK
+                }
+
+                NotificationPermission.PROVISIONAL -> NotificationPrompt.QUIET
+
+                NotificationPermission.REFUSED_ONCE -> NotificationPrompt.ASK_AGAIN
+
+                NotificationPermission.DENIED -> NotificationPrompt.BLOCKED
+
+                NotificationPermission.GRANTED, null -> null
+            }
+        }
 }

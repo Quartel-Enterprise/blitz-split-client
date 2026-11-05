@@ -74,12 +74,12 @@ already open in the stack goes back to that group instead, so the group never st
 `androidApp/.../navigation/AppNavDisplay.kt` collects the back stack and hands it to `NavDisplay`:
 
 ```kotlin
-NavDisplay(
+val entries = rememberAppNavEntries(
     backStack = backStack,
-    onBack = { appViewModel.navigator.navigateBack() },
-    entryDecorators = listOf(
+    decorators = listOf(
         rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
         rememberViewModelStoreNavEntryDecorator(),
+        homeBarsEntryDecorator,
     ),
     entryProvider = entryProvider {
         entry<Route.Welcome> { WelcomeScreen() }
@@ -88,10 +88,27 @@ NavDisplay(
         entry<Route.Groups> { GroupsScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
     },
 )
+HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
+    NavDisplay(
+        entries = entries,
+        sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
+        onBack = { appViewModel.navigator.navigateBack() },
+    )
+}
 ```
 
 The ViewModel store decorator gives each entry its own ViewModel, cleared when the entry is popped. The system back
 gesture goes through `navigateBack()`, so the shared stack stays the source of truth.
+
+Groups and Contacts are the one exception (`rememberAppNavEntries`, `HomeTabEntries.kt`): while one of them is
+the route right above Home, it is decorated with `rememberDecoratedNavEntries` on its own, outside the rest of the
+stack, so another tab taking its place doesn't pop its decorator state. Its ViewModel and saved state stay, as
+Apple's tabs keep theirs, and the tab comes back as it was left instead of on a skeleton; both are cleared once Home stops being
+the root. The back stack itself is unchanged: the shared ViewModels still see the tabs take each other's place, so
+what they do when a tab leaves the stack (Groups closing its search) still happens. Balances isn't kept, since its
+route carries the filter Home's cards ask for. The home's bar or rail is drawn once around `NavDisplay`
+(`HomeBarsLayout`), see
+[responsive-layouts.md](responsive-layouts.md).
 
 ### Apple: `NavigationStack` path
 
@@ -183,7 +200,12 @@ deeper (a group's "Ver na Atividade", a push notification) `Navigator.openActivi
 the stack, closing whatever it opened, and otherwise puts it right above Início; without Início in the stack (the
 welcome, the restore) it does nothing. `popToGroups()` is `openHomeTab(Route.Groups)`. Each tab's ViewModel has an
 `OnHomeTabClicked`, and on Apple the `TabView` selects the tab from the route right above Início. Back from any tab
-returns to Início. Android's rail beside a group or its Estatísticas drawn alone sends the
+returns to Início. Apple's `TabView` keeps every tab it has shown, ViewModel included, while another tab replaces it
+right above Início: Grupos and Início own theirs in `MainTabView`, and Contatos and Saldos stay mounted (Saldos as the
+last route it showed, a new ViewModel for a route with another filter). Android and the web drop a tab's ViewModel
+with its route. So a shared ViewModel never assumes it starts again when its route comes back onto the stack: one
+that must reset something on that return watches `navigator.backStack` for its route coming back
+(`GlobalBalancesViewModel` takes the route's filter again), the rule every platform then shares. Android's rail beside a group or its Estatísticas drawn alone sends the
 screen's `OnRailTabClicked(HomeTab)` (`HomeTab` in `:core:model`, which Android's bar and rail draw too):
 `Navigator.openHomeTab(HomeTab)` goes back to that tab while it is in the stack (Saldos with whatever filter), and
 otherwise opens its first route through `openHomeTab(Route)`. The rail selects the tab the screen sits in, the nearest
@@ -227,8 +249,8 @@ the only source of truth: nothing about the window reaches it, and a phone walks
   says so (a tablet lying down and a book, the halves split on the hinge the device reports: see
   [responsive-layouts.md](responsive-layouts.md)), else at one, which leaves the strategy out and the screens as on a phone. The strategy only claims the pane entries
   on top, so any other route above the groups (the profile, a joined invite) is a scene of its own, full screen,
-  and a dialog or sheet over the group keeps the scene drawn under it. `Route.GroupStats` carries `detailPane` too on
-  a tablet lying down (decision 2), so the scene draws it in the group's place in the pane, with its back arrow; on a
+  and a dialog or sheet over the group keeps the scene drawn under it. `Route.GroupStats` (and `Route.CategoryExpenses`,
+  the bills of a category it opens) carries `detailPane` too on a tablet lying down (decision 2), so the scene draws it in the group's place in the pane, with its back arrow; on a
   book it carries nothing and covers the window, split on the hinge. `LocalInDetailPane` tells a screen it sits in the
   pane: `InGroupPane` reads it from the scene itself (`LocalListDetailSceneScope`, which Material provides to the
   panes it draws, while the list pane shows), never from the window, so a group drawn alone keeps its back arrow.

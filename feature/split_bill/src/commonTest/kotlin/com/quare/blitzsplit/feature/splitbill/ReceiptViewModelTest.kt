@@ -46,6 +46,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryHint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategorySuggestionReason
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
@@ -114,7 +115,7 @@ class ReceiptViewModelTest {
         // Then
         assertTrue(state.showsScanReceipt)
         assertTrue(state.canScanReceipt)
-        assertFalse(state.showsReceiptCamera)
+        assertFalse(state.showsReceiptSourceChoice)
         assertNull(state.receipt)
     }
 
@@ -141,8 +142,8 @@ class ReceiptViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
 
             // Then
-            assertFalse(viewModel.uiState.value.isReceiptCameraRequested)
-            assertFalse(viewModel.uiState.value.showsReceiptCamera)
+            assertFalse(viewModel.uiState.value.isReceiptSourceRequested)
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
         }
 
     @Test
@@ -168,7 +169,7 @@ class ReceiptViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
 
         // Then
-        assertFalse(viewModel.uiState.value.showsReceiptCamera)
+        assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
     }
 
     @Test
@@ -197,8 +198,8 @@ class ReceiptViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertFalse(state.isReceiptCameraRequested)
-        assertFalse(state.showsReceiptCamera)
+        assertFalse(state.isReceiptSourceRequested)
+        assertFalse(state.showsReceiptSourceChoice)
     }
 
     @Test
@@ -212,7 +213,7 @@ class ReceiptViewModelTest {
 
             // Then
             assertTrue(state.isLoaded)
-            assertTrue(state.showsReceiptCamera)
+            assertTrue(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -229,7 +230,7 @@ class ReceiptViewModelTest {
 
             // Then
             assertNotNull(state.groupSelection)
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -249,7 +250,7 @@ class ReceiptViewModelTest {
             val state = viewModel.uiState.value
             assertNull(state.groupSelection)
             assertEquals(TRIP_ID, state.groupId)
-            assertTrue(state.showsReceiptCamera)
+            assertTrue(state.showsReceiptSourceChoice)
         }
 
     @Test
@@ -279,7 +280,7 @@ class ReceiptViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
 
         // Then
-        assertTrue(viewModel.uiState.value.showsReceiptCamera)
+        assertTrue(viewModel.uiState.value.showsReceiptSourceChoice)
     }
 
     @Test
@@ -289,11 +290,11 @@ class ReceiptViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraDismissed)
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPickerDismissed)
 
         // Then
         val state = viewModel.uiState.value
-        assertFalse(state.showsReceiptCamera)
+        assertFalse(state.showsReceiptSourceChoice)
         assertNull(state.receipt)
         assertTrue(state.showsScanReceipt)
         assertTrue(readSources.isEmpty())
@@ -311,7 +312,7 @@ class ReceiptViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertFalse(state.showsReceiptCamera)
+            assertFalse(state.showsReceiptSourceChoice)
             assertEquals(
                 BillReceipt(
                     ReceiptStatus.READING,
@@ -324,6 +325,257 @@ class ReceiptViewModelTest {
             assertTrue(state.isReadingReceipt)
             assertFalse(state.showsScanReceipt)
             assertFalse(state.canScanReceipt)
+            assertEquals(listOf(source.toList()), readSources)
+        }
+
+    @Test
+    fun `GIVEN the choice open WHEN picking Tirar foto THEN the choice closes and the camera opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isReceiptSourceRequested)
+            assertFalse(state.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.CAMERA, state.receiptSource)
+            assertEquals(ReceiptPhotoSource.CAMERA, state.shownReceiptSource)
+            assertTrue(readSources.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Inicio shortcut to a group WHEN picking Escolher da galeria THEN the gallery opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = newRoute(scansReceipt = true))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.PHOTOS, state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN the choice open WHEN picking Escolher arquivo THEN the file chooser opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.FILES))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertFalse(state.showsReceiptSourceChoice)
+        assertEquals(ReceiptPhotoSource.FILES, state.shownReceiptSource)
+    }
+
+    @Test
+    fun `GIVEN the choice asked for without a camera WHEN it is skipped THEN the gallery opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.PHOTOS))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.PHOTOS, state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN the choice never asked for WHEN it is skipped THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
+
+        // Then
+        assertNull(viewModel.uiState.value.shownReceiptSource)
+    }
+
+    @Test
+    fun `GIVEN the choice never asked for WHEN a source is picked THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertFalse(state.isReceiptSourceRequested)
+        assertNull(state.receiptSource)
+        assertNull(state.shownReceiptSource)
+    }
+
+    @Test
+    fun `GIVEN the camera already picked WHEN a late tap picks the gallery THEN the camera stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.CAMERA, state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN Rachar em qual grupo open WHEN a source is picked THEN the request still waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNotNull(state.groupSelection)
+            assertTrue(state.isReceiptSourceRequested)
+            assertNull(state.receiptSource)
+            assertNull(state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN a source tapped while Rachar em qual grupo is open WHEN tapping Continuar THEN the choice opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsReceiptSourceChoice)
+            assertNull(state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN Rachar em qual grupo open WHEN the choice is skipped THEN no choice opens after Continuar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.FILES, state.receiptSource)
+        }
+
+    @Test
+    fun `GIVEN the choice open and the bill saving WHEN a source is picked THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            expenses.createGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isSaving)
+            assertNull(state.receiptSource)
+            assertNull(state.shownReceiptSource)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the camera picked WHEN tapping Ler cupom fiscal again THEN the choice opens without the camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsReceiptSourceChoice)
+            assertNull(state.receiptSource)
+            assertNull(state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN the gallery open WHEN it closes without a photo THEN neither the choice nor the gallery shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPickerDismissed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isReceiptSourceRequested)
+            assertFalse(state.showsReceiptSourceChoice)
+            assertNull(state.receiptSource)
+            assertNull(state.shownReceiptSource)
+            assertNull(state.receipt)
+            assertTrue(readSources.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the gallery open WHEN a photo is picked THEN the gallery closes and the receipt is being read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(holdsReads = true)
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isReceiptSourceRequested)
+            assertNull(state.receiptSource)
+            assertNull(state.shownReceiptSource)
+            assertEquals(ReceiptStatus.READING, state.receipt?.status)
             assertEquals(listOf(source.toList()), readSources)
         }
 
@@ -758,7 +1010,7 @@ class ReceiptViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
 
             // Then
-            assertTrue(viewModel.uiState.value.showsReceiptCamera)
+            assertTrue(viewModel.uiState.value.showsReceiptSourceChoice)
         }
 
     @Test
@@ -1832,7 +2084,120 @@ class ReceiptViewModelTest {
         trackedEvents.clear()
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnReceiptCameraDismissed)
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPickerDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the choice open WHEN picking Tirar foto THEN sends the source picked as camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // Then
+            assertEquals(
+                listOf("receipt_source_picked" to mapOf<String, Any>("source" to ReceiptPhotoSource.CAMERA)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the choice open WHEN picking Escolher da galeria THEN sends the source picked as photos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // Then
+            assertEquals(
+                listOf("receipt_source_picked" to mapOf<String, Any>("source" to ReceiptPhotoSource.PHOTOS)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the choice open WHEN picking Escolher arquivo THEN sends the source picked as files`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.FILES))
+
+            // Then
+            assertEquals(
+                listOf("receipt_source_picked" to mapOf<String, Any>("source" to ReceiptPhotoSource.FILES)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the choice asked for without a camera WHEN it is skipped THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the choice never asked for WHEN a source is picked THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the camera already picked WHEN a late tap picks the gallery THEN sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Rachar em qual grupo open WHEN a source is picked THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            route = fromHome(scansReceipt = true),
+            storedGroups = listOf(dinner, trip),
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
 
         // Then
         assertTrue(trackedEvents.isEmpty())

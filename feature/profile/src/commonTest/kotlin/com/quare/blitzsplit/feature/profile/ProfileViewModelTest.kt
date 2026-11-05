@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.model.PaymentKey
@@ -3239,7 +3240,7 @@ class ProfileViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(listOf("cpf"), state.paymentKeys.valueOrNull()?.map { it.id })
-            assertEquals(3, state.activeNotificationCount.valueOrNull())
+            assertEquals(5, state.activeNotificationCount.valueOrNull())
         }
 
     @Test
@@ -4117,7 +4118,7 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `GIVEN notifications never changed WHEN the profile opens THEN shows 3 active notifications`() =
+    fun `GIVEN notifications never changed WHEN the profile opens THEN shows 5 active notifications`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -4126,17 +4127,42 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(3, state.activeNotificationCount.valueOrNull())
+            assertEquals(5, state.activeNotificationCount.valueOrNull())
         }
 
     @Test
-    fun `GIVEN the default notifications WHEN turning invites on THEN shows 4 active notifications`() =
+    fun `GIVEN the default notifications WHEN turning invites on THEN shows 6 active notifications`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
 
             // When
-            notificationPreferences.updatePreference(NotificationType.INVITES, isEnabled = true)
+            notificationPreferences.updatePreference(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
+
+            // Then
+            assertEquals(
+                6,
+                viewModel.uiState.value.activeNotificationCount
+                    .valueOrNull(),
+            )
+        }
+
+    @Test
+    fun `GIVEN the default notifications WHEN turning one off THEN shows 4 active notifications`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            notificationPreferences.updatePreference(
+                NotificationType.BALANCE_REMINDER,
+                NotificationChannel.PUSH,
+                isEnabled = false,
+            )
 
             // Then
             assertEquals(
@@ -4147,27 +4173,15 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN the default notifications WHEN turning one off THEN shows 2 active notifications`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            notificationPreferences.updatePreference(NotificationType.SETTLE_REMINDERS, isEnabled = false)
-
-            // Then
-            assertEquals(
-                2,
-                viewModel.uiState.value.activeNotificationCount
-                    .valueOrNull(),
-            )
-        }
-
-    @Test
     fun `GIVEN every notification turned off WHEN the profile opens THEN shows no active notification`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(preferences = NotificationPreferences(enabledTypes = emptySet()))
+            prepareScenario(
+                preferences = NotificationPreferences(
+                    push = emptySet(),
+                    inApp = NotificationPreferences.DEFAULT.inApp,
+                ),
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -4177,16 +4191,21 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN every notification turned on WHEN the profile opens THEN shows 4 active notifications`() =
+    fun `GIVEN every notification turned on WHEN the profile opens THEN shows 6 active notifications`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(preferences = NotificationPreferences(enabledTypes = NotificationType.entries.toSet()))
+            prepareScenario(
+                preferences = NotificationPreferences(
+                    push = NotificationType.entries.toSet(),
+                    inApp = NotificationPreferences.DEFAULT.inApp,
+                ),
+            )
 
             // When
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(4, state.activeNotificationCount.valueOrNull())
+            assertEquals(6, state.activeNotificationCount.valueOrNull())
         }
 
     @Test
@@ -4281,7 +4300,11 @@ class ProfileViewModelTest {
             prepareScenario()
 
             // When
-            notificationPreferences.updatePreference(NotificationType.INVITES, isEnabled = true)
+            notificationPreferences.updatePreference(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
 
             // Then
             assertEquals(listOf(PendingChange.NOTIFICATION_PREFERENCES), viewModel.uiState.value.pendingChanges)

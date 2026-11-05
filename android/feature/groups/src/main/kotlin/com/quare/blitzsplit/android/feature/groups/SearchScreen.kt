@@ -4,11 +4,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -22,8 +20,9 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.HomeBars
+import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.core.model.HomeTab
@@ -56,22 +55,22 @@ internal fun SearchContent(
 ) {
     val title = stringResource(R.string.groups_search)
     val onTabClick: (HomeTab) -> Unit = { tab -> onEvent(SearchUiEvent.OnHomeTabClicked(tab)) }
-    AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
+    AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
         val usesSideColumn = layout == DeviceLayout.PhoneLandscape
-        Row(modifier = Modifier.fillMaxSize()) {
-            if (layout.usesNavigationRail) {
-                HomeNavigationRail(
-                    selected = null,
-                    onTabClick = onTabClick,
-                )
-            }
+        HomeBarsScaffold(
+            bars = HomeBars(
+                kind = homeBarsKindOf(layout.usesNavigationRail),
+                selected = null,
+                onTabClick = onTabClick,
+            ),
+            // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
+            modifier = Modifier.semantics { paneTitle = title },
+        ) {
             SearchScaffold(
                 search = search,
                 onEvent = onEvent,
                 layout = layout,
                 usesSideColumn = usesSideColumn,
-                onTabClick = onTabClick,
-                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -83,11 +82,9 @@ private fun SearchScaffold(
     onEvent: (SearchUiEvent) -> Unit,
     layout: DeviceLayout,
     usesSideColumn: Boolean,
-    onTabClick: (HomeTab) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             if (!usesSideColumn) {
                 GroupsSearchBar(
@@ -97,20 +94,8 @@ private fun SearchScaffold(
                 )
             }
         },
-        bottomBar = {
-            if (!layout.usesNavigationRail) {
-                HomeNavigationBar(
-                    selected = null,
-                    onTabClick = onTabClick,
-                )
-            }
-        },
         containerColor = MaterialTheme.colorScheme.surface,
-        contentWindowInsets = if (layout.usesNavigationRail) {
-            WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-        } else {
-            WindowInsets.safeDrawing
-        },
+        contentWindowInsets = WindowInsets.safeDrawing,
     ) { padding ->
         val contentModifier = Modifier
             .padding(padding)

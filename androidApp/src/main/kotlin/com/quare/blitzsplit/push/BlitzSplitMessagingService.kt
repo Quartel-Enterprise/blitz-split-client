@@ -14,6 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.quare.blitzsplit.MainActivity
 import com.quare.blitzsplit.R
+import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import org.json.JSONArray
 import org.koin.android.ext.android.inject

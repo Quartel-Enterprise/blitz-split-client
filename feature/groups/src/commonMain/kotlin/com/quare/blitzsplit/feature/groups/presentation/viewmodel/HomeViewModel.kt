@@ -35,6 +35,8 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
@@ -86,11 +88,13 @@ class HomeViewModel(
     private val updateRecoveryCodePrompt: UpdateRecoveryCodePrompt,
     private val consumeGroupDeletion: ConsumeGroupDeletion,
     private val recoveryCodeCardDismissal: RecoveryCodeCardDismissal,
+    updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
+    currentTimeMillis: CurrentTimeMillis,
+    observeLastNotificationPromptAt: ObserveLastNotificationPromptAt,
     observeRecordedPayment: ObserveRecordedPayment,
     observeSettledUp: ObserveSettledUp,
     consumeRecordedPayment: ConsumeRecordedPayment,
     deleteSettlement: DeleteSettlement,
-    currentTimeMillis: CurrentTimeMillis,
     currentTimeZone: CurrentTimeZone,
     minuteTicks: MinuteTicks,
     observeProfile: ObserveProfile,
@@ -131,6 +135,10 @@ class HomeViewModel(
                 deletedGroupNotice = null,
                 isRefreshing = false,
                 activityUnreadCount = 0,
+                notificationPermission = null,
+                canAskQuietly = false,
+                hasAskedQuietly = false,
+                isNotificationPromptSnoozed = true,
             ),
         )
 
@@ -151,6 +159,15 @@ class HomeViewModel(
     private val paymentGroupId = MutableStateFlow<String?>(null)
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
+
+    private val notificationPrompts = HomeNotificationPrompts(
+        uiState = uiState,
+        scope = viewModelScope,
+        trackEvent = trackEvent,
+        updateLastNotificationPromptAt = updateLastNotificationPromptAt,
+        currentTimeMillis = currentTimeMillis,
+        emit = ::emit,
+    )
 
     init {
         combine(
@@ -214,6 +231,11 @@ class HomeViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
+        notificationPrompts.watch(
+            observeLastNotificationPromptAt = observeLastNotificationPromptAt,
+            minuteTicks = minuteTicks,
+            isHomeOnTop = navigator.backStack.map { it.lastOrNull() == Route.Home },
+        )
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
@@ -365,6 +387,17 @@ class HomeViewModel(
 
             HomeUiEvent.OnRecoveryCodeCardDismissed -> recoveryCodeCardDismissal.isDismissed.value = true
 
+            is HomeUiEvent.OnNotificationPermissionChecked -> notificationPrompts.onChecked(
+                permission = event.permission,
+                canAskQuietly = event.canAskQuietly,
+            )
+
+            is HomeUiEvent.OnQuietNotificationsAnswered -> notificationPrompts.onQuietAnswered(event.permission)
+
+            HomeUiEvent.OnNotificationPromptTurnOnClicked -> notificationPrompts.turnOn()
+
+            HomeUiEvent.OnNotificationPromptDismissed -> notificationPrompts.dismiss()
+
             HomeUiEvent.OnUndoPaymentClicked -> undoRecordedPayment()
 
             HomeUiEvent.OnRecordedPaymentNoticeShown -> uiState.update { it.copy(recordedPayment = null) }
@@ -469,6 +502,10 @@ class HomeViewModel(
                 ),
             )
         }
+    }
+
+    private fun emit(action: HomeUiAction) {
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private fun paymentGroupOrNull(): Group? = groups.firstOrNull { it.id == paymentGroupId.value }

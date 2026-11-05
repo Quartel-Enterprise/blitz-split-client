@@ -19,6 +19,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 
@@ -74,8 +75,11 @@ internal fun createInitialBillState(
         categoryDeletion = null,
         receipt = null,
         receiptCategoryId = null,
-        // Why: Início's "Ler cupom fiscal" opens Rachar conta straight on the camera, after "Rachar em qual grupo?".
-        isReceiptCameraRequested = route.scansReceipt && route.expenseId == null,
+        /*
+         * Why: Início's "Ler cupom fiscal" opens Rachar conta straight on "Tirar foto" or the gallery's choice, after
+         * "Rachar em qual grupo?".
+         */
+        receiptRequest = ReceiptRequest.Choice.takeIf { route.scansReceipt && route.expenseId == null },
         conflict = null,
         settledPair = null,
         deletion = null,
@@ -148,12 +152,14 @@ private fun SplitEditor.toUnit(
 
 /*
  * Why: Início's "Ler cupom fiscal" for a bill whose group splits in a cryptocurrency, once no other group is being
- * picked: the bill opens alone, and the camera doesn't open later when the bill moves to another group.
+ * picked: the bill opens alone, and neither the choice nor the camera opens later when the bill moves to another group.
  */
 internal fun SplitBillUiState.withReceiptRequestSettled(): SplitBillUiState {
     val isAskingNothing = groups.isNotEmpty() && groupSelection == null && !isPickedGroupLoading
-    return if (isReceiptCameraRequested && currency.isCrypto && isLoaded && isAskingNothing) {
-        copy(isReceiptCameraRequested = false)
+    return if (receiptRequest != null && currency.isCrypto && isLoaded &&
+        isAskingNothing
+    ) {
+        copy(receiptRequest = null)
     } else {
         this
     }

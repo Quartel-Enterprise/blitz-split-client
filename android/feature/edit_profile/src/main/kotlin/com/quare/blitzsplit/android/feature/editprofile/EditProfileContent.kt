@@ -44,7 +44,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -53,7 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
 import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
-import com.quare.blitzsplit.android.designsystem.component.FlatListItem
+import com.quare.blitzsplit.android.designsystem.component.SheetActionItem
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
@@ -426,57 +425,47 @@ private fun PhotoMenuSheet(
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(modifier = Modifier.navigationBarsPadding().padding(bottom = 16.dp)) {
             if (onTakePhotoClick != null) {
-                PhotoMenuItem(Icons.Outlined.PhotoCamera, stringResource(R.string.edit_profile_take_photo)) {
+                SheetActionItem(
+                    icon = Icons.Outlined.PhotoCamera,
+                    label = stringResource(R.string.edit_profile_take_photo),
+                    onClick = {
+                        onDismiss()
+                        onTakePhotoClick()
+                    },
+                )
+            }
+            SheetActionItem(
+                icon = Icons.Outlined.PhotoLibrary,
+                label = stringResource(R.string.edit_profile_choose_photo),
+                onClick = {
                     onDismiss()
-                    onTakePhotoClick()
-                }
-            }
-            PhotoMenuItem(Icons.Outlined.PhotoLibrary, stringResource(R.string.edit_profile_choose_photo)) {
-                onDismiss()
-                onChoosePhotoClick()
-            }
+                    onChoosePhotoClick()
+                },
+            )
             if (accountPhotoProvider != null) {
-                PhotoMenuItem(
+                SheetActionItem(
                     icon = Icons.Outlined.AccountCircle,
                     label = stringResource(
                         R.string.edit_profile_use_account_photo,
                         stringResource(accountPhotoProvider.labelRes),
                     ),
-                ) {
-                    onDismiss()
-                    onUseAccountPhotoClick()
-                }
+                    onClick = {
+                        onDismiss()
+                        onUseAccountPhotoClick()
+                    },
+                )
             }
             if (hasPhoto) {
-                PhotoMenuItem(Icons.Outlined.Delete, stringResource(R.string.edit_profile_remove_photo)) {
-                    onDismiss()
-                    onRemoveClick()
-                }
+                SheetActionItem(
+                    icon = Icons.Outlined.Delete,
+                    label = stringResource(R.string.edit_profile_remove_photo),
+                    onClick = {
+                        onDismiss()
+                        onRemoveClick()
+                    },
+                )
             }
         }
-    }
-}
-
-@Composable
-private fun PhotoMenuItem(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit,
-) {
-    Surface(
-        onClick = onClick,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        FlatListItem(
-            headlineContent = { Text(label) },
-            leadingContent = {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        )
     }
 }
 

@@ -39,6 +39,10 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update
     is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks and
     keeps "Version".
+  - Profile › Preferences › "Notifications" ("5 active", the rows whose Push is on) opens Notifications: a row per
+    kind of Activity and the weekly reminder, each with a Push and an In app toggle. Activity's bar opens the same
+    screen; see [activity-and-push.md](activity-and-push.md) for the rows, the defaults and how each platform draws
+    it (the Mac and the web keep it inside the profile, as before).
   - Android's Profile › Preferences › "Appearance" is a row ("System", "System · dynamic colors") opening a sheet
     as Bible Planner's theme picker (`ProfileDialog.APPEARANCE`): a card per theme with a preview of the app in it
     (System half light, half dark, in the wallpaper's colors while they are on), then "Dynamic colors" with an ⓘ

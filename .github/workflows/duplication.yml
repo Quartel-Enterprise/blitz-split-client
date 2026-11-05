@@ -56,6 +56,8 @@ jobs:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
+    # A hung runner would otherwise hold the check, and merge-when-green, for six hours.
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v7

@@ -14,6 +14,26 @@ The home's four tabs and the web's and the Mac's shell.
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
     to that tab or opens it in the place of the others (`Navigator.openHomeTab(HomeTab)`, the group's
     `OnRailTabClicked`).
+  - Going from a tab to another never redraws the whole screen. Android draws the bottom bar or the rail once, around
+    the navigation (`HomeBarsLayout`), and each screen that has them (the tabs, Search, a group's screens and
+    Statistics wherever the rail shows beside them) only leaves their place free and says what they show
+    (`HomeBarsScaffold`): switching tabs, a rail click from a group and a group opened from a tab change only the content,
+    while the selected tab moves within the one bar. Between two tabs (Search included) the tab coming in fades in over
+    the one leaving in 180 ms (the web's `page-enter`), the one leaving fading out over it when the switch goes back down
+    the stack or follows the back gesture, so the content never shows half transparent (`createHomeTabTransitionSpec`);
+    a group and every other screen keep Navigation 3's default fade. A screen without the bars (the
+    profile, a group on a phone upright) covers them as it comes in, and they go once no screen with them is left.
+    Each layout keeps its bars: the bottom bar on a phone upright, the rail without labels on a phone lying down and a
+    tabletop, the rail beside Groups' list and detail on a tablet and an unfolded foldable, and no rail beside a group
+    in the pane by the list nor on a tabletop's group. Apple keeps one `TabView` (the iPad's and Mac's sidebar) above
+    the tabs, and the web one frame (`HomeFrame`), so their bars never redraw either.
+  - What a tab keeps once shown. Apple's tabs keep their content: back on Balances or Contacts, the screen is already
+    read, never blank nor shimmering again, and keeps the person picked beside the list and the rows opened
+    (`MainTabView`). Android keeps Groups and Contacts the same way (their list, its scroll, the person picked), and
+    opens Balances afresh. Balances still comes back on the filter it was opened with, "All" from its tab, on every
+    platform, so a shortcut always lands on the filter it names (`GlobalBalancesViewModel`); one opened with another
+    filter (Home's totals, Contacts' "You owe" and "Owe you") reads its people afresh, as its ViewModel is the
+    route's. The web opens each tab afresh, its picks and opened rows included.
   - The web's and the Mac's shell (slice 13): on the web the group's Expenses, Balances and Members, Statistics and
     Profile draw inside the home's frame (`PageShell`, `HomeSidebarViewModel`): the sidebar on the desktop, the icon rail
     on the tablet, the tab the group was opened from selected (Profile selects the profile at the sidebar's foot
@@ -40,7 +60,11 @@ The home's four tabs and the web's and the Mac's shell.
     content at the same width, 1152 px at most (`pageContentClass`; Balances, Contacts and Activity keep their one
     column at 768 px under 1024 px). A new page (a tab, a group, Profile,
     the welcome's steps) comes in with a short fade and rise (180 ms, `page-enter`) under the frame, which stays put;
-    a group's own tabs still change with no transition, and reduced motion shows the page at once.
+    a group's own tabs still change with no transition, and reduced motion shows the page at once. The frame (the
+    sidebar, the tablet's rail, the phone's top bar and bottom navigation) is mounted once for every page in it
+    (`HomeFrame`): going to another tab, a group, Activity or Profile swaps only the content, never redraws the frame,
+    and who is signed in and Search never blink while the new page reads its own state (they come from the sidebar's
+    `HomeSidebarViewModel` meanwhile).
   - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
     page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
     `brand_clicked` where the screen's ViewModel tracks its events.

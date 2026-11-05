@@ -33,6 +33,9 @@ class FakeActivityRepository(
     val chargeActorUserIds = mutableListOf<String?>()
     val chargeSentAts = mutableListOf<Long>()
     val markAllCalls = mutableListOf<Pair<Long, Long>>()
+
+    // Why: each saveRead call, in order, so a test sees an event saved twice or not at all.
+    val savedReadIds = mutableListOf<String>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
     var loadOlderCalls = 0
@@ -65,6 +68,7 @@ class FakeActivityRepository(
     override suspend fun findEvent(eventId: String): ActivityEvent? = events.value.firstOrNull { it.id == eventId }
 
     override suspend fun saveRead(eventId: String): Result<Unit> {
+        savedReadIds += eventId
         markReadError?.let { return Result.failure(it) }
         readState.update { it.copy(readEventIds = it.readEventIds + eventId) }
         return Result.success(Unit)

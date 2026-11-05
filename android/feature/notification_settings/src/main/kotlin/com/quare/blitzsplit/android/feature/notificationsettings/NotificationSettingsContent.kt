@@ -2,54 +2,66 @@ package com.quare.blitzsplit.android.feature.notificationsettings
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
-import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
+import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiState
 import software.quare.loadable.Loadable
@@ -57,7 +69,8 @@ import software.quare.loadable.toLoaded
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val singleColumnMaxWidth = 592.dp
-private const val DISABLED_ALPHA = 0.38f
+private val cellWidth = 48.dp
+private val cellSpacing = 4.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,25 +110,17 @@ fun NotificationSettingsContent(
                     ),
             ) {
                 if (state.showsPermissionDenied) {
-                    PermissionDeniedBanner(onEvent = onEvent)
+                    PermissionDeniedBanner(
+                        canAskAgain = state.canAskAgain,
+                        onEvent = onEvent,
+                    )
                 }
-                Text(
-                    text = stringResource(R.string.notification_settings_section),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(
-                        start = 4.dp,
-                        top = 20.dp,
-                        bottom = 8.dp,
-                    ),
-                )
+                ChannelHeader()
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     state.types.forEachIndexed { index, type ->
                         NotificationRow(
                             type = type,
-                            isChecked = state.isEnabled(type),
-                            isEnabled = state.areTogglesEnabled,
-                            isLoading = state.showsTogglesLoading,
+                            state = state,
                             shape = createRowShape(
                                 index = index,
                                 count = state.types.size,
@@ -124,6 +129,16 @@ fun NotificationSettingsContent(
                         )
                     }
                 }
+                Text(
+                    text = stringResource(R.string.notification_settings_legend),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(
+                        start = 4.dp,
+                        end = 4.dp,
+                        top = 12.dp,
+                    ),
+                )
                 Text(
                     text = stringResource(R.string.notification_settings_footer),
                     style = MaterialTheme.typography.bodySmall,
@@ -141,7 +156,11 @@ fun NotificationSettingsContent(
 }
 
 @Composable
-private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Unit) {
+private fun PermissionDeniedBanner(
+    // Why: refused once, Android still shows its dialog once more, so "Turn on" asks instead of opening the settings.
+    canAskAgain: Boolean,
+    onEvent: (NotificationSettingsUiEvent) -> Unit,
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -161,7 +180,13 @@ private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Uni
                     contentDescription = null,
                 )
                 val title = stringResource(R.string.notification_settings_denied_title)
-                val body = stringResource(R.string.notification_settings_denied_body)
+                val body = stringResource(
+                    if (canAskAgain) {
+                        R.string.notification_settings_refused_body
+                    } else {
+                        R.string.notification_settings_denied_body
+                    },
+                )
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(title) }
@@ -172,12 +197,64 @@ private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Uni
                 )
             }
             Button(
-                onClick = { onEvent(NotificationSettingsUiEvent.OnOpenSettingsClicked) },
+                onClick = {
+                    onEvent(
+                        if (canAskAgain) {
+                            NotificationSettingsUiEvent.OnAskAgainClicked
+                        } else {
+                            NotificationSettingsUiEvent.OnOpenSettingsClicked
+                        },
+                    )
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError,
                 ),
-            ) { Text(stringResource(R.string.notification_settings_open_settings)) }
+            ) {
+                Text(
+                    stringResource(
+                        if (canAskAgain) {
+                            R.string.notification_settings_turn_on
+                        } else {
+                            R.string.notification_settings_open_settings
+                        },
+                    ),
+                )
+            }
+        }
+    }
+}
+
+// Why: "Notify me about", and over the toggles the names of their columns, Push and In app.
+@Composable
+private fun ChannelHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 4.dp,
+                end = 16.dp,
+                top = 20.dp,
+                bottom = 8.dp,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(cellSpacing),
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        Text(
+            text = stringResource(R.string.notification_settings_section),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
+        )
+        NotificationChannel.entries.forEach { channel ->
+            Text(
+                text = stringResource(channel.labelRes),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                modifier = Modifier.width(cellWidth),
+            )
         }
     }
 }
@@ -185,32 +262,26 @@ private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Uni
 @Composable
 private fun NotificationRow(
     type: NotificationType,
-    isChecked: Boolean,
-    isEnabled: Boolean,
-    isLoading: Boolean,
+    state: NotificationSettingsUiState,
     shape: RoundedCornerShape,
     onEvent: (NotificationSettingsUiEvent) -> Unit,
 ) {
+    val title = stringResource(type.titleRes)
     Surface(
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
-        modifier = Modifier
-            .fillMaxWidth()
-            .alpha(if (isEnabled || isLoading) 1f else DISABLED_ALPHA),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier
-                .toggleable(
-                    value = isChecked,
-                    enabled = isEnabled,
-                    role = Role.Switch,
-                    onValueChange = { onEvent(NotificationSettingsUiEvent.OnToggled(type, it)) },
-                ).heightIn(min = 72.dp)
+                .heightIn(min = 72.dp)
                 .padding(
-                    horizontal = 16.dp,
-                    vertical = 10.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 10.dp,
+                    bottom = 10.dp,
                 ),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(cellSpacing),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
@@ -218,7 +289,7 @@ private fun NotificationRow(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text(
-                    text = stringResource(type.titleRes),
+                    text = title,
                     style = MaterialTheme.typography.titleSmall,
                 )
                 Text(
@@ -226,24 +297,107 @@ private fun NotificationRow(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            }
-            // Why: until the choices and the system's permission are known, the switch shimmers, neither on nor off.
-            if (isLoading) {
-                ShimmerBox {
-                    ShimmerLine(
-                        width = 52.dp,
-                        height = 32.dp,
+                if (state.isBlockedBySystem(type)) {
+                    BlockedBySystemLine(
+                        title = title,
+                        onOpenSettings = { onEvent(NotificationSettingsUiEvent.OnChannelSettingsClicked(type)) },
                     )
                 }
-            } else {
-                // Why: the whole row toggles, so the switch only shows the state.
-                Switch(
-                    checked = isChecked,
-                    onCheckedChange = null,
-                    enabled = isEnabled,
-                )
+            }
+            state.channels.forEach { channel ->
+                Box(
+                    modifier = Modifier.width(cellWidth),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    when {
+                        // Why: the weekly reminder never shows in Activity, so it has no In app toggle.
+                        !state.hasToggle(type, channel) -> Unit
+
+                        // Why: until the choices and the system's permission are known, it shimmers, neither on nor off.
+                        state.showsTogglesLoading -> ShimmerBox {
+                            ShimmerAvatarSkeleton(size = 40.dp)
+                        }
+
+                        else -> ChannelToggle(
+                            type = type,
+                            channel = channel,
+                            title = title,
+                            isChecked = state.isEnabled(type, channel),
+                            isEnabled = state.isToggleEnabled(type, channel),
+                            onEvent = onEvent,
+                        )
+                    }
+                }
             }
         }
+    }
+}
+
+// Why: the row's channel silenced in Android's settings, which its Push can't override: only that channel's settings can.
+@Composable
+private fun BlockedBySystemLine(
+    title: String,
+    onOpenSettings: () -> Unit,
+) {
+    val openDescription = stringResource(R.string.notification_settings_open_channel_settings_description, title)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Block,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(16.dp),
+        )
+        Text(
+            text = stringResource(R.string.notification_settings_blocked_in_android),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.error,
+        )
+        TextButton(
+            onClick = onOpenSettings,
+            contentPadding = PaddingValues(horizontal = 8.dp),
+            modifier = Modifier
+                .heightIn(min = 32.dp)
+                .semantics { contentDescription = openDescription },
+        ) {
+            Text(
+                text = stringResource(R.string.notification_settings_open_settings),
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
+    }
+}
+
+// Why: a filled icon when on and a crossed-out one when off, so the state never rests on the color alone.
+@Composable
+private fun ChannelToggle(
+    type: NotificationType,
+    channel: NotificationChannel,
+    title: String,
+    isChecked: Boolean,
+    isEnabled: Boolean,
+    onEvent: (NotificationSettingsUiEvent) -> Unit,
+) {
+    val description = stringResource(
+        R.string.notification_settings_toggle_description,
+        title,
+        stringResource(channel.labelRes),
+    )
+    FilledIconToggleButton(
+        checked = isChecked,
+        onCheckedChange = { onEvent(NotificationSettingsUiEvent.OnToggled(type, channel, it)) },
+        enabled = isEnabled,
+        modifier = Modifier.semantics {
+            contentDescription = description
+            role = Role.Switch
+        },
+    ) {
+        Icon(
+            imageVector = channel.iconOf(isChecked),
+            contentDescription = null,
+        )
     }
 }
 
@@ -265,20 +419,36 @@ private fun createRowShape(
 @get:StringRes
 private val NotificationType.titleRes: Int
     get() = when (this) {
-        NotificationType.NEW_EXPENSE -> R.string.notification_settings_new_expense
-        NotificationType.PAYMENT_MARKED -> R.string.notification_settings_payment_marked
-        NotificationType.SETTLE_REMINDERS -> R.string.notification_settings_settle_reminders
-        NotificationType.INVITES -> R.string.notification_settings_invites
+        NotificationType.BILLS -> R.string.notification_settings_bills
+        NotificationType.PAYMENTS -> R.string.notification_settings_payments
+        NotificationType.COMMENTS -> R.string.notification_settings_comments
+        NotificationType.PEOPLE_AND_GROUPS -> R.string.notification_settings_people_and_groups
+        NotificationType.PAYMENT_REQUESTS -> R.string.notification_settings_payment_requests
+        NotificationType.BALANCE_REMINDER -> R.string.notification_settings_balance_reminder
     }
 
 @get:StringRes
 private val NotificationType.detailRes: Int
     get() = when (this) {
-        NotificationType.NEW_EXPENSE -> R.string.notification_settings_new_expense_detail
-        NotificationType.PAYMENT_MARKED -> R.string.notification_settings_payment_marked_detail
-        NotificationType.SETTLE_REMINDERS -> R.string.notification_settings_settle_reminders_detail
-        NotificationType.INVITES -> R.string.notification_settings_invites_detail
+        NotificationType.BILLS -> R.string.notification_settings_bills_detail
+        NotificationType.PAYMENTS -> R.string.notification_settings_payments_detail
+        NotificationType.COMMENTS -> R.string.notification_settings_comments_detail
+        NotificationType.PEOPLE_AND_GROUPS -> R.string.notification_settings_people_and_groups_detail
+        NotificationType.PAYMENT_REQUESTS -> R.string.notification_settings_payment_requests_detail
+        NotificationType.BALANCE_REMINDER -> R.string.notification_settings_balance_reminder_detail
     }
+
+@get:StringRes
+private val NotificationChannel.labelRes: Int
+    get() = when (this) {
+        NotificationChannel.PUSH -> R.string.notification_settings_push
+        NotificationChannel.IN_APP -> R.string.notification_settings_in_app
+    }
+
+private fun NotificationChannel.iconOf(isChecked: Boolean): ImageVector = when (this) {
+    NotificationChannel.PUSH -> if (isChecked) Icons.Filled.PhoneAndroid else Icons.Outlined.MobileOff
+    NotificationChannel.IN_APP -> if (isChecked) Icons.Filled.Notifications else Icons.Outlined.NotificationsOff
+}
 
 @DevicePreviews
 @Composable
@@ -286,8 +456,9 @@ private fun NotificationSettingsPreview() {
     BlitzSplitTheme {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
-                enabledTypes = NotificationPreferences.DEFAULT.enabledTypes.toLoaded(),
+                preferences = NotificationPreferences.DEFAULT.toLoaded(),
                 permission = NotificationPermission.GRANTED,
+                systemBlockedTypes = emptySet(),
             ),
             onEvent = {},
         )
@@ -300,8 +471,24 @@ private fun NotificationSettingsLoadingPreview() {
     BlitzSplitTheme {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
-                enabledTypes = Loadable.Loading,
+                preferences = Loadable.Loading,
                 permission = null,
+                systemBlockedTypes = emptySet(),
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun NotificationSettingsBlockedChannelPreview() {
+    BlitzSplitTheme {
+        NotificationSettingsContent(
+            state = NotificationSettingsUiState(
+                preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                permission = NotificationPermission.GRANTED,
+                systemBlockedTypes = setOf(NotificationType.COMMENTS),
             ),
             onEvent = {},
         )
@@ -314,8 +501,9 @@ private fun NotificationSettingsDeniedPreview() {
     BlitzSplitTheme {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
-                enabledTypes = NotificationPreferences.DEFAULT.enabledTypes.toLoaded(),
+                preferences = NotificationPreferences.DEFAULT.toLoaded(),
                 permission = NotificationPermission.DENIED,
+                systemBlockedTypes = emptySet(),
             ),
             onEvent = {},
         )

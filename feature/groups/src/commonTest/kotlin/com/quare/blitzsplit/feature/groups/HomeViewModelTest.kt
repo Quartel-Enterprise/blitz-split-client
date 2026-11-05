@@ -48,6 +48,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.UserProfile
@@ -56,6 +57,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
 import com.quare.blitzsplit.core.sync.FirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
@@ -69,6 +72,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.NotificationPrompt
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.RecoveryCodeCardDismissal
@@ -131,6 +135,12 @@ class HomeViewModelTest {
 
     // Why: the device's clock, which a test moves on and then ticks a minute for.
     private var clockMillis = 0L
+
+    // Why: the device's settings row, when Home's notification card was last answered.
+    private val lastNotificationPromptAt = MutableStateFlow<Long?>(null)
+
+    // Why: every time the card's answer was stored, in order.
+    private val notificationPromptWrites = mutableListOf<Long>()
 
     @BeforeTest
     fun setUp() {
@@ -2852,7 +2862,1760 @@ class HomeViewModelTest {
             assertEquals(emptyList(), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN a group and notifications never asked WHEN the platform reports it THEN shows the soft ask card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN a group and notifications refused once WHEN the platform reports it THEN shows the ask again card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
+
+            // Then
+            assertEquals(NotificationPrompt.ASK_AGAIN, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN a group and notifications denied WHEN the platform reports it THEN shows the blocked card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+
+            // Then
+            assertEquals(NotificationPrompt.BLOCKED, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN a group and notifications allowed WHEN the platform reports it THEN shows no notification card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN a group WHEN Inicio opens before the platform reports the permission THEN shows no notification card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.notificationPermission)
+            assertNull(state.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the first use with no group WHEN notifications were never asked THEN shows no notification card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsFirstUse)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the first use WHEN the first group arrives THEN shows the soft ask card`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED, canAskQuietly = false),
+        )
+
+        // When
+        groups.groups.value = listOf(trio())
+
+        // Then
+        assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+    }
+
+    @Test
+    fun `GIVEN a first download with a group already down WHEN notifications were never asked THEN shows no card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+                syncState = SyncState.SYNCING,
+                storedGroups = listOf(trio()),
+                isFirstDownloadPending = true,
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertTrue(viewModel.uiState.value.isFirstDownload)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN a first download with a group WHEN it ends THEN shows the soft ask card`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+            syncState = SyncState.SYNCING,
+            storedGroups = listOf(trio()),
+            isFirstDownloadPending = true,
+        )
+        viewModel.onEvent(
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.NOT_DETERMINED, canAskQuietly = false),
+        )
+
+        // When
+        firstDownload.end()
+
+        // Then
+        assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+    }
+
+    @Test
+    fun `GIVEN the recovery code card of an anonymous account WHEN notifications were never asked THEN it wins`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsRecoveryCodeCard)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the recovery code card over the notification card WHEN closing it THEN shows the soft ask card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+                storedGroups = listOf(trio()),
+            )
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed)
+
+            // Then
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN a Google account offline with a group WHEN never asked THEN shows the soft ask card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                status = AccountStatus.Connected("pierre", AccountProvider.GOOGLE),
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the card answered 20 days ago WHEN notifications were never asked THEN shows no notification card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptAnsweredAt = daysAgo(20),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertTrue(viewModel.uiState.value.isNotificationPromptSnoozed)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the card answered a minute short of 21 days ago WHEN Inicio opens THEN shows no notification card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptAnsweredAt = now - 21.days.inWholeMilliseconds + oneMinute,
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the card answered exactly 21 days ago WHEN notifications were never asked THEN shows the card again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptAnsweredAt = daysAgo(21),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the card snoozed a minute short of 21 days WHEN that minute passes THEN shows it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptAnsweredAt = now - 21.days.inWholeMilliseconds + oneMinute,
+            )
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            clockMillis = now + oneMinute
+            minutes.value += 1
+
+            // Then
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN Not now tapped on an open Inicio WHEN three weeks pass THEN shows the card again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // When
+            clockMillis = now + 21.days.inWholeMilliseconds
+            minutes.value += 1
+
+            // Then
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the card answered at a time after the clock now WHEN Inicio opens THEN still shows the card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptAnsweredAt = now + 1.days.inWholeMilliseconds,
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertFalse(viewModel.uiState.value.isNotificationPromptSnoozed)
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the last answer not read yet from the device WHEN notifications were never asked THEN shows no card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptTimeRead = false,
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Then
+            assertTrue(viewModel.uiState.value.isNotificationPromptSnoozed)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the soft ask card WHEN tapping Turn on THEN asks the system for the permission`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestNotificationPermission), actions)
+        }
+
+    @Test
+    fun `GIVEN the ask again card WHEN tapping Turn on THEN asks the system for the permission`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestNotificationPermission), actions)
+        }
+
+    @Test
+    fun `GIVEN the blocked card WHEN tapping Turn on THEN opens the notification settings`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+        )
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+        // Then
+        assertEquals(listOf<HomeUiAction>(HomeUiAction.OpenNotificationSettings), actions)
+    }
+
+    @Test
+    fun `GIVEN the soft ask card WHEN tapping Turn on THEN tracks the turn on tap with the soft ask`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_prompt_turn_on_clicked" to mapOf<String, Any>(
+                        "prompt" to NotificationPrompt.SOFT_ASK,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the blocked card WHEN tapping Turn on THEN tracks the turn on tap with the blocked card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_prompt_turn_on_clicked" to mapOf<String, Any>("prompt" to NotificationPrompt.BLOCKED),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the soft ask card WHEN tapping Turn on THEN hides the card and stores now as its last answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.notificationPrompt)
+            assertEquals(listOf(now), notificationPromptWrites)
+        }
+
+    @Test
+    fun `GIVEN the soft ask card WHEN tapping Turn on twice quickly THEN acts tracks and stores only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestNotificationPermission), actions)
+            assertEquals(1, trackedEvents.size)
+            assertEquals(listOf(now), notificationPromptWrites)
+        }
+
+    @Test
+    fun `GIVEN the ask again card WHEN tapping Not now THEN tracks the dismissal and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // Then
+            assertEquals(
+                listOf("notification_prompt_dismissed" to mapOf<String, Any>("prompt" to NotificationPrompt.ASK_AGAIN)),
+                trackedEvents,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the blocked card WHEN tapping Not now THEN hides the card and stores now as its last answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.notificationPrompt)
+            assertTrue(viewModel.uiState.value.isNotificationPromptSnoozed)
+            assertEquals(listOf(now), notificationPromptWrites)
+        }
+
+    @Test
+    fun `GIVEN the soft ask card WHEN tapping Not now twice quickly THEN tracks and stores only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // Then
+            assertEquals(1, trackedEvents.size)
+            assertEquals(listOf(now), notificationPromptWrites)
+        }
+
+    @Test
+    fun `GIVEN Not now tapped WHEN a late tap on Turn on arrives THEN asks tracks and stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(listOf("notification_prompt_dismissed"), trackedEvents.map { it.first })
+            assertEquals(listOf(now), notificationPromptWrites)
+        }
+
+    @Test
+    fun `GIVEN notifications allowed WHEN a late tap on Turn on arrives THEN asks tracks and stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(notificationPromptWrites.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN notifications allowed WHEN a late tap on Not now arrives THEN tracks nothing and stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(notificationPromptWrites.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission not reported yet WHEN tapping Turn on THEN asks tracks and stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(notificationPromptWrites.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the card snoozed WHEN a tap on Turn on arrives THEN asks tracks and stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptAnsweredAt = daysAgo(3),
+            )
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(notificationPromptWrites.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the first use with no group WHEN a tap on Not now arrives THEN tracks nothing and stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(notificationPromptWrites.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Turn on tapped on the soft ask WHEN the system prompt allows them THEN says notifications are on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertEquals(
+                listOf(HomeUiAction.RequestNotificationPermission, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the blocked card WHEN back from the settings allowed THEN says notifications are on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertEquals(
+                listOf(HomeUiAction.OpenNotificationSettings, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN notifications denied and no Turn on WHEN another screen gets them allowed THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN Turn on then notifications on WHEN they turn off and on again elsewhere THEN says it only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertEquals(
+                listOf(HomeUiAction.RequestNotificationPermission, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on tapped after a first refusal WHEN the system allows them THEN says notifications are on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.REFUSED_ONCE, canAskQuietly = false),
+            )
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertEquals(
+                listOf(HomeUiAction.RequestNotificationPermission, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN Inicio just opened WHEN the first report says notifications are allowed THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val granted = HomeUiEvent.OnNotificationPermissionChecked(
+                NotificationPermission.GRANTED,
+                canAskQuietly = false,
+            )
+
+            // When
+            viewModel.onEvent(granted)
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN notifications allowed WHEN a return to the app reports them allowed again THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the soft ask card WHEN the system prompt refuses them THEN says nothing and shows the blocked card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(NotificationPrompt.BLOCKED, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN notifications allowed WHEN the settings turn them off THEN says nothing and shows the blocked card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.DENIED, canAskQuietly = false),
+            )
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(NotificationPrompt.BLOCKED, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN the platform reports the notification permission THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+            )
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the notification events WHEN reading their analytics THEN the ViewModel sends the card answers`() {
+        // Given
+        val events = listOf(
+            HomeUiEvent.OnNotificationPromptTurnOnClicked,
+            HomeUiEvent.OnNotificationPromptDismissed,
+            HomeUiEvent.OnNotificationPermissionChecked(NotificationPermission.GRANTED, canAskQuietly = false),
+        )
+
+        // When
+        val analytics = events.map { it.analytics }
+
+        // Then
+        assertEquals(
+            listOf(
+                EventAnalytics.Manual("notification_prompt_turn_on_clicked"),
+                EventAnalytics.Manual("notification_prompt_dismissed"),
+                EventAnalytics.Manual(setOf("notification_permission_answered", "notification_prompt_shown")),
+            ),
+            analytics,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group on Apple WHEN the platform reports notifications never asked THEN asks to deliver quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+            assertTrue(viewModel.uiState.value.hasAskedQuietly)
+            assertNull(viewModel.uiState.value.notificationPermission)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the first use on Apple WHEN notifications were never asked THEN does not ask quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertEquals(NotificationPermission.NOT_DETERMINED, viewModel.uiState.value.notificationPermission)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the first use on Apple never asked WHEN the first group arrives THEN asks quietly once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            groups.groups.value = listOf(trio())
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+            assertNull(viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the groups not read yet on Apple WHEN notifications were never asked THEN does not ask quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                groupsRead = false,
+            )
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertFalse(viewModel.uiState.value.hasAskedQuietly)
+        }
+
+    @Test
+    fun `GIVEN a group on Android or the web WHEN notifications were never asked THEN shows the soft ask instead`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertFalse(viewModel.uiState.value.hasAskedQuietly)
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN a group on Apple WHEN the platform reports any permission but never asked THEN does not ask quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val permissions = listOf(
+                NotificationPermission.PROVISIONAL,
+                NotificationPermission.GRANTED,
+                NotificationPermission.DENIED,
+            )
+
+            // When
+            permissions.forEach { viewModel.onEvent(appleReports(it)) }
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertFalse(viewModel.uiState.value.hasAskedQuietly)
+        }
+
+    @Test
+    fun `GIVEN the quiet request changed nothing WHEN never asked is read again THEN shows the soft ask`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+            assertEquals(NotificationPrompt.SOFT_ASK, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the quiet request out WHEN a read started before it says never asked THEN shows no card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertNull(viewModel.uiState.value.notificationPrompt)
+            assertTrue(tracked("notification_prompt_shown").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a stale read during the quiet request WHEN quiet delivery answers THEN shows the quiet card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.PROVISIONAL))
+
+            // Then
+            assertEquals(NotificationPrompt.QUIET, viewModel.uiState.value.notificationPrompt)
+            assertEquals(listOf(shown(NotificationPrompt.QUIET)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN the soft ask after a quiet request WHEN more checks read never asked THEN never asks quietly again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            groups.groups.value = listOf(trio(), trio(id = "trip"))
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+        }
+
+    @Test
+    fun `GIVEN the recovery code card on Apple WHEN notifications were never asked THEN still asks quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsRecoveryCodeCard)
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+        }
+
+    @Test
+    fun `GIVEN the recovery code sheet on Apple WHEN notifications were never asked THEN still asks quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.DUE,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsRecoveryCodePrompt)
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+        }
+
+    @Test
+    fun `GIVEN a first download with a group already down on Apple WHEN never asked THEN still asks quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Connected("pierre", AccountProvider.APPLE),
+                syncState = SyncState.SYNCING,
+                storedGroups = listOf(trio()),
+                isFirstDownloadPending = true,
+            )
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(viewModel.uiState.value.isFirstDownload)
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+        }
+
+    @Test
+    fun `GIVEN the card answered 3 days ago on Apple WHEN notifications were never asked THEN still asks quietly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                notificationPromptAnsweredAt = daysAgo(3),
+            )
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(viewModel.uiState.value.isNotificationPromptSnoozed)
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestQuietNotifications), actions)
+        }
+
+    @Test
+    fun `GIVEN the quiet request WHEN Apple reports quiet delivery THEN shows the quiet card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+            // Then
+            assertEquals(NotificationPrompt.QUIET, viewModel.uiState.value.notificationPrompt)
+        }
+
+    @Test
+    fun `GIVEN the quiet card WHEN tapping Turn on THEN asks for the full prompt of Apple`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+        // Then
+        assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestNotificationPermission), actions)
+    }
+
+    @Test
+    fun `GIVEN the quiet card WHEN tapping Turn on THEN tracks the turn on tap with the quiet card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "notification_prompt_turn_on_clicked" to mapOf<String, Any>("prompt" to NotificationPrompt.QUIET),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the quiet card WHEN tapping Turn on THEN hides the card and stores now as its last answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.notificationPrompt)
+            assertTrue(viewModel.uiState.value.isNotificationPromptSnoozed)
+            assertEquals(listOf(now), notificationPromptWrites)
+        }
+
+    @Test
+    fun `GIVEN the quiet card WHEN tapping Not now THEN tracks the dismissal with the quiet card and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+            // Why: the card's showing has its own tests.
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // Then
+            assertEquals(
+                listOf("notification_prompt_dismissed" to mapOf<String, Any>("prompt" to NotificationPrompt.QUIET)),
+                trackedEvents,
+            )
+            assertTrue(actions.isEmpty())
+            assertNull(viewModel.uiState.value.notificationPrompt)
+            assertEquals(listOf(now), notificationPromptWrites)
+        }
+
+    @Test
+    fun `GIVEN Turn on on the quiet card WHEN the full prompt of Apple allows them THEN says notifications are on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(
+                listOf(HomeUiAction.RequestNotificationPermission, HomeUiAction.ShowNotificationsOn),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the quiet card WHEN Apple keeps delivering quietly THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestNotificationPermission), actions)
+        }
+
+    @Test
+    fun `GIVEN a group on Android WHEN notifications were never asked THEN tracks the soft ask shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(listOf("notification_prompt_shown" to shown(NotificationPrompt.SOFT_ASK)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the soft ask card shown WHEN the platform reports the same permission again THEN tracks nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN the soft ask card shown WHEN minutes pass THEN tracks no second showing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+        // When
+        clockMillis = now + oneMinute
+        minutes.value += 1
+        clockMillis = now + 2 * oneMinute
+        minutes.value += 1
+
+        // Then
+        assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+    }
+
+    @Test
+    fun `GIVEN the soft ask card shown WHEN other things on Inicio change THEN tracks no second showing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            activityUnread.value = 3
+            isOnline.value = false
+            groups.groups.value = listOf(trio(), trio(id = "trip"))
+
+            // Then
+            assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN Not now on the soft ask card WHEN three weeks pass THEN tracks it shown again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // When
+            clockMillis = now + 21.days.inWholeMilliseconds
+            minutes.value += 1
+
+            // Then
+            assertEquals(
+                listOf(shown(NotificationPrompt.SOFT_ASK), shown(NotificationPrompt.SOFT_ASK)),
+                tracked("notification_prompt_shown"),
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the soft ask then refused once WHEN three weeks pass THEN tracks the ask again shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+
+            // When
+            clockMillis = now + 21.days.inWholeMilliseconds
+            minutes.value += 1
+
+            // Then
+            assertEquals(
+                listOf(shown(NotificationPrompt.SOFT_ASK), shown(NotificationPrompt.ASK_AGAIN)),
+                tracked("notification_prompt_shown"),
+            )
+        }
+
+    @Test
+    fun `GIVEN the blocked card gone once allowed WHEN notifications get blocked again THEN tracks it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.DENIED))
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.DENIED))
+
+            // Then
+            assertEquals(
+                listOf(shown(NotificationPrompt.BLOCKED), shown(NotificationPrompt.BLOCKED)),
+                tracked("notification_prompt_shown"),
+            )
+        }
+
+    @Test
+    fun `GIVEN the soft ask card shown WHEN a refusal makes it the ask again card THEN tracks the ask again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+
+            // Then
+            assertEquals(
+                listOf(shown(NotificationPrompt.SOFT_ASK), shown(NotificationPrompt.ASK_AGAIN)),
+                tracked("notification_prompt_shown"),
+            )
+        }
+
+    @Test
+    fun `GIVEN the ask again card shown WHEN it turns into the blocked card THEN tracks the blocked card shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.DENIED))
+
+            // Then
+            assertEquals(
+                listOf(shown(NotificationPrompt.ASK_AGAIN), shown(NotificationPrompt.BLOCKED)),
+                tracked("notification_prompt_shown"),
+            )
+        }
+
+    @Test
+    fun `GIVEN the first use never asked WHEN the first group arrives THEN tracks the soft ask shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            groups.groups.value = listOf(trio())
+
+            // Then
+            assertEquals(listOf("notification_prompt_shown" to shown(NotificationPrompt.SOFT_ASK)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the recovery code card over the notification card WHEN closing it THEN tracks the soft ask shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous("anonymous"),
+                prompt = RecoveryCodePrompt.SNOOZED,
+                storedGroups = listOf(trio()),
+            )
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            val shownUnderTheRecoveryCard = tracked("notification_prompt_shown")
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnRecoveryCodeCardDismissed)
+
+            // Then
+            assertTrue(shownUnderTheRecoveryCard.isEmpty())
+            assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN a group on Apple WHEN asking quietly THEN tracks no card shown`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+
+        // When
+        viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the quiet request WHEN Apple reports quiet delivery THEN tracks the quiet card shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+            // Then
+            assertEquals(listOf("notification_prompt_shown" to shown(NotificationPrompt.QUIET)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the quiet request changed nothing WHEN Apple reads never asked again THEN tracks the soft ask`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(listOf("notification_prompt_shown" to shown(NotificationPrompt.SOFT_ASK)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Turn on on the soft ask WHEN the system prompt allows them THEN tracks the answer as granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.SOFT_ASK, isGranted = true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the soft ask WHEN the system prompt refuses them THEN tracks the answer as not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.DENIED))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.SOFT_ASK, isGranted = false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the soft ask WHEN the system prompt is dismissed unanswered THEN tracks it as not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.SOFT_ASK, isGranted = false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the soft ask WHEN Android refuses them once THEN tracks the answer as not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.SOFT_ASK, isGranted = false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the ask again card WHEN the system allows them THEN tracks the answer as granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.ASK_AGAIN, isGranted = true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the blocked card WHEN back from the settings still blocked THEN tracks it as not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.DENIED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.DENIED))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.BLOCKED, isGranted = false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the blocked card WHEN back from the settings allowed THEN tracks the answer as granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.DENIED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.BLOCKED, isGranted = true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the quiet card WHEN Apple keeps delivering quietly THEN tracks the answer as not granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.QUIET, isGranted = false)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Turn on on the quiet card WHEN the full prompt allows them THEN tracks the answer as granted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(
+                listOf("notification_permission_answered" to answered(NotificationPrompt.QUIET, isGranted = true)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the answer to Turn on tracked WHEN later checks read the permission THEN tracks no more answers`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertTrue(tracked("notification_permission_answered").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no Turn on WHEN the platform reports a changed permission THEN tracks no answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.DENIED))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertTrue(tracked("notification_permission_answered").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Not now on the soft ask WHEN the platform reports the permission again THEN tracks no answer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertTrue(tracked("notification_permission_answered").isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the quiet request WHEN Apple reports quiet delivery THEN tracks no answer`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+        // When
+        viewModel.onEvent(appleReports(NotificationPermission.PROVISIONAL))
+
+        // Then
+        assertTrue(tracked("notification_permission_answered").isEmpty())
+    }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
+
+    private val oneMinute = 60_000L
 
     // Why: Saturday, 31 October 2026, 15:00 in UTC, the time zone the tests count days in.
     private val now = Instant.parse("2026-10-31T15:00:00Z").toEpochMilliseconds()
@@ -2880,6 +4643,92 @@ class HomeViewModelTest {
     private fun hoursAgo(hours: Int): Long = now - hours.hours.inWholeMilliseconds
 
     private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds
+
+    // Why: Apple can deliver quietly with no prompt while never asked; Android and the web cannot.
+    @Test
+    fun `GIVEN Turn on refused WHEN notifications are allowed later elsewhere THEN says nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+            viewModel.onEvent(androidReports(NotificationPermission.REFUSED_ONCE))
+
+            // When
+            viewModel.onEvent(androidReports(NotificationPermission.GRANTED))
+
+            // Then
+            assertEquals(listOf<HomeUiAction>(HomeUiAction.RequestNotificationPermission), actions)
+        }
+
+    @Test
+    fun `GIVEN the quiet answer in WHEN a read started before it says never asked THEN keeps the quiet card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+            viewModel.onEvent(HomeUiEvent.OnQuietNotificationsAnswered(NotificationPermission.PROVISIONAL))
+
+            // When
+            viewModel.onEvent(appleReports(NotificationPermission.NOT_DETERMINED))
+
+            // Then
+            assertEquals(NotificationPrompt.QUIET, viewModel.uiState.value.notificationPrompt)
+            assertEquals(listOf(shown(NotificationPrompt.QUIET)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN another screen over Home WHEN the card comes up THEN counts it only once Home is back on top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.Profile)
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            val shownBehind = tracked("notification_prompt_shown")
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertTrue(shownBehind.isEmpty())
+            assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
+    @Test
+    fun `GIVEN the card counted as shown WHEN Home comes back on top with it THEN does not count it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(androidReports(NotificationPermission.NOT_DETERMINED))
+            navigator.navigate(Route.Profile)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(listOf(shown(NotificationPrompt.SOFT_ASK)), tracked("notification_prompt_shown"))
+        }
+
+    private fun appleReports(permission: NotificationPermission): HomeUiEvent =
+        HomeUiEvent.OnNotificationPermissionChecked(permission, canAskQuietly = true)
+
+    private fun androidReports(permission: NotificationPermission): HomeUiEvent =
+        HomeUiEvent.OnNotificationPermissionChecked(permission, canAskQuietly = false)
+
+    // Why: the params of each tracked event of that name, in order.
+    private fun tracked(name: String): List<Map<String, Any>> =
+        trackedEvents.filter { it.first == name }.map { it.second }
+
+    private fun shown(prompt: NotificationPrompt): Map<String, Any> = mapOf("prompt" to prompt)
+
+    private fun answered(
+        prompt: NotificationPrompt,
+        isGranted: Boolean,
+    ): Map<String, Any> = mapOf(
+        "source" to "home",
+        "prompt" to prompt,
+        "is_granted" to isGranted,
+    )
 
     private fun group(
         id: String,
@@ -2993,6 +4842,8 @@ class HomeViewModelTest {
         isFirstDownloadPending: Boolean = false,
         peopleRead: Boolean = true,
         awaitsFullSync: Boolean = false,
+        notificationPromptAnsweredAt: Long? = null,
+        notificationPromptTimeRead: Boolean = true,
     ) {
         account = FakeAccountRepository(initialStatus = status).also {
             it.recoveryCodePrompt = prompt
@@ -3017,6 +4868,7 @@ class HomeViewModelTest {
         dismissal = RecoveryCodeCardDismissal().also { it.isDismissed.value = isCardDismissedThisLaunch }
         firstDownload = FirstDownload().also { if (isFirstDownloadPending) it.start() }
         activityUnread = MutableStateFlow(0)
+        lastNotificationPromptAt.value = notificationPromptAnsweredAt
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = HomeViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
@@ -3030,6 +4882,14 @@ class HomeViewModelTest {
             updateRecoveryCodePrompt = UpdateRecoveryCodePromptUseCase(account),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             recoveryCodeCardDismissal = dismissal,
+            updateLastNotificationPromptAt = UpdateLastNotificationPromptAt {
+                notificationPromptWrites += it
+                lastNotificationPromptAt.value = it
+            },
+            // Why: like the groups, the settings row not read yet is a flow that has not emitted.
+            observeLastNotificationPromptAt = ObserveLastNotificationPromptAt {
+                if (notificationPromptTimeRead) lastNotificationPromptAt else MutableSharedFlow()
+            },
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),
             observeSettledUp = ObserveSettledUpUseCase(recordedPayments),
             consumeRecordedPayment = ConsumeRecordedPaymentUseCase(recordedPayments),

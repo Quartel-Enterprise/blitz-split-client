@@ -301,6 +301,10 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
     deletedGroupNotice = null,
     isRefreshing = false,
     activityUnreadCount = 3,
+    notificationPermission = null,
+    canAskQuietly = false,
+    hasAskedQuietly = false,
+    isNotificationPromptSnoozed = false,
 )
 
 private fun buildPreviewPerson(

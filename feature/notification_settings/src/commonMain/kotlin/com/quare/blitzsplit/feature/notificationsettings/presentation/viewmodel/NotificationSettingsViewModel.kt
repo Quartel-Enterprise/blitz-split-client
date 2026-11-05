@@ -1,6 +1,9 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
+import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -10,7 +13,6 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPrefe
 import com.quare.blitzsplit.core.profile.domain.usecase.UpdateNotificationPreference
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiState
@@ -27,12 +29,13 @@ import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 
 /*
- * Why: only the choices and the system permission. Nothing sends a push or registers the device yet; that comes
- * with the push sender, which reads the synced choices.
+ * Why: the choices and the system permission, for the Push and In app channel of each row. The server reads the
+ * synced push choices to send; Activity reads the in-app ones for its bell. Opened from the profile and from Activity.
  */
 class NotificationSettingsViewModel(
     private val navigator: Navigator,
     private val updateNotificationPreference: UpdateNotificationPreference,
+    private val markActivityTypeRead: MarkActivityTypeRead,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
@@ -40,8 +43,9 @@ class NotificationSettingsViewModel(
     val uiState: StateFlow<NotificationSettingsUiState>
         field = MutableStateFlow(
             NotificationSettingsUiState(
-                enabledTypes = Loadable.Loading,
+                preferences = Loadable.Loading,
                 permission = null,
+                systemBlockedTypes = emptySet(),
             ),
         )
 
@@ -51,10 +55,13 @@ class NotificationSettingsViewModel(
     val stateWatcher: FlowWatcher<NotificationSettingsUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<NotificationSettingsUiAction> = FlowWatcher(uiAction)
 
+    // Why: the app asked the system, and its answer (OnPermissionAnswered) hasn't come back yet.
+    private var awaitsPermissionAnswer = false
+
     init {
         combine(observeNotificationPreferences(), observeFirstDownload()) { preferences, firstDownload ->
-            if (firstDownload != null) Loadable.Loading else preferences.enabledTypes.toLoaded()
-        }.onEach { enabledTypes -> uiState.update { it.copy(enabledTypes = enabledTypes) } }
+            if (firstDownload != null) Loadable.Loading else preferences.toLoaded()
+        }.onEach { preferences -> uiState.update { it.copy(preferences = preferences) } }
             .launchIn(viewModelScope)
     }
 
@@ -68,10 +75,35 @@ class NotificationSettingsViewModel(
                 )
             }
 
-            is NotificationSettingsUiEvent.OnToggled -> toggle(event.type, event.isEnabled)
+            is NotificationSettingsUiEvent.OnPermissionAnswered -> answerPermission(event.permission)
+
+            is NotificationSettingsUiEvent.OnSystemBlockedTypesChecked -> uiState.update {
+                it.copy(systemBlockedTypes = event.types)
+            }
+
+            is NotificationSettingsUiEvent.OnToggled -> toggle(event.type, event.channel, event.isEnabled)
 
             NotificationSettingsUiEvent.OnOpenSettingsClicked -> emit(NotificationSettingsUiAction.OpenSystemSettings)
+
+            NotificationSettingsUiEvent.OnAskAgainClicked -> if (uiState.value.canAskAgain) {
+                trackEvent("notification_ask_again_clicked", emptyMap())
+                requestPermission()
+            }
+
+            NotificationSettingsUiEvent.OnQuietTurnOnClicked -> if (uiState.value.showsQuietNotice) {
+                trackEvent("notification_quiet_turn_on_clicked", emptyMap())
+                requestPermission()
+            }
+
+            is NotificationSettingsUiEvent.OnChannelSettingsClicked -> openChannelSettings(event.type)
         }
+    }
+
+    // Why: only while the system silences that row's channel, so a late tap opens nothing.
+    private fun openChannelSettings(type: NotificationType) {
+        if (!uiState.value.isBlockedBySystem(type)) return
+        trackEvent("notification_channel_settings_clicked", mapOf("type" to type))
+        emit(NotificationSettingsUiAction.OpenChannelSettings(type))
     }
 
     // Why: the web and macOS draw it inside the profile, where the back stack doesn't end on this screen.
@@ -80,25 +112,51 @@ class NotificationSettingsViewModel(
     }
 
     /*
-     * Why: the system is asked only once a notice is turned on, and only if it never was. With the permission
-     * denied or unknown, or the choices still loading, the toggles are disabled, so a tap that still arrives changes
-     * nothing.
+     * Why: the system is asked only once a push is turned on, and only if it never was (or Apple delivers quietly); the
+     * bell needs no permission. With the choices still loading or the permission unknown (or, for a push, denied, all or
+     * the row's channel), the toggles are disabled, so a tap that still arrives changes nothing.
      */
     private fun toggle(
         type: NotificationType,
+        channel: NotificationChannel,
         isEnabled: Boolean,
     ) {
         val state = uiState.value
-        if (!state.areTogglesEnabled) return
-        trackEvent("notification_toggled", mapOf("type" to type, "is_enabled" to isEnabled))
+        if (!state.isToggleEnabled(type, channel) || !state.hasToggle(type, channel)) return
+        trackEvent("notification_toggled", mapOf("type" to type, "channel" to channel, "is_enabled" to isEnabled))
         viewModelScope.launch {
+            // Why: what came while the bell was off stays read once it is back on, as it showed meanwhile.
+            if (channel == NotificationChannel.IN_APP && isEnabled) markActivityTypeRead(type)
             updateNotificationPreference(
                 type = type,
+                channel = channel,
                 isEnabled = isEnabled,
             )
         }
-        if (isEnabled && state.permission == NotificationPermission.NOT_DETERMINED) {
-            emit(NotificationSettingsUiAction.RequestPermission)
+        // Why: Apple's full prompt too while it delivers quietly, for banners and sounds.
+        if (isEnabled && channel == NotificationChannel.PUSH &&
+            (state.permission == NotificationPermission.NOT_DETERMINED || state.showsQuietNotice)
+        ) {
+            requestPermission()
+        }
+    }
+
+    private fun requestPermission() {
+        awaitsPermissionAnswer = true
+        emit(NotificationSettingsUiAction.RequestPermission)
+    }
+
+    private fun answerPermission(permission: NotificationPermission) {
+        uiState.update { it.copy(permission = permission) }
+        if (awaitsPermissionAnswer) {
+            awaitsPermissionAnswer = false
+            trackEvent(
+                "notification_permission_answered",
+                mapOf(
+                    "source" to "notification_settings",
+                    "is_granted" to (permission == NotificationPermission.GRANTED),
+                ),
+            )
         }
     }
 

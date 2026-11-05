@@ -2,6 +2,9 @@
 
 The global balances, a person's profile and Contacts.
 
+On Apple, Balances and Contacts come back to their tab already read, with the person picked and the rows opened, and
+Balances on the filter it was opened with: see the tab switch in [the home and the shells](home-and-shell.md).
+
   - "Balances" (flow 8, `Route.GlobalBalances` over the groups) is the home's second tab: each person once, netted
     across every group of one currency (`PeopleBalances`): someone who joined is their account in every group, a name
     nobody joined as is the same person wherever it is written the same, and someone no longer in a group only

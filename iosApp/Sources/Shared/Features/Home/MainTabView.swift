@@ -24,6 +24,8 @@ struct MainTabView: View {
     @State private var home = HomeModel()
     @State private var model = GroupsModel()
     @State private var showsRecoveryCode = false
+    /// The last Balances its tab showed, which it keeps drawing while another tab is in front.
+    @State private var lastBalancesRoute: RouteGlobalBalances?
     #if os(macOS)
     @State private var sidebar = HomeSidebarModel()
     #endif
@@ -55,10 +57,13 @@ struct MainTabView: View {
                 .measuringNarrowWindow()
                 #endif
             }
-            // The shared back stack holds Balances right above Home, where its tab shows
+            // The shared back stack holds Balances right above Home, where its tab shows. Once shown it stays, so
+            // coming back to the tab finds it already read, on the filter its route names; only a route with another
+            // filter opens it afresh. Its ViewModel then keeps reading the balances behind the other tabs for the
+            // rest of the home, the price of coming back without a shimmer, as Home's and Groups' do.
             Tab("Balances", systemImage: "dollarsign.circle", value: MainTab.balances) {
                 NavigationStack(path: balancesPath) {
-                    if let route = balancesRoute {
+                    if let route = shownBalancesRoute {
                         GlobalBalancesView(route: route)
                             .id(route)
                             .navigationDestination(for: AppRoute.self) { Self.destination($0) }
@@ -70,16 +75,13 @@ struct MainTabView: View {
                 .measuringNarrowWindow()
                 #endif
             }
-            // Contacts sits right above Home too, and keeps what it opens in its own tab's stack
+            // Contacts sits right above Home too, and keeps what it opens in its own tab's stack. Its list stays
+            // while another tab is in front, so coming back never reads it again.
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) {
-                if isContactsShown {
-                    ContactsColumns(path: tabStack(isShown: isContactsShown))
-                        #if os(macOS)
-                        .measuringNarrowWindow()
-                        #endif
-                } else {
-                    Color.clear
-                }
+                ContactsColumns(path: tabStack(isShown: isContactsShown))
+                    #if os(macOS)
+                    .measuringNarrowWindow()
+                    #endif
             }
             #if os(iOS)
             // Nothing to look in before the first group
@@ -112,6 +114,7 @@ struct MainTabView: View {
         .glassToast(
             [
                 GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
+                GlassToastMessage(text: "Notifications on", trigger: home.notificationsOnCount),
                 GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: home.changeErrorCount),
             ]
                 + GroupExitCopy.errorToasts(
@@ -130,6 +133,9 @@ struct MainTabView: View {
         }
         .sheet(isPresented: $showsRecoveryCode) {
             RecoveryCodeSheet()
+        }
+        .onChange(of: balancesRoute, initial: true) { _, route in
+            if let route { lastBalancesRoute = route }
         }
     }
 
@@ -211,6 +217,12 @@ struct MainTabView: View {
         return nil
     }
 
+    /// The Balances its tab draws: the one right above Home, or else the last one shown, kept while another tab is in
+    /// front. Its ViewModel is the route's, so a route with another filter draws a new one.
+    private var shownBalancesRoute: RouteGlobalBalances? {
+        balancesRoute ?? lastBalancesRoute
+    }
+
     /// Contacts right above Home, which its tab shows.
     private var isContactsShown: Bool {
         if case .contacts = path.first { return true }
@@ -275,12 +287,14 @@ struct MainTabView: View {
         switch path.last {
         case let .groupDetail(route): route.groupId
         case let .groupStats(route): route.groupId
+        case let .categoryExpenses(route): route.groupId
         default: nil
         }
     }
     #endif
 
-    /// What the tabs push over themselves: Activity, a group's expenses, balances, members or statistics, how
+    /// What the tabs push over themselves: Activity, a group's expenses, balances, members or statistics (and a
+    /// category's bills they open), how
     /// simplifying debts works, a bill, an invite
     /// opened from its link, a group's invite with an iPad's room, the profile, its editor, its category map and, on
     /// iPhone, a key.
@@ -297,6 +311,7 @@ struct MainTabView: View {
         case let .groupDetail(route): GroupDetailView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
         case let .groupStats(route): GroupStatsView(route: route)
+        case let .categoryExpenses(route): CategoryExpensesView(route: route)
         // "How it works" of Simplify debts, from the group's Balances; the Mac opens it as a sheet
         case let .simplifyDebtsInfo(route): SimplifyDebtsInfoView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)

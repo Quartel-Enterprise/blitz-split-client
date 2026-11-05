@@ -3,10 +3,8 @@ package com.quare.blitzsplit.android.platform
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.provider.Settings
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import com.quare.blitzsplit.core.model.NotificationPermission
 
 private const val PREFERENCES_NAME = "notification_permission"
 private const val KEY_HAS_ASKED = "has_asked"
@@ -26,14 +25,14 @@ private const val KEY_HAS_ASKED = "has_asked"
 /*
  * Why: the app's notification permission, read, asked and sent to the system settings. Android doesn't say
  * whether it ever asked, and its rationale flag is false both before the first ask and after a refusal for good,
- * so the app remembers that it asked.
+ * so the app remembers that it asked; the flag on tells a first refusal, after which Android still asks once more.
  */
 class NotificationPermissionAccess internal constructor(
     private val activity: Activity,
     private val launcher: ManagedActivityResultLauncher<String, Boolean>,
     private val askMemory: AskMemory,
 ) {
-    fun read(): SystemNotificationPermission = activity.readNotificationPermission()
+    fun read(): NotificationPermission = activity.readNotificationPermission()
 
     fun request() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -43,19 +42,13 @@ class NotificationPermissionAccess internal constructor(
     }
 
     fun openSettings() {
-        activity.startActivity(
-            Intent(
-                Settings.ACTION_APP_NOTIFICATION_SETTINGS,
-            ).putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName),
-        )
+        activity.openAppNotificationSettings()
     }
 }
 
 // Why: onResult gets the permission as read right after the person answers the system dialog.
 @Composable
-fun rememberNotificationPermissionAccess(
-    onResult: (SystemNotificationPermission) -> Unit,
-): NotificationPermissionAccess {
+fun rememberNotificationPermissionAccess(onResult: (NotificationPermission) -> Unit): NotificationPermissionAccess {
     val activity = requireNotNull(LocalActivity.current)
     // Why: saved, since the activity may be recreated (a rotation) while the system dialog is on top of it.
     val askMemory = rememberSaveable(saver = AskMemory.Saver) { AskMemory() }
@@ -84,22 +77,22 @@ internal class AskMemory(
     }
 }
 
-private fun Activity.readNotificationPermission(): SystemNotificationPermission = when {
-    NotificationManagerCompat.from(this).areNotificationsEnabled() -> SystemNotificationPermission.GRANTED
+private fun Activity.readNotificationPermission(): NotificationPermission = when {
+    NotificationManagerCompat.from(this).areNotificationsEnabled() -> NotificationPermission.GRANTED
 
-    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> SystemNotificationPermission.DENIED
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU -> NotificationPermission.DENIED
 
     // Why: granted but switched off in the system settings, which no prompt can turn back on.
     ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-        PackageManager.PERMISSION_GRANTED -> SystemNotificationPermission.DENIED
+        PackageManager.PERMISSION_GRANTED -> NotificationPermission.DENIED
 
-    !hasAskedNotificationPermission() -> SystemNotificationPermission.ASKABLE
+    // Why: never asked by this app (even if refused outside it), or a dialog dismissed without an answer.
+    !hasAskedNotificationPermission() -> NotificationPermission.NOT_DETERMINED
 
-    /*
-     * Why: a first refusal still lets Android ask again, but the person said no, so the notice shows it like a
-     * refusal for good instead of leaving the toggles on and asking at the next one.
-     */
-    else -> SystemNotificationPermission.DENIED
+    // Why: a first refusal, after which Android still shows its dialog once more; only the next one is for good.
+    shouldShowNotificationRationale() -> NotificationPermission.REFUSED_ONCE
+
+    else -> NotificationPermission.DENIED
 }
 
 private fun Activity.shouldShowNotificationRationale(): Boolean =

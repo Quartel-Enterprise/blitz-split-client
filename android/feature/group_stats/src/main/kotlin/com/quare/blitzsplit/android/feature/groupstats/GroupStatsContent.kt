@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
-import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -113,12 +112,11 @@ fun GroupStatsContent(
         onTabClick = { tab -> onEvent(GroupStatsUiEvent.OnRailTabClicked(tab)) },
         onSearchClick = { onEvent(GroupStatsUiEvent.OnRailSearchClicked) },
         modifier = modifier,
-    ) { showsRail ->
+    ) {
         GroupStatsScaffold(
             state = state,
             onEvent = onEvent,
             onPickDates = onPickDates,
-            showsRail = showsRail,
         )
     }
 }
@@ -129,7 +127,6 @@ private fun GroupStatsScaffold(
     state: GroupStatsUiState,
     onEvent: (GroupStatsUiEvent) -> Unit,
     onPickDates: () -> Unit,
-    showsRail: Boolean,
 ) {
     val layout = rememberStatsLayout()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -153,7 +150,7 @@ private fun GroupStatsScaffold(
         modifier = Modifier
             .fillMaxSize()
             .then(if (isTabletop) Modifier else Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)),
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.toGroupRailInsets(showsRail),
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         topBar = {
             val title = @Composable { Text(stringResource(R.string.group_stats_title)) }
             val subtitle = @Composable {
@@ -261,6 +258,7 @@ private fun GroupStatsScaffold(
                     StatsSummaryColumn(
                         state = state,
                         money = money,
+                        onEvent = onEvent,
                         chip = chip,
                         modifier = Modifier.weight(1f),
                     )
@@ -279,6 +277,7 @@ private fun GroupStatsScaffold(
                         StatsSummaryColumn(
                             state = state,
                             money = money,
+                            onEvent = onEvent,
                             chip = chip,
                             modifier = Modifier
                                 .fillMaxSize()
@@ -357,6 +356,7 @@ private fun StatsColumn(
             StatsCategoriesSection(
                 state = state,
                 money = money,
+                onEvent = onEvent,
             )
         }
         item(key = "people") {
@@ -398,6 +398,7 @@ private fun StatsColumn(
 private fun StatsSummaryColumn(
     state: GroupStatsUiState,
     money: MoneyFormatter,
+    onEvent: (GroupStatsUiEvent) -> Unit,
     chip: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -414,6 +415,7 @@ private fun StatsSummaryColumn(
         StatsCategoriesSection(
             state = state,
             money = money,
+            onEvent = onEvent,
             pieSize = twoColumnsPieSize,
         )
     }
@@ -517,6 +519,7 @@ private fun StatsTabletopLayout(
                 StatsCategoriesSection(
                     state = state,
                     money = money,
+                    onEvent = onEvent,
                     pieSize = twoColumnsPieSize,
                     modifier = Modifier.weight(1f),
                 )

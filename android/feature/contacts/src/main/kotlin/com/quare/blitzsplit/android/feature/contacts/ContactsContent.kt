@@ -4,12 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -35,9 +33,10 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationBar
-import com.quare.blitzsplit.android.designsystem.component.HomeNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.HomeBars
+import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
@@ -71,18 +70,20 @@ fun ContactsContent(
     val title = stringResource(R.string.contacts_title)
     val onTabClick: (HomeTab) -> Unit = { tab -> eventOf(tab)?.let(onEvent) }
     val paneLayout = rememberContactsPaneLayout()
-    AdaptiveScreen(modifier = modifier.fillMaxSize().semantics { paneTitle = title }) { layout ->
+    AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
         val columnWidth = if (layout.isTablet) tabletColumnMaxWidth else columnMaxWidth
-        Row(modifier = Modifier.fillMaxSize()) {
-            if (layout.usesNavigationRail) {
-                HomeNavigationRail(
-                    selected = HomeTab.CONTACTS,
-                    onTabClick = onTabClick,
-                    onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
-                )
-            }
+        HomeBarsScaffold(
+            bars = HomeBars(
+                kind = homeBarsKindOf(layout.usesNavigationRail),
+                selected = HomeTab.CONTACTS,
+                onTabClick = onTabClick,
+                onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
+            ),
+            // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
+            modifier = Modifier.semantics { paneTitle = title },
+        ) {
             Scaffold(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxSize(),
                 topBar = {
                     ContactsTopBar(
                         state = state,
@@ -91,21 +92,8 @@ fun ContactsContent(
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                bottomBar = {
-                    if (!layout.usesNavigationRail) {
-                        HomeNavigationBar(
-                            selected = HomeTab.CONTACTS,
-                            onTabClick = onTabClick,
-                            onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
-                        )
-                    }
-                },
                 containerColor = MaterialTheme.colorScheme.surface,
-                contentWindowInsets = if (layout.usesNavigationRail) {
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-                } else {
-                    WindowInsets.safeDrawing
-                },
+                contentWindowInsets = WindowInsets.safeDrawing,
             ) { padding ->
                 val bodyModifier = Modifier
                     .padding(padding)

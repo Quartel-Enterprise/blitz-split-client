@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.activity.domain.usecase.FindActivityEvent
 import com.quare.blitzsplit.core.activity.domain.usecase.LoadBillHistory
 import com.quare.blitzsplit.core.activity.domain.usecase.LoadOlderActivity
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
+import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkAllActivityRead
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityFeed
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
@@ -21,6 +22,7 @@ import com.quare.blitzsplit.core.activity.domain.usecase.impl.FindActivityEventU
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadBillHistoryUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.LoadOlderActivityUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.MarkActivityReadUseCase
+import com.quare.blitzsplit.core.activity.domain.usecase.impl.MarkActivityTypeReadUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.MarkAllActivityReadUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityFeedUseCase
 import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveActivityUnreadCountUseCase
@@ -42,6 +44,7 @@ val activityModule = module {
     factoryOf(::MarkActivityReadUseCase).bind<MarkActivityRead>()
     factoryOf(::FindActivityEventUseCase).bind<FindActivityEvent>()
     factoryOf(::MarkAllActivityReadUseCase).bind<MarkAllActivityRead>()
+    factoryOf(::MarkActivityTypeReadUseCase).bind<MarkActivityTypeRead>()
     factoryOf(::RecordChargesUseCase).bind<RecordCharges>()
     factoryOf(::LoadOlderActivityUseCase).bind<LoadOlderActivity>()
     factoryOf(::ObserveBillHistoryUseCase).bind<ObserveBillHistory>()
