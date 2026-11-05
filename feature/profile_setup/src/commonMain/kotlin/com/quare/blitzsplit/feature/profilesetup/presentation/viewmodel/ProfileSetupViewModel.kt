@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
@@ -76,7 +77,7 @@ class ProfileSetupViewModel(
             is ProfileSetupUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
             ProfileSetupUiEvent.OnPhotoUnreadable -> photoPicker.fail()
             ProfileSetupUiEvent.OnContinueClicked -> save()
-            ProfileSetupUiEvent.OnBackClicked -> navigator.navigateBack()
+            ProfileSetupUiEvent.OnBackClicked -> navigator.navigateBackFrom(Route.ProfileSetup)
         }
     }
 

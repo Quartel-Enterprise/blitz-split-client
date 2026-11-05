@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameValidation
@@ -137,7 +138,7 @@ class EditProfileViewModel(
 
             EditProfileUiEvent.OnDiscardClicked -> discard()
 
-            EditProfileUiEvent.OnBackClicked -> navigator.navigateBack()
+            EditProfileUiEvent.OnBackClicked -> navigator.navigateBackFrom(Route.EditProfile)
         }
     }
 

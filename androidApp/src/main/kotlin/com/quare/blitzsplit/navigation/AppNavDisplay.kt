@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -66,6 +67,7 @@ import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
+import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -190,10 +192,12 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
     val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
-    val groupsMetadata = remember(listDetail, isHomeEmpty) {
+    // Why: NavDisplay keeps an entry's metadata until the back stack changes, so the placeholder reads it as it draws.
+    val currentIsHomeEmpty by rememberUpdatedState(isHomeEmpty)
+    val groupsMetadata = remember(listDetail) {
         homeListPaneMetadataOf(
             listDetail = listDetail,
-            isHomeEmpty = isHomeEmpty,
+            isHomeEmpty = { currentIsHomeEmpty },
         )
     }
     NavDisplay(
@@ -279,7 +283,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.SimplifyDebtsInfo> { route ->
                 SimplifyDebtsInfoScreen(
                     route = route,
-                    onBack = { appViewModel.navigator.navigateBack() },
+                    onBack = { appViewModel.navigator.navigateBackFrom(route) },
                 )
             }
             // Why: the group stays behind the bill wider than a phone, but under a new bill on a tabletop's hinge.

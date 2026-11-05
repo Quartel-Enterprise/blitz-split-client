@@ -71,8 +71,8 @@ sealed interface GroupsUiEvent : UiEvent {
 
             OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to SOURCE))
 
-            // Why: only a search that opens, never ⌘K over a dialog nor the search tab over a pushed screen.
-            OnSearchOpened -> EventAnalytics.Manual("search_opened")
+            // Why: only a search that opens, never ⌘K over a dialog nor a late tap over a pushed screen.
+            OnSearchOpened, OnSearchTabClicked -> EventAnalytics.Manual("search_opened")
 
             OnSearchTabLeft -> EventAnalytics.NotTracked
 
@@ -175,6 +175,12 @@ sealed interface GroupsUiEvent : UiEvent {
 
     // Why: Android's magnifier, iOS's search tab, the web's "Buscar…" or ⌘K, the Mac's toolbar field.
     data object OnSearchOpened : GroupsUiEvent
+
+    /*
+     * Why: iOS's search tab from Grupos, which leaves a screen pushed over the list first, as it does from the other
+     * tabs (Navigator.openSearchFromPage).
+     */
+    data object OnSearchTabClicked : GroupsUiEvent
 
     /*
      * Why: the search tab (iOS) or item (Android) shows what its results opened, so leaving it for Groups goes back to

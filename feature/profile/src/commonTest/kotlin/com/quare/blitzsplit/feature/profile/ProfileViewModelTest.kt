@@ -646,6 +646,23 @@ class ProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN the profile over a group WHEN tapping back twice THEN only the profile closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.replaceAll(Route.Home)
+            navigator.navigate(Route.Groups)
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnBackClicked)
+            viewModel.onEvent(ProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the profile WHEN tapping edit THEN opens the profile editor`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

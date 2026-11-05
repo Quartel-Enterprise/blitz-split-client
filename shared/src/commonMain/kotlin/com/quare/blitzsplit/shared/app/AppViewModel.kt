@@ -234,6 +234,8 @@ class AppViewModel(
             }
             // Why: the server says the person is in it, so a group not on the device yet comes with a later sync.
             if (observeGroup(groupId).first() == null) return@launch
+            // Why: the server's answer may come late, and nothing opens over a screen the person moved to meanwhile.
+            if (navigator.backStack.value != tabTop) return@launch
             if (location is BillLocation.Deleted) noticeBillGone(groupId, target.expenseId)
             navigator.navigate(
                 Route.GroupDetail(
@@ -281,8 +283,10 @@ class AppViewModel(
                 ?.let { findActivityEvent(it) }
                 ?.takeUnless { it.isCommentDeleted }
                 ?.commentId
-            link.routesAbove
+            val routes = link.routesAbove
                 .filter { route -> route !is Route.BillDetail || observeExpense(route.expenseId).first() != null }
+            if (navigator.backStack.value != tabTop) return@launch
+            routes
                 .map { route -> if (route is Route.BillDetail) route.copy(focusCommentId = commentId) else route }
                 .forEach(navigator::navigate)
         }

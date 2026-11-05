@@ -18,6 +18,7 @@ import { DefaultSplitDialog } from '@/features/edit-group/DefaultSplitDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
+import { forgetClosedPickedTabs } from '@/features/group-detail/pickedTabs'
 import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { SearchRouteDialog } from '@/features/groups/SearchDialog'
@@ -61,6 +62,9 @@ export function App() {
     if (isReady && theme) applyTheme(theme)
   }, [isReady, theme])
   useBrowserHistory(app, backStack)
+  useEffect(() => {
+    if (backStack) forgetClosedPickedTabs(backStack)
+  }, [backStack])
 
   if (!isReady || !backStack) return <AppSkeleton />
   return (
@@ -249,29 +253,77 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
   }
 }
 
-// Each push of the shared back stack becomes a browser history entry; the back button pops it.
+/*
+ * Each push of the shared back stack becomes a browser history entry; the back button pops it. A screen the app
+ * closes itself (a dialog's ✕, a tab of the sidebar, a deletion) goes back in the history too, so the entries above
+ * the stack never linger as back presses that do nothing.
+ */
 function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null) {
+  // The size of the stack the current history entry stands for.
   const size = useRef(0)
+  // Why: the first entry of this page; going back below it would leave the app, so the stack replaces it instead.
+  const floor = useRef(0)
+  // Why: a history.go of ours under way; the popstate it ends with catches the history up with the stack.
+  const isGoing = useRef(false)
+  const latestSize = useRef(0)
+  latestSize.current = backStack?.length ?? 0
+  const sync = useRef((length: number) => {
+    if (size.current === 0) {
+      window.history.replaceState({ size: length }, '')
+      size.current = length
+      floor.current = length
+    } else if (length > size.current) {
+      // Why: one entry per screen pushed, so a bill opened over its group at once still goes back to the group.
+      for (let next = size.current + 1; next <= length; next++) window.history.pushState({ size: next }, '')
+      size.current = length
+    } else if (length < size.current && size.current > floor.current) {
+      const landing = Math.max(length, floor.current)
+      goBy.current(landing - size.current)
+      size.current = landing
+    } else {
+      window.history.replaceState({ size: length }, '')
+      size.current = length
+      floor.current = Math.min(floor.current, length)
+    }
+  })
+  // Why: a traversal the browser drops (another one under way) ends with no popstate, so a moment later the history
+  // catches up anyway; a popstate coming after that finds the history already where it lands, and does nothing.
+  const goings = useRef(0)
+  const goBy = useRef((delta: number) => {
+    isGoing.current = true
+    const going = ++goings.current
+    window.history.go(delta)
+    window.setTimeout(() => {
+      if (!isGoing.current || going !== goings.current) return
+      isGoing.current = false
+      sync.current(latestSize.current)
+    }, 1000)
+  })
   useEffect(() => {
     if (!app || !backStack) return
-    if (backStack.length > size.current && size.current > 0) {
-      // Why: one entry per screen pushed, so a bill opened over its group at once still goes back to the group.
-      for (let next = size.current + 1; next <= backStack.length; next++) window.history.pushState({ size: next }, '')
-    } else {
-      window.history.replaceState({ size: backStack.length }, '')
-    }
-    size.current = backStack.length
+    if (!isGoing.current) sync.current(backStack.length)
   }, [app, backStack])
   useEffect(() => {
     if (!app) return
     const onPopState = (event: PopStateEvent) => {
+      if (isGoing.current) {
+        isGoing.current = false
+        sync.current(latestSize.current)
+        return
+      }
       const target = (event.state as { size?: number } | null)?.size ?? 1
       // Why: a deletion under way waits for the welcome, as the screen's own Back does, so the entry comes back.
       if (isBrowserBackBlocked()) {
         window.history.pushState({ size: size.current }, '')
         return
       }
-      if (target < size.current) app.popTo(target)
+      if (target < size.current) {
+        size.current = target
+        app.popTo(target)
+      } else if (target > size.current) {
+        // Why: the forward button names screens the stack no longer has.
+        goBy.current(size.current - target)
+      }
     }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)

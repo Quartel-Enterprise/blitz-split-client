@@ -517,6 +517,31 @@ class GroupsSearchTest {
         }
 
     @Test
+    fun `GIVEN a group over the list WHEN tapping the search tab THEN opens the search over the list`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                backStack = listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        churrasco.id,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchTabClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+            assertTrue(viewModel.uiState.value.isSearching)
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN the search open in the groups WHEN typing and closing it THEN tracks only the opening`() =
         runTest(testDispatcher) {
             // Given

@@ -31,6 +31,7 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 | --- | --- | --- |
 | `navigate(route)` | Pushes `route` | `OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)` |
 | `navigateBack()` | Pops the top entry, never the last one | `OnBackClicked -> navigator.navigateBack()` |
+| `navigateBackFrom(route)` | Pops only while `route` is on top, so a second tap during the exit, or a dismissal sent twice, closes nothing under it | `OnBackClicked -> navigator.navigateBackFrom(Route.Profile)` |
 | `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId, isNewGroup = true))` once "Novo grupo" saved the group; Convidar's "Ver quem já entrou" and "Ir para o grupo" go through `openGroup(from, groupId, tab)`, which opens the group's one screen on a tab: it goes back to the group right below when it already opened on that tab, and otherwise puts the group in that place, so the group never stacks over itself |
 | `replaceAll(route)` | Leaves only `route`, so back can't return to the first access flow | `navigator.replaceAll(Route.Home)` after a profile is saved or restored |
 | `popTo(size)` | Keeps the first `size` entries (at least one) | Called by the UIs, not the ViewModels: see below |
@@ -61,8 +62,9 @@ from the page's own URL (`BlitzSplitWeb.openInviteLink`, which then puts `/` bac
 drops the URL into the `LinkInbox` singleton of `:shared`. `AppViewModel` waits until its `uiState` is `READY`, takes
 the link and pushes `Route.JoinInvite(code, memberCode, inviterCode)` over whatever started (the groups, or the welcome
 before there is a profile), so the start route logic stays in one place. `InviteLink.targetOf` reads the codes from any
-host, so `borarachar.com` keeps working once it redirects there. Joining replaces the stack with `[Groups,
-GroupDetail(groupId, joinedAs, EXPENSES)]`, `joinedAs` null when there is no member name to greet.
+host, so `borarachar.com` keeps working once it redirects there. Joining replaces the stack with `[Home,
+Groups, GroupDetail(groupId, joinedAs, EXPENSES)]`, `joinedAs` null when there is no member name to greet. A member's link to a group
+already open in the stack goes back to that group instead, so the group never stacks over itself.
 
 **Navigation never belongs in a `UiAction`.** `UiAction` is for what only a platform can do (see
 [state-management.md](state-management.md#uiaction--one-shot-effects-only-a-platform-can-perform)).
@@ -155,7 +157,15 @@ key id), with the route itself kept inside so `PaymentKeyPresenter` opens its Vi
 only the last one, except `payment-key` and `delete-account`, dialogs drawn over the entry under them (the profile), and
 `useBrowserHistory` keeps the history in step (`create-group` and `invite` are dialogs over the home the same way): a
 longer stack `pushState`s an entry holding its size, and a `popstate` (the browser's back button) calls
-`app.popTo(size)`, the same catch-up as SwiftUI's.
+`app.popTo(size)`, the same catch-up as SwiftUI's. A shorter stack the app made itself (a dialog's ✕, a tab of the
+sidebar, a deletion) goes back in the history by as many entries (`history.go`), never below the page's first entry,
+which it replaces instead, so no entry above the stack is left as a back press that does nothing; a `popstate` that
+names more entries than the stack has (the forward button) goes back the same way.
+
+Only the top page is mounted, so a full page a group opens (Statistics, a person's profile) drops the group's page,
+and back draws it anew with a new `GroupDetailViewModel`, on the tab its route opened on. The web remembers the tab
+picked per group page (`pickedTabs.ts`, forgotten once that page leaves the stack) and gives it back through
+`GroupDetailUiEvent.OnTabRestored`, which is not tracked: nobody tapped it.
 
 ### Sheets and tabs are state, not routes
 
@@ -186,7 +196,9 @@ results preview beside the list; over Início, Saldos and Contatos it is a route
 `Route.Search`, pushed by `Navigator.openSearchOver(HomeTab)` only while that tab is on top, so a late tap never
 stacks it over something the tab opened. From a screen outside the tabs (the web's pages, Android's rail beside a
 group) `Navigator.openSearchFromPage()` goes back to the tab under it first; a `Route.Search` pushed right over Grupos
-is taken by `GroupsViewModel` for its own search, which also closes once Grupos leaves the back stack. `SearchViewModel` closes it with `navigateBack` and opens a result in its
+is taken by `GroupsViewModel` for its own search, which also closes once Grupos leaves the back stack. iOS's search tab
+from Grupos sends `GroupsUiEvent.OnSearchTabClicked`, which goes back to the list first when a screen is pushed over
+it, as the tab does from the others. `SearchViewModel` closes it with `navigateBack` and opens a result in its
 place (`replaceAbove`), so back from the group or the bill returns to the tab, never to the search.
 
 A group's tabs (Despesas, Saldos, Membros) are state too: the group is one route, `Route.GroupDetail(groupId,

@@ -387,6 +387,11 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSearchOpened -> openSearch()
 
+            GroupsUiEvent.OnSearchTabClicked -> {
+                if (!isListShown()) navigator.popToGroups()
+                openSearch()
+            }
+
             GroupsUiEvent.OnSearchTabLeft -> leaveSearchTab()
 
             is GroupsUiEvent.OnSearch -> onSearchEvent(event.event)

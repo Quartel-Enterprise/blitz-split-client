@@ -224,6 +224,11 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnTabSelected(groupTabOf(tab)))
     }
 
+    // Why: the tab picked before a page the group opened covered it, as the group's page comes back.
+    fun restoreTab(tab: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnTabRestored(groupTabOf(tab)))
+    }
+
     // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
     fun togglePin() {
         viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)

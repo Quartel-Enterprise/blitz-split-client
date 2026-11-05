@@ -200,6 +200,22 @@ class ProfileSetupViewModelTest {
     }
 
     @Test
+    fun `GIVEN the setup over Restore WHEN going back twice THEN only the setup closes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.replaceAll(Route.Welcome)
+        navigator.navigate(Route.Restore)
+        navigator.navigate(Route.ProfileSetup)
+
+        // When
+        viewModel.onEvent(ProfileSetupUiEvent.OnBackClicked)
+        viewModel.onEvent(ProfileSetupUiEvent.OnBackClicked)
+
+        // Then
+        assertEquals(listOf(Route.Welcome, Route.Restore), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN an Apple session with a photo WHEN the screen opens THEN shows that photo`() = runTest(testDispatcher) {
         // Given
         prepareScenario(sessionUser = appleUser)

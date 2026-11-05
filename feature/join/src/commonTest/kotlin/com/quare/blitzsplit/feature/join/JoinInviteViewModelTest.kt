@@ -319,6 +319,28 @@ class JoinInviteViewModelTest {
         }
 
     @Test
+    fun `GIVEN the group open under the link WHEN a member opens it THEN goes back to the group`() =
+        runTest(testDispatcher) {
+            // Given
+            val openGroup = Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.MEMBERS,
+            )
+            prepareScenario(
+                invite = trip.copy(isMember = true),
+                storedGroup = tripGroup,
+                under = listOf(Route.Home, Route.Groups, openGroup, Route.Invite(GROUP_ID, isNewGroup = false)),
+            )
+
+            // When
+            val backStack = navigator.backStack.value
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, openGroup), backStack)
+        }
+
+    @Test
     fun `GIVEN this account already joined from another device WHEN the link opens THEN syncs then opens the group`() =
         runTest(testDispatcher) {
             // Given
