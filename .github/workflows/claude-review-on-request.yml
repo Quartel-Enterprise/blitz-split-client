@@ -58,7 +58,7 @@ jobs:
       # The head commit, not GitHub's merge of it with main: the review's line numbers have to match the
       # commit the comments are anchored to. No persisted credentials: this review pushes nothing, and
       # checkout would keep GITHUB_TOKEN's header in $RUNNER_TEMP, next to the session.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         if: steps.in-progress.outputs.found == 'false'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
