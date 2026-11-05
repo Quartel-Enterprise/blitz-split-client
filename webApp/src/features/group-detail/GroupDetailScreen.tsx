@@ -7,7 +7,7 @@ import {
   type JsPaymentRow,
   type JsRoute,
 } from 'blitzsplit-shared'
-import { useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
@@ -179,27 +179,36 @@ function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: Grou
   )
 }
 
+/** The line whose ⋮ is open, one for the whole table, so opening a line's menu (or right clicking it) closes any other. */
+const OpenRowMenuContext = createContext<{ openId: string | null; setOpenId: (id: string | null) => void }>({
+  openId: null,
+  setOpenId: () => {},
+})
+
 function ExpensesTable({ presenter, state }: { presenter: GroupDetailPresenter; state: JsGroupDetailState }) {
+  const [openId, setOpenId] = useState<string | null>(null)
   return (
-    <div role="table" aria-label={t('group_tabExpenses')} className="flex flex-col overflow-hidden rounded-xl border bg-card">
-      <div role="row" className={cn(rowColumns, 'hidden h-10 items-center border-b text-[13px] font-medium text-muted-foreground md:grid')}>
-        <span role="columnheader" className="px-4">
-          {t('groupDetail_columnExpense')}
-        </span>
-        <span role="columnheader" className="px-4 text-right">
-          {t('groupDetail_columnTotal')}
-        </span>
-        <span role="columnheader" className="px-4 text-right">
-          {t('groupDetail_columnBalance')}
-        </span>
-        <span role="columnheader" className="sr-only">
-          {t('groupDetail_columnOptions')}
-        </span>
+    <OpenRowMenuContext.Provider value={{ openId, setOpenId }}>
+      <div role="table" aria-label={t('group_tabExpenses')} className="flex flex-col overflow-hidden rounded-xl border bg-card">
+        <div role="row" className={cn(rowColumns, 'hidden h-10 items-center border-b text-[13px] font-medium text-muted-foreground md:grid')}>
+          <span role="columnheader" className="px-4">
+            {t('groupDetail_columnExpense')}
+          </span>
+          <span role="columnheader" className="px-4 text-right">
+            {t('groupDetail_columnTotal')}
+          </span>
+          <span role="columnheader" className="px-4 text-right">
+            {t('groupDetail_columnBalance')}
+          </span>
+          <span role="columnheader" className="sr-only">
+            {t('groupDetail_columnOptions')}
+          </span>
+        </div>
+        {state.days.map((day) => (
+          <ExpenseDayRows key={day.dayStartMillis} presenter={presenter} day={day} state={state} />
+        ))}
       </div>
-      {state.days.map((day) => (
-        <ExpenseDayRows key={day.dayStartMillis} presenter={presenter} day={day} state={state} />
-      ))}
-    </div>
+    </OpenRowMenuContext.Provider>
   )
 }
 
@@ -234,6 +243,7 @@ interface DayRowOption {
  * the line opens too.
  */
 function DayRow({
+  id,
   icon,
   title,
   meta,
@@ -243,6 +253,8 @@ function DayRow({
   options,
   onOpen,
 }: {
+  // Why: the entry's id, which says whether its ⋮ is the table's open one.
+  id: string
   icon: ReactNode
   title: string
   meta: string
@@ -252,7 +264,9 @@ function DayRow({
   options: DayRowOption[]
   onOpen: () => void
 }) {
-  const [isMenuOpen, setMenuOpen] = useState(false)
+  const menu = useContext(OpenRowMenuContext)
+  const isMenuOpen = menu.openId === id
+  const setMenuOpen = (open: boolean) => menu.setOpenId(open ? id : null)
   return (
     <div
       role="row"
@@ -340,6 +354,7 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
   const balance = expense.myBalanceMinor
   return (
     <DayRow
+      id={expense.id}
       icon={<CategoryBadge category={expense.category} className="size-full rounded-[inherit]" />}
       title={expense.description}
       meta={paid}
@@ -369,6 +384,7 @@ function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailP
       : t('payment_paid', { from: nameOrFormer(payment.fromName), to: nameOrFormer(payment.toName) })
   return (
     <DayRow
+      id={payment.id}
       icon={<HandCoins className="size-4" />}
       title={title}
       meta={t('payment_meta', { time: formatTime(payment.paidAt), method: paymentMethodLabel(payment.method) })}

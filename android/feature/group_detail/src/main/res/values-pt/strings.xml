@@ -84,5 +84,4 @@
     <string name="group_detail_entry_share">Compartilhar</string>
     <string name="group_detail_entry_delete">Apagar</string>
     <string name="group_detail_entry_options">Opções de %s</string>
-    <string name="group_detail_delete_bill_error">Não deu para apagar a conta. Tente de novo.</string>
 </resources>

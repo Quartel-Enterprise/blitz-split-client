@@ -1,20 +1,14 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import com.quare.blitzsplit.android.designsystem.component.RowMenuButton
+import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 
 // Why: one option of a bill's or a payment's ⋮ on Despesas; a destructive one is drawn in the error color.
@@ -59,7 +53,7 @@ internal fun paymentMenuItemsOf(paymentId: String): List<EntryMenuItem> = listOf
     ),
 )
 
-// Why: the row's ⋮, which a long press on the row opens too.
+// Why: the row's ⋮, which a long press on the row opens too, drawn as every list row's ⋮ is.
 @Composable
 internal fun EntryMenu(
     title: String,
@@ -68,39 +62,19 @@ internal fun EntryMenu(
     onOpenChange: (Boolean) -> Unit,
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
-    Box {
-        IconButton(onClick = { onOpenChange(true) }) {
-            Icon(
-                imageVector = Icons.Outlined.MoreVert,
-                contentDescription = stringResource(R.string.group_detail_entry_options, title),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+    RowMenuButton(
+        contentDescription = stringResource(R.string.group_detail_entry_options, title),
+        items = items.map { item ->
+            RowMenuItem(
+                label = item.label,
+                icon = item.icon,
+                hint = null,
+                isEnabled = true,
+                isDestructive = item.isDestructive,
+                onClick = { onEvent(item.event) },
             )
-        }
-        DropdownMenu(
-            expanded = isOpen,
-            onDismissRequest = { onOpenChange(false) },
-        ) {
-            items.forEach { item ->
-                val color = if (item.isDestructive) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-                DropdownMenuItem(
-                    text = { Text(item.label, color = color) },
-                    onClick = {
-                        onOpenChange(false)
-                        onEvent(item.event)
-                    },
-                    leadingIcon = {
-                        Icon(
-                            item.icon,
-                            contentDescription = null,
-                            tint = color,
-                        )
-                    },
-                )
-            }
-        }
-    }
+        },
+        isOpen = isOpen,
+        onOpenChange = onOpenChange,
+    )
 }

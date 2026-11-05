@@ -39,9 +39,15 @@ sealed interface GroupDetailUiEvent : UiEvent {
             // Why: a toggle, sent with where it ended up.
             OnPinToggled -> EventAnalytics.Manual("group_pin_toggled")
 
-            OnLeaveGroupClicked -> EventAnalytics.Automatic("leave_group_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            OnLeaveGroupClicked -> EventAnalytics.Automatic(
+                "leave_group_clicked",
+                mapOf("source" to GROUP_DETAIL_SOURCE),
+            )
 
-            OnDeleteGroupClicked -> EventAnalytics.Automatic("delete_group_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            OnDeleteGroupClicked -> EventAnalytics.Automatic(
+                "delete_group_clicked",
+                mapOf("source" to GROUP_DETAIL_SOURCE),
+            )
 
             // Why: only an answer to a dialog still open, since Apple's alert also closes itself after its button.
             OnGroupExitConfirmed -> EventAnalytics.Manual("group_exit_confirmed")
@@ -53,9 +59,10 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             is OnExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
-            is OnExpenseEditClicked -> EventAnalytics.Automatic("bill_edit_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            // Why: only once Editar conta opened, as Conta counts it: never for a bill gone or a group covered.
+            is OnExpenseEditClicked -> EventAnalytics.Manual("bill_edit_clicked")
 
-            is OnExpenseShareClicked -> EventAnalytics.Automatic("bill_share_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            is OnExpenseShareClicked -> EventAnalytics.Manual("bill_share_clicked")
 
             // Why: only when the question opens, not a second tap before it draws.
             is OnExpenseDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
@@ -83,7 +90,10 @@ sealed interface GroupDetailUiEvent : UiEvent {
             // Why: only a question still open, since Apple's alert also closes itself after Apagar.
             OnPaymentDeleteDismissed -> EventAnalytics.Manual("payment_delete_cancelled")
 
-            OnUndoPaymentClicked -> EventAnalytics.Automatic("payment_undo_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            OnUndoPaymentClicked -> EventAnalytics.Automatic(
+                "payment_undo_clicked",
+                mapOf("source" to GROUP_DETAIL_SOURCE),
+            )
 
             OnTeachClicked -> EventAnalytics.Automatic("category_teach_clicked")
 
@@ -94,7 +104,10 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             OnTeachConfirmed -> EventAnalytics.Manual("category_teach_confirmed")
 
-            OnProtectAccessClicked -> EventAnalytics.Automatic("protect_access_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            OnProtectAccessClicked -> EventAnalytics.Automatic(
+                "protect_access_clicked",
+                mapOf("source" to GROUP_DETAIL_SOURCE),
+            )
 
             OnSimplifyDebtsInfoClicked -> EventAnalytics.Automatic(
                 "simplify_debts_info_clicked",

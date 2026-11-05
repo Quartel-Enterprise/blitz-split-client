@@ -370,8 +370,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete bill", when its question opens; `group_detail` is a bill's ⋮ "Delete" on Expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
 | `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
 | `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
-| `bill_edit_clicked` | `source` (`group_detail`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" on Expenses | `:feature:bill_detail`, `:feature:group_detail` |
-| `bill_share_clicked` | `source` (`group_detail`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" on Expenses | `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_edit_clicked` | `source` (`group_detail`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" on Expenses once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_share_clicked` | `source` (`group_detail`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" on Expenses once Share bill opened | `:feature:bill_detail`, `:feature:group_detail` |
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |

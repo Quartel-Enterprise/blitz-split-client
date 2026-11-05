@@ -167,6 +167,50 @@ class GroupDetailBillMenuViewModelTest {
         }
 
     @Test
+    fun `GIVEN another screen over the group WHEN tapping Edit bill THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(dinner))
+        navigator.navigate(Route.EditGroup(GROUP_ID))
+        val event = GroupDetailUiEvent.OnExpenseEditClicked("dinner")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a bill no longer in the group WHEN tapping Edit bill THEN opens nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner))
+            val event = GroupDetailUiEvent.OnExpenseEditClicked("gone")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+            assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a bill no longer in the group WHEN tapping Share bill THEN opens nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner))
+            val event = GroupDetailUiEvent.OnExpenseShareClicked("gone")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+            assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN the group on top WHEN tapping Share bill in a bill menu THEN opens Share bill over the group`() =
         runTest(testDispatcher) {
             // Given

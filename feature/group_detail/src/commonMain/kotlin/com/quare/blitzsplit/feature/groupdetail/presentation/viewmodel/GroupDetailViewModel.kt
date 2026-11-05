@@ -223,21 +223,27 @@ class GroupDetailViewModel(
                 ),
             )
 
-            is GroupDetailUiEvent.OnExpenseEditClicked -> screen.open(
-                Route.SplitBill(
-                    groupId = route.groupId,
-                    expenseId = event.expenseId,
-                    picksGroupFirst = false,
-                    scansReceipt = false,
-                ),
-            )
+            is GroupDetailUiEvent.OnExpenseEditClicked -> {
+                val isOpened = openBill(event.expenseId) {
+                    Route.SplitBill(
+                        groupId = route.groupId,
+                        expenseId = event.expenseId,
+                        picksGroupFirst = false,
+                        scansReceipt = false,
+                    )
+                }
+                if (isOpened) trackEvent("bill_edit_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            }
 
-            is GroupDetailUiEvent.OnExpenseShareClicked -> screen.open(
-                Route.ShareBill(
-                    groupId = route.groupId,
-                    expenseId = event.expenseId,
-                ),
-            )
+            is GroupDetailUiEvent.OnExpenseShareClicked -> {
+                val isOpened = openBill(event.expenseId) {
+                    Route.ShareBill(
+                        groupId = route.groupId,
+                        expenseId = event.expenseId,
+                    )
+                }
+                if (isOpened) trackEvent("bill_share_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            }
 
             is GroupDetailUiEvent.OnExpenseDeleteClicked -> askToDeleteBill(event.expenseId)
 
@@ -467,6 +473,12 @@ class GroupDetailViewModel(
         uiState.update { it.copy(paymentToDelete = null) }
         screen.deletePayment(payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
+
+    // Why: a bill's Editar or Compartilhar from its ⋮, only while it is still in the group; says whether it opened.
+    private fun openBill(
+        expenseId: String,
+        next: () -> Route,
+    ): Boolean = shownExpenses.any { it.id == expenseId } && screen.open(next())
 
     // Why: a second tap before the question draws opens it once; a bill already gone has nothing to delete.
     private fun askToDeleteBill(expenseId: String) {

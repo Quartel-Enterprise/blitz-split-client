@@ -49,7 +49,7 @@ fun GroupDetailScreen(
     val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val teachError = stringResource(R.string.group_detail_teach_error)
-    val billDeleteError = stringResource(R.string.group_detail_delete_bill_error)
+    val billDeleteError = stringResource(DesignR.string.designsystem_delete_bill_error)
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
     LaunchedEffect(viewModel) {

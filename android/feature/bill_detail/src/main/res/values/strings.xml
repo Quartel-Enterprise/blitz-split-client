@@ -21,7 +21,6 @@
     <string name="bill_detail_not_joined">Hasn\'t joined yet</string>
     <string name="bill_detail_not_in">Not in this bill</string>
     <string name="bill_detail_no_share">—</string>
-    <string name="bill_detail_delete_error">Couldn\'t delete the bill. Try again.</string>
     <string name="bill_detail_offline">No internet. Comments and photos wait in the queue and go out when you\'re back online.</string>
     <string name="bill_detail_comments">Comments</string>
     <string name="bill_detail_no_comments">No comments yet. Ask or agree on something about this bill.</string>
