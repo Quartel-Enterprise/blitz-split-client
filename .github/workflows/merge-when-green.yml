@@ -13,10 +13,24 @@ name: merge-when-green
 # the label again is what merges it then. The checks review-gate held for claude-review's threads
 # (see review-gate.yml) don't count as failed: once every conversation is resolved, this workflow
 # re-runs them and merges when they pass.
+#
+# Events get lost: a run that fails to start (startup_failure), or a workflow_run GitHub never
+# sends. So a sweep also checks every labeled pull request every 15 minutes, and workflow_dispatch
+# runs that sweep by hand, for every labeled pull request or only the one given. A label this
+# workflow removed for unresolved conversations still has to be added again.
 on:
   pull_request:
     types:
       - labeled
+  schedule:
+    # Off the hour, when GitHub's scheduled runs queue the longest.
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+    inputs:
+      pull-request:
+        description: 'The number of the pull request to check. Empty checks every open one labeled merge-when-green.'
+        required: false
+        default: ''
   workflow_run:
     workflows:
       - build-and-test
@@ -34,15 +48,62 @@ permissions:
   contents: read
 
 jobs:
+  # The sweep lists the branches of the labeled pull requests, and the merge job below checks each
+  # one, as it does the branch of a pull request event. Drafts and pull requests from forks are
+  # left out here already, so they start no merge job every 15 minutes; the merge job skips them
+  # too, as on the events.
+  sweep:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      branches: ${{ steps.list.outputs.branches }}
+    steps:
+      - name: List the labeled pull requests
+        id: list
+        # pipefail, so a pull request number that doesn't exist fails here instead of passing an
+        # empty list on.
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ inputs.pull-request }}
+        run: |
+          # As in the merge job, the label is filtered here rather than with --label, which goes
+          # through the search index and lags behind a label just added.
+          fields=headRefName,labels,state,isDraft,isCrossRepository
+          if [ -n "$PR_NUMBER" ]; then
+            prs=$(gh pr view "$PR_NUMBER" --json "$fields" | jq -c '[.]')
+          else
+            prs=$(gh pr list --state open --limit 200 --json "$fields")
+          fi
+          branches=$(jq -c '[.[] | select(.state == "OPEN" and (.isDraft | not) and (.isCrossRepository | not)
+            and any(.labels[]; .name == "merge-when-green")) | .headRefName] | unique' <<< "$prs")
+          echo "Labeled pull request branches: $branches"
+          echo "branches=$branches" >> "$GITHUB_OUTPUT"
+
   merge:
+    needs: sweep
     # Pull requests from forks are left out: their author could push a commit after a maintainer
-    # added the label, and this would merge it with the maintainer's token.
+    # added the label, and this would merge it with the maintainer's token. A skipped sweep (every
+    # event but the two that run it) doesn't skip this job; a failed one does.
     if: >-
+      !cancelled() && (
       (github.event_name == 'pull_request' && github.event.label.name == 'merge-when-green' &&
       github.event.pull_request.head.repo.full_name == github.repository) ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
-      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'))
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')) ||
+      (needs.sweep.result == 'success' && needs.sweep.outputs.branches != '' &&
+      needs.sweep.outputs.branches != '[]'))
+    # One branch on an event, every labeled one on a sweep. toJSON quotes the event's branch name.
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJSON(needs.sweep.outputs.branches || format('[{0}]', toJSON(github.event.pull_request.head.ref || github.event.workflow_run.head_branch))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -52,7 +113,7 @@ jobs:
       pull-requests: write
       statuses: read
     concurrency:
-      group: merge-when-green-${{ github.event.pull_request.head.ref || github.event.workflow_run.head_branch }}
+      group: merge-when-green-${{ matrix.branch }}
     steps:
       # Reads the pull request with MERGE_WHEN_GREEN_TOKEN too, so a missing or expired token fails
       # here, before anything else runs.
@@ -62,11 +123,17 @@ jobs:
           GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          HEAD_BRANCH: ${{ github.event.pull_request.head.ref || github.event.workflow_run.head_branch }}
+          HEAD_BRANCH: ${{ matrix.branch }}
           TRIGGER_RUN_ID: ${{ github.event.workflow_run.id || 0 }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
             echo "::error::The MERGE_WHEN_GREEN_TOKEN secret is not set."
+            exit 1
+          fi
+
+          # An empty --head filters nothing, and would judge any labeled pull request.
+          if [ -z "$HEAD_BRANCH" ]; then
+            echo "::error::No head branch to check."
             exit 1
           fi
 
@@ -104,7 +171,7 @@ jobs:
           # are answers here, not errors, so the JSON it prints is what gets inspected. A pull request
           # whose changes run no check workflow (docs only) has nothing to wait for. GITHUB_TOKEN reads
           # them, since it is granted checks: read and the personal token isn't.
-          checks=$(GH_TOKEN="$GITHUB_TOKEN" gh pr checks "$pr" --json name,workflow,bucket 2> "$RUNNER_TEMP/checks.err") || true
+          checks=$(GH_TOKEN="$GITHUB_TOKEN" gh pr checks "$pr" --json name,workflow,bucket,link 2> "$RUNNER_TEMP/checks.err") || true
           if ! jq -e 'type == "array"' <<< "$checks" > /dev/null 2>&1; then
             if ! grep -q 'no checks reported' "$RUNNER_TEMP/checks.err"; then
               cat "$RUNNER_TEMP/checks.err"
@@ -113,6 +180,30 @@ jobs:
             checks='[]'
           fi
           others=$(jq '[.[] | select(.workflow != "merge-when-green")]' <<< "$checks")
+
+          # GitHub sometimes leaves a job's check in progress after its workflow run completed: the
+          # job has no steps and never ends, so waiting on it would wait forever. A pending check
+          # whose run completed takes the run's conclusion instead: a run succeeds only when every
+          # job of it did.
+          pending_runs=$(jq -r '.[] | select(.bucket == "pending") | .link // ""
+            | capture("/actions/runs/(?<id>[0-9]+)/job/")? | .id' <<< "$others" | sort -u)
+          for run_id in $pending_runs; do
+            if ! run=$(GH_TOKEN="$GITHUB_TOKEN" gh api "repos/$GH_REPO/actions/runs/$run_id" \
+              --jq '"\(.status) \(.conclusion // "")"'); then
+              continue
+            fi
+            read -r status conclusion <<< "$run"
+            [ "$status" = completed ] || continue
+            case "$conclusion" in
+              success) bucket=pass ;;
+              skipped) bucket=skipping ;;
+              cancelled) bucket=cancel ;;
+              *) bucket=fail ;;
+            esac
+            echo "::warning::Run $run_id completed ($conclusion) with a check still in progress: counted as $bucket."
+            others=$(jq --arg id "$run_id" --arg bucket "$bucket" 'map(if .bucket == "pending"
+              and ((.link // "") | contains("/actions/runs/\($id)/job/")) then .bucket = $bucket else . end)' <<< "$others")
+          done
 
           # A gate that held its workflow's checks for claude-review's open threads is the only
           # review-gate check that fails. Its run completes failed, which starts this workflow too.
