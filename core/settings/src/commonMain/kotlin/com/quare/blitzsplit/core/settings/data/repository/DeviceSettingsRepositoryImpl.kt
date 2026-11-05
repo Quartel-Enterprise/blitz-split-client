@@ -93,4 +93,13 @@ class DeviceSettingsRepositoryImpl(
     override suspend fun updateLastUpdatePromptAt(epochMillis: Long) {
         local.update { entity -> entity.copy(lastUpdatePromptAt = epochMillis) }
     }
+
+    override fun observeLastNotificationPromptAt(): Flow<Long?> = local
+        .observe()
+        .map { entity -> entity?.lastNotificationPromptAt }
+        .distinctUntilChanged()
+
+    override suspend fun updateLastNotificationPromptAt(epochMillis: Long) {
+        local.update { entity -> entity.copy(lastNotificationPromptAt = epochMillis) }
+    }
 }

@@ -1,6 +1,7 @@
-import { Banknote, Camera, KeyRound, SquarePlus, Users, X } from 'lucide-react'
+import { Banknote, BellOff, BellRing, Camera, KeyRound, SquarePlus, Users, X, type LucideIcon } from 'lucide-react'
 import { HomePresenter, type JsHomeState } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
+import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { SplitBillIcon } from '@/components/common'
 import { ActivityBell, HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
@@ -17,6 +18,7 @@ import { HomeSummaryCards, PeopleCard, RecentBills, YourGroups } from '@/feature
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
+import { isWebPushSupported, requestNotificationPermission, watchNotificationPermission } from '@/push/webPush'
 
 // Grupos, Saldos and Contatos take their place right above Início.
 const tabEvents: Partial<Record<HomeTab, (presenter: HomePresenter) => void>> = {
@@ -37,8 +39,14 @@ export function HomeScreen() {
   useActions(
     presenter,
     (p, onAction: (action: string) => void) => p.observeActions(onAction),
-    toastGroupAction,
+    (action) => {
+      if (action === 'notifications-on') toast(t('home_notificationsOn'))
+      else if (action === 'request-notification-permission') {
+        void requestNotificationPermission().then((permission) => presenter?.notificationPermissionChecked(permission))
+      } else toastGroupAction(action)
+    },
   )
+  useNotificationPermission(presenter)
   // Why: Registrar pagamento, which "Quem pagou a quem?" or a face opened over Início, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   useDeletedGroupNotice(presenter, state)
@@ -90,6 +98,7 @@ export function HomeScreen() {
         {state.showsHome && (
           <>
             {state.showsRecoveryCodeCard && <RecoveryCodeCard presenter={presenter} />}
+            {state.notificationPrompt && <NotificationCard presenter={presenter} isBlocked={state.notificationPrompt === 'BLOCKED'} />}
             <HomeSummaryCards presenter={presenter} state={state} />
             <PeopleCard presenter={presenter} state={state} />
             <div className="flex flex-col gap-3.5 md:gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-5">
@@ -220,25 +229,64 @@ function FirstUseCard({ presenter }: { presenter: HomePresenter }) {
 /** "Guarde seu código de recuperação", after the first sync of an account without Google or Apple; ✕ hides it until the next visit. */
 function RecoveryCodeCard({ presenter }: { presenter: HomePresenter }) {
   return (
-    <section role="note" aria-labelledby="home-recovery-title" className="flex flex-wrap items-center gap-3 rounded-lg border bg-card py-3 pr-3 pl-4">
-      <KeyRound aria-hidden className="size-[18px] shrink-0 text-primary" />
+    <HomeActionCard id="home-recovery-title" icon={KeyRound} title={t('home_recoveryTitle')} body={t('home_recoveryBody')}>
+      <Button variant="outline" size="sm" onClick={() => presenter.connectAccount()}>
+        {t('home_connectAccount')}
+      </Button>
+      <Button size="sm" onClick={() => presenter.showRecoveryCode()}>
+        {t('home_showCode')}
+      </Button>
+      <Button variant="ghost" size="icon-sm" aria-label={t('home_dismiss')} className="text-muted-foreground" onClick={() => presenter.dismissRecoveryCodeCard()}>
+        <X />
+      </Button>
+    </HomeActionCard>
+  )
+}
+
+/**
+ * The soft ask before the browser's prompt, once there is a group, so "Not now" never spends it. Blocked, it says where
+ * to allow them instead, since a page can't open the browser's settings.
+ */
+function NotificationCard({ presenter, isBlocked }: { presenter: HomePresenter; isBlocked: boolean }) {
+  return (
+    <HomeActionCard
+      id="home-notifications-title"
+      icon={isBlocked ? BellOff : BellRing}
+      title={t(isBlocked ? 'home_notificationsOffTitle' : 'home_notificationsTitle')}
+      body={t(isBlocked ? 'home_notificationsOffBody' : 'home_notificationsBody')}
+    >
+      <Button variant="outline" size="sm" onClick={() => presenter.dismissNotificationPrompt()}>
+        {t('home_notificationsNotNow')}
+      </Button>
+      {!isBlocked && (
+        <Button size="sm" onClick={() => presenter.turnOnNotifications()}>
+          {t('home_notificationsTurnOn')}
+        </Button>
+      )}
+    </HomeActionCard>
+  )
+}
+
+/** A card of Início that asks for something: its icon, title and text, and its answers at the end. */
+function HomeActionCard({ id, icon: Icon, title, body, children }: { id: string; icon: LucideIcon; title: string; body: string; children: ReactNode }) {
+  return (
+    <section role="note" aria-labelledby={id} className="flex flex-wrap items-center gap-3 rounded-lg border bg-card py-3 pr-3 pl-4">
+      <Icon aria-hidden className="size-[18px] shrink-0 text-primary" />
       <span className="flex min-w-[200px] flex-1 flex-col gap-0.5">
-        <strong id="home-recovery-title" className="text-sm font-semibold">
-          {t('home_recoveryTitle')}
+        <strong id={id} className="text-sm font-semibold">
+          {title}
         </strong>
-        <span className="text-[13px] text-muted-foreground">{t('home_recoveryBody')}</span>
+        <span className="text-[13px] text-muted-foreground">{body}</span>
       </span>
-      <span className="ml-auto flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => presenter.connectAccount()}>
-          {t('home_connectAccount')}
-        </Button>
-        <Button size="sm" onClick={() => presenter.showRecoveryCode()}>
-          {t('home_showCode')}
-        </Button>
-        <Button variant="ghost" size="icon-sm" aria-label={t('home_dismiss')} className="text-muted-foreground" onClick={() => presenter.dismissRecoveryCodeCard()}>
-          <X />
-        </Button>
-      </span>
+      <span className="ml-auto flex items-center gap-2">{children}</span>
     </section>
   )
+}
+
+/** The browser's permission, told to Home on open, whenever the tab comes back and whenever the site settings change it. */
+function useNotificationPermission(presenter: HomePresenter | null) {
+  useEffect(() => {
+    if (!presenter || !isWebPushSupported()) return
+    return watchNotificationPermission((permission) => presenter.notificationPermissionChecked(permission))
+  }, [presenter])
 }

@@ -20005,6 +20005,83 @@
           }
         }
       }
+    },
+    "Know when a bill comes in" : {
+      "comment" : "Home's notification card: the soft ask before the system's prompt",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saiba quando entrar uma conta"
+          }
+        }
+      }
+    },
+    "Get notified when someone adds a bill with you or marks a payment to you." : {
+      "comment" : "Home's notification card, while never asked",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receba um aviso quando alguém adicionar uma conta com você ou marcar um pagamento para você."
+          }
+        }
+      }
+    },
+    "Notifications are off" : {
+      "comment" : "Home's notification card, once refused",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As notificações estão desligadas"
+          }
+        }
+      }
+    },
+    "Turn them on in Settings to know when someone adds a bill with you." : {
+      "comment" : "Home's notification card once refused, on iPhone and iPad",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ative nos Ajustes para saber quando alguém adicionar uma conta com você."
+          }
+        }
+      }
+    },
+    "Turn them on in System Settings to know when someone adds a bill with you." : {
+      "comment" : "Home's notification card once refused, on the Mac",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ative nos Ajustes do Sistema para saber quando alguém adicionar uma conta com você."
+          }
+        }
+      }
+    },
+    "Turn on" : {
+      "comment" : "Home's notification card: asks for the permission, or opens its settings",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar"
+          }
+        }
+      }
+    },
+    "Notifications on" : {
+      "comment" : "Toast once the system allows notifications",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificações ativadas"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

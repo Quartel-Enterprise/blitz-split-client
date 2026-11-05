@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.notificationsettings.presentation.model
 
 import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
@@ -17,6 +18,9 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
             is OnToggled -> EventAnalytics.Manual("notification_toggled")
 
             OnOpenSettingsClicked -> EventAnalytics.Automatic("notification_system_settings_clicked")
+
+            // Why: only while Android can still ask (refused once).
+            OnAskAgainClicked -> EventAnalytics.Manual("notification_ask_again_clicked")
         }
 
     data object OnBackClicked : NotificationSettingsUiEvent
@@ -33,4 +37,7 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
     ) : NotificationSettingsUiEvent
 
     data object OnOpenSettingsClicked : NotificationSettingsUiEvent
+
+    // Why: the notice's "Turn on" on Android after a first refusal, which shows the system's dialog once more.
+    data object OnAskAgainClicked : NotificationSettingsUiEvent
 }

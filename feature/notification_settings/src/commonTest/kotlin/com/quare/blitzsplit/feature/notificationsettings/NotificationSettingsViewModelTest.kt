@@ -2,16 +2,17 @@ package com.quare.blitzsplit.feature.notificationsettings
 
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityTypeRead
 import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdateNotificationPreferenceUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
@@ -863,6 +864,268 @@ class NotificationSettingsViewModelTest {
 
             // Then
             assertTrue(markedReadTypes.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN saved choices WHEN the permission is reported refused once THEN shows the notice that asks again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(saved = NotificationType.entries.toSet())
+            val reported = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.REFUSED_ONCE)
+
+            // When
+            viewModel.onEvent(reported)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsPermissionDenied)
+            assertTrue(state.canAskAgain)
+            assertFalse(state.arePushTogglesEnabled)
+            assertTrue(state.areInAppTogglesEnabled)
+            assertTrue(state.types.none { state.isEnabled(it, NotificationChannel.PUSH) })
+            assertEquals(NotificationType.entries.toSet(), preferences.preferences.value.push)
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN a notice is turned on THEN saves sends and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PEOPLE_AND_GROUPS,
+                NotificationChannel.PUSH,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertEquals(NotificationPreferences.DEFAULT, preferences.preferences.value)
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN a notice is turned off THEN saves nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.PUSH,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertEquals(NotificationPreferences.DEFAULT, preferences.preferences.value)
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN an In app notice is turned off THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(listOf(Triple(NotificationType.BILLS, NotificationChannel.IN_APP, false)), preferences.updates)
+            assertFalse(viewModel.uiState.value.isEnabled(NotificationType.BILLS, NotificationChannel.IN_APP))
+            assertTrue(viewModel.uiState.value.isEnabled(NotificationType.PAYMENTS, NotificationChannel.IN_APP))
+            assertEquals(
+                listOf(
+                    "notification_toggled" to mapOf<String, Any>(
+                        "type" to NotificationType.BILLS,
+                        "channel" to NotificationChannel.IN_APP,
+                        "is_enabled" to false,
+                    ),
+                ),
+                trackedEvents,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN turn on is tapped THEN asks the system again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            val tapped = NotificationSettingsUiEvent.OnAskAgainClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertEquals(
+                listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission),
+                actions,
+            )
+            assertTrue(preferences.updates.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN turn on is tapped THEN sends the tap once with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            val tapped = NotificationSettingsUiEvent.OnAskAgainClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertEquals(
+                listOf("notification_ask_again_clicked" to emptyMap<String, Any>()),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN turn on WHEN reading its analytics THEN is sent by hand as notification_ask_again_clicked`() {
+        // Given
+        val event = NotificationSettingsUiEvent.OnAskAgainClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("notification_ask_again_clicked"), analytics)
+    }
+
+    @Test
+    fun `GIVEN the permission denied WHEN a late turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+            val tapped = NotificationSettingsUiEvent.OnAskAgainClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission granted WHEN a late turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+            val tapped = NotificationSettingsUiEvent.OnAskAgainClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission never asked WHEN a late turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            val tapped = NotificationSettingsUiEvent.OnAskAgainClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN a turn on arrives THEN asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = null)
+            val tapped = NotificationSettingsUiEvent.OnAskAgainClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once that came back denied WHEN turn on arrives THEN asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED))
+            val tapped = NotificationSettingsUiEvent.OnAskAgainClicked
+
+            // When
+            viewModel.onEvent(tapped)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN it comes back granted THEN shows the saved choices again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = setOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS),
+                permission = NotificationPermission.REFUSED_ONCE,
+            )
+            val reported = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(reported)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsPermissionDenied)
+            assertFalse(state.canAskAgain)
+            assertTrue(state.arePushTogglesEnabled)
+            assertEquals(
+                listOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS),
+                state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) },
+            )
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN it comes back denied THEN keeps the notice with the system settings`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+            val reported = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.DENIED)
+
+            // When
+            viewModel.onEvent(reported)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsPermissionDenied)
+            assertFalse(state.canAskAgain)
+            assertFalse(state.arePushTogglesEnabled)
+            assertTrue(state.types.none { state.isEnabled(it, NotificationChannel.PUSH) })
+            assertEquals(NotificationPreferences.DEFAULT, preferences.preferences.value)
         }
 
     private fun TestScope.prepareScenario(

@@ -73,6 +73,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
+import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -243,7 +244,12 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.ProfileSetup> { ProfileSetupScreen() }
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
-            entry<Route.Home>(metadata = homeBarsMetadata) { HomeScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
+            entry<Route.Home>(metadata = homeBarsMetadata) {
+                HomeScreen(
+                    recoveryCodeSheet = { RecoveryCodeSheet() },
+                    isPushConfigured = PushSetup.isConfigured,
+                )
+            }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
                 GroupsScreen(

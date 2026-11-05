@@ -37,4 +37,10 @@ data class DeviceSettingsEntity(
      */
     @ColumnInfo(defaultValue = "NULL")
     val lastUpdatePromptAt: Long?,
+    /*
+     * Why: when Home's notification card was last answered ("Turn on" or "Not now", epoch millis), so it comes back
+     * only weeks later; null until answered once.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val lastNotificationPromptAt: Long?,
 )

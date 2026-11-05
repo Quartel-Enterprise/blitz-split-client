@@ -321,7 +321,7 @@ private fun ColumnScope.HomeSecondColumn(
     HomeBillsSection(state, onEvent, metrics)
 }
 
-// Why: the shortcuts, and the recovery code's card under them while it shows.
+// Why: the shortcuts, and the recovery code's or the notifications' card under them while it shows.
 @Composable
 private fun HomeShortcutsSection(
     state: HomeUiState,
@@ -343,6 +343,13 @@ private fun HomeShortcutsSection(
     }
     if (state.showsRecoveryCodeCard) {
         HomeRecoveryCodeCard(
+            onEvent = onEvent,
+            modifier = Modifier.padding(horizontal = metrics.gutter),
+        )
+    }
+    state.notificationPrompt?.let { prompt ->
+        HomeNotificationCard(
+            prompt = prompt,
             onEvent = onEvent,
             modifier = Modifier.padding(horizontal = metrics.gutter),
         )

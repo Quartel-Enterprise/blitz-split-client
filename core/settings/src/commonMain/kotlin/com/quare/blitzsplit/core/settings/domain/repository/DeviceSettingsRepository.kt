@@ -29,4 +29,8 @@ interface DeviceSettingsRepository {
     fun observeLastUpdatePromptAt(): Flow<Long?>
 
     suspend fun updateLastUpdatePromptAt(epochMillis: Long)
+
+    fun observeLastNotificationPromptAt(): Flow<Long?>
+
+    suspend fun updateLastNotificationPromptAt(epochMillis: Long)
 }

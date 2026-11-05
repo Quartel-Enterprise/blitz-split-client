@@ -233,6 +233,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `recovery_code_card_show_clicked` | none | "See code" on "Save your recovery code" | `:feature:groups` |
 | `recovery_code_card_connect_clicked` | none | "Connect account" on that card | `:feature:groups` |
 | `recovery_code_card_dismissed` | none | That card's ✕ | `:feature:groups` |
+| `notification_prompt_turn_on_clicked` | `prompt` (`soft_ask`, `ask_again`, `blocked`) | "Turn on" on Home's notification card, while it shows: the system's prompt, or its settings once blocked | `:feature:groups` |
+| `notification_prompt_dismissed` | `prompt` (`soft_ask`, `ask_again`, `blocked`) | "Not now" on that card, while it shows | `:feature:groups` |
 | `group_stats_clicked` | none | The group's Statistics | `:feature:group_detail` |
 | `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Expenses, Balances or Members | `:feature:group_detail` |
 | `edit_group_clicked` | none | "Edit group" | `:feature:group_detail` |
@@ -465,3 +467,4 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_saved` | `has_photo` | The profile saved | `:feature:edit_profile` |
 | `notification_toggled` | `type` (`BILLS`, `PAYMENTS`, `COMMENTS`, `PEOPLE_AND_GROUPS`, `PAYMENT_REQUESTS`, `BALANCE_REMINDER`), `channel` (`PUSH`, `IN_APP`), `is_enabled` | A Push or In app toggle of Notifications, while its channel's toggles take a change | `:feature:notification_settings` |
 | `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |
+| `notification_ask_again_clicked` | none | The notice's "Turn on" on Android after a first refusal, which shows the system's dialog once more | `:feature:notification_settings` |

@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.notificationsettings
 
 import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiState
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
@@ -324,6 +324,119 @@ class NotificationSettingsUiStateTest {
         // Then
         assertFalse(inAppEnabled)
         assertTrue(state.isEnabled(NotificationType.PAYMENTS, NotificationChannel.PUSH))
+    }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN drawing the toggles THEN shows the notice and every push toggle off`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
+            permission = NotificationPermission.REFUSED_ONCE,
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) }
+
+        // Then
+        assertTrue(state.showsPermissionDenied)
+        assertFalse(state.arePushTogglesEnabled)
+        assertFalse(state.areTogglesEnabled(NotificationChannel.PUSH))
+        assertFalse(state.showsTogglesLoading)
+        assertTrue(enabled.isEmpty())
+        assertEquals(NotificationType.entries.toSet(), state.preferences.valueOrNull()?.push)
+    }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN drawing the In app toggles THEN enables them with the saved choices`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = inAppOf(billsAndComments).toLoaded(),
+            permission = NotificationPermission.REFUSED_ONCE,
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.IN_APP) }
+
+        // Then
+        assertTrue(state.areInAppTogglesEnabled)
+        assertTrue(state.areTogglesEnabled(NotificationChannel.IN_APP))
+        assertEquals(listOf(NotificationType.BILLS, NotificationType.COMMENTS), enabled)
+    }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN drawing the notice THEN offers to ask again`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.REFUSED_ONCE,
+        )
+
+        // When
+        val canAskAgain = state.canAskAgain
+
+        // Then
+        assertTrue(canAskAgain)
+    }
+
+    @Test
+    fun `GIVEN the permission denied WHEN drawing the notice THEN offers the system settings instead`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.DENIED,
+        )
+
+        // When
+        val canAskAgain = state.canAskAgain
+
+        // Then
+        assertFalse(canAskAgain)
+        assertTrue(state.showsPermissionDenied)
+    }
+
+    @Test
+    fun `GIVEN the permission granted WHEN checking the notice THEN cannot ask again`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.GRANTED,
+        )
+
+        // When
+        val canAskAgain = state.canAskAgain
+
+        // Then
+        assertFalse(canAskAgain)
+    }
+
+    @Test
+    fun `GIVEN the permission never asked WHEN checking the notice THEN cannot ask again`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = NotificationPermission.NOT_DETERMINED,
+        )
+
+        // When
+        val canAskAgain = state.canAskAgain
+
+        // Then
+        assertFalse(canAskAgain)
+    }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN checking the notice THEN cannot ask again`() {
+        // Given
+        val state = NotificationSettingsUiState(
+            preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            permission = null,
+        )
+
+        // When
+        val canAskAgain = state.canAskAgain
+
+        // Then
+        assertFalse(canAskAgain)
     }
 
     private val newExpenseAndInvites = setOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS)

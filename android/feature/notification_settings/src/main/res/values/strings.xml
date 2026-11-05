@@ -4,6 +4,8 @@
     <string name="notification_settings_denied_title">Blitz Split notifications are turned off on Android.</string>
     <string name="notification_settings_denied_body">Turn them on in the system settings to get the pushes below. The bell keeps working.</string>
     <string name="notification_settings_open_settings">Open settings</string>
+    <string name="notification_settings_refused_body">Android lets you allow them once more to get the pushes below. The bell keeps working.</string>
+    <string name="notification_settings_turn_on">Turn on</string>
     <string name="notification_settings_section">Notify me about</string>
     <string name="notification_settings_push">Push</string>
     <string name="notification_settings_in_app">In app</string>

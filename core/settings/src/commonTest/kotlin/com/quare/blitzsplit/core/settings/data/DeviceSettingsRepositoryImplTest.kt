@@ -606,6 +606,45 @@ class DeviceSettingsRepositoryImplTest {
         assertEquals(1_700_000_000_000L, repository.observeLastUpdatePromptAt().first())
     }
 
+    @Test
+    fun `GIVEN no row WHEN the notification prompt time is read THEN it is null`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val lastPromptAt = repository.observeLastNotificationPromptAt().first()
+
+        // Then
+        assertEquals(null, lastPromptAt)
+    }
+
+    @Test
+    fun `GIVEN other settings WHEN the notification prompt is answered THEN only its time changes`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                lastUpdatePromptAt = 1_600_000_000_000L,
+            ),
+        )
+
+        // When
+        repository.updateLastNotificationPromptAt(1_700_000_000_000L)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    lastUpdatePromptAt = 1_600_000_000_000L,
+                    lastNotificationPromptAt = 1_700_000_000_000L,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(1_700_000_000_000L, repository.observeLastNotificationPromptAt().first())
+    }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
@@ -615,6 +654,7 @@ class DeviceSettingsRepositoryImplTest {
         usesDynamicColors: Boolean = false,
         showsBitcoinInSats: Boolean = false,
         lastUpdatePromptAt: Long? = null,
+        lastNotificationPromptAt: Long? = null,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -625,6 +665,7 @@ class DeviceSettingsRepositoryImplTest {
         usesDynamicColors = usesDynamicColors,
         showsBitcoinInSats = showsBitcoinInSats,
         lastUpdatePromptAt = lastUpdatePromptAt,
+        lastNotificationPromptAt = lastNotificationPromptAt,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -681,6 +722,7 @@ private class FakeDeviceSettingsLocalDataSource(
             usesDynamicColors = false,
             showsBitcoinInSats = false,
             lastUpdatePromptAt = null,
+            lastNotificationPromptAt = null,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch'
 import { t, type MessageKey } from '@/i18n'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
-import { startWebPush } from '@/push/webPush'
+import { requestNotificationPermission, watchNotificationPermission } from '@/push/webPush'
 
 const labels: Record<string, { title: MessageKey; detail: MessageKey }> = {
   BILLS: { title: 'notifications_bills', detail: 'notifications_billsDetail' },
@@ -24,22 +24,6 @@ const labels: Record<string, { title: MessageKey; detail: MessageKey }> = {
   PEOPLE_AND_GROUPS: { title: 'notifications_peopleAndGroups', detail: 'notifications_peopleAndGroupsDetail' },
   PAYMENT_REQUESTS: { title: 'notifications_paymentRequests', detail: 'notifications_paymentRequestsDetail' },
   BALANCE_REMINDER: { title: 'notifications_balanceReminder', detail: 'notifications_balanceReminderDetail' },
-}
-
-/**
- * The NotificationPermission's name for the browser's. A browser with no notifications at all reports NOT_DETERMINED,
- * so the toggles, which wait for a permission to be known, still come.
- */
-function readPermission(): string {
-  if (!('Notification' in window)) return 'NOT_DETERMINED'
-  switch (Notification.permission) {
-    case 'granted':
-      return 'GRANTED'
-    case 'denied':
-      return 'DENIED'
-    default:
-      return 'NOT_DETERMINED'
-  }
 }
 
 /**
@@ -53,27 +37,14 @@ function useNotificationSettings() {
     presenter,
     (p, onAction: (action: JsNotificationSettingsAction) => void) => p.observeActions(onAction),
     (action) => {
-      if (action.type !== 'request-permission' || !('Notification' in window)) return
-      void Notification.requestPermission().then(() => {
-        presenter?.permissionChecked(readPermission())
-        void startWebPush()
-      })
+      if (action.type !== 'request-permission') return
+      void requestNotificationPermission().then((permission) => presenter?.permissionChecked(permission))
     },
   )
   // Why: read again whenever the tab comes back, since the person may allow or block it in the site settings.
   useEffect(() => {
     if (!presenter) return
-    let lastPermission = readPermission()
-    const check = () => {
-      const permission = readPermission()
-      presenter.permissionChecked(permission)
-      // Allowed in the site settings meanwhile: subscribe now rather than on the next load
-      if (permission === 'GRANTED' && lastPermission !== 'GRANTED') void startWebPush()
-      lastPermission = permission
-    }
-    check()
-    window.addEventListener('focus', check)
-    return () => window.removeEventListener('focus', check)
+    return watchNotificationPermission((permission) => presenter.permissionChecked(permission))
   }, [presenter])
   return { presenter, state }
 }

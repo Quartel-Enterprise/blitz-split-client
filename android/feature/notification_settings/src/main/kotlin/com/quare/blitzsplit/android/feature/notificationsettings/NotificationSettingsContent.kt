@@ -55,9 +55,9 @@ import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.NotificationChannel
+import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
-import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationPermission
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiState
 import software.quare.loadable.Loadable
@@ -106,7 +106,10 @@ fun NotificationSettingsContent(
                     ),
             ) {
                 if (state.showsPermissionDenied) {
-                    PermissionDeniedBanner(onEvent = onEvent)
+                    PermissionDeniedBanner(
+                        canAskAgain = state.canAskAgain,
+                        onEvent = onEvent,
+                    )
                 }
                 ChannelHeader()
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -149,7 +152,11 @@ fun NotificationSettingsContent(
 }
 
 @Composable
-private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Unit) {
+private fun PermissionDeniedBanner(
+    // Why: refused once, Android still shows its dialog once more, so "Turn on" asks instead of opening the settings.
+    canAskAgain: Boolean,
+    onEvent: (NotificationSettingsUiEvent) -> Unit,
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,7 +176,13 @@ private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Uni
                     contentDescription = null,
                 )
                 val title = stringResource(R.string.notification_settings_denied_title)
-                val body = stringResource(R.string.notification_settings_denied_body)
+                val body = stringResource(
+                    if (canAskAgain) {
+                        R.string.notification_settings_refused_body
+                    } else {
+                        R.string.notification_settings_denied_body
+                    },
+                )
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(title) }
@@ -180,12 +193,30 @@ private fun PermissionDeniedBanner(onEvent: (NotificationSettingsUiEvent) -> Uni
                 )
             }
             Button(
-                onClick = { onEvent(NotificationSettingsUiEvent.OnOpenSettingsClicked) },
+                onClick = {
+                    onEvent(
+                        if (canAskAgain) {
+                            NotificationSettingsUiEvent.OnAskAgainClicked
+                        } else {
+                            NotificationSettingsUiEvent.OnOpenSettingsClicked
+                        },
+                    )
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError,
                 ),
-            ) { Text(stringResource(R.string.notification_settings_open_settings)) }
+            ) {
+                Text(
+                    stringResource(
+                        if (canAskAgain) {
+                            R.string.notification_settings_turn_on
+                        } else {
+                            R.string.notification_settings_open_settings
+                        },
+                    ),
+                )
+            }
         }
     }
 }

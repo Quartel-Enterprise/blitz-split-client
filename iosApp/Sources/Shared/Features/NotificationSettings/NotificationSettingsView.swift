@@ -1,13 +1,6 @@
 import Observation
 import Shared
 import SwiftUI
-import UserNotifications
-
-#if os(iOS)
-import UIKit
-#else
-import AppKit
-#endif
 
 @Observable
 final class NotificationSettingsModel {
@@ -34,12 +27,7 @@ final class NotificationSettingsModel {
     /// Read on appear and on every return to the app, since the person may change it in Settings.
     func checkPermission() {
         Task {
-            let settings = await UNUserNotificationCenter.current().notificationSettings()
-            let permission: NotificationPermission = switch settings.authorizationStatus {
-            case .notDetermined: .notDetermined
-            case .denied: .denied
-            default: .granted
-            }
+            let permission = await PushNotifications.readPermission()
             send(NotificationSettingsUiEventOnPermissionChecked(permission: permission))
         }
     }
@@ -48,26 +36,14 @@ final class NotificationSettingsModel {
         switch action {
         case is NotificationSettingsUiActionRequestPermission:
             Task {
-                _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+                await PushNotifications.requestPermission()
                 checkPermission()
             }
         case is NotificationSettingsUiActionOpenSystemSettings:
-            openSystemSettings()
+            PushNotifications.openSettings()
         default:
             break
         }
-    }
-
-    private func openSystemSettings() {
-        #if os(iOS)
-        guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
-        UIApplication.shared.open(url)
-        #else
-        let bundleId = Bundle.main.bundleIdentifier ?? ""
-        let address = "x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=\(bundleId)"
-        guard let url = URL(string: address) else { return }
-        NSWorkspace.shared.open(url)
-        #endif
     }
 
     isolated deinit {
@@ -142,7 +118,7 @@ struct NotificationSettingsSections: View {
                     }
                 }
                 // On the one header always there: a Form hands a section's modifiers to each of its rows
-                .modifier(PermissionChecks(model: model))
+                .checkingNotificationPermission { model.checkPermission() }
             } footer: {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Push sends a notification to this device. In app marks it new on the bell and in Activity; turned off, it still shows in Activity, already read.")
@@ -224,26 +200,6 @@ private struct LoadingShimmer: ViewModifier {
             content
         }
     }
-}
-
-/// Reads the permission when the screen or section appears and on every return to the app: the Mac's
-/// scene stays active while the person is in System Settings, so it listens to the app becoming active.
-private struct PermissionChecks: ViewModifier {
-    let model: NotificationSettingsModel
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear { model.checkPermission() }
-            .onReceive(NotificationCenter.default.publisher(for: Self.didBecomeActive)) { _ in
-                model.checkPermission()
-            }
-    }
-
-    #if os(macOS)
-    private static let didBecomeActive = NSApplication.didBecomeActiveNotification
-    #else
-    private static let didBecomeActive = UIApplication.didBecomeActiveNotification
-    #endif
 }
 
 private struct PermissionDeniedNotice: View {
