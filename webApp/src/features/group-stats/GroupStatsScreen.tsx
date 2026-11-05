@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils'
 import { CategoriesCard } from './CategoriesCard'
 import { StatsChart } from './StatsChart'
 import {
+  averageLabel,
   formatRange,
   grainNoteText,
   paidByText,
@@ -488,6 +489,12 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
         {peak && (
           <span className="text-[13px] text-muted-foreground">
             {peakLabel(peak, state.grain)} <strong className="font-semibold text-foreground tabular-nums">{money(peak.amountMinor)}</strong>
+          </span>
+        )}
+        {state.chartAverageMinor != null && (
+          <span className="flex items-center gap-1 text-[13px] text-muted-foreground">
+            <span aria-hidden className="mr-0.5 w-4 border-t-2 border-dashed border-muted-foreground" />
+            {averageLabel(state.grain)} <strong className="font-semibold text-foreground tabular-nums">{money(state.chartAverageMinor)}</strong>
           </span>
         )}
         {note && <span className="text-xs leading-normal text-muted-foreground">{note}</span>}

@@ -50,6 +50,13 @@ data class GroupStatsUiState(
     val grain: StatsGrain,
     val grains: List<StatsGrainOption>,
     val bars: List<StatsBar>,
+    /*
+     * Why: the chart's value lines, from 0 up in round steps ("R$ 0", "R$ 500", "R$ 1 mil", "R$ 1,5 mil"), the last one
+     * the top of its scale, so a bar's height reads against them; empty while nothing was spent.
+     */
+    val chartTicksMinor: List<Long>,
+    // Why: the dashed "Average per day" line, the bars' mean, empty ones too; null with one bar or a mean under one unit.
+    val chartAverageMinor: Long?,
     val grainNotes: List<StatsGrainNote>,
     val biggestExpense: StatsBiggestExpense?,
     // Why: "Acertos", the only figure that reads the payments too; null until two people had a debt in the period.
@@ -89,6 +96,12 @@ data class GroupStatsUiState(
     // Why: "Dia mais caro: 28 de out, R$ 1.458,00".
     val peak: StatsBar?
         get() = bars.firstOrNull { it.isPeak }
+
+    // Why: the amount the chart's top stands for: its last value line, or the most expensive bar without one.
+    val chartTopMinor: Long
+        get() = chartTicksMinor.lastOrNull()?.takeIf { it > 0 }
+            ?: bars.maxOfOrNull { it.amountMinor }?.coerceAtLeast(1L)
+            ?: 1L
 
     // Why: with only some labels, a label names a week by its month ("jan", "mar").
     val hasSparseLabels: Boolean

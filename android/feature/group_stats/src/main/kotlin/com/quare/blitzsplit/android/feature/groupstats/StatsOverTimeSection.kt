@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -109,8 +112,10 @@ internal fun StatsOverTimeSection(
             )
             StatsChartImage(
                 state = state,
+                money = money,
                 description = chartDescriptionOf(state, dates, money),
                 labelOf = { bar -> dates.toBarLabel(bar, state.grain, state.hasSparseLabels, today) },
+                nameOf = { bar -> dates.toBarName(bar, state.grain) },
                 height = chartHeight,
             )
             val peak = state.peak
@@ -128,6 +133,12 @@ internal fun StatsOverTimeSection(
                     )
                 }
             }
+            state.chartAverageMinor?.let { average ->
+                StatsAverageLegendRow(
+                    label = stringResource(averageLabelOf(state.grain)),
+                    amount = money.toText(average),
+                )
+            }
             grainNoteTextOf(state)?.takeIf { showsGrainNote }?.let { note ->
                 Text(
                     note,
@@ -136,6 +147,46 @@ internal fun StatsOverTimeSection(
                 )
             }
         }
+    }
+}
+
+// Why: the dashed average line's key, a short dash in its color before "Average per day: R$ 405".
+@Composable
+private fun StatsAverageLegendRow(
+    label: String,
+    amount: String,
+) {
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Canvas(
+            modifier = Modifier
+                .padding(end = 2.dp)
+                .size(
+                    width = 16.dp,
+                    height = 2.dp,
+                ),
+        ) {
+            drawLine(
+                color = color,
+                start = Offset(0f, size.height / 2),
+                end = Offset(size.width, size.height / 2),
+                strokeWidth = size.height,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 3.dp.toPx())),
+            )
+        }
+        Text(
+            label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = amount,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 

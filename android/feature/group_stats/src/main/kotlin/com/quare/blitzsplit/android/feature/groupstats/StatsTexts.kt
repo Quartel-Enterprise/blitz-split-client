@@ -58,6 +58,14 @@ internal fun grainLabelOf(grain: StatsGrain): Int = when (grain) {
     StatsGrain.YEAR -> R.string.group_stats_grain_year
 }
 
+// Why: "Average per day:", before the dashed line's amount.
+internal fun averageLabelOf(grain: StatsGrain): Int = when (grain) {
+    StatsGrain.DAY -> R.string.group_stats_average_day
+    StatsGrain.WEEK -> R.string.group_stats_average_week
+    StatsGrain.MONTH -> R.string.group_stats_average_month
+    StatsGrain.YEAR -> R.string.group_stats_average_year
+}
+
 // Why: "Dia mais caro: 28 de out.,", before the amount.
 @Composable
 internal fun peakLabelOf(

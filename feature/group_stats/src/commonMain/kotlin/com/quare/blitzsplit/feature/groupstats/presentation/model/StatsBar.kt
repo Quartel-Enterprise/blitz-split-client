@@ -6,6 +6,8 @@ data class StatsBar(
     val startMillis: Long,
     val endMillis: Long,
     val amountMinor: Long,
+    // Why: "3 expenses" in the callout of a bar or point someone picks.
+    val expenseCount: Int,
     // Why: a day bar of today, labeled "hoje".
     val isToday: Boolean,
     // Why: "Dia mais caro", "Semana mais cara"…: the first of the most expensive ones.

@@ -85,6 +85,21 @@ export function formatMoney(minor: number, currency: string, fractionDigits: num
   }
 }
 
+/**
+ * "R$ 1,5 mil" or "R$1.5K": the short amount of a chart's value line. Bitcoin and ether, which have no short currency
+ * format, write the whole amount.
+ */
+export function formatCompactMoney(minor: number, currency: string, fractionDigits: number): string {
+  if (currency in cryptoSymbols) return formatMoney(minor, currency, fractionDigits)
+  try {
+    return new Intl.NumberFormat(uiTag, { style: 'currency', currency, notation: 'compact', maximumSignificantDigits: 2 }).format(
+      minor / 10 ** fractionDigits,
+    )
+  } catch {
+    return formatMoney(minor, currency, fractionDigits)
+  }
+}
+
 /** A balance with its sign, "+R$ 600" or "−R$ 118,50" (a true minus sign), and no sign at zero. */
 export function formatSignedMoney(minor: number, currency: string, fractionDigits: number): string {
   return withSign(minor, formatMoney(Math.abs(minor), currency, fractionDigits))

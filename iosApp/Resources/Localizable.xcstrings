@@ -15385,6 +15385,61 @@
         }
       }
     },
+    "Average per day:" : {
+      "comment" : "The group statistics: before the amount of the chart's dashed average line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Média por dia:"
+          }
+        }
+      }
+    },
+    "Average per week:" : {
+      "comment" : "The group statistics: before the amount of the chart's dashed average line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Média por semana:"
+          }
+        }
+      }
+    },
+    "Average per month:" : {
+      "comment" : "The group statistics: before the amount of the chart's dashed average line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Média por mês:"
+          }
+        }
+      }
+    },
+    "Average per year:" : {
+      "comment" : "The group statistics: before the amount of the chart's dashed average line",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Média por ano:"
+          }
+        }
+      }
+    },
+    "No expenses" : {
+      "comment" : "The group statistics: a picked bar of the chart without bills",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa"
+          }
+        }
+      }
+    },
     "Over time" : {
       "comment" : "The group statistics: section of the chart",
       "localizations" : {

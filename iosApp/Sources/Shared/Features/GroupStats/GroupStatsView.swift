@@ -575,6 +575,25 @@ private struct StatsOverTimeSection: View {
                     }
                     .font(.footnote)
                 }
+                if let average = state.chartAverageMinor {
+                    HStack(spacing: 4) {
+                        // The dashed line's key, as the chart draws it
+                        Path { path in
+                            path.move(to: CGPoint(x: 0, y: 1))
+                            path.addLine(to: CGPoint(x: 16, y: 1))
+                        }
+                        .stroke(Color.secondary, style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+                        .frame(width: 16, height: 2)
+                        .padding(.trailing, 2)
+                        Text(verbatim: GroupStatsCopy.average(grain: state.grain))
+                            .foregroundStyle(.secondary)
+                        Text(verbatim: state.currency.format(Int64(truncating: average)))
+                            .fontWeight(.semibold)
+                            .monospacedDigit()
+                    }
+                    .font(.footnote)
+                    .accessibilityElement(children: .combine)
+                }
             }
             .padding(16)
             .background(Palette.card, in: .rect(cornerRadius: 26))
