@@ -142,7 +142,6 @@ class GroupStatsUiStateTest {
         categories = emptyList(),
         isLoaded = true,
         homeTab = HomeTab.GROUPS,
-        activityUnreadCount = 0,
     )
 
     private companion object {
