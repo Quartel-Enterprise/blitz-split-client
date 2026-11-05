@@ -174,8 +174,8 @@ final class AppModel {
             #endif
         case .registerPayment, .settleUp:
             return presentsAsSheet(route)
-        case .deleteAccount, .createGroup, .splitBill, .editGroup, .defaultSplit, .pickPayment, .contactInvite,
-             .shareBill, .inAppUpdate, .joinWithLink, .profilePhoto:
+        case .deleteAccount, .createGroup, .splitBill, .editGroup, .defaultSplit, .charge, .pickPayment,
+             .contactInvite, .shareBill, .inAppUpdate, .joinWithLink, .profilePhoto:
             return true
         default:
             return false
