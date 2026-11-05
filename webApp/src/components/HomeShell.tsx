@@ -1,6 +1,6 @@
 import { Bell, ChevronRight, CircleDollarSign, House, Search, UserRound, Users } from 'lucide-react'
 import type { JsGroupRow } from 'blitzsplit-shared'
-import { createContext, useContext, useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
 import { Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
@@ -63,27 +63,23 @@ export function HomeTabCrumb({ tab, onOpen }: { tab: HomeTab; onOpen: (tab: Home
  */
 export const PageKeyContext = createContext('')
 
-// Why: the last page that came in; module state, so a frame mounted again for the same page (back from Mapa de
-// categorias to Perfil) doesn't fade it in twice.
+// Why: the last page that came in, read as a page (`HomeShell`) mounts with its content; module state, so a page
+// mounted again for the same key (its skeleton swapped for it, or back from Mapa de categorias to Perfil) never fades
+// in twice.
 let enteredPageKey: string | null = null
 
 /**
- * Fades the frame's content in (`page-enter`) each time another page comes in, the frame itself staying put. Restarted
- * by hand, since the content's element stays mounted from a page to the next.
+ * Whether the page fades in (`page-enter`) under the frame, which stays put: decided once as the page mounts with its
+ * content, not as the back stack changes, since the page draws nothing until its presenter's state is read.
  */
-function usePageEnter(): RefObject<HTMLDivElement | null> {
+function useEntersAnimated(): boolean {
   const pageKey = useContext(PageKeyContext)
-  const content = useRef<HTMLDivElement>(null)
-  useLayoutEffect(() => {
-    const element = content.current
-    if (!element || enteredPageKey === pageKey) return
+  // Why: decided once at mount, so a page that changes its key without remounting never fades.
+  const [entersAnimated] = useState(() => pageKey !== enteredPageKey)
+  useEffect(() => {
     enteredPageKey = pageKey
-    element.classList.remove('page-enter')
-    // Why: reading the layout in between makes the browser start the animation over.
-    void element.offsetWidth
-    element.classList.add('page-enter')
   }, [pageKey])
-  return content
+  return entersAnimated
 }
 
 /** Who is signed in, under the sidebar and in the phone's top bar. */
@@ -175,6 +171,7 @@ export const HomeShellChromeContext = createContext<((chrome: HomeShellChrome | 
  */
 export function HomeShell({ children, overlays, ...chrome }: HomeShellChrome & { children: ReactNode; overlays?: ReactNode }) {
   const handChrome = useContext(HomeShellChromeContext)
+  const entersAnimated = useEntersAnimated()
   // Why: before the browser paints, so the frame never draws this page with the previous one's tab or bars.
   useLayoutEffect(() => {
     handChrome?.(chrome)
@@ -182,7 +179,8 @@ export function HomeShell({ children, overlays, ...chrome }: HomeShellChrome & {
   useLayoutEffect(() => () => handChrome?.(null), [handChrome])
   return (
     <>
-      {children}
+      {/* Why: a new page fades in under the frame, which stays put. */}
+      <div className={cn('flex min-w-0 flex-1 flex-col', entersAnimated && 'page-enter')}>{children}</div>
       {overlays}
     </>
   )
@@ -214,7 +212,6 @@ export function HomeShellView({
   }
   // Why: a screen whose presenter can't count the logo yet opens Home as its tab does.
   const openBrand = onBrand ?? (() => select('home'))
-  const content = usePageEnter()
   const current = (tab: HomeTab) => (tab === selected ? (isOutsideTabs ? 'true' : 'page') : undefined)
   return (
     <div className={cn('flex min-h-dvh', className)}>
@@ -314,10 +311,7 @@ export function HomeShellView({
           </header>
         )}
 
-        {/* Why: a new page fades in under the frame, which stays put. */}
-        <div ref={content} className="flex min-w-0 flex-1 flex-col">
-          {children}
-        </div>
+        <div className="flex min-w-0 flex-1 flex-col">{children}</div>
 
         {phoneBars !== 'none' && (
           <nav aria-label={t('groups_mainNavigation')} className={cn('sticky bottom-0 grid h-16 border-t bg-card md:hidden', search ? 'grid-cols-5' : 'grid-cols-4')}>

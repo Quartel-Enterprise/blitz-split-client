@@ -45,15 +45,18 @@ interface FramedPage {
 
 const nothing = () => {}
 
+// Why: the Search of a page outside the tabs, which answers to no shortcut, as ⌘K there could close a dialog over it.
+const pageSearchKeys = { shortcut: '', keyShortcuts: '' }
+
 const startingChrome: HomeShellChrome = { profile: null, onTab: nothing, onProfile: nothing }
 
 /**
  * The home's frame (`HomeShellView`) around one page of it at a time, mounted for as long as pages of the frame follow
  * each other in the same place of the back stack: a tab, a group or Perfil swaps the content alone, while the sidebar,
  * the rail and the phone's bars stay as they are. Each page (`HomeShell`) hands it its tab, bars and clicks once its
- * presenter is up; until then the frame keeps the previous page's, its clicks through the sidebar. Who is signed in and whether Search
- * shows come from the sidebar while the page still reads its own, so neither blinks as the page comes in. Before the
- * first page, it draws nothing, as the page did.
+ * presenter is up; until then the frame keeps the previous page's, its clicks through the sidebar. Who is signed in
+ * and whether Search shows come from the sidebar while the page still reads its own, so neither blinks as the page
+ * comes in. Before the first page, it draws nothing, as the page did.
  */
 export function HomeFrame({ children }: { children: ReactNode }) {
   const sidebar = useContext(HomeSidebarContext)
@@ -65,7 +68,7 @@ export function HomeFrame({ children }: { children: ReactNode }) {
   const chrome = !page ? startingChrome : page.isShown ? page.chrome : sidebarChrome(page.chrome, sidebar?.presenter)
   // Why: the tabs show Search's shortcut (⌘K), the pages outside them none, as each draws its own Search.
   const isOnTab = !(chrome.isOutsideTabs ?? (chrome.phoneBars ?? 'home') !== 'home')
-  const searchKeys = isOnTab ? homeSearchKeys : { shortcut: '', keyShortcuts: '' }
+  const searchKeys = isOnTab ? homeSearchKeys : pageSearchKeys
   return (
     <HomeShellChromeContext.Provider value={handChrome}>
       <HomeShellView
@@ -152,7 +155,7 @@ export function PageShell({
  * the phone's bottom navigation never lays out four items and then five; once read it shows only with a group.
  */
 function pageSearchOf(state: JsHomeSidebarState | null, presenter: HomeSidebarPresenter | undefined) {
-  if (!state) return { shortcut: '', keyShortcuts: '', onOpen: () => {} }
+  if (!state) return { ...pageSearchKeys, onOpen: nothing }
   if (!state.canSearch || !presenter) return undefined
-  return { shortcut: '', keyShortcuts: '', onOpen: () => presenter.openSearch() }
+  return { ...pageSearchKeys, onOpen: () => presenter.openSearch() }
 }
