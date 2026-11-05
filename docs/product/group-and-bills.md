@@ -150,8 +150,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     again starts from the category tapped. It lays out as Statistics: in the group's pane beside the groups on an
     Android tablet and an iPad lying down, one column of up to 624 dp elsewhere on Android (a book's chips before the
     hinge and the bills after it), a List on iOS and the Mac, a page in the home's frame on the web, under the
-    breadcrumb "Groups › Viagem Floripa › Statistics › Expenses by category" from the tablet up, with the group's
-    Expenses table.
+    breadcrumb "Groups › Viagem Floripa › Statistics › Expenses by category" from the tablet up (the group's crumb
+    going back to the group past Statistics), with the group's Expenses table. Its subtitle writes the period as
+    Statistics did: "This month" and "Last month" as the month, picked dates as their days.
   - Any member may edit or delete a bill. "Edit bill" is "Split a bill" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Anyone in the group can edit or delete it." and "Delete
     bill"; saving goes back to Bill. Members who left the group are dropped from the edited split, but a payer who

@@ -123,6 +123,7 @@ class HomePaneTest {
                 categoryId = "food",
                 periodStartMillis = null,
                 periodEndMillis = null,
+                isMonthPeriod = false,
             ),
         )
 

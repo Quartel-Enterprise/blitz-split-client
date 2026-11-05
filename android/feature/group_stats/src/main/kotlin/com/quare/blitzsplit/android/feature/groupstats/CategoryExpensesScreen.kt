@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -52,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
 import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
+import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.toGroupRailInsets
@@ -137,11 +139,14 @@ private fun CategoryExpensesScaffold(
             MediumFlexibleTopAppBar(
                 title = { Text(stringResource(R.string.category_expenses_title)) },
                 subtitle = {
-                    Text(
-                        text = subtitleOf(state),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    // Why: nothing is guessed while the bills are read: the group and its period only once they are.
+                    if (state.isLoaded) {
+                        Text(
+                            text = subtitleOf(state),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(CategoryExpensesUiEvent.OnBackClicked) }) {
@@ -301,6 +306,17 @@ private fun LazyListScope.categoryExpenseItems(
     times: DateTimeTextFormatter,
     onEvent: (CategoryExpensesUiEvent) -> Unit,
 ) {
+    if (!state.isLoaded) {
+        item(key = "loading") {
+            ShimmerListSkeleton(
+                count = 4,
+                leadingShape = RoundedCornerShape(14.dp),
+                containerShapeOf = { index -> groupedRowShapeOf(index, 4) },
+                spacing = 2.dp,
+                modifier = Modifier.padding(top = 20.dp),
+            )
+        }
+    }
     if (state.isEmpty) {
         item(key = "empty") {
             Column(

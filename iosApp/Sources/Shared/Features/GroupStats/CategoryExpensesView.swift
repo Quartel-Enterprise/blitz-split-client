@@ -147,13 +147,12 @@ private struct CategoryExpensesList: View {
     /// "21:30 · Bruno paid · Restaurant", "17:40 · queued · You paid · Food": the subcategory says which part of the
     /// main category the bill is.
     private static func meta(_ expense: CategoryExpenseRow) -> String {
-        let time = ExpenseFormat.time(expense.spentAt)
-        var parts = [expense.isPending ? String(localized: "\(time) · queued") : time]
-        if let paid = ExpenseFormat.paid(expense.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil) {
-            parts.append(paid)
-        }
-        parts.append(CategoryCopy.name(expense.category))
-        return parts.joined(separator: " · ")
+        let bill = billMeta(
+            spentAt: expense.spentAt,
+            isPending: expense.isPending,
+            payers: expense.payers.map { (name: $0.name, isMe: $0.isMe) },
+        )
+        return "\(bill) · \(CategoryCopy.name(expense.category))"
     }
 }
 

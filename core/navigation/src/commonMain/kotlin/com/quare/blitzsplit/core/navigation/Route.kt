@@ -106,6 +106,8 @@ sealed interface Route {
         val categoryId: String,
         val periodStartMillis: Long?,
         val periodEndMillis: Long?,
+        // Why: the period was "This month" or "Last month", which the statistics name as a month ("October 2026").
+        val isMonthPeriod: Boolean,
     ) : Route
 
     // Why: "Editar grupo", from the group's ⋮ menu: a sheet over the group on iOS and macOS, a dialog on the web.

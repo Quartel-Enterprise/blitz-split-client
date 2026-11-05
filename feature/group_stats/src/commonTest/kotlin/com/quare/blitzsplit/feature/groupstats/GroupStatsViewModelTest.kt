@@ -1844,6 +1844,7 @@ class GroupStatsViewModelTest {
                 AppCategory.FOOD.key,
                 periodStartMillis = null,
                 periodEndMillis = null,
+                isMonthPeriod = false,
             ),
             navigator.backStack.value,
         )
@@ -1866,6 +1867,7 @@ class GroupStatsViewModelTest {
                     AppCategory.FOOD.key,
                     periodStartMillis = millisOf("2026-10-01T00:00:00Z"),
                     periodEndMillis = millisOf("2026-10-29T00:00:00Z"),
+                    isMonthPeriod = true,
                 ),
                 navigator.backStack.value,
             )
@@ -1893,6 +1895,7 @@ class GroupStatsViewModelTest {
                     AppCategory.FOOD.key,
                     periodStartMillis = millisOf("2026-10-24T00:00:00Z"),
                     periodEndMillis = millisOf("2026-10-26T00:00:00Z"),
+                    isMonthPeriod = false,
                 ),
                 navigator.backStack.value,
             )

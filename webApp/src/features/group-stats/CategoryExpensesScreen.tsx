@@ -1,8 +1,7 @@
-import { ArrowLeft, Check, ChevronRight } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { CategoryExpensesPresenter, type JsCategoryExpensesState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { groupPageContentClass, HomeTabCrumb, type HomeTab } from '@/components/HomeShell'
-import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
+import { CrumbButton, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { SkeletonRows } from '@/components/ui/skeleton'
 import { DayRowGroup, DayRowsTable, ExpenseLine } from '@/features/group-detail/ExpenseRows'
@@ -12,6 +11,7 @@ import { avatarStyle } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { StatsPage } from './StatsPage'
 import { expenseCountText, formatRange, periodLabel } from './statsFormat'
 
 /**
@@ -23,7 +23,6 @@ import { expenseCountText, formatRange, periodLabel } from './statsFormat'
 export function CategoryExpensesScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new CategoryExpensesPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsCategoryExpensesState) => void) => p.observeState(onChange))
-  const openHomeTab = useOpenHomeTab()
   if (!presenter || !state) return null
   const homeTab = state.homeTab as HomeTab
   if (!state.isLoaded) {
@@ -41,73 +40,58 @@ export function CategoryExpensesScreen({ route }: { route: JsRoute }) {
   const subtitle = `${state.groupName} · ${period}`
 
   return (
-    <PageShell selected={homeTab} groups={{ selectedId: route.groupId ?? '' }} phoneBars="none">
-      <div className="flex min-h-dvh flex-col">
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-1 border-b bg-background/95 px-2 backdrop-blur md:hidden">
-          <Button variant="ghost" size="icon" aria-label={t('categoryExpenses_back')} onClick={() => presenter.back()}>
-            <ArrowLeft />
-          </Button>
-          <span className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate font-semibold">{t('categoryExpenses_title')}</span>
-            <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
-          </span>
-        </header>
-
-        <main className={cn(groupPageContentClass, 'gap-4 sm:gap-5')}>
-          <nav aria-label={t('groupDetail_breadcrumb')} className="-mb-1 hidden items-center gap-1.5 text-[13px] md:flex">
-            <HomeTabCrumb tab={homeTab} onOpen={openHomeTab} />
-            <span className="truncate text-muted-foreground">{state.groupName}</span>
-            <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
-            <button
-              type="button"
-              onClick={() => presenter.back()}
-              className="truncate rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
-            >
-              {t('stats_title')}
-            </button>
-            <ChevronRight aria-hidden className="size-3.5 text-muted-foreground" />
-            <span aria-current="page">{t('categoryExpenses_title')}</span>
-          </nav>
-          <div className="hidden min-w-0 flex-col gap-1 md:flex">
-            <h1 className="text-2xl leading-[30px] font-semibold tracking-tight">{t('categoryExpenses_title')}</h1>
-            <span className="text-sm text-muted-foreground">{subtitle}</span>
-          </div>
-
-          <CategoryChips state={state} presenter={presenter} />
-          <p aria-live="polite" className="text-[15px] font-semibold tabular-nums">
-            {t('categoryExpenses_summary', {
-              total: formatMoney(state.totalMinor, state.currency, state.fractionDigits),
-              count: expenseCountText(state.expenseCount),
-            })}
-          </p>
-
-          {state.isEmpty ? (
-            <div className="flex flex-col items-center gap-2 rounded-xl border bg-card px-6 py-12 text-center">
-              <p className="font-semibold">{t('categoryExpenses_emptyTitle')}</p>
-              <p className="max-w-sm text-sm text-muted-foreground">{t('categoryExpenses_emptyBody')}</p>
-            </div>
-          ) : (
-            <DayRowsTable label={t('categoryExpenses_title')}>
-              {state.days.map((day) => (
-                <DayRowGroup key={day.dayStartMillis} dayStartMillis={day.dayStartMillis} relativeDay={day.relativeDay}>
-                  {day.expenses.map((expense) => (
-                    <ExpenseLine
-                      key={expense.id}
-                      expense={expense}
-                      currency={state.currency}
-                      fractionDigits={state.fractionDigits}
-                      extraMeta={categoryName(expense.category)}
-                      options={[]}
-                      onOpen={() => presenter.openExpense(expense.id)}
-                    />
-                  ))}
-                </DayRowGroup>
-              ))}
-            </DayRowsTable>
-          )}
-        </main>
+    <StatsPage
+      homeTab={homeTab}
+      groupId={route.groupId ?? ''}
+      backLabel={t('categoryExpenses_back')}
+      title={t('categoryExpenses_title')}
+      subtitle={subtitle}
+      onBack={() => presenter.back()}
+      crumbs={
+        <>
+          <CrumbButton onClick={() => presenter.openGroup()}>{state.groupName}</CrumbButton>
+          <CrumbButton onClick={() => presenter.back()}>{t('stats_title')}</CrumbButton>
+        </>
+      }
+    >
+      <div className="hidden min-w-0 flex-col gap-1 md:flex">
+        <h1 className="text-2xl leading-[30px] font-semibold tracking-tight">{t('categoryExpenses_title')}</h1>
+        <span className="text-sm text-muted-foreground">{subtitle}</span>
       </div>
-    </PageShell>
+
+      <CategoryChips state={state} presenter={presenter} />
+      <p aria-live="polite" className="text-[15px] font-semibold tabular-nums">
+        {t('categoryExpenses_summary', {
+          total: formatMoney(state.totalMinor, state.currency, state.fractionDigits),
+          count: expenseCountText(state.expenseCount),
+        })}
+      </p>
+
+      {state.isEmpty ? (
+        <div className="flex flex-col items-center gap-2 rounded-xl border bg-card px-6 py-12 text-center">
+          <p className="font-semibold">{t('categoryExpenses_emptyTitle')}</p>
+          <p className="max-w-sm text-sm text-muted-foreground">{t('categoryExpenses_emptyBody')}</p>
+        </div>
+      ) : (
+        <DayRowsTable label={t('categoryExpenses_title')}>
+          {state.days.map((day) => (
+            <DayRowGroup key={day.dayStartMillis} dayStartMillis={day.dayStartMillis} relativeDay={day.relativeDay}>
+              {day.expenses.map((expense) => (
+                <ExpenseLine
+                  key={expense.id}
+                  expense={expense}
+                  currency={state.currency}
+                  fractionDigits={state.fractionDigits}
+                  extraMeta={categoryName(expense.category)}
+                  options={[]}
+                  onOpen={() => presenter.openExpense(expense.id)}
+                />
+              ))}
+            </DayRowGroup>
+          ))}
+        </DayRowsTable>
+      )}
+    </StatsPage>
   )
 }
 

@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -99,6 +100,8 @@ class CategoryExpensesViewModel(
         when (event) {
             CategoryExpensesUiEvent.OnBackClicked -> leave()
 
+            CategoryExpensesUiEvent.OnGroupClicked -> leaveToGroup()
+
             is CategoryExpensesUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             CategoryExpensesUiEvent.OnRailSearchClicked -> if (isOnTop() && navigator.openSearchFromPage()) {
@@ -166,7 +169,11 @@ class CategoryExpensesViewModel(
             isTrip = group.type == GroupType.TRIP,
             periodStartMillis = if (isWhole) null else SpentDay.startOf(span.start, timeZone),
             periodEndMillis = if (isWhole) null else SpentDay.startOf(span.end, timeZone),
-            periodRangeStyle = CategoryExpenseDays.rangeStyleOf(span, SpentDay.dateOf(now, timeZone)),
+            periodRangeStyle = when {
+                route.isMonthPeriod -> StatsRangeStyle.MONTH
+                span.canSplitBy(StatsGrain.DAY) -> StatsRangeStyle.DAYS
+                else -> StatsRangeStyle.MONTHS
+            },
             chips = chips,
             days = CategoryExpenseDays.of(
                 expenses = shown,
@@ -192,6 +199,18 @@ class CategoryExpensesViewModel(
                 focusCommentId = null,
             ),
         )
+    }
+
+    // Why: back to whatever opened the statistics (the group's screen), or one step when they aren't under this list.
+    private fun leaveToGroup() {
+        if (!isOnTop()) return
+        val stack = navigator.backStack.value
+        val statsIndex = stack.lastIndex - 1
+        if (stack.getOrNull(statsIndex) == Route.GroupStats(route.groupId)) {
+            navigator.popTo(statsIndex)
+        } else {
+            navigator.navigateBack()
+        }
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

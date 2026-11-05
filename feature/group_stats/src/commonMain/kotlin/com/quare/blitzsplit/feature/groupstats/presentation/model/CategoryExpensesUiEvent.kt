@@ -13,6 +13,9 @@ sealed interface CategoryExpensesUiEvent : UiEvent {
             // Why: a back, which each platform also does its own way: where it went is its screen view.
             OnBackClicked -> EventAnalytics.NotTracked
 
+            // Why: a back past the statistics, as the web's breadcrumb goes: where it went is its screen view.
+            OnGroupClicked -> EventAnalytics.NotTracked
+
             // Why: a tab of the home's rail: where it went is its screen view.
             is OnRailTabClicked -> EventAnalytics.NotTracked
 
@@ -29,6 +32,9 @@ sealed interface CategoryExpensesUiEvent : UiEvent {
         }
 
     data object OnBackClicked : CategoryExpensesUiEvent
+
+    // Why: the group's name in the web's breadcrumb, which goes back to the group past the statistics.
+    data object OnGroupClicked : CategoryExpensesUiEvent
 
     // Why: a tab of the home's rail, which Android keeps beside the group's screens.
     data class OnRailTabClicked(

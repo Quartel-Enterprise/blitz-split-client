@@ -390,6 +390,7 @@ class GroupStatsViewModel(
                 categoryId = categoryId,
                 periodStartMillis = state.periodStartMillis.takeUnless { isWhole },
                 periodEndMillis = state.periodEndMillis.takeUnless { isWhole },
+                isMonthPeriod = state.periodRangeStyle == StatsRangeStyle.MONTH,
             ),
         )
     }

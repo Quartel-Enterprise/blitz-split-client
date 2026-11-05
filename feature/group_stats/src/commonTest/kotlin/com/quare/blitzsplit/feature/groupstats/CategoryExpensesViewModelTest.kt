@@ -185,6 +185,48 @@ class CategoryExpensesViewModelTest {
         }
 
     @Test
+    fun `GIVEN dates picked over a whole month WHEN the list opens THEN names its days as the statistics did`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = Route.CategoryExpenses(
+                    groupId = GROUP_ID,
+                    categoryId = AppCategory.FOOD.key,
+                    periodStartMillis = millisOf("2026-09-01T00:00:00Z"),
+                    periodEndMillis = millisOf("2026-09-30T00:00:00Z"),
+                    isMonthPeriod = false,
+                ),
+            )
+
+            // When
+            val style = viewModel.uiState.value.periodRangeStyle
+
+            // Then
+            assertEquals(StatsRangeStyle.DAYS, style)
+        }
+
+    @Test
+    fun `GIVEN dates picked over more than 3 months WHEN the list opens THEN names its months`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = Route.CategoryExpenses(
+                    groupId = GROUP_ID,
+                    categoryId = AppCategory.FOOD.key,
+                    periodStartMillis = millisOf("2026-01-01T00:00:00Z"),
+                    periodEndMillis = millisOf("2026-10-29T00:00:00Z"),
+                    isMonthPeriod = false,
+                ),
+            )
+
+            // When
+            val style = viewModel.uiState.value.periodRangeStyle
+
+            // Then
+            assertEquals(StatsRangeStyle.MONTHS, style)
+        }
+
+    @Test
     fun `GIVEN the whole trip WHEN the list opens THEN the period has no dates and goes by days`() =
         runTest(testDispatcher) {
             // Given
@@ -529,6 +571,7 @@ class CategoryExpensesViewModelTest {
                     AppCategory.FOOD.key,
                     periodStartMillis = millisOf("2026-10-01T03:00:00Z"),
                     periodEndMillis = millisOf("2026-10-29T03:00:00Z"),
+                    isMonthPeriod = false,
                 ),
                 stored = listOf(
                     expense("september-pizza", 4_000, millisOf("2026-10-01T02:00:00Z"), AppCategory.FOOD.key),
@@ -680,6 +723,34 @@ class CategoryExpensesViewModelTest {
     }
 
     @Test
+    fun `GIVEN the list over the statistics WHEN tapping the group crumb THEN returns to the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnGroupClicked)
+
+            // Then
+            assertEquals(statsStack.dropLast(1), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill over the list WHEN a late group crumb arrives THEN nothing changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        navigator.navigate(Route.BillDetail(GROUP_ID, "market", focusCommentId = null))
+        val stack = navigator.backStack.value
+
+        // When
+        viewModel.onEvent(CategoryExpensesUiEvent.OnGroupClicked)
+
+        // Then
+        assertEquals(stack, navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN a profile over the list WHEN a late back arrives THEN nothing changes`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -804,6 +875,7 @@ class CategoryExpensesViewModelTest {
         categoryId = categoryId,
         periodStartMillis = millisOf("2026-10-01T00:00:00Z"),
         periodEndMillis = millisOf("2026-10-29T00:00:00Z"),
+        isMonthPeriod = true,
     )
 
     private fun wholeHistory(categoryId: String): Route.CategoryExpenses = Route.CategoryExpenses(
@@ -811,6 +883,7 @@ class CategoryExpensesViewModelTest {
         categoryId = categoryId,
         periodStartMillis = null,
         periodEndMillis = null,
+        isMonthPeriod = false,
     )
 
     private fun millisOf(instant: String): Long = Instant.parse(instant).toEpochMilliseconds()

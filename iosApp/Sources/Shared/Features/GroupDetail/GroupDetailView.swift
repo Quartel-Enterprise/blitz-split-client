@@ -294,14 +294,15 @@ private struct JoinedNotice: View {
 /// The bill's line on the list: "21:30 · Bruno paid", "17:40 · queued · You paid", "21:30 · You and Ana paid", or
 /// just the time once whoever paid alone left the group.
 private func expenseMeta(_ row: ExpenseRow) -> String {
-    let time = ExpenseFormat.time(row.spentAt)
-    let when = row.isPending ? String(localized: "\(time) · queued") : time
-    guard let paid = payerText(row) else { return when }
-    return "\(when) · \(paid)"
+    billMeta(spentAt: row.spentAt, isPending: row.isPending, payers: row.payers.map { (name: $0.name, isMe: $0.isMe) })
 }
 
-private func payerText(_ row: ExpenseRow) -> String? {
-    ExpenseFormat.paid(row.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil)
+/// A bill's meta on a list of bills by day (the group's Expenses, a category's from the statistics).
+func billMeta(spentAt: Int64, isPending: Bool, payers: [(name: String?, isMe: Bool)]) -> String {
+    let time = ExpenseFormat.time(spentAt)
+    let when = isPending ? String(localized: "\(time) · queued") : time
+    guard let paid = ExpenseFormat.paid(payers, loneFormer: nil) else { return when }
+    return "\(when) · \(paid)"
 }
 
 /// A payment's banknote (a bill draws its category's badge instead).

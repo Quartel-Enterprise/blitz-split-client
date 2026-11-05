@@ -70,6 +70,10 @@ class CategoryExpensesPresenter(
         viewModel.onEvent(CategoryExpensesUiEvent.OnBackClicked)
     }
 
+    fun openGroup() {
+        viewModel.onEvent(CategoryExpensesUiEvent.OnGroupClicked)
+    }
+
     fun toggleCategory(categoryId: String) {
         viewModel.onEvent(CategoryExpensesUiEvent.OnCategoryToggled(categoryId))
     }

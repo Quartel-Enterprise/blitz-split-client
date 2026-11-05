@@ -42,6 +42,7 @@ internal val everyRouteKind: List<Route> = listOf(
         categoryId = "secret-category",
         periodStartMillis = 1L,
         periodEndMillis = 2L,
+        isMonthPeriod = false,
     ),
     Route.EditGroup(groupId = "secret-group"),
     Route.DefaultSplit(groupId = "secret-group"),
