@@ -71,6 +71,14 @@ final class SplitBillModel {
         )
     }
 
+    /// The bill's currency beside its total, the group's until another is picked.
+    var currency: Binding<GroupCurrency> {
+        Binding(
+            get: { self.current.currency },
+            set: { self.send(SplitBillUiEventOnCurrencyPicked(currency: $0)) },
+        )
+    }
+
     var billDescription: Binding<String> {
         Binding(
             get: { self.current.description_ },
@@ -432,6 +440,10 @@ private struct PhoneSplitBill: View {
         Section {
             AmountField(currency: state.currency, text: model.amount, label: "Amount")
                 .focused($focusedField, equals: .amount)
+            Picker("Currency", selection: model.currency) {
+                CurrencyOptions(currencies: state.currencies)
+            }
+            .disabled(!state.canChangeCurrency)
         } header: {
             Text("Amount")
         } footer: {
@@ -1069,6 +1081,10 @@ private struct MacBillForm: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+                    Picker("Currency:", selection: model.currency) {
+                        CurrencyOptions(currencies: state.currencies)
+                    }
+                    .disabled(!state.canChangeCurrency)
                     Picker("Who paid:", selection: payer) {
                         ForEach(state.people, id: \.id) { person in
                             Text(verbatim: SplitBillCopy.name(person)).tag(person.id)

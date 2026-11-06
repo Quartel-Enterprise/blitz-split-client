@@ -15,7 +15,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
-    keyboard, digits coming in from the right with the group currency's decimals fixed (`GroupCurrency.fractionDigits`:
+    keyboard, digits coming in from the right with the bill's currency's decimals fixed (`GroupCurrency.fractionDigits`:
     "0,01", "0,12", "1,23"; yen "1", "12", "1.234"), the caret at the end, a comma or a dot typed changing nothing,
     and the device language's separators whatever the currency ("1.234,56" in Portuguese, "1,234.56" in English). A
     paste reads as an amount ("12,5", "R$ 1.234,56"), and a bill moved to a group of another currency keeps its number
@@ -70,7 +70,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     than one (`GroupBalances.getByCurrency`, the group's default currency first; every figure under a chip is that
     currency's only), and every amount of a bill row, a payment row, a debt row and a detail is in the bill's or
     payment's own currency, never the group's. The home's overall balance is the global Balances' computation
-    (`PeopleBalances.totals`). Still to come: the bill form's currency picker and the activity amounts.
+    (`PeopleBalances.totals`). The bill form picks the bill's currency beside the total (see
+    [Split a bill](split-bill.md)), and Activity shows each amount in its bill's or payment's own currency.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): Currency (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

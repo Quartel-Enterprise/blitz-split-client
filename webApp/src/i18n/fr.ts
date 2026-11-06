@@ -1792,6 +1792,7 @@ export const fr: Record<MessageKey, string> = {
   categoryIcon_gym: 'Haltère',
   categoryIcon_dots: 'Autre',
   category_path: '{parent} › {name}',
+  splitBill_currencyChange: 'Devise : {code}. Change-la',
   splitBill_categoryChange: 'Catégorie : {name}. Change-la',
   splitBill_categoryByTerm: '{path} d’après le mot « {term} » de ta carte. Touche l’icône pour la changer.',
   splitBill_categoryByLongest: '{count} mots de la carte correspondent. « {term} » l’emporte, le plus long : {path}.',

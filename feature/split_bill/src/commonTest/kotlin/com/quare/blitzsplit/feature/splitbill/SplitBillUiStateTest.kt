@@ -850,6 +850,21 @@ class SplitBillUiStateTest {
         assertNull(shown)
     }
 
+    @Test
+    fun `GIVEN the group picked still read WHEN reading if the currency can change THEN it cannot`() {
+        // Given
+        val state = state(
+            groups = listOf(billGroup),
+            pickedGroupId = "group-2",
+        )
+
+        // When
+        val canChange = state.canChangeCurrency
+
+        // Then
+        assertFalse(canChange)
+    }
+
     private val billGroup = BillGroup(
         id = "group-1",
         name = "Viagem Floripa",
@@ -914,6 +929,7 @@ class SplitBillUiStateTest {
         groups = groups,
         groupSelection = groupSelection,
         currency = currency,
+        pickedCurrency = null,
         showsSats = showsSats,
         people = people,
         amountText = amountText,

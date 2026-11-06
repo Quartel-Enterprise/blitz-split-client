@@ -1790,6 +1790,7 @@ export const en = {
   categoryIcon_gym: 'Dumbbell',
   categoryIcon_dots: 'Other',
   category_path: '{parent} › {name}',
+  splitBill_currencyChange: 'Currency: {code}. Change it',
   splitBill_categoryChange: 'Category: {name}. Change it',
   splitBill_categoryByTerm: '{path} by the word “{term}” in your map. Tap the icon to change it.',
   splitBill_categoryByLongest: '{count} words of the map matched. “{term}” wins, the longest: {path}.',
