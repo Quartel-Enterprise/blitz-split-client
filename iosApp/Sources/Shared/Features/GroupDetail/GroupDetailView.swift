@@ -588,7 +588,7 @@ private struct MacGroupScreen: View {
             case .expenses: MacGroupExpenses(model: model)
             case .balances:
                 // Drawn in the window's middle, as Expenses' empty state, not as a row of the list
-                if model.state.isBalancesEmpty, !model.state.isLoadingBalances {
+                if model.state.isBalancesEmpty {
                     NoBalancesYet()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
