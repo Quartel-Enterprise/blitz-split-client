@@ -10,7 +10,7 @@ tags the release, publishes each platform to its own channel and records it as a
 | --- | --- |
 | Android | Firebase App Distribution, group `beta`, project `blitz-split` |
 | Web | Cloudflare Pages, project `blitz-split-beta`: https://blitz-split-beta.pages.dev |
-| iOS and macOS | TestFlight, signed by Xcode with the App Store Connect API key |
+| iOS and macOS | TestFlight, signed with the team's distribution certificate through fastlane match ([Apple signing](#apple-signing)) |
 
 Each platform is a build job and a publish job of its own, between `plan` and `finalize`. The `android`, `web`, `ios` and
 `macos` inputs of the workflow turn a platform off for a run.
@@ -18,12 +18,8 @@ Each platform is a build job and a publish job of its own, between `plan` and `f
 The iOS and macOS jobs share two composite actions, [`apple-build`](../.github/actions/apple-build/action.yml) and
 [`apple-upload`](../.github/actions/apple-upload/action.yml).
 
-The Apple and web jobs are written but have not run yet: expect the first run to need a fix or two. The likeliest
-spot is the upload, which uses `xcrun altool --upload-app`: if the runner's Xcode refuses it, switch
-`apple-upload` to `xcrun iTMSTransporter` or export with `destination: upload` in `iosApp/ExportOptions.plist`. The
-other likely spot is the signing: Xcode creates the cloud-managed certificates through the API key, and an Apple
-account has a limit of them, so if the archive reports a certificate limit, revoke the ones the runs created in the
-Apple Developer account.
+The upload uses `xcrun altool --upload-app`: if the runner's Xcode refuses it, switch `apple-upload` to
+`xcrun iTMSTransporter`, or have the signing lane write `destination: upload` into the export options.
 
 ## Releasing a beta
 
@@ -84,7 +80,9 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `GOOGLE_SERVICES_JSON` | `androidApp/google-services.json`, `base64 -i` encoded: the file is not committed |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | A service account key (JSON) with the **Firebase App Distribution Admin** role on `blitz-split` |
 | `GOOGLE_SERVICE_INFO_PLIST` | `iosApp/Resources/GoogleService-Info.plist`, `base64 -i` encoded |
-| `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_P8` | An App Store Connect API key with the **Admin** role (Xcode needs it to create the cloud-managed distribution certificate) and the text of its `.p8`. The Issuer ID is on Users and Access › Integrations |
+| `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_P8` | An App Store Connect API key and the text of its `.p8`, for match and the upload. The Issuer ID is on Users and Access › Integrations |
+| `MATCH_PASSWORD` | The passphrase of `bible-planner-certs`, the certificates repository Bible Planner's releases use too ([Apple signing](#apple-signing)) |
+| `MATCH_SSH_PRIVATE_KEY` | The private half of a read-only deploy key of `bible-planner-certs` |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A token with **Account › Cloudflare Pages › Edit**, and the account's id |
 | `MERGE_WHEN_GREEN_TOKEN` | Already there, for the pull request merges: `finalize` merges the merge-back with it |
 | `GRADLE_ENCRYPTION_KEY` | Optional, and not set today: the builds pass it to the Gradle action, which then keeps the configuration cache between runs ([ci.md](ci.md)) |
@@ -97,6 +95,33 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 
 Also needed once: **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**, for the
 merge-back.
+
+## Apple signing
+
+The iOS and macOS betas sign with the team's **Apple Distribution** certificate and an App Store profile for
+`com.quare.blitzsplit`, which [fastlane match](https://docs.fastlane.tools/actions/match/) keeps encrypted in the
+private repository `Quartel-Enterprise/bible-planner-certs`, shared with Bible Planner (same team, `TTV2A365LG`). The
+`apple_signing` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) fetches them read-only into a temporary keychain,
+switches the app target's Release configuration to manual signing (the committed `project.yml` keeps automatic
+signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
+also needs the team's **Mac Installer Distribution** certificate, which the repository holds.
+
+Why not Xcode's cloud-managed certificate, which the betas used first: the certificate's name is "Apple
+Distribution: Antônio Vieira", and cloud signing writes the designated requirement with the name decomposed
+(`o` + U+0302) while the certificate holds the composed `ô`. The requirement then never matches, `codesign --verify`
+says the app "does not satisfy its designated Requirement", and App Store Connect refuses the upload with 90035
+("Invalid Signature").
+
+CI never creates a certificate or a profile. Once, from a Mac with fastlane and the passphrase, create the two App
+Store profiles of `com.quare.blitzsplit` (match reuses the certificates already in the repository):
+
+```bash
+fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match appstore --platform macos --additional_cert_types mac_installer_distribution --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+```
+
+A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
+the same commands with `--force`.
 
 ## Before the first beta: analytics consent
 

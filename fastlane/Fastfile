@@ -1,0 +1,80 @@
+# Signing of the Apple betas (docs/release-process.md#apple-signing). The apple-build action runs this lane after it
+# generates the Xcode project and before it archives.
+#
+# Why not Xcode's cloud-managed certificate: the team's certificate is "Apple Distribution: Antônio Vieira", and
+# cloud signing writes the designated requirement with that name decomposed (o + U+0302) while the certificate holds
+# the composed ô. The two never compare equal, so App Store Connect refuses the upload (90035, "Invalid Signature").
+# Signing with the certificate itself, from the keychain, gives a requirement that matches, as Bible Planner's
+# releases show with the same team and certificates repository.
+TEAM_ID = "TTV2A365LG".freeze
+BUNDLE_ID = "com.quare.blitzsplit".freeze
+CERTS_REPO = "git@github.com:Quartel-Enterprise/bible-planner-certs.git".freeze
+PROJECT = File.expand_path("../iosApp/BoraRachar.xcodeproj", __dir__)
+TARGETS = { "ios" => "BoraRachar-iOS", "macos" => "BoraRachar-macOS" }.freeze
+# XcodeGen writes these with "development", which an App Store profile refuses under manual signing
+APS_ENVIRONMENT = {
+  "ios" => ["iosApp/Generated/iOS.entitlements", "aps-environment"],
+  "macos" => ["iosApp/Generated/macOS.entitlements", "com.apple.developer.aps-environment"],
+}.freeze
+
+desc "Fetch the distribution certificate and the App Store profile, sign the target manually, write ExportOptions.plist"
+desc "Options: platform (ios|macos), export_options (path of the plist to write)"
+lane :apple_signing do |options|
+  platform = options.fetch(:platform)
+  target = TARGETS.fetch(platform)
+  repo_root = File.expand_path("..", __dir__)
+
+  # A temporary keychain on CI, so the certificate never lands in the login one; nothing outside CI
+  setup_ci
+
+  api_key = app_store_connect_api_key(
+    key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+    issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+    key_filepath: ENV.fetch("KEY_PATH"),
+  )
+
+  # readonly: CI never creates or revokes a certificate or a profile. Creating them is a one-time step on a Mac
+  # (docs/release-process.md#apple-signing). The macOS package needs the installer certificate too.
+  match(
+    type: "appstore",
+    readonly: true,
+    platform: platform,
+    app_identifier: BUNDLE_ID,
+    team_id: TEAM_ID,
+    storage_mode: "git",
+    git_url: CERTS_REPO,
+    api_key: api_key,
+    additional_cert_types: platform == "macos" ? ["mac_installer_distribution"] : [],
+  )
+  profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+
+  # Only the app target and only Release: the Swift packages' frameworks take no profile, and the committed
+  # project.yml keeps automatic signing for local builds
+  update_code_signing_settings(
+    use_automatic_signing: false,
+    path: PROJECT,
+    team_id: TEAM_ID,
+    targets: [target],
+    code_sign_identity: "Apple Distribution",
+    profile_name: profile,
+    build_configurations: ["Release"],
+  )
+
+  entitlements, key = APS_ENVIRONMENT.fetch(platform)
+  # PlistBuddy, not plutil: plutil reads the dots of com.apple.developer.aps-environment as a key path
+  sh("/usr/libexec/PlistBuddy", "-c", "Set :#{key} production", File.join(repo_root, entitlements))
+
+  export_options = {
+    "method" => "app-store-connect",
+    "teamID" => TEAM_ID,
+    "signingStyle" => "manual",
+    "signingCertificate" => "Apple Distribution",
+    "provisioningProfiles" => { BUNDLE_ID => profile },
+    "destination" => "export",
+    "uploadSymbols" => true,
+    # The workflow sets the build number itself, from version.properties
+    "manageAppVersionAndBuildNumber" => false,
+  }
+  export_options["installerSigningCertificate"] = "3rd Party Mac Developer Installer" if platform == "macos"
+  File.write(options.fetch(:export_options), Plist::Emit.dump(export_options))
+end
