@@ -1,6 +1,17 @@
 import Shared
 import SwiftUI
 
+/// "Nobody owes anything yet": the Balances tab of a group with no bill.
+struct NoBalancesYet: View {
+    var body: some View {
+        ContentUnavailableView(
+            "Nobody owes anything yet",
+            systemImage: "arrow.left.arrow.right",
+            description: Text("Balances show up once the first expense is added."),
+        )
+    }
+}
+
 /// "Balances", the group's tab with who owes whom, each pair once and already netted, under the group's header:
 /// "Nobody owes anything yet" before the first bill, "Everyone's settled up" once nobody owes, "Simplified debts" while
 /// the group simplifies them, then "With you" and "Between the others", and the note on how the pairs are netted. A pair opens "Record payment" over the group.
@@ -21,11 +32,7 @@ struct BalancesSections: View {
         }
         if state.isBalancesEmpty {
             Section {
-                ContentUnavailableView(
-                    "Nobody owes anything yet",
-                    systemImage: "arrow.left.arrow.right",
-                    description: Text("Balances show up once the first expense is added."),
-                )
+                NoBalancesYet()
             }
             .listRowBackground(Color.clear)
         } else if state.header.isEveryoneSettled {

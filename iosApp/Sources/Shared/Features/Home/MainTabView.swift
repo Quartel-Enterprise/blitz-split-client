@@ -349,7 +349,13 @@ struct MainTabView: View {
         // The profile's "Category map"; the Mac opens it in Ajustes instead (`AppModel`)
         case .categoryMap: CategoryMapView()
         case let .paymentKey(route): PaymentKeyView(route: route)
-        case let .groupDetail(route): GroupDetailView(route: route)
+        case let .groupDetail(route):
+            #if os(macOS)
+            // A new identity per group: the Mac's sidebar swaps the group in place, and the screen builds its model once
+            GroupDetailView(route: route).id(route.groupId)
+            #else
+            GroupDetailView(route: route)
+            #endif
         case let .billDetail(route): BillDetailView(route: route)
         case let .groupStats(route): GroupStatsView(route: route)
         case let .categoryExpenses(route): CategoryExpensesView(route: route)
