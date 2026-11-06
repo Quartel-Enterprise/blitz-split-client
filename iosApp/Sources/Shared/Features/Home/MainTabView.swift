@@ -301,21 +301,18 @@ struct MainTabView: View {
     }
 
     #if os(macOS)
-    /// What ⌘K runs, nil while a sheet covers the window.
+    /// What ⌘K runs, nil while a sheet covers the window, the recovery code's prompt included (never searched over, as
+    /// `HomeUiEvent.OnSearchClicked` refuses on the other platforms).
     private var searchCommand: (() -> Void)? {
-        guard isWindowUncovered else { return nil }
+        guard isWindowUncovered, !showsRecoveryCode else { return nil }
         return openSearch
     }
 
     /// ⌘K: the search tab, as a click on it in the sidebar, and its field focused; already open, back to its results
-    /// from what a result pushed over them, as a click on the tab does.
+    /// from what a result pushed over them, as a click on the tab does (`selectFromGroups`).
     private func openSearch() {
         searchFocusRequest += 1
-        if selectedTab == .search {
-            model.send(GroupsUiEventOnSearchTabClicked.shared)
-        } else {
-            tabSelection.wrappedValue = .search
-        }
+        tabSelection.wrappedValue = .search
     }
 
     /// "Open" shows while Groups or a group's screen is in front, whichever tab opened the group.
