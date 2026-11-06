@@ -256,10 +256,7 @@ private struct CreateGroupIcon: View {
                 }
             }
         } label: {
-            Image(systemName: "camera")
-                .font(.system(size: 13, weight: .semibold))
-                .frame(width: 32, height: 32)
-                .glassEffect(.regular.interactive(), in: .circle)
+            CornerGlassIcon(systemName: "camera", iconSize: 13)
         }
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
