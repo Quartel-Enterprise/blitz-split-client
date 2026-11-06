@@ -82,10 +82,8 @@ runs:
       shell: bash
       run: brew install xcodegen
 
-    - name: Generate the Xcode project
-      shell: bash
-      run: ./iosApp/generate-project.sh
-
+    # Before the project: XcodeGen lists the files Resources holds when it runs, so a plist decoded after it stays
+    # out of the app bundle, Firebase never starts and the Crashlytics dSYM phase finds no GOOGLE_APP_ID.
     - name: Decode the Firebase config and the App Store Connect key
       shell: bash
       env:
@@ -95,6 +93,10 @@ runs:
       run: |
         echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/Resources/GoogleService-Info.plist
         echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
+
+    - name: Generate the Xcode project
+      shell: bash
+      run: ./iosApp/generate-project.sh
 
     # -allowProvisioningUpdates with the API key lets Xcode create the cloud-managed distribution certificate and the
     # profile itself, so there is no certificates repository to keep.
