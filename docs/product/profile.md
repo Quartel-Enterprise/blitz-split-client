@@ -81,7 +81,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's
     LocaleManager, which the system's app language settings also change (the languages the build generates its locale config from), the app's
     own copy before 13; the Apple apps' AppleLanguages, which iOS's Settings › Bora Rachar › Language also changes; the
-    browser's storage on the web. Android's row ("System", "Português") opens a sheet as Bible Planner's
+    browser's storage on the web. Android's row ("System", "Português (BR)") opens a sheet as Bible Planner's
     (`ProfileDialog.LANGUAGE`): a row per option with its chip ("EN", "PT", "ES", a phone for System, "Device language"
     under it) and a radio, a bottom sheet on a phone, a 560 dp dialog anywhere wider, a book's right half; a pick
     closes it and the app draws again in it (Android 13 and later on their own, the activity opening again before,

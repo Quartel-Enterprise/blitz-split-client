@@ -362,7 +362,6 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
             <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-3">
               {state.languageOptions.map((code) => {
                 const isSelected = code === state.language
-                const name = languageNames[code]
                 return (
                   <button
                     key={code}
@@ -374,7 +373,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
                       segmentClass(isSelected),
                     )}
                   >
-                    {name ? t(name) : t('profile_languageSystem')}
+                    {t(languageNames[code] ?? 'profile_languageSystem')}
                   </button>
                 )
               })}
