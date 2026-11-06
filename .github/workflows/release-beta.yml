@@ -175,20 +175,11 @@ jobs:
             echo "::error::apksigner printed no signing certificate for the release APK."
             exit 1
           fi
-          # apksigner prints abcd…, assetlinks.json lists AB:CD:…
-          fingerprint="$(tr 'a-f' 'A-F' <<< "$sha256" | sed 's/../&:/g; s/:$//')"
-          # A site that doesn't answer leaves it unknown, rather than reporting a key missing. Android reads
-          # the file only without a redirect, so a redirect fails it as Android would (--max-redirs 0).
-          if ! statements="$(curl -fsSL --max-redirs 0 --max-time 20 https://blitzsplit.com/.well-known/assetlinks.json)"; then
-            app_links="blitzsplit.com's assetlinks.json didn't load without a redirect, so invite links may open the browser."
-            echo "::warning title=App Links::$app_links"
-          elif jq -e --arg fingerprint "$fingerprint" 'any(.[];
-              .target.package_name == "com.quare.blitzsplit"
-              and any(.target.sha256_cert_fingerprints[]?; ascii_upcase == $fingerprint))' \
-              <<< "$statements" > /dev/null; then
-            app_links="blitzsplit.com's assetlinks.json lists this key, so invite links open the app."
-          else
-            app_links="blitzsplit.com's assetlinks.json doesn't list this key, so invite links open the browser (docs/release-process.md#outside-the-stores)."
+          # assetlinks.json lists AB:CD:…
+          fingerprint="$(sed 's/../&:/g; s/:$//' <<< "${sha256^^}")"
+          # The package the APK declares, so the check follows the applicationId.
+          package="$("$(dirname "$apksigner")/aapt2" dump packagename androidApp/build/outputs/apk/release/*.apk)"
+          if ! app_links="$(./scripts/release/app-links-status.sh "$package" "$fingerprint")"; then
             echo "::warning title=App Links::$app_links"
           fi
           echo "::notice title=APK signing SHA-1::$sha1"
