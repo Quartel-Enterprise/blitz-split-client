@@ -18,8 +18,7 @@ name: merge-when-green
 # sends. So a sweep also checks every labeled pull request, and workflow_dispatch runs that sweep
 # by hand, for every labeled pull request or only the one given. GitHub's scheduler alone is not
 # enough: it drops most scheduled runs of this repository (about one in 26 fired over a day), so the
-# sweep also runs on every push to main (each merge) and when build-and-test completes on main
-# (one of them, so a push doesn't start a sweep per workflow). With no activity on main only the
+# sweep also runs on every push to main (each merge), once per push. With no activity on main only the
 # schedule or a manual dispatch recovers a lost event. A label this workflow removed for
 # unresolved conversations still has to be added again.
 on:
@@ -58,13 +57,11 @@ jobs:
   # The sweep lists the branches of the labeled pull requests, and the merge job below checks each
   # one, as it does the branch of a pull request event. Drafts and pull requests from forks are
   # left out here already, so they start no merge job on every sweep; the merge job skips them
-  # too, as on the events. A workflow_run of a pull request sweeps nothing: it checks its own branch.
+  # too, as on the events. A workflow_run sweeps nothing: it checks its own branch.
   sweep:
     if: >-
       github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'push' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.event != 'pull_request' &&
-      github.event.workflow_run.name == 'build-and-test')
+      github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -148,7 +145,7 @@ jobs:
             exit 1
           fi
 
-          # No workflow runs on every push here, so none can tell that the push's workflows have
+          # No pull request workflow runs on every push here, so none can tell that the push's workflows have
           # registered their runs. A label added, or a sweep run, right after a push gives them time
           # to; a completed run of the head commit (workflow_run) means they already have.
           if [ "$GITHUB_EVENT_NAME" != workflow_run ]; then

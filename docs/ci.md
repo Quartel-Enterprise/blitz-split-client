@@ -14,7 +14,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
 | `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
-| `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every push to `main`, `build-and-test` completing on `main`, every 15 minutes (when GitHub fires it), and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
+| `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every push to `main`, every 15 minutes (when GitHub fires it), and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
 | `release-beta` | By hand, with `./scripts/release/release-beta.sh` | Ships a beta to the closed group: Android on Firebase App Distribution, the web on Cloudflare Pages, iOS and macOS on TestFlight. Merges the versionCode back into `main` and publishes the `X.Y.Z-beta_N` GitHub pre-release; see [release-process.md](release-process.md) |
 
 Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
@@ -146,8 +146,8 @@ finish is the one that triggers the merge. GitHub loses some of those events: a 
 with the label (drafts and forks left out) and checks each one the same way. GitHub's scheduler can't be what drives it:
 it fired about one run in 26 of the `schedule` here (GitHub drops scheduled runs under load, and the workflow has no
 workflow-level `concurrency` that could cancel them; only the `merge` job has one, per branch). The sweep therefore runs on every push to `main` (each
-merge), when `build-and-test` completes on `main`, every 15 minutes when GitHub does fire the schedule, and by hand.
-Those only fire when something lands on `main`: with `main` idle, a pull request that missed its event waits for the
+merge), every 15 minutes when GitHub does fire the schedule, and by hand.
+The push trigger only fires when something lands on `main`: with `main` idle, a pull request that missed its event waits for the
 schedule or for someone to dispatch the workflow. To check them right away, run
 the workflow by hand (**Actions**, `merge-when-green`, **Run workflow**), with a pull request number to check only that
 one. The sweep only sees pull requests that still have the label: one it removed for an unresolved conversation needs
