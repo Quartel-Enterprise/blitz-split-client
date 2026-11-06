@@ -112,10 +112,7 @@ interface GroupRepository {
      */
     fun hideGroup(groupId: String)
 
-    /*
-     * Why: the server answered: a group it turned down comes back where it was, and one it deleted, already gone from
-     * the device, no longer costs the screens a filter.
-     */
+    // Why: the server turned the deletion down, or couldn't be reached, so the group comes back where it was.
     fun showGroup(groupId: String)
 
     suspend fun uploadPendingGroups(userId: String): Result<Unit>

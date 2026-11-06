@@ -328,10 +328,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     pending they ask at once. Both run under the coordinator's sync lock (`SyncCoordinator.syncThen`), so no other
     sync, whose download read the server before the request, brings the group back. `DeleteGroup` doesn't make the
     screen wait: it hides the group from `GroupRepository.observeGroups` (in memory, `hideGroup`) and asks in the
-    app's scope (`SyncCoordinator.runInBackground`), then shows it again once answered (`showGroup`). A failure
+    app's scope (`SyncCoordinator.runInBackground`); a group the server deleted stays hidden. A request that failed
     syncs first, since the server may have deleted it with the answer lost on the way; `has_balance`, or a failure
-    whose group is still on the device after that, posts a `GroupDeletion` with its `failure` for Groups or Home to
-    say. On `left`, `deleted` or
+    whose group is still on the device after that, shows it again (`showGroup`) and posts a `GroupDeletion` with its
+    `failure` for Groups or Home to say. On `left`, `deleted` or
     `not_member` (another device of this user already left) the group leaves the device with its members, bills and
     payments (`GroupDao.deleteGroupsWithMembers`); `has_balance` changes nothing but one more sync, which brings the
     bill or payment the server knew of. Both run `NonCancellable`, so a screen closed mid request still drops the

@@ -91,6 +91,7 @@ class GroupExitUseCaseTest {
         assertTrue(groups.uploadedUserIds.isEmpty())
         assertEquals(listOf("group-1"), groups.deletedGroupIds)
         assertTrue(deletions.observeDeletions().first().isEmpty())
+        assertEquals(setOf("group-1"), groups.hiddenGroupIds.value)
     }
 
     @Test
@@ -133,6 +134,7 @@ class GroupExitUseCaseTest {
 
             // Then
             assertTrue(groups.deletedGroupIds.isEmpty())
+            assertEquals(1, groups.downloadedUserIds.size)
             assertTrue(groups.hiddenGroupIds.value.isEmpty())
             assertEquals(
                 listOf(GroupDeleteFailure.FAILED),

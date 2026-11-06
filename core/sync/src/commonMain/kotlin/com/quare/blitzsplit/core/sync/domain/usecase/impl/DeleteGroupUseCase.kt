@@ -10,10 +10,12 @@ import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import kotlinx.coroutines.flow.first
 
 /*
- * Why: a notice of an earlier attempt still queued goes, as this one answers anew. Once the server answered the group
- * is shown again: deleted, it already left the device; refused, it comes back. A failure may hide a deletion the
- * server made anyway (an answer lost on the way), so a sync settles it first, and only a group still on the device
- * says it wasn't deleted; that also keeps a sign out meanwhile from hearing of the previous account's group.
+ * Why: a notice of an earlier attempt still queued goes, as this one answers anew. A group the server deleted stays
+ * hidden, so a local delete that failed (which the next sync redoes) never brings it back meanwhile. A request that
+ * reached for the server and failed may hide a deletion it made anyway (an answer lost on the way), so a sync settles
+ * it first; a sync that failed before the request already says the server wasn't reached, and one more wouldn't help.
+ * Only a group still on the device then says it wasn't deleted, which also keeps a sign out meanwhile from hearing of
+ * the previous account's group.
  */
 class DeleteGroupUseCase(
     private val groupRepository: GroupRepository,
@@ -27,16 +29,20 @@ class DeleteGroupUseCase(
         deletionRepository.consume(groupId)
         groupRepository.hideGroup(groupId)
         coordinator.runInBackground {
-            val result = coordinator.runGroupExit { groupRepository.deleteGroup(groupId) }
+            var wasAsked = false
+            val result = coordinator.runGroupExit {
+                wasAsked = true
+                groupRepository.deleteGroup(groupId)
+            }
             val failure = when {
                 result.isFailure -> GroupDeleteFailure.FAILED
                 result.getOrNull() == GroupExitOutcome.HAS_BALANCE -> GroupDeleteFailure.HAS_BALANCE
-                else -> null
+                else -> return@runInBackground
             }
-            if (failure == GroupDeleteFailure.FAILED) coordinator.syncNow()
+            if (failure == GroupDeleteFailure.FAILED && wasAsked) coordinator.syncNow()
             groupRepository.showGroup(groupId)
             val isStillOnDevice = groupRepository.observeGroups().first().any { it.id == groupId }
-            if (failure != null && isStillOnDevice) {
+            if (isStillOnDevice) {
                 deletionRepository.post(
                     GroupDeletion(
                         groupId = groupId,
