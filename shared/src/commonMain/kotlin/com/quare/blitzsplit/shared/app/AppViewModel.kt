@@ -238,9 +238,9 @@ class AppViewModel(
     }
 
     /*
-     * Why: a comment's link opens the bill's Conta over its group's Despesas, over Grupos, scrolled to the comment, as a
-     * push notification's tap does: after a sync of a few seconds at most, since the comment may be newer than this
-     * device's copy. A deleted bill opens Despesas, which says so; a group the person isn't in, or a link this device
+     * Why: a comment's link opens the bill's Conta over its group's Despesas, over Grupos, scrolled to the comment, after
+     * a sync of a few seconds at most, since the comment may be newer than this device's copy; the link names no group,
+     * so unlike a push notification's tap there is nothing to open before it. A deleted bill opens Despesas, which says so; a group the person isn't in, or a link this device
      * can't check offline, says so over wherever the app is. Without a profile there is no group to be in.
      */
     private fun openBillCommentLink(target: BillCommentTarget) {
@@ -286,35 +286,60 @@ class AppViewModel(
     }
 
     /*
-     * Why: a push notification's tap opens its tab or Atividade, then, after a sync, what it is about: a notification comes right
-     * after the change it tells of, which this device may not have yet (a new bill, a group the person was just
-     * added to). Offline the sync fails at once and what the device has opens. The sync runs on its own and waits a
-     * few seconds at most, so a long one never holds the tab nor the links that come after. Nothing opens over the
-     * tab once the person moved on, nor for a group still not on the device, and Conta, which would close at once,
-     * not for a bill still not on it. The event is read, as its tap in Atividade makes it. Without a profile there is
-     * no home, and nothing opens.
+     * Why: a push notification's tap opens its tab or Atividade, and right over it what it is about with what the device
+     * already has, the group and its bill, so the person lands there at once. Waiting for a sync first left Atividade
+     * on screen for seconds, behind the sync the app's return to the front starts, and a tap meanwhile cancelled the
+     * rest: the notification seemed to always open Atividade. What the device doesn't have yet (a group the person was
+     * just added to, a new bill, a comment newer than this copy) comes with a sync of a few seconds at most, then opens
+     * over what is on top while the person stayed there; offline the sync fails at once. Nothing opens for a group
+     * still not on the device, nor Conta, which would close at once, for a bill still not on it. The event is read, as
+     * its tap in Atividade makes it. Without a profile there is no home, and nothing opens.
      */
     private fun openPushLink(link: PushLink) {
         link.eventId?.let { eventId -> viewModelScope.launch { markActivityRead(eventId) } }
         if (Route.Home !in navigator.backStack.value) return
         link.homeTab?.let(navigator::openHomeTab) ?: navigator.openActivity()
-        val groupId = link.groupId ?: return
-        val tabTop = navigator.backStack.value
+        val routes = link.routesAbove
+        if (routes.isEmpty()) return
         viewModelScope.launch {
+            val openedCount = openPushRoutes(link, routes, isSynced = false) ?: return@launch
+            if (openedCount == routes.size) return@launch
+            val top = navigator.backStack.value
             withTimeoutOrNull(PUSH_LINK_SYNC_SECONDS.seconds) { syncNow() }
-            if (navigator.backStack.value != tabTop || observeGroup(groupId).first() == null) return@launch
-            // Why: a comment's notification opens Conta at the comment, as its item in Atividade does.
-            val commentId = link.eventId
-                ?.let { findActivityEvent(it) }
-                ?.takeUnless { it.isCommentDeleted }
-                ?.commentId
-            val routes = link.routesAbove
-                .filter { route -> route !is Route.BillDetail || observeExpense(route.expenseId).first() != null }
-            if (navigator.backStack.value != tabTop) return@launch
-            routes
-                .map { route -> if (route is Route.BillDetail) route.copy(focusCommentId = commentId) else route }
-                .forEach(navigator::navigate)
+            if (navigator.backStack.value != top) return@launch
+            openPushRoutes(link, routes.drop(openedCount), isSynced = true)
         }
+    }
+
+    /*
+     * Why: opens the routes in order while the device has what each one shows, and says how many opened; null when the
+     * person moved on meanwhile, over whom nothing opens. A comment's Conta opens at the comment, as its item in
+     * Atividade does, so before the sync it waits for the comment's event too.
+     */
+    private suspend fun openPushRoutes(
+        link: PushLink,
+        routes: List<Route>,
+        isSynced: Boolean,
+    ): Int? {
+        val top = navigator.backStack.value
+        val event = link.eventId?.let { findActivityEvent(it) }
+        val focusCommentId = event?.takeUnless { it.isCommentDeleted }?.commentId
+        val available = mutableListOf<Route>()
+        for (route in routes) {
+            val isOnDevice = when (route) {
+                is Route.GroupDetail -> observeGroup(route.groupId).first() != null
+
+                is Route.BillDetail -> observeExpense(route.expenseId).first() != null &&
+                    (isSynced || event != null || !link.isComment)
+
+                else -> true
+            }
+            if (!isOnDevice) break
+            available += if (route is Route.BillDetail) route.copy(focusCommentId = focusCommentId) else route
+        }
+        if (navigator.backStack.value != top) return null
+        available.forEach(navigator::navigate)
+        return available.size
     }
 
     // Why: signing out, now or once synced, erases the profile wherever the app is, and only the welcome is left.

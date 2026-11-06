@@ -1315,7 +1315,7 @@ class GroupsSearchTest {
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             leaveGroup = LeaveGroup { Result.success(GroupExitOutcome.DONE) },
-            deleteGroup = DeleteGroup { Result.success(GroupExitOutcome.DONE) },
+            deleteGroup = DeleteGroup { _, _ -> },
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
             consumeRecordedPayment = ConsumeRecordedPayment {},
             deleteSettlement = DeleteSettlement { Result.success(Unit) },

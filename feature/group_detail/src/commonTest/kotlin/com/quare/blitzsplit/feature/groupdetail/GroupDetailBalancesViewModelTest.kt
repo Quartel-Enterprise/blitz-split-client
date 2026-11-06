@@ -1138,7 +1138,10 @@ class GroupDetailBalancesViewModelTest {
                 consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
-                deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+                deleteGroup = DeleteGroup { groupId, _ ->
+                    groups.hideGroup(groupId)
+                    groups.deletedGroupIds += groupId
+                },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
             ),

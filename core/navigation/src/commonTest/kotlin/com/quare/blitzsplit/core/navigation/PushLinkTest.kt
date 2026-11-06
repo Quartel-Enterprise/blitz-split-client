@@ -572,6 +572,19 @@ class PushLinkTest {
         tab = tab,
     )
 
+    @Test
+    fun `GIVEN a comment and a bill notification WHEN asking whether each is a comment THEN only the comment is`() {
+        // Given
+        val comment = pushLink("comment_added")
+        val bill = pushLink("bill_created")
+
+        // When
+        val kinds = listOf(comment.isComment, bill.isComment)
+
+        // Then
+        assertEquals(listOf(true, false), kinds)
+    }
+
     private fun pushLink(
         kind: String,
         groupId: String? = GROUP_ID,

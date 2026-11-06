@@ -23,6 +23,10 @@ data class PushLink(
             else -> null
         }
 
+    // Why: a comment's notification opens Conta at the comment, which the event names once it is on the device.
+    val isComment: Boolean
+        get() = kind == COMMENT_ADDED
+
     // Why: what opens over the tab or Atividade, in order; nothing without a group, whose kind they already show.
     val routesAbove: List<Route>
         get() {

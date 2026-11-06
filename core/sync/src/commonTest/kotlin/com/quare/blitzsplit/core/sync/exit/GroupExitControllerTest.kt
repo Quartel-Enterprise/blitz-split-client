@@ -15,11 +15,15 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 class GroupExitControllerTest {
     private lateinit var serverAnswer: CompletableDeferred<Result<GroupExitOutcome>>
     private lateinit var controller: GroupExitController
+
+    // Why: what the controller did on confirming, in order: the screen moving on, the group handed over.
+    private val steps = mutableListOf<String>()
 
     @Test
     fun `GIVEN no dialog open WHEN Analytics asks which dialog can be answered THEN there is none`() = runTest {
@@ -105,20 +109,19 @@ class GroupExitControllerTest {
         }
 
     @Test
-    fun `GIVEN the server is answering Apagar WHEN Analytics asks which dialog can be answered THEN there is none`() =
-        runTest {
-            // Given
-            prepareScenario()
-            controller.askToDelete()
-            controller.confirm()
-            runCurrent()
+    fun `GIVEN Apagar was confirmed WHEN Analytics asks which dialog can be answered THEN there is none`() = runTest {
+        // Given
+        prepareScenario()
+        controller.askToDelete()
+        controller.confirm()
+        runCurrent()
 
-            // When
-            val dialog = controller.findAnswerableDialog()
+        // When
+        val dialog = controller.findAnswerableDialog()
 
-            // Then
-            assertNull(dialog)
-        }
+        // Then
+        assertNull(dialog)
+    }
 
     @Test
     fun `GIVEN the server is answering Sair WHEN dismissing THEN the dialog still cannot be answered`() = runTest {
@@ -156,25 +159,6 @@ class GroupExitControllerTest {
         }
 
     @Test
-    fun `GIVEN the server found a balance on Apagar WHEN asking for the open dialog THEN names delete_blocked`() =
-        runTest {
-            // Given
-            prepareScenario()
-            controller.askToDelete()
-            controller.confirm()
-            runCurrent()
-            controller.update(target(debts = listOf(meOwesAna)))
-            serverAnswer.complete(Result.success(GroupExitOutcome.HAS_BALANCE))
-            runCurrent()
-
-            // When
-            val dialog = controller.findAnswerableDialog()
-
-            // Then
-            assertEquals(GroupExitDialogKind.DELETE_BLOCKED, dialog)
-        }
-
-    @Test
     fun `GIVEN the group was left WHEN Analytics asks which dialog can be answered THEN there is none`() = runTest {
         // Given
         prepareScenario()
@@ -195,7 +179,7 @@ class GroupExitControllerTest {
     fun `GIVEN the server failed WHEN Analytics asks which dialog can be answered THEN there is none`() = runTest {
         // Given
         prepareScenario()
-        controller.askToDelete()
+        controller.askToLeave()
         controller.confirm()
         runCurrent()
         serverAnswer.complete(Result.failure(IllegalStateException("offline")))
@@ -259,6 +243,22 @@ class GroupExitControllerTest {
         // Then
         assertNull(controller.findAnswerableDialog())
     }
+
+    @Test
+    fun `GIVEN Apagar asks first WHEN confirming THEN moves on first and hands the group over without waiting`() =
+        runTest {
+            // Given
+            prepareScenario()
+            controller.askToDelete()
+
+            // When
+            controller.confirm()
+
+            // Then
+            assertEquals(listOf("exited", "delete group-1 Apê 302"), steps)
+            assertNull(controller.state.value.dialog)
+            assertFalse(controller.state.value.isRunning)
+        }
 
     private val meOwesAna = Debt(
         fromMemberId = "me",
@@ -324,12 +324,12 @@ class GroupExitControllerTest {
         serverAnswer = CompletableDeferred()
         controller = GroupExitController(
             leaveGroup = { serverAnswer.await() },
-            deleteGroup = { serverAnswer.await() },
+            deleteGroup = { groupId, groupName -> steps += "delete $groupId $groupName" },
             scope = backgroundScope,
             openRegisterPayment = { _, _, _ -> },
             openBalances = {},
-            onExited = {},
-            showError = {},
+            onExited = { steps += "exited" },
+            showLeaveError = {},
         )
         controller.update(target(debts = debts))
     }

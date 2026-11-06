@@ -106,7 +106,6 @@
     <string name="designsystem_group_exit_deleted_message_nobody">“%s” fue eliminado después de que todos saldaran cuentas. No quedó nada pendiente, y el grupo sale de tu lista.</string>
     <string name="designsystem_group_exit_back_to_groups">Volver a Grupos</string>
     <string name="designsystem_group_exit_leave_error">No se pudo salir del grupo. Revisa tu conexión e inténtalo de nuevo.</string>
-    <string name="designsystem_group_exit_delete_error">No se pudo eliminar el grupo. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="designsystem_group_exit_needs_internet">Requiere internet</string>
     <string name="designsystem_debt_you_owe">Debes %s</string>
     <string name="designsystem_debt_owes_you">%s te debe</string>

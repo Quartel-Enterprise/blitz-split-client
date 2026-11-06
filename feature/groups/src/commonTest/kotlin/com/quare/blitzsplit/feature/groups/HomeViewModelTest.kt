@@ -2143,6 +2143,7 @@ class HomeViewModelTest {
                     groupId = "a",
                     groupName = "Apê 302",
                     deletedByName = "Carla",
+                    failure = null,
                 ),
             )
             deletions.post(
@@ -2150,6 +2151,7 @@ class HomeViewModelTest {
                     groupId = "b",
                     groupName = "Churrasco",
                     deletedByName = null,
+                    failure = null,
                 ),
             )
 
@@ -2159,6 +2161,7 @@ class HomeViewModelTest {
                     groupId = "a",
                     groupName = "Apê 302",
                     deletedByName = "Carla",
+                    failure = null,
                 ),
                 viewModel.uiState.value.deletedGroupNotice,
             )
@@ -2168,6 +2171,7 @@ class HomeViewModelTest {
                     groupId = "b",
                     groupName = "Churrasco",
                     deletedByName = null,
+                    failure = null,
                 ),
                 viewModel.uiState.value.deletedGroupNotice,
             )
@@ -2187,6 +2191,7 @@ class HomeViewModelTest {
                     groupId = "a",
                     groupName = "Apê 302",
                     deletedByName = "Carla",
+                    failure = null,
                 ),
             )
             assertNull(viewModel.uiState.value.deletedGroupNotice)

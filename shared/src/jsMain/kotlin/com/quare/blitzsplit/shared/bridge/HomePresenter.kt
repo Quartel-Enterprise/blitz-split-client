@@ -128,6 +128,8 @@ class JsHomeState(
     val deletedGroupId: String?,
     val deletedGroupName: String?,
     val deletedGroupByName: String?,
+    // Why: "has-balance" or "failed" when it was this device's own deletion that didn't go through; null otherwise.
+    val deletedGroupFailure: String?,
     // Why: the count on the bell, every unread event of Atividade.
     val activityUnreadCount: Int,
     // Why: "Buscar…" and ⌘K only once there is a group to look in.
@@ -190,6 +192,7 @@ class HomePresenter {
                 deletedGroupId = state.deletedGroupNotice?.groupId,
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
+                deletedGroupFailure = state.deletedGroupNotice?.failure?.let(::toJsDeleteFailure),
                 activityUnreadCount = state.activityUnreadCount,
                 canSearch = state.canSearch,
                 notificationPrompt = state.notificationPrompt?.name,

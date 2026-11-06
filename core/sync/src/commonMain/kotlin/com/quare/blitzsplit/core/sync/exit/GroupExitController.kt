@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 /*
  * Why: "Sair do grupo" and "Apagar grupo" ask the same and end the same from the group's ⋮ menu and from a row of the
  * home: the dialog each opens, kept up to date while a sync changes the balances, and the server's answer. The screen
- * says where "Acertar" and "Ver saldos" go, what follows a group that left (onExited) and how a failure shows.
+ * says where "Acertar" and "Ver saldos" go, what follows a group that left (onExited) and how leaving fails. Deleting
+ * doesn't wait for the server: the group leaves at once, and Grupos or Início say if it comes back (DeleteGroup).
  */
 class GroupExitController(
     private val leaveGroup: LeaveGroup,
@@ -26,7 +27,7 @@ class GroupExitController(
     private val openRegisterPayment: (groupId: String, fromMemberId: String, toMemberId: String) -> Unit,
     private val openBalances: (groupId: String) -> Unit,
     private val onExited: () -> Unit,
-    private val showError: suspend (isDelete: Boolean) -> Unit,
+    private val showLeaveError: suspend () -> Unit,
 ) {
     val state: StateFlow<GroupExitState>
         field = MutableStateFlow(GroupExitState.idle)
@@ -97,7 +98,7 @@ class GroupExitController(
         state.update { it.copy(dialog = dialog) }
     }
 
-    // Why: the dialog's main button: "Sair" and "Apagar para todos" ask the server, "Acertar" and "Ver saldos" go on.
+    // Why: the dialog's main button: "Sair" asks the server, "Apagar para todos" hands the group over to it at once.
     fun confirm() {
         val current = state.value
         if (current.isRunning) return
@@ -115,9 +116,9 @@ class GroupExitController(
                 openBalances(target.group.id)
             }
 
-            is GroupExitDialog.ConfirmLeave -> run(target, isDelete = false)
+            is GroupExitDialog.ConfirmLeave -> leave(target)
 
-            is GroupExitDialog.ConfirmDelete -> run(target, isDelete = true)
+            is GroupExitDialog.ConfirmDelete -> delete(target)
         }
     }
 
@@ -160,15 +161,18 @@ class GroupExitController(
         openRegisterPayment(target.group.id, meId, creditorId)
     }
 
-    private fun run(
-        target: GroupExitTarget,
-        isDelete: Boolean,
-    ) {
+    // Why: the screen moves on first, so the group leaving what it observes right after never closes it a second time.
+    private fun delete(target: GroupExitTarget) {
+        onExited()
+        state.update { it.copy(dialog = null) }
+        deleteGroup(target.group.id, target.group.name)
+    }
+
+    private fun leave(target: GroupExitTarget) {
         state.update { it.copy(isRunning = true) }
         val groupId = target.group.id
         scope.launch {
-            val result = if (isDelete) deleteGroup(groupId) else leaveGroup(groupId)
-            result
+            leaveGroup(groupId)
                 .onSuccess { outcome ->
                     when (outcome) {
                         // Why: the group already left the device.
@@ -186,7 +190,7 @@ class GroupExitController(
                         GroupExitOutcome.HAS_BALANCE -> state.update {
                             it.copy(
                                 isRunning = false,
-                                dialog = blockedDialogOrNull(isDelete),
+                                dialog = blockedDialogOrNull(isDelete = false),
                             )
                         }
                     }
@@ -197,7 +201,7 @@ class GroupExitController(
                             dialog = null,
                         )
                     }
-                    showError(isDelete)
+                    showLeaveError()
                 }
         }
     }

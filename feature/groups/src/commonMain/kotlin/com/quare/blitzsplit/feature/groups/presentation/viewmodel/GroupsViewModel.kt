@@ -181,9 +181,7 @@ class GroupsViewModel(
                 navigator.popToGroups()
             }
         },
-        showError = { isDelete ->
-            uiAction.emit(if (isDelete) GroupsUiAction.ShowDeleteError else GroupsUiAction.ShowLeaveError)
-        },
+        showLeaveError = { uiAction.emit(GroupsUiAction.ShowLeaveError) },
     )
 
     private val layoutPicker = GroupsLayoutPicker(
@@ -568,10 +566,13 @@ class GroupsViewModel(
         )
     }
 
-    // Why: the group beside the list says "Grupo apagado" itself, so the home leaves its deletion to it.
+    /*
+     * Why: the group beside the list says "Grupo apagado" itself, so the home leaves its deletion to it. A deletion of
+     * this device's that didn't go through is the home's to say, wherever the group shows again.
+     */
     private fun showNextDeletion() {
         val paneGroupId = paneGroupIdOrNull()
-        val deletion = pendingDeletions.firstOrNull { it.groupId != paneGroupId } ?: return
+        val deletion = pendingDeletions.firstOrNull { it.failure != null || it.groupId != paneGroupId } ?: return
         if (!isListShown() || uiState.value.deletedGroupNotice != null) return
         consumeGroupDeletion(deletion.groupId)
         pendingDeletions = pendingDeletions - deletion
@@ -581,6 +582,7 @@ class GroupsViewModel(
                     groupId = deletion.groupId,
                     groupName = deletion.groupName,
                     deletedByName = deletion.deletedByName,
+                    failure = deletion.failure,
                 ),
             )
         }

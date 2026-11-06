@@ -60,6 +60,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupDeleteFailure
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
@@ -1872,20 +1873,6 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN the server unreachable WHEN confirming Apagar THEN says so`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(exitError = IllegalStateException("offline"))
-        viewModel.onEvent(GroupDetailUiEvent.OnDeleteGroupClicked)
-
-        // When
-        viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed)
-
-        // Then
-        assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowDeleteError), actions)
-        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
-    }
-
-    @Test
     fun `GIVEN someone else deleted the group WHEN a sync takes it off THEN says so and stays until asked`() =
         runTest(testDispatcher) {
             // Given
@@ -1895,6 +1882,7 @@ class GroupDetailViewModelTest {
                     groupId = GROUP_ID,
                     groupName = "Viagem de Floripa",
                     deletedByName = "Ana",
+                    failure = null,
                 ),
             )
 
@@ -1914,6 +1902,29 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN its own deletion turned down WHEN the group leaves the device THEN closes with no Grupo apagado`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            deletions.post(
+                GroupDeletion(
+                    groupId = GROUP_ID,
+                    groupName = "Viagem de Floripa",
+                    deletedByName = null,
+                    failure = GroupDeleteFailure.FAILED,
+                ),
+            )
+
+            // When
+            groups.groups.value = emptyList()
+
+            // Then
+            assertNull(viewModel.uiState.value.exit.deletedNotice)
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+            assertEquals(1, deletions.observeDeletions().first().size)
+        }
+
+    @Test
     fun `GIVEN Grupo apagado shown WHEN tapping Voltar para Grupos THEN goes back to Grupos`() =
         runTest(testDispatcher) {
             // Given
@@ -1923,6 +1934,7 @@ class GroupDetailViewModelTest {
                     groupId = GROUP_ID,
                     groupName = "Viagem de Floripa",
                     deletedByName = "Ana",
+                    failure = null,
                 ),
             )
             groups.groups.value = emptyList()
@@ -1946,6 +1958,7 @@ class GroupDetailViewModelTest {
                     groupId = GROUP_ID,
                     groupName = "Viagem de Floripa",
                     deletedByName = null,
+                    failure = null,
                 ),
             )
             groups.groups.value = emptyList()
@@ -2172,6 +2185,7 @@ class GroupDetailViewModelTest {
                     groupId = GROUP_ID,
                     groupName = "Viagem de Floripa",
                     deletedByName = "Ana",
+                    failure = null,
                 ),
             )
             groups.groups.value = emptyList()
@@ -2470,6 +2484,7 @@ class GroupDetailViewModelTest {
                     groupId = GROUP_ID,
                     groupName = "Viagem de Floripa",
                     deletedByName = "Ana",
+                    failure = null,
                 ),
             )
             groups.groups.value = emptyList()
@@ -3396,7 +3411,10 @@ class GroupDetailViewModelTest {
                 consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(isOnline) },
                 leaveGroup = LeaveGroup { groups.requestLeaveGroup(it) },
-                deleteGroup = DeleteGroup { groups.deleteGroup(it) },
+                deleteGroup = DeleteGroup { groupId, _ ->
+                    groups.hideGroup(groupId)
+                    groups.deletedGroupIds += groupId
+                },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
             ),

@@ -6,7 +6,6 @@ import SwiftUI
 final class GroupDetailModel {
     private(set) var state: GroupDetailUiState
     private(set) var leaveErrorCount = 0
-    private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
     private(set) var teachErrorCount = 0
@@ -27,7 +26,6 @@ final class GroupDetailModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is GroupDetailUiActionShowLeaveError: self?.leaveErrorCount += 1
-            case is GroupDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             case is GroupDetailUiActionShowTeachError: self?.teachErrorCount += 1
             case is GroupDetailUiActionShowBillDeleteError: self?.billDeleteErrorCount += 1
@@ -193,7 +191,6 @@ struct GroupDetailView: View {
             GlassToastMessage(text: "Couldn't delete the bill. Try again.", trigger: model?.billDeleteErrorCount ?? 0),
         ] + GroupExitCopy.errorToasts(
             leave: model?.leaveErrorCount ?? 0,
-            delete: model?.deleteErrorCount ?? 0,
             change: model?.changeErrorCount ?? 0,
         ))
         .recordedPaymentNotice(

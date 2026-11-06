@@ -149,13 +149,22 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     and changing the category moves the bill to the other way while Split was never changed by hand.
   - "Leave group" and "Delete group" (5.3c to 5.3f, 6.1i to 6.1k) need the internet: offline the ⋮ menu shows
     them disabled with "Needs internet", since only the server knows every device's bills and payments. The
-    device syncs first, then the server checks the balances again (`leave_group`, `delete_group`). Leaving needs your
+    device pushes first what it hasn't sent yet (a whole sync, only while something waits to go up), then the server
+    checks the balances again (`leave_group`, `delete_group`). Leaving needs your
     own balance settled ("Settle up before leaving" lists what is still open, with "Settle up" while you owe, "See balances"
     otherwise); you go back to Groups, and your member stays as a name in the bills and payments, not joined, so the
     invite link can bring you back. A group nobody else with an account is in goes, which "Leave" says
     (`ConfirmLeave.deletesGroup`). Any member may delete the group
     once nobody owes anything ("There are still open balances" lists the pairs, with "See balances"), for everyone, with its
-    bills and payments, after "Delete “X”?" ("Delete for everyone", no undo). On the other devices a sync takes it off,
+    bills and payments, after "Delete “X”?" ("Delete for everyone", no undo). Deleting answers at once (beta feedback
+    3, item 7: the dialog's spinner used to wait for a whole sync, a round trip per part, before the server was even
+    asked): "Delete for everyone" closes the dialog and the group's screens, and the group leaves every list, Home
+    and the balances right away, while the device asks the server in the background (`DeleteGroup`,
+    `GroupRepository.hideGroup`); it leaves the device once the server deleted it. If the server finds a balance
+    this device didn't have yet, or can't be reached, the group comes back and Groups or Home, whichever is on top
+    first, says "“X” wasn't deleted: there are still open balances in it." or "Couldn't delete “X”. Check your
+    connection and try again." (`GroupDeletion.failure`, the same queue as below). Leaving still waits for the
+    server in its dialog. On the other devices a sync takes it off,
     even with a change not pushed yet (the server's `removed_groups`): the group open on it, whatever the tab, says
     "Group deleted" with who deleted it and "Back to Groups" (`GroupExitState.deletedNotice`), once on top again
     if a bill covered it; any other screen of the group (Invite) just closes, and Groups or Home, whichever is

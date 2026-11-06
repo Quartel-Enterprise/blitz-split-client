@@ -101,7 +101,6 @@
     <string name="designsystem_group_exit_deleted_message_nobody">“%s” was deleted after everyone settled up. Nothing was left open, and the group leaves your list.</string>
     <string name="designsystem_group_exit_back_to_groups">Back to Groups</string>
     <string name="designsystem_group_exit_leave_error">Couldn\'t leave the group. Check your connection and try again.</string>
-    <string name="designsystem_group_exit_delete_error">Couldn\'t delete the group. Check your connection and try again.</string>
     <string name="designsystem_group_exit_needs_internet">Needs internet</string>
     <string name="designsystem_debt_you_owe">You owe %s</string>
     <string name="designsystem_debt_owes_you">%s owes you</string>

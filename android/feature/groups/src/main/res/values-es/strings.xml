@@ -24,6 +24,8 @@
     </plurals>
     <string name="groups_deleted_by">%1$s eliminó el grupo “%2$s”.</string>
     <string name="groups_deleted">Se eliminó el grupo “%s”.</string>
+    <string name="groups_delete_has_balance">“%s” no se eliminó: aún hay saldos abiertos en él.</string>
+    <string name="groups_delete_failed">No se pudo eliminar “%s”. Revisa tu conexión e inténtalo de nuevo.</string>
     <plurals name="groups_sync_offline_queued">
         <item quantity="one">Sin conexión · %d cambio en cola</item>
         <item quantity="many">Sin conexión · %d cambios en cola</item>

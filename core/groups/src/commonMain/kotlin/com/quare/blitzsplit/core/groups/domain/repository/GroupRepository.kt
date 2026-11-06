@@ -105,6 +105,19 @@ interface GroupRepository {
     // Why: "Apagar grupo", online only: the server checks nobody owes anything; then the group leaves the device.
     suspend fun deleteGroup(groupId: String): Result<GroupExitOutcome>
 
+    /*
+     * Why: "Apagar grupo" takes the group off every screen at once, while the server is asked, so nobody waits on it;
+     * the group stays on the device until the server deleted it. Only while the app runs: a deletion the app closed
+     * on is the server's to settle, and the next sync takes the group off or keeps it.
+     */
+    fun hideGroup(groupId: String)
+
+    /*
+     * Why: the server answered: a group it turned down comes back where it was, and one it deleted, already gone from
+     * the device, no longer costs the screens a filter.
+     */
+    fun showGroup(groupId: String)
+
     suspend fun uploadPendingGroups(userId: String): Result<Unit>
 
     /*

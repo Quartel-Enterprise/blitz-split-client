@@ -102,8 +102,13 @@ The feed, unread state, real time and push notifications.
     insert), and each device words them in its language from a kind and the names (Android's channels are the six rows,
     the first four keeping their ids `new_expense`, `payment_marked`, `invites` and `settle_reminders` so a channel
     already silenced stays so, plus `comments` and `payment_requests`; Apple's `push.<kind>` strings, the web's service worker): the group's name over "Ana split “Dinner”
-    with you". A tap opens what the item's tap in Activity opens, over Activity over Home (`PushLink.homeTab` null, after a sync when its group isn't
-    on the device yet) and marks it read; a reminder opens the group's Balances over Groups, or Balances. Each device
+    with you". A tap opens what the item's tap in Activity opens, over Activity over Home (`PushLink.homeTab` null),
+    and marks it read; a reminder opens the group's Balances over Groups, or Balances. The specific screen opens at
+    once with what the device already has (beta feedback 3, item 28: waiting for a sync first left Activity on screen
+    for seconds, so a tap seemed to always open Activity): the group, then the bill (Bill) when it is on the device, at
+    the comment for a comment once its event is. Only what isn't there yet (a group just joined, a new bill or comment)
+    waits for a sync of up to 5 seconds, then opens over what is on top while the person stayed there; nothing opens
+    for a group or bill still missing after it. Android, iOS, macOS and the web share this (`AppViewModel.openPushLink`). Each device
     registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
     it while none is or while Notifications' "Push notifications" switch is off, a sign out made offline once back
     online; a failed call is tried again after 30 seconds, 2 and 10 minutes, then waits for the next change. Android and Apple register their token at every launch

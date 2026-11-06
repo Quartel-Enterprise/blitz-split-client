@@ -24,12 +24,16 @@ import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.utils.suspendRunCatching
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 class GroupRepositoryImpl(
     private val local: GroupLocalDataSource,
@@ -40,13 +44,23 @@ class GroupRepositoryImpl(
     private val mapper: GroupMapper,
     private val deletions: GroupDeletionRepository,
 ) : GroupRepository {
+    // Why: the groups this device is deleting, off every screen while the server is asked.
+    private val hiddenGroupIds = MutableStateFlow(emptySet<String>())
+
     override fun observeGroups(): Flow<List<Group>> = combine(
         local.observeGroups(),
         local.observeMembers(),
         local.observeMemberPhotos(),
         observeMyPhotoUrl(),
-        mapper::toDomain,
-    ).distinctUntilChanged()
+        hiddenGroupIds,
+    ) { groups, members, photos, myPhotoUrl, hiddenIds ->
+        mapper.toDomain(
+            groups = groups.filterNot { it.id in hiddenIds },
+            members = members,
+            photos = photos,
+            myPhotoUrl = myPhotoUrl,
+        )
+    }.distinctUntilChanged()
 
     /*
      * Why: the photo as the profile shows it, so one picked offline and not uploaded yet shows in the faces too; the
@@ -58,7 +72,16 @@ class GroupRepositoryImpl(
         .distinctUntilChanged()
         .map { it?.toImageUrl() }
 
-    override fun observeHasGroups(): Flow<Boolean> = local.observeHasGroups().distinctUntilChanged()
+    // Why: the groups' rows are read only while one is hidden, so the last group deleted leaves the home at once.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun observeHasGroups(): Flow<Boolean> = hiddenGroupIds
+        .flatMapLatest { hiddenIds ->
+            if (hiddenIds.isEmpty()) {
+                local.observeHasGroups()
+            } else {
+                local.observeGroups().map { groups -> groups.any { it.id !in hiddenIds } }
+            }
+        }.distinctUntilChanged()
 
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
@@ -204,6 +227,14 @@ class GroupRepositoryImpl(
 
     override suspend fun deleteGroup(groupId: String): Result<GroupExitOutcome> = suspendRunCatching {
         exitOutcomeOf(groupId, remote.deleteGroup(groupId))
+    }
+
+    override fun hideGroup(groupId: String) {
+        hiddenGroupIds.update { it + groupId }
+    }
+
+    override fun showGroup(groupId: String) {
+        hiddenGroupIds.update { it - groupId }
     }
 
     // Why: not_member means another device already took this person out, so the group leaves this one too.
@@ -452,6 +483,7 @@ class GroupRepositoryImpl(
                         groupId = dto.groupId,
                         groupName = dto.groupName,
                         deletedByName = dto.removedByName,
+                        failure = null,
                     ),
                 )
             }
@@ -459,6 +491,7 @@ class GroupRepositoryImpl(
 
     override suspend fun clear() {
         local.clear()
+        hiddenGroupIds.value = emptySet()
     }
 
     private companion object {
