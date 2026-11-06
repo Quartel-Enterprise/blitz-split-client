@@ -1514,6 +1514,456 @@ class ActivityItemsTest {
 
     // endregion
 
+    // region Currency of each row
+
+    @Test
+    fun `GIVEN an event with its own currency WHEN mapping the feed THEN the item is in it and not in the groups`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "e1",
+                    currency = "EUR",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(GroupCurrency.EUR, item.currency)
+    }
+
+    @Test
+    fun `GIVEN an event without currency in a USD group WHEN mapping the feed THEN the item is in the groups`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "e1",
+                    groupId = FLORIPA,
+                    currency = null,
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(GroupCurrency.USD, item.currency)
+    }
+
+    @Test
+    fun `GIVEN an event with a currency of a gone group WHEN mapping the feed THEN keeps its currency`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "e1",
+                    groupId = PRAIA,
+                    currency = "JPY",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(GroupCurrency.JPY, item.currency)
+    }
+
+    @Test
+    fun `GIVEN an event with a currency code nobody supports WHEN mapping the feed THEN the item is in the groups`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "e1",
+                    currency = "XYZ",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(GroupCurrency.BRL, item.currency)
+    }
+
+    @Test
+    fun `GIVEN an unsupported currency code of a gone group WHEN mapping the feed THEN has no currency`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "e1",
+                    groupId = PRAIA,
+                    currency = "XYZ",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertNull(item.currency)
+    }
+
+    @Test
+    fun `GIVEN a queued change with its own currency WHEN mapping the feed THEN the item is in it`() {
+        // Given
+        val feed = feed(
+            queued = listOf(
+                queued(
+                    id = BILL_MERCADO,
+                    currency = "USD",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(GroupCurrency.USD, item.currency)
+    }
+
+    @Test
+    fun `GIVEN a queued change with an unsupported code WHEN mapping the feed THEN the item is in the groups`() {
+        // Given
+        val feed = feed(
+            queued = listOf(
+                queued(
+                    id = BILL_MERCADO,
+                    currency = "XYZ",
+                ),
+            ),
+        )
+
+        // When
+        val item = entriesOf(feed, groups).single().item
+
+        // Then
+        assertEquals(GroupCurrency.BRL, item.currency)
+    }
+
+    @Test
+    fun `GIVEN an edit of a bill in USD WHEN mapping the feed THEN its before and after amounts are in USD`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                amountEdit(
+                    currency = "USD",
+                    previousCurrency = null,
+                ),
+            ),
+        )
+
+        // When
+        val row = entriesOf(feed, groups)
+            .single()
+            .item.changes
+            .single()
+
+        // Then
+        assertEquals(GroupCurrency.USD, row.before.currency)
+        assertEquals(GroupCurrency.USD, row.after.currency)
+    }
+
+    @Test
+    fun `GIVEN an edit that moved a bill from EUR to USD WHEN mapping the feed THEN before is EUR and after USD`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                amountEdit(
+                    currency = "USD",
+                    previousCurrency = "EUR",
+                ),
+            ),
+        )
+
+        // When
+        val row = entriesOf(feed, groups)
+            .single()
+            .item.changes
+            .single()
+
+        // Then
+        assertEquals(GroupCurrency.EUR, row.before.currency)
+        assertEquals(GroupCurrency.USD, row.after.currency)
+    }
+
+    @Test
+    fun `GIVEN an edit of an old event without currency WHEN mapping the feed THEN both amounts are in the groups`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                amountEdit(
+                    currency = null,
+                    previousCurrency = null,
+                ),
+            ),
+        )
+
+        // When
+        val row = entriesOf(feed, groups)
+            .single()
+            .item.changes
+            .single()
+
+        // Then
+        assertEquals(GroupCurrency.BRL, row.before.currency)
+        assertEquals(GroupCurrency.BRL, row.after.currency)
+    }
+
+    @Test
+    fun `GIVEN an edit that moved a bill out of USD WHEN mapping the feed THEN before is USD and after the groups`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                amountEdit(
+                    currency = null,
+                    previousCurrency = "USD",
+                ),
+            ),
+        )
+
+        // When
+        val row = entriesOf(feed, groups)
+            .single()
+            .item.changes
+            .single()
+
+        // Then
+        assertEquals(GroupCurrency.USD, row.before.currency)
+        assertEquals(GroupCurrency.BRL, row.after.currency)
+    }
+
+    @Test
+    fun `GIVEN an edit of a gone group WHEN mapping the feed THEN the amounts keep the events currencies`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                amountEdit(
+                    groupId = PRAIA,
+                    currency = "EUR",
+                    previousCurrency = "JPY",
+                ),
+            ),
+        )
+
+        // When
+        val row = entriesOf(feed, groups)
+            .single()
+            .item.changes
+            .single()
+
+        // Then
+        assertEquals(GroupCurrency.JPY, row.before.currency)
+        assertEquals(GroupCurrency.EUR, row.after.currency)
+    }
+
+    @Test
+    fun `GIVEN pairs in USD and BRL of the same person WHEN simplifying THEN they never net against each other`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(debt(BRUNO_APE, ME_APE, 5_000L, currency = "USD")),
+                    debtsAfter = listOf(debt(BRUNO_APE, ME_APE, 5_000L, currency = "BRL")),
+                ),
+            ),
+        )
+
+        // When
+        val changes = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+
+        // Then
+        assertEquals(
+            listOf(
+                ActivityDebtChange("Bruno", 0L, 5_000L, GroupCurrency.BRL),
+                ActivityDebtChange("Bruno", 5_000L, 0L, GroupCurrency.USD),
+            ),
+            changes,
+        )
+    }
+
+    @Test
+    fun `GIVEN the same person changing in two currencies WHEN simplifying THEN has a row for each currency`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(
+                        debt(BRUNO_APE, ME_APE, 1_000L, currency = "BRL"),
+                        debt(BRUNO_APE, ME_APE, 3_000L, currency = "USD"),
+                    ),
+                    debtsAfter = listOf(
+                        debt(BRUNO_APE, ME_APE, 4_000L, currency = "BRL"),
+                        debt(BRUNO_APE, ME_APE, 2_000L, currency = "USD"),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val changes = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+
+        // Then
+        assertEquals(
+            listOf(
+                ActivityDebtChange("Bruno", 1_000L, 4_000L, GroupCurrency.BRL),
+                ActivityDebtChange("Bruno", 3_000L, 2_000L, GroupCurrency.USD),
+            ),
+            changes,
+        )
+    }
+
+    @Test
+    fun `GIVEN pairs in several currencies WHEN simplifying THEN lists the groups first and the rest by code`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    groupId = FLORIPA,
+                    groupName = "Viagem Floripa",
+                    debtsAfter = listOf(
+                        debt("diego-floripa", "me-floripa", 1_000L, currency = "JPY"),
+                        debt("diego-floripa", "me-floripa", 2_000L, currency = "EUR"),
+                        debt("diego-floripa", "me-floripa", 3_000L, currency = "USD"),
+                        debt("diego-floripa", "me-floripa", 4_000L, currency = "BRL"),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val changes = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+
+        // Then
+        assertEquals(
+            listOf(GroupCurrency.USD, GroupCurrency.BRL, GroupCurrency.EUR, GroupCurrency.JPY),
+            changes?.map { it.currency },
+        )
+    }
+
+    @Test
+    fun `GIVEN pairs without currency WHEN simplifying THEN they are in the groups currency and net with its pairs`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(debt(BRUNO_APE, ME_APE, 2_000L, currency = null)),
+                    debtsAfter = listOf(
+                        debt(BRUNO_APE, ME_APE, 2_000L, currency = "BRL"),
+                        debt(ANA_APE, ME_APE, 500L, currency = null),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val changes = entriesOf(feed, groups)
+            .single()
+            .item.simplification
+            ?.myChanges
+
+        // Then
+        assertEquals(listOf(ActivityDebtChange("Ana", 0L, 500L, GroupCurrency.BRL)), changes)
+    }
+
+    @Test
+    fun `GIVEN pairs in several currencies WHEN simplifying THEN counts the payments of all of them`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(
+                        debt(BRUNO_APE, ME_APE, 1_000L, currency = "BRL"),
+                        debt(BRUNO_APE, ME_APE, 1_000L, currency = "USD"),
+                        debt(ANA_APE, ME_APE, 1_000L, currency = "EUR"),
+                    ),
+                    debtsAfter = listOf(debt(ANA_APE, ME_APE, 1_000L, currency = "EUR")),
+                ),
+            ),
+        )
+
+        // When
+        val simplification = entriesOf(feed, groups).single().item.simplification
+
+        // Then
+        assertEquals(3, simplification?.paymentsBefore)
+        assertEquals(1, simplification?.paymentsAfter)
+    }
+
+    @Test
+    fun `GIVEN pairs in two currencies of a gone group WHEN simplifying THEN has no changes but counts them`() {
+        // Given
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    groupId = PRAIA,
+                    debtsBefore = listOf(debt(BRUNO_APE, ME_APE, 1_000L, currency = "BRL")),
+                    debtsAfter = listOf(debt(BRUNO_APE, ME_APE, 2_000L, currency = "USD")),
+                ),
+            ),
+        )
+
+        // When
+        val simplification = entriesOf(feed, groups).single().item.simplification
+
+        // Then
+        assertEquals(emptyList(), simplification?.myChanges)
+        assertEquals(1, simplification?.paymentsBefore)
+        assertEquals(1, simplification?.paymentsAfter)
+    }
+
+    @Test
+    fun `GIVEN pairs in two currencies of a group you are not a member of WHEN simplifying THEN has no changes`() {
+        // Given
+        val groupsWithoutMe = listOf(
+            group(
+                id = APE,
+                name = "Apê 302",
+                type = GroupType.HOME,
+                color = AvatarColor.PEACH,
+                currency = GroupCurrency.BRL,
+                member(ANA_APE, "Ana", AvatarColor.GREEN, userId = "ana"),
+                member(BRUNO_APE, "Bruno", AvatarColor.LILAC, userId = "bruno"),
+            ),
+        )
+        val feed = feed(
+            events = listOf(
+                simplifyEvent(
+                    debtsBefore = listOf(debt(BRUNO_APE, ME_APE, 1_000L, currency = "BRL")),
+                    debtsAfter = listOf(debt(BRUNO_APE, ME_APE, 2_000L, currency = "USD")),
+                ),
+            ),
+        )
+
+        // When
+        val simplification = entriesOf(feed, groupsWithoutMe).single().item.simplification
+
+        // Then
+        assertEquals(emptyList(), simplification?.myChanges)
+    }
+
+    // endregion
+
     private val groups = listOf(
         group(
             id = APE,
@@ -1641,6 +2091,8 @@ class ActivityItemsTest {
         debtsBefore: List<ActivityDebt> = emptyList(),
         debtsAfter: List<ActivityDebt> = emptyList(),
         memberNames: Map<String, String> = emptyMap(),
+        currency: String? = null,
+        previousCurrency: String? = null,
     ): ActivityEvent = ActivityEvent(
         id = id,
         seq = seq,
@@ -1654,8 +2106,8 @@ class ActivityItemsTest {
         occurredAt = occurredAt,
         subject = subject,
         amountMinor = 10_000L,
-        currency = null,
-        previousCurrency = null,
+        currency = currency,
+        previousCurrency = previousCurrency,
         code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
@@ -1691,15 +2143,36 @@ class ActivityItemsTest {
         memberNames = memberNames,
     )
 
+    // Why: a bill's amount edited, in the currency the event says and the one it had before, when it moved.
+    private fun amountEdit(
+        currency: String?,
+        previousCurrency: String?,
+        groupId: String = APE,
+    ): ActivityEvent = event(
+        id = "edit",
+        kind = ActivityKind.BILL_EDITED,
+        groupId = groupId,
+        currency = currency,
+        previousCurrency = previousCurrency,
+        changes = listOf(
+            ActivityChange(
+                field = ActivityField.AMOUNT,
+                before = ActivityValue.none.copy(minor = 61_200L),
+                after = ActivityValue.none.copy(minor = 64_200L),
+            ),
+        ),
+    )
+
     private fun debt(
         from: String,
         to: String,
         amountMinor: Long,
+        currency: String? = null,
     ): ActivityDebt = ActivityDebt(
         fromMemberId = from,
         toMemberId = to,
         amountMinor = amountMinor,
-        currency = null,
+        currency = currency,
     )
 
     private fun debtChange(
@@ -1743,13 +2216,14 @@ class ActivityItemsTest {
         toMemberId: String? = null,
         savedAt: Long = NOW,
         code: String? = null,
+        currency: String? = null,
     ): QueuedChange = QueuedChange(
         id = id,
         groupId = groupId,
         kind = kind,
         subject = subject,
         amountMinor = 10_000L,
-        currency = null,
+        currency = currency,
         code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,

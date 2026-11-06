@@ -2081,6 +2081,40 @@ class GroupMapperImplTest {
     }
 
     @Test
+    fun `GIVEN pairs in their own currency WHEN encoding the change THEN each pair writes its currency`() {
+        // Given
+        val change = SimplifyDebtsChange(
+            before = listOf(
+                SimplifyDebtsPair(
+                    fromMemberId = "m-2",
+                    toMemberId = "m-1",
+                    amountMinor = 3_000L,
+                    currency = "USD",
+                ),
+                SimplifyDebtsPair(
+                    fromMemberId = "m-2",
+                    toMemberId = "m-1",
+                    amountMinor = 500L,
+                    currency = null,
+                ),
+            ),
+            after = emptyList(),
+        )
+
+        // When
+        val encoded = mapper.encode(change)
+
+        // Then
+        assertEquals(
+            Json.parseToJsonElement(
+                """{"before":[{"from":"m-2","to":"m-1","amount":3000,"currency":"USD"},""" +
+                    """{"from":"m-2","to":"m-1","amount":500}],"after":[]}""",
+            ),
+            Json.parseToJsonElement(encoded),
+        )
+    }
+
+    @Test
     fun `GIVEN a change with no pairs WHEN encoding it THEN writes both lists empty`() {
         // Given
         val change = SimplifyDebtsChange(
