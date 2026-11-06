@@ -37,6 +37,7 @@ const changeVerbs: Record<string, MessageKey> = {
   description: 'billDetail_historyDescription',
   'spent-at': 'billDetail_historySpentAt',
   category: 'billDetail_historyCategory',
+  currency: 'billDetail_historyCurrency',
   payers: 'billDetail_historyPayers',
   split: 'billDetail_historySplit',
 }
@@ -47,6 +48,7 @@ const fieldLabels: Record<string, MessageKey> = {
   description: 'activity_fieldDescription',
   'spent-at': 'activity_fieldSpentAt',
   category: 'activity_fieldCategory',
+  currency: 'activity_fieldCurrency',
   payers: 'activity_fieldPayers',
   split: 'activity_fieldSplit',
 }
@@ -109,6 +111,8 @@ function changeDiffs(change: JsBillHistoryChange, isFirst: boolean, money: Money
       return [{ label, from: quoted(change.beforeText), to: quoted(change.afterText) }]
     case 'spent-at':
       return [{ label, from: dateOrDash(change.beforeMillis), to: dateOrDash(change.afterMillis) }]
+    case 'currency':
+      return [{ label, from: change.beforeText ?? '—', to: change.afterText ?? '—' }]
     case 'category':
       return [{ label, from: change.beforeCategory ? categoryName(change.beforeCategory) : '—', to: change.afterCategory ? categoryName(change.afterCategory) : '—' }]
     case 'payers':

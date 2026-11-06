@@ -87,7 +87,7 @@ class ShareBillViewModel(
                     state.copy(
                         description = expense.description,
                         totalMinor = expense.amountMinor,
-                        currency = group.currency,
+                        currency = expense.currency,
                         memberNames = group.members.filter { it.hasJoined && !it.isMe }.map { it.name },
                     )
                 }

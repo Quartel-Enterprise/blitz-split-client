@@ -71,7 +71,7 @@ class ShareBillViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill on the device WHEN the sheet opens THEN shows its description and total`() =
+    fun `GIVEN a USD bill in a BRL group WHEN the sheet opens THEN shows its description and total in USD`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -898,7 +898,7 @@ class ShareBillViewModelTest {
         color = AvatarColor.LILAC,
         shape = GroupShape.SQUARE,
         photo = null,
-        currency = GroupCurrency.USD,
+        currency = GroupCurrency.BRL,
         members = listOf(
             member(ANA, "Ana", hasJoined = true),
             member(

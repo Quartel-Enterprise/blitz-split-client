@@ -939,7 +939,7 @@ class BillHistoriesTest {
             event(
                 changes = listOf(
                     change(ActivityField.DESCRIPTION, text("Feira"), text("Mercado")),
-                    change(ActivityField.CURRENCY, code("USD"), code("BRL")),
+                    change(ActivityField.COLOR, code("blue"), code("green")),
                 ),
             ),
         )
@@ -1089,6 +1089,7 @@ class BillHistoriesTest {
             BillUndo(
                 description = "Feira",
                 amountMinor = 30_000,
+                currency = GroupCurrency.BRL,
                 payers = listOf(ExpensePayer(ANA, 30_000)),
                 splitMode = SplitMode.EQUAL,
                 shares = listOf(share(ANA, 10_000), share(PIERRE, 10_000), share(BRUNO, 10_000)),
@@ -1113,6 +1114,7 @@ class BillHistoriesTest {
             BillUndo(
                 description = "Feira",
                 amountMinor = 48_000,
+                currency = GroupCurrency.BRL,
                 payers = listOf(ExpensePayer(ANA, 48_000)),
                 splitMode = SplitMode.EQUAL,
                 shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(BRUNO, 16_000)),
@@ -1203,6 +1205,141 @@ class BillHistoriesTest {
 
         // Then
         assertNull(undo)
+    }
+
+    @Test
+    fun `GIVEN an edit that changed the currency WHEN building the history THEN lists the currency change`() {
+        // Given
+        val events = listOf(event(changes = listOf(change(ActivityField.CURRENCY, code("BRL"), code("USD")))))
+
+        // When
+        val entry = entriesOf(events).single()
+
+        // Then
+        assertEquals(listOf(BillHistoryChange.Currency(GroupCurrency.BRL, GroupCurrency.USD)), entry.changes)
+    }
+
+    @Test
+    fun `GIVEN a currency change with codes this build does not know WHEN building THEN those sides are null`() {
+        // Given
+        val events = listOf(event(changes = listOf(change(ActivityField.CURRENCY, code("XXX"), code(null)))))
+
+        // When
+        val entry = entriesOf(events).single()
+
+        // Then
+        assertEquals(listOf(BillHistoryChange.Currency(null, null)), entry.changes)
+    }
+
+    @Test
+    fun `GIVEN an edit written before bills had a currency WHEN building the history THEN lists no currency change`() {
+        // Given
+        val events = listOf(event(changes = listOf(change(ActivityField.AMOUNT, minor(40_000), minor(48_000)))))
+
+        // When
+        val entry = entriesOf(events).single()
+
+        // Then
+        assertTrue(entry.changes.none { it is BillHistoryChange.Currency })
+    }
+
+    @Test
+    fun `GIVEN BRL 100 edited to USD 20 WHEN undoing THEN puts back BRL 100 and not USD 100`() {
+        // Given
+        val event = currencyEvent()
+        val bill = usdBill()
+
+        // When
+        val undo = undoOf(event, bill, group)
+
+        // Then
+        assertEquals(10_000, undo?.amountMinor)
+        assertEquals(GroupCurrency.BRL, undo?.currency)
+        assertEquals(listOf(ExpensePayer(ANA, 10_000)), undo?.payers)
+    }
+
+    @Test
+    fun `GIVEN BRL 100 edited to USD 20 WHEN building the history THEN the edit can be undone`() {
+        // Given
+        val events = listOf(currencyEvent())
+
+        // When
+        val entry = historyOf(events, usdBill(), group, now, TimeZone.UTC).single().entries.single()
+
+        // Then
+        assertTrue(entry.canUndo)
+    }
+
+    @Test
+    fun `GIVEN the bill is no longer in the currency the edit left WHEN undoing THEN there is nothing to undo`() {
+        // Given
+        val event = currencyEvent()
+        val bill = usdBill().copy(currency = GroupCurrency.EUR)
+
+        // When
+        val undo = undoOf(event, bill, group)
+        val entry = historyOf(listOf(event), bill, group, now, TimeZone.UTC).single().entries.single()
+
+        // Then
+        assertNull(undo)
+        assertFalse(entry.canUndo)
+    }
+
+    @Test
+    fun `GIVEN a currency change whose before code is unknown WHEN undoing THEN there is nothing to undo`() {
+        // Given
+        val event = currencyEvent(beforeCode = "XXX")
+
+        // When
+        val undo = undoOf(event, usdBill(), group)
+
+        // Then
+        assertNull(undo)
+    }
+
+    @Test
+    fun `GIVEN a currency change with no before code WHEN undoing THEN there is nothing to undo`() {
+        // Given
+        val event = currencyEvent(beforeCode = null)
+
+        // When
+        val undo = undoOf(event, usdBill(), group)
+
+        // Then
+        assertNull(undo)
+    }
+
+    @Test
+    fun `GIVEN an edit of the amount only on a USD bill WHEN undoing THEN it goes back in USD`() {
+        // Given
+        val event = event(
+            changes = listOf(
+                change(ActivityField.AMOUNT, minor(30_000), minor(48_000)),
+                change(ActivityField.PAYERS, payers(ANA to 30_000), payers(ANA to 48_000)),
+            ),
+        )
+        val bill = expense(currency = GroupCurrency.USD)
+
+        // When
+        val undo = undoOf(event, bill, group)
+
+        // Then
+        assertEquals(GroupCurrency.USD, undo?.currency)
+        assertEquals(30_000, undo?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN an edit with no currency change on a bill in USD WHEN undoing THEN keeps the bill currency`() {
+        // Given
+        val event = event(changes = listOf(change(ActivityField.DESCRIPTION, text("Feira"), text("Mercado"))))
+        val bill = expense(currency = GroupCurrency.USD)
+
+        // When
+        val undo = undoOf(event, bill, group)
+
+        // Then
+        assertEquals(GroupCurrency.USD, undo?.currency)
+        assertEquals("Feira", undo?.description)
     }
 
     @Test
@@ -1392,12 +1529,14 @@ class BillHistoriesTest {
         items: BillItems? = null,
         isPending: Boolean = false,
         updatedAt: Long = spentAt,
+        currency: GroupCurrency = GroupCurrency.BRL,
+        amountMinor: Long = 48_000,
     ): Expense = Expense(
         id = EXPENSE_ID,
         groupId = GROUP_ID,
         description = description,
-        currency = GroupCurrency.BRL,
-        amountMinor = 48_000,
+        currency = currency,
+        amountMinor = amountMinor,
         splitMode = SplitMode.EQUAL,
         payers = payers,
         shares = listOf(share(ANA, 16_000), share(PIERRE, 16_000), share(BRUNO, 16_000)),
@@ -1446,6 +1585,21 @@ class BillHistoriesTest {
         debtsAfter = emptyList(),
         memberNames = emptyMap(),
     )
+
+    // Why: Ana's BRL 100 became USD 20: the amount and the currency changed in one edit.
+    private fun currencyEvent(beforeCode: String? = "BRL"): ActivityEvent = event(
+        changes = listOf(
+            change(ActivityField.AMOUNT, minor(10_000), minor(2_000)),
+            change(ActivityField.CURRENCY, code(beforeCode), code("USD")),
+            change(ActivityField.PAYERS, payers(ANA to 10_000), payers(ANA to 2_000)),
+        ),
+    )
+
+    private fun usdBill(): Expense = expense(
+        currency = GroupCurrency.USD,
+        amountMinor = 2_000,
+        payers = listOf(ExpensePayer(ANA, 2_000)),
+    ).copy(shares = listOf(share(ANA, 667), share(PIERRE, 667), share(BRUNO, 666)))
 
     private fun attachment(
         id: String,

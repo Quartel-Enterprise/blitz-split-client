@@ -420,6 +420,7 @@ export const en = {
   billDetail_historyAmount: 'changed the amount',
   billDetail_historyDescription: 'changed the description',
   billDetail_historySpentAt: 'changed the date',
+  billDetail_historyCurrency: 'changed the currency',
   billDetail_historyCategory: 'changed the category',
   billDetail_historyPayers: 'changed who paid',
   billDetail_historySplit: 'changed the split',
