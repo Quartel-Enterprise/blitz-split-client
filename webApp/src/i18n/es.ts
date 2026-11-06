@@ -728,6 +728,8 @@ export const es: Record<MessageKey, string> = {
   notifications_footer: 'Los avisos llegan cuando hay internet. Para silenciar un grupo, usa el menú dentro de él.',
   notifications_deniedTitle: 'Las notificaciones están bloqueadas en este navegador.',
   notifications_deniedBody: 'Permítelas en la configuración del sitio, junto a la barra de direcciones, para recibir las notificaciones push de abajo. La campana sigue funcionando.',
+  notifications_pushSwitch: 'Notificaciones push',
+  notifications_pushSwitchDetail: 'Solo en este navegador',
   notifications_section: 'Avisarme sobre',
   notifications_push: 'Push',
   notifications_inApp: 'En la app',

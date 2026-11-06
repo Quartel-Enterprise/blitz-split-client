@@ -80,8 +80,9 @@ struct NotificationSettingsView: View {
     }
 }
 
-/// The denied notice (4.8b), which only stops the pushes, and a row per kind of Activity (and the weekly reminder),
-/// each with a Push and an In app toggle under the column names, for a Form of the screen or of the Mac's settings.
+/// The denied notice (4.8b), which only stops the pushes, the "Push notifications" switch of this device, and a row
+/// per kind of Activity (and the weekly reminder), each with a Push and an In app toggle under the column names, for a
+/// Form of the screen or of the Mac's settings.
 struct NotificationSettingsSections: View {
     let model: NotificationSettingsModel
 
@@ -99,6 +100,11 @@ struct NotificationSettingsSections: View {
                     QuietDeliveryNotice {
                         model.send(NotificationSettingsUiEventOnQuietTurnOnClicked.shared)
                     }
+                }
+            }
+            Section {
+                PushSwitchRow(state: state) { isOn in
+                    model.send(NotificationSettingsUiEventOnPushToggled(isEnabled: isOn))
                 }
             }
             Section {
@@ -134,6 +140,27 @@ struct NotificationSettingsSections: View {
                 }
             }
         }
+    }
+}
+
+/// Whether this device takes pushes at all: off until the system allows them, and turned on it asks the system when it
+/// still can, or opens Settings when only they can allow them. Each row's Push shows off while it is off.
+private struct PushSwitchRow: View {
+    let state: NotificationSettingsUiState
+    let toggle: (Bool) -> Void
+
+    var body: some View {
+        let isOn = state.isPushOn
+        Toggle(isOn: Binding(get: { isOn }, set: { toggle($0) })) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Push notifications")
+                Text("On this device only")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .disabled(!state.isPushSwitchEnabled)
+        .modifier(LoadingShimmer(isLoading: state.showsPushSwitchLoading))
     }
 }
 

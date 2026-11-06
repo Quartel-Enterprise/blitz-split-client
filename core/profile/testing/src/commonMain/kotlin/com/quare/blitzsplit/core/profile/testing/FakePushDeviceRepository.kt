@@ -10,12 +10,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 // the failure knobs are public vars.
 class FakePushDeviceRepository(
     initialDevice: PushDevice? = null,
+    isEnabled: Boolean = true,
 ) : PushDeviceRepository {
     val device = MutableStateFlow(initialDevice)
+    val isEnabled = MutableStateFlow(isEnabled)
+    val enabledUpdates = mutableListOf<Boolean>()
     val registeredUserIds = mutableListOf<String>()
     var unregisterCount = 0
     var registerError: Throwable? = null
     var unregisterError: Throwable? = null
+
+    // Records the switch's writes without showing them, like a Room write that hasn't answered yet.
+    var holdsEnabledWrites = false
 
     // Never answers, like a call stuck on a slow network.
     var unregisterHangs = false
@@ -24,6 +30,13 @@ class FakePushDeviceRepository(
 
     override fun setDevice(device: PushDevice) {
         this.device.value = device
+    }
+
+    override fun observeIsEnabled(): Flow<Boolean> = isEnabled
+
+    override suspend fun setEnabled(isEnabled: Boolean) {
+        enabledUpdates += isEnabled
+        if (!holdsEnabledWrites) this.isEnabled.value = isEnabled
     }
 
     override suspend fun register(userId: String): Result<Unit> {

@@ -3007,6 +3007,23 @@
         }
       }
     },
+    "On this device only" : {
+      "comment" : "Notifications: under the Push notifications switch",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo en este dispositivo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só neste aparelho"
+          }
+        }
+      }
+    },
     "Open balance reminder" : {
       "localizations" : {
         "es" : {
@@ -3798,6 +3815,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Push"
+          }
+        }
+      }
+    },
+    "Push notifications" : {
+      "comment" : "Notifications: the switch over the rows, whether this device takes pushes at all",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificaciones push"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificações push"
           }
         }
       }

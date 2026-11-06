@@ -726,6 +726,8 @@ export const en = {
   notifications_footer: "Notices arrive when there's internet. To mute a group, use the menu inside it.",
   notifications_deniedTitle: 'Notifications are blocked in this browser.',
   notifications_deniedBody: 'Allow them in the site settings, next to the address bar, to get the pushes below. The bell keeps working.',
+  notifications_pushSwitch: 'Push notifications',
+  notifications_pushSwitchDetail: 'In this browser only',
   notifications_section: 'Notify me about',
   notifications_push: 'Push',
   notifications_inApp: 'In app',

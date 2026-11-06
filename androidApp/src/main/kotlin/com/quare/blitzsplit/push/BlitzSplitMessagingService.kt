@@ -16,8 +16,11 @@ import com.google.firebase.messaging.RemoteMessage
 import com.quare.blitzsplit.MainActivity
 import com.quare.blitzsplit.R
 import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import org.koin.android.ext.android.inject
 
@@ -27,6 +30,7 @@ import org.koin.android.ext.android.inject
  */
 class BlitzSplitMessagingService : FirebaseMessagingService() {
     private val setPushDevice: SetPushDevice by inject()
+    private val observePushEnabled: ObservePushEnabled by inject()
 
     // Why: before Android 13 the notifications built here are in Profile › Language's pick, as the screens are.
     override fun attachBaseContext(newBase: Context) {
@@ -57,7 +61,7 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         val title = data[TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
         val tag = data[EVENT_ID] ?: kind.kind
         val link = data[LINK]
-        if (!canNotify()) return
+        if (!canNotify() || !isPushEnabled()) return
         val notification = NotificationCompat
             .Builder(this, kind.channel.id)
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
@@ -69,6 +73,13 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             .build()
         NotificationManagerCompat.from(this).notify(tag, 0, notification)
     }
+
+    /*
+     * Why: Notifications' "Push notifications" switch off takes the token off the server only once online and only if
+     * that call succeeds, so a push still sent meanwhile is dropped here. onMessageReceived runs off the main thread,
+     * and the read is one Room row.
+     */
+    private fun isPushEnabled(): Boolean = runBlocking { observePushEnabled().first() }
 
     // Why: before Android 13 the permission doesn't exist and notifications are on until the settings turn them off.
     private fun canNotify(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||

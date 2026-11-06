@@ -28,7 +28,7 @@ const labels: Record<string, { title: MessageKey; detail: MessageKey }> = {
 
 /**
  * The presenter and its state, with the browser's permission read on open and whenever the tab comes back. Asking for
- * it (a push turned on while never asked) also subscribes this browser once allowed.
+ * it (the "Push notifications" switch turned on while never asked) also subscribes this browser once allowed.
  */
 function useNotificationSettings() {
   const presenter = usePresenter(() => new NotificationSettingsPresenter())
@@ -117,7 +117,8 @@ const channels = [
 ] as const
 
 /**
- * The blocked notice, which only stops the pushes, then the rows with their two switches under "Push" and "In app".
+ * The blocked notice, which only stops the pushes, the "Push notifications" switch of this browser (every row's Push
+ * shows off while it is off), then the rows with their two switches under "Push" and "In app".
  * A browser can't open its own settings, so the notice says where to allow them instead of a button.
  */
 function NotificationSettingsBody({ presenter, state }: { presenter: NotificationSettingsPresenter; state: JsNotificationSettingsState }) {
@@ -131,6 +132,22 @@ function NotificationSettingsBody({ presenter, state }: { presenter: Notificatio
           </p>
         </div>
       )}
+      <label className="flex min-h-16 items-center gap-3 rounded-lg border px-3 py-2.5">
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-sm font-medium">{t('notifications_pushSwitch')}</span>
+          <span className="text-xs text-muted-foreground">{t('notifications_pushSwitchDetail')}</span>
+        </span>
+        {state.showsPushSwitchLoading ? (
+          <Skeleton aria-hidden className="h-5 w-9 rounded-full" />
+        ) : (
+          <Switch
+            checked={state.isPushOn}
+            disabled={!state.isPushSwitchEnabled}
+            className={cn(!state.isPushSwitchEnabled && 'opacity-50')}
+            onCheckedChange={(checked) => presenter.togglePush(checked)}
+          />
+        )}
+      </label>
       <div aria-busy={state.showsTogglesLoading} className="flex flex-col divide-y rounded-lg border">
         <div className="flex items-end gap-3 px-3 pt-3 pb-2">
           <span className="flex-1 text-xs font-medium text-muted-foreground">{t('notifications_section')}</span>

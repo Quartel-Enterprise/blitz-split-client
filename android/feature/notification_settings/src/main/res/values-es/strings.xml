@@ -10,6 +10,8 @@
     <string name="notification_settings_blocked_in_android">Bloqueadas en Android</string>
     <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
     <string name="notification_settings_open_channel_settings_description">Abrir la configuración de Android para %1$s</string>
+    <string name="notification_settings_push_switch">Notificaciones push</string>
+    <string name="notification_settings_push_switch_detail">Solo en este dispositivo</string>
     <string name="notification_settings_section">Avisarme sobre</string>
     <string name="notification_settings_push">Push</string>
     <string name="notification_settings_in_app">En la app</string>

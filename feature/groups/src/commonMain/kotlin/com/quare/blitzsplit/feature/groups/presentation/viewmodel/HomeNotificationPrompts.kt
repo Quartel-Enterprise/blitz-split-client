@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import com.quare.blitzsplit.core.model.NotificationPermission
+import com.quare.blitzsplit.core.profile.domain.usecase.UpdatePushEnabled
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
@@ -32,6 +33,7 @@ internal class HomeNotificationPrompts(
     private val scope: CoroutineScope,
     private val trackEvent: TrackEvent,
     private val updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
+    private val updatePushEnabled: UpdatePushEnabled,
     private val currentTimeMillis: CurrentTimeMillis,
     private val emit: (HomeUiAction) -> Unit,
 ) {
@@ -96,10 +98,15 @@ internal class HomeNotificationPrompts(
         check(permission, canAskQuietly = true)
     }
 
+    /*
+     * Why: also turns Notifications' "Push notifications" switch on for this device (Pierre's call), so the "Notifications
+     * on" a grant shows is true even after the switch was turned off.
+     */
     fun turnOn() {
         answer { prompt ->
             trackEvent("notification_prompt_turn_on_clicked", mapOf("prompt" to prompt))
             pendingRequest = prompt
+            scope.launch { updatePushEnabled(true) }
             emit(
                 when (prompt) {
                     // Why: Apple's full prompt still asks while it delivers quietly.

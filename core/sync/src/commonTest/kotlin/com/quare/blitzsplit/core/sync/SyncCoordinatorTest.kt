@@ -66,6 +66,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -75,6 +76,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.seconds
 
 class SyncCoordinatorTest {
     private val calls = mutableListOf<String>()
@@ -6484,6 +6487,92 @@ class SyncCoordinatorTest {
         // Then
         assertTrue(pushDevices.registeredUserIds.isEmpty())
         assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN a push token and an account WHEN the push switch is turned off THEN unregisters the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.isEnabled.value = false
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN the push switch turned off WHEN the unregister call fails THEN tries again later`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+        pushDevices.unregisterError = noConnection
+        pushDevices.isEnabled.value = false
+        runCurrent()
+        pushDevices.unregisterError = null
+
+        // When
+        advanceTimeBy(30.seconds)
+        runCurrent()
+
+        // Then
+        assertEquals(2, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN the push switch turned off WHEN the unregister call keeps failing THEN stops after four tries`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = google,
+                storedPushDevice = androidDevice,
+            )
+            coordinator.start()
+            runCurrent()
+            pushDevices.unregisterError = noConnection
+
+            // When
+            pushDevices.isEnabled.value = false
+            advanceTimeBy(1.hours)
+            runCurrent()
+
+            // Then
+            assertEquals(4, pushDevices.unregisterCount)
+        }
+
+    @Test
+    fun `GIVEN the push switch off WHEN it is turned back on THEN registers the device again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.isEnabled.value = false
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.isEnabled.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(1, pushDevices.unregisterCount)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
     }
 
     @Test
