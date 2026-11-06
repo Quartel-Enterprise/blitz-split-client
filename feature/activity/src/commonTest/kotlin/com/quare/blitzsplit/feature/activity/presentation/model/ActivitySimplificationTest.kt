@@ -90,5 +90,6 @@ class ActivitySimplificationTest {
         name = name,
         beforeMinor = beforeMinor,
         afterMinor = afterMinor,
+        currency = null,
     )
 }

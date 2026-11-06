@@ -4784,6 +4784,8 @@ class BillDetailViewModelTest {
         occurredAt = occurredAt,
         subject = "Mercado",
         amountMinor = 48_000,
+        currency = null,
+        previousCurrency = null,
         code = SplitMode.EQUAL.code.takeIf { kind == ActivityKind.BILL_CREATED },
         fromMemberId = null,
         toMemberId = null,

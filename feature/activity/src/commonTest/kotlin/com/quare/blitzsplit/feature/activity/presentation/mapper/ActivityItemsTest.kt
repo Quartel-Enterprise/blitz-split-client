@@ -1654,6 +1654,8 @@ class ActivityItemsTest {
         occurredAt = occurredAt,
         subject = subject,
         amountMinor = 10_000L,
+        currency = null,
+        previousCurrency = null,
         code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
@@ -1697,6 +1699,7 @@ class ActivityItemsTest {
         fromMemberId = from,
         toMemberId = to,
         amountMinor = amountMinor,
+        currency = null,
     )
 
     private fun debtChange(
@@ -1746,6 +1749,7 @@ class ActivityItemsTest {
         kind = kind,
         subject = subject,
         amountMinor = 10_000L,
+        currency = null,
         code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,

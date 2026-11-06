@@ -8,5 +8,5 @@ data class SimplifyDebtsPairDto(
     @SerialName("from") val from: String,
     @SerialName("to") val to: String,
     @SerialName("amount") val amount: Long,
-    @SerialName("currency") val currency: String? = null,
+    @SerialName("currency") val currency: String?,
 )

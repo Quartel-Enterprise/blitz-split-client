@@ -47,8 +47,8 @@ class ActivityMapperImpl : ActivityMapper {
             occurredAt = entity.occurredAt,
             subject = data.findText("description") ?: data.findText("name"),
             amountMinor = data.findLong("amount_minor"),
-            currency = data.findText("currency"),
-            previousCurrency = data.findText("previous_currency"),
+            currency = data.findText("currency")?.takeIf { it.isNotBlank() },
+            previousCurrency = data.findText("previous_currency")?.takeIf { it.isNotBlank() },
             code = codeOf(kind, data),
             fromMemberId = data.findText("from_member_id"),
             toMemberId = data.findText("to_member_id"),
@@ -76,7 +76,7 @@ class ActivityMapperImpl : ActivityMapper {
                 fromMemberId = pair.findText("from") ?: return@mapNotNull null,
                 toMemberId = pair.findText("to") ?: return@mapNotNull null,
                 amountMinor = pair.findLong("amount") ?: return@mapNotNull null,
-                currency = pair.findText("currency"),
+                currency = pair.findText("currency")?.takeIf { it.isNotBlank() },
             )
         }
 

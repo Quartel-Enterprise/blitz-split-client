@@ -252,8 +252,10 @@ private fun simplificationOrNull(
     if (event.kind != ActivityKind.SIMPLIFY_DEBTS_CHANGED) return null
     val meId = group?.members?.firstOrNull { it.isMe }?.id
     val groupCode = group?.currency?.code
-    // Why: balances are one per currency, so each currency's pairs move apart from the others': the group's currency
-    // first, then the others by code; an old pair with no currency is in the group's.
+    /*
+     * Why: balances are one per currency, so each currency's pairs move apart from the others': the group's currency
+     * first, then the others by code; an old pair with no currency is in the group's.
+     */
     val codes = (event.debtsBefore + event.debtsAfter)
         .map { it.currency ?: groupCode }
         .distinct()
@@ -284,8 +286,10 @@ private fun simplificationOrNull(
     )
 }
 
-// Why: the row's own currency when the event or the queued change says one, else the group's, as every event
-// written before each bill and payment had its own currency.
+/*
+ * Why: the row's own currency when the event or the queued change says one, else the group's, as every event
+ * written before each bill and payment had its own currency.
+ */
 private fun currencyOf(
     code: String?,
     fallback: GroupCurrency?,

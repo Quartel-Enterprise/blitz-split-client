@@ -12,5 +12,5 @@ data class ActivityDebtChange(
     val beforeMinor: Long,
     val afterMinor: Long,
     // Why: the currency this pair is in, since balances are one per currency; null when not even the group's is known.
-    val currency: GroupCurrency? = null,
+    val currency: GroupCurrency?,
 )
