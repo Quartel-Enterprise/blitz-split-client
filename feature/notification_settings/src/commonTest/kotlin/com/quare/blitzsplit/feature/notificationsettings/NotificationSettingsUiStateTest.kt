@@ -19,6 +19,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(emptySet()).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = null,
             systemBlockedTypes = emptySet(),
         )
@@ -45,6 +46,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = null,
             systemBlockedTypes = emptySet(),
         )
@@ -64,6 +66,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = Loadable.Loading,
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -82,6 +85,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -96,10 +100,11 @@ class NotificationSettingsUiStateTest {
     }
 
     @Test
-    fun `GIVEN the permission never asked WHEN drawing the toggles THEN enables them with the saved choices`() {
+    fun `GIVEN the permission never asked WHEN drawing the toggles THEN shows every push off and disabled`() {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.NOT_DETERMINED,
             systemBlockedTypes = emptySet(),
         )
@@ -108,9 +113,10 @@ class NotificationSettingsUiStateTest {
         val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) }
 
         // Then
-        assertTrue(state.arePushTogglesEnabled)
+        assertFalse(state.isPushOn)
+        assertFalse(state.arePushTogglesEnabled)
         assertFalse(state.showsPermissionDenied)
-        assertEquals(listOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS), enabled)
+        assertTrue(enabled.isEmpty())
     }
 
     @Test
@@ -118,6 +124,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.DENIED,
             systemBlockedTypes = emptySet(),
         )
@@ -137,6 +144,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(emptySet()).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = null,
             systemBlockedTypes = emptySet(),
         )
@@ -153,6 +161,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.DENIED,
             systemBlockedTypes = emptySet(),
         )
@@ -172,6 +181,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.DENIED,
             systemBlockedTypes = emptySet(),
         )
@@ -188,6 +198,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -206,6 +217,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.NOT_DETERMINED,
             systemBlockedTypes = emptySet(),
         )
@@ -223,6 +235,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = null,
             systemBlockedTypes = emptySet(),
         )
@@ -242,6 +255,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = Loadable.Loading,
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.DENIED,
             systemBlockedTypes = emptySet(),
         )
@@ -261,6 +275,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -277,6 +292,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -293,6 +309,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -313,6 +330,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = inAppOf(NotificationType.entries.toSet()).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -332,6 +350,7 @@ class NotificationSettingsUiStateTest {
                 push = setOf(NotificationType.PAYMENTS),
                 inApp = setOf(NotificationType.BILLS),
             ).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -349,6 +368,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.REFUSED_ONCE,
             systemBlockedTypes = emptySet(),
         )
@@ -370,6 +390,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.REFUSED_ONCE,
             systemBlockedTypes = emptySet(),
         )
@@ -388,6 +409,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.REFUSED_ONCE,
             systemBlockedTypes = emptySet(),
         )
@@ -404,6 +426,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.DENIED,
             systemBlockedTypes = emptySet(),
         )
@@ -421,6 +444,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = emptySet(),
         )
@@ -437,6 +461,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.NOT_DETERMINED,
             systemBlockedTypes = emptySet(),
         )
@@ -453,6 +478,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = null,
             systemBlockedTypes = emptySet(),
         )
@@ -469,6 +495,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -485,6 +512,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.PROVISIONAL,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -501,6 +529,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.DENIED,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -517,6 +546,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.REFUSED_ONCE,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -533,6 +563,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = null,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -549,6 +580,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -565,6 +597,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -583,6 +616,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -600,6 +634,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(billsAndComments).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = setOf(NotificationType.BILLS),
         )
@@ -620,6 +655,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.GRANTED,
             systemBlockedTypes = setOf(NotificationType.BALANCE_REMINDER),
         )
@@ -638,6 +674,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.PROVISIONAL,
             systemBlockedTypes = emptySet(),
         )
@@ -659,6 +696,7 @@ class NotificationSettingsUiStateTest {
         // Given
         val state = NotificationSettingsUiState(
             preferences = NotificationPreferences.DEFAULT.toLoaded(),
+            devicePush = true.toLoaded(),
             permission = NotificationPermission.PROVISIONAL,
             systemBlockedTypes = emptySet(),
         )
@@ -680,6 +718,7 @@ class NotificationSettingsUiStateTest {
         val showingQuietNotice = permissions.filter { permission ->
             NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                devicePush = true.toLoaded(),
                 permission = permission,
                 systemBlockedTypes = emptySet(),
             ).showsQuietNotice
@@ -689,6 +728,255 @@ class NotificationSettingsUiStateTest {
         assertEquals(5, permissions.size)
         assertTrue(showingQuietNotice.isEmpty())
     }
+
+    @Test
+    fun `GIVEN every permission or none read WHEN checking which allow pushes THEN only granted and quiet do`() {
+        // Given
+        val permissions = everyPermission
+
+        // When
+        val allowing = permissions.filter { permission -> state(permission = permission).isPermissionAllowed }
+
+        // Then
+        assertEquals(listOf(NotificationPermission.GRANTED, NotificationPermission.PROVISIONAL), allowing)
+    }
+
+    @Test
+    fun `GIVEN the switch saved on WHEN drawing it under every permission THEN shows it on only when allowed`() {
+        // Given
+        val permissions = everyPermission
+
+        // When
+        val showingOn = permissions.filter { permission ->
+            state(
+                devicePush = true.toLoaded(),
+                permission = permission,
+            ).isPushOn
+        }
+
+        // Then
+        assertEquals(listOf(NotificationPermission.GRANTED, NotificationPermission.PROVISIONAL), showingOn)
+    }
+
+    @Test
+    fun `GIVEN the switch saved off WHEN drawing it under every permission THEN shows it off`() {
+        // Given
+        val permissions = everyPermission
+
+        // When
+        val showingOn = permissions.filter { permission ->
+            state(
+                devicePush = false.toLoaded(),
+                permission = permission,
+            ).isPushOn
+        }
+
+        // Then
+        assertTrue(showingOn.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the switch not read yet and granted WHEN drawing it THEN shimmers it off and untappable`() {
+        // Given
+        val state = state(
+            devicePush = Loadable.Loading,
+            permission = NotificationPermission.GRANTED,
+        )
+
+        // When
+        val showsLoading = state.showsPushSwitchLoading
+
+        // Then
+        assertTrue(showsLoading)
+        assertFalse(state.isPushOn)
+        assertFalse(state.isPushSwitchEnabled)
+    }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN drawing the switch THEN shimmers it off and untappable`() {
+        // Given
+        val state = state(
+            devicePush = true.toLoaded(),
+            permission = null,
+        )
+
+        // When
+        val showsLoading = state.showsPushSwitchLoading
+
+        // Then
+        assertTrue(showsLoading)
+        assertFalse(state.isPushOn)
+        assertFalse(state.isPushSwitchEnabled)
+    }
+
+    @Test
+    fun `GIVEN the switch and the permission both read WHEN drawing it THEN never shimmers and always takes a tap`() {
+        // Given
+        val states = listOf(true, false).flatMap { isEnabled ->
+            NotificationPermission.entries.map {
+                state(
+                    devicePush = isEnabled.toLoaded(),
+                    permission = it,
+                )
+            }
+        }
+
+        // When
+        val shimmering = states.filter { it.showsPushSwitchLoading }
+
+        // Then
+        assertTrue(shimmering.isEmpty())
+        assertTrue(states.all { it.isPushSwitchEnabled })
+    }
+
+    @Test
+    fun `GIVEN the switch not read yet WHEN drawing the toggles THEN shimmers them with every push off and disabled`() {
+        // Given
+        val state = state(
+            preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = Loadable.Loading,
+            permission = NotificationPermission.GRANTED,
+        )
+
+        // When
+        val showsLoading = state.showsTogglesLoading
+
+        // Then
+        assertTrue(showsLoading)
+        assertFalse(state.arePushTogglesEnabled)
+        assertTrue(state.types.none { state.isEnabled(it, NotificationChannel.PUSH) })
+    }
+
+    @Test
+    fun `GIVEN the choices the switch and the permission all read WHEN drawing the toggles THEN shimmers none`() {
+        // Given
+        val state = state(
+            devicePush = false.toLoaded(),
+            permission = NotificationPermission.DENIED,
+        )
+
+        // When
+        val showsLoading = state.showsTogglesLoading
+
+        // Then
+        assertFalse(showsLoading)
+    }
+
+    @Test
+    fun `GIVEN the switch off and granted WHEN drawing the toggles THEN shows every push off and disabled`() {
+        // Given
+        val state = state(
+            preferences = pushOf(NotificationType.entries.toSet()).toLoaded(),
+            devicePush = false.toLoaded(),
+            permission = NotificationPermission.GRANTED,
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) }
+
+        // Then
+        assertTrue(enabled.isEmpty())
+        assertFalse(state.arePushTogglesEnabled)
+        assertTrue(state.types.none { state.isToggleEnabled(it, NotificationChannel.PUSH) })
+        assertEquals(NotificationType.entries.toSet(), state.preferences.valueOrNull()?.push)
+    }
+
+    @Test
+    fun `GIVEN the switch off during quiet delivery WHEN drawing the notice THEN shows no quiet notice`() {
+        // Given
+        val state = state(
+            preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = false.toLoaded(),
+            permission = NotificationPermission.PROVISIONAL,
+        )
+
+        // When
+        val showsQuietNotice = state.showsQuietNotice
+
+        // Then
+        assertFalse(showsQuietNotice)
+    }
+
+    @Test
+    fun `GIVEN the switch off during quiet delivery WHEN drawing the toggles THEN shows every push off`() {
+        // Given
+        val state = state(
+            preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = false.toLoaded(),
+            permission = NotificationPermission.PROVISIONAL,
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.PUSH) }
+
+        // Then
+        assertTrue(enabled.isEmpty())
+        assertFalse(state.arePushTogglesEnabled)
+    }
+
+    @Test
+    fun `GIVEN the switch off and granted WHEN drawing the In app toggles THEN shows the saved choices`() {
+        // Given
+        val state = state(
+            preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = false.toLoaded(),
+            permission = NotificationPermission.GRANTED,
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.IN_APP) }
+
+        // Then
+        assertTrue(state.areInAppTogglesEnabled)
+        assertEquals(listOf(NotificationType.BILLS, NotificationType.COMMENTS), enabled)
+    }
+
+    @Test
+    fun `GIVEN the switch off and never asked WHEN drawing the In app toggles THEN keeps them enabled`() {
+        // Given
+        val state = state(
+            preferences = inAppOf(billsAndComments).toLoaded(),
+            devicePush = false.toLoaded(),
+            permission = NotificationPermission.NOT_DETERMINED,
+        )
+
+        // When
+        val enabled = state.types.filter { state.isEnabled(it, NotificationChannel.IN_APP) }
+
+        // Then
+        assertTrue(state.areInAppTogglesEnabled)
+        assertEquals(listOf(NotificationType.BILLS, NotificationType.COMMENTS), enabled)
+    }
+
+    @Test
+    fun `GIVEN the switch on and the permission refused once WHEN drawing the toggles THEN shows the switch off`() {
+        // Given
+        val state = state(
+            preferences = pushOf(newExpenseAndInvites).toLoaded(),
+            devicePush = true.toLoaded(),
+            permission = NotificationPermission.REFUSED_ONCE,
+        )
+
+        // When
+        val isPushOn = state.isPushOn
+
+        // Then
+        assertFalse(isPushOn)
+        assertFalse(state.arePushTogglesEnabled)
+    }
+
+    private val everyPermission: List<NotificationPermission?> = NotificationPermission.entries + null
+
+    private fun state(
+        preferences: Loadable<NotificationPreferences> = NotificationPreferences.DEFAULT.toLoaded(),
+        devicePush: Loadable<Boolean> = true.toLoaded(),
+        permission: NotificationPermission?,
+    ): NotificationSettingsUiState = NotificationSettingsUiState(
+        preferences = preferences,
+        devicePush = devicePush,
+        permission = permission,
+        systemBlockedTypes = emptySet(),
+    )
 
     private val newExpenseAndInvites = setOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS)
 

@@ -23,7 +23,6 @@
     </plurals>
     <string name="groups_deleted_by">%1$s deleted the group “%2$s”.</string>
     <string name="groups_deleted">The group “%s” was deleted.</string>
-    <string name="groups_split_bill">Split a bill</string>
     <plurals name="groups_sync_offline_queued">
         <item quantity="one">Offline · %d change queued</item>
         <item quantity="other">Offline · %d changes queued</item>

@@ -9,6 +9,14 @@ interface PushDeviceRepository {
 
     fun setDevice(device: PushDevice)
 
+    /*
+     * Why: Notifications' "Push notifications" switch, kept per device: off, the token leaves the server so no push
+     * reaches this device, whatever the system allows. On until turned off.
+     */
+    fun observeIsEnabled(): Flow<Boolean>
+
+    suspend fun setEnabled(isEnabled: Boolean)
+
     // Why: the server moves a token to whoever registers it last, so each user signed in here registers it once.
     suspend fun register(userId: String): Result<Unit>
 

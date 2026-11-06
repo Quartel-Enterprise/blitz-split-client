@@ -39,6 +39,7 @@ import com.quare.blitzsplit.core.profile.domain.model.AppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.UpdatePushEnabled
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.DismissAppBanner
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppBannerDismissed
@@ -102,6 +103,7 @@ class HomeViewModel(
     observeAppBannerDismissed: ObserveAppBannerDismissed,
     observeAppInvite: ObserveAppInvite,
     updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
+    updatePushEnabled: UpdatePushEnabled,
     currentTimeMillis: CurrentTimeMillis,
     observeLastNotificationPromptAt: ObserveLastNotificationPromptAt,
     observeRecordedPayment: ObserveRecordedPayment,
@@ -183,6 +185,7 @@ class HomeViewModel(
         scope = viewModelScope,
         trackEvent = trackEvent,
         updateLastNotificationPromptAt = updateLastNotificationPromptAt,
+        updatePushEnabled = updatePushEnabled,
         currentTimeMillis = currentTimeMillis,
         emit = ::emit,
     )
@@ -509,14 +512,7 @@ class HomeViewModel(
         if (recent == null) {
             open(Route.CreateGroup)
         } else {
-            open(
-                Route.SplitBill(
-                    groupId = recent.id,
-                    expenseId = null,
-                    picksGroupFirst = true,
-                    scansReceipt = scansReceipt,
-                ),
-            )
+            open(Route.SplitBill.createPickingGroup(recent.id, scansReceipt))
         }
     }
 

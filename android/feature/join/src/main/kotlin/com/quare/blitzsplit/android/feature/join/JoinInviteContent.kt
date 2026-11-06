@@ -367,6 +367,7 @@ private fun GroupCard(state: JoinInviteUiState) {
                 initials = state.groupInitials,
                 color = state.groupColor,
                 size = 56.dp,
+                photoUrl = state.groupPhotoUrl,
             )
             Column {
                 Text(
@@ -401,6 +402,7 @@ private fun AlreadyInText(
                     initial = member.initials,
                     color = member.avatarColor,
                     size = 36.dp,
+                    photoUrl = member.photoUrl,
                     modifier = Modifier.offset(x = (-8 * index).dp),
                 )
             }
@@ -445,6 +447,7 @@ private fun createPreviewState(status: JoinInviteStatus): JoinInviteUiState = Jo
     groupName = "Viagem Floripa",
     groupInitials = previewInitialsOf("Viagem Floripa"),
     groupColor = AvatarColor.BLUE,
+    groupPhotoUrl = null,
     creatorName = "Pierre",
     members = createPreviewMembers(),
     displayLink = "blitzsplit.com/g/7Hk2pQxa",

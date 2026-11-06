@@ -52,11 +52,6 @@ sealed interface MembersUiEvent : UiEvent {
 
             is OnDraftChanged -> EventAnalytics.NotTracked
 
-            is OnSuggestionClicked -> EventAnalytics.Automatic(
-                "member_name_suggestion_clicked",
-                mapOf("source" to SOURCE),
-            )
-
             OnSaveClicked -> EventAnalytics.Automatic("member_editor_save_clicked")
 
             OnEditorDismissed -> EventAnalytics.NotTracked
@@ -112,10 +107,6 @@ sealed interface MembersUiEvent : UiEvent {
 
     data class OnDraftChanged(
         val draft: String,
-    ) : MembersUiEvent
-
-    data class OnSuggestionClicked(
-        val name: String,
     ) : MembersUiEvent
 
     data object OnSaveClicked : MembersUiEvent

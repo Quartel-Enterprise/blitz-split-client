@@ -175,12 +175,9 @@ class CreateGroupViewModelTest {
             assertEquals("", state.initials)
             assertEquals(GroupType.TRIP, state.type)
             assertEquals("", state.draft)
-            assertNull(state.takenName)
-            assertTrue(state.nicknameSuggestions.isEmpty())
             assertFalse(state.isCreating)
             assertFalse(state.canCreate)
             assertFalse(state.canAddMember)
-            assertTrue(state.showsNoAppNotice)
         }
 
     @Test
@@ -303,62 +300,6 @@ class CreateGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a new group WHEN the form opens THEN its icon is the cookie`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertEquals(GroupShape.COOKIE, state.shape)
-    }
-
-    @Test
-    fun `GIVEN a peach cookie WHEN tapping the Android avatar THEN takes the next color and the next shape`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(profile = pierre.copy(avatarColor = AvatarColor.BLUE))
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
-
-            // Then
-            val state = viewModel.uiState.value
-            assertEquals(AvatarColor.GREEN, state.color)
-            assertEquals(GroupShape.PETAL, state.shape)
-        }
-
-    @Test
-    fun `GIVEN the Android avatar WHEN tapping it twenty times THEN shows every color with every shape once`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val seen = mutableSetOf<Pair<AvatarColor, GroupShape>>()
-
-            // When
-            repeat(AvatarColor.entries.size * GroupShape.entries.size) {
-                viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
-                seen += viewModel.uiState.value.let { it.color to it.shape }
-            }
-
-            // Then
-            assertEquals(AvatarColor.entries.size * GroupShape.entries.size, seen.size)
-        }
-
-    @Test
-    fun `GIVEN the Apple and web avatar WHEN tapping it THEN the shape stays`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
-
-        // Then
-        assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
-    }
-
-    @Test
     fun `GIVEN a trip WHEN picking home THEN the group is a home`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -399,70 +340,20 @@ class CreateGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN Ana in the group WHEN typing a padded aNA THEN warns about Ana and suggests two nicknames`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("  aNA  "))
-
-            // Then
-            assertEquals("Ana", viewModel.uiState.value.takenName)
-            assertEquals(listOf("Ana P.", "Ana 2"), viewModel.uiState.value.nicknameSuggestions)
-        }
-
-    @Test
-    fun `GIVEN a named group with Ana WHEN typing Ana again THEN can neither add nor create nor show the notice`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
-            addMember("Ana")
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-
-            // Then
-            val state = viewModel.uiState.value
-            assertFalse(state.canAddMember)
-            assertFalse(state.canCreate)
-            assertFalse(state.showsNoAppNotice)
-        }
-
-    @Test
-    fun `GIVEN the creator Pierre WHEN typing pierre THEN warns about Pierre`() = runTest(testDispatcher) {
+    fun `GIVEN a named group with Ana WHEN typing Ana again THEN can add and create`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(profile = pierre)
-        val draft = "pierre"
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        addMember("Ana")
 
         // When
-        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged(draft))
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
 
         // Then
-        assertEquals("Pierre", viewModel.uiState.value.takenName)
-        assertEquals(listOf("Pierre P.", "Pierre 2"), viewModel.uiState.value.nicknameSuggestions)
+        val state = viewModel.uiState.value
+        assertTrue(state.canAddMember)
+        assertTrue(state.canCreate)
     }
-
-    @Test
-    fun `GIVEN a draft repeating Ana WHEN the draft becomes a free name THEN clears the warning`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana Paula"))
-
-            // Then
-            val state = viewModel.uiState.value
-            assertNull(state.takenName)
-            assertTrue(state.nicknameSuggestions.isEmpty())
-            assertTrue(state.canAddMember)
-            assertTrue(state.showsNoAppNotice)
-        }
 
     @Test
     fun `GIVEN Ana added WHEN typing a single letter THEN can neither add it nor create the group`() =
@@ -479,40 +370,6 @@ class CreateGroupViewModelTest {
             val state = viewModel.uiState.value
             assertFalse(state.canAddMember)
             assertFalse(state.canCreate)
-        }
-
-    @Test
-    fun `GIVEN a draft repeating Ana WHEN the draft is cleared THEN clears the warning and can add nothing`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("  "))
-
-            // Then
-            val state = viewModel.uiState.value
-            assertNull(state.takenName)
-            assertTrue(state.nicknameSuggestions.isEmpty())
-            assertFalse(state.canAddMember)
-            assertTrue(state.showsNoAppNotice)
-        }
-
-    @Test
-    fun `GIVEN the creator name typed early WHEN the profile is read THEN warns about the creator`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(profile = null)
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Pierre"))
-
-            // When
-            profiles.profile.value = pierre
-
-            // Then
-            assertEquals("Pierre", viewModel.uiState.value.takenName)
-            assertFalse(viewModel.uiState.value.canAddMember)
         }
 
     @Test
@@ -593,82 +450,23 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a draft repeating Ana WHEN adding it THEN adds nobody and keeps the warning`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+    fun `GIVEN a draft repeating Ana WHEN adding it THEN adds a second Ana as typed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        addMember("Ana")
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
 
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnAddMemberClicked)
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnAddMemberClicked)
 
-            // Then
-            assertEquals(
-                listOf("Pierre", "Ana"),
-                viewModel.uiState.value.members
-                    .map { it.name },
-            )
-            assertEquals("Ana", viewModel.uiState.value.takenName)
-        }
-
-    @Test
-    fun `GIVEN a draft repeating Ana WHEN picking a nickname THEN adds it and clears the draft and the warning`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnSuggestionClicked("Ana P."))
-
-            // Then
-            val state = viewModel.uiState.value
-            assertEquals(listOf("Pierre", "Ana", "Ana P."), state.members.map { it.name })
-            assertFalse(state.members.last().isMe)
-            assertEquals("", state.draft)
-            assertNull(state.takenName)
-            assertTrue(state.nicknameSuggestions.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN a draft repeating Ana WHEN picking the numbered nickname THEN adds that nickname`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnSuggestionClicked("Ana 2"))
-
-            // Then
-            assertEquals(
-                listOf("Pierre", "Ana", "Ana 2"),
-                viewModel.uiState.value.members
-                    .map { it.name },
-            )
-        }
-
-    @Test
-    fun `GIVEN a draft repeating Ana WHEN picking a name that was not suggested THEN adds nobody`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnSuggestionClicked("Ana Z."))
-
-            // Then
-            assertEquals(
-                listOf("Pierre", "Ana"),
-                viewModel.uiState.value.members
-                    .map { it.name },
-            )
-        }
+        // Then
+        assertEquals(
+            listOf("Pierre", "Ana", "ana"),
+            viewModel.uiState.value.members
+                .map { it.name },
+        )
+        assertEquals("", viewModel.uiState.value.draft)
+    }
 
     @Test
     fun `GIVEN Ana in the group WHEN removing Ana THEN only the creator is left`() = runTest(testDispatcher) {
@@ -712,25 +510,6 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a draft repeating Ana WHEN removing Ana THEN the draft is free again`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        addMember("Ana")
-        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-        val anaId = memberIdOf("Ana")
-
-        // When
-        viewModel.onEvent(CreateGroupUiEvent.OnRemoveMemberClicked(anaId))
-
-        // Then
-        val state = viewModel.uiState.value
-        assertNull(state.takenName)
-        assertTrue(state.nicknameSuggestions.isEmpty())
-        assertTrue(state.canAddMember)
-        assertTrue(state.showsNoAppNotice)
-    }
-
-    @Test
     fun `GIVEN a name and a draft not added yet WHEN reading the state THEN can create`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -743,11 +522,10 @@ class CreateGroupViewModelTest {
         // Then
         assertTrue(state.canCreate)
         assertTrue(state.canAddMember)
-        assertTrue(state.showsNoAppNotice)
     }
 
     @Test
-    fun `GIVEN a filled group WHEN creating THEN creates it once with the trimmed name and its members in order`() =
+    fun `GIVEN a filled group WHEN creating THEN creates one square with the trimmed name and members in order`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -755,7 +533,7 @@ class CreateGroupViewModelTest {
                 region = "BR",
             )
             viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("  Viagem Floripa  "))
-            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
+            viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
             viewModel.onEvent(CreateGroupUiEvent.OnTypeSelected(GroupType.HOME))
             viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
             addMember("Ana")
@@ -769,7 +547,7 @@ class CreateGroupViewModelTest {
             assertEquals("Viagem Floripa", group.name)
             assertEquals(GroupType.HOME, group.type)
             assertEquals(AvatarColor.GREEN, group.color)
-            assertEquals(GroupShape.PETAL, group.shape)
+            assertEquals(GroupShape.SQUARE, group.shape)
             assertNull(group.photo)
             assertEquals(GroupCurrency.EUR, group.currency)
             assertEquals(
@@ -915,7 +693,7 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a draft repeating Ana WHEN creating THEN creates nothing`() = runTest(testDispatcher) {
+    fun `GIVEN a draft repeating Ana WHEN creating THEN creates the group with both`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
@@ -926,8 +704,13 @@ class CreateGroupViewModelTest {
         viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
 
         // Then
-        assertTrue(groups.createdGroups.isEmpty())
-        assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+        assertEquals(
+            listOf("Pierre", "Ana", "ANA"),
+            groups.createdGroups
+                .single()
+                .members
+                .map { it.name },
+        )
     }
 
     @Test
@@ -1424,22 +1207,6 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a group photo WHEN tapping the Android avatar THEN the color and the shape stay`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            pickAndConfirm(firstPhoto)
-            val color = viewModel.uiState.value.color
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
-
-            // Then
-            assertEquals(color, viewModel.uiState.value.color)
-            assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
-        }
-
-    @Test
     fun `GIVEN a confirmed photo still being prepared WHEN tapping the avatar THEN the color stays`() =
         runTest(testDispatcher) {
             // Given
@@ -1691,23 +1458,6 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen open WHEN tapping the Android avatar THEN sends the shape and color event`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val tap = CreateGroupUiEvent.OnShapeAndColorClicked
-
-            // When
-            viewModel.onEvent(tap)
-
-            // Then
-            assertEquals(
-                listOf("group_shape_and_color_clicked" to mapOf<String, Any>("source" to "create_group")),
-                trackedEvents,
-            )
-        }
-
-    @Test
     fun `GIVEN the screen open WHEN a photo is picked THEN sends the photo picked event`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1816,28 +1566,6 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a draft repeating Ana WHEN picking a nickname THEN sends the suggestion event without the name`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            addMember("Ana")
-            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
-            trackedEvents.clear()
-            val nickname = viewModel.uiState.value.nicknameSuggestions
-                .first()
-            val pick = CreateGroupUiEvent.OnSuggestionClicked(nickname)
-
-            // When
-            viewModel.onEvent(pick)
-
-            // Then
-            assertEquals(
-                listOf("member_name_suggestion_clicked" to mapOf<String, Any>("source" to "create_group")),
-                trackedEvents,
-            )
-        }
-
-    @Test
     fun `GIVEN Ana in the group WHEN removing Ana THEN sends the remove member event without the id`() =
         runTest(testDispatcher) {
             // Given
@@ -1857,23 +1585,6 @@ class CreateGroupViewModelTest {
     fun `GIVEN no group name WHEN creating THEN sends only the create tap`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        val create = CreateGroupUiEvent.OnCreateClicked
-
-        // When
-        viewModel.onEvent(create)
-
-        // Then
-        assertEquals(listOf("create_group_create_clicked" to emptyMap<String, Any>()), trackedEvents)
-    }
-
-    @Test
-    fun `GIVEN a draft repeating Ana WHEN creating THEN sends only the create tap`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
-        addMember("Ana")
-        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ANA"))
-        trackedEvents.clear()
         val create = CreateGroupUiEvent.OnCreateClicked
 
         // When

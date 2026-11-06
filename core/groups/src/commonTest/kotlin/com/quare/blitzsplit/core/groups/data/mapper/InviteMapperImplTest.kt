@@ -58,19 +58,48 @@ class InviteMapperImplTest {
                         name = "Pierre",
                         avatarColor = AvatarColor.PEACH,
                         hasJoined = true,
+                        photoUrl = null,
                     ),
                     InviteMember(
                         id = "m-2",
                         name = "Ana",
                         avatarColor = AvatarColor.GREEN,
                         hasJoined = false,
+                        photoUrl = null,
                     ),
                 ),
                 personalMemberId = null,
                 inviterName = null,
+                groupPhotoUrl = null,
             ),
             invite,
         )
+    }
+
+    @Test
+    fun `GIVEN a group photo and a joined member photo WHEN mapping the invite THEN keeps both`() {
+        // Given
+        val dto = inviteDto(
+            photoUrl = GROUP_PHOTO,
+            members = listOf(
+                memberDto(
+                    id = "m-1",
+                    photoUrl = PIERRE_PHOTO,
+                ),
+                memberDto(
+                    id = "m-2",
+                    name = "Ana",
+                    hasJoined = false,
+                ),
+            ),
+        )
+
+        // When
+        val invite = mapper.toDomain("aB3dE5gH", dto)
+
+        // Then
+        assertEquals(GROUP_PHOTO, invite.groupPhotoUrl)
+        assertEquals(listOf(PIERRE_PHOTO, null), invite.members.map { it.photoUrl })
     }
 
     @Test
@@ -282,7 +311,7 @@ class InviteMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a member already has the new name WHEN mapping the answer THEN the name is taken`() {
+    fun `GIVEN the name taken answer of an older server WHEN mapping it THEN reads as an invalid link`() {
         // Given
         val dto = JoinGroupResultDto(
             status = "name_taken",
@@ -294,7 +323,7 @@ class InviteMapperImplTest {
         val outcome = mapper.toDomain(dto)
 
         // Then
-        assertEquals(JoinOutcome.NameTaken, outcome)
+        assertEquals(JoinOutcome.InvalidLink, outcome)
     }
 
     @Test
@@ -338,12 +367,14 @@ class InviteMapperImplTest {
         members: List<InviteMemberDto> = listOf(memberDto()),
         personalMemberId: String? = null,
         inviterName: String? = null,
+        photoUrl: String? = null,
     ): InviteDto = InviteDto(
         groupId = "group-1",
         name = "Viagem Floripa",
         type = type,
         color = color,
         currency = currency,
+        photoUrl = photoUrl,
         creatorName = creatorName,
         isMember = isMember,
         members = members,
@@ -356,10 +387,17 @@ class InviteMapperImplTest {
         name: String = "Pierre",
         avatarColor: String = "blue",
         hasJoined: Boolean = true,
+        photoUrl: String? = null,
     ): InviteMemberDto = InviteMemberDto(
         id = id,
         name = name,
         avatarColor = avatarColor,
         hasJoined = hasJoined,
+        photoUrl = photoUrl,
     )
+
+    private companion object {
+        const val GROUP_PHOTO = "https://x.supabase.co/storage/v1/object/public/group-photos/group-1/photo.jpg?v=2"
+        const val PIERRE_PHOTO = "https://x.supabase.co/storage/v1/object/public/avatars/u-1/avatar.jpg"
+    }
 }

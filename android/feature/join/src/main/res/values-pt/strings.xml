@@ -48,7 +48,7 @@
     <string name="join_pick_new_title">Entrar com outro nome</string>
     <string name="join_pick_new_message">Você entra como um membro novo. Os gastos lançados antes não incluem você.</string>
     <string name="join_pick_new_name">Seu nome</string>
-    <string name="join_pick_new_helper">Pelo menos 2 letras, sem repetir um nome que já está no grupo.</string>
+    <string name="join_pick_new_helper">Pelo menos 2 letras.</string>
     <string name="join_pick_cancel">Cancelar</string>
     <string name="join_pick_new_join">Entrar no grupo</string>
     <string name="join_pick_error">Não deu para entrar. Confira a internet e tente de novo.</string>

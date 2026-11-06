@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,12 +33,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeBars
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
+import com.quare.blitzsplit.android.designsystem.component.SplitBillRailHeader
 import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
+import com.quare.blitzsplit.android.designsystem.component.splitBillFabClearance
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
@@ -44,6 +50,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiState
 
 private val columnMaxWidth = 640.dp
 private val tabletColumnMaxWidth = 560.dp
+private val listBottomPadding = 24.dp
 
 private fun eventOf(tab: HomeTab): ContactsUiEvent? = when (tab) {
     HomeTab.HOME -> ContactsUiEvent.OnHomeTabClicked
@@ -53,7 +60,8 @@ private fun eventOf(tab: HomeTab): ContactsUiEvent? = when (tab) {
 }
 
 /*
- * Why: the home's Contatos tab, with no "Rachar conta": the actions are on each profile. Upright, one centered column
+ * Why: the home's Contatos tab, with "Rachar conta" floating on a phone and on top of the rail otherwise, as on every
+ * home tab; the other actions are on each profile. Upright, one centered column
  * (560dp on a tablet and a foldable) whose profile and agenda open over it; a phone lying down, a tablet lying down
  * and an unfolded book put the list beside the pane, which draws what `detailPane` holds (the person picked, the
  * agenda or the canvas' shapes) and the empty state.
@@ -70,14 +78,19 @@ fun ContactsContent(
     val title = stringResource(R.string.contacts_title)
     val onTabClick: (HomeTab) -> Unit = { tab -> eventOf(tab)?.let(onEvent) }
     val paneLayout = rememberContactsPaneLayout()
+    val listState = rememberLazyListState()
+    val onSplitBillClick = { onEvent(ContactsUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
         val columnWidth = if (layout.isTablet) tabletColumnMaxWidth else columnMaxWidth
+        // Why: the single list only, whose bottom padding makes room for it; beside a rail or a pane the rail has it.
+        val onFabClick = onSplitBillClick?.takeIf { !layout.usesNavigationRail && paneLayout == null }
         HomeBarsScaffold(
             bars = HomeBars(
                 kind = homeBarsKindOf(layout.usesNavigationRail),
                 selected = HomeTab.CONTACTS,
                 onTabClick = onTabClick,
                 onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
+                railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
             ),
             // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
             modifier = Modifier.semantics { paneTitle = title },
@@ -92,6 +105,14 @@ fun ContactsContent(
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
+                floatingActionButton = {
+                    if (onFabClick != null) {
+                        SplitBillFab(
+                            onClick = onFabClick,
+                            isExpanded = !listState.canScrollBackward,
+                        )
+                    }
+                },
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentWindowInsets = WindowInsets.safeDrawing,
             ) { padding ->
@@ -135,6 +156,8 @@ fun ContactsContent(
                             state = state,
                             isPaneShown = false,
                             onEvent = onEvent,
+                            listState = listState,
+                            bottomPadding = if (onFabClick != null) splitBillFabClearance else listBottomPadding,
                             modifier = Modifier
                                 .widthIn(max = columnWidth)
                                 .fillMaxWidth(),
@@ -177,10 +200,13 @@ private fun ContactsLazyList(
     isPaneShown: Boolean,
     onEvent: (ContactsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
+    bottomPadding: Dp = listBottomPadding,
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(bottom = 24.dp),
+        state = listState,
+        contentPadding = PaddingValues(bottom = bottomPadding),
     ) {
         contactsListItems(
             state = state,

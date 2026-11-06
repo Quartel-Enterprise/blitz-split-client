@@ -103,7 +103,7 @@ struct HomeView: View {
             if state.showsFirstUse {
                 ScrollView {
                     VStack(spacing: 16) {
-                        syncStatus
+                        downloadStatus
                         HomeFirstUseCard(send: model.send)
                     }
                     .padding(16)
@@ -140,6 +140,14 @@ struct HomeView: View {
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: HomeCopy.tabTitle)
+            // The sync status takes the bar's empty leading side, so it comes and goes without moving the content
+            if let status = syncText {
+                ToolbarItem(placement: .topBarLeading) {
+                    SyncStatusCapsule(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
+                        model.send(HomeUiEventOnRetrySyncClicked.shared)
+                    }
+                }
+            }
             TabTrailingItems(
                 showsSplitBill: state.showsSplitBillButton,
                 showsSplitBillTitle: !hasVerticalBar && !isUprightIPhone,
@@ -164,7 +172,7 @@ struct HomeView: View {
             if let fold = acrossFold {
                 FoldQuarters(fold: fold, spacing: 24) {
                     VStack(spacing: 14) {
-                        syncStatus
+                        downloadStatus
                         people
                         summary(stacksButtons: true)
                     }
@@ -242,7 +250,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private func firstColumn(stacksButtons: Bool) -> some View {
-        syncStatus
+        downloadStatus
         people
         summary(stacksButtons: stacksButtons)
         shortcuts
@@ -259,13 +267,16 @@ struct HomeView: View {
     /// From this width the Mac's window holds the canvas' two rows of two columns.
     private static let macWideWidth: CGFloat = 860
 
-    /// The overall balance beside the people, then the latest bills beside your groups.
+    /// The overall balance over the shortcuts beside the people, then the latest bills beside your groups.
     private var macWide: some View {
         VStack(alignment: .leading, spacing: 12) {
             recoveryCard
             HStack(alignment: .top, spacing: 12) {
-                summary(stacksButtons: true)
-                    .frame(width: 300)
+                VStack(spacing: 12) {
+                    summary(stacksButtons: true)
+                    shortcuts
+                }
+                .frame(width: 300)
                 people
             }
             HStack(alignment: .top, spacing: 12) {
@@ -279,11 +290,12 @@ struct HomeView: View {
         .padding(20)
     }
 
-    /// One column: the overall balance, the people, then your groups as a grid over the bills.
+    /// One column: the overall balance, the shortcuts, the people, then your groups as a grid over the bills.
     private var macNarrow: some View {
         VStack(alignment: .leading, spacing: 12) {
             recoveryCard
             summary(stacksButtons: false)
+            shortcuts
             people
             if !state.groups.isEmpty {
                 HomeGroupsSection(groups: state.groups, style: .grid, send: model.send)
@@ -296,21 +308,14 @@ struct HomeView: View {
 
     // MARK: - Sections
 
-    /// "Offline · 1 change queued", "No response from the server" with "Try again", or "Syncing… 3 of 7 groups" with
-    /// a bar while the first download fills the device: only when it asks for attention. The Mac says it as the window's subtitle.
+    /// The first download's bar while it fills the device ("Syncing… 3 of 7 groups" is in the bar's leading capsule,
+    /// as "Offline · 1 change queued" and "No response from the server" are). The Mac says it as the window's subtitle.
     @ViewBuilder
-    private var syncStatus: some View {
+    private var downloadStatus: some View {
         #if os(iOS)
-        if let status = syncText {
-            VStack(alignment: .leading, spacing: 8) {
-                SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
-                    model.send(HomeUiEventOnRetrySyncClicked.shared)
-                }
-                if let progress = state.firstDownload {
-                    DownloadProgressBar(progress: progress)
-                }
-            }
-            .padding(.horizontal, 4)
+        if let progress = state.firstDownload {
+            DownloadProgressBar(progress: progress)
+                .padding(.horizontal, 4)
         }
         #endif
     }
@@ -353,11 +358,8 @@ struct HomeView: View {
         }
     }
 
-    @ViewBuilder
     private var shortcuts: some View {
-        #if os(iOS)
         HomeShortcuts(canScanReceipt: state.canScanReceipt, send: model.send)
-        #endif
     }
 
     /// The recovery code's card, or the notifications' once there is a group: never both at once.
@@ -417,33 +419,14 @@ struct HomeView: View {
         }
     }
 
-    /// "Try again" while the server doesn't answer, the shortcuts grouped in glass, the profile, and "Split a bill"
-    /// as the prominent item, ⌘N.
+    /// "Try again" while the server doesn't answer, search, the bell, the profile, and "Split a bill" as the
+    /// prominent item, ⌘N. The shortcuts sit in the content, spelled out, as on the other platforms.
     @ToolbarContentBuilder
     private var macToolbar: some ToolbarContent {
         if state.canRetrySync {
             ToolbarItem(placement: .primaryAction) {
                 Button("Try again", systemImage: "arrow.clockwise") {
                     model.send(HomeUiEventOnRetrySyncClicked.shared)
-                }
-            }
-        }
-        if state.showsHome {
-            ToolbarItem(placement: .primaryAction) {
-                ControlGroup {
-                    Button("Scan a receipt", systemImage: "doc.text.viewfinder") {
-                        model.send(HomeUiEventOnScanReceiptClicked.shared)
-                    }
-                    .disabled(!state.canScanReceipt)
-                    .help(state.canScanReceipt ? Text("Scan a receipt") : Text("Scan a receipt · needs internet"))
-                    Button("Record payment", systemImage: "banknote") {
-                        model.send(HomeUiEventOnRecordPaymentClicked.shared)
-                    }
-                    .help(Text("Record payment"))
-                    Button("New group", systemImage: "person.badge.plus") {
-                        model.send(HomeUiEventOnCreateGroupClicked.shared)
-                    }
-                    .help(Text("New group"))
                 }
             }
         }

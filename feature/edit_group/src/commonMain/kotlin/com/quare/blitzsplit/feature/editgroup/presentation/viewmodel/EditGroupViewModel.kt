@@ -17,7 +17,6 @@ import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -65,7 +64,6 @@ class EditGroupViewModel(
                 name = "",
                 initials = "",
                 color = AvatarColor.default,
-                shape = GroupShape.fallback,
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
@@ -176,17 +174,9 @@ class EditGroupViewModel(
                 uiState.update { it.copy(iconEditor = it.iconEditor?.copy(color = event.color)) }
             }
 
-            is EditGroupUiEvent.OnIconShapePicked -> if (uiState.value.iconEditor != null) {
-                trackEvent("group_icon_shape_picked", mapOf("shape" to event.shape))
-                uiState.update { it.copy(iconEditor = it.iconEditor?.copy(shape = event.shape)) }
-            }
-
             EditGroupUiEvent.OnIconConfirmed -> confirmIcon()
 
-            is EditGroupUiEvent.OnColorSelected -> useIcon(
-                color = event.color,
-                shape = uiState.value.shape,
-            )
+            is EditGroupUiEvent.OnColorSelected -> useIcon(event.color)
 
             is EditGroupUiEvent.OnPhotoPicked -> preparePhoto(event.source)
 
@@ -235,7 +225,6 @@ class EditGroupViewModel(
                     name = group.name,
                     initials = Initials.of(group.name),
                     color = group.color,
-                    shape = group.shape,
                     photo = group.photo,
                     type = group.type,
                     currency = group.currency,
@@ -353,33 +342,23 @@ class EditGroupViewModel(
         if (!state.isLoaded || state.isSaving) return
         uiState.update {
             it.copy(
-                iconEditor = GroupIconEditor(
-                    color = it.color,
-                    shape = it.shape,
-                ),
+                iconEditor = GroupIconEditor(color = it.color),
             )
         }
     }
 
     private fun confirmIcon() {
         val editor = uiState.value.iconEditor ?: return
-        useIcon(
-            color = editor.color,
-            shape = editor.shape,
-        )
+        useIcon(editor.color)
     }
 
     // Why: the icon stands in place of the photo, so picking one takes the photo off, and a pick still prepared too.
-    private fun useIcon(
-        color: AvatarColor,
-        shape: GroupShape,
-    ) {
+    private fun useIcon(color: AvatarColor) {
         if (uiState.value.isSaving) return
         photoPicker.cancel()
         updateForm {
             it.copy(
                 color = color,
-                shape = shape,
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
@@ -447,8 +426,6 @@ class EditGroupViewModel(
         val name = if (state.name.trim() != original.name) state.name else latest.name
         val type = if (state.type != original.type) state.type else latest.type
         val color = if (state.color != original.color) state.color else latest.color
-        // Why: null keeps what Room has, which the domain may only read as the fallback (none, or a newer app's).
-        val shape = state.shape.takeIf { it != original.shape }
         val photo = if (state.photo != original.photo) state.photo else latest.photo
         val currency = if (!state.isCurrencyLocked && state.currency != original.currency) {
             state.currency
@@ -461,7 +438,8 @@ class EditGroupViewModel(
                 name = name,
                 type = type,
                 color = color,
-                shape = shape,
+                // Why: every group draws the same rounded square now, so the shape a group has stays as Room has it.
+                shape = null,
                 photo = photo,
                 currency = currency,
             ).onSuccess {
@@ -470,7 +448,6 @@ class EditGroupViewModel(
                     name = name.trim(),
                     type = type,
                     color = color,
-                    shape = shape ?: latest.shape,
                     photo = photo,
                     currency = currency,
                 )
@@ -500,7 +477,6 @@ class EditGroupViewModel(
             name.trim() != group.name ||
                 type != group.type ||
                 color != group.color ||
-                shape != group.shape ||
                 photo != group.photo ||
                 (!isCurrencyLocked && currency != group.currency)
         )

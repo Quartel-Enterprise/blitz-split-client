@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
+import com.quare.blitzsplit.core.provider.room.dao.PushSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.SettlementDao
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
@@ -44,6 +45,7 @@ import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
+import com.quare.blitzsplit.core.provider.room.entity.PushSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 
 @Database(
@@ -71,8 +73,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         BillCommentEntity::class,
         BillAttachmentEntity::class,
         BillCommentLikeEntity::class,
+        PushSettingsEntity::class,
     ],
-    version = 38,
+    version = 39,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -224,6 +227,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 37,
             to = 38,
         ),
+        AutoMigration(
+            from = 38,
+            to = 39,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -263,4 +270,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun billAttachmentDao(): BillAttachmentDao
 
     abstract fun billCommentLikeDao(): BillCommentLikeDao
+
+    abstract fun pushSettingsDao(): PushSettingsDao
 }

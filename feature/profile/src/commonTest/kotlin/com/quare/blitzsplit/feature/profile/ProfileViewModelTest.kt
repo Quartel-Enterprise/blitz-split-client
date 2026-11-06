@@ -106,6 +106,9 @@ class ProfileViewModelTest {
     private lateinit var profiles: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
+
+    // Why: Notifications' "Push notifications" switch of this device, on unless a test turns it off.
+    private val isPushEnabled = MutableStateFlow(true)
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private lateinit var syncState: MutableStateFlow<SyncState>
@@ -3706,6 +3709,23 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(listOf("cpf"), state.paymentKeys.valueOrNull()?.map { it.id })
             assertEquals(5, state.activeNotificationCount.valueOrNull())
+        }
+
+    @Test
+    fun `GIVEN five rows with Push on WHEN the push switch is off on this device THEN counts none active`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+
+            // When
+            isPushEnabled.value = false
+
+            // Then
+            assertEquals(
+                0,
+                viewModel.uiState.value.activeNotificationCount
+                    .valueOrNull(),
+            )
         }
 
     @Test
@@ -7391,6 +7411,7 @@ class ProfileViewModelTest {
             observePendingNotificationPreferenceChanges = ObservePendingNotificationPreferenceChanges {
                 notificationPreferences.hasPendingChanges
             },
+            observePushEnabled = { isPushEnabled },
             observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
             updateBitcoinInSats = { storedBitcoinInSats.value = it },
             observeBitcoinInSats = { storedBitcoinInSats },

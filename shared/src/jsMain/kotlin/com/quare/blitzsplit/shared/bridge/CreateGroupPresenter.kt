@@ -42,13 +42,10 @@ class JsCreateGroupState(
     val cryptoCurrencies: Array<String>,
     val members: Array<JsCreateGroupMember>,
     val draft: String,
-    val takenName: String?,
-    val nicknameSuggestions: Array<String>,
     val isCreating: Boolean,
     val showsCreateError: Boolean,
     val canAddMember: Boolean,
     val canCreate: Boolean,
-    val showsNoAppNotice: Boolean,
 )
 
 class CreateGroupPresenter {
@@ -86,13 +83,10 @@ class CreateGroupPresenter {
                         )
                     }.toTypedArray(),
                 draft = state.draft,
-                takenName = state.takenName,
-                nicknameSuggestions = state.nicknameSuggestions.toTypedArray(),
                 isCreating = state.isCreating,
                 showsCreateError = state.showsCreateError,
                 canAddMember = state.canAddMember,
                 canCreate = state.canCreate,
-                showsNoAppNotice = state.showsNoAppNotice,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -145,10 +139,6 @@ class CreateGroupPresenter {
 
     fun addMember() {
         viewModel.onEvent(CreateGroupUiEvent.OnAddMemberClicked)
-    }
-
-    fun useSuggestion(name: String) {
-        viewModel.onEvent(CreateGroupUiEvent.OnSuggestionClicked(name))
     }
 
     fun removeMember(memberId: String) {

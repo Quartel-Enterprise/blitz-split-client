@@ -72,10 +72,12 @@ class InviteRepositoryImplTest {
                         name = "Pierre",
                         avatarColor = AvatarColor.BLUE,
                         hasJoined = true,
+                        photoUrl = null,
                     ),
                 ),
                 personalMemberId = null,
                 inviterName = null,
+                groupPhotoUrl = null,
             ),
             result.getOrThrow(),
         )
@@ -376,10 +378,12 @@ class InviteRepositoryImplTest {
                 name = "Pierre",
                 avatarColor = "blue",
                 hasJoined = true,
+                photoUrl = null,
             ),
         ),
         personalMemberId = null,
         inviterName = null,
+        photoUrl = null,
     )
 
     private fun prepareScenario(

@@ -11,7 +11,6 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Route
@@ -40,7 +39,6 @@ internal val emptyGroupHeader = GroupHeader(
     groupName = "",
     groupInitials = "",
     groupColor = AvatarColor.entries.first(),
-    groupShape = GroupShape.fallback,
     groupPhotoUrl = null,
     currency = GroupCurrency.BRL,
     faces = emptyList(),
@@ -298,7 +296,6 @@ internal fun groupHeaderOf(
         groupName = group.name,
         groupInitials = Initials.of(group.name),
         groupColor = group.color,
-        groupShape = group.shape,
         groupPhotoUrl = group.photo?.toImageUrl(),
         currency = group.currency,
         faces = group.members.take(MAX_FACES).map(::faceOf),

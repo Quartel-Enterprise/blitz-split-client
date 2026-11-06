@@ -2,16 +2,13 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 
 data class GroupRow(
     val id: String,
     val name: String,
-    // Why: "VF" for "Viagem Floripa", what the group's shape shows.
+    // Why: "VF" for "Viagem Floripa", what the group's rounded square shows.
     val initials: String,
     val color: AvatarColor,
-    // Why: only Android draws it.
-    val shape: GroupShape,
     // Why: drawn in place of the color and the initials, null for none.
     val photoUrl: String?,
     // Why: up to three faces; the rest is "+N" (extraMemberCount).

@@ -86,7 +86,7 @@ function Invite({ presenter, state }: { presenter: JoinInvitePresenter; state: J
         {member != null ? <PersonalTitle inviter={state.inviterName} name={member.name} /> : <LinkTitle creator={state.creatorName} group={state.groupName} />}
       </h1>
       <section className="flex items-center gap-4 rounded-2xl border bg-card p-5">
-        <GroupAvatar initials={state.groupInitials} color={state.groupColor} className="size-14 text-lg" />
+        <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-14 text-lg" />
         <div className="min-w-0">
           <p className="truncate text-lg font-semibold">{state.groupName}</p>
           <p className="text-sm text-muted-foreground">{state.creatorName != null ? `${count} · ${t('join_createdBy', { name: state.creatorName })}` : count}</p>
@@ -133,7 +133,7 @@ function Faces({ members }: { members: JsJoinMember[] }) {
   return (
     <div aria-hidden className="flex -space-x-2">
       {members.slice(0, shownFaces).map((member) => (
-        <Avatar key={member.id} initial={member.initials} color={member.color} className="size-9 text-xs ring-2 ring-background" />
+        <Avatar key={member.id} initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-9 text-xs ring-2 ring-background" />
       ))}
       {more > 0 && <span className="flex size-9 items-center justify-center rounded-full bg-muted text-xs font-semibold ring-2 ring-background">+{more}</span>}
     </div>

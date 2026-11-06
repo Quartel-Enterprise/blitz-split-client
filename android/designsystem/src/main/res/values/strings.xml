@@ -35,6 +35,7 @@
     <string name="designsystem_group_shape_petal">Petal</string>
     <string name="designsystem_group_shape_square">Square</string>
     <string name="designsystem_group_shape_circle">Circle</string>
+    <string name="designsystem_split_bill">Split a bill</string>
     <string name="designsystem_when">When</string>
     <string name="designsystem_when_today">Today, %1$s · %2$s</string>
     <string name="designsystem_when_yesterday">Yesterday, %1$s · %2$s</string>

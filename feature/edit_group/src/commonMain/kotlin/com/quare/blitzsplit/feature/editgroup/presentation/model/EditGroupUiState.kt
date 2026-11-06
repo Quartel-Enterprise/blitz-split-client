@@ -6,7 +6,6 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -17,9 +16,7 @@ data class EditGroupUiState(
     // Why: "VF" for "Viagem Floripa", what the group's avatar shows; empty while there is no name.
     val initials: String,
     val color: AvatarColor,
-    // Why: only Android draws it.
-    val shape: GroupShape,
-    // Why: drawn in place of the color and the initials; picking a color or a shape takes it off.
+    // Why: drawn in place of the color and the initials; picking a color takes it off.
     val photo: ProfilePhoto?,
     val isPreparingPhoto: Boolean,
     // Why: the photo picked couldn't be read; the one shown stays.

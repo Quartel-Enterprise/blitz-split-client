@@ -6,15 +6,12 @@ import com.quare.blitzsplit.core.groups.domain.model.MemberNameRules
 data class MemberNameEditor(
     // Why: the member being renamed, null while adding someone.
     val memberId: String?,
+    // Why: a name may repeat in the group (beta feedback 3, item 29); people are told apart by their member ids.
     val draft: String,
-    // Why: "Já tem uma Ana no grupo", as the group spells it, while the draft matches another member.
-    val takenName: String?,
-    // Why: "Ana P." and "Ana 2", free in the group, to tap instead.
-    val nicknameSuggestions: List<String>,
 ) {
     val isAdding: Boolean
         get() = memberId == null
 
     val canSave: Boolean
-        get() = MemberNameRules.isLongEnough(draft) && takenName == null
+        get() = MemberNameRules.isLongEnough(draft)
 }

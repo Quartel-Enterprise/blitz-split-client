@@ -19,11 +19,6 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
             OnColorClicked -> EventAnalytics.Automatic("group_color_clicked", mapOf("source" to SOURCE))
 
-            OnShapeAndColorClicked -> EventAnalytics.Automatic(
-                "group_shape_and_color_clicked",
-                mapOf("source" to SOURCE),
-            )
-
             /*
              * Why: each UI opens the camera or the picker straight from its tap, so the photo handed back stands for
              * it.
@@ -56,11 +51,6 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
             OnAddMemberClicked -> EventAnalytics.Automatic("create_group_add_member_clicked")
 
-            is OnSuggestionClicked -> EventAnalytics.Automatic(
-                "member_name_suggestion_clicked",
-                mapOf("source" to SOURCE),
-            )
-
             is OnRemoveMemberClicked -> EventAnalytics.Automatic("create_group_remove_member_clicked")
 
             // Why: the tap, and the group it created once saved, with what kind of group it is.
@@ -75,12 +65,6 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
     // Why: the group's avatar takes the next color of the palette.
     data object OnColorClicked : CreateGroupUiEvent
-
-    /*
-     * Why: Android's "Trocar forma e cor do grupo" takes the next color and the next shape at once; five colors over
-     * four shapes go through all twenty before they repeat.
-     */
-    data object OnShapeAndColorClicked : CreateGroupUiEvent
 
     // Why: each UI opens its own picker or camera straight from the tap and hands over the file it returned.
     class OnPhotoPicked(
@@ -112,10 +96,6 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
     // Why: "Adicionar", and the keyboard's done key in the draft.
     data object OnAddMemberClicked : CreateGroupUiEvent
-
-    data class OnSuggestionClicked(
-        val name: String,
-    ) : CreateGroupUiEvent
 
     data class OnRemoveMemberClicked(
         val memberId: String,

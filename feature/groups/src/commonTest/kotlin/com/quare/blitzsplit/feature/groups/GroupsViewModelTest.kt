@@ -1096,7 +1096,6 @@ class GroupsViewModelTest {
                 name = "Viagem Floripa",
                 initials = "VF",
                 color = AvatarColor.LILAC,
-                shape = GroupShape.COOKIE,
                 photoUrl = null,
                 faces = listOf(
                     MemberFace(

@@ -10,4 +10,6 @@ data class JoinMember(
     val avatarColor: AvatarColor,
     // Why: "Já entrou": someone opened the link and picked this member, who can't be picked again.
     val hasJoined: Boolean,
+    // Why: the face of whoever joined as this member, drawn over the initials; null for none.
+    val photoUrl: String?,
 )

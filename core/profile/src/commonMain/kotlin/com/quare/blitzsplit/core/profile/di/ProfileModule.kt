@@ -11,11 +11,13 @@ import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PushDeviceRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.PushSettingsLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomAppInviteLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomMemberPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomNotificationPreferencesLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomPaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.RoomProfileLocalDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.RoomPushSettingsLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseAppInviteRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseNotificationPreferencesRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabasePaymentKeyRemoteDataSource
@@ -57,11 +59,13 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificati
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKeyChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SavePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.core.profile.domain.usecase.UpdateNotificationPreference
+import com.quare.blitzsplit.core.profile.domain.usecase.UpdatePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidateDisplayName
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.DeletePaymentKeyUseCase
@@ -78,11 +82,13 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingNotif
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingPaymentKeyChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePushEnabledUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SavePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SaveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SetPushDeviceUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdateNotificationPreferenceUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdatePushEnabledUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidateDisplayNameUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.generated.StoreConfig
@@ -126,8 +132,11 @@ val profileModule = module {
     factoryOf(::UpdateNotificationPreferenceUseCase).bind<UpdateNotificationPreference>()
     singleOf(::SupabasePushDeviceRemoteDataSource).bind<PushDeviceRemoteDataSource>()
     singleOf(::PushDeviceMapperImpl).bind<PushDeviceMapper>()
+    singleOf(::RoomPushSettingsLocalDataSource).bind<PushSettingsLocalDataSource>()
     singleOf(::PushDeviceRepositoryImpl).bind<PushDeviceRepository>()
     factoryOf(::SetPushDeviceUseCase).bind<SetPushDevice>()
+    factoryOf(::ObservePushEnabledUseCase).bind<ObservePushEnabled>()
+    factoryOf(::UpdatePushEnabledUseCase).bind<UpdatePushEnabled>()
     single<ClientPlatform> { currentClientPlatform }
     single {
         AppStores(

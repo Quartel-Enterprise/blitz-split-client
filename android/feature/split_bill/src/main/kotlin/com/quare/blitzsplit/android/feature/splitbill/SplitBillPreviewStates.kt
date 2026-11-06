@@ -13,7 +13,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -98,7 +97,6 @@ private val previewGroups = listOf(
         "Viagem Floripa",
         previewInitialsOf("Viagem Floripa"),
         AvatarColor.PEACH,
-        GroupShape.COOKIE,
         photoUrl = null,
         memberCount = 6,
     ),
@@ -107,7 +105,6 @@ private val previewGroups = listOf(
         "Apê 302",
         previewInitialsOf("Apê 302"),
         AvatarColor.BLUE,
-        GroupShape.COOKIE,
         photoUrl = null,
         memberCount = 2,
     ),
@@ -116,7 +113,6 @@ private val previewGroups = listOf(
         "Futebol de quinta",
         previewInitialsOf("Futebol de quinta"),
         AvatarColor.GREEN,
-        GroupShape.COOKIE,
         photoUrl = null,
         memberCount = 10,
     ),
@@ -125,7 +121,6 @@ private val previewGroups = listOf(
         "Churrasco de sábado",
         previewInitialsOf("Churrasco de sábado"),
         AvatarColor.SAND,
-        GroupShape.COOKIE,
         photoUrl = null,
         memberCount = 8,
     ),
@@ -148,7 +143,6 @@ internal fun createPreviewBillState(
     groupName = "Viagem Floripa",
     groupInitials = previewInitialsOf("Viagem Floripa"),
     groupColor = AvatarColor.PEACH,
-    groupShape = GroupShape.COOKIE,
     groupPhotoUrl = null,
     groups = previewGroups,
     groupSelection = groupSelection,

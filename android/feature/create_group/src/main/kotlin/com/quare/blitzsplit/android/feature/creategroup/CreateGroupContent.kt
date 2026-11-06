@@ -68,7 +68,6 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
@@ -165,10 +164,7 @@ private fun MembersColumn(
         state = state,
         onEvent = onEvent,
     )
-    MembersNoticesSection(
-        state = state,
-        onEvent = onEvent,
-    )
+    NoAppNoticeText()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -250,30 +246,19 @@ private fun CreateErrorText(state: CreateGroupUiState) {
     }
 }
 
+// Why: "Ninguém precisa ter o app agora"; a name may repeat another member's (beta feedback 3, item 29).
 @Composable
-private fun MembersNoticesSection(
-    state: CreateGroupUiState,
-    onEvent: (CreateGroupUiEvent) -> Unit,
-) {
-    if (state.takenName != null) {
-        TakenNameMessage(
-            takenName = state.takenName.orEmpty(),
-            suggestions = state.nicknameSuggestions,
-            onEvent = onEvent,
-        )
-    }
-    if (state.showsNoAppNotice) {
-        Text(
-            text = stringResource(R.string.create_group_no_app_notice),
-            modifier = Modifier.padding(
-                start = 20.dp,
-                end = 20.dp,
-                top = 8.dp,
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+private fun NoAppNoticeText() {
+    Text(
+        text = stringResource(R.string.create_group_no_app_notice),
+        modifier = Modifier.padding(
+            start = 20.dp,
+            end = 20.dp,
+            top = 8.dp,
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable
@@ -323,8 +308,8 @@ private fun IdentitySection(
 }
 
 /*
- * Why: tapping the avatar steps through the shapes and the colors together while no photo covers them; the button on
- * its corner takes or picks a photo, which opens "Ajustar foto", or removes it.
+ * Why: the group's rounded square, as every group is drawn; tapping it steps through the colors while no photo covers
+ * it. The button on its corner takes or picks a photo, which opens "Ajustar foto", or removes it.
  */
 @Composable
 private fun GroupIconWithPhotoButton(
@@ -333,19 +318,18 @@ private fun GroupIconWithPhotoButton(
     photoPickers: PhotoPickers,
 ) {
     var isPhotoMenuOpen by rememberSaveable { mutableStateOf(false) }
-    val changeIconLabel = stringResource(R.string.create_group_change_shape_and_color)
+    val changeIconLabel = stringResource(R.string.create_group_change_color)
     Box(modifier = Modifier.size(76.dp)) {
         GroupBadge(
             initials = state.initials,
             color = state.color,
             size = 72.dp,
-            shape = state.shape,
             photoUrl = state.photoUrl,
             modifier = Modifier
                 .clickable(
                     enabled = state.canChangeColor,
                     role = Role.Button,
-                    onClick = { onEvent(CreateGroupUiEvent.OnShapeAndColorClicked) },
+                    onClick = { onEvent(CreateGroupUiEvent.OnColorClicked) },
                 ).semantics { contentDescription = changeIconLabel },
         )
         if (state.isPreparingPhoto) {
@@ -509,10 +493,7 @@ private fun CurrencyRow(
 private fun CreateGroupPreview() {
     BlitzSplitTheme {
         CreateGroupContent(
-            state = buildPreviewState(
-                draft = "",
-                takenName = null,
-            ),
+            state = buildPreviewState(draft = ""),
             photoPickers = previewPhotoPickers,
             isDialog = false,
             onEvent = {},
@@ -520,30 +501,10 @@ private fun CreateGroupPreview() {
     }
 }
 
-@DevicePreviews
-@Composable
-private fun CreateGroupTakenNamePreview() {
-    BlitzSplitTheme {
-        CreateGroupContent(
-            state = buildPreviewState(
-                draft = "Ana",
-                takenName = "Ana",
-            ),
-            photoPickers = previewPhotoPickers,
-            isDialog = false,
-            onEvent = {},
-        )
-    }
-}
-
-private fun buildPreviewState(
-    draft: String,
-    takenName: String?,
-): CreateGroupUiState = CreateGroupUiState(
+private fun buildPreviewState(draft: String): CreateGroupUiState = CreateGroupUiState(
     name = "Viagem Floripa",
     initials = previewInitialsOf("Viagem Floripa"),
     color = AvatarColor.PEACH,
-    shape = GroupShape.COOKIE,
     photo = null,
     isPreparingPhoto = false,
     showsPhotoError = false,
@@ -557,8 +518,6 @@ private fun buildPreviewState(
         CreateGroupMember("4", "Carla", previewInitialsOf("Carla"), AvatarColor.LILAC, isMe = false),
     ),
     draft = draft,
-    takenName = takenName,
-    nicknameSuggestions = if (takenName == null) emptyList() else listOf("Ana P.", "Ana 2"),
     isCreating = false,
     showsCreateError = false,
 )

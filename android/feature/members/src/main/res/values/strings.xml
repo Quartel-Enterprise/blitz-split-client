@@ -32,8 +32,6 @@
     <string name="members_add">Add person</string>
     <string name="members_invite_instead">Has the app? Invite with the link</string>
     <string name="members_name_label">Name</string>
-    <string name="members_name_taken">%s is already in the group. Use a nickname to tell them apart.</string>
-    <string name="members_use_nickname">Use “%s”</string>
     <string name="members_save">Save</string>
     <string name="members_cancel">Cancel</string>
     <string name="members_change_error">Couldn\'t save the change. Try again.</string>

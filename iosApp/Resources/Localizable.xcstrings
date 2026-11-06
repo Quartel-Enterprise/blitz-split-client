@@ -3007,6 +3007,23 @@
         }
       }
     },
+    "On this device only" : {
+      "comment" : "Notifications: under the Push notifications switch",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo en este dispositivo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só neste aparelho"
+          }
+        }
+      }
+    },
     "Open balance reminder" : {
       "localizations" : {
         "es" : {
@@ -3815,6 +3832,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Push"
+          }
+        }
+      }
+    },
+    "Push notifications" : {
+      "comment" : "Notifications: the switch over the rows, whether this device takes pushes at all",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificaciones push"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificações push"
           }
         }
       }
@@ -11914,23 +11948,6 @@
         }
       }
     },
-    "Scan a receipt · needs internet" : {
-      "comment" : "Home on the Mac: the disabled shortcut's tooltip",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanear recibo · requiere internet"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ler cupom fiscal · precisa de internet"
-          }
-        }
-      }
-    },
     "Search" : {
       "comment" : "The search tab, its title and the Mac toolbar field",
       "localizations" : {
@@ -13164,23 +13181,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ ainda não entrou. Dá para adicionar de novo depois."
-          }
-        }
-      }
-    },
-    "%@ is already in the group. Use a nickname to tell them apart." : {
-      "comment" : "%@ is the member's name the typed one repeats",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ ya está en el grupo. Usa un apodo para diferenciarlos."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ já está no grupo. Use um apelido para diferenciar."
           }
         }
       }
@@ -17423,18 +17423,18 @@
         }
       }
     },
-    "At least 2 letters, and not a name already in the group." : {
+    "At least 2 letters." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Al menos 2 letras, y no un nombre que ya esté en el grupo."
+            "value" : "Al menos 2 letras."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pelo menos 2 letras, sem repetir um nome que já está no grupo."
+            "value" : "Pelo menos 2 letras."
           }
         }
       }
@@ -20990,23 +20990,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Usar sem conta"
-          }
-        }
-      }
-    },
-    "Use “%@”" : {
-      "comment" : "A nickname suggested for a repeated member name, like “Ana P.”",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usar “%@”"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usar “%@”"
           }
         }
       }

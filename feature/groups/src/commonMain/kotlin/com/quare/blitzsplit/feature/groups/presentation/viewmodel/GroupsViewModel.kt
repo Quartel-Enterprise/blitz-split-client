@@ -513,14 +513,7 @@ class GroupsViewModel(
         if (recent == null) {
             navigator.navigate(Route.CreateGroup)
         } else {
-            navigator.navigate(
-                Route.SplitBill(
-                    groupId = recent.id,
-                    expenseId = null,
-                    picksGroupFirst = true,
-                    scansReceipt = false,
-                ),
-            )
+            navigator.navigate(Route.SplitBill.createPickingGroup(recent.id))
         }
     }
 

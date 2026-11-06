@@ -8,6 +8,8 @@ data class JoinInviteUiState(
     // Why: "VF" for Viagem Floripa.
     val groupInitials: String,
     val groupColor: AvatarColor,
+    // Why: drawn in place of the color and the initials; null for no photo.
+    val groupPhotoUrl: String?,
     // Why: "Pierre te chamou", "criado por Pierre"; null once the creator's account was deleted.
     val creatorName: String?,
     // Why: in the order they were added, the creator first.

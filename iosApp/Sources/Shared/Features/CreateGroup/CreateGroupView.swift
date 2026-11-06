@@ -258,9 +258,8 @@ private struct CreateGroupIcon: View {
     }
 }
 
-/// "Who's in": the creator first ("you", not removable), then each name added. The draft row adds on
-/// Return, keeping the keyboard up for the next name, and a repeated name swaps the hint below for the nicknames
-/// to pick from.
+/// "Who's in": the creator first ("you", not removable), then each name added, which may repeat another's. The
+/// draft row adds on Return, keeping the keyboard up for the next name.
 private struct MembersSection: View {
     let model: CreateGroupModel
     @FocusState private var isDraftFocused: Bool
@@ -279,7 +278,7 @@ private struct MembersSection: View {
             HStack(spacing: 12) {
                 Image(systemName: "plus.circle.fill")
                     .font(.title2)
-                    .foregroundStyle(state.takenName == nil ? Palette.accent : Palette.negative)
+                    .foregroundStyle(Palette.accent)
                     .accessibilityHidden(true)
                 TextField("Add by name", text: draftBinding)
                     #if os(iOS)
@@ -306,27 +305,7 @@ private struct MembersSection: View {
                 Text("\(state.members.count) people")
             }
         } footer: {
-            if let takenName = state.takenName {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label {
-                        Text("\(takenName) is already in the group. Use a nickname to tell them apart.")
-                    } icon: {
-                        Image(systemName: "exclamationmark.circle")
-                    }
-                    .foregroundStyle(Palette.negative)
-                    HStack(spacing: 8) {
-                        ForEach(state.nicknameSuggestions, id: \.self) { suggestion in
-                            Button("Use “\(suggestion)”") {
-                                model.send(CreateGroupUiEventOnSuggestionClicked(name: suggestion))
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                    }
-                }
-            }
-            if state.showsNoAppNotice {
-                Text("Nobody needs the app right now. You can already add expenses for everyone and send the link later.")
-            }
+            Text("Nobody needs the app right now. You can already add expenses for everyone and send the link later.")
         }
     }
 
