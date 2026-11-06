@@ -422,8 +422,35 @@ gh pr edit --add-label merge-when-green
 
 The workflow squash merges the pull request once every check on its head commit has passed and
 every review conversation is resolved, including the checks of the fix commit the opening
-`claude-review` pushes. That happens minutes later, so wait for it without blocking the turn:
+`claude-review` pushes. The label is this project's merge, not GitHub's auto-merge: don't call
+`set_auto_merge` or `gh pr merge --auto`. That merge happens minutes later, so wait for it without
+blocking the turn, in one of the three ways below. Before ending the turn, tell the user the label
+and the wait are on, and that the task gets cleaned up once the merge happens.
 
+- **With the `ccd_pr` tools** (a session in the Claude desktop app), turn on the app's Auto-fix.
+  Call `get_status`; if it doesn't report this pull request, bind it with `bind_pr` and its URL.
+  Then call `set_monitor` with `auto_fix: true` and the URL: opening the pull request through this
+  skill is the user's request for that switch, so don't ask. The app wakes the session with a
+  `<ci-monitor-event>` on a failed check, a conflict with `main` and every new comment, the one
+  `merge-when-green` leaves when it removes its label included (outcome 3). It sends none on a
+  merge, a close, a cancelled check or a check stuck pending, so also run the loop below with
+  `autofix=1`: it then reads only the pull request's state and label, not its checks, and exits on a
+  merge (0), a close (1) or after two hours (4). If it already exited when a fix is pushed, start it
+  again. Handle each event as the outcomes below say, with the loop's filter: a failed
+  `review-gate` check is the hold for the review's open threads, not a failure, and a cancelled
+  `merge-when-green` run was only replaced by a newer one. A review comment that arrives while the
+  label is still on is one of the opening `claude-review`'s threads: leave it for outcome 3, which
+  `merge-when-green` starts once every check has passed. Diagnose an event with `get_status` or one
+  `gh pr checks <pr>` call; don't poll the checks yourself. Once an outcome says to stop, later
+  events don't start the fixes of that blocker again: stay quiet until the user answers or
+  something new shows up. Once the pull request merges or closes, or the user says to stop, turn
+  Auto-fix off (`set_monitor` with `auto_fix: false`) before going on with outcome 0 or 1.
+
+  The app turns Auto-fix on only for a pull request it is sure this session opened, and may refuse
+  one it isn't (e.g. one opened from a worktree the session didn't start in). Then tell the user
+  they can turn it on from the PR bar themselves, and wait with the loop below, `autofix=0`. If they
+  do, the first `<ci-monitor-event>` says so: stop that loop (`TaskStop`) and start it again with
+  `autofix=1`, so only the app's events drive the fixes.
 - **With the `subscribe_pr_activity` tool** (a Claude Code cloud session), call it for the pull
   request and end the turn: check results, reviews and comments wake the session as PR events, and
   the rules that arrive with the subscription govern them. Handle each event as the outcomes below
@@ -432,11 +459,13 @@ every review conversation is resolved, including the checks of the fix commit th
   Once an outcome says to stop, later events don't start the fixes of that blocker again: stay
   quiet until the user answers or something new shows up (another check failing, a new thread).
   Call `unsubscribe_pr_activity` once the pull request merges or closes, or the user says to stop.
-- **Without it**, run this with the Bash tool's `run_in_background`, which calls you back when it
-  exits.
+- **Without either**, run the loop with `autofix=0`.
+
+Run the loop with the Bash tool's `run_in_background`, which calls you back when it exits.
 
 ```bash
 pr=$(gh pr view --json number -q .number)
+autofix=0 # 1 while the app's Auto-fix reports the checks and the label's removal
 for _ in $(seq 120); do
   # A failed read (network, rate limit) is no answer: keep waiting.
   case $(gh pr view "$pr" --json state,labels -q '.state + " " + ([.labels[].name] | join(","))' \
@@ -444,27 +473,28 @@ for _ in $(seq 120); do
     MERGED*) exit 0 ;;
     CLOSED*) exit 1 ;;
     ERROR | *merge-when-green*) ;;
-    *) exit 3 ;;
+    *) [ "$autofix" = 1 ] || exit 3 ;;
   esac
-  # The filter of merge-when-green.yml: a failed review-gate check is the gate holding the checks
-  # for the review's open threads, not a failure. merge-when-green's own runs don't count either,
-  # but only when cancelled (a newer run replaced it): its failure is a missing token.
-  gh pr checks "$pr" --json name,workflow,bucket -q '.[]
-    | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
-    | select((.workflow == "merge-when-green" and .bucket == "cancel") | not)
-    | .bucket' 2>/dev/null | grep -qxE 'fail|cancel' && exit 2
+  if [ "$autofix" = 0 ]; then
+    # The filter of merge-when-green.yml: a failed review-gate check is the gate holding the checks
+    # for the review's open threads, not a failure. merge-when-green's own runs don't count either,
+    # but only when cancelled (a newer run replaced it): its failure is a missing token.
+    gh pr checks "$pr" --json name,workflow,bucket -q '.[]
+      | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
+      | select((.workflow == "merge-when-green" and .bucket == "cancel") | not)
+      | .bucket' 2>/dev/null | grep -qxE 'fail|cancel' && exit 2
+  fi
   sleep 60
 done
 exit 4
 ```
 
-Tell the user the label and auto fix are on, and that the task gets cleaned up once the merge
-happens. Every fix below goes the same way, without asking: pull first, before any local commit
+Every fix below goes the same way, without asking: pull first, before any local commit
 (`git pull --ff-only`: the opening `claude-review` may have pushed its fix commit), fix, run step 2
 again if a Kotlin file changed and the step 8 checks of the areas the fix touches, commit it with
 step 9's message rules, push (step 10), and wait again as above. Never amend, rebase or force push
 what is already on `origin`, and never skip, disable or loosen a test or a check to get it green.
-When the command exits, or a PR event says the same:
+When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
 
 - **0, merged:** run the `finish-task` skill right away, as after a direct merge below.
 - **2, a check failed or was cancelled:** see which one (`gh pr checks <pr>`).
@@ -513,7 +543,8 @@ When the command exits, or a PR event says the same:
 - **1, closed without merging:** tell the user and stop.
 - **4, still open after two hours:** a check is stuck pending, or no workflow completion is left to
   start `merge-when-green`. Report the pending checks (`gh pr checks <pr>`) and stop; the label
-  stays on.
+  stays on. With Auto-fix on, a cancelled check also shows up only here: re-run it once
+  (`gh run rerun <run> --failed`) and start the loop again instead of stopping.
 
 To merge directly, check whether the pull request has any checks to wait for. Right after the push
 GitHub may not have registered them yet, so give it up to a minute:
