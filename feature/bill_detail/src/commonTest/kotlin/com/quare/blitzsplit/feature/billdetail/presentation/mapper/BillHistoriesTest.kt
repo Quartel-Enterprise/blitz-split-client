@@ -1572,6 +1572,8 @@ class BillHistoriesTest {
         occurredAt = occurredAt,
         subject = "Mercado",
         amountMinor = amountMinor,
+        currency = null,
+        previousCurrency = null,
         code = code,
         fromMemberId = null,
         toMemberId = null,

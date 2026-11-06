@@ -163,18 +163,23 @@ function changesSummary(item: JsActivityItem): string | null {
   return `${line} · ${t(more === 1 ? 'activity_moreChangesOne' : 'activity_moreChangesOther', { count: more })}`
 }
 
+/** An amount of a Simplify debts pair, unsigned, in that pair's own currency; empty when not even the group's is known. */
+function debtMoney(minor: number, pair: JsActivityDebtChange): string {
+  return pair.currency ? formatMoney(Math.abs(minor), pair.currency, pair.fractionDigits) : ''
+}
+
 /**
- * "7 pagamentos viraram 5. Agora Diego te paga R$ 64, e Ana não te deve mais." (13.7): the largest pair that came and
- * the largest that went for this browser's user. Nothing while it waits to go up, which the meta already says.
+ * "7 pagamentos viraram 5. Agora Diego te paga R$ 64, e Ana não te deve mais." (13.7): the first pair that came and
+ * the first that went for this browser's user, the group's currency first. Nothing while it waits to go up, which the
+ * meta already says.
  */
-function simplificationDetail(item: JsActivityItem, simplification: JsActivitySimplification | null | undefined): string {
+function simplificationDetail(simplification: JsActivitySimplification | null | undefined): string {
   if (!simplification) return ''
-  const money = (minor: number) => (item.currency ? formatMoney(Math.abs(minor), item.currency, item.fractionDigits) : '')
   const counts = t('activity_simplifyCounts', { before: simplification.paymentsBefore, after: simplification.paymentsAfter })
   const added = simplification.newPair
   const gone = simplification.gonePair
   const now = added
-    ? t(added.afterMinor > 0 ? 'activity_simplifyNowPaysYou' : 'activity_simplifyNowYouPay', { name: nameOrFormer(added.name), amount: money(added.afterMinor) })
+    ? t(added.afterMinor > 0 ? 'activity_simplifyNowPaysYou' : 'activity_simplifyNowYouPay', { name: nameOrFormer(added.name), amount: debtMoney(added.afterMinor, added) })
     : null
   const goneOwedMe = gone != null && gone.beforeMinor > 0
   const goneName = { name: nameOrFormer(gone?.name) }
@@ -185,9 +190,9 @@ function simplificationDetail(item: JsActivityItem, simplification: JsActivitySi
 }
 
 /** One side of a "Ver mudanças" line of 13.7b: "te devia R$ 64", "você deve R$ 20", "não te devia", "não deve mais". */
-function debtSideText(item: JsActivityItem, minor: number, isAfter: boolean): string {
+function debtSideText(change: JsActivityDebtChange, minor: number, isAfter: boolean): string {
   if (minor === 0) return t(isAfter ? 'activity_debtOwesNothing' : 'activity_debtDidntOweYou')
-  const amount = item.currency ? formatMoney(Math.abs(minor), item.currency, item.fractionDigits) : ''
+  const amount = debtMoney(minor, change)
   if (minor > 0) return t(isAfter ? 'activity_debtOwesYou' : 'activity_debtOwedYou', { amount })
   return t(isAfter ? 'activity_debtYouOwe' : 'activity_debtYouOwed', { amount })
 }
@@ -206,8 +211,8 @@ export function changeRows(item: JsActivityItem): ChangeRow[] {
     return item.simplification.myChanges.map((change: JsActivityDebtChange, index) => ({
       key: `${index}`,
       label: nameOrFormer(change.name),
-      before: debtSideText(item, change.beforeMinor, false),
-      after: debtSideText(item, change.afterMinor, true),
+      before: debtSideText(change, change.beforeMinor, false),
+      after: debtSideText(change, change.afterMinor, true),
     }))
   }
   return item.changes.map((change) => ({
@@ -262,7 +267,7 @@ export function detailLine(item: JsActivityItem): string {
     case 'comment_added':
       return item.body && !item.isCommentDeleted ? `“${item.body}”` : ''
     case SIMPLIFY_KIND:
-      return simplificationDetail(item, item.simplification)
+      return simplificationDetail(item.simplification)
     default:
       return amount
   }

@@ -19,6 +19,13 @@ data class ActivityEvent(
     // Why: the bill's description, or the group's or the member's name, as it was then.
     val subject: String?,
     val amountMinor: Long?,
+    /*
+     * Why: the currency of the bill's or payment's amount; null for an event written before each row had its own
+     * (the group's then), and for the events that carry no amount.
+     */
+    val currency: String?,
+    // Why: the currency a bill had before an edit moved it to another, which the amount it changed from is in.
+    val previousCurrency: String?,
     // Why: a bill's split mode, a group's type, a payment's method, an attachment's kind, a link's visibility, by codes.
     val code: String?,
     val fromMemberId: String?,

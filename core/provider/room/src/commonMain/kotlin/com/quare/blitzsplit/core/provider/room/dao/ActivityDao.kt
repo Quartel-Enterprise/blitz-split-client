@@ -43,14 +43,14 @@ interface ActivityDao {
     suspend fun getState(): ActivityStateEntity?
 
     @Query(
-        "SELECT e.id, e.groupId, e.description, e.amountMinor, e.splitMode, e.isDeleted, e.updatedAt, " +
+        "SELECT e.id, e.groupId, e.description, e.amountMinor, e.currency, e.splitMode, e.isDeleted, e.updatedAt, " +
             "EXISTS(SELECT 1 FROM activity_event a WHERE a.targetId = e.id AND a.seq IS NOT NULL) AS hasEvent " +
             "FROM expense e WHERE e.pendingSync = 1",
     )
     fun observeQueuedBills(): Flow<List<QueuedBillRow>>
 
     @Query(
-        "SELECT id, groupId, fromMemberId, toMemberId, amountMinor, method, isDeleted, updatedAt " +
+        "SELECT id, groupId, fromMemberId, toMemberId, amountMinor, currency, method, isDeleted, updatedAt " +
             "FROM settlement WHERE pendingSync = 1",
     )
     fun observeQueuedPayments(): Flow<List<QueuedPaymentRow>>

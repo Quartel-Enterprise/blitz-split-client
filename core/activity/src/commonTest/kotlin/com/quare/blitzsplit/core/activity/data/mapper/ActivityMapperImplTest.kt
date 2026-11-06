@@ -53,6 +53,8 @@ class ActivityMapperImplTest {
                 occurredAt = 1_000L,
                 subject = "Mercado",
                 amountMinor = 31_200L,
+                currency = null,
+                previousCurrency = null,
                 code = "equal",
                 fromMemberId = null,
                 toMemberId = null,
@@ -139,10 +141,10 @@ class ActivityMapperImplTest {
         assertEquals(ActivityEvent.SIMPLIFY_ON, event?.code)
         assertEquals("Viagem Floripa", event?.subject)
         assertEquals(
-            listOf(ActivityDebt("diego", "bruno", 6_400L), ActivityDebt("bruno", "pierre", 6_400L)),
+            listOf(ActivityDebt("diego", "bruno", 6_400L, null), ActivityDebt("bruno", "pierre", 6_400L, null)),
             event?.debtsBefore,
         )
-        assertEquals(listOf(ActivityDebt("diego", "pierre", 6_400L)), event?.debtsAfter)
+        assertEquals(listOf(ActivityDebt("diego", "pierre", 6_400L, null)), event?.debtsAfter)
         assertEquals(mapOf("diego" to "Diego", "bruno" to "Bruno", "pierre" to "Pierre"), event?.memberNames)
     }
 
@@ -664,6 +666,7 @@ class ActivityMapperImplTest {
                 kind = ActivityKind.BILL_CREATED,
                 subject = "Mercado",
                 amountMinor = 31_200L,
+                currency = "BRL",
                 code = "equal",
                 fromMemberId = null,
                 toMemberId = null,
@@ -716,6 +719,7 @@ class ActivityMapperImplTest {
                 kind = ActivityKind.PAYMENT_RECORDED,
                 subject = null,
                 amountMinor = 5_000L,
+                currency = "BRL",
                 code = "cash",
                 fromMemberId = "ana",
                 toMemberId = "bruno",
@@ -753,6 +757,7 @@ class ActivityMapperImplTest {
                 kind = ActivityKind.GROUP_CREATED,
                 subject = "Apê 302",
                 amountMinor = null,
+                currency = null,
                 code = "home",
                 fromMemberId = null,
                 toMemberId = null,
@@ -1061,6 +1066,379 @@ class ActivityMapperImplTest {
         )
     }
 
+    @Test
+    fun `GIVEN a bill created event with a currency WHEN reading it THEN keeps that currency`() {
+        // Given
+        val entity = entity(
+            kind = "bill_created",
+            data = """{"amount_minor":5000,"currency":"USD"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("USD", event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN a bill edited event with a currency WHEN reading it THEN keeps that currency`() {
+        // Given
+        val entity = entity(
+            kind = "bill_edited",
+            data = """{"amount_minor":5000,"currency":"USD"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("USD", event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN a bill deleted event with a currency WHEN reading it THEN keeps that currency`() {
+        // Given
+        val entity = entity(
+            kind = "bill_deleted",
+            data = """{"amount_minor":5000,"currency":"USD"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("USD", event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN a payment recorded event with a currency WHEN reading it THEN keeps that currency`() {
+        // Given
+        val entity = entity(
+            kind = "payment_recorded",
+            data = """{"amount_minor":5000,"currency":"USD"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("USD", event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN a payment undone event with a currency WHEN reading it THEN keeps that currency`() {
+        // Given
+        val entity = entity(
+            kind = "payment_undone",
+            data = """{"amount_minor":5000,"currency":"USD"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("USD", event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN a bill edited that moved to another currency WHEN reading it THEN keeps the currency it had before`() {
+        // Given
+        val entity = entity(
+            kind = "bill_edited",
+            data = """
+                {"amount_minor":5000,"currency":"EUR","previous_currency":"USD",
+                "changes":[{"field":"amount","before":3000,"after":5000}]}
+            """,
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("EUR", event?.currency)
+        assertEquals("USD", event?.previousCurrency)
+        assertEquals(
+            3_000L,
+            event
+                ?.changes
+                ?.single()
+                ?.before
+                ?.minor,
+        )
+    }
+
+    @Test
+    fun `GIVEN a bill edited that kept its currency WHEN reading it THEN has no previous currency`() {
+        // Given
+        val entity = entity(
+            kind = "bill_edited",
+            data = """{"amount_minor":5000,"currency":"BRL"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals("BRL", event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN an event written before currencies per bill WHEN reading it THEN its currencies are null`() {
+        // Given
+        val entity = entity(
+            kind = "bill_created",
+            data = """{"amount_minor":5000}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN an event with a null currency WHEN reading it THEN its currency is null`() {
+        // Given
+        val entity = entity(
+            kind = "payment_recorded",
+            data = """{"amount_minor":5000,"currency":null,"previous_currency":null}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN an event with a blank currency WHEN reading it THEN its currency is null`() {
+        // Given
+        val entity = entity(
+            kind = "payment_recorded",
+            data = """{"amount_minor":5000,"currency":"  "}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.currency)
+    }
+
+    @Test
+    fun `GIVEN an event whose currency is not text WHEN reading it THEN its currency is null`() {
+        // Given
+        val entity = entity(
+            kind = "bill_created",
+            data = """{"amount_minor":5000,"currency":{"code":"USD"},"previous_currency":["USD"]}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.currency)
+        assertNull(event?.previousCurrency)
+    }
+
+    @Test
+    fun `GIVEN an event with no amount WHEN reading it THEN it has no currency`() {
+        // Given
+        val entity = entity(
+            kind = "member_joined",
+            data = """{"name":"Carla"}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertNull(event?.currency)
+    }
+
+    @Test
+    fun `GIVEN Simplificar dividas pairs with a currency WHEN reading it THEN each pair keeps its own`() {
+        // Given
+        val entity = entity(
+            kind = "simplify_debts_changed",
+            data = """
+                {"simplify_debts":true,
+                "before":[{"from":"a","to":"b","amount":100,"currency":"USD"},
+                {"from":"b","to":"c","amount":200,"currency":"EUR"}],
+                "after":[{"from":"a","to":"c","amount":100,"currency":"USD"}]}
+            """,
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(
+            listOf(ActivityDebt("a", "b", 100L, "USD"), ActivityDebt("b", "c", 200L, "EUR")),
+            event?.debtsBefore,
+        )
+        assertEquals(listOf(ActivityDebt("a", "c", 100L, "USD")), event?.debtsAfter)
+    }
+
+    @Test
+    fun `GIVEN a pair with no currency next to one with it WHEN reading it THEN only that pair has none`() {
+        // Given
+        val entity = entity(
+            kind = "simplify_debts_changed",
+            data = """
+                {"simplify_debts":true,
+                "before":[{"from":"a","to":"b","amount":100},{"from":"b","to":"c","amount":200,"currency":"EUR"}],
+                "after":[]}
+            """,
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(
+            listOf(ActivityDebt("a", "b", 100L, null), ActivityDebt("b", "c", 200L, "EUR")),
+            event?.debtsBefore,
+        )
+    }
+
+    @Test
+    fun `GIVEN a pair with a blank currency WHEN reading it THEN the pair has none`() {
+        // Given
+        val entity = entity(
+            kind = "simplify_debts_changed",
+            data = """{"simplify_debts":true,"before":[{"from":"a","to":"b","amount":100,"currency":""}],"after":[]}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(listOf(ActivityDebt("a", "b", 100L, null)), event?.debtsBefore)
+    }
+
+    @Test
+    fun `GIVEN a pair with a currency but no amount WHEN reading it THEN the pair stays out`() {
+        // Given
+        val entity = entity(
+            kind = "simplify_debts_changed",
+            data = """{"simplify_debts":true,"before":[{"from":"a","to":"b","currency":"USD"}],"after":[]}""",
+        )
+
+        // When
+        val event = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(emptyList(), event?.debtsBefore)
+    }
+
+    @Test
+    fun `GIVEN a pending bill in dollars WHEN reading it queued THEN keeps the currency of the row`() {
+        // Given
+        val row = billRow().copy(currency = "USD")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertEquals("USD", queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a pending bill deleted in euros WHEN reading it queued THEN keeps the currency of the row`() {
+        // Given
+        val row = billRow(isDeleted = true).copy(currency = "EUR")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertEquals("EUR", queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a pending payment in dollars WHEN reading it queued THEN keeps the currency of the row`() {
+        // Given
+        val row = paymentRow(isDeleted = false).copy(currency = "USD")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertEquals("USD", queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a pending payment undone in euros WHEN reading it queued THEN keeps the currency of the row`() {
+        // Given
+        val row = paymentRow(isDeleted = true).copy(currency = "EUR")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertEquals("EUR", queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a pending bill saved with a blank currency WHEN reading it queued THEN it has no currency`() {
+        // Given
+        val row = billRow().copy(currency = "")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertNull(queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a pending payment saved with a blank currency WHEN reading it queued THEN it has no currency`() {
+        // Given
+        val row = paymentRow(isDeleted = false).copy(currency = " ")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertNull(queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a pending group change WHEN reading it queued THEN it has no currency`() {
+        // Given
+        val row = groupRow(isNew = false)
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertNull(queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a new pending group WHEN reading it queued THEN it has no currency`() {
+        // Given
+        val row = groupRow(isNew = true)
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertNull(queued.currency)
+    }
+
     private fun json(text: String): JsonObject = Json.parseToJsonElement(text).jsonObject
 
     private fun dto(
@@ -1102,6 +1480,7 @@ class ActivityMapperImplTest {
         groupId = GROUP_ID,
         description = "Mercado",
         amountMinor = 31_200L,
+        currency = "BRL",
         splitMode = "equal",
         isDeleted = isDeleted,
         updatedAt = 7_000L,
@@ -1114,6 +1493,7 @@ class ActivityMapperImplTest {
         fromMemberId = "ana",
         toMemberId = "bruno",
         amountMinor = 5_000L,
+        currency = "BRL",
         method = "cash",
         isDeleted = isDeleted,
         updatedAt = 8_000L,

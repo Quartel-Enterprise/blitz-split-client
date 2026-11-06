@@ -213,7 +213,7 @@ enum ActivityCopy {
             return nil
         case .simplifyDebtsChanged:
             // A change still waiting to go up has no counts yet: its meta line already says "Waiting to send"
-            return item.simplification.map { simplification($0, currency: item.currency) }
+            return item.simplification.map { simplification($0) }
         case .commentAdded:
             return item.isCommentDeleted ? nil : item.body.map { "“\($0)”" }
         default:
@@ -382,7 +382,7 @@ enum ActivityCopy {
     // MARK: - Simplify debts (13.7)
 
     /// "7 payments became 5. Now Diego pays you $64, and Ana no longer owes you."
-    static func simplification(_ simplification: ActivitySimplification, currency: GroupCurrency?) -> String {
+    static func simplification(_ simplification: ActivitySimplification) -> String {
         let counts = String(
             localized: "\(Int(simplification.paymentsBefore)) payments became \(Int(simplification.paymentsAfter)).",
             bundle: .appLanguage,
@@ -391,7 +391,7 @@ enum ActivityCopy {
         var after = ""
         if let pair = simplification.newPair {
             let name = PaymentCopy.name(pair.name)
-            let amount = debtAmount(abs(pair.afterMinor), currency: currency)
+            let amount = debtAmount(abs(pair.afterMinor), currency: pair.currency)
             after = pair.afterMinor > 0
                 ? String(
                     localized: "Now \(name) pays you \(amount)",
