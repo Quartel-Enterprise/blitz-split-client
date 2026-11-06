@@ -281,15 +281,12 @@ private struct PhotoEditor: View {
                         }
                     }
                 } label: {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 14, weight: .semibold))
-                        .frame(width: 32, height: 32)
-                        .glassEffect(.regular.interactive(), in: .circle)
+                    CornerGlassIcon(systemName: "pencil")
                 }
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
                 .fixedSize()
-                .offset(x: 4, y: 4)
+                .offset(x: 4 + CornerGlassIcon.targetPadding, y: 4 + CornerGlassIcon.targetPadding)
                 .accessibilityLabel("Edit photo")
             }
             if state.showsPhotoError {

@@ -256,15 +256,12 @@ private struct CreateGroupIcon: View {
                 }
             }
         } label: {
-            Image(systemName: "camera")
-                .font(.system(size: 13, weight: .semibold))
-                .frame(width: 32, height: 32)
-                .glassEffect(.regular.interactive(), in: .circle)
+            CornerGlassIcon(systemName: "camera")
         }
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
         .fixedSize()
-        .offset(x: 6, y: 6)
+        .offset(x: 6 + CornerGlassIcon.targetPadding, y: 6 + CornerGlassIcon.targetPadding)
         .accessibilityLabel("Group photo")
     }
 }
