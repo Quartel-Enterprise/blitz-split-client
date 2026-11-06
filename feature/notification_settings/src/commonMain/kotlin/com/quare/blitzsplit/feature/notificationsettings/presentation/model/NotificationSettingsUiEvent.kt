@@ -18,8 +18,11 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
             // Why: what the system says, which nobody tapped, but it ends the funnel the app's request began.
             is OnPermissionAnswered -> EventAnalytics.Manual("notification_permission_answered")
 
-            // Why: only while its channel's toggles take a change (the preferences read, the push's permission not refused).
+            // Why: only while its channel's toggles take a change (the preferences read, the pushes on on this device).
             is OnToggled -> EventAnalytics.Manual("notification_toggled")
+
+            // Why: only once the switch and the permission are known, and only a tap that changes the switch.
+            is OnPushToggled -> EventAnalytics.Manual("notification_push_toggled")
 
             OnOpenSettingsClicked -> EventAnalytics.Automatic("notification_system_settings_clicked")
 
@@ -51,6 +54,14 @@ sealed interface NotificationSettingsUiEvent : UiEvent {
     data class OnToggled(
         val type: NotificationType,
         val channel: NotificationChannel,
+        val isEnabled: Boolean,
+    ) : NotificationSettingsUiEvent
+
+    /*
+     * Why: the "Push notifications" switch over the rows, for this device only: on, it asks the system when it still
+     * can, or opens its settings when only they can allow them.
+     */
+    data class OnPushToggled(
         val isEnabled: Boolean,
     ) : NotificationSettingsUiEvent
 

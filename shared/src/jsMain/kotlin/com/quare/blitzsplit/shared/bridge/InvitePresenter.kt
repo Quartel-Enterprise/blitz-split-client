@@ -20,6 +20,7 @@ class JsInviteMember(
     val color: String,
     val isMe: Boolean,
     val hasJoined: Boolean,
+    val photoUrl: String?,
 )
 
 class JsInviteState(
@@ -149,4 +150,5 @@ private fun toJsInviteMember(member: InviteMember): JsInviteMember = JsInviteMem
     color = member.avatarColor.code,
     isMe = member.isMe,
     hasJoined = member.hasJoined,
+    photoUrl = member.photoUrl,
 )

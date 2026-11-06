@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.core.contacts.domain.usecase.impl
 
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
-import com.quare.blitzsplit.core.contacts.domain.model.MemberNameTakenException
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -31,23 +30,9 @@ class AddContactToGroupUseCase(
             ?: return Result.failure(NoSuchElementException("No group $groupId"))
         // Why: a stale tap never adds someone the group already has, a guest being their name there.
         if (group.members.any { PeopleBalances.keyOf(it) == contact.key }) return Result.success(Unit)
-        /*
-         * Why: two members of a group never share a name. Someone with an account takes the nickname ("Ana 2"); a
-         * guest is their name, so another member already called that leaves them out of this group.
-         */
-        val check = checkMemberName(
-            name = contact.name,
-            takenNames = group.members.map(GroupMember::name),
-            adderName = group.members
-                .firstOrNull { it.isMe }
-                ?.name
-                .orEmpty(),
-        )
-        val name = when (check) {
-            is MemberNameCheck.Available -> check.name
-            is MemberNameCheck.Taken -> check.suggestions.lastOrNull()?.takeIf { contact.userId != null }
-            MemberNameCheck.Blank, MemberNameCheck.TooShort -> null
-        } ?: return Result.failure(MemberNameTakenException(contact.name))
+        // Why: a name may repeat in a group (beta feedback 3, item 29), so only one too short holds it back.
+        val name = (checkMemberName(contact.name) as? MemberNameCheck.Available)?.name
+            ?: return Result.failure(IllegalArgumentException("${contact.name} is too short for a member's name"))
         val userId = contact.userId ?: return addMember(groupId, name)
         return repository.addMember(
             groupId = groupId,

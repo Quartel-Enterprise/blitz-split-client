@@ -304,7 +304,7 @@ function ReleaseMemberDialog({ presenter, name, isReleasing }: { presenter: Memb
   )
 }
 
-/** "Adicionar pessoa" and "Renomear" ask the same thing: a name free in the group, with nicknames when it isn't. */
+/** "Adicionar pessoa" and "Renomear" ask the same thing: a name, which may repeat another member's. */
 function MemberNameDialog({ presenter, editor }: { presenter: MembersPresenter; editor: JsMemberNameEditor }) {
   // Why: the ViewModel caps the draft as it handles it, so the field reads the capped text back.
   const [draft, setDraft] = useDraft(editor.draft, (value) => {
@@ -339,23 +339,7 @@ function MemberNameDialog({ presenter, editor }: { presenter: MembersPresenter; 
               autoComplete="off"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              aria-invalid={editor.takenName != null}
-              aria-describedby={editor.takenName != null ? `${nameId}-taken` : undefined}
             />
-            {editor.takenName != null && (
-              <>
-                <p id={`${nameId}-taken`} className="text-sm text-destructive">
-                  {t('members_nameTaken', { name: editor.takenName })}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {editor.nicknameSuggestions.map((suggestion) => (
-                    <Button key={suggestion} type="button" variant="outline" size="sm" onClick={() => presenter.useSuggestion(suggestion)}>
-                      {t('members_useNickname', { name: suggestion })}
-                    </Button>
-                  ))}
-                </div>
-              </>
-            )}
             {/* Why: someone who has the app joins through the link instead, and picks their own name. */}
             {editor.isAdding && (
               <Button type="button" variant="link" className="self-start px-0" onClick={() => presenter.inviteInstead()}>

@@ -7,9 +7,10 @@ Creating a group and inviting people.
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
     with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). The group's avatar is its rounded
     square on every platform, Android included (the beta's feedback dropped Android's shapes), and tapping it steps
-    its color through the palette ("Change the group's color"), and Currency starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
-    the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "New
-    group") and "Ana 2". The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
+    its color through the palette ("Change the group's color"), and Currency starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. "Add by name"
+    takes any name of 2 letters or more, one already in the group too (beta feedback 3, item 29: people are told apart by
+    their member and user ids, not their name), here, in Members' "Add person" and "Rename" and in Contacts' "Add to a
+    group" alike. The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
     photo, the Mac's "Choose photo…" a file, and Remove photo once there is one), which opens "Adjust photo"; while a
     photo is on, the tap changes nothing, and the photo goes up with the group's first sync as Edit group's does.
   - "Invite" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
@@ -27,7 +28,8 @@ Creating a group and inviting people.
     title and buttons below. "Change the link?" takes a book's right half and a tabletop's top half. iOS opens it as a
     sheet on an iPhone (two columns lying down) and pushes it full screen with an iPad's room (two columns lying
     down, the QR card first upright); the Mac opens the new group's in a sheet and the group's as a popover on the
-    group's "Invite people" (or Members' Share), with "Change link…" under its share button. Every Invite, the new
+    group's "Invite people" (or Members' Share), with "Change link…" under its share button. The web's Invite lists the members with
+    their profile photos (yours too) over the initials (beta feedback 3, item 25). Every Invite, the new
     group's too, ends with "Add someone without the app": someone who won't install it goes in by name, as in "New
     group", so it opens the group's Members with "Add person" already open (`RequestAddPerson`, which the group's
     Members on top takes once).

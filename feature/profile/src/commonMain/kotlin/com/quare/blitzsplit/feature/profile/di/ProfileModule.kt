@@ -40,6 +40,7 @@ val profileModule = module {
             dynamicColorSupport = get(),
             observeNotificationPreferences = get(),
             observePendingNotificationPreferenceChanges = get(),
+            observePushEnabled = get(),
             observeFirstDownload = get(),
             connectivityObserver = get(),
             trackEvent = get(),

@@ -55,6 +55,7 @@ val groupsModule = module {
             holdPickedReceipt = get(),
             observeAppInvite = get(),
             updateLastNotificationPromptAt = get(),
+            updatePushEnabled = get(),
             observeLastNotificationPromptAt = get(),
             observeRecordedPayment = get(),
             observeSettledUp = get(),

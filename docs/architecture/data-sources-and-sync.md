@@ -317,8 +317,8 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     member's, or the least used one, when the device has no profile yet), and on `Joined` or `AlreadyMember` saves a
     profile from the name joined as when there is none, then runs `syncNow()` so the group is in Room before
     Membros opens it. Joining is online only: the link waits on the invite screen until the device is online. A
-    member someone else took first (`MemberTaken`) or a name already in the group (`NameTaken`) comes back as an
-    outcome, not an error, and the pick screen reloads the list. A personal link asks `get_invite` with the member's
+    member someone else took first (`MemberTaken`) comes back as an outcome, not an error, and the pick screen reloads
+    the list. A new member's name may repeat another member's, so the server no longer answers `name_taken`. A personal link asks `get_invite` with the member's
     code and the sharer's too, which answer `personal_member_id` and `inviter_name`, and joins with `join_group` as
     that member right from the invite screen.
   - **Leaving and deleting a group** ("Sair do grupo", "Apagar grupo") are online only, never queued: whether a

@@ -80,8 +80,8 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    /// Only from a tap (Home's card, a Push toggle, Notifications' notice): the system shows its prompt while the person
-    /// never answered it, provisional included.
+    /// Only from a tap (Home's card, Notifications' "Push notifications" switch or its notice, a Push toggle while Apple
+    /// delivers quietly): the system shows its prompt while the person never answered it, provisional included.
     static func requestPermission() async {
         _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
     }

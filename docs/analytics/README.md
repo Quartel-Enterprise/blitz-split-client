@@ -170,8 +170,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `member_add_clicked` | none | "Add person" | `:feature:members` |
 | `person_clicked` | `source` (`members`, `register_payment`, `global_balances`, `group_stats`, `bill_detail`, `activity`) | A person's row, which opens their profile | `:feature:members`, `:feature:register_payment`, `:feature:global_balances`, `:feature:group_stats`, `:feature:bill_detail`, `:feature:activity` |
 | `member_rename_clicked` | none | A member's "Rename" | `:feature:members` |
-| `member_name_suggestion_clicked` | `source` (`members`, `create_group`) | A nickname offered for a name already in the group ("Ana P.", "Ana 2") | `:feature:members`, `:feature:create_group` |
-| `member_editor_save_clicked` | none | The name editor's Save or the keyboard's Done, adding or renaming; also a Done the screen refuses (a name taken or too short) | `:feature:members` |
+| `member_editor_save_clicked` | none | The name editor's Save or the keyboard's Done, adding or renaming; also a Done the screen refuses (a name too short) | `:feature:members` |
 | `member_editor_invite_clicked` | none | "Add person"'s "Has the app? Invite with the link", which opens Invite | `:feature:members` |
 | `personal_invite_clicked` | none | "Personal invite for Carla" | `:feature:members` |
 | `member_remove_clicked` | none | "Remove from group", which asks first | `:feature:members` |
@@ -187,7 +186,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_invite_scan_another_clicked` | none | "Scan another QR code", for an invite no longer valid | `:feature:join` |
 | `join_pick_member_selected` | none | A name picked in "Who are you in the group?" | `:feature:join` |
 | `join_pick_join_clicked` | none | "Join as Bruno" | `:feature:join` |
-| `join_pick_not_in_list_clicked` | none | "I'm not on the list" | `:feature:join` |
+| `join_pick_not_in_list_clicked` | none | "I'm not on the list": opens "Join with another name", or joins at once with a Google or Apple account | `:feature:join` |
 | `join_pick_new_member_confirmed` | none | "Join group" with a new name | `:feature:join` |
 | `camera_settings_clicked` | `source` (`join_with_link`, `receipt`) | "Open settings" with the camera denied, on the reader or on the receipt camera (Android, iOS), from Split a bill or Home | `:feature:join`, `:feature:split_bill`, `:feature:groups` |
 | `join_with_link_open_camera_clicked` | none | "Open camera", the only tap that asks for the camera and starts it; a tap once it was asked, or on a device with no camera, doesn't count | `:feature:join` |
@@ -491,6 +490,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |
 | `profile_saved` | `has_photo` | The profile saved | `:feature:edit_profile` |
 | `notification_toggled` | `type` (`BILLS`, `PAYMENTS`, `COMMENTS`, `PEOPLE_AND_GROUPS`, `PAYMENT_REQUESTS`, `BALANCE_REMINDER`), `channel` (`PUSH`, `IN_APP`), `is_enabled` | A Push or In app toggle of Notifications, while its channel's toggles take a change | `:feature:notification_settings` |
+| `notification_push_toggled` | `is_enabled` | The "Push notifications" switch of Notifications, for this device, once it and the permission are known and only when the tap changes it | `:feature:notification_settings` |
 | `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |
 | `notification_ask_again_clicked` | none | The notice's "Turn on" on Android after a first refusal, which shows the system's dialog once more | `:feature:notification_settings` |
 | `notification_quiet_turn_on_clicked` | none | The notice's "Turn on" while Apple delivers quietly, which shows its full prompt for banners and sounds | `:feature:notification_settings` |

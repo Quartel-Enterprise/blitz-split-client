@@ -23,6 +23,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
         avatarColor = AvatarColor.BLUE,
         isMe = true,
         hasJoined = true,
+        photoUrl = null,
     ),
     InviteMember(
         id = "2",
@@ -31,6 +32,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
         avatarColor = AvatarColor.PEACH,
         isMe = false,
         hasJoined = false,
+        photoUrl = null,
     ),
     InviteMember(
         id = "3",
@@ -39,6 +41,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
         avatarColor = AvatarColor.GREEN,
         isMe = false,
         hasJoined = false,
+        photoUrl = null,
     ),
     InviteMember(
         id = "4",
@@ -47,6 +50,7 @@ private fun createPreviewMembers(): List<InviteMember> = listOf(
         avatarColor = AvatarColor.LILAC,
         isMe = false,
         hasJoined = false,
+        photoUrl = null,
     ),
 )
 

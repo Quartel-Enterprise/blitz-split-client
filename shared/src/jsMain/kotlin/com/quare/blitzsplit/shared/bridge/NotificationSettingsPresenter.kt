@@ -30,6 +30,10 @@ class JsNotificationItem(
 
 class JsNotificationSettingsState(
     val items: Array<JsNotificationItem>,
+    // Why: the "Push notifications" switch of this browser, over the rows.
+    val isPushOn: Boolean,
+    val isPushSwitchEnabled: Boolean,
+    val showsPushSwitchLoading: Boolean,
     val showsPermissionDenied: Boolean,
     // Why: the toggles shimmer while the choices load or the browser's permission wasn't reported yet.
     val showsTogglesLoading: Boolean,
@@ -61,6 +65,9 @@ class NotificationSettingsPresenter {
                                 }.toTypedArray(),
                         )
                     }.toTypedArray(),
+                isPushOn = state.isPushOn,
+                isPushSwitchEnabled = state.isPushSwitchEnabled,
+                showsPushSwitchLoading = state.showsPushSwitchLoading,
                 showsPermissionDenied = state.showsPermissionDenied,
                 showsTogglesLoading = state.showsTogglesLoading,
             )
@@ -105,6 +112,10 @@ class NotificationSettingsPresenter {
         val type = NotificationType.entries.firstOrNull { it.name == typeName } ?: return
         val channel = NotificationChannel.entries.firstOrNull { it.name == channelName } ?: return
         viewModel.onEvent(NotificationSettingsUiEvent.OnToggled(type, channel, isEnabled))
+    }
+
+    fun togglePush(isEnabled: Boolean) {
+        viewModel.onEvent(NotificationSettingsUiEvent.OnPushToggled(isEnabled))
     }
 
     // Why: the dialog Activity opens closes back to it; inside the profile nothing is left to close.

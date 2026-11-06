@@ -118,6 +118,7 @@ class InviteViewModelTest {
                         AvatarColor.BLUE,
                         isMe = true,
                         hasJoined = true,
+                        photoUrl = null,
                     ),
                     InviteMember(
                         "member-2",
@@ -126,6 +127,7 @@ class InviteViewModelTest {
                         AvatarColor.PEACH,
                         isMe = false,
                         hasJoined = false,
+                        photoUrl = null,
                     ),
                     InviteMember(
                         "member-3",
@@ -134,6 +136,7 @@ class InviteViewModelTest {
                         AvatarColor.GREEN,
                         isMe = false,
                         hasJoined = false,
+                        photoUrl = null,
                     ),
                     InviteMember(
                         "member-4",
@@ -142,9 +145,36 @@ class InviteViewModelTest {
                         AvatarColor.LILAC,
                         isMe = false,
                         hasJoined = false,
+                        photoUrl = null,
                     ),
                 ),
                 state.members,
+            )
+        }
+
+    @Test
+    fun `GIVEN this device user and Ana with photos WHEN the screen opens THEN shows their photos`() =
+        runTest(testDispatcher) {
+            // Given
+            val members = listOf(
+                pierre.copy(photoUrl = "file:///photos/pierre.jpg"),
+                ana.copy(photoUrl = "https://x.supabase.co/storage/v1/object/public/avatars/ana/avatar.jpg"),
+                bruno,
+            )
+            prepareScenario(storedGroup = trip.copy(members = members))
+
+            // When
+            val photos = viewModel.uiState.value.members
+                .map { it.photoUrl }
+
+            // Then
+            assertEquals(
+                listOf(
+                    "file:///photos/pierre.jpg",
+                    "https://x.supabase.co/storage/v1/object/public/avatars/ana/avatar.jpg",
+                    null,
+                ),
+                photos,
             )
         }
 

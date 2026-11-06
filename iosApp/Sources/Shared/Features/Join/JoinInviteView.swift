@@ -259,7 +259,7 @@ private struct JoinInviteContent: View {
         if state.isPersonal, let member = state.personalMember {
             GroupedCard {
                 HStack(spacing: 12) {
-                    AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
+                    AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
                     Text(verbatim: member.name)
                         .font(.headline)
                 }
@@ -308,7 +308,7 @@ private struct JoinInviteContent: View {
     private func group(_ state: JoinInviteUiState) -> some View {
         GroupedCard {
             HStack(spacing: 16) {
-                GroupAvatar(initials: state.groupInitials, color: state.groupColor, size: 56)
+                GroupAvatar(initials: state.groupInitials, color: state.groupColor, photoUrl: state.groupPhotoUrl, size: 56)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: state.groupName)
                         .font(.title3.weight(.semibold))
@@ -339,7 +339,7 @@ private struct JoinInviteContent: View {
     private func faces(_ members: [JoinMember]) -> some View {
         HStack(spacing: -8) {
             ForEach(members.prefix(3), id: \.id) { member in
-                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
+                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
                     .overlay(Circle().stroke(Palette.groupedBackground, lineWidth: 2))
             }
             if members.count > 3 {

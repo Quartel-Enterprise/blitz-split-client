@@ -10,4 +10,5 @@ internal fun InviteMember.toJoinMember(): JoinMember = JoinMember(
     initials = Initials.of(name),
     avatarColor = avatarColor,
     hasJoined = hasJoined,
+    photoUrl = photoUrl,
 )

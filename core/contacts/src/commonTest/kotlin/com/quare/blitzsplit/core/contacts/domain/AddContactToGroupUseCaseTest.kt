@@ -2,7 +2,6 @@ package com.quare.blitzsplit.core.contacts.domain
 
 import com.quare.blitzsplit.core.contacts.contact
 import com.quare.blitzsplit.core.contacts.contactGroup
-import com.quare.blitzsplit.core.contacts.domain.model.MemberNameTakenException
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.AddContactToGroupUseCase
 import com.quare.blitzsplit.core.contacts.group
 import com.quare.blitzsplit.core.contacts.me
@@ -94,7 +93,7 @@ class AddContactToGroupUseCaseTest {
         }
 
     @Test
-    fun `GIVEN another member called Carla WHEN adding the account Carla THEN adds her with a nickname`() = runTest {
+    fun `GIVEN another member called Carla WHEN adding the account Carla THEN adds her with the same name`() = runTest {
         // Given
         prepareScenario(storedGroups = listOf(group("ape", me("ape"), member("carla-ape", "Carla"))))
 
@@ -104,25 +103,26 @@ class AddContactToGroupUseCaseTest {
         // Then
         assertTrue(result.isSuccess)
         val added = repository.addedMembers.single().second
-        assertEquals("Carla 2", added.name)
+        assertEquals("Carla", added.name)
         assertEquals("carla", added.userId)
     }
 
     @Test
-    fun `GIVEN an account called Diego in the group WHEN adding the guest Diego THEN fails and adds nobody`() =
-        runTest {
-            // Given
-            prepareScenario(
-                storedGroups = listOf(group("ape", me("ape"), member("diego-ape", "Diego", userId = "diego"))),
-            )
+    fun `GIVEN an account called Diego in the group WHEN adding the guest Diego THEN adds the guest too`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group("ape", me("ape"), member("diego-ape", "Diego", userId = "diego"))),
+        )
 
-            // When
-            val result = useCase(diego, groupId = "ape")
+        // When
+        val result = useCase(diego, groupId = "ape")
 
-            // Then
-            assertIs<MemberNameTakenException>(result.exceptionOrNull())
-            assertTrue(repository.addedMembers.isEmpty())
-        }
+        // Then
+        assertTrue(result.isSuccess)
+        val added = repository.addedMembers.single().second
+        assertEquals("Diego", added.name)
+        assertNull(added.userId)
+    }
 
     @Test
     fun `GIVEN someone with an account already in the group WHEN adding them THEN adds nobody`() = runTest {
