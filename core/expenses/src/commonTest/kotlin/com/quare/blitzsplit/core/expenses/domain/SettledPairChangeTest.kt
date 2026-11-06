@@ -464,7 +464,7 @@ class SettledPairChangeTest {
     }
 
     @Test
-    fun `GIVEN a bill that moves to dollars WHEN a payment in dollars exists THEN warns in dollars`() {
+    fun `GIVEN a bill that moves to dollars WHEN only a payment in dollars exists THEN says nothing, the saved bill is in reais`() {
         // Given
         val paidInDollars = elisaPaidBruno.copy(currency = GroupCurrency.USD)
         val changed = jantar.copy(currency = GroupCurrency.USD)
@@ -473,8 +473,7 @@ class SettledPairChangeTest {
         val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(paidInDollars))
 
         // Then
-        assertEquals(GroupCurrency.USD, change?.currency)
-        assertEquals(SettledPairOutcome.EVEN, change?.outcome)
+        assertNull(change)
     }
 
     private val group = Group(
