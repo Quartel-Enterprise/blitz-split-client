@@ -578,6 +578,24 @@ class RoomSettlementLocalDataSourceTest {
         assertEquals(listOf("theirs"), dataSource.observeSettlements(OTHER_USER_GROUP).first().map { it.id })
     }
 
+    @Test
+    fun `GIVEN a payment in reais WHEN a newer server row brings it in dollars THEN it is stored in dollars`() =
+        runTest {
+            // Given
+            prepareScenario(stored = listOf(settlement(id = "payment-1")))
+            val serverPayment = settlement(
+                id = "payment-1",
+                currency = "USD",
+                updatedAt = 9_000L,
+            )
+
+            // When
+            dataSource.applyRemote(listOf(serverPayment))
+
+            // Then
+            assertEquals("USD", dataSource.observeSettlements(MY_GROUP).first().single().currency)
+        }
+
     private fun group(
         id: String,
         ownerUserId: String,
@@ -611,6 +629,7 @@ class RoomSettlementLocalDataSourceTest {
         groupId: String = MY_GROUP,
         createdBy: String? = USER_ID,
         amountMinor: Long = 5_000L,
+        currency: String = "BRL",
         paidAt: Long = 1_000L,
         isDeleted: Boolean = false,
         pendingSync: Boolean = false,
@@ -621,7 +640,7 @@ class RoomSettlementLocalDataSourceTest {
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
-        currency = "BRL",
+        currency = currency,
         amountMinor = amountMinor,
         method = "pix",
         paidAt = paidAt,

@@ -99,6 +99,7 @@ interface SettlementDao {
             fromMemberId = entity.fromMemberId,
             toMemberId = entity.toMemberId,
             amountMinor = entity.amountMinor,
+            currency = entity.currency,
             method = entity.method,
             paidAt = entity.paidAt,
             isDeleted = entity.isDeleted,
@@ -119,8 +120,8 @@ interface SettlementDao {
     // Why: Last-Write-Wins as the server keeps it, a newer server row winning even over a change not pushed yet.
     @Query(
         "UPDATE settlement SET createdBy = :createdBy, fromMemberId = :fromMemberId, toMemberId = :toMemberId, " +
-            "amountMinor = :amountMinor, method = :method, paidAt = :paidAt, isDeleted = :isDeleted, " +
-            "addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
+            "amountMinor = :amountMinor, currency = :currency, method = :method, paidAt = :paidAt, " +
+            "isDeleted = :isDeleted, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
             "WHERE id = :id AND updatedAt < :remoteUpdatedAt",
     )
     suspend fun updateFromRemote(
@@ -129,6 +130,7 @@ interface SettlementDao {
         fromMemberId: String,
         toMemberId: String,
         amountMinor: Long,
+        currency: String,
         method: String,
         paidAt: Long,
         isDeleted: Boolean,
