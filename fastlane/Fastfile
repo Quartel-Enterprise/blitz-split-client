@@ -20,6 +20,9 @@ APS_ENVIRONMENT = {
   "macos" => ["iosApp/Generated/macOS.entitlements", "com.apple.developer.aps-environment"],
 }.freeze
 
+# No fastlane/README.md written into the checkout after each run
+skip_docs
+
 desc "Fetch the distribution certificate and the App Store profile, sign the target manually, write ExportOptions.plist"
 desc "Options: scheme (BoraRachar-iOS|BoraRachar-macOS), export_options (path of the plist to write)"
 lane :apple_signing do |options|
