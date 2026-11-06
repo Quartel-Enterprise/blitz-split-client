@@ -46,6 +46,34 @@ class SettledPairChangeTest {
     }
 
     @Test
+    fun `GIVEN a BRL payment and a USD bill WHEN the bill's part grows THEN says nothing, the payment settles BRL only`() {
+        // Given
+        val usdBill = jantar.copy(currency = GroupCurrency.USD)
+        val changed = usdBill.withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(usdBill, changed, group, listOf(usdBill), listOf(elisaPaidBruno))
+
+        // Then
+        assertNull(change)
+    }
+
+    @Test
+    fun `GIVEN a USD bill and a BRL bill with a BRL payment WHEN deleting the BRL bill THEN adds up only BRL`() {
+        // Given
+        val usdBill = jantar.copy(
+            id = "usd",
+            currency = GroupCurrency.USD,
+        )
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, null, group, listOf(jantar, usdBill), listOf(elisaPaidBruno))
+
+        // Then
+        assertEquals(10_000L, change?.amountMinor)
+    }
+
+    @Test
     fun `GIVEN Elisa settled with Bruno after the bill WHEN deleting it THEN Bruno comes to owe her the payment`() {
         // Given
         val expenses = listOf(jantar)
