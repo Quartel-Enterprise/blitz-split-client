@@ -19,6 +19,8 @@ enum AppLocale {
         if identifier == Bundle.main.preferredLocalizations.first { return nil }
         let base = String(identifier.prefix { $0 != "-" })
         let hasBase = base != identifier && Bundle.main.url(forResource: base, withExtension: "lproj") != nil
+        // The bare language, never with the device's region: SwiftUI reads the `.lproj` of the locale's exact identifier,
+        // so "es_US" draws every literal in English. Dates and amounts take the device's region at the next launch.
         return Locale(identifier: hasBase ? base : identifier)
     }
 
@@ -34,10 +36,18 @@ enum AppLocale {
     }
 
     /// The app's language for the device's own languages, English when it has none of them, read from the device's
-    /// settings since the app's AppleLanguages may still hold the language picked before System.
+    /// settings, never `Locale.preferredLanguages`, which starts with the language picked before System while the app's
+    /// AppleLanguages still holds it, until the next launch.
     private static var systemLanguage: String {
-        let global = UserDefaults.standard.persistentDomain(forName: UserDefaults.globalDomain)
-        let languages = global?["AppleLanguages"] as? [String] ?? Locale.preferredLanguages
+        let key = "AppleLanguages"
+        let languages = UserDefaults.standard.persistentDomain(forName: UserDefaults.globalDomain)?[key] as? [String]
+            ?? CFPreferencesCopyValue(
+                key as CFString,
+                kCFPreferencesAnyApplication,
+                kCFPreferencesCurrentUser,
+                kCFPreferencesAnyHost,
+            ) as? [String]
+            ?? Locale.preferredLanguages
         let localizations = Bundle.main.localizations.filter { $0 != "Base" }
         return Bundle.preferredLocalizations(from: localizations, forPreferences: languages).first ?? "en"
     }
@@ -54,12 +64,19 @@ enum AppLocale {
         return Bundle(url: merged)
     }
 
-    /// Once per build: the tables only change with the app, so a launch finds them merged already.
+    /// Once per version of the tables: a launch finds them merged already, and a build that changed a string (a debug
+    /// build keeps its number) merges them again.
     private static func merge(_ variant: URL, over base: URL, named identifier: String) -> URL? {
         let files = FileManager.default
-        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "0"
+        let tables = [base, variant].flatMap { lproj in
+            (try? files.contentsOfDirectory(at: lproj, includingPropertiesForKeys: nil)) ?? []
+        }
+        let version = tables
+            .compactMap { try? files.attributesOfItem(atPath: $0.path)[.modificationDate] as? Date }
+            .map(\.timeIntervalSince1970)
+            .max() ?? 0
         let merged = files.temporaryDirectory
-            .appending(path: "AppLocale/\(build)/\(identifier).lproj", directoryHint: .isDirectory)
+            .appending(path: "AppLocale/\(Int(version))/\(identifier).lproj", directoryHint: .isDirectory)
         let done = merged.appending(path: ".merged")
         if files.fileExists(atPath: done.path) { return merged }
         do {
@@ -68,7 +85,8 @@ enum AppLocale {
             for table in try files.contentsOfDirectory(at: base, includingPropertiesForKeys: nil)
             where ["strings", "stringsdict"].contains(table.pathExtension) {
                 var entries = dictionary(at: table)
-                entries.merge(dictionary(at: variant.appending(path: table.lastPathComponent))) { _, override in override }
+                let overrides = dictionary(at: variant.appending(path: table.lastPathComponent))
+                entries.merge(overrides) { _, override in override }
                 let data = try PropertyListSerialization.data(fromPropertyList: entries, format: .binary, options: 0)
                 try data.write(to: merged.appending(path: table.lastPathComponent))
             }

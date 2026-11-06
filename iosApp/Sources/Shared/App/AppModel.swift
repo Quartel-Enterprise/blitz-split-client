@@ -14,8 +14,9 @@ final class AppModel {
         willSet { AppLocale.apply(newValue) }
         didSet { redrawMainWindowIfFree() }
     }
-    /// The language the main window was last drawn again in. A pick made while a sheet is open in it (the Mac's
-    /// Ajustes beside a bill being split) waits for the sheet to close, so its form isn't drawn again empty.
+    /// The language the main window was last drawn again in. A pick made while something being filled in is open in it
+    /// (a sheet or cover, the Mac's bill inspector or invite popover, beside Ajustes) waits for it to close, so what was
+    /// typed there isn't drawn again empty; a pushed page holds no draft of its own and redraws at once.
     private(set) var mainWindowLanguage: AppLanguage
     /// Why a comment's link opened nothing ("You're not in this group"), shown over wherever the app is; nil for none.
     private(set) var billLinkNotice: BillLinkNotice?
@@ -92,7 +93,8 @@ final class AppModel {
     }
 
     private func redrawMainWindowIfFree() {
-        if mainWindowLanguage != language, sheet == nil { mainWindowLanguage = language }
+        let isFree = sheet == nil && cover == nil && billInspector == nil && invitePopover == nil
+        if mainWindowLanguage != language, isFree { mainWindowLanguage = language }
     }
 
     #if os(macOS)
