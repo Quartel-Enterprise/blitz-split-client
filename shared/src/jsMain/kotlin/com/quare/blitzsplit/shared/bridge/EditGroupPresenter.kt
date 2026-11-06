@@ -201,6 +201,7 @@ class EditGroupPresenter(
     }
 
     fun selectCurrency(code: String) {
+        // Why: a picker never creates a currency this version doesn't know, unlike the chips of the group screens.
         val currency = GroupCurrency.fromCodeOrNull(code) ?: return
         viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(currency))
     }

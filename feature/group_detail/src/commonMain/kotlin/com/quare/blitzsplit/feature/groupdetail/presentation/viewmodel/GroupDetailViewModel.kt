@@ -233,7 +233,8 @@ class GroupDetailViewModel(
                 ),
             )
 
-            is GroupDetailUiEvent.OnExpenseEditClicked -> {
+            // Why: a bill in a currency this version doesn't know is read-only (see `GroupCurrency.fromCode`).
+            is GroupDetailUiEvent.OnExpenseEditClicked -> if (isBillEditable(event.expenseId)) {
                 val isOpened = openBill(event.expenseId) {
                     Route.SplitBill(
                         groupId = route.groupId,
@@ -478,6 +479,10 @@ class GroupDetailViewModel(
         uiState.update { it.copy(paymentToDelete = null) }
         screen.deletePayment(payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
+
+    // Why: a bill in a currency this version doesn't know is read-only; the bill's own screen says so.
+    private fun isBillEditable(expenseId: String): Boolean =
+        shownExpenses.none { it.id == expenseId && !it.currency.isKnown }
 
     // Why: a bill's Editar or Compartilhar from its ⋮, only while it is still in the group; says whether it opened.
     private fun openBill(

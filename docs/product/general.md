@@ -78,7 +78,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     class, not an enum: `GroupCurrency.fromCode` gives the listed currency or a read-only one that carries the code
     (`isKnown` false, equal only to the same code, never in `entries`, so never offered by a picker). It is its own
     currency in every balance, with its own chip. It is read-only: Edit is off on the bill, with "This bill uses a
-    currency this app version doesn't know. Update the app to edit it.", no payment can be registered in it, and no
+    currency this app version doesn't know. Update the app to edit it.", no payment can be registered in it (a tap on its debt row does nothing, and the group's bill menu does not open the form for it), and no
     amount in it is valid (`ExpenseRules.isAmountValid`, and the expense and settlement repositories refuse to store
     one); the stored code goes back to the server as it came. A group whose own default currency is unknown reads as
     the fallback, USD (`GroupMapperImpl`), which only sets the default of a new bill.
