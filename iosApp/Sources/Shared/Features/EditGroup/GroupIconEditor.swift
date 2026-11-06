@@ -92,10 +92,7 @@ struct EditGroupIconSection: View {
             Button {
                 model.send(EditGroupUiEventOnIconClicked.shared)
             } label: {
-                Image(systemName: "pencil")
-                    .font(.system(size: 14, weight: .semibold))
-                    .frame(width: 32, height: 32)
-                    .glassEffect(.regular.interactive(), in: .circle)
+                CornerGlassIcon(systemName: "pencil")
             }
             .buttonStyle(.plain)
             .offset(x: 4, y: 4)
