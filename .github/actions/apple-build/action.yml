@@ -1,8 +1,9 @@
 name: 'Build an Apple app for TestFlight'
 description: >-
-  Archives and exports one scheme of the Apple app, signed by Xcode with the App Store Connect API key. The iOS and
-  the macOS beta jobs of release-beta.yml differ only in these inputs. The calling job checks out the repository
-  first, since the steps run its scripts.
+  Archives and exports one scheme of the Apple app, signed with the team's distribution certificate and App Store
+  profile from the certificates repository (fastlane match, fastlane/Fastfile). The iOS and the macOS beta jobs of
+  release-beta.yml differ only in these inputs. The calling job checks out the repository first, since the steps run
+  its scripts.
 
 inputs:
   scheme:
@@ -36,6 +37,12 @@ inputs:
   key-p8:
     description: 'The text of the API key (.p8)'
     required: true
+  match-password:
+    description: 'The passphrase of the certificates repository'
+    required: true
+  match-ssh-private-key:
+    description: 'A private key that can read the certificates repository (a deploy key of bible-planner-certs)'
+    required: true
   cache-encryption-key:
     description: 'Passed to the Gradle action'
     required: false
@@ -53,8 +60,10 @@ runs:
         APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
         APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
+        MATCH_PASSWORD: ${{ inputs.match-password }}
+        MATCH_SSH_PRIVATE_KEY: ${{ inputs.match-ssh-private-key }}
       run: |
-        ./scripts/release/require-env.sh GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+        ./scripts/release/require-env.sh GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8 MATCH_PASSWORD MATCH_SSH_PRIVATE_KEY
         # The Crashlytics dSYM phase of the archive reads GOOGLE_APP_ID from the plist and fails the build ten
         # minutes in when it is missing (a google-services.json, or a value that is not the base64 of the plist):
         # fail here, before the caches and the project generation.
@@ -82,6 +91,31 @@ runs:
       shell: bash
       run: brew install xcodegen
 
+    # The xcode-27 image ships Ruby and fastlane; this version is the one the signing lane was checked with, and a
+    # newer image keeps it until someone moves FASTLANE_VERSION on purpose
+    - name: Check fastlane
+      shell: bash
+      env:
+        FASTLANE_VERSION: '2.241.2'
+      run: |
+        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
+          gem install fastlane -v "$FASTLANE_VERSION" --no-document
+        fi
+        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
+          echo "::error::The fastlane on the PATH is not $FASTLANE_VERSION."
+          exit 1
+        fi
+
+    - name: Prepare SSH access to the certificates repository
+      shell: bash
+      env:
+        MATCH_SSH_PRIVATE_KEY: ${{ inputs.match-ssh-private-key }}
+      run: |
+        mkdir -p ~/.ssh
+        printf '%s\n' "$MATCH_SSH_PRIVATE_KEY" > "$RUNNER_TEMP/match_ssh"
+        chmod 600 "$RUNNER_TEMP/match_ssh"
+        ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+
     # Before the project: XcodeGen lists the files Resources holds when it runs, so a plist decoded after it stays
     # out of the app bundle, Firebase never starts and the Crashlytics dSYM phase finds no GOOGLE_APP_ID.
     - name: Decode the Firebase config and the App Store Connect key
@@ -102,38 +136,43 @@ runs:
           exit 1
         fi
 
-    # -allowProvisioningUpdates with the API key lets Xcode create the cloud-managed distribution certificate and the
-    # profile itself, so there is no certificates repository to keep.
-    #
+    # After the project, which the lane switches to manual signing for Release (docs/release-process.md#apple-signing)
+    - name: Sign with the team's distribution certificate
+      shell: bash
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
+        MATCH_PASSWORD: ${{ inputs.match-password }}
+        GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ssh -o IdentitiesOnly=yes
+      run: fastlane apple_signing scheme:${{ inputs.scheme }} export_options:"$RUNNER_TEMP/ExportOptions.plist"
+
     # No -clonedSourcePackagesDirPath: a Release build with the Firebase plist runs the Crashlytics dSYM script of
     # project.yml, which looks for the Firebase checkout in ${BUILD_DIR%/Build/*}/SourcePackages, that is, under the
     # derived data path. apple.yml moves the packages elsewhere because it has no plist, and the script skips itself.
     - name: Archive the app
       shell: bash
       env:
-        KEY_ID: ${{ inputs.key-id }}
-        ISSUER_ID: ${{ inputs.key-issuer-id }}
         BUILD_SETTINGS: ${{ inputs.build-settings }}
       run: >-
         xcodebuild archive -project iosApp/BoraRachar.xcodeproj -scheme "${{ inputs.scheme }}"
         -destination "${{ inputs.destination }}" -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
-        -derivedDataPath iosApp/build/DerivedData
-        -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH"
-        -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" $BUILD_SETTINGS -quiet
+        -derivedDataPath iosApp/build/DerivedData $BUILD_SETTINGS -quiet
 
+    # ExportOptions.plist comes from the signing lane, with the profile match installed
     - name: Export the app
       shell: bash
-      env:
-        KEY_ID: ${{ inputs.key-id }}
-        ISSUER_ID: ${{ inputs.key-issuer-id }}
       run: >-
         xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
-        -exportPath "${{ inputs.export-path }}" -exportOptionsPlist iosApp/ExportOptions.plist
-        -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH"
-        -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID"
+        -exportPath "${{ inputs.export-path }}" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
 
-    # The signing key must not stay on the runner for the steps after this action, or for the next job on a reused one.
-    - name: Remove the App Store Connect key
+    # The keys and the certificate must not stay on the runner for the steps after this action, or for the next job on
+    # a reused one.
+    - name: Remove the keys and the signing keychain
       if: always()
       shell: bash
-      run: rm -f "${KEY_PATH:-}"
+      run: |
+        rm -f "${KEY_PATH:-}" "$RUNNER_TEMP/match_ssh"
+        # setup_ci made the temporary keychain the default and the only one searched: give both back to the login one
+        security default-keychain -s login.keychain-db 2> /dev/null || true
+        security list-keychains -d user -s login.keychain-db 2> /dev/null || true
+        security delete-keychain fastlane_tmp_keychain-db 2> /dev/null || true

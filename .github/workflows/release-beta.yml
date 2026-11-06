@@ -376,6 +376,8 @@ jobs:
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-ssh-private-key: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Upload the IPA as a build artifact
@@ -442,6 +444,8 @@ jobs:
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-ssh-private-key: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Upload the package as a build artifact
