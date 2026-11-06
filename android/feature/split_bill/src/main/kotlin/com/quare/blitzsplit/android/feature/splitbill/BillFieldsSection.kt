@@ -100,7 +100,7 @@ private fun CurrencyChip(
         Surface(
             onClick = { isMenuOpen = true },
             modifier = Modifier
-                .height(56.dp)
+                .height(68.dp)
                 .semantics { contentDescription = label },
             enabled = state.canChangeCurrency,
             shape = RoundedCornerShape(12.dp),
