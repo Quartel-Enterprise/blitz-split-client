@@ -65,6 +65,9 @@ class JsActivityDebtChange(
     val name: String?,
     val beforeMinor: Double,
     val afterMinor: Double,
+    // Why: the currency this pair is in, null when not even the group's is known: the amount is left out then.
+    val currency: String?,
+    val fractionDigits: Int,
 )
 
 /*
@@ -479,4 +482,6 @@ private fun toJsActivityDebtChange(change: ActivityDebtChange): JsActivityDebtCh
     name = change.name,
     beforeMinor = change.beforeMinor.toDouble(),
     afterMinor = change.afterMinor.toDouble(),
+    currency = change.currency?.code,
+    fractionDigits = change.currency?.fractionDigits ?: 2,
 )

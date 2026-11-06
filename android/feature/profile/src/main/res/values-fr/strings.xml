@@ -48,6 +48,10 @@
     <string name="profile_appearance">Apparence</string>
     <string name="profile_language">Langue</string>
     <string name="profile_language_system">Système</string>
+    <string name="profile_language_english">Anglais</string>
+    <string name="profile_language_portuguese">Portugais (BR)</string>
+    <string name="profile_language_spanish">Espagnol</string>
+    <string name="profile_language_french">Français</string>
     <string name="profile_language_system_detail">Langue de l’appareil</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">

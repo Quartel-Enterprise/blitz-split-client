@@ -6060,11 +6060,13 @@ class GroupRepositoryImplTest {
                 fromMemberId = "m-2",
                 toMemberId = "m-1",
                 amountMinor = 3_000L,
+                currency = null,
             ),
             SimplifyDebtsPair(
                 fromMemberId = "m-3",
                 toMemberId = "m-2",
                 amountMinor = 3_000L,
+                currency = null,
             ),
         ),
         after = listOf(
@@ -6072,6 +6074,7 @@ class GroupRepositoryImplTest {
                 fromMemberId = "m-3",
                 toMemberId = "m-1",
                 amountMinor = 3_000L,
+                currency = null,
             ),
         ),
     )

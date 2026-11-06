@@ -297,6 +297,7 @@ class GroupMapperImpl : GroupMapper {
         from = pair.fromMemberId,
         to = pair.toMemberId,
         amount = pair.amountMinor,
+        currency = pair.currency,
     )
 
     override fun encodeIncomes(incomes: Map<String, Long>): String? = incomes.takeIf { it.isNotEmpty() }?.let {

@@ -5,4 +5,6 @@ data class ActivityDebt(
     val fromMemberId: String,
     val toMemberId: String,
     val amountMinor: Long,
+    // Why: the currency the pair is in; null for an event written before balances were per currency (the group's).
+    val currency: String?,
 )
