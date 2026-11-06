@@ -418,7 +418,6 @@ export const fr: Record<MessageKey, string> = {
   billDetail_history: 'Historique',
   billDetail_historyCreated: 'a créé la dépense',
   billDetail_historyCreatedOffline: 'a créé la dépense hors ligne',
-  billDetail_historyCurrency: 'a changé la devise',
   billDetail_historyEdited: 'a modifié la dépense',
   billDetail_historyEditedOffline: 'a modifié la dépense hors ligne',
   billDetail_historyAmount: 'a modifié le montant',
