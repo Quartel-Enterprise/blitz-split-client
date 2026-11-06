@@ -10,7 +10,6 @@ struct GroupsTable: View {
     let model: GroupsModel
 
     @State private var selection: String?
-    @State private var tableIdentity = 0
     @Environment(\.isNarrowWindow) private var isNarrowWindow
 
     var body: some View {
@@ -97,12 +96,10 @@ struct GroupsTable: View {
         .onChange(of: selection) { _, groupId in
             guard let groupId else { return }
             model.send(GroupsUiEventOnGroupClicked(groupId: groupId))
-            selection = nil
-            // Why: the table keeps its native row selected while the group is open, so back on the list a click on
-            // that same row changes nothing and the group never opens. A new identity drops the stale selection.
-            tableIdentity += 1
+            // Why: cleared on the next turn, so the table's native row selection is cleared too and the same row can be
+            // clicked again once back on the list.
+            DispatchQueue.main.async { selection = nil }
         }
-        .id(tableIdentity)
     }
 }
 
