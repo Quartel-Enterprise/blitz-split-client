@@ -329,13 +329,14 @@ struct SyncStatusRow: View {
 }
 
 #if os(iOS)
-/// Home's sync status in its bar's leading side: one line that truncates, a button that tries again while the server
-/// doesn't answer and plain text otherwise.
+/// Home's sync status in its bar's leading side: one line, a button that tries again while the server doesn't answer
+/// and plain text otherwise.
 struct SyncStatusCapsule: View {
     let status: String
     let badge: SyncBadge?
     let canRetry: Bool
     let onRetry: () -> Void
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         if canRetry {
@@ -351,13 +352,17 @@ struct SyncStatusCapsule: View {
         HStack(spacing: 6) {
             Image(systemName: badge == .offline ? "icloud.slash" : canRetry ? "exclamationmark.icloud" : "arrow.triangle.2.circlepath.icloud")
                 .accessibilityHidden(true)
+            // An iPhone's bar keeps the bell, the profile and "Split a bill" beside it, so a long status truncates there
+            // (VoiceOver still reads it whole) instead of sending them into the bar's overflow menu
             Text(verbatim: status)
                 .lineLimit(1)
-                .truncationMode(.tail)
+                .frame(maxWidth: sizeClass == .compact ? 104 : 320, alignment: .leading)
         }
         .font(.subheadline)
         .foregroundStyle(.secondary)
         .padding(.horizontal, 4)
+        // A toolbar item is offered only an icon's width, which would leave the cloud and drop the words
+        .fixedSize(horizontal: true, vertical: false)
     }
 }
 #endif
