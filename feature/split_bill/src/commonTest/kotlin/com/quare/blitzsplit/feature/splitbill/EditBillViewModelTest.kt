@@ -307,50 +307,6 @@ class EditBillViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill in another currency than the group default WHEN Editar conta opens THEN shows the bill own`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.JPY))
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertEquals(GroupCurrency.BRL, state.currency)
-            assertEquals("312,00", state.amountText)
-        }
-
-    @Test
-    fun `GIVEN a bill in another currency than the group default WHEN tapping Salvar THEN keeps the bill own`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.JPY))
-
-            // When
-            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
-
-            // Then
-            val updated = expenses.updatedExpenses.single()
-            assertEquals(GroupCurrency.BRL, updated.currency)
-            assertEquals(31_200L, updated.amountMinor)
-            assertEquals(savedEqualShares, updated.shares)
-        }
-
-    @Test
-    fun `GIVEN the bill being edited WHEN a sync changes the group default currency THEN the bill keeps its own`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.JPY))
-
-            // Then
-            assertEquals(GroupCurrency.BRL, viewModel.uiState.value.currency)
-            assertEquals("312,00", viewModel.uiState.value.amountText)
-        }
-
-    @Test
     fun `GIVEN a saved Valores bill left as it was WHEN tapping Salvar THEN saves the same values`() =
         runTest(testDispatcher) {
             // Given
@@ -1462,7 +1418,6 @@ class EditBillViewModelTest {
 
     private fun TestScope.prepareScenario(
         storedExpense: Expense? = savedBill,
-        storedGroup: Group = trip,
         screen: Route.SplitBill = route,
         underneath: List<Route> =
             listOf(
@@ -1479,7 +1434,7 @@ class EditBillViewModelTest {
         deleteError: Throwable? = null,
         deleteGate: CompletableDeferred<Unit>? = null,
     ) {
-        groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
+        groups = FakeGroupRepository(initialGroups = listOf(trip))
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense)).also {
             it.updateError = updateError
             it.deleteError = deleteError

@@ -274,10 +274,8 @@ internal fun SplitBillUiState.withGroupShown(
     people: List<BillPerson>,
     decimalSeparator: Char,
 ): SplitBillUiState {
-    // Why: a bill being edited keeps its own currency; the group's is only the default of new bills.
-    val billCurrency = if (isEditing) currency else group.currency
     val severalPayers = severalPayers
-        ?.withPeople(people, billCurrency, showsSats, keepsFormer = isEditing, decimalSeparator)
+        ?.withPeople(people, group.currency, showsSats, keepsFormer = isEditing, decimalSeparator)
         ?.takeIf { it.payers.isNotEmpty() }
     val payerId = if (severalPayers != null) {
         ""
@@ -292,9 +290,9 @@ internal fun SplitBillUiState.withGroupShown(
         groupInitials = Initials.of(group.name),
         groupColor = group.color,
         groupPhotoUrl = group.photo?.toImageUrl(),
-        currency = billCurrency,
+        currency = group.currency,
         // Why: moved to a group of another currency, the bill keeps the number typed, not its digits.
-        amountText = TypedText.toCurrency(amountText, currency, billCurrency, showsSats, decimalSeparator),
+        amountText = TypedText.toCurrency(amountText, currency, group.currency, showsSats, decimalSeparator),
         people = people,
         payerId = payerId,
         severalPayers = severalPayers,
@@ -304,7 +302,7 @@ internal fun SplitBillUiState.withGroupShown(
         },
         payerAmounts = payerAmounts?.withPeople(
             people,
-            billCurrency,
+            group.currency,
             showsSats,
             keepsFormer = isEditing,
             decimalSeparator,

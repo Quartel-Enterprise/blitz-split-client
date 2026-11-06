@@ -7,10 +7,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
-/*
- * Why: "Editar conta" opens filled in with the bill as it was saved, its split as it was typed, in the bill's own
- * currency: the group's is only the default of new bills and may have changed since.
- */
+// Why: "Editar conta" opens filled in with the bill as it was saved, its split as it was typed.
 internal fun SplitBillUiState.toFilledWith(
     group: Group,
     expense: Expense,
@@ -26,16 +23,16 @@ internal fun SplitBillUiState.toFilledWith(
         payerAmountsOf(
             expense = expense,
             people = people,
-            currency = expense.currency,
+            currency = group.currency,
             showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         )
     }
     return copy(
-        currency = expense.currency,
+        currency = group.currency,
         amountText = AmountInput.format(
             amountMinor = expense.amountMinor,
-            currency = expense.currency,
+            currency = group.currency,
             showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         ),
@@ -49,7 +46,7 @@ internal fun SplitBillUiState.toFilledWith(
         split = splitEditorOf(
             expense = expense,
             people = people,
-            currency = expense.currency,
+            currency = group.currency,
             showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         ),
