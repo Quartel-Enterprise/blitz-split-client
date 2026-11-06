@@ -89,7 +89,8 @@ fun GlobalBalancesContent(
     val listState = rememberLazyListState()
     val onSplitBillClick = { onEvent(GlobalBalancesUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
-        val showsFab = !layout.usesNavigationRail && onSplitBillClick != null
+        // Why: the single list only, whose bottom padding makes room for it; beside a rail or a pane the rail has it.
+        val onFabClick = onSplitBillClick?.takeIf { !layout.usesNavigationRail && listDetail == null }
         HomeBarsScaffold(
             bars = HomeBars(
                 kind = homeBarsKindOf(layout.usesNavigationRail),
@@ -119,9 +120,9 @@ fun GlobalBalancesContent(
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
-                    if (showsFab && onSplitBillClick != null) {
+                    if (onFabClick != null) {
                         SplitBillFab(
-                            onClick = onSplitBillClick,
+                            onClick = onFabClick,
                             isExpanded = !listState.canScrollBackward,
                         )
                     }
@@ -145,7 +146,7 @@ fun GlobalBalancesContent(
                     layout = layout,
                     onEvent = onEvent,
                     listState = listState,
-                    bottomPadding = if (showsFab) splitBillFabClearance else listBottomPadding,
+                    bottomPadding = if (onFabClick != null) splitBillFabClearance else listBottomPadding,
                     modifier = Modifier
                         .padding(padding)
                         .consumeWindowInsets(padding),

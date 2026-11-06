@@ -139,6 +139,11 @@ export function GroupsActions({ presenter, state }: { presenter: GroupsPresenter
  * 3 de 7 grupos" while Início's first download knows how many are coming) or "Sem resposta do servidor" with "Tentar
  * de novo".
  */
+/** Whether `SyncStatus` draws anything, so a page can leave out the place it would take. */
+export function showsSyncStatus(state: SyncState, downloadProgress?: JsDownloadProgress | null): boolean {
+  return Boolean(state.syncBadge) || (downloadProgress?.isWaitingForInternet ?? false)
+}
+
 export function SyncStatus({
   state,
   presenter,
@@ -148,8 +153,8 @@ export function SyncStatus({
   presenter: { retrySync(): void }
   downloadProgress?: JsDownloadProgress | null
 }) {
+  if (!showsSyncStatus(state, downloadProgress)) return null
   const isWaitingForInternet = downloadProgress?.isWaitingForInternet ?? false
-  if (!state.syncBadge && !isWaitingForInternet) return null
   const isOffline = state.syncBadge === 'OFFLINE' || isWaitingForInternet
   // Why: offline midway through Início's first download, what is missing only comes once the browser reconnects.
   const label = isWaitingForInternet

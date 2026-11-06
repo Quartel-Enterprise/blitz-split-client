@@ -5,10 +5,9 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecentGroupId
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
@@ -34,7 +33,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -58,8 +56,7 @@ class ContactsViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-    observeHasGroups: ObserveHasGroups,
-    observeGroupsByActivity: ObserveGroupsByActivity,
+    observeRecentGroupId: ObserveRecentGroupId,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactsUiEvent>(trackEvent) {
     // Why: the screen these events come from, as their source param says.
@@ -138,15 +135,16 @@ class ContactsViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        observeHasGroups()
-            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
-            .launchIn(viewModelScope)
-        observeGroupsByActivity()
-            .map { groups -> groups.firstOrNull()?.id }
-            .distinctUntilChanged()
+        // Why: "Buscar" and "Rachar conta" both need a group, settled ones included.
+        observeRecentGroupId()
             .onEach { groupId ->
                 splitBillGroupId = groupId
-                uiState.update { it.copy(showsSplitBillButton = groupId != null) }
+                uiState.update {
+                    it.copy(
+                        canSearch = groupId != null,
+                        showsSplitBillButton = groupId != null,
+                    )
+                }
             }.launchIn(viewModelScope)
     }
 
@@ -306,14 +304,7 @@ class ContactsViewModel(
         val groupId = splitBillGroupId ?: return
         if (!isTabShown()) return
         trackEvent("split_bill_clicked", sourceParams)
-        navigator.navigate(
-            Route.SplitBill(
-                groupId = groupId,
-                expenseId = null,
-                picksGroupFirst = true,
-                scansReceipt = false,
-            ),
-        )
+        navigator.navigate(Route.SplitBill.createPickingGroup(groupId))
     }
 
     private fun closeOverTab() {

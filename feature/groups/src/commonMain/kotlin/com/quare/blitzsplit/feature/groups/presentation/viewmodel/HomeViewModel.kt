@@ -509,14 +509,7 @@ class HomeViewModel(
         if (recent == null) {
             open(Route.CreateGroup)
         } else {
-            open(
-                Route.SplitBill(
-                    groupId = recent.id,
-                    expenseId = null,
-                    picksGroupFirst = true,
-                    scansReceipt = scansReceipt,
-                ),
-            )
+            open(Route.SplitBill.createPickingGroup(recent.id, scansReceipt))
         }
     }
 

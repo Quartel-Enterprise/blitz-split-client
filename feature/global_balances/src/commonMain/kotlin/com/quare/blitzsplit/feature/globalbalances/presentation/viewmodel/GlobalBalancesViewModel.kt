@@ -8,11 +8,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -64,8 +63,7 @@ class GlobalBalancesViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-    observeHasGroups: ObserveHasGroups,
-    observeGroupsByActivity: ObserveGroupsByActivity,
+    observeRecentGroupId: ObserveRecentGroupId,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<GlobalBalancesUiEvent>(trackEvent) {
     val uiState: StateFlow<GlobalBalancesUiState>
@@ -133,15 +131,16 @@ class GlobalBalancesViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-        observeHasGroups()
-            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
-            .launchIn(viewModelScope)
-        observeGroupsByActivity()
-            .map { groups -> groups.firstOrNull()?.id }
-            .distinctUntilChanged()
+        // Why: "Buscar" and "Rachar conta" both need a group, settled ones included.
+        observeRecentGroupId()
             .onEach { groupId ->
                 splitBillGroupId = groupId
-                uiState.update { it.copy(showsSplitBillButton = groupId != null) }
+                uiState.update {
+                    it.copy(
+                        canSearch = groupId != null,
+                        showsSplitBillButton = groupId != null,
+                    )
+                }
             }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
@@ -350,14 +349,7 @@ class GlobalBalancesViewModel(
         val groupId = splitBillGroupId ?: return
         if (!isOnTop()) return
         trackEvent("split_bill_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
-        navigator.navigate(
-            Route.SplitBill(
-                groupId = groupId,
-                expenseId = null,
-                picksGroupFirst = true,
-                scansReceipt = false,
-            ),
-        )
+        navigator.navigate(Route.SplitBill.createPickingGroup(groupId))
     }
 
     private fun zeroTotalOf(currency: GroupCurrency): PeopleTotal = PeopleTotal(

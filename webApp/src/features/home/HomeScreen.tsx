@@ -12,7 +12,7 @@ import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { useDeletedGroupNotice } from '@/features/groups/GroupsScreen'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { DownloadProgressBar } from '@/features/groups/FirstDownload'
-import { SyncStatus } from '@/features/groups/GroupsPage'
+import { showsSyncStatus, SyncStatus } from '@/features/groups/GroupsPage'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { AppBanner, AppInviteCard, toastUsedOnPhone } from '@/features/app-download/AppDownload'
 import { HomeSummaryCards, PeopleCard, RecentBills, YourGroups } from '@/features/home/HomeSections'
@@ -57,8 +57,7 @@ export function HomeScreen() {
   useDeletedGroupNotice(presenter, state)
   if (!presenter || !state) return null
 
-  // Why: SyncStatus' own rule, which also speaks while a first download waits for the internet.
-  const showsSyncStatus = Boolean(state.syncBadge || state.firstDownload?.isWaitingForInternet)
+  const hasSyncStatus = showsSyncStatus(state, state.firstDownload)
   return (
     <HomeShell
       selected="home"
@@ -68,7 +67,7 @@ export function HomeScreen() {
       onBrand={() => presenter.openBrand()}
       search={search}
       bell={{ unreadCount: state.activityUnreadCount, onOpen: () => presenter.openActivity() }}
-      syncStatus={showsSyncStatus && <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />}
+      syncStatus={hasSyncStatus && <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />}
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >
       <main className={cn(pageContentClass, 'gap-3.5 md:gap-4 lg:gap-5')}>
@@ -79,7 +78,7 @@ export function HomeScreen() {
           <div className="flex min-w-0 items-center gap-3 md:mr-auto">
             {/* Why: the phone's bottom bar already names the page; the heading stays for screen readers. */}
             <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only">{t('home_title')}</h1>
-            {showsSyncStatus && (
+            {hasSyncStatus && (
               <div className="hidden min-w-0 items-center gap-2 md:flex">
                 <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />
               </div>

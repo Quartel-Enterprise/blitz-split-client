@@ -8,19 +8,18 @@ import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -2160,15 +2159,12 @@ class GlobalBalancesViewModelTest {
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             // Why: Room not read yet is a flow that hasn't emitted.
-            observeHasGroups = if (groupsRead) {
-                ObserveHasGroupsUseCase(groups)
+            observeRecentGroupId = if (groupsRead) {
+                ObserveRecentGroupIdUseCase(
+                    ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
+                )
             } else {
-                ObserveHasGroups { flow { awaitCancellation() } }
-            },
-            observeGroupsByActivity = if (groupsRead) {
-                ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money)
-            } else {
-                ObserveGroupsByActivity { flow { awaitCancellation() } }
+                ObserveRecentGroupId { flow { awaitCancellation() } }
             },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
