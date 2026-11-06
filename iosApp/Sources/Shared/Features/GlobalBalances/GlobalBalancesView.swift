@@ -125,7 +125,7 @@ struct GlobalBalancesView: View {
         #endif
         .toolbar {
             #if os(iOS)
-            TabTitle(title: String(localized: "Balances"))
+            TabTitle(title: String(localized: "Balances", bundle: .appLanguage))
             #endif
             #if os(macOS)
             if let model {
@@ -519,20 +519,30 @@ private struct PersonDetail: View {
 
     private var direction: String {
         row.owesYou
-            ? String(localized: "\(name) owes you")
+            ? String(localized: "\(name) owes you", bundle: .appLanguage)
             : String(
                 localized: "You owe %@ (a member)",
                 defaultValue: "You owe \(name)",
+                bundle: .appLanguage,
                 comment: "A pair in Balances; %@ is whom this device's user owes",
             )
     }
 
     private var note: String {
-        guard row.isNetOfSeveralGroups else { return String(localized: "Only one group open with \(name).") }
+        guard row.isNetOfSeveralGroups else { return String(
+            localized: "Only one group open with \(name).",
+            bundle: .appLanguage,
+        ) }
         let amount = row.currency.format(abs(row.netMinor))
         return row.owesYou
-            ? String(localized: "The net already offsets the groups: Request and Got paid use \(amount). The app records a payment in each group.")
-            : String(localized: "The net already offsets the groups: Settle up uses \(amount). The app records a payment in each group.")
+            ? String(
+                localized: "The net already offsets the groups: Request and Got paid use \(amount). The app records a payment in each group.",
+                bundle: .appLanguage,
+            )
+            : String(
+                localized: "The net already offsets the groups: Settle up uses \(amount). The app records a payment in each group.",
+                bundle: .appLanguage,
+            )
     }
 
     private var header: some View {
@@ -543,7 +553,10 @@ private struct PersonDetail: View {
                     .font(.title2.weight(.bold))
                     .lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
-                Text(verbatim: row.isGuest ? String(localized: "\(groups) · guest without the app") : groups)
+                Text(verbatim: row.isGuest ? String(
+                    localized: "\(groups) · guest without the app",
+                    bundle: .appLanguage,
+                ) : groups)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -632,12 +645,21 @@ private struct EmptyBalances: View {
         switch emptyState {
         case .nothingToPay:
             let amount = total.currency.format(total.toReceiveMinor)
-            return String(localized: "You've settled up with everyone. You still have \(amount) to get back from \(Int(total.toReceiveCount)) people.")
+            return String(
+                localized: "You've settled up with everyone. You still have \(amount) to get back from \(Int(total.toReceiveCount)) people.",
+                bundle: .appLanguage,
+            )
         case .nothingToReceive:
             let amount = total.currency.format(total.toPayMinor)
-            return String(localized: "You still owe \(amount) to \(Int(total.toPayCount)) people.")
+            return String(
+                localized: "You still owe \(amount) to \(Int(total.toPayCount)) people.",
+                bundle: .appLanguage,
+            )
         default:
-            return String(localized: "Nobody owes you and you owe nobody. When someone adds a bill, the balance shows up here.")
+            return String(
+                localized: "Nobody owes you and you owe nobody. When someone adds a bill, the balance shows up here.",
+                bundle: .appLanguage,
+            )
         }
     }
 
@@ -655,11 +677,11 @@ enum GlobalBalancesCopy {
     /// "Floripa trip" for one group, "3 groups" for more, and "· guest" for someone who never joined.
     static func meta(_ row: PersonRow) -> String {
         let groups = groupsText(names: row.groups.map(\.groupName))
-        return row.isGuest ? String(localized: "\(groups) · guest") : groups
+        return row.isGuest ? String(localized: "\(groups) · guest", bundle: .appLanguage) : groups
     }
 
     static func groupsText(names: [String]) -> String {
-        names.count > 1 ? String(localized: "\(names.count) groups") : (names.first ?? "")
+        names.count > 1 ? String(localized: "\(names.count) groups", bundle: .appLanguage) : (names.first ?? "")
     }
 
     /// "Overall balance +R$ 186,40 · already offset across groups", under the Mac's title.
@@ -667,8 +689,8 @@ enum GlobalBalancesCopy {
         guard let total = state.primaryTotal.loaded(as: PeopleTotal.self) else { return "" }
         let net = total.currency.formatSigned(total.netMinor)
         return state.emptyState == nil
-            ? String(localized: "Overall balance \(net) · already offset across groups")
-            : String(localized: "Overall balance \(net) · adding up every group")
+            ? String(localized: "Overall balance \(net) · already offset across groups", bundle: .appLanguage)
+            : String(localized: "Overall balance \(net) · adding up every group", bundle: .appLanguage)
     }
 
     /// Request's message in the device's language, from the debt, the groups and, if wanted, the Pix key; a guest's
@@ -680,38 +702,48 @@ enum GlobalBalancesCopy {
         let amount = charge.currency.format(charge.amountMinor)
         let names = ExpenseFormat.names(charge.groupNames)
         let groups = charge.groupNames.count > 1
-            ? String(localized: "the groups \(names)")
-            : String(localized: "the group \(names)")
+            ? String(localized: "the groups \(names)", bundle: .appLanguage)
+            : String(localized: "the group \(names)", bundle: .appLanguage)
         let bills = ExpenseFormat.names(charge.guestBills)
         let body: String
         if !charge.isGuest || charge.guestBills.isEmpty {
-            body = String(localized: "Hi \(name)! By the Blitz Split math, you owe me \(amount) from \(groups).")
+            body = String(
+                localized: "Hi \(name)! By the Blitz Split math, you owe me \(amount) from \(groups).",
+                bundle: .appLanguage,
+            )
         } else if let paid = charge.guestPaidMinor?.int64Value {
             let paidText = charge.currency.format(paid)
-            body = String(localized: "Hi \(name)! You owe me \(amount) from \(groups): your part of \(bills), minus the \(paidText) you already paid.")
+            body = String(
+                localized: "Hi \(name)! You owe me \(amount) from \(groups): your part of \(bills), minus the \(paidText) you already paid.",
+                bundle: .appLanguage,
+            )
         } else {
-            body = String(localized: "Hi \(name)! You owe me \(amount) from \(groups): your part of \(bills).")
+            body = String(
+                localized: "Hi \(name)! You owe me \(amount) from \(groups): your part of \(bills).",
+                bundle: .appLanguage,
+            )
         }
         // Why they pay me and not whom the bills say, in each group that simplifies its debts (13.6b)
         let reroutes = charge.reroutes.map { reroute in
             let instead = ExpenseFormat.names(reroute.insteadOfNames)
             return String(
                 localized: "\(reroute.groupName) simplified its debts, so instead of paying \(instead) you pay me directly; your total didn't change.",
+                bundle: .appLanguage,
                 comment: "Request's message: %1$@ is the group, %2$@ whom they would pay by the bills",
             )
         }
         let explained = ([body] + reroutes).joined(separator: " ")
         guard charge.includesPixKey, let pixKey else { return explained }
-        return String(localized: "\(explained) Pix: \(pixKey.value)")
+        return String(localized: "\(explained) Pix: \(pixKey.value)", bundle: .appLanguage)
     }
 
     /// "Email · pierre@email.com".
     static func pixKey(_ key: PaymentKey) -> String {
         let type = switch key.type {
-        case .cpf: String(localized: "CPF")
-        case .phone: String(localized: "Phone")
-        case .random: String(localized: "Random key")
-        default: String(localized: "Email")
+        case .cpf: String(localized: "CPF", bundle: .appLanguage)
+        case .phone: String(localized: "Phone", bundle: .appLanguage)
+        case .random: String(localized: "Random key", bundle: .appLanguage)
+        default: String(localized: "Email", bundle: .appLanguage)
         }
         return "\(type) · \(key.value)"
     }

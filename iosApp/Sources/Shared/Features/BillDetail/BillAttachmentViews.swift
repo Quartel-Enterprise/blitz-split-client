@@ -7,25 +7,43 @@ extension BillCopy {
     /// "2 of 5 photos"; the receipt isn't one of them. Nil while the attachments load.
     static func photoCount(_ state: BillDetailUiState) -> String? {
         guard let count = state.photoCount?.intValue else { return nil }
-        return String(localized: "\(count) of \(Int(state.photoLimit)) photos")
+        return String(localized: "\(count) of \(Int(state.photoLimit)) photos", bundle: .appLanguage)
     }
 
     /// "Photo 2", or "Store receipt".
     static func attachmentName(_ attachment: BillAttachmentTile) -> String {
-        guard let number = attachment.photoNumber?.intValue else { return String(localized: "Store receipt") }
-        return String(localized: "Photo \(number)", comment: "One of a bill's photos, by the order it was added")
+        guard let number = attachment.photoNumber?.intValue else { return String(
+            localized: "Store receipt",
+            bundle: .appLanguage,
+        ) }
+        return String(
+            localized: "Photo \(number)",
+            bundle: .appLanguage,
+            comment: "One of a bill's photos, by the order it was added",
+        )
     }
 
     /// "Photo 1 of 2" over the viewer, or "Store receipt".
     static func viewerTitle(_ attachment: BillAttachmentTile, photoCount: Int32) -> String {
-        guard let number = attachment.photoNumber?.intValue else { return String(localized: "Store receipt") }
-        return String(localized: "Photo \(number) of \(Int(photoCount))", comment: "The bill's photo viewer's title")
+        guard let number = attachment.photoNumber?.intValue else { return String(
+            localized: "Store receipt",
+            bundle: .appLanguage,
+        ) }
+        return String(
+            localized: "Photo \(number) of \(Int(photoCount))",
+            bundle: .appLanguage,
+            comment: "The bill's photo viewer's title",
+        )
     }
 
     /// "You", whoever added it, or "Someone" once they left the group.
     static func adder(_ attachment: BillAttachmentTile) -> String {
-        if attachment.isAddedByMe { return String(localized: "You") }
-        return attachment.adderName ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
+        if attachment.isAddedByMe { return String(localized: "You", bundle: .appLanguage) }
+        return attachment.adderName ?? String(
+            localized: "Someone",
+            bundle: .appLanguage,
+            comment: "Who did something in Activity, unnamed",
+        )
     }
 
     /// "Ana · Yesterday" under a tile.
@@ -40,15 +58,15 @@ extension BillCopy {
         let date = ExpenseFormat.shortDate(attachment.addedAt)
         if attachment.isReceipt {
             return switch attachment.addedDay {
-            case .today: String(localized: "\(who) scanned the receipt today at \(time)")
-            case .yesterday: String(localized: "\(who) scanned the receipt yesterday at \(time)")
-            default: String(localized: "\(who) scanned the receipt on \(date) at \(time)")
+            case .today: String(localized: "\(who) scanned the receipt today at \(time)", bundle: .appLanguage)
+            case .yesterday: String(localized: "\(who) scanned the receipt yesterday at \(time)", bundle: .appLanguage)
+            default: String(localized: "\(who) scanned the receipt on \(date) at \(time)", bundle: .appLanguage)
             }
         }
         return switch attachment.addedDay {
-        case .today: String(localized: "\(who) attached it today at \(time)")
-        case .yesterday: String(localized: "\(who) attached it yesterday at \(time)")
-        default: String(localized: "\(who) attached it on \(date) at \(time)")
+        case .today: String(localized: "\(who) attached it today at \(time)", bundle: .appLanguage)
+        case .yesterday: String(localized: "\(who) attached it yesterday at \(time)", bundle: .appLanguage)
+        default: String(localized: "\(who) attached it on \(date) at \(time)", bundle: .appLanguage)
         }
     }
 
@@ -56,7 +74,7 @@ extension BillCopy {
     static func attachmentLabel(_ attachment: BillAttachmentTile) -> String {
         let label = "\(attachmentName(attachment)), \(attachmentCaption(attachment))"
         guard attachment.isPending else { return label }
-        return "\(label), \(String(localized: "waiting to go up", comment: "A bill's photo not on the server yet"))"
+        return "\(label), \(String(localized: "waiting to go up", bundle: .appLanguage, comment: "A bill's photo not on the server yet"))"
     }
 
     /// "bora-rachar-foto-2.jpg" in Portuguese and "blitz-split-photo-2.jpg" in any other language, as the data export

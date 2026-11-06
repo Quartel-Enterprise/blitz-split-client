@@ -2593,6 +2593,22 @@
         }
       }
     },
+    "Language" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
+        }
+      }
+    },
     "Later" : {
       "comment" : "Pay with a key (4.5): closes without marking",
       "localizations" : {

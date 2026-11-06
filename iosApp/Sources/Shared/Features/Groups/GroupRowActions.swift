@@ -52,15 +52,18 @@ struct GroupRowActions: View {
 
     /// "Settle the R$ 98,00 first" while this person still owes or is owed, "Needs internet" offline.
     private var leaveHint: String? {
-        if !isOnline { return String(localized: "Needs internet") }
+        if !isOnline { return String(localized: "Needs internet", bundle: .appLanguage) }
         guard group.settleBeforeLeavingMinor > 0 else { return nil }
-        return String(localized: "Settle the \(group.currency.format(group.settleBeforeLeavingMinor)) first")
+        return String(
+            localized: "Settle the \(group.currency.format(group.settleBeforeLeavingMinor)) first",
+            bundle: .appLanguage,
+        )
     }
 
     /// "Only once everyone has settled up" while anybody in the group owes anybody, "Needs internet" offline.
     private var deleteHint: String? {
-        if !isOnline { return String(localized: "Needs internet") }
-        return group.hasOpenDebts ? String(localized: "Only once everyone has settled up") : nil
+        if !isOnline { return String(localized: "Needs internet", bundle: .appLanguage) }
+        return group.hasOpenDebts ? String(localized: "Only once everyone has settled up", bundle: .appLanguage) : nil
     }
 
     private var leaveTitle: LocalizedStringKey {

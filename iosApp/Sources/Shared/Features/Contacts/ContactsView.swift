@@ -173,7 +173,7 @@ struct ContactsView: View {
         #endif
         .toolbar {
             #if os(iOS)
-            TabTitle(title: String(localized: "Contacts"))
+            TabTitle(title: String(localized: "Contacts", bundle: .appLanguage))
             #endif
             #if os(macOS)
             ToolbarItem(placement: .primaryAction) {
@@ -488,6 +488,7 @@ struct AgendaContactRow: View {
                 Text(String(
                     localized: "Invite (a contact)",
                     defaultValue: "Invite",
+                    bundle: .appLanguage,
                     comment: "Invites someone of the agenda with a group's link",
                 ))
             }

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
 import software.quare.loadable.Loadable
@@ -40,6 +41,8 @@ data class ProfileUiState(
     val usesDynamicColors: Boolean,
     // Why: Preferências' "Bitcoin em satoshis", every bitcoin amount shown and typed in whole sats on this device.
     val showsBitcoinInSats: Boolean,
+    // Why: Preferences' "Language", this device's pick, SYSTEM following the device.
+    val language: AppLanguage,
     /*
      * Why: "5 active" under "Notifications", the rows whose push is on; the toggles live on their own screen or section. Loading like
      * the keys, since a restored account's choices only come with its first full sync.
@@ -77,6 +80,10 @@ data class ProfileUiState(
 
     val hasAccount: Boolean
         get() = accountProvider != null
+
+    // Why: "System" first, then each language in its own name, as every UI lists them.
+    val languageOptions: List<AppLanguage>
+        get() = AppLanguage.entries
 
     // Why: only an anonymous user that synced has a code; a local only one has nothing to recover with.
     val showsRecoveryCodeRow: Boolean

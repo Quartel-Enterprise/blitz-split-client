@@ -273,14 +273,18 @@ extension FocusedValues {
 /// View › Grid Size: Compact, Standard or Large, as the slider under the grid; disabled while the list is picked or
 /// the groups aren't in front.
 struct GroupsCommands: Commands {
+    /// Profile › Language, whose change draws the menu again: the menu bar has no `locale` of the windows to follow.
+    let language: AppLanguage
     @FocusedValue(\.groupsModel) private var model
 
     var body: some Commands {
         CommandGroup(after: .toolbar) {
-            Picker("Grid Size", selection: gridSizeBinding) {
+            Picker(selection: gridSizeBinding) {
                 ForEach(GroupsDisplayCopy.gridSizes, id: \.self) { size in
-                    Text(GroupsDisplayCopy.gridSizeName(size)).tag(size)
+                    Text(GroupsDisplayCopy.gridSizeName(size), bundle: .appLanguage).tag(size)
                 }
+            } label: {
+                Text("Grid Size", bundle: .appLanguage)
             }
             .disabled(model?.state.canPickGridSize != true)
         }

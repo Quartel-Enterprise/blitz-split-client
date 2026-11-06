@@ -71,14 +71,16 @@ extension FocusedValues {
 /// Go › Back (⌘[) and Forward (⌘]), as in the Finder: the mouse's back and forward buttons from the keyboard, and
 /// for a mouse whose driver sends those keys instead of its buttons.
 struct NavigationCommands: Commands {
+    /// Profile › Language, whose change draws the menu again: the menu bar has no `locale` of the windows to follow.
+    let language: AppLanguage
     @FocusedValue(\.windowNavigation) private var app
 
     var body: some Commands {
-        CommandMenu("Go") {
-            Button("Back") { app?.goBack() }
+        CommandMenu(Text("Go", bundle: .appLanguage)) {
+            Button { app?.goBack() } label: { Text("Back", bundle: .appLanguage) }
                 .keyboardShortcut("[", modifiers: .command)
                 .disabled(app?.canGoBack != true)
-            Button("Forward") { app?.goForward() }
+            Button { app?.goForward() } label: { Text("Forward", bundle: .appLanguage) }
                 .keyboardShortcut("]", modifiers: .command)
                 .disabled(app?.canGoForward != true)
         }

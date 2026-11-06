@@ -9,31 +9,37 @@ private enum PayWithKeyCopy {
 
     /// "Apê 302 · you owe", or "3 groups · you owe" across groups.
     static func source(_ state: RegisterPaymentUiState) -> String {
-        if let group = state.groupName { return String(localized: "\(group) · you owe") }
-        return String(localized: "\(state.groupParts.count) groups · you owe")
+        if let group = state.groupName { return String(localized: "\(group) · you owe", bundle: .appLanguage) }
+        return String(localized: "\(state.groupParts.count) groups · you owe", bundle: .appLanguage)
     }
 
     static func method(_ method: PaymentMethod) -> String {
-        method == .pix ? String(localized: "Pix") : String(localized: "Bitcoin")
+        method == .pix ? String(localized: "Pix", bundle: .appLanguage) : String(
+            localized: "Bitcoin",
+            bundle: .appLanguage,
+        )
     }
 
     static func type(_ type: PaymentKeyType) -> String {
         switch type {
-        case .cpf: String(localized: "CPF")
-        case .phone: String(localized: "Phone")
-        case .email: String(localized: "Email")
-        case .random: String(localized: "Random key")
-        case .lightning: String(localized: "Lightning")
-        default: String(localized: "On-chain")
+        case .cpf: String(localized: "CPF", bundle: .appLanguage)
+        case .phone: String(localized: "Phone", bundle: .appLanguage)
+        case .email: String(localized: "Email", bundle: .appLanguage)
+        case .random: String(localized: "Random key", bundle: .appLanguage)
+        case .lightning: String(localized: "Lightning", bundle: .appLanguage)
+        default: String(localized: "On-chain", bundle: .appLanguage)
         }
     }
 
     /// Where to pay, and to check the name the bank shows: the app moves no money.
     static func note(_ state: RegisterPaymentUiState) -> String {
         if state.shownKeyMethod == .pix {
-            return String(localized: "Pay in your bank's app and come back to mark it as paid. Check that the bank shows \(name(state))'s name.")
+            return String(
+                localized: "Pay in your bank's app and come back to mark it as paid. Check that the bank shows \(name(state))'s name.",
+                bundle: .appLanguage,
+            )
         }
-        return String(localized: "Pay in your wallet and come back to mark it as paid.")
+        return String(localized: "Pay in your wallet and come back to mark it as paid.", bundle: .appLanguage)
     }
 }
 

@@ -34,6 +34,10 @@ struct BoraRacharApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(app: app)
+                .appLocale(app.mainWindowLanguage)
+                // Drawn again in a language picked, as Android opens its activity again: titles and the strings
+                // views read once take it too, and the shared back stack puts back where the person was
+                .id(app.mainWindowLanguage)
                 // borarachar://auth-callback: the browser sign in (Google) coming back
                 .onOpenURL { url in
                     BlitzSplitApple.shared.handleDeepLink(url: url)
@@ -54,10 +58,10 @@ struct BoraRacharApp: App {
         .defaultSize(width: 960, height: 680)
         .windowResizability(.contentMinSize)
         .commands {
-            GroupsCommands()
-            ActivityCommands()
-            SearchCommands()
-            NavigationCommands()
+            GroupsCommands(language: app.language)
+            ActivityCommands(language: app.language)
+            SearchCommands(language: app.language)
+            NavigationCommands(language: app.language)
         }
         #endif
 
@@ -65,6 +69,8 @@ struct BoraRacharApp: App {
         // Ajustes (⌘,): the profile, as the canvas draws it on the Mac, and Categories, the category map (9.1)
         Settings {
             SettingsView(app: app)
+                .appLocale(app.language)
+                .id(app.language)
         }
         #endif
     }

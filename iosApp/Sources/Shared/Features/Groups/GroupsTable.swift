@@ -185,7 +185,7 @@ private struct GroupItem: Identifiable {
 
     /// "+R$ 214,90", "−R$ 98,00", "R$ 0,00" or "Settled up".
     var balance: String {
-        row.isSettled ? String(localized: "Settled up") : row.currency.formatSigned(row.netMinor)
+        row.isSettled ? String(localized: "Settled up", bundle: .appLanguage) : row.currency.formatSigned(row.netMinor)
     }
 }
 
@@ -209,7 +209,7 @@ private struct GroupsSummaryCards: View {
             SummaryCard(
                 label: "To get back",
                 amounts: GroupsCopy.amounts(summary.totals) { $0.toReceiveMinor },
-                caption: String(localized: "in \(Int(summary.toReceiveGroupCount)) groups"),
+                caption: String(localized: "in \(Int(summary.toReceiveGroupCount)) groups", bundle: .appLanguage),
                 color: Palette.positive,
                 isEnabled: summary.canOpenToReceive,
             ) {
@@ -218,7 +218,7 @@ private struct GroupsSummaryCards: View {
             SummaryCard(
                 label: "To pay",
                 amounts: GroupsCopy.amounts(summary.totals) { -$0.toPayMinor },
-                caption: String(localized: "in \(Int(summary.toPayGroupCount)) groups"),
+                caption: String(localized: "in \(Int(summary.toPayGroupCount)) groups", bundle: .appLanguage),
                 color: Palette.negative,
                 isEnabled: summary.canOpenToPay,
             ) {

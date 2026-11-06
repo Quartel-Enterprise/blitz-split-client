@@ -282,9 +282,9 @@ struct ActivityFilterChips: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            let groupName = state.groupChipName ?? String(localized: "Group")
+            let groupName = state.groupChipName ?? String(localized: "Group", bundle: .appLanguage)
             chip(title: groupName, isOn: state.filter.groupId != nil)
-                .accessibilityLabel(Text("Filter by group: \(state.groupChipName ?? String(localized: "All groups"))"))
+                .accessibilityLabel(Text("Filter by group: \(state.groupChipName ?? String(localized: "All groups", bundle: .appLanguage))"))
             chip(title: ActivityCopy.typeChip(state.typeChips), isOn: !state.typeChips.isEmpty)
                 .accessibilityLabel(Text("Filter by type: \(ActivityCopy.typeChip(state.typeChips))"))
             if let person = state.personName {
@@ -374,7 +374,10 @@ struct ActivityFilterSheet: View {
                         model.send(ActivityUiEventOnFilterApplied.shared)
                     } label: {
                         Label {
-                            Text(verbatim: String(localized: "Show \(ActivityCopy.results(model.state.draftResultCount))"))
+                            Text(verbatim: String(
+                                localized: "Show \(ActivityCopy.results(model.state.draftResultCount))",
+                                bundle: .appLanguage,
+                            ))
                         } icon: {
                             Image(systemName: "checkmark")
                         }
@@ -391,7 +394,7 @@ struct ActivityFilterSheet: View {
                 .padding(.vertical, 8)
             GroupedCard {
                 VStack(spacing: 0) {
-                    groupRow(id: nil, name: String(localized: "All groups"), color: nil)
+                    groupRow(id: nil, name: String(localized: "All groups", bundle: .appLanguage), color: nil)
                     ForEach(model.state.groups, id: \.id) { group in
                         Divider().padding(.leading, 48)
                         groupRow(id: group.id, name: group.name, color: group.color)
@@ -637,10 +640,10 @@ private struct ActivityFilterPopover: View {
 enum ActivityMacCopy {
     /// Under the title: "Syncing…", "3 new", "No activity" or "All read".
     static func subtitle(_ state: ActivityUiState) -> String {
-        if state.showsPlaceholders { return String(localized: "Syncing…") }
+        if state.showsPlaceholders { return String(localized: "Syncing…", bundle: .appLanguage) }
         if state.unreadCount > 0 { return ActivityCopy.unread(state.unreadCount) }
-        if state.emptyState == .nothingYet { return String(localized: "No activity") }
-        return String(localized: "All read")
+        if state.emptyState == .nothingYet { return String(localized: "No activity", bundle: .appLanguage) }
+        return String(localized: "All read", bundle: .appLanguage)
     }
 }
 
@@ -651,13 +654,17 @@ extension FocusedValues {
 
 /// Edit › Mark All as Read, as the toolbar's button; disabled with nothing unread or Activity not in front.
 struct ActivityCommands: Commands {
+    /// Profile › Language, whose change draws the menu again: the menu bar has no `locale` of the windows to follow.
+    let language: AppLanguage
     @FocusedValue(\.activityModel) private var model
 
     var body: some Commands {
         CommandGroup(after: .pasteboard) {
             Divider()
-            Button("Mark All as Read") {
+            Button {
                 model?.send(ActivityUiEventOnMarkAllReadClicked.shared)
+            } label: {
+                Text("Mark All as Read", bundle: .appLanguage)
             }
             .disabled(model?.state.canMarkAllRead != true)
         }

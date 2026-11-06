@@ -128,7 +128,7 @@ struct GroupsView: View {
         #if os(iOS)
         .tabTitleDisplayMode()
         .toolbar {
-            TabTitle(title: String(localized: "Groups"))
+            TabTitle(title: String(localized: "Groups", bundle: .appLanguage))
             TabTrailingItems(
                 showsSplitBill: state.showsSplitBillButton,
                 showsSplitBillTitle: false,
@@ -221,8 +221,8 @@ struct GroupsView: View {
             return Text(verbatim: sync ?? "")
         }
         let count = state.showsSettledGroups
-            ? String(localized: "\(state.settledGroups.count) settled up")
-            : String(localized: "\(state.openGroups.count) open")
+            ? String(localized: "\(state.settledGroups.count) settled up", bundle: .appLanguage)
+            : String(localized: "\(state.openGroups.count) open", bundle: .appLanguage)
         guard let sync else {
             return Text(verbatim: count)
         }

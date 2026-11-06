@@ -1,0 +1,35 @@
+package com.quare.blitzsplit.core.model
+
+/*
+ * Why: Profile › Language, kept per device by each platform's own per-app language and never synced. SYSTEM follows the
+ * device, English for a language the app doesn't have; the tag is what each platform hands its per-app language.
+ */
+enum class AppLanguage(
+    val tag: String?,
+) {
+    SYSTEM(null),
+    ENGLISH("en"),
+    PORTUGUESE("pt-BR"),
+    SPANISH("es"),
+    ;
+
+    // Why: Spain's Spanish (es-ES) only overrides the words Spain says differently, so a device in Spain keeps them.
+    fun toTag(region: String?): String? = if (this == SPANISH &&
+        region.equals("ES", ignoreCase = true)
+    ) {
+        "es-ES"
+    } else {
+        tag
+    }
+
+    companion object {
+        // Why: any Portuguese, Spanish or English tag the platform kept (pt-PT, es-ES, en-GB), SYSTEM for none or any other.
+        fun fromTag(tag: String?): AppLanguage {
+            val language = tag
+                ?.substringBefore('-')
+                ?.substringBefore('_')
+                ?.lowercase()
+            return entries.firstOrNull { it.tag?.substringBefore('-') == language } ?: SYSTEM
+        }
+    }
+}

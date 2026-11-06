@@ -397,11 +397,13 @@ extension FocusedValues {
 
 /// Edit › Search (⌘K), as the web's "Search… ⌘K": the search tab atop the sidebar, its field focused.
 struct SearchCommands: Commands {
+    /// Profile › Language, whose change draws the menu again: the menu bar has no `locale` of the windows to follow.
+    let language: AppLanguage
     @FocusedValue(\.openSearch) private var openSearch
 
     var body: some Commands {
         CommandGroup(after: .textEditing) {
-            Button("Search") { openSearch?() }
+            Button { openSearch?() } label: { Text("Search", bundle: .appLanguage) }
                 .keyboardShortcut("k", modifiers: .command)
                 .disabled(openSearch == nil)
         }

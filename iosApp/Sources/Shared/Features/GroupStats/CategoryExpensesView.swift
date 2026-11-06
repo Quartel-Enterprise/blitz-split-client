@@ -73,9 +73,9 @@ struct CategoryExpensesView: View {
         let period: String = if let start = state.periodStartMillis?.int64Value, let end = state.periodEndMillis?.int64Value {
             GroupStatsCopy.range(state.periodRangeStyle, start: start, end: end)
         } else if state.isTrip {
-            String(localized: "The whole trip")
+            String(localized: "The whole trip", bundle: .appLanguage)
         } else {
-            String(localized: "All time")
+            String(localized: "All time", bundle: .appLanguage)
         }
         return "\(state.groupName) · \(period)"
     }

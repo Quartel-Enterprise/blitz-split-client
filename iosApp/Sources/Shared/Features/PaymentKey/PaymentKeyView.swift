@@ -281,7 +281,10 @@ private struct KeySections: View {
         if state.method == .bitcoin {
             Section("We accept") {
                 if state.type == .lightning {
-                    AcceptedRow(sample: Text(String(localized: "name@wallet.app")), name: "Lightning Address")
+                    AcceptedRow(sample: Text(String(
+                        localized: "name@wallet.app",
+                        bundle: .appLanguage,
+                    )), name: "Lightning Address")
                     AcceptedRow(sample: Text(verbatim: "LNURL1DP68GURN…"), name: "LNURL")
                 } else {
                     AcceptedRow(sample: Text(verbatim: "bc1q…"), name: "SegWit (bech32)")
@@ -579,9 +582,9 @@ private extension PaymentKeyType {
         switch self {
         case .cpf: Text("Format 000.000.000-00")
         case .phone: Text("Format +55 (00) 90000-0000")
-        case .email: Text(String(localized: "Format name@domain.com"))
+        case .email: Text(String(localized: "Format name@domain.com", bundle: .appLanguage))
         case .random: Text("32 letters and numbers, as your bank shows it")
-        case .lightning: Text(String(localized: "Like name@wallet.com or LNURL1…"))
+        case .lightning: Text(String(localized: "Like name@wallet.com or LNURL1…", bundle: .appLanguage))
         default: Text("Mainnet address starting with bc1q or bc1p")
         }
     }
@@ -601,8 +604,8 @@ private extension PaymentKeyType {
     /// The Bitcoin field's label as VoiceOver reads it, for `UnhyphenatedTextField`.
     var addressFieldLabel: String {
         switch self {
-        case .lightning: String(localized: "Lightning Address or LNURL")
-        default: String(localized: "Bitcoin address")
+        case .lightning: String(localized: "Lightning Address or LNURL", bundle: .appLanguage)
+        default: String(localized: "Bitcoin address", bundle: .appLanguage)
         }
     }
 
@@ -631,7 +634,7 @@ private extension PaymentKeyFormat {
         switch self {
         case .cpf: Text("Format 000.000.000-00 · check digits match")
         case .phone: Text("Format +55 (00) 90000-0000")
-        case .email: Text(String(localized: "Format name@domain.com"))
+        case .email: Text(String(localized: "Format name@domain.com", bundle: .appLanguage))
         case .random: Text("Random key recognized (32 characters)")
         case .lightningAddress: Text("Valid Lightning Address")
         case .lnurl: Text("Valid LNURL")
@@ -648,7 +651,10 @@ private extension PaymentKeyError {
         case .invalidPhone: Text("Incomplete mobile number: use the area code and 9 digits, starting with 9.")
         case .invalidEmail: Text("Incomplete email: the domain is missing, like .com or .com.br.")
         case .invalidRandom: Text("Incomplete random key: it has 32 letters and numbers.")
-        case .invalidLightning: Text(String(localized: "This isn't a Lightning Address (name@wallet) or an LNURL."))
+        case .invalidLightning: Text(String(
+            localized: "This isn't a Lightning Address (name@wallet) or an LNURL.",
+            bundle: .appLanguage,
+        ))
         case .lightningInvoice: Text("This is a Lightning invoice (lnbc…): it pays once and expires. Paste a Lightning Address or an LNURL.")
         case .invalidOnchain: Text("Invalid address. Use a mainnet bc1q or bc1p address.")
         case .testnetAddress: Text("This is a testnet address (tb1…). Only Bitcoin mainnet works here, with bc1… addresses.")

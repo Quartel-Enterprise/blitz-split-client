@@ -73,13 +73,16 @@ private struct ProfileDialogsModifier: ViewModifier {
     private var unlinkMessage: String {
         let state = model.state
         var lines = [
-            String(localized: "You keep using Blitz Split on this \(DeviceName.current), without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don't lose access."),
+            String(
+                localized: "You keep using Blitz Split on this \(DeviceName.current), without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don't lose access.",
+                bundle: .appLanguage,
+            ),
         ]
         if state.showsOfflineNotice {
-            lines.append(String(localized: "Needs an internet connection."))
+            lines.append(String(localized: "Needs an internet connection.", bundle: .appLanguage))
         }
         if state.hasUnlinkFailed {
-            lines.append(String(localized: "Couldn't disconnect. Try again."))
+            lines.append(String(localized: "Couldn't disconnect. Try again.", bundle: .appLanguage))
         }
         return lines.joined(separator: "\n\n")
     }

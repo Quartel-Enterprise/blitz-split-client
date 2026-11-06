@@ -38,7 +38,7 @@ struct HomePeopleSection: View {
         VStack(alignment: .leading, spacing: 4) {
             HomeSectionHeader(
                 title: HomeCopy.peopleTitle(count: people?.count ?? 0, isCounted: isCounted && people != nil),
-                action: String(localized: "See balances"),
+                action: String(localized: "See balances", bundle: .appLanguage),
             ) {
                 send(HomeUiEventOnSeeBalancesClicked.shared)
             }
@@ -350,8 +350,14 @@ struct HomeNotificationCard: View {
     private var message: String {
         switch prompt {
         case .blocked: HomeCopy.notificationsOffMessage
-        case .quiet: String(localized: "They go to Notification Center without a sound or banner. Turn them on to see bills as they come in.")
-        default: String(localized: "Get notified when someone adds a bill with you or marks a payment to you.")
+        case .quiet: String(
+            localized: "They go to Notification Center without a sound or banner. Turn them on to see bills as they come in.",
+            bundle: .appLanguage,
+        )
+        default: String(
+            localized: "Get notified when someone adds a bill with you or marks a payment to you.",
+            bundle: .appLanguage,
+        )
         }
     }
 }
@@ -432,7 +438,10 @@ struct HomeGroupsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HomeSectionHeader(title: String(localized: "Your groups"), action: HomeCopy.seeAllGroups) {
+            HomeSectionHeader(title: String(
+                localized: "Your groups",
+                bundle: .appLanguage,
+            ), action: HomeCopy.seeAllGroups) {
                 send(HomeUiEventOnSeeAllGroupsClicked.shared)
             }
             switch style {
@@ -588,7 +597,10 @@ struct HomeBillsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HomeSectionHeader(title: String(localized: "Latest expenses"), action: String(localized: "See everything")) {
+            HomeSectionHeader(title: String(localized: "Latest expenses", bundle: .appLanguage), action: String(
+                localized: "See everything",
+                bundle: .appLanguage,
+            )) {
                 send(HomeUiEventOnSeeAllBillsClicked.shared)
             }
             ForEach(days, id: \.dayStartMillis) { day in

@@ -169,9 +169,9 @@ private enum RegisterPaymentCopy {
     /// "Did Ana pay you?", "Did you pay Bruno?" or "Did Diego pay Bruno?".
     static func title(_ state: RegisterPaymentUiState) -> String {
         switch state.kind {
-        case .received: String(localized: "Did \(from(state)) pay you?")
-        case .paid: String(localized: "Did you pay \(to(state))?")
-        default: String(localized: "Did \(from(state)) pay \(to(state))?")
+        case .received: String(localized: "Did \(from(state)) pay you?", bundle: .appLanguage)
+        case .paid: String(localized: "Did you pay \(to(state))?", bundle: .appLanguage)
+        default: String(localized: "Did \(from(state)) pay \(to(state))?", bundle: .appLanguage)
         }
     }
 
@@ -179,30 +179,34 @@ private enum RegisterPaymentCopy {
     static func subtitle(_ state: RegisterPaymentUiState) -> String {
         let debt = Self.debt(state)
         guard state.simplifiedNote != nil else { return debt }
-        return String(localized: "\(debt) · simplified debt", comment: "Record payment: the debt of a simplified pair")
+        return String(
+            localized: "\(debt) · simplified debt",
+            bundle: .appLanguage,
+            comment: "Record payment: the debt of a simplified pair",
+        )
     }
 
     /// "Ana owes you $162.30", "You owe Bruno $118.00" or "Diego owes Bruno $64.00".
     static func debt(_ state: RegisterPaymentUiState) -> String {
         let debt = state.currency.format(state.debtMinor)
         return switch state.kind {
-        case .received: String(localized: "\(from(state)) owes you \(debt)")
-        case .paid: String(localized: "You owe \(to(state)) \(debt)")
-        default: String(localized: "\(from(state)) owes \(to(state)) \(debt)")
+        case .received: String(localized: "\(from(state)) owes you \(debt)", bundle: .appLanguage)
+        case .paid: String(localized: "You owe \(to(state)) \(debt)", bundle: .appLanguage)
+        default: String(localized: "\(from(state)) owes \(to(state)) \(debt)", bundle: .appLanguage)
         }
     }
 
     /// Under the amount: more than the debt, or what is still owed after a partial payment.
     static func amountHelp(_ state: RegisterPaymentUiState) -> (text: String, isError: Bool)? {
         if state.showsOverDebtError {
-            return (String(localized: "\(debt(state)). Use up to that amount."), true)
+            return (String(localized: "\(debt(state)). Use up to that amount.", bundle: .appLanguage), true)
         }
         guard let remaining = state.remainingMinor?.int64Value else { return nil }
         let left = state.currency.format(remaining)
         let text = switch state.kind {
-        case .received: String(localized: "\(from(state)) will still owe you \(left)")
-        case .paid: String(localized: "You'll still owe \(to(state)) \(left)")
-        default: String(localized: "\(from(state)) will still owe \(to(state)) \(left)")
+        case .received: String(localized: "\(from(state)) will still owe you \(left)", bundle: .appLanguage)
+        case .paid: String(localized: "You'll still owe \(to(state)) \(left)", bundle: .appLanguage)
+        default: String(localized: "\(from(state)) will still owe \(to(state)) \(left)", bundle: .appLanguage)
         }
         return (text, false)
     }

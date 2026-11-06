@@ -789,6 +789,8 @@ export const en = {
   profile_signOutScheduled: 'Sign out scheduled',
   profile_signOutScheduledDetail: 'Signs out as soon as everything is uploaded',
   profile_appearance: 'Appearance',
+  profile_language: 'Language',
+  profile_languageSystem: 'System',
   profile_bitcoinInSats: 'Bitcoin in satoshis',
   profile_bitcoinInSatsDetail: 'Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).',
   money_sats: '{amount} sats',

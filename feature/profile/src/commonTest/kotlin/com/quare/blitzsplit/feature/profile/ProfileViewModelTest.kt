@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AppDownloadSource
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
@@ -111,6 +112,8 @@ class ProfileViewModelTest {
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
     private val storedBitcoinInSats = MutableStateFlow(false)
+    private lateinit var storedLanguage: MutableStateFlow<AppLanguage>
+    private val languageWrites = mutableListOf<AppLanguage>()
     private var supportsDynamicColors = true
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ProfileViewModel
@@ -1205,6 +1208,456 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(false, storedDynamicColors.value)
+        }
+
+    @Test
+    fun `GIVEN no language picked WHEN the profile opens THEN follows the system`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(AppLanguage.SYSTEM, state.language)
+    }
+
+    @Test
+    fun `GIVEN Portuguese stored WHEN the profile opens THEN shows Portuguese`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(language = AppLanguage.PORTUGUESE)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(AppLanguage.PORTUGUESE, state.language)
+    }
+
+    @Test
+    fun `GIVEN the system language WHEN English is picked elsewhere THEN shows English at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+
+            // When
+            storedLanguage.value = AppLanguage.ENGLISH
+
+            // Then
+            assertEquals(AppLanguage.ENGLISH, viewModel.uiState.value.language)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping Language THEN opens the language sheet`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertEquals(ProfileDialog.LANGUAGE, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN tapping Language THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(theme = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping Language THEN keeps the sign out dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+        assertTrue(viewModel.uiState.value.isSigningOut)
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping Language THEN keeps the unlink dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithApple,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
+        assertTrue(viewModel.uiState.value.isUnlinking)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN dismissing it THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN dismissing it THEN stores nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(language = AppLanguage.SYSTEM)
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertTrue(languageWrites.isEmpty())
+        assertTrue(actions.isEmpty())
+        assertEquals(AppLanguage.SYSTEM, viewModel.uiState.value.language)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN picking Portuguese THEN stores it shows it and closes the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+            // Then
+            assertEquals(listOf(AppLanguage.PORTUGUESE), languageWrites)
+            assertEquals(AppLanguage.PORTUGUESE, storedLanguage.value)
+            assertEquals(AppLanguage.PORTUGUESE, viewModel.uiState.value.language)
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN picking English THEN asks to apply it once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(language = AppLanguage.SYSTEM)
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.ENGLISH))
+
+        // Then
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ApplyLanguage), actions)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open on Portuguese WHEN picking Portuguese again THEN only closes the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.PORTUGUESE)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertTrue(languageWrites.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertEquals(AppLanguage.PORTUGUESE, viewModel.uiState.value.language)
+        }
+
+    @Test
+    fun `GIVEN the language sheet open on the system language WHEN picking it again THEN only closes the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.SYSTEM))
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertTrue(languageWrites.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Portuguese WHEN picking the system language THEN stores it and asks to apply it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.PORTUGUESE)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.SYSTEM))
+
+            // Then
+            assertEquals(listOf(AppLanguage.SYSTEM), languageWrites)
+            assertEquals(AppLanguage.SYSTEM, viewModel.uiState.value.language)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ApplyLanguage), actions)
+        }
+
+    @Test
+    fun `GIVEN no dialog open WHEN the Apple apps pick English THEN stores it applies it and opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.ENGLISH))
+
+            // Then
+            assertEquals(listOf(AppLanguage.ENGLISH), languageWrites)
+            assertEquals(AppLanguage.ENGLISH, viewModel.uiState.value.language)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ApplyLanguage), actions)
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN no dialog open on English WHEN the web picks English again THEN stores and applies nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.ENGLISH)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.ENGLISH))
+
+            // Then
+            assertTrue(languageWrites.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN English picked elsewhere WHEN picking English THEN stores and applies nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+            storedLanguage.value = AppLanguage.ENGLISH
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.ENGLISH))
+
+            // Then
+            assertTrue(languageWrites.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN who sees your profile open WHEN a language is picked THEN keeps who sees your profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+            // Then
+            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
+            assertEquals(listOf(AppLanguage.PORTUGUESE), languageWrites)
+        }
+
+    @Test
+    fun `GIVEN Appearance open WHEN a language is picked THEN keeps Appearance open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(language = AppLanguage.SYSTEM)
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.ENGLISH))
+
+        // Then
+        assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the system language WHEN picking Portuguese THEN stores it before asking to apply it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+            val storedWhenApplied = mutableListOf<AppLanguage>()
+            backgroundScope.launch {
+                viewModel.uiAction.collect {
+                    if (it ==
+                        ProfileUiAction.ApplyLanguage
+                    ) {
+                        storedWhenApplied += storedLanguage.value
+                    }
+                }
+            }
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+            // Then
+            assertEquals(listOf(AppLanguage.PORTUGUESE), storedWhenApplied)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping Language THEN sends the language clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertEquals(listOf("profile_language_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN tapping Language again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+        assertEquals(ProfileDialog.LANGUAGE, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the theme not read yet WHEN tapping Language THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(theme = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping Language THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN an unlink under way WHEN tapping Language THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            unlinkHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
+        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the system language WHEN picking Portuguese THEN sends the language selected`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+            // Then
+            assertEquals(
+                listOf("language_selected" to mapOf<String, Any>("language" to AppLanguage.PORTUGUESE)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN picking the system language THEN sends only the language selected`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.ENGLISH)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.SYSTEM))
+
+            // Then
+            assertEquals(
+                listOf("language_selected" to mapOf<String, Any>("language" to AppLanguage.SYSTEM)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Portuguese WHEN picking Portuguese again THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(language = AppLanguage.PORTUGUESE)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the language sheet open on English WHEN picking English again THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.ENGLISH)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.ENGLISH))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test
@@ -6798,6 +7251,7 @@ class ProfileViewModelTest {
         updateCheckHangs: Boolean = false,
         themeWriteHangs: Boolean = false,
         invite: AppInvite? = null,
+        language: AppLanguage = AppLanguage.SYSTEM,
     ) {
         appInvite = MutableStateFlow(invite)
         appInviteDismissals = 0
@@ -6834,6 +7288,8 @@ class ProfileViewModelTest {
         this@ProfileViewModelTest.syncState = MutableStateFlow(syncState)
         storedTheme = MutableStateFlow(theme)
         storedDynamicColors = MutableStateFlow(dynamicColors)
+        storedLanguage = MutableStateFlow(language)
+        languageWrites.clear()
         this@ProfileViewModelTest.supportsDynamicColors = supportsDynamicColors
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
@@ -6909,6 +7365,11 @@ class ProfileViewModelTest {
             observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
             updateBitcoinInSats = { storedBitcoinInSats.value = it },
             observeBitcoinInSats = { storedBitcoinInSats },
+            updateAppLanguage = {
+                languageWrites += it
+                storedLanguage.value = it
+            },
+            observeAppLanguage = { storedLanguage },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
