@@ -103,7 +103,6 @@
     <string name="designsystem_group_exit_deleted_message_nobody">“%s” foi apagado depois que todo mundo acertou. Nada ficou pendente, e o grupo sai da sua lista.</string>
     <string name="designsystem_group_exit_back_to_groups">Voltar para Grupos</string>
     <string name="designsystem_group_exit_leave_error">Não deu para sair do grupo. Confira a conexão e tente de novo.</string>
-    <string name="designsystem_group_exit_delete_error">Não deu para apagar o grupo. Confira a conexão e tente de novo.</string>
     <string name="designsystem_group_exit_needs_internet">Precisa de internet</string>
     <string name="designsystem_debt_you_owe">Você deve a %s</string>
     <string name="designsystem_debt_owes_you">%s te deve</string>

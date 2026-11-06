@@ -114,7 +114,7 @@ private struct ProfileDialogsModifier: ViewModifier {
     }
 }
 
-/// Without Google or Apple the profile only comes back with the recovery code, so "Erase and sign out"
+/// Without Google or Apple the profile only comes back with the recovery code, so "Sign out" ("Erase and sign out")
 /// waits for the switch saying it is kept, or that losing it is understood when there is none yet.
 private struct EraseProfileSheet: View {
     let model: ProfileModel
@@ -131,7 +131,7 @@ private struct EraseProfileSheet: View {
                             .foregroundStyle(Palette.negative)
                     }
                     if let code = state.formattedRecoveryCode {
-                        Text("You use it without an account. When you leave, your profile and your data are gone from this \(DeviceName.current). To come back, you need the recovery code.")
+                        Text("Your account has no Google or Apple sign in. When you sign out, we erase the copy on this \(DeviceName.current). To come back, you need the recovery code.")
                         HStack {
                             Text(verbatim: code)
                                 .font(.system(.title3, design: .monospaced).weight(.semibold))
@@ -167,7 +167,7 @@ private struct EraseProfileSheet: View {
                         if state.isSigningOut {
                             ProgressView()
                         } else {
-                            Text("Erase and sign out")
+                            Text(state.erasesProfileOnSignOut ? "Erase and sign out" : "Sign out" as LocalizedStringKey)
                         }
                     }
                     .disabled(!state.canErase)
@@ -178,7 +178,12 @@ private struct EraseProfileSheet: View {
                 }
             }
             .formStyle(.grouped)
-            .navigationTitle("Erase the profile from this \(DeviceName.current)?")
+            // An anonymous account signs out like any other and comes back with its code; only without one is it erased
+            .navigationTitle(
+                state.erasesProfileOnSignOut
+                    ? "Erase the profile from this \(DeviceName.current)?"
+                    : "Sign out?" as LocalizedStringKey,
+            )
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif

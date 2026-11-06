@@ -7,7 +7,6 @@ final class GroupsModel {
     private(set) var state: GroupsUiState
     private(set) var comingSoonCount = 0
     private(set) var leaveErrorCount = 0
-    private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
     let deletedGroup = DeletedGroupToast()
 
@@ -28,7 +27,6 @@ final class GroupsModel {
             switch action {
             case is GroupsUiActionShowComingSoon: self?.comingSoonCount += 1
             case is GroupsUiActionShowLeaveError: self?.leaveErrorCount += 1
-            case is GroupsUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupsUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }
@@ -84,23 +82,7 @@ struct GroupsView: View {
                 #if os(iOS)
                 GroupsList(model: model)
                 #else
-                // The toolbar's field: the results take the groups' place once something is typed
-                if state.isSearching, state.search.hasQuery {
-                    VStack(spacing: 0) {
-                        Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
-                            ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
-                                Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .labelsHidden()
-                        .fixedSize()
-                        .padding(.vertical, 8)
-                        GroupsSearchResultsList(model: model)
-                    }
-                } else {
-                    GroupsTable(model: model)
-                }
+                GroupsTable(model: model)
                 #endif
             } else if state.showsEmptyState {
                 emptyState
@@ -156,28 +138,22 @@ struct GroupsView: View {
         }
         #else
         .navigationSubtitle(macSubtitle)
-        // Nothing to look in before the first group
-        .toolbarSearch(macSearchBinding, isShown: !state.groups.isEmpty)
         .toolbar {
             if !state.groups.isEmpty {
-                // A narrow window draws them above the table instead, and the search's results, which hold both,
-                // take the table's place at every width
-                if !isNarrowWindow, !(state.isSearching && state.search.hasQuery) {
+                // A narrow window draws them above the table instead
+                if !isNarrowWindow {
                     ToolbarItem(placement: .principal) {
                         GroupsStatusPicker(model: model)
                     }
                 }
-                // List or Grid, as in the Finder; the size is the slider under the grid and View › Grid Size. The
-                // search's results stay a list
-                if !state.isSearching {
-                    ToolbarItem(placement: .principal) {
-                        Picker("View", selection: displayBinding) {
-                            Label("List", systemImage: GroupsDisplayCopy.displayIcon(.list)).tag(GroupsDisplay.list)
-                            Label("Grid", systemImage: GroupsDisplayCopy.displayIcon(.grid)).tag(GroupsDisplay.grid)
-                        }
-                        .pickerStyle(.segmented)
-                        .labelStyle(.iconOnly)
+                // List or Grid, as in the Finder; the size is the slider under the grid and View › Grid Size
+                ToolbarItem(placement: .principal) {
+                    Picker("View", selection: displayBinding) {
+                        Label("List", systemImage: GroupsDisplayCopy.displayIcon(.list)).tag(GroupsDisplay.list)
+                        Label("Grid", systemImage: GroupsDisplayCopy.displayIcon(.grid)).tag(GroupsDisplay.grid)
                     }
+                    .pickerStyle(.segmented)
+                    .labelStyle(.iconOnly)
                 }
             }
             if state.canRetrySync {
@@ -192,6 +168,8 @@ struct GroupsView: View {
                 Button("New group", systemImage: "plus.square.on.square") {
                     model.send(GroupsUiEventOnCreateGroupClicked.shared)
                 }
+                .keyboardShortcut("n", modifiers: [.command, .shift])
+                .help(Text("New group (⇧⌘N)"))
                 profileButton
             }
             if state.showsSplitBillButton {
@@ -199,6 +177,8 @@ struct GroupsView: View {
                     SplitBillButton {
                         model.send(GroupsUiEventOnSplitBillClicked.shared)
                     }
+                    .keyboardShortcut("n", modifiers: .command)
+                    .help(Text("Split a bill (⌘N)"))
                 }
             }
         }
@@ -230,29 +210,10 @@ struct GroupsView: View {
         )
     }
 
-    /// The toolbar's field: typing opens the search, clearing it closes it. Only with the groups on top, where the
-    /// field shows, so closing it never leaves a screen.
-    private var macSearchBinding: Binding<String> {
-        Binding(
-            get: { model.current.search.query },
-            set: { query in
-                if query.isEmpty {
-                    if model.current.search.isOpen { model.sendSearch(SearchUiEventOnClosed.shared) }
-                    return
-                }
-                if !model.current.search.isOpen { model.send(GroupsUiEventOnSearchOpened.shared) }
-                model.sendSearch(SearchUiEventOnQueryChanged(query: query))
-            },
-        )
-    }
-
-    /// "Offline · 1 change queued · 4 open", "4 open", "1 settled up", or "Searching groups, people and expenses"; a
-    /// first download's "Syncing… 3 of 7 groups" in front, the Mac's place for it, as Home's.
+    /// "Offline · 1 change queued · 4 open", "4 open" or "1 settled up"; a first download's "Syncing… 3 of 7 groups"
+    /// in front, the Mac's place for it, as Home's.
     private var macSubtitle: Text {
         let state = model.state
-        if state.isSearching, state.search.hasQuery {
-            return Text("Searching groups, people and expenses")
-        }
         let sync = GroupsCopy.sync(
             state.syncBadge,
             pendingChangeCount: state.pendingChangeCount,
@@ -289,17 +250,3 @@ struct GroupsView: View {
         }
     }
 }
-
-#if os(macOS)
-private extension View {
-    /// The Mac's toolbar search field, only while there is something to look in.
-    @ViewBuilder
-    func toolbarSearch(_ text: Binding<String>, isShown: Bool) -> some View {
-        if isShown {
-            searchable(text: text, placement: .toolbar, prompt: Text("Search"))
-        } else {
-            self
-        }
-    }
-}
-#endif

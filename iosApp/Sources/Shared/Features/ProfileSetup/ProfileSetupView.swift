@@ -18,6 +18,12 @@ final class ProfileSetupModel {
         })
     }
 
+    /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: the name field reads
+    /// what it sent back at once, so the Mac's capital first letter never lands on a later keystroke.
+    var current: ProfileSetupUiState {
+        (holder.viewModel.uiState.value as? ProfileSetupUiState) ?? state
+    }
+
     func send(_ event: any ProfileSetupUiEvent) {
         holder.viewModel.onEvent(event: event)
     }
@@ -235,18 +241,13 @@ private struct NameSection: View {
             SectionCaption(text: "Your name")
             GroupedCard {
                 HStack(spacing: 8) {
-                    TextField(
-                        "John Doe",
-                        text: Binding(
-                            get: { model.state.name },
-                            set: { model.send(ProfileSetupUiEventOnNameChanged(name: $0)) },
-                        ),
-                    )
-                    .textContentType(.name)
-                    .focused($isFocused)
-                    .submitLabel(.done)
-                    .onSubmit { model.send(ProfileSetupUiEventOnContinueClicked.shared) }
-                    .accessibilityLabel("Your name")
+                    TextField("John Doe", text: nameBinding.firstLetterCapitalized)
+                        .textContentType(.name)
+                        .capitalizesFirstLetter(isPersonName: true)
+                        .focused($isFocused)
+                        .submitLabel(.done)
+                        .onSubmit { model.send(ProfileSetupUiEventOnContinueClicked.shared) }
+                        .accessibilityLabel("Your name")
                     if state.nameError != nil {
                         Image(systemName: "exclamationmark.circle.fill")
                             .foregroundStyle(Palette.negative)
@@ -270,6 +271,13 @@ private struct NameSection: View {
                 .foregroundStyle(state.nameError != nil ? Palette.negative : .secondary)
                 .padding(.horizontal, 20)
         }
+    }
+
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: { model.current.name },
+            set: { model.send(ProfileSetupUiEventOnNameChanged(name: $0)) },
+        )
     }
 
     private func nameHint(_ state: ProfileSetupUiState) -> LocalizedStringKey {

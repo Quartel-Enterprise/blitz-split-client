@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { t } from '@/i18n'
 import { amountPlaceholder, currencySymbol, formatPercent } from '@/lib/money'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 import {
   itemDeletionText,
@@ -217,7 +218,7 @@ function ItemBody({ presenter, state, editor, money }: { presenter: SplitItemsPr
       <div className="grid grid-cols-[minmax(0,1fr)_80px_120px] gap-3 max-sm:grid-cols-[80px_minmax(0,1fr)]">
         <div className="flex flex-col gap-1.5 max-sm:col-span-2">
           <Label htmlFor="item-name">{t('item_name')}</Label>
-          <Input id="item-name" value={name} autoComplete="off" onChange={(event) => setName(event.target.value)} />
+          <Input id="item-name" {...freeTextProps(name, setName)} autoComplete="off" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="item-quantity">{t('item_quantity')}</Label>

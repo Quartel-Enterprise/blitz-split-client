@@ -19,7 +19,7 @@ inputs:
     required: false
     default: ''
   version:
-    description: 'The versionName: Apple refuses a suffix, so the plain X.Y.Z'
+    description: 'The versionName, a beta suffix too: generate-project.sh gives Apple the plain X.Y.Z and Profile the whole one'
     required: true
   version-code:
     description: 'The build number'
@@ -56,7 +56,7 @@ runs:
       run: ./scripts/release/require-env.sh GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
 
     # Apple refuses a suffixed version string, so the Apple apps carry the plain X.Y.Z and tell the betas apart by
-    # the build number.
+    # the build number; generate-project.sh strips the suffix, which Profile still shows (BlitzSplitVersionName).
     - name: Bump version
       shell: bash
       run: ./scripts/release/bump-version.sh "${{ inputs.version }}" "${{ inputs.version-code }}"

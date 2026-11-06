@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.NotificationPermission
+import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import software.quare.loadable.Loadable
 import software.quare.loadable.valueOrNull
 
@@ -67,6 +68,13 @@ data class HomeUiState(
     val hasBills: Boolean,
     // Why: the ✕ of the phone browser's banner (14.3), kept on this device.
     val isAppBannerDismissed: Boolean,
+    /*
+     * Why: "Ler cupom fiscal" asks where the photo comes from before Rachar conta opens (beta feedback, part 3, item
+     * 16): "Tirar foto", the gallery or a file, as each platform has them.
+     */
+    val showsReceiptSourceChoice: Boolean,
+    // Why: the camera, the gallery or the file picker picked on that choice, until a photo comes or it closes.
+    val receiptSource: ReceiptPhotoSource?,
 ) {
     val isFirstDownload: Boolean
         get() = firstDownload != null
@@ -94,15 +102,19 @@ data class HomeUiState(
     val onlyPersonToPay: HomePerson?
         get() = people.valueOrNull()?.singleOrNull { it.netMinor < 0 }
 
-    // Why: "Rachar conta" and "Buscar" (5.2) need a group, settled ones included, to split in or look in.
+    // Why: "Rachar conta" needs a group, settled ones included, to split in; the notification ask, one to be notified about.
     private val hasGroups: Boolean
         get() = isLoaded && groupCount > 0
 
     val showsSplitBillButton: Boolean
         get() = hasGroups
 
-    val canSearch: Boolean
-        get() = hasGroups
+    /*
+     * Why: "Ler cupom fiscal" asks where the photo comes from, which needs a group to read it in; the web opens its file
+     * chooser inside the tap only then, so a file is never picked for a tap that opens Novo grupo instead.
+     */
+    val canPickReceipt: Boolean
+        get() = canScanReceipt && hasGroups
 
     // Why: reading a receipt needs the internet; offline it shows disabled with "Precisa de internet" (7.1d).
     val canScanReceipt: Boolean

@@ -13,9 +13,6 @@
     <string name="split_bill_category_hold_hint">Mantén pulsada una categoría del grupo para editarla o eliminarla.</string>
     <string name="split_bill_category_by_receipt">%1$s según el recibo. Toca el icono para cambiarla.</string>
     <string name="split_bill_receipt_retake">Hacer otra foto</string>
-    <string name="split_bill_receipt_source_camera">Hacer foto</string>
-    <string name="split_bill_receipt_camera_shutter">Hacer foto</string>
-    <string name="split_bill_receipt_camera_settings">Abrir ajustes</string>
     <string name="split_bill_amount">Importe</string>
     <plurals name="split_bill_mode_amount_among">
         <item quantity="one">Por importe entre %d</item>
@@ -36,5 +33,4 @@
     <string name="split_bill_items_row_amount">Por importe</string>
     <string name="split_bill_item_mode_amount">Importe</string>
     <string name="split_bill_scan_receipt_help">Completa el importe, la fecha y la descripción a partir de la foto.</string>
-    <string name="split_bill_receipt_camera_hint">Encuadra todo el recibo. Completamos el importe, la fecha y la descripción; tú lo revisas antes de guardar.</string>
 </resources>

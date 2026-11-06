@@ -1054,6 +1054,29 @@
         }
       }
     },
+    "%@ by the word “%@” in your map. Click the icon to change it." : {
+      "comment" : "Under a bill's description on the Mac: its category, chosen by a word of the map",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ por la palabra “%2$@” de tu mapa. Haz clic en el ícono para cambiar."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ por la palabra “%2$@” de tu mapa. Haz clic en el icono para cambiar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ pela palavra “%2$@” do seu mapa. Clique no ícone para trocar."
+          }
+        }
+      }
+    },
     "%@ came from the word “%@”. See and edit the words that pick the category." : {
       "comment" : "Category map card",
       "localizations" : {
@@ -1693,6 +1716,23 @@
         }
       }
     },
+    "Forward" : {
+      "comment" : "The Mac's Go menu: opens again the screen Back closed (the mouse's forward button, ⌘])",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adelante"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avançar"
+          }
+        }
+      }
+    },
     "Gallery" : {
       "comment" : "The profile photo viewer: choose a photo",
       "localizations" : {
@@ -1706,6 +1746,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Galeria"
+          }
+        }
+      }
+    },
+    "Go" : {
+      "comment" : "The Mac's Go menu, with Back and Forward",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir"
           }
         }
       }
@@ -3785,6 +3842,23 @@
         }
       }
     },
+    "Privacy Policy" : {
+      "comment" : "Profile: the legal footer's link",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de Privacidad"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de Privacidade"
+          }
+        }
+      }
+    },
     "Profile photo" : {
       "comment" : "The profile photo viewer: the photo",
       "localizations" : {
@@ -4030,6 +4104,23 @@
         }
       }
     },
+    "Terms of Service" : {
+      "comment" : "Profile: the legal footer's link",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Términos de Servicio"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termos de Serviço"
+          }
+        }
+      }
+    },
     "That comment was deleted." : {
       "comment" : "A comment's link opened the bill, but the comment is gone",
       "localizations" : {
@@ -4094,6 +4185,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esse comentário é de um grupo em que você não está. Peça o convite a quem te mandou o link."
+          }
+        }
+      }
+    },
+    "Toggle Sidebar" : {
+      "comment" : "The Mac's button at the detail's leading edge that shows or hides the sidebar, in the main window and in Settings",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar u ocultar la barra lateral"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar ou ocultar a barra lateral"
           }
         }
       }
@@ -6894,6 +7002,29 @@
         }
       }
     },
+    "Category: %@. Click the icon to change it." : {
+      "comment" : "Under a bill's description on the Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoría: %@. Haz clic en el ícono para cambiar."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoría: %@. Haz clic en el icono para cambiar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoria: %@. Clique no ícone para trocar."
+          }
+        }
+      }
+    },
     "Changing it here moves the term to another category." : {
       "comment" : "Edit term",
       "localizations" : {
@@ -8318,6 +8449,29 @@
         }
       }
     },
+    "No word of your map. The bill stays in Other; click the icon to pick one." : {
+      "comment" : "Under a bill's description on the Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna palabra de tu mapa. El gasto queda en Otros; haz clic en el ícono para elegir una."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna palabra de tu mapa. El gasto queda en Otros; haz clic en el icono para elegir una."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma palavra do seu mapa. A conta fica em Outros; clique no ícone para escolher."
+          }
+        }
+      }
+    },
     "None. Every category follows the split above." : {
       "comment" : "Default split without exceptions",
       "localizations" : {
@@ -9715,6 +9869,23 @@
         }
       }
     },
+    "Your account has no Google or Apple sign in. When you sign out, we erase the copy on this %@. To come back, you need the recovery code." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu cuenta no tiene Google ni Apple. Al cerrar sesión, borramos la copia de este %@. Para volver, necesitas el código de recuperación."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua conta não tem Google nem Apple. Ao sair, apagamos a cópia deste %@. Para voltar, só com o código de recuperação."
+          }
+        }
+      }
+    },
     "Your contacts are empty. The invite link works without them." : {
       "comment" : "Invite from contacts: the agenda was read and holds nobody",
       "localizations" : {
@@ -10130,23 +10301,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conectar conta"
-          }
-        }
-      }
-    },
-    "Couldn't delete the group. Check your connection and try again." : {
-      "comment" : "Deleting the group failed: no sync or no answer from the server",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo eliminar el grupo. Revisa tu conexión e inténtalo de nuevo."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não deu para apagar o grupo. Confira a conexão e tente de novo."
           }
         }
       }
@@ -11898,7 +12052,7 @@
       }
     },
     "Search" : {
-      "comment" : "The search tab, its title and the Mac toolbar field",
+      "comment" : "The search tab, its title, and the Mac's sidebar item and Edit › Search (⌘K)",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11944,23 +12098,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Procura em grupos, pessoas e despesas deste %@, inclusive nos grupos quitados, sem precisar de internet."
-          }
-        }
-      }
-    },
-    "Searching groups, people and expenses" : {
-      "comment" : "The Mac window's subtitle while searching",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buscando en grupos, personas y gastos"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buscando em grupos, pessoas e despesas"
           }
         }
       }
@@ -12248,6 +12385,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O grupo “%@” foi apagado."
+          }
+        }
+      }
+    },
+    "“%@” wasn't deleted: there are still open balances in it." : {
+      "comment" : "A toast on the groups: the server turned this device's Delete group down, someone still owes in it, and the group is back; %@ is the group",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” no se eliminó: aún hay saldos abiertos en él."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” não foi apagado: ainda há saldo em aberto nele."
+          }
+        }
+      }
+    },
+    "Couldn't delete “%@”. Check your connection and try again." : {
+      "comment" : "A toast on the groups: this device's Delete group couldn't reach the server and the group is back; %@ is the group",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo eliminar “%@”. Revisa tu conexión e inténtalo de nuevo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para apagar “%@”. Confira a conexão e tente de novo."
           }
         }
       }
@@ -18080,6 +18251,23 @@
         }
       }
     },
+    "New group (⇧⌘N)" : {
+      "comment" : "The Mac's tooltip on Groups' New group button, with its shortcut",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuevo grupo (⇧⌘N)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novo grupo (⇧⌘N)"
+          }
+        }
+      }
+    },
     "No access to contacts" : {
       "comment" : "The agenda was refused",
       "localizations" : {
@@ -19171,22 +19359,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Privacidade e sobre"
-          }
-        }
-      }
-    },
-    "Privacy policy" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Política de privacidad"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Política de privacidade"
           }
         }
       }
@@ -20304,22 +20476,6 @@
         }
       }
     },
-    "Terms of use" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Términos de uso"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Termos de uso"
-          }
-        }
-      }
-    },
     "The copy of your data on this %@" : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -21003,22 +21159,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lightning Address válido"
-          }
-        }
-      }
-    },
-    "Version" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versión"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versão"
           }
         }
       }
@@ -21776,23 +21916,6 @@
         }
       }
     },
-    "You use it without an account. When you leave, your profile and your data are gone from this %@. To come back, you need the recovery code." : {
-      "comment" : "%@ is the device: iPhone, iPad or Mac",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La usas sin cuenta. Al salir, tu perfil y tus datos desaparecen de este %@. Para volver, necesitas el código de recuperación."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Você usa sem conta. Ao sair, seu perfil e seus dados somem deste %@. Para voltar, só com o código de recuperação."
-          }
-        }
-      }
-    },
     "You're invited to %@" : {
       "comment" : "The title of an invite link whose creator deleted their account",
       "localizations" : {
@@ -21988,6 +22111,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seu perfil (nome, foto e cor)"
+          }
+        }
+      }
+    },
+    "Your recovery code" : {
+      "comment" : "Delete account: what gets deleted, for an account without Google or Apple",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu código de recuperación"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu código de recuperação"
           }
         }
       }
@@ -27346,6 +27486,23 @@
         }
       }
     },
+    "Double-click each item and check who had it. Done unlocks once every item has someone." : {
+      "comment" : "Bill items on the Mac, where a double click opens an item: no item has anyone yet",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz doble clic en cada artículo y marca quién lo consumió. Listo se habilita cuando todos tengan a alguien."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clique duas vezes em cada item e marque quem consumiu. Pronto libera quando todos tiverem dono."
+          }
+        }
+      }
+    },
     "%@ has nobody yet: %@ out of the split." : {
       "comment" : "Bill items: the item nobody has, and its amount",
       "localizations" : {
@@ -29303,6 +29460,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ pelo cupom fiscal. Toque no ícone para trocar."
+          }
+        }
+      }
+    },
+    "%@ from the receipt. Click the icon to change it." : {
+      "comment" : "Split a bill on the Mac: the receipt chose the category",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ por el recibo. Haz clic en el ícono para cambiar."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ por el recibo. Haz clic en el icono para cambiar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pelo cupom fiscal. Clique no ícone para trocar."
           }
         }
       }
@@ -32274,6 +32454,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Notificações ativadas"
+          }
+        }
+      }
+    },
+    "%@'s Pix keys" : {
+      "comment" : "Record payment, Pix picked: the receiver's Pix keys",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claves Pix de %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaves Pix de %@"
+          }
+        }
+      }
+    },
+    "%@ has no Pix key in the app." : {
+      "comment" : "Record payment, Pix picked: the receiver has no Pix key",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no tiene clave Pix en la app."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ não tem chave Pix no app."
+          }
+        }
+      }
+    },
+    "Pix keys:" : {
+      "comment" : "Record payment on the Mac, Pix picked: the label of the receiver's Pix keys",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claves Pix:"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaves Pix:"
           }
         }
       }

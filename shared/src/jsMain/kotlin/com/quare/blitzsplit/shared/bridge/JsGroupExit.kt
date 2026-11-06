@@ -5,6 +5,7 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
+import com.quare.blitzsplit.core.model.GroupDeleteFailure
 
 // Why: the dialog of "Sair do grupo" or "Apagar grupo", flat; kind says which and which fields it fills.
 class JsGroupExitDialog(
@@ -98,3 +99,9 @@ private fun toJsGroupDeletedNotice(notice: GroupDeletedNotice): JsGroupDeletedNo
     groupName = notice.groupName,
     deletedByName = notice.deletedByName,
 )
+
+// Why: why this device's own "Apagar grupo" brought the group back, which Grupos and Início word.
+internal fun toJsDeleteFailure(failure: GroupDeleteFailure): String = when (failure) {
+    GroupDeleteFailure.HAS_BALANCE -> "has-balance"
+    GroupDeleteFailure.FAILED -> "failed"
+}

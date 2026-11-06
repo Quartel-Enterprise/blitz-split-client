@@ -22,7 +22,7 @@ extension GroupsModel: SearchSource {
 
 /// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. An
 /// iPad shows it in the search tab and an iPhone in Groups' place, under a large title with the field and All / Groups /
-/// People / Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
+/// People / Expenses; the Mac in its sidebar's search tab, the field and the scopes above the results. A group found opens the group, a person
 /// once their profile and in each group that group's members, an expense its bill over the group. Always a list, even
 /// with the grid. Nothing holding what was typed but something close above it says "Did you mean “Larissa”?".
 struct GroupsSearchResultsList: View {
@@ -176,12 +176,7 @@ struct GroupsSearchView: View {
     }
 
     private var scopePicker: some View {
-        Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
-            ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
-                Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
-            }
-        }
-        .pickerStyle(.segmented)
+        GroupsSearchScopePicker(model: model)
     }
 }
 
@@ -217,7 +212,56 @@ private struct GroupsSearchField: View {
         .onAppear { if model.currentSearch.query.isEmpty { isFocused = true } }
     }
 }
+#else
+/// The Mac's search tab, atop the sidebar as the web's "Search… ⌘K" (Pierre's beta feedback): the field, which takes
+/// the focus as the tab opens and again on every ⌘K, and All / Groups / People / Expenses above the results.
+struct GroupsSearchView: View {
+    let model: any SearchSource
+    @Environment(\.searchFocusRequest) private var focusRequest
+    @FocusState private var isFieldFocused: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 10) {
+                TextField("Groups, people and expenses", text: GroupsSearchCopy.queryBinding(model))
+                    .textFieldStyle(.roundedBorder)
+                    .focused($isFieldFocused)
+                GroupsSearchScopePicker(model: model)
+                    .labelsHidden()
+                    .fixedSize()
+            }
+            .frame(maxWidth: 560)
+            .padding(16)
+            Divider()
+            GroupsSearchResultsList(model: model)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .navigationTitle("Search")
+        .onAppear { isFieldFocused = true }
+        .onChange(of: focusRequest) { isFieldFocused = true }
+    }
+}
+
+extension EnvironmentValues {
+    /// Bumped by every ⌘K, so the Mac's search field takes the focus again while its tab is already open.
+    @Entry var searchFocusRequest = 0
+}
 #endif
+
+/// All / Groups / People / Expenses as segments, the same on iPhone, iPad and Mac.
+struct GroupsSearchScopePicker: View {
+    let model: any SearchSource
+
+    var body: some View {
+        Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
+            ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
+                Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+}
 
 /// The words and bindings of the search, the same on iPhone, iPad and Mac.
 enum GroupsSearchCopy {

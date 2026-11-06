@@ -8,6 +8,7 @@
     <string name="delete_account_deleted_profile">Your profile (name, photo and color)</string>
     <string name="delete_account_deleted_keys">Your Pix and Bitcoin keys</string>
     <string name="delete_account_deleted_provider">The link to your %1$s account</string>
+    <string name="delete_account_deleted_recovery_code">Your recovery code</string>
     <string name="delete_account_deleted_device">The copy of your data on this device</string>
     <string name="delete_account_export">Export my data first</string>
     <string name="delete_account_confirm">I understand this can\'t be undone</string>

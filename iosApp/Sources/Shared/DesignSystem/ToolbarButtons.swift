@@ -227,21 +227,3 @@ struct ActivityBellButton: View {
         .help(Text("Activity"))
     }
 }
-
-#if os(macOS)
-/// The Mac's magnifier of Home, Balances and Contacts, which opens "Search" (5.2) as a sheet over the tab, once there
-/// is a group to look in. An iPhone and an iPad have the search tab instead, which reaches the search from every tab.
-struct SearchToolbarItem: ToolbarContent {
-    let canSearch: Bool
-    let action: () -> Void
-
-    var body: some ToolbarContent {
-        if canSearch {
-            ToolbarItem(placement: .primaryAction) {
-                Button("Search", systemImage: "magnifyingglass", action: action)
-                    .help(Text("Search"))
-            }
-        }
-    }
-}
-#endif

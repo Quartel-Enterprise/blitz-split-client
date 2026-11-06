@@ -91,8 +91,6 @@ class JsGlobalBalancesState(
     // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer.
     val isWaitingForInternet: Boolean,
     val recordedPayment: JsPaymentNotice?,
-    // Why: "Buscar…" and ⌘K only once there is a group to look in.
-    val canSearch: Boolean,
 )
 
 class GlobalBalancesPresenter(
@@ -133,7 +131,6 @@ class GlobalBalancesPresenter(
                 isLoaded = state.isLoaded,
                 isWaitingForInternet = state.isWaitingForInternet,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
-                canSearch = state.canSearch,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

@@ -238,6 +238,8 @@ struct HomeSummaryCard: View {
 /// "Scan a receipt" (it needs the internet), "Record payment" and "New group", spelled out on every platform.
 struct HomeShortcuts: View {
     let canScanReceipt: Bool
+    /// "Scan a receipt" asks where the photo comes from pointing at its tile, as Split a bill's own button does.
+    let receiptRequest: ReceiptSourceRequest
     let send: (any HomeUiEvent) -> Void
 
     var body: some View {
@@ -245,6 +247,10 @@ struct HomeShortcuts: View {
             ShortcutTile(title: "Scan a receipt", systemImage: "doc.text.viewfinder", isEnabled: canScanReceipt) {
                 send(HomeUiEventOnScanReceiptClicked.shared)
             }
+            .receiptSourceDialog(
+                isPresented: receiptRequest.choiceShown(isActive: ReceiptSource.hasChoice),
+                pick: receiptRequest.pick,
+            )
             ShortcutTile(title: "Record payment", systemImage: "banknote", isEnabled: true) {
                 send(HomeUiEventOnRecordPaymentClicked.shared)
             }

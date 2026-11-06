@@ -46,6 +46,11 @@ private val shimmerFadeInDuration = 200.milliseconds
 fun ShimmerBox(
     modifier: Modifier = Modifier,
     isDelayed: Boolean = true,
+    /*
+     * Why: off for a block inside an element that already says what it is (a bill's photo tile), so a row of them
+     * never queues one "Carregando" each.
+     */
+    announcesLoading: Boolean = true,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val isInspecting = LocalInspectionMode.current
@@ -77,7 +82,7 @@ fun ShimmerBox(
             modifier = modifier
                 .graphicsLayer { this.alpha = alpha }
                 .clearAndSetSemantics {
-                    if (isShown) {
+                    if (isShown && announcesLoading) {
                         contentDescription = loadingLabel
                         liveRegion = LiveRegionMode.Polite
                     }

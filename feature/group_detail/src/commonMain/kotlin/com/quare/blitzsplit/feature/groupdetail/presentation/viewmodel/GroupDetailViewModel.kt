@@ -112,9 +112,7 @@ class GroupDetailViewModel(
         groupId = route.groupId,
         useCases = useCases,
         scope = viewModelScope,
-        showExitError = { isDelete ->
-            uiAction.emit(if (isDelete) GroupDetailUiAction.ShowDeleteError else GroupDetailUiAction.ShowLeaveError)
-        },
+        showLeaveError = { uiAction.emit(GroupDetailUiAction.ShowLeaveError) },
         showBalances = { selectTab(GroupTab.BALANCES) },
     )
 

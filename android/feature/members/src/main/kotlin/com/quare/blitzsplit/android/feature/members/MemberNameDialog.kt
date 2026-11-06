@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -16,9 +15,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
+import com.quare.blitzsplit.android.designsystem.component.personNameKeyboardOptions
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
@@ -47,10 +46,7 @@ internal fun MemberNameDialog(
                         .focusRequester(focusRequester),
                     label = { Text(stringResource(R.string.members_name_label)) },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Words,
-                        imeAction = ImeAction.Done,
-                    ),
+                    keyboardOptions = personNameKeyboardOptions.copy(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = { onEvent(MembersUiEvent.OnSaveClicked) }),
                 )
                 // Why: someone who has the app joins through the link instead, and picks their own name.

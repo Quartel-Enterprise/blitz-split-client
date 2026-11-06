@@ -69,13 +69,12 @@ data class GroupsUiState(
     // Why: "Última atividade" on the Flip's cover screen; null with no bill on the device.
     val latestBill: LatestBill?,
 ) {
-    // Why: "Buscar" only shows once there is a group, as the empty home has nothing to look in.
-    val canSearch: Boolean
-        get() = groups.isNotEmpty()
-
-    // Why: the search drawn in the home's place: Android's search bar, iOS's tab, the web's dialog.
+    /*
+     * Why: the search drawn in the home's place: Android's search bar, Apple's search tab, the web's dialog. "Buscar"
+     * is an item of the navigation, there from the first launch, before the first group too (Pierre's beta feedback).
+     */
     val isSearching: Boolean
-        get() = search.isOpen && canSearch
+        get() = search.isOpen
 
     // Why: only the open groups go in the grid; Quitados, the search and what a filter finds stay a list.
     val showsGrid: Boolean

@@ -2,4 +2,8 @@
 <resources>
     <string name="platform_camera_denied">Permite el acceso a la cámara en Ajustes para hacer una foto.</string>
     <string name="platform_camera_settings">Ajustes</string>
+    <string name="platform_receipt_source_camera">Hacer foto</string>
+    <string name="platform_receipt_camera_shutter">Hacer foto</string>
+    <string name="platform_receipt_camera_settings">Abrir ajustes</string>
+    <string name="platform_receipt_camera_hint">Encuadra todo el recibo. Completamos el importe, la fecha y la descripción; tú lo revisas antes de guardar.</string>
 </resources>

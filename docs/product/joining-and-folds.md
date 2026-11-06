@@ -14,7 +14,8 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on the group's Expenses (3.3, `Route.GroupDetail` with `joinedAs`) with "You joined as
     <name>" over the bills and, while the account has no Google or Apple, "Protect your access", which opens the
-    Profile. "Invite" (3.1) and "Who are you in the group?" (3.2) are one column on a phone and upright on a tablet; lying
+    Profile. On the Mac, Return joins ("Join group", "Join as Bruno") and "Who are you in the group?", the invite
+    sheet's next page, has "Back" (Esc) to the invite. "Invite" (3.1) and "Who are you in the group?" (3.2) are one column on a phone and upright on a tablet; lying
     down, on a tablet lying down (a 920 dp / 900 pt container) and on a book (one half each, 24 dp off the hinge's
     band) the title, or the question with "I'm not on the list", on the left and the group with its buttons, or the
     names with "Join as Bruno" always in sight, on the right; an Android tabletop puts the invite's title and

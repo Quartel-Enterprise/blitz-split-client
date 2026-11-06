@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
@@ -23,6 +24,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.GroupDeleteFailure
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
@@ -43,6 +45,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
+import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
@@ -70,6 +73,7 @@ class GroupsDetailPaneTest {
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var groups: FakeGroupRepository
     private lateinit var navigator: BackStackNavigator
+    private lateinit var deletions: InMemoryGroupDeletionRepository
     private lateinit var viewModel: GroupsViewModel
 
     @BeforeTest
@@ -274,6 +278,36 @@ class GroupsDetailPaneTest {
                     ),
                 ),
                 navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the group beside the list WHEN its own deletion is turned down THEN the home says so anyway`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupsUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(GroupsUiEvent.OnGroupClicked("aniversario"))
+
+            // When
+            deletions.post(
+                GroupDeletion(
+                    groupId = "aniversario",
+                    groupName = "Aniversário da Ana",
+                    deletedByName = null,
+                    failure = GroupDeleteFailure.HAS_BALANCE,
+                ),
+            )
+
+            // Then
+            assertEquals(
+                DeletedGroupNotice(
+                    groupId = "aniversario",
+                    groupName = "Aniversário da Ana",
+                    deletedByName = null,
+                    failure = GroupDeleteFailure.HAS_BALANCE,
+                ),
+                viewModel.uiState.value.deletedGroupNotice,
             )
         }
 
@@ -611,7 +645,7 @@ class GroupsDetailPaneTest {
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
         groups = FakeGroupRepository(initialGroups = storedGroups)
         navigator = BackStackNavigator(startRoute = Route.Groups)
-        val deletions = InMemoryGroupDeletionRepository()
+        deletions = InMemoryGroupDeletionRepository()
         viewModel = GroupsViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
             observeProfile = ObserveProfileUseCase(
@@ -631,7 +665,7 @@ class GroupsDetailPaneTest {
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             leaveGroup = LeaveGroup { Result.success(GroupExitOutcome.DONE) },
-            deleteGroup = DeleteGroup { Result.success(GroupExitOutcome.DONE) },
+            deleteGroup = DeleteGroup { _, _ -> },
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
             consumeRecordedPayment = ConsumeRecordedPayment {},
             deleteSettlement = DeleteSettlement { Result.success(Unit) },

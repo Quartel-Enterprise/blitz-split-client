@@ -33,7 +33,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertEquals(listOf("receipt", "photo-a", "photo-b"), tiles.map { it.id })
@@ -50,7 +50,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertEquals(listOf("photo-a", "photo-b"), tiles.map { it.id })
@@ -69,7 +69,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertFalse(tiles[0].canRemove)
@@ -89,7 +89,15 @@ class BillAttachmentsTest {
         val jpeg = byteArrayOf(1, 2, 3)
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), mapOf("photo-a" to jpeg), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(
+            attachments,
+            emptyMap(),
+            mapOf("photo-a" to jpeg),
+            group,
+            now,
+            TimeZone.UTC,
+            isOnline = false,
+        ).single()
 
         // Then
         assertEquals(jpeg, tile.localImage)
@@ -104,7 +112,7 @@ class BillAttachmentsTest {
         val imageUrls = mapOf("photo-a" to "https://bucket/photo-a.jpg")
 
         // When
-        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("https://bucket/photo-a.jpg", tile.imageUrl)
@@ -118,10 +126,130 @@ class BillAttachmentsTest {
         val imageUrls = mapOf("photo-b" to "https://bucket/photo-b.jpg")
 
         // When
-        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertNull(tile.imageUrl)
+    }
+
+    @Test
+    fun `GIVEN online a synced photo without a signed URL yet WHEN making the tiles THEN its image is loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertTrue(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online the receipt without a signed URL yet WHEN making the tiles THEN its image is loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "receipt",
+                kind = BillAttachmentKind.RECEIPT,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertTrue(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN offline a synced photo without a signed URL WHEN making the tiles THEN its image is not loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online a synced photo with its signed URL WHEN making the tiles THEN its image is not loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+        val imageUrls = mapOf("photo-a" to "https://bucket/photo-a.jpg")
+
+        // When
+        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online only another photo has its signed URL WHEN making the tiles THEN this one is loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(id = "photo-a"),
+            attachment(id = "photo-b"),
+        )
+        val imageUrls = mapOf("photo-b" to "https://bucket/photo-b.jpg")
+
+        // When
+        val tiles = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = true)
+
+        // Then
+        assertEquals(listOf(true, false), tiles.map { it.isImageLoading })
+    }
+
+    @Test
+    fun `GIVEN online a photo added here not up yet WHEN making the tiles THEN its image is not loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                isPending = true,
+                hasPendingImage = true,
+            ),
+        )
+        val localImages = mapOf("photo-a" to byteArrayOf(1, 2, 3))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), localImages, group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online a photo added here already up WHEN making the tiles THEN its bytes draw and it is not loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+        val localImages = mapOf("photo-a" to byteArrayOf(1, 2, 3))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), localImages, group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online a photo to go up whose bytes were not read WHEN making the tiles THEN it is not loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                isPending = true,
+                hasPendingImage = true,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
     }
 
     @Test
@@ -138,7 +266,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals(1200, tile.width)
@@ -152,7 +280,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = ANA))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("Ana", tile.adderName)
@@ -165,7 +293,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = PIERRE))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("Pierre", tile.adderName)
@@ -179,7 +307,7 @@ class BillAttachmentsTest {
         val renamed = group.copy(members = listOf(ana.copy(name = "Ana Paula"), pierre))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), renamed, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), renamed, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("Ana Paula", tile.adderName)
@@ -191,7 +319,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = FORMER))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertNull(tile.adderName)
@@ -204,7 +332,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = null))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertNull(tile.adderName)
@@ -230,7 +358,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertEquals(listOf(RelativeDay.TODAY, RelativeDay.YESTERDAY, RelativeDay.OTHER), tiles.map { it.addedDay })
@@ -243,7 +371,7 @@ class BillAttachmentsTest {
         val brasilia = UtcOffset(hours = -3).asTimeZone()
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, brasilia).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, brasilia, isOnline = false).single()
 
         // Then
         assertEquals(RelativeDay.YESTERDAY, tile.addedDay)

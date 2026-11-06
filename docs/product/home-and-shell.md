@@ -4,7 +4,7 @@ The home's four tabs and the web's and the Mac's shell.
 
   - The home shows four tabs (Home, Groups, Balances, Contacts); Activity left them for a bell in Home's bar with its
     unread count (Pierre's call, see [activity-and-push.md](activity-and-push.md)), which leaves iOS's search tab room
-    at the end of the bar on an iPhone too. Search is an item of the navigation on iOS, Android and the web (where
+    at the end of the bar on an iPhone too. Search is an item of the navigation on iOS, iPadOS, macOS, Android and the web (where
     each puts it, in [groups-home.md](groups-home.md)). Home (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
     lying down and a tabletop, where it also draws "Split a bill" as the small button so the tabs and Search fit its
@@ -48,9 +48,20 @@ The home's four tabs and the web's and the Mac's shell.
     (the tab it sits in stays selected). A group
     picked there opens over Groups as its row does, in the place of what Groups opened (the one already open goes
     back to it, keeping its tab, and the one in front stays as it is). A Mac window under 800 pt (the boards' narrow window is 768 pt) moves the segments
-    the toolbar held below it, into the content (Groups' Open / Settled up, which a search's results hide at
-    every width, a group's Expenses / Balances / Members), and drops a column: Groups' "Latest activity" and Expenses' "Who paid" (`isNarrowWindow`, measured
+    the toolbar held below it, into the content (Groups' Open / Settled up, a group's Expenses / Balances / Members),
+    and drops a column: Groups' "Latest activity" and Expenses' "Who paid" (`isNarrowWindow`, measured
     per tab by `measuringNarrowWindow()`).
+  - The Mac's window and its navigation (Pierre's beta feedback). The sidebar's button sits at the leading edge of the
+    detail's toolbar, right of the sidebar's divider, in the main window and in Settings alike, never in the sidebar's
+    header (`SidebarToggleButton`; the system's own is hidden, `hidingSystemSidebarToggle()`); View › Hide Sidebar
+    still toggles it. The sidebar lists Search first, then Home, Groups, Balances and Contacts, ⌘K opening Search (or, open, back to
+    its results), as the mouse's buttons and the Go menu never while a sheet covers the window, which they would close. The
+    mouse's back and forward buttons go back and forward, as in the Finder and Safari: back closes the screen on top
+    as its back button does (never under a sheet), forward opens again what back closed, and any other move (a tap, a
+    tab, a sheet) forgets what forward had, as a browser's history; Go › Back (⌘[) and Forward (⌘]) do the same from
+    the keyboard (`ForwardHistory`). A group's row in Groups' table, a group in the sidebar's "Open"
+    and whatever else a tab opens draws over that tab (`SyncedNavigationStack`, which the Mac's `TabView` needs to
+    push a tab's path).
   - A home tab (Home, Groups, Balances, Contacts, Activity) shows its title only on a wide screen, on every platform
     (Pierre's call): the web from the tablet up (768 px, atop the content), an Android tablet or unfolded foldable
     (`HomeTabTitle`, 600 dp on the short side; a phone lying down stays untitled), an iPad's room (a large title under the
@@ -69,3 +80,11 @@ The home's four tabs and the web's and the Mac's shell.
   - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
     page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
     `brand_clicked` where the screen's ViewModel tracks its events.
+  - The Mac has one window (the Settings window aside): every window would draw the one shared back stack, so the File
+    menu has no New Window and windows don't tab (no View › Show Tab Bar, whose "+" opened another; a closed window
+    comes back from the Dock), and ⌘N is "Split a bill", the toolbar's main button on Home, Groups (asking the group
+    first) and a group's screens (that group), with ⇧⌘N for Groups' "New group"; Settings' sidebar is 250 pt, room
+    for "Keys to receive payments" whole.
+  - On the Mac, a link the app is opened with (the browser sign in coming back through `borarachar://auth-callback`, an
+    invite link) goes to the main window already open, which updates in place, never to a second window opened on top
+    of it (beta feedback 12, `handlesExternalEvents` on the main window's root); with none open, the app opens one.

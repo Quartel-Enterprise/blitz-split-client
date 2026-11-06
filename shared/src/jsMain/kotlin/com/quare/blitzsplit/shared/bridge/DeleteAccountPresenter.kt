@@ -17,6 +17,8 @@ class JsDeleteAccountState(
     val accountProvider: String?,
     // Why: the provider line of "o que será apagado" shimmers until the account was read.
     val isAccountLoading: Boolean,
+    // Why: "Your recovery code" in "What gets deleted", for an anonymous account.
+    val deletesRecoveryCode: Boolean,
     val hasConfirmed: Boolean,
     val isDeleting: Boolean,
     val hasFailed: Boolean,
@@ -40,6 +42,7 @@ class DeleteAccountPresenter {
             JsDeleteAccountState(
                 accountProvider = state.accountProvider.valueOrNull()?.code,
                 isAccountLoading = state.accountProvider.isLoading(),
+                deletesRecoveryCode = state.deletesRecoveryCode,
                 hasConfirmed = state.hasConfirmed,
                 isDeleting = state.isDeleting,
                 hasFailed = state.hasFailed,

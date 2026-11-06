@@ -147,7 +147,10 @@ sealed interface Route {
         val expenseId: String?,
         // Why: from the home's "Rachar conta" (7.1i), which asks "Rachar em qual grupo?" first, groupId marked.
         val picksGroupFirst: Boolean,
-        // Why: from Início's "Ler cupom fiscal" (7.1e), which opens the camera (a file on the Mac and the web) at once.
+        /*
+         * Why: from Início's "Ler cupom fiscal" (7.1e), whose photo, picked on Início, waits in TakePickedReceipt to be
+         * read (beta feedback, part 3, item 16); without one there (an app restored) the form asks for it again.
+         */
         val scansReceipt: Boolean,
     ) : Route {
         companion object {

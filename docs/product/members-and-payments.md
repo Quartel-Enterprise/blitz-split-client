@@ -59,7 +59,17 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
   - "Record payment" (`Route.RegisterPayment`) records a payment made outside the app, which any member may
     record between any two members, with no confirmation by whoever received it: up to the pair's debt, never over
     ("Ana owes you R$ 162,30. Use up to that amount."), partial payments allowed, Pix / Cash / Transfer / Other
-    and "When" (date and time, never after now). "Settle up" opens it too, as "Pay Ana" while Ana has a key (4.5,
+    and "When" (date and time, never after now). With Pix picked, when this device's user is the one who pays (beta
+    feedback 3 item 26, `RegisterPaymentUiState.formPixKeys`), the form lists "Ana's Pix keys" under "How it was paid",
+    her default first, each with its type and a copy button (the "Copied" confirmation as in "Pay Ana", below), or
+    says "Ana has no Pix key in the app." (`showsNoPixKeyNotice`), a guest with no account included, in a group in
+    reais only (the keys show in any currency, but the form opens on Pix in every one, and a euro or dollar group
+    would read the notice on every payment); nothing while
+    the keys still load, before the account's first download is whole, offline or back online with it still coming
+    down (none cached says nothing then), for
+    a former member (whose keys the device can't know), and for "Got paid" or "Already
+    paid", where the keys would be of no use. The keys are the ones "Pay Ana" reads (`member_payment_key`, below),
+    so they need no sync of their own. "Settle up" opens it too, as "Pay Ana" while Ana has a key (4.5,
     below). It is a bottom sheet on an Android phone
     (640 dp lying down, in two columns: who paid whom and the amount, then how, when and the buttons), a 560 dp
     dialog on its tablets and foldables upright and in a book's right half, and full screen on a tabletop (✕ and
@@ -149,13 +159,22 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     and changing the category moves the bill to the other way while Split was never changed by hand.
   - "Leave group" and "Delete group" (5.3c to 5.3f, 6.1i to 6.1k) need the internet: offline the ⋮ menu shows
     them disabled with "Needs internet", since only the server knows every device's bills and payments. The
-    device syncs first, then the server checks the balances again (`leave_group`, `delete_group`). Leaving needs your
+    device pushes first what it hasn't sent yet (a whole sync, only while something waits to go up), then the server
+    checks the balances again (`leave_group`, `delete_group`). Leaving needs your
     own balance settled ("Settle up before leaving" lists what is still open, with "Settle up" while you owe, "See balances"
     otherwise); you go back to Groups, and your member stays as a name in the bills and payments, not joined, so the
     invite link can bring you back. A group nobody else with an account is in goes, which "Leave" says
     (`ConfirmLeave.deletesGroup`). Any member may delete the group
     once nobody owes anything ("There are still open balances" lists the pairs, with "See balances"), for everyone, with its
-    bills and payments, after "Delete “X”?" ("Delete for everyone", no undo). On the other devices a sync takes it off,
+    bills and payments, after "Delete “X”?" ("Delete for everyone", no undo). Deleting answers at once (beta feedback
+    3, item 7: the dialog's spinner used to wait for a whole sync, a round trip per part, before the server was even
+    asked): "Delete for everyone" closes the dialog and the group's screens, and the group leaves every list, Home
+    and the balances right away, while the device asks the server in the background (`DeleteGroup`,
+    `GroupRepository.hideGroup`); it leaves the device once the server deleted it. If the server finds a balance
+    this device didn't have yet, or can't be reached, the group comes back and Groups or Home, whichever is on top
+    first, says "“X” wasn't deleted: there are still open balances in it." or "Couldn't delete “X”. Check your
+    connection and try again." (`GroupDeletion.failure`, the same queue as below). Leaving still waits for the
+    server in its dialog. On the other devices a sync takes it off,
     even with a change not pushed yet (the server's `removed_groups`): the group open on it, whatever the tab, says
     "Group deleted" with who deleted it and "Back to Groups" (`GroupExitState.deletedNotice`), once on top again
     if a bill covered it; any other screen of the group (Invite) just closes, and Groups or Home, whichever is

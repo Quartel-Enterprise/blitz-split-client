@@ -25,6 +25,11 @@ struct BoraRacharApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        #if os(macOS)
+        // One window: a tab's "+" (View › Show Tab Bar) would open a second one drawing the same shared back stack,
+        // as File › New Window did (its `.newItem` group below is empty)
+        NSWindow.allowsAutomaticWindowTabbing = false
+        #endif
         FirebaseSetup.start()
         BlitzSplitApple.shared.start()
         FirebaseSetup.attachAnalytics()
@@ -42,6 +47,11 @@ struct BoraRacharApp: App {
                 .onOpenURL { url in
                     BlitzSplitApple.shared.handleDeepLink(url: url)
                 }
+                #if os(macOS)
+                // A URL the app is opened with (the browser sign in coming back, an invite link) goes to the window
+                // already open, never a new one on top of it (beta feedback 12); with none open, the group opens one
+                .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
+                #endif
                 // The browser sign in opens over the app
                 .onReceive(NotificationCenter.default.publisher(for: Self.willResignActive)) { _ in
                     BlitzSplitApple.shared.handleAppPaused()
@@ -58,8 +68,13 @@ struct BoraRacharApp: App {
         .defaultSize(width: 960, height: 680)
         .windowResizability(.contentMinSize)
         .commands {
+            // One window: a second one would draw the same shared back stack and move with it, so File › New Window
+            // goes, and ⌘N is "Split a bill", the main button of Home, Groups and a group's screens
+            CommandGroup(replacing: .newItem) {}
             GroupsCommands(language: app.language)
             ActivityCommands(language: app.language)
+            SearchCommands(language: app.language)
+            NavigationCommands(language: app.language)
         }
         #endif
 

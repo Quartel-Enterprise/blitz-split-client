@@ -373,6 +373,7 @@ class EditAfterPaymentViewModelTest {
             ),
             saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
+            takePickedReceipt = { null },
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },

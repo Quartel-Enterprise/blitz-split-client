@@ -181,9 +181,7 @@ class GroupsViewModel(
                 navigator.popToGroups()
             }
         },
-        showError = { isDelete ->
-            uiAction.emit(if (isDelete) GroupsUiAction.ShowDeleteError else GroupsUiAction.ShowLeaveError)
-        },
+        showLeaveError = { uiAction.emit(GroupsUiAction.ShowLeaveError) },
     )
 
     private val layoutPicker = GroupsLayoutPicker(
@@ -260,10 +258,10 @@ class GroupsViewModel(
                         pendingChangeCount = home.pendingChangeCount,
                         latestBill = home.latestBill,
                         /*
-                         * Why: what the search found changes with the device's data, a sync's included. Once the last
-                         * group goes the search closes, so the next group doesn't bring back a forgotten search.
+                         * Why: what the search found changes with the device's data, a sync's included. It stays open
+                         * once the last group goes, as it opens before the first one (Pierre's beta feedback).
                          */
-                        search = if (home.rows.isEmpty()) GroupsSearch.closed else searchedOf(it.search, home.rows),
+                        search = searchedOf(it.search, home.rows),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -302,7 +300,6 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
         GroupsSearchStack(navigator).watch(
             scope = viewModelScope,
-            canSearch = uiState.map { it.canSearch }.distinctUntilChanged(),
             isOpen = { uiState.value.search.isOpen },
             close = ::closeSearch,
             open = {
@@ -387,8 +384,7 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSearchOpened -> openSearch()
 
-            // Why: a tap that can't open the search (no group yet) leaves what is pushed where it is.
-            GroupsUiEvent.OnSearchTabClicked -> if (uiState.value.canSearch) {
+            GroupsUiEvent.OnSearchTabClicked -> {
                 if (!isListShown()) navigator.popToGroups()
                 openSearch()
             }
@@ -440,11 +436,11 @@ class GroupsViewModel(
     }
 
     /*
-     * Why: there is nothing to look in before the first group, and only from the groups on top, so ⌘K over a dialog
-     * on the web or iOS's search tab over a pushed screen doesn't open a search whose close would pop that screen.
+     * Why: only from the groups on top, so ⌘K over a dialog on the web or iOS's search tab over a pushed screen doesn't
+     * open a search whose close would pop that screen.
      */
     private fun openSearch() {
-        if (!uiState.value.canSearch || !isListShown()) return
+        if (!isListShown()) return
         if (!uiState.value.search.isOpen) trackEvent("search_opened", mapOf("source" to "groups"))
         uiState.update { it.copy(search = it.search.copy(isOpen = true)) }
         search { it }
@@ -568,10 +564,13 @@ class GroupsViewModel(
         )
     }
 
-    // Why: the group beside the list says "Grupo apagado" itself, so the home leaves its deletion to it.
+    /*
+     * Why: the group beside the list says "Grupo apagado" itself, so the home leaves its deletion to it. A deletion of
+     * this device's that didn't go through is the home's to say, wherever the group shows again.
+     */
     private fun showNextDeletion() {
         val paneGroupId = paneGroupIdOrNull()
-        val deletion = pendingDeletions.firstOrNull { it.groupId != paneGroupId } ?: return
+        val deletion = pendingDeletions.firstOrNull { it.failure != null || it.groupId != paneGroupId } ?: return
         if (!isListShown() || uiState.value.deletedGroupNotice != null) return
         consumeGroupDeletion(deletion.groupId)
         pendingDeletions = pendingDeletions - deletion
@@ -581,6 +580,7 @@ class GroupsViewModel(
                     groupId = deletion.groupId,
                     groupName = deletion.groupName,
                     deletedByName = deletion.deletedByName,
+                    failure = deletion.failure,
                 ),
             )
         }

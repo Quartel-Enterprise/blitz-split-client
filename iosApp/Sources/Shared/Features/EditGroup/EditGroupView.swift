@@ -225,7 +225,8 @@ private struct EditGroupForm: View {
         }
         Section {
             HStack(spacing: 8) {
-                TextField("Group name", text: nameBinding)
+                TextField("Group name", text: nameBinding.firstLetterCapitalized)
+                    .capitalizesFirstLetter()
                     .accessibilityHint(state.showsNameError ? Text(nameErrorText) : Text(""))
                 Text(verbatim: "\(state.nameLength)/\(state.maxNameLength)")
                     .font(.subheadline)

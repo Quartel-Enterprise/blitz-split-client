@@ -14,6 +14,11 @@ data class BillAttachmentTile(
     val localImage: ByteArray?,
     // Why: the signed URL of an image in the bucket; null offline or until it is signed.
     val imageUrl: String?,
+    /*
+     * Why: online, its URL is still being signed, so the thumbnail shimmers rather than showing an empty box (beta
+     * feedback, part 3, item 21); each UI shimmers on while the image itself downloads, too.
+     */
+    val isImageLoading: Boolean,
     val width: Int?,
     val height: Int?,
     // Why: "Foto 2"; null for the receipt.

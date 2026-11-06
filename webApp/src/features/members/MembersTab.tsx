@@ -24,6 +24,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
 const nameId = 'member-name'
@@ -337,8 +338,7 @@ function MemberNameDialog({ presenter, editor }: { presenter: MembersPresenter; 
               id={nameId}
               autoFocus
               autoComplete="off"
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
+              {...freeTextProps(draft, setDraft, 'words')}
             />
             {/* Why: someone who has the app joins through the link instead, and picks their own name. */}
             {editor.isAdding && (

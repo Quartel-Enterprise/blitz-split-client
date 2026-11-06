@@ -52,6 +52,7 @@ val groupsModule = module {
             dismissAppBanner = get(),
             observeAppBannerDismissed = get(),
             encodeQrCode = get(),
+            holdPickedReceipt = get(),
             observeAppInvite = get(),
             updateLastNotificationPromptAt = get(),
             updatePushEnabled = get(),

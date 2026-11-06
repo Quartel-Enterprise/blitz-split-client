@@ -6,7 +6,6 @@ import SwiftUI
 final class GroupDetailModel {
     private(set) var state: GroupDetailUiState
     private(set) var leaveErrorCount = 0
-    private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
     private(set) var billDeletedCount = 0
     private(set) var teachErrorCount = 0
@@ -27,7 +26,6 @@ final class GroupDetailModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is GroupDetailUiActionShowLeaveError: self?.leaveErrorCount += 1
-            case is GroupDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             case is GroupDetailUiActionShowTeachError: self?.teachErrorCount += 1
             case is GroupDetailUiActionShowBillDeleteError: self?.billDeleteErrorCount += 1
@@ -81,6 +79,15 @@ final class GroupDetailModel {
     /// "Delete this bill?" closed without "Delete", from a bill's options on the list.
     func dismissBillDeletion() {
         if current.billToDelete != nil { send(GroupDetailUiEventOnExpenseDeleteDismissed.shared) }
+    }
+
+    /// A line's "Delete": a payment asks "Delete this payment?" as its tap does, a bill "Delete this bill?".
+    func delete(_ entry: any DayEntry) {
+        if entry is PaymentRow {
+            send(GroupDetailUiEventOnPaymentClicked(paymentId: entry.id))
+        } else {
+            send(GroupDetailUiEventOnExpenseDeleteClicked(expenseId: entry.id))
+        }
     }
 
     func open(_ entry: any DayEntry) {
@@ -193,7 +200,6 @@ struct GroupDetailView: View {
             GlassToastMessage(text: "Couldn't delete the bill. Try again.", trigger: model?.billDeleteErrorCount ?? 0),
         ] + GroupExitCopy.errorToasts(
             leave: model?.leaveErrorCount ?? 0,
-            delete: model?.deleteErrorCount ?? 0,
             change: model?.changeErrorCount ?? 0,
         ))
         .recordedPaymentNotice(
@@ -667,16 +673,25 @@ private struct MacGroupExpenses: View {
         }
         .contextMenu(forSelectionType: String.self) { ids in
             // One line's options; several picked at once have none in common
-            let entries = state.days.flatMap(\.entries)
-            if ids.count == 1, let id = ids.first, let entry = entries.first(where: { $0.id == id }) {
+            if ids.count == 1, let entry = entry(ids.first) {
                 DayEntryMenuItems(entry: entry, model: model)
             }
         } primaryAction: { ids in
-            let entries = state.days.flatMap(\.entries)
-            if let id = ids.first, let entry = entries.first(where: { $0.id == id }) {
-                model.open(entry)
-            }
+            if let entry = entry(ids.first) { model.open(entry) }
         }
+        // Delete (⌫) asks what the line's "Delete…" asks, for one line picked
+        .onDeleteCommand {
+            if selection.count == 1, let entry = entry(selection.first) { model.delete(entry) }
+        }
+    }
+
+    /// The bill or payment of a line, nil once it left the list.
+    private func entry(_ id: String?) -> (any DayEntry)? {
+        guard let id else { return nil }
+        for day in state.days {
+            if let entry = day.entries.first(where: { $0.id == id }) { return entry }
+        }
+        return nil
     }
 }
 #endif

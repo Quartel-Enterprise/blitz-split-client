@@ -4534,6 +4534,22 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN an anonymous user WHEN tapping delete account THEN opens the delete account screen over the profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                code = recoveryCode,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.DeleteAccount), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a scheduled sign out WHEN a delete account tap arrives THEN stays on the profile`() =
         runTest(testDispatcher) {
             // Given
@@ -4576,7 +4592,7 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN an anonymous user WHEN the profile opens THEN hides delete account`() = runTest(testDispatcher) {
+    fun `GIVEN an anonymous user WHEN the profile opens THEN shows delete account`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             status = anonymous,
@@ -4587,7 +4603,7 @@ class ProfileViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertFalse(state.showsDeleteAccount)
+        assertTrue(state.showsDeleteAccount)
     }
 
     @Test
@@ -6088,6 +6104,19 @@ class ProfileViewModelTest {
         // Then
         assertEquals(listOf("profile_delete_account_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
+
+    @Test
+    fun `GIVEN an anonymous user WHEN tapping delete account THEN sends the delete account clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = anonymous)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+
+            // Then
+            assertEquals(listOf("profile_delete_account_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
 
     @Test
     fun `GIVEN a local only user WHEN a delete account tap arrives THEN sends nothing`() = runTest(testDispatcher) {

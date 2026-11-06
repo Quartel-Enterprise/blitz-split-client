@@ -24,7 +24,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,7 +37,6 @@ import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
-import kotlinx.coroutines.launch
 
 // Why: a tabletop's full screen, the form's or "Pagar Ana"'s, under a bar with ✕ and the screen's title.
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,9 +92,10 @@ internal fun PayWithKeyPane(
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scope = rememberCoroutineScope()
-    val copied = stringResource(R.string.register_payment_pay_copied)
-    val onCopied: () -> Unit = { scope.launch { snackbarHostState.showSnackbar(copied) } }
+    val onCopy = rememberKeyCopy(
+        snackbarHostState = snackbarHostState,
+        onEvent = onEvent,
+    )
     when (presentation) {
         FormPresentation.Dialog -> DialogCard(
             isWide = false,
@@ -109,7 +108,7 @@ internal fun PayWithKeyPane(
                 layout = PayWithKeyLayout.OneColumn,
                 money = money,
                 onEvent = onEvent,
-                onCopied = onCopied,
+                onCopy = onCopy,
                 modifier = Modifier
                     .weight(
                         weight = 1f,
@@ -141,7 +140,7 @@ internal fun PayWithKeyPane(
                         layout = if (isLyingDown) PayWithKeyLayout.TwoColumns else PayWithKeyLayout.OneColumn,
                         money = money,
                         onEvent = onEvent,
-                        onCopied = onCopied,
+                        onCopy = onCopy,
                         modifier = Modifier
                             .weight(
                                 weight = 1f,
@@ -173,7 +172,7 @@ internal fun PayWithKeyPane(
                 layout = PayWithKeyLayout.TabletopHalves,
                 money = money,
                 onEvent = onEvent,
-                onCopied = onCopied,
+                onCopy = onCopy,
                 modifier = Modifier.weight(1f),
             )
         }

@@ -55,12 +55,6 @@ extension RegisterPaymentModel {
         send(RegisterPaymentUiEventOnMarkAsPaidClicked.shared)
     }
 
-    /// A copy of "Pay Ana": the pasteboard is the app's, the shared code only counts which copy it was.
-    func copy(_ text: String, _ target: PayCopyTarget) {
-        send(RegisterPaymentUiEventOnCopyClicked(target: target))
-        Pasteboard.copy(text)
-    }
-
     /// A part of the debt, cash or a past day go through the form, which takes this screen's place.
     func payOtherwise() {
         send(RegisterPaymentUiEventOnPayOtherwiseClicked.shared)
@@ -177,30 +171,69 @@ private struct OtherKeysList: View {
                 VStack(spacing: 0) {
                     ForEach(Array(state.otherKeys.enumerated()), id: \.element.id) { index, key in
                         if index > 0 { Divider().padding(.leading, 16) }
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(verbatim: PayWithKeyCopy.type(key.type))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text(verbatim: key.text)
-                                    .font(.body.weight(.semibold))
-                            }
-                            Spacer()
-                            Button {
-                                onCopy(key.value, .otherKey)
-                            } label: {
-                                Label("Copy", systemImage: "doc.on.doc")
-                                    .labelStyle(.iconOnly)
-                            }
-                            .buttonStyle(.borderless)
-                            .accessibilityLabel(Text("Copy \(PayWithKeyCopy.type(key.type)) of \(PayWithKeyCopy.name(state))"))
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
+                        KeyCopyRow(state: state, key: key, target: .otherKey, onCopy: onCopy)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
                     }
                 }
                 .background(Palette.card, in: .rect(cornerRadius: 16))
             }
+        }
+    }
+}
+
+/// One key of the receiver, its type over it, with its copy button.
+private struct KeyCopyRow: View {
+    let state: RegisterPaymentUiState
+    let key: ReceiverKey
+    let target: PayCopyTarget
+    let onCopy: (String, PayCopyTarget) -> Void
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: PayWithKeyCopy.type(key.type))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(verbatim: key.text)
+                    .font(.body.weight(.semibold))
+            }
+            Spacer()
+            Button {
+                onCopy(key.value, target)
+            } label: {
+                Label("Copy", systemImage: "doc.on.doc")
+                    .labelStyle(.iconOnly)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel(Text("Copy \(PayWithKeyCopy.type(key.type)) of \(PayWithKeyCopy.name(state))"))
+        }
+    }
+}
+
+/// The form's Pix keys, with Pix picked (beta feedback 3 item 26): each key of the receiver with its copy button, or
+/// that they have none in the app.
+struct FormPixKeyRows: View {
+    let state: RegisterPaymentUiState
+    let onCopy: (String, PayCopyTarget) -> Void
+
+    /// Whether the form shows anything under "How it was paid".
+    static func isShown(_ state: RegisterPaymentUiState) -> Bool {
+        !state.formPixKeys.isEmpty || state.showsNoPixKeyNotice
+    }
+
+    /// "Ana's Pix keys", over the keys.
+    static func title(_ state: RegisterPaymentUiState) -> String {
+        String(localized: "\(PayWithKeyCopy.name(state))'s Pix keys", bundle: .appLanguage)
+    }
+
+    var body: some View {
+        ForEach(state.formPixKeys, id: \.id) { key in
+            KeyCopyRow(state: state, key: key, target: .formPixKey, onCopy: onCopy)
+        }
+        if state.showsNoPixKeyNotice {
+            Text("\(PayWithKeyCopy.name(state)) has no Pix key in the app.")
+                .foregroundStyle(.secondary)
         }
     }
 }
@@ -236,7 +269,6 @@ struct PhonePayWithKey: View {
     let model: RegisterPaymentModel
 
     @State private var layout = ScreenLayout()
-    @State private var copyCount = 0
 
     private var state: RegisterPaymentUiState {
         model.state
@@ -271,7 +303,6 @@ struct PhonePayWithKey: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 8)
         }
-        .glassToast("Copied", trigger: copyCount)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -306,24 +337,19 @@ struct PhonePayWithKey: View {
         }
         KeyMethodPicker(state: state, selection: model.keyMethod)
         if let key = state.defaultKey {
-            DefaultKeyCard(state: state, key: key, onCopy: copy)
+            DefaultKeyCard(state: state, key: key, onCopy: model.copy)
         }
     }
 
     @ViewBuilder
     private var rest: some View {
         if let code = state.pixCode {
-            PixCodeCard(state: state, code: code, qrSize: 112, onCopy: copy)
+            PixCodeCard(state: state, code: code, qrSize: 112, onCopy: model.copy)
         }
-        OtherKeysList(state: state, onCopy: copy)
+        OtherKeysList(state: state, onCopy: model.copy)
         PayNotes(state: state)
         PayOtherwiseButton(model: model)
             .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func copy(_ text: String, _ target: PayCopyTarget) {
-        model.copy(text, target)
-        copyCount += 1
     }
 }
 #endif
@@ -333,8 +359,6 @@ struct PhonePayWithKey: View {
 /// the other keys and the note scroll between the title and the buttons, so it fits a 560 pt window.
 struct MacPayWithKey: View {
     let model: RegisterPaymentModel
-
-    @State private var copyCount = 0
 
     private var state: RegisterPaymentUiState {
         model.state
@@ -354,12 +378,12 @@ struct MacPayWithKey: View {
                     KeyMethodPicker(state: state, selection: model.keyMethod)
                         .labelsHidden()
                     if let key = state.defaultKey {
-                        DefaultKeyCard(state: state, key: key, onCopy: copy)
+                        DefaultKeyCard(state: state, key: key, onCopy: model.copy)
                     }
                     if let code = state.pixCode {
-                        PixCodeCard(state: state, code: code, qrSize: 88, onCopy: copy)
+                        PixCodeCard(state: state, code: code, qrSize: 88, onCopy: model.copy)
                     }
-                    OtherKeysList(state: state, onCopy: copy)
+                    OtherKeysList(state: state, onCopy: model.copy)
                     PayNotes(state: state)
                     PayOtherwiseButton(model: model)
                         .buttonStyle(.link)
@@ -384,12 +408,6 @@ struct MacPayWithKey: View {
         }
         .padding(20)
         .frame(width: 440)
-        .glassToast("Copied", trigger: copyCount)
-    }
-
-    private func copy(_ text: String, _ target: PayCopyTarget) {
-        model.copy(text, target)
-        copyCount += 1
     }
 }
 #endif

@@ -139,7 +139,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `welcome_use_without_account_clicked` | none | Welcome's "Use without an account" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Welcome's "I've used it on another device" | `:feature:welcome` |
 | `avatar_color_selected` | `color`, `source` (`profile_setup`, `edit_profile`) | An avatar color picked | `:feature:profile_setup`, `:feature:edit_profile` |
-| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`, `bill_detail`, `edit_profile`, `profile_photo`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:edit_profile` |
+| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`, `bill_detail`, `edit_profile`, `profile_photo`, `home`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap; `home` is the receipt's photo Home's "Scan receipt" picked, which opens Split a bill | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:edit_profile`, `:feature:groups` |
 | `photo_crop_turned` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`) | "Adjust photo"'s Rotate | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
 | `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`), `axis` (`horizontal`, `vertical`) | "Adjust photo"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
 | `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`) | "Adjust photo"'s Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
@@ -188,7 +188,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_pick_join_clicked` | none | "Join as Bruno" | `:feature:join` |
 | `join_pick_not_in_list_clicked` | none | "I'm not on the list": opens "Join with another name", or joins at once with a Google or Apple account | `:feature:join` |
 | `join_pick_new_member_confirmed` | none | "Join group" with a new name | `:feature:join` |
-| `camera_settings_clicked` | `source` (`join_with_link`, `receipt`) | "Open settings" with the camera denied, on the reader or on the receipt camera (Android, iOS) | `:feature:join`, `:feature:split_bill` |
+| `camera_settings_clicked` | `source` (`join_with_link`, `receipt`) | "Open settings" with the camera denied, on the reader or on the receipt camera (Android, iOS), from Split a bill or Home | `:feature:join`, `:feature:split_bill`, `:feature:groups` |
 | `join_with_link_open_camera_clicked` | none | "Open camera", the only tap that asks for the camera and starts it; a tap once it was asked, or on a device with no camera, doesn't count | `:feature:join` |
 | `join_with_link_torch_toggled` | `is_on` | The reader's flashlight, with where it ended up | `:feature:join` |
 | `join_with_link_paste_clicked` | none | The reader's Paste, also with an empty clipboard or one the browser won't read | `:feature:join` |
@@ -206,7 +206,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `update_dismissed` | `source` (`startup`, `manual`) | "Not now" or Esc on "Update available" (iOS, macOS) | `in_app_update` |
 | `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
 | `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
-| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`, `category_expenses`) | Search opened: its navigation item (Android's bar or rail, the web's), iOS's search tab, the Mac's magnifier or field, or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
+| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`, `category_expenses`) | Search opened: its navigation item (Android's bar or rail, the web's), Apple's search tab (the Mac's sidebar item), or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `contact`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped: `contact` is the person's profile, `person` their row in a group | `:feature:groups` |
 | `search_suggestion_clicked` | `source` (`search`, `groups`) | "Did you mean “Larissa”?" tapped | `:feature:groups` |
@@ -230,7 +230,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_undo_clicked` | `source` (`home`, `groups`, `group_detail`, `global_balances`) | "Undo" on "Ana's payment recorded." | `:feature:groups`, `:feature:group_detail`, `:feature:global_balances` |
 | `home_see_balances_clicked` | none | "See balances" over Home's faces | `:feature:groups` |
 | `balance_face_clicked` | `source` (`home`) | A face of "Balances with people", which opens settling up with them for the net | `:feature:groups` |
-| `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Scan receipt" | `:feature:groups`, `:feature:split_bill` |
+| `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Scan receipt", only while it can ask where the photo comes from (online; on Home once it is read) | `:feature:groups`, `:feature:split_bill` |
 | `record_payment_clicked` | `source` (`home`) | Home's "Record a payment" | `:feature:groups` |
 | `home_see_all_groups_clicked` | none | "See all" over "Your groups" | `:feature:groups` |
 | `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`, `category_expenses`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
@@ -297,7 +297,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_mark_as_paid_clicked` | none | "Mark as paid" | `:feature:register_payment` |
 | `payment_pay_otherwise_clicked` | none | "I paid another amount or another way" | `:feature:register_payment` |
 | `payment_paid_anyway_clicked` | none | "I paid anyway" (13.5c) | `:feature:register_payment` |
-| `payment_copy_clicked` | `target` (`key`, `pix_code`, `other_key`) | A copy on "Pay Ana": "Copy key", "Copy code" of the Pix code, or the copy of one of "Ana's other keys" | `:feature:register_payment` |
+| `payment_copy_clicked` | `target` (`key`, `pix_code`, `other_key`, `form_pix_key`) | A copy on "Pay Ana": "Copy key", "Copy code" of the Pix code, or the copy of one of "Ana's other keys"; or the copy of one of "Ana's Pix keys" in the form, with Pix picked | `:feature:register_payment` |
 | `payment_recorded` | `method`, `way` (`form`, `mark_as_paid`, `paid_anyway`), `kind` (`paid`, `received`, `between_others`), `groups` (how many payments, one per group), `is_full_debt` | A payment saved | `:feature:register_payment` |
 | `balances_filter_selected` | `filter` (`all`, `you_owe`, `owes_you`), `source` (`global_balances`) | All, You owe or Owe you, another than the one picked | `:feature:global_balances` |
 | `balances_person_expand_toggled` | `is_expanded` | "By group" opened or closed on a row | `:feature:global_balances` |
@@ -359,7 +359,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Done" on "Several people paid", once the amounts add up | `:feature:split_bill` |
 | `split_bill_date_clicked` | none | "When", opening its picker | `:feature:split_bill` |
 | `split_bill_split_clicked` | none | "Split", which opens Split | `:feature:split_bill` |
-| `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose File…" (Mac) or "Choose photo" (web); not sent where no camera leaves anything to choose | `:feature:split_bill` |
+| `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose file" (Android) or "Choose File…" (Apple), or "Choose photo" (web); not sent where no camera leaves anything to choose; Home's shortcut asks the same | `:feature:split_bill`, `:feature:groups` |
 | `receipt_items_clicked` | none | "14 items" beside "Read from the receipt", which opens Items, while the receipt's items are there in the bill's currency | `:feature:split_bill` |
 | `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`) | Equal, Amounts, %, Shares or Items, another than the one picked | `:feature:split_bill` |
 | `split_bill_person_toggled` | `is_included` | A person in or out of Equal, with where they ended up | `:feature:split_bill` |
@@ -390,8 +390,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_map_clicked` | `source` (`split_bill`, `profile`) | The "Category map" card | `:feature:split_bill`, `:feature:profile` |
 | `receipt_read` | `result` (`read`, `unreadable`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Scan receipt" began | `:feature:split_bill` |
 | `receipt_removed` | none | × on "Receipt photo" | `:feature:split_bill` |
-| `receipt_camera_torch_toggled` | `is_on` | The receipt camera's flashlight (Android, iOS), with where it ended up | `:feature:split_bill` |
-| `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill` |
+| `receipt_camera_torch_toggled` | `is_on` | The receipt camera's flashlight (Android, iOS), with where it ended up | `:feature:split_bill`, `:feature:groups` |
+| `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill`, `:feature:groups` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
 | `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete bill", when its question opens; `group_detail` is a bill's ⋮ "Delete" on Expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
@@ -459,10 +459,10 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_recovery_code_clicked` | none | "Recovery code" | `:feature:profile` |
 | `bitcoin_in_sats_toggled` | `is_on` | "Bitcoin in satoshis" | `:feature:profile` |
 | `profile_notifications_clicked` | none | "Notifications" (Android and iOS) | `:feature:profile` |
-| `privacy_policy_clicked` | none | "Privacy policy" | `:feature:profile` |
-| `terms_clicked` | none | "Terms of use" | `:feature:profile` |
+| `privacy_policy_clicked` | none | "Privacy Policy", in Profile's footer | `:feature:profile` |
+| `terms_clicked` | none | "Terms of Service", in Profile's footer | `:feature:profile` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
-| `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Erase the profile from this device?" | `:feature:profile` |
+| `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_visibility_info_clicked` | none | "Who sees your profile", when it opens | `:feature:profile` |
 | `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`, `unlink_account`) | A confirmation of Profile (sign out, erase, disconnect) closed without its main button, while nothing signs out or unlinks | `:feature:profile` |
 | `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
@@ -479,12 +479,12 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `dynamic_colors_toggled` | `is_on` | "Dynamic colors", where the device draws them (Android 12 and later) | `:feature:profile` |
 | `check_for_updates_clicked` | none | "Check for updates", while not already checking | `:feature:profile` |
 | `sign_out_clicked` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | "Sign out" or "Erase profile and sign out", with the dialog it opens | `:feature:profile` |
-| `sign_out_confirmed` | none | "Sign out" on "Sign out?", when the sign out starts | `:feature:profile` |
+| `sign_out_confirmed` | none | "Sign out" on a Google or Apple account's "Sign out?", when the sign out starts | `:feature:profile` |
 | `sign_out_when_synced_clicked` | none | "Sign out once synced" | `:feature:profile` |
 | `sign_out_now_clicked` | none | "Sign out now and lose the changes", when the sign out starts | `:feature:profile` |
-| `erase_code_copy_clicked` | none | Copy of the recovery code on "Erase the profile from this device?" | `:feature:profile` |
+| `erase_code_copy_clicked` | none | Copy of the recovery code on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `erase_connect_instead_clicked` | none | "Connect Google or Apple instead" there, while it can connect | `:feature:profile` |
-| `profile_erase_confirmed` | none | "Erase and sign out", when the erase starts | `:feature:profile` |
+| `profile_erase_confirmed` | none | "Erase and sign out", or "Sign out" on an anonymous account's "Sign out?", when the erase starts | `:feature:profile` |
 | `account_photo_selected` | `source` (`edit_profile`, `profile_photo`) | "Use Google account photo" or Apple's, while the account has one | `:feature:edit_profile` |
 | `edit_profile_discard_clicked` | none | Cancel on the web's and the Mac's inline form, putting back what was saved | `:feature:edit_profile` |
 | `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |

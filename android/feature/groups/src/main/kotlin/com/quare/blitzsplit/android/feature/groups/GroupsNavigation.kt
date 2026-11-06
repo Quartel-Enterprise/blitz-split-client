@@ -32,7 +32,7 @@ internal fun groupsBarsOf(
         kind = homeBarsKindOf(usesRail),
         selected = HomeTab.GROUPS.takeUnless { state.isSearching },
         onTabClick = { tab -> eventOf(tab, state.isSearching)?.let(onEvent) },
-        onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) }.takeIf { state.canSearch },
+        onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) },
         railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
     )
 }

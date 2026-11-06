@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
 export function ProfileSetupScreen() {
@@ -80,10 +81,9 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
             id="profile-name"
             autoComplete="name"
             placeholder={t('profileSetup_namePlaceholder')}
-            value={name}
+            {...freeTextProps(name, setName, 'words')}
             aria-invalid={nameError !== null}
             aria-describedby="profile-name-help"
-            onChange={(event) => setName(event.target.value)}
           />
           <span id="profile-name-help" role={nameError ? 'alert' : undefined} className={cn('text-xs', nameError ? 'text-destructive' : 'text-muted-foreground')}>
             {t(nameError ?? 'profileSetup_nameHint', { min: state.nameMinLength, max: state.nameMaxLength })}

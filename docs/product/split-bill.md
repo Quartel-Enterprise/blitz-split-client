@@ -55,7 +55,11 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     ("2 items with nobody", in red) and the items, service and cover close with the total ("R$ 15 left" or
     "over", "the receipt says" for items a receipt gave), offering "Add an item of R$ 15" (a new item at that price)
     and "Split the difference" (shared in proportion to what each one consumed, a "Difference" row that can be taken
-    off). Delete item asks first, saying what is left to split once it goes. Back keeps the items typed for Items to
+    off). Delete item asks first, saying what is left to split once it goes. The Mac's items are a table 860 pt wide
+    (700 in a window under 900 pt), where a double click opens an item ("Double-click each item and check
+    who had it."), a right click offers "Edit…" and "Delete Item…", the Delete key (⌫) deletes the item picked, and
+    "Add item" opens Item on its name, ready to type; the Mac's hints say "click" where a touch screen says "tap"
+    ("Click the icon to change it."). Back keeps the items typed for Items to
     open with again until Split closes or another mode's Done. The bill keeps its items inside its row
     (`expenses.items`, stamped with the bill's `updated_at`) beside shares holding each one's total, stored as
     "amount": an older version reads it by Amounts, and items another version saved the bill without are dropped,
@@ -139,10 +143,15 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     leave it out there; Home's shortcut still opens it), online only ("Needs internet. Fill it in by hand or scan
     the receipt once you're back online."). It asks first where the photo comes from (Pierre's call, beta feedback
     part 2, item 7, `SplitBillUiState.showsReceiptSourceChoice`, `OnReceiptSourcePicked`, `OnReceiptChoiceSkipped` where there is no camera), as Home's shortcut and
-    "Take another photo" do too: Android a bottom sheet "Scan receipt" with "Take photo" and "Choose from gallery"
-    (the system Photo Picker, no storage permission), iOS and iPadOS an action sheet with "Take photo" and "Choose
-    from Photos" (PhotosPicker), the Mac one with "Choose File…" and "Choose from Photos", and the web a dialog (a
-    drawer on a phone) with "Take photo" and "Choose photo" (the browser's file chooser, the phone's gallery). Where
+    "Take another photo" do too: Android a bottom sheet "Scan receipt" with "Take photo", "Choose from gallery"
+    (the system Photo Picker, no storage permission) and "Choose file" (the documents picker, an image saved as a
+    file), iOS and iPadOS an action sheet with "Take photo", "Choose from Photos" (PhotosPicker) and "Choose File…"
+    (Files), the Mac one with "Choose File…" and "Choose from Photos", and the web a dialog (a
+    drawer on a phone) with "Take photo" and "Choose photo" (the browser's file chooser, the phone's gallery).
+    Home's shortcut asks on Home instead and opens the form with the photo picked there (beta feedback part 3, item
+    16, `ReceiptRequest.Picked`): it is read once "Split in which group?" is answered and that group is read, in its
+    currency, as a photo picked on the form is; a group in bitcoin or ether drops it, and an app restored without the
+    photo (the system closed it meanwhile) asks for one again. Where
     there is no camera to take it with (a device without one, a browser that lists none) it goes straight to the
     gallery or the file chooser. "Take photo" opens Android's and iOS's own camera, black, with the receipt's frame,
     the flash, the gallery (still there, to change one's mind) and the shutter, and on the web the browser's camera (a

@@ -17,7 +17,9 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
+import { useRef } from 'react'
 
 const formId = 'create-group-form'
 const nameId = 'create-group-name'
@@ -99,6 +101,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
   })
   const members = state.members.length
   const photo = usePhotoPicker()
+  const draftRef = useRef<HTMLInputElement>(null)
   return (
     <form
       id={formId}
@@ -160,7 +163,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <Label htmlFor={nameId}>{t('createGroup_nameLabel')}</Label>
-          <Input id={nameId} value={name} onChange={(event) => setName(event.target.value)} autoComplete="off" />
+          <Input id={nameId} {...freeTextProps(name, setName)} autoComplete="off" />
         </div>
       </div>
       {state.showsPhotoError && (
@@ -217,14 +220,27 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
               )}
             </li>
           ))}
-          <li className="flex items-center gap-2 px-3 py-2">
+          {/*
+            Why: a click or tap anywhere on the row, the + included, focuses the name (and opens a phone's keyboard),
+            as one on the field does (beta feedback 3 items 6 and 10); the field and "Add" handle their own.
+          */}
+          <li
+            className="flex cursor-text items-center gap-2 px-3 py-2"
+            onClick={(event) => {
+              const input = draftRef.current
+              if (!input || (event.target as HTMLElement).closest('button, input')) return
+              // Why: focus() on the focused field does nothing, so a phone keyboard put away wouldn't come back.
+              if (document.activeElement === input) input.blur()
+              input.focus()
+            }}
+          >
             <Plus aria-hidden className="size-4 shrink-0 text-muted-foreground" />
             <Input
-              value={draft}
+              ref={draftRef}
+              {...freeTextProps(draft, setDraft, 'words')}
               placeholder={t('createGroup_addPlaceholder')}
               aria-label={t('createGroup_addPlaceholder')}
               autoComplete="off"
-              onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
                 // Why: Enter adds the name, not the group; the field stays focused for the next one.
                 if (event.key === 'Enter') {

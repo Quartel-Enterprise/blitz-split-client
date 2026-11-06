@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.feature.deleteaccount
 
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
-import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -96,6 +96,51 @@ class DeleteAccountViewModelTest {
         // Then
         assertNull(state.accountProvider.valueOrNull())
     }
+
+    @Test
+    fun `GIVEN an anonymous user with a code WHEN the screen opens THEN lists the recovery code as deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+                recoveryCode = "ABCDEFGHJKLM",
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.deletesRecoveryCode)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user whose code is not made yet WHEN the screen opens THEN leaves the recovery code out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+                recoveryCode = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.deletesRecoveryCode)
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN the screen opens THEN leaves the recovery code out of what gets deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = googleAccount)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.deletesRecoveryCode)
+        }
 
     @Test
     fun `GIVEN only a local profile WHEN the screen opens THEN names no account`() = runTest(testDispatcher) {
@@ -224,10 +269,24 @@ class DeleteAccountViewModelTest {
         }
 
     @Test
-    fun `GIVEN an anonymous user who checked the box WHEN delete is tapped THEN deletes nothing`() =
+    fun `GIVEN an anonymous user who checked the box WHEN delete is tapped THEN deletes the account`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID))
+            viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+
+            // When
+            viewModel.onEvent(DeleteAccountUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(1, deletions)
+        }
+
+    @Test
+    fun `GIVEN only a local profile with the box checked WHEN delete is tapped THEN deletes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
             viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
 
             // When
@@ -620,8 +679,10 @@ class DeleteAccountViewModelTest {
         deleteResult: Result<Unit> = Result.success(Unit),
         deleteHangs: Boolean = false,
         holdsAccount: Boolean = false,
+        recoveryCode: String? = null,
     ) {
         account = FakeAccountRepository(initialStatus = status)
+        account.recoveryCode = recoveryCode
         isOnline = MutableStateFlow(online)
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(Route.Profile)
@@ -637,10 +698,10 @@ class DeleteAccountViewModelTest {
                 deleteGate?.await() ?: this@DeleteAccountViewModelTest.deleteResult
             },
             exportUserData = ExportUserData { exportError?.let { Result.failure(it) } ?: Result.success(exportedJson) },
-            observeAccountStatus = if (holdsAccount) {
-                ObserveAccountStatus { emptyFlow() }
+            observeAccount = if (holdsAccount) {
+                ObserveAccount { emptyFlow() }
             } else {
-                ObserveAccountStatusUseCase(account)
+                ObserveAccountUseCase(account)
             },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )

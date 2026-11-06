@@ -303,7 +303,10 @@ private fun ColumnScope.DeleteAccountDetailsSection(
         )
     }
     DeleteAccountHeading()
-    DeletedItemsCard(provider = state.accountProvider)
+    DeletedItemsCard(
+        provider = state.accountProvider,
+        deletesRecoveryCode = state.deletesRecoveryCode,
+    )
     // Why: the export reads the copy on this device, so it works offline too.
     TextButton(
         onClick = { onEvent(DeleteAccountUiEvent.OnExportClicked) },
@@ -357,7 +360,10 @@ private fun DeleteAccountHeading() {
 
 // Why: the provider's line shimmers until the account was read, so the list never leaves it out before its time.
 @Composable
-private fun DeletedItemsCard(provider: Loadable<AccountProvider?>) {
+private fun DeletedItemsCard(
+    provider: Loadable<AccountProvider?>,
+    deletesRecoveryCode: Boolean,
+) {
     val items = buildList {
         add(stringResource(R.string.delete_account_deleted_profile))
         add(stringResource(R.string.delete_account_deleted_keys))
@@ -368,6 +374,7 @@ private fun DeletedItemsCard(provider: Loadable<AccountProvider?>) {
                 add(stringResource(R.string.delete_account_deleted_provider, stringResource(it.labelRes)))
             }
         }
+        if (deletesRecoveryCode) add(stringResource(R.string.delete_account_deleted_recovery_code))
         add(stringResource(R.string.delete_account_deleted_device))
     }
     Surface(
@@ -508,6 +515,8 @@ private fun createPreviewState(
     hasFailed: Boolean = false,
 ): DeleteAccountUiState = DeleteAccountUiState(
     accountProvider = AccountProvider.GOOGLE.toLoaded(),
+    hasAccount = true,
+    hasRecoveryCode = false,
     isOnline = isOnline,
     hasConfirmed = hasConfirmed,
     isDeleting = false,

@@ -97,6 +97,7 @@ private struct CreateGroupForm: View {
 
     /// The sheet's own size, which decides the columns.
     @State private var layout = ScreenLayout()
+    @FocusState private var isNameFocused: Bool
 
     private var state: CreateGroupUiState {
         model.state
@@ -132,6 +133,12 @@ private struct CreateGroupForm: View {
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
         .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(CreateGroupUiEventOnPhotoCrop(event: $0)) }
+        #if os(macOS)
+        // The Mac's sheet opens on the name, ready to type; iOS waits for a tap, which brings the keyboard up
+        .onAppear {
+            if model.current.name.isEmpty { isNameFocused = true }
+        }
+        #endif
     }
 
     /// The error, the avatar and the name, type and currency.
@@ -149,7 +156,9 @@ private struct CreateGroupForm: View {
                 .listRowBackground(Color.clear)
         }
         Section {
-            TextField("Group name", text: nameBinding)
+            TextField("Group name", text: nameBinding.firstLetterCapitalized)
+                .capitalizesFirstLetter()
+                .focused($isNameFocused)
             Picker("Type", selection: typeBinding) {
                 ForEach(state.types, id: \.self) { type in
                     Text(type.title).tag(type)
@@ -280,9 +289,18 @@ private struct MembersSection: View {
                     .font(.title2)
                     .foregroundStyle(Palette.accent)
                     .accessibilityHidden(true)
-                TextField("Add by name", text: draftBinding)
-                    #if os(iOS)
-                    .textInputAutocapitalization(.words)
+                    // A tap or click on the + focuses the name, as one on the field does (beta feedback 3 items 6
+                    // and 10). Only on the +: a gesture over the field would take its own clicks, which place the
+                    // cursor and select
+                    .contentShape(.rect)
+                    .onTapGesture(perform: focusDraft)
+                // The prompt, not a label: the Mac's grouped form would put the label on the left and the field,
+                // empty, on the right (beta feedback 3 item 10)
+                TextField("Add by name", text: draftBinding.firstLetterCapitalized, prompt: Text("Add by name"))
+                    .labelsHidden()
+                    .capitalizesFirstLetter(isPersonName: true)
+                    #if os(macOS)
+                    .multilineTextAlignment(.leading)
                     #endif
                     .focused($isDraftFocused)
                     .submitLabel(.next)
@@ -307,6 +325,20 @@ private struct MembersSection: View {
         } footer: {
             Text("Nobody needs the app right now. You can already add expenses for everyone and send the link later.")
         }
+    }
+
+    /// Focuses the name field; on iOS one already focused with its keyboard put away loses the focus first, since
+    /// setting the same value again would bring nothing back. The Mac has no keyboard to bring back, and focusing its
+    /// field again would select the name typed so far, which the next key would replace.
+    private func focusDraft() {
+        guard isDraftFocused else {
+            isDraftFocused = true
+            return
+        }
+        #if os(iOS)
+        isDraftFocused = false
+        Task { @MainActor in isDraftFocused = true }
+        #endif
     }
 
     private var draftBinding: Binding<String> {

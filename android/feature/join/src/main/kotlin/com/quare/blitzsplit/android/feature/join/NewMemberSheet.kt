@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,8 +26,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.personNameKeyboardOptions
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.NewMemberDraft
@@ -107,10 +106,7 @@ private fun NewMemberFormContent(
             supportingText = { Text(stringResource(R.string.join_pick_new_helper)) },
             enabled = !isJoining,
             singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Done,
-            ),
+            keyboardOptions = personNameKeyboardOptions.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { onEvent(JoinPickUiEvent.OnNewMemberConfirmed) }),
         )
         Row(

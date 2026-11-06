@@ -67,9 +67,9 @@
     <string name="profile_dynamic_colors_info_note">Groups, avatars and categories keep their own colors, so you still tell them apart. This only applies to this device.</string>
     <string name="profile_dynamic_colors_info_ok">Got it</string>
     <string name="profile_section_about">Privacy and about</string>
-    <string name="profile_privacy_policy">Privacy policy</string>
-    <string name="profile_terms">Terms of use</string>
-    <string name="profile_version">Version</string>
+    <string name="profile_privacy_policy">Privacy Policy</string>
+    <string name="profile_terms">Terms of Service</string>
+    <string name="profile_version_footer">Version %1$s</string>
     <string name="profile_check_for_updates">Check for updates</string>
     <string name="profile_check_for_updates_version">Version %1$s</string>
     <string name="profile_check_for_updates_checking">Checking…</string>
@@ -90,7 +90,7 @@
     <string name="profile_sign_out_now">Sign out now and lose the changes</string>
     <string name="profile_sign_out_failed">Couldn\'t sign out. Try again.</string>
     <string name="profile_erase_title">Erase the profile from this device?</string>
-    <string name="profile_erase_body">You use the app without an account. When you leave, your profile and your data are gone from here. To come back, you need the recovery code.</string>
+    <string name="profile_erase_body">Your account has no Google or Apple sign in. When you sign out, we erase this device\'s copy. To come back, you need the recovery code.</string>
     <string name="profile_erase_body_no_code">You use the app without an account and haven\'t synced yet, so there is no recovery code. When you leave, your profile is gone for good.</string>
     <string name="profile_erase_code_saved">I kept the code somewhere safe</string>
     <string name="profile_erase_no_code_ack">I understand it can\'t be recovered</string>

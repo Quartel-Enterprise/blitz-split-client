@@ -146,13 +146,23 @@ class SyncCoordinator(
     /*
      * Why: a request the server judges with every change made here ("Sair do grupo", "Apagar grupo"). Under the same
      * lock as the sync before it, so no other sync runs between the two or alongside the request: one whose download
-     * read the server before it would bring back what the request just took off the device.
+     * read the server before it would bring back what the request just took off the device. With nothing waiting to
+     * go up the server already has every change made here, so the request goes at once: a whole sync first, a round
+     * trip per part, is what made deleting a group slow.
      */
     suspend fun <T> syncThen(request: suspend () -> Result<T>): Result<T> = runUnderSyncLock {
-        syncLocked().fold(
+        val synced = suspendRunCatching {
+            if (observeHasPendingChanges().first()) syncLocked().getOrThrow()
+        }
+        synced.fold(
             onSuccess = { suspendRunCatching { request().getOrThrow() } },
             onFailure = { Result.failure(it) },
         )
+    }
+
+    // Why: work a screen hands over and doesn't wait for ("Apagar grupo"), which outlives it like every sync.
+    fun runInBackground(block: suspend () -> Unit) {
+        scope.launch { block() }
     }
 
     private suspend fun <T> runUnderSyncLock(block: suspend () -> Result<T>): Result<T> {

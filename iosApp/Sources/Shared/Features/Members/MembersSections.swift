@@ -385,7 +385,8 @@ private struct MemberNameSheet: View {
         if let editor = model.state.editor {
             NavigationStack {
                 Form {
-                    TextField("Name", text: draftBinding)
+                    TextField("Name", text: draftBinding.firstLetterCapitalized)
+                        .capitalizesFirstLetter(isPersonName: true)
                         .focused($isFocused)
                         .submitLabel(.done)
                         .onSubmit { model.send(MembersUiEventOnSaveClicked.shared) }

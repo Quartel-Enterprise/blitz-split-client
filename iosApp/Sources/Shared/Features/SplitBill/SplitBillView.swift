@@ -356,14 +356,6 @@ private struct PhoneSplitBill: View {
                 .foldSheetPlacement()
         }
         .receiptSourceChoice(model: model, isSettled: isSettled, isAnchoredAtButton: isScanButtonShown)
-        .fullScreenCover(isPresented: model.receiptSourceShown(.camera, isSettled: isSettled)) {
-            ReceiptCameraView(
-                onPhoto: { data in model.receiptPicked(data) },
-                onDismiss: { model.send(SplitBillUiEventOnReceiptPickerDismissed.shared) },
-                onTorchToggled: { isOn in model.send(SplitBillUiEventOnReceiptTorchClicked(isOn: isOn)) },
-                onSettingsOpened: { model.send(SplitBillUiEventOnReceiptCameraSettingsClicked.shared) },
-            )
-        }
         .sheet(isPresented: payerShown) {
             // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.
             if model.state.payerSelection == nil, model.shownPayerAmounts != nil {
@@ -412,8 +404,8 @@ private struct PhoneSplitBill: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Category: \(CategoryCopy.path(state.category, parent: state.categoryParent)). Change it")
-                TextField("What was it? E.g. Groceries", text: model.billDescription)
-                    .textInputAutocapitalization(.sentences)
+                TextField("What was it? E.g. Groceries", text: model.billDescription.firstLetterCapitalized)
+                    .capitalizesFirstLetter()
                     .submitLabel(.next)
                     .focused($focusedField, equals: .description)
                     .onSubmit { focusedField = .amount }
@@ -942,6 +934,8 @@ private struct PayerAmountField: View {
 private struct MacSplitBill: View {
     let model: SplitBillModel
 
+    @Environment(\.windowLayout) private var window
+
     var body: some View {
         Group {
             if model.state.itemsEditor != nil {
@@ -955,10 +949,10 @@ private struct MacSplitBill: View {
         .frame(width: model.state.itemsEditor != nil ? itemsWidth : 520)
     }
 
-    /// "Bill Items" is 860 pt wide, 700 in a window too narrow for it.
+    /// "Bill Items" is 860 pt wide, 700 in a window too narrow for it: the window the sheet opened over, as the root
+    /// measures it (the key window is a sheet: this one, 520 pt while the form shows, or Item over it).
     private var itemsWidth: CGFloat {
-        let window = NSApplication.shared.keyWindow?.frame.width ?? .infinity
-        return window < 900 ? 700 : 860
+        window.size.width < 900 ? 700 : 860
     }
 }
 
@@ -1048,10 +1042,11 @@ private struct MacBillForm: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 8) {
                                 MacCategoryMenu(model: model)
-                                TextField(text: model.billDescription, prompt: Text("What was it? E.g. Groceries")) {
+                                TextField(text: model.billDescription.firstLetterCapitalized, prompt: Text("What was it? E.g. Groceries")) {
                                     Text("Description")
                                 }
                                 .labelsHidden()
+                                .capitalizesFirstLetter()
                                 .focused($isDescriptionFocused)
                             }
                             if state.showsDescriptionError {
@@ -1180,12 +1175,6 @@ private struct MacBillForm: View {
         }
         // "Ler Cupom Fiscal…" picks the receipt's photo from Photos or a file, as the Mac has no camera to frame it (7.1e)
         .receiptSourceChoice(model: model, isSettled: isSettled)
-        .fileImporter(isPresented: model.receiptSourceShown(.files, isSettled: isSettled), allowedContentTypes: [.image]) { result in
-            guard case let .success(url) = result else { return }
-            Task {
-                model.receiptPicked(await Self.readFile(url))
-            }
-        }
         .sheet(isPresented: groupShown) {
             MacGroupPicker(model: model)
         }
@@ -1196,15 +1185,6 @@ private struct MacBillForm: View {
             }
             .frame(width: 480, height: 560)
         }
-    }
-
-    /// The picked file's bytes, read off the main actor since a large photo or one on iCloud Drive takes a while
-    /// (@concurrent: with approachable concurrency a nonisolated async function runs on its caller's actor).
-    @concurrent
-    private nonisolated static func readFile(_ url: URL) async -> Data? {
-        let isScoped = url.startAccessingSecurityScopedResource()
-        defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
-        return try? Data(contentsOf: url)
     }
 
     private var categoryFormShown: Binding<Bool> {

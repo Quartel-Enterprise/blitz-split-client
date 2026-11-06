@@ -10,10 +10,14 @@ The home tab, its shortcuts and pinned groups.
     "Overall balance" as Groups' (big in the first currency with a net, a line for each other one with a net,
     `HomeSummary.main` and `others`), with "Owed to you" and "You owe", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Balances filtered (You owe straight to settling up while only
-    one person is in it), disabled at zero. Three shortcuts: "Scan receipt", which opens Split a bill as
-    "Split a bill" does (asking the group first) and asks at once where the receipt's photo comes from, "Take photo"
-    or the gallery, as the form's "Scan receipt" does (7.1e, `Route.SplitBill.scansReceipt`; offline disabled with
-    "Needs internet"),
+    one person is in it), disabled at zero. Three shortcuts: "Scan receipt", which first asks right on Home where the
+    receipt's photo comes from, as the form's "Scan receipt" asks (the same sheet, dialog or drawer: the camera, the
+    gallery and a file, as each platform has them; straight to the gallery or the file chooser without a camera),
+    then, once a photo is picked, opens Split a bill as "Split a bill" does (asking the group first) with that photo
+    already reading (beta feedback part 3, item 16: `HomeUiState.showsReceiptSourceChoice`,
+    `HomeUiEvent.OnReceiptPhotoPicked`, the photo handed over by `HoldPickedReceipt` / `TakePickedReceipt`,
+    `Route.SplitBill.scansReceipt`; closing the choice or the picker stays on Home, as does another screen opening
+    over it; a photo that comes back before Home is read waits for it; offline disabled with "Needs internet"),
     "Record payment", which asks "Who paid whom?" first (`Route.PickPayment`: every open pair of every
     group, the most recent group first, pairs with you first; the pair opens Record payment in its place), and
     "New group". Every platform draws them in the page, each with its name, never as bare icons in a bar (on the Mac

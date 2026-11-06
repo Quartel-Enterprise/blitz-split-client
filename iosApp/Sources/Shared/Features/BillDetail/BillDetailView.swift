@@ -743,60 +743,86 @@ private struct MacBillDetail: View {
         }
     }
 
+    /// The bill's name beside its buttons; the narrow inspector (330 pt) puts the buttons in a row above it, which
+    /// beside them would leave the name a hundred points and cut the group's line to a few letters.
+    @ViewBuilder
     private var header: some View {
-        HStack(alignment: .top, spacing: 12) {
-            CategoryBadge(category: state.category, size: isNarrow ? 32 : 40)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                Text(verbatim: state.description_)
-                    .font(isNarrow ? .title3.bold() : .title2.bold())
-                    .lineLimit(2)
-                    .accessibilityAddTraits(.isHeader)
-                Text(verbatim: "\(state.groupName) · \(ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay))")
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            Spacer(minLength: 8)
-            Button("Share", systemImage: "square.and.arrow.up") {
-                model.send(BillDetailUiEventOnShareClicked.shared)
-            }
-            .labelStyle(.iconOnly)
-            .help(Text("Share"))
-            .disabled(!state.areActionsEnabled)
-            Button {
-                model.send(BillDetailUiEventOnEditClicked.shared)
-            } label: {
-                if isNarrow {
-                    Label("Edit…", systemImage: "pencil")
-                        .labelStyle(.iconOnly)
-                } else {
-                    Text("Edit…")
+        if isNarrow {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 12) {
+                    Spacer(minLength: 0)
+                    headerButtons
+                }
+                HStack(alignment: .top, spacing: 12) {
+                    CategoryBadge(category: state.category, size: 32)
+                    headerTitles
                 }
             }
-            .help(Text("Edit…"))
-            .disabled(!state.areActionsEnabled)
-            Button(role: .destructive) {
-                model.send(BillDetailUiEventOnDeleteClicked.shared)
-            } label: {
-                Label {
-                    Text(BillCopy.delete)
-                } icon: {
-                    Image(systemName: "trash")
-                }
-                .labelStyle(.iconOnly)
+        } else {
+            HStack(alignment: .top, spacing: 12) {
+                CategoryBadge(category: state.category, size: 40)
+                headerTitles
+                Spacer(minLength: 8)
+                headerButtons
             }
-            .help(Text(BillCopy.delete))
-            .disabled(!state.areActionsEnabled)
-            Button("Close", systemImage: "xmark") {
-                model.send(BillDetailUiEventOnBackClicked.shared)
-            }
-            .labelStyle(.iconOnly)
-            .buttonStyle(.borderless)
-            .help(Text("Close"))
         }
+    }
+
+    private var headerTitles: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            Text(verbatim: state.description_)
+                .font(isNarrow ? .title3.bold() : .title2.bold())
+                .lineLimit(2)
+                .accessibilityAddTraits(.isHeader)
+            Text(verbatim: "\(state.groupName) · \(ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay))")
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+    }
+
+    /// Share, Edit…, Delete and Close.
+    @ViewBuilder
+    private var headerButtons: some View {
+        Button("Share", systemImage: "square.and.arrow.up") {
+            model.send(BillDetailUiEventOnShareClicked.shared)
+        }
+        .labelStyle(.iconOnly)
+        .help(Text("Share"))
+        .disabled(!state.areActionsEnabled)
+        Button {
+            model.send(BillDetailUiEventOnEditClicked.shared)
+        } label: {
+            if isNarrow {
+                Label("Edit…", systemImage: "pencil")
+                    .labelStyle(.iconOnly)
+            } else {
+                Text("Edit…")
+            }
+        }
+        .help(Text("Edit…"))
+        .disabled(!state.areActionsEnabled)
+        Button(role: .destructive) {
+            model.send(BillDetailUiEventOnDeleteClicked.shared)
+        } label: {
+            Label {
+                Text(BillCopy.delete)
+            } icon: {
+                Image(systemName: "trash")
+            }
+            .labelStyle(.iconOnly)
+        }
+        .help(Text(BillCopy.delete))
+        .disabled(!state.areActionsEnabled)
+        Button("Close", systemImage: "xmark") {
+            model.send(BillDetailUiEventOnBackClicked.shared)
+        }
+        .labelStyle(.iconOnly)
+        .buttonStyle(.borderless)
+        .help(Text("Close"))
     }
 
     private var billContent: some View {

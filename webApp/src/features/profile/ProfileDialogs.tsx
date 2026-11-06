@@ -67,15 +67,16 @@ export function ProfileDialogs({ presenter, state }: { presenter: ProfilePresent
 }
 
 /**
- * Without Google or Apple the profile only comes back with the recovery code, so "Erase and sign out"
+ * Without Google or Apple the profile only comes back with the recovery code, so "Sign out" ("Erase and sign out")
  * waits for the box saying it is kept, or that losing it is understood when there is none yet.
  */
 function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfilePresenter; state: JsProfileState; onClose: () => void }) {
   const code = state.formattedRecoveryCode
   return (
     <ResponsiveDialog
-      title={t('profile_eraseTitle')}
-      description={t(state.hasRecoveryCode ? 'profile_eraseBody' : 'profile_eraseBodyNoCode')}
+      // An anonymous account signs out like any other and comes back with its code; only without one is it erased
+      title={t(state.erasesProfileOnSignOut ? 'profile_eraseTitle' : 'profile_signOutTitle')}
+      description={t(state.erasesProfileOnSignOut ? 'profile_eraseBodyNoCode' : 'profile_eraseBody')}
       onClose={onClose}
       body={
         <div className="flex flex-col gap-3">
@@ -113,7 +114,7 @@ function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfileP
       </Button>
       <Button variant="destructive" disabled={!state.canErase} onClick={() => presenter.confirmErase()}>
         {state.isSigningOut && <Loader2 className="animate-spin" />}
-        {t('profile_eraseConfirm')}
+        {t(state.erasesProfileOnSignOut ? 'profile_eraseConfirm' : 'profile_signOut')}
       </Button>
     </ResponsiveDialog>
   )

@@ -6,6 +6,7 @@ import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { SplitBillIcon } from '@/components/common'
 import { ActivityBell, HomeShell, loadedProfile, pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { ListCardSkeleton, SummaryCardsSkeleton } from '@/components/PageSkeletons'
+import { ReceiptInput, useReceiptPicker, type ReceiptPicker } from '@/components/ReceiptSourcePicker'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
@@ -36,7 +37,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: HomePresenter) => void>> = 
 export function HomeScreen() {
   const presenter = usePresenter(() => new HomePresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsHomeState) => void) => p.observeState(onChange))
-  const search = useHomeSearch(presenter, state?.canSearch ?? false)
+  const search = useHomeSearch(presenter)
   useActions(
     presenter,
     (p, onAction: (action: string) => void) => p.observeActions(onAction),
@@ -55,6 +56,8 @@ export function HomeScreen() {
   // Why: Registrar pagamento, which "Quem pagou a quem?" or a face opened over Início, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
   useDeletedGroupNotice(presenter, state)
+  // Why: "Ler cupom fiscal" asks where the photo comes from here, then opens Rachar conta reading it.
+  const receiptPicker = useReceiptPicker(presenter, state)
   if (!presenter || !state) return null
 
   const hasSyncStatus = showsSyncStatus(state, state.firstDownload)
@@ -71,6 +74,7 @@ export function HomeScreen() {
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >
       <main className={cn(pageContentClass, 'gap-3.5 md:gap-4 lg:gap-5')}>
+        <ReceiptInput presenter={presenter} state={state} picker={receiptPicker} />
         {/* Why: a phone's browser gets the banner (14.3), never the card nor a QR code. */}
         {state.showsAppBanner && state.appInvite && <AppBanner invite={state.appInvite} onOpen={() => presenter.trackAppBannerOpen()} onDismiss={() => presenter.dismissAppBanner()} />}
         <div className="flex min-h-9 flex-col items-stretch gap-3 md:flex-row md:items-center">
@@ -86,7 +90,7 @@ export function HomeScreen() {
           </div>
           {state.showsHome && (
             <div className="flex flex-col items-stretch gap-2 md:flex-row md:items-center">
-              <Shortcuts presenter={presenter} state={state} variant="buttons" />
+              <Shortcuts presenter={presenter} state={state} receiptPicker={receiptPicker} variant="buttons" />
               {state.showsSplitBillButton && (
                 <Button className="h-11 md:h-9" onClick={() => presenter.splitBill()}>
                   <SplitBillIcon /> {t('groups_splitBill')}
@@ -97,7 +101,7 @@ export function HomeScreen() {
           {/* Why: the phone's top bar holds the bell; from the tablet up it ends Início's title row. */}
           <ActivityBell unreadCount={state.activityUnreadCount} onOpen={() => presenter.openActivity()} className="hidden md:flex" />
         </div>
-        {state.showsHome && <Shortcuts presenter={presenter} state={state} variant="tiles" />}
+        {state.showsHome && <Shortcuts presenter={presenter} state={state} receiptPicker={receiptPicker} variant="tiles" />}
 
         {/* Why: only the first download's bar; the status itself is in the title row or the phone's top bar. */}
         {state.firstDownload && <DownloadProgressBar progress={state.firstDownload} className="max-w-80" />}
@@ -175,9 +179,20 @@ interface Shortcut {
  * a row of tiles under the title on the tablet and the phone. Offline only "Ler cupom fiscal" says "Precisa de
  * internet"; it stays focusable (aria-disabled), so the hint reaches the keyboard and a pointer's hover too.
  */
-function Shortcuts({ presenter, state, variant }: { presenter: HomePresenter; state: JsHomeState; variant: 'buttons' | 'tiles' }) {
+function Shortcuts({
+  presenter,
+  state,
+  receiptPicker,
+  variant,
+}: {
+  presenter: HomePresenter
+  state: JsHomeState
+  receiptPicker: ReceiptPicker
+  variant: 'buttons' | 'tiles'
+}) {
   const shortcuts: Shortcut[] = [
-    { label: 'home_scanReceipt', icon: <Camera />, isEnabled: state.canScanReceipt, onClick: () => presenter.scanReceipt() },
+    // Why: asks "Tirar foto" or "Escolher foto" right here (the file chooser at once without a camera).
+    { label: 'home_scanReceipt', icon: <Camera />, isEnabled: state.canScanReceipt, onClick: receiptPicker.pick },
     { label: 'home_recordPayment', icon: <Banknote />, isEnabled: true, onClick: () => presenter.recordPayment() },
     { label: 'groups_newGroup', icon: <SquarePlus />, isEnabled: true, onClick: () => presenter.createGroup() },
   ]

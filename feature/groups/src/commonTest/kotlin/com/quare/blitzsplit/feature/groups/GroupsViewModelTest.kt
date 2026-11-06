@@ -448,6 +448,7 @@ class GroupsViewModelTest {
                 groupId = "group-1",
                 groupName = "Aniversário da Ana",
                 deletedByName = "Carla",
+                failure = null,
             ),
         )
 
@@ -457,6 +458,7 @@ class GroupsViewModelTest {
                 groupId = "group-1",
                 groupName = "Aniversário da Ana",
                 deletedByName = "Carla",
+                failure = null,
             ),
             viewModel.uiState.value.deletedGroupNotice,
         )
@@ -474,6 +476,7 @@ class GroupsViewModelTest {
                     groupId = "group-1",
                     groupName = "Aniversário da Ana",
                     deletedByName = null,
+                    failure = null,
                 ),
             )
             val whileCovered = viewModel.uiState.value.deletedGroupNotice
@@ -500,6 +503,7 @@ class GroupsViewModelTest {
                     groupId = "group-1",
                     groupName = "Aniversário da Ana",
                     deletedByName = "Carla",
+                    failure = null,
                 ),
             )
             deletions.post(
@@ -507,6 +511,7 @@ class GroupsViewModelTest {
                     groupId = "group-2",
                     groupName = "Futebol de quinta",
                     deletedByName = "Bruno",
+                    failure = null,
                 ),
             )
 
@@ -531,6 +536,7 @@ class GroupsViewModelTest {
                     groupId = "group-1",
                     groupName = "Churrasco",
                     deletedByName = "Carla",
+                    failure = null,
                 ),
             )
             deletions.post(
@@ -538,6 +544,7 @@ class GroupsViewModelTest {
                     groupId = "group-2",
                     groupName = "Churrasco",
                     deletedByName = "Carla",
+                    failure = null,
                 ),
             )
             val first = viewModel.uiState.value.deletedGroupNotice
@@ -3497,7 +3504,7 @@ class GroupsViewModelTest {
             observeGroupDeletions = ObserveGroupDeletionsUseCase(deletions),
             consumeGroupDeletion = ConsumeGroupDeletionUseCase(deletions),
             leaveGroup = LeaveGroup { Result.success(GroupExitOutcome.DONE) },
-            deleteGroup = DeleteGroup { Result.success(GroupExitOutcome.DONE) },
+            deleteGroup = DeleteGroup { _, _ -> },
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },

@@ -8,6 +8,7 @@
     <string name="delete_account_deleted_profile">Tu perfil (nombre, foto y color)</string>
     <string name="delete_account_deleted_keys">Tus claves Pix y Bitcoin</string>
     <string name="delete_account_deleted_provider">El vínculo con tu cuenta de %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Tu código de recuperación</string>
     <string name="delete_account_deleted_device">La copia de tus datos en este dispositivo</string>
     <string name="delete_account_export">Exportar mis datos primero</string>
     <string name="delete_account_confirm">Entiendo que no se puede deshacer</string>

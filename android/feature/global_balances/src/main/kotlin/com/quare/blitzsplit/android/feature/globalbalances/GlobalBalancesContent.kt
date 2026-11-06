@@ -96,7 +96,7 @@ fun GlobalBalancesContent(
                 kind = homeBarsKindOf(layout.usesNavigationRail),
                 selected = HomeTab.BALANCES,
                 onTabClick = onTabClick,
-                onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
+                onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) },
                 railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
             ),
             // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.

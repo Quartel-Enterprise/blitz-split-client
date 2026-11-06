@@ -72,14 +72,25 @@ struct SettingsView: View {
                             .simultaneousGesture(TapGesture().onEnded { pick(pane) })
                             .tag(pane)
                     }
-                    .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
+                    // Room for its longest section whole, "Keys to receive payments" (Pierre's beta screenshot cut it)
+                    .navigationSplitViewColumnWidth(min: 200, ideal: 250, max: 300)
                 } detail: {
-                    if pane == .categories {
-                        MacCategoryMapPane()
-                    } else {
-                        ProfileView(model: model, pane: pane, scrollRequest: scrollRequest)
+                    Group {
+                        if pane == .categories {
+                            MacCategoryMapPane()
+                        } else {
+                            ProfileView(model: model, pane: pane, scrollRequest: scrollRequest)
+                        }
+                    }
+                    // The sidebar's button at the detail's leading edge, right of the divider, where the main
+                    // window's sits (Pierre's beta feedback), rather than in the sidebar's own header
+                    .toolbar {
+                        ToolbarItem(placement: .navigation) {
+                            SidebarToggleButton(visibility: $columnVisibility)
+                        }
                     }
                 }
+                .hidingSystemSidebarToggle(unifiesToolbar: true)
                 .onGeometryChange(for: Bool.self, of: { $0.size.width < 700 }) { isNarrow in
                     columnVisibility = isNarrow ? .detailOnly : .all
                 }

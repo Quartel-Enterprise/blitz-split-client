@@ -18,25 +18,27 @@ interface DeletedGroupNoticeState {
   deletedGroupId?: string | null
   deletedGroupName?: string | null
   deletedGroupByName?: string | null
+  deletedGroupFailure?: string | null
 }
 
 /**
- * "Carla apagou o grupo X." once someone else deleted a group, on Grupos and Início. State, not an action, so it waits
- * until the screen is on top; the next deleted group follows once this one shows.
+ * "Carla apagou o grupo X." once someone else deleted a group, on Grupos and Início, or why this device's own deletion
+ * didn't go through and the group is back. State, not an action, so it waits until the screen is on top; the next
+ * deleted group follows once this one shows.
  */
 export function useDeletedGroupNotice(presenter: { deletedGroupNoticeShown(): void } | null, state: DeletedGroupNoticeState | null | undefined) {
   const deletedGroupId = state?.deletedGroupId ?? null
   const deletedGroupName = state?.deletedGroupName ?? null
   const deletedGroupByName = state?.deletedGroupByName ?? null
+  const deletedGroupFailure = state?.deletedGroupFailure ?? null
   useEffect(() => {
     if (!deletedGroupId || !deletedGroupName) return
-    toast(
-      deletedGroupByName
-        ? t('groups_deletedBy', { name: deletedGroupByName, group: deletedGroupName })
-        : t('groups_deleted', { group: deletedGroupName }),
-    )
+    if (deletedGroupFailure === 'has-balance') toast(t('groups_deleteHasBalance', { group: deletedGroupName }))
+    else if (deletedGroupFailure) toast(t('groups_deleteFailed', { group: deletedGroupName }))
+    else if (deletedGroupByName) toast(t('groups_deletedBy', { name: deletedGroupByName, group: deletedGroupName }))
+    else toast(t('groups_deleted', { group: deletedGroupName }))
     presenter?.deletedGroupNoticeShown()
-  }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName])
+  }, [presenter, deletedGroupId, deletedGroupName, deletedGroupByName, deletedGroupFailure])
 }
 
 // Início, Saldos and Contatos take Grupos' place above Início.
@@ -61,7 +63,7 @@ export function GroupsScreen() {
   useDeletedGroupNotice(presenter, state)
   // Why: Registrar pagamento, which a row's Acertar opened over the home, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  const search = useHomeSearch(presenter, state?.canSearch ?? false)
+  const search = useHomeSearch(presenter)
   const searchActions = useMemo(() => (presenter ? searchActionsOf(presenter) : null), [presenter])
   if (!presenter || !state) return null
   // Why: the first download draws the page before its first group, with what is still coming in gray.

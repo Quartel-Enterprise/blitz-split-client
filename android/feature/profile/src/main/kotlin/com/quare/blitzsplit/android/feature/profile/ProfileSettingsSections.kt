@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,11 +14,9 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
@@ -165,37 +165,53 @@ internal fun AboutSection(
             headline = stringResource(R.string.profile_visibility),
             modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnVisibilityInfoClicked) },
         )
-        HorizontalDivider()
-        SectionRow(
-            icon = Icons.AutoMirrored.Outlined.OpenInNew,
-            headline = stringResource(R.string.profile_privacy_policy),
-            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnPrivacyPolicyClicked) },
-        )
-        HorizontalDivider()
-        SectionRow(
-            icon = Icons.AutoMirrored.Outlined.OpenInNew,
-            headline = stringResource(R.string.profile_terms),
-            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnTermsClicked) },
-        )
-        HorizontalDivider()
+        // Why: the version itself sits in the legal footer, at the end of the profile (beta feedback 18).
         if (state.showsCheckForUpdates) {
+            HorizontalDivider()
             CheckForUpdatesRow(
                 appVersion = appVersion,
                 isChecking = state.isCheckingForUpdates,
                 onEvent = onEvent,
             )
-        } else {
-            SectionRow(
-                icon = Icons.Outlined.Info,
-                headline = stringResource(R.string.profile_version),
-                trailing = {
-                    Text(
-                        text = appVersion,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                },
-            )
         }
+    }
+}
+
+/*
+ * Why: the legal pages and the version, discreet and centered at the very end of the profile, as Bible Planner's
+ * (beta feedback 18).
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun LegalFooter(
+    appVersion: String,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        FlowRow(horizontalArrangement = Arrangement.Center) {
+            TextButton(onClick = { onEvent(ProfileUiEvent.OnPrivacyPolicyClicked) }) {
+                Text(stringResource(R.string.profile_privacy_policy))
+            }
+            Text(
+                text = "•",
+                modifier = Modifier.align(Alignment.CenterVertically),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            TextButton(onClick = { onEvent(ProfileUiEvent.OnTermsClicked) }) {
+                Text(stringResource(R.string.profile_terms))
+            }
+        }
+        Text(
+            text = stringResource(R.string.profile_version_footer, appVersion),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
@@ -247,18 +263,19 @@ internal fun SignOutButton(
                 imageVector = Icons.AutoMirrored.Outlined.Logout,
                 contentDescription = null,
             )
-            Text(
-                stringResource(
-                    if (state.hasAccount) R.string.profile_sign_out else R.string.profile_erase_and_sign_out,
-                ),
-            )
+            val labelRes = if (state.erasesProfileOnSignOut) {
+                R.string.profile_erase_and_sign_out
+            } else {
+                R.string.profile_sign_out
+            }
+            Text(stringResource(labelRes))
         }
     }
 }
 
 /*
- * Why: the stores and the LGPD ask for it apart from "Sair", at the very end. Only a Google or Apple account
- * has one on the server; without one "Apagar perfil e sair" already erases everything.
+ * Why: the stores and the LGPD ask for it apart from "Sign out", at the very end, for every account the server keeps,
+ * an anonymous one too; a local only profile has none, and "Erase profile and sign out" already erases everything.
  */
 @Composable
 internal fun DeleteAccountButton(onEvent: (ProfileUiEvent) -> Unit) {

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
+import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptions
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
@@ -177,6 +178,7 @@ private fun ChargeColumn(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.global_balances_charge_message)) },
             minLines = 3,
+            keyboardOptions = freeTextKeyboardOptions,
         )
         if (pixKey != null) {
             Row(

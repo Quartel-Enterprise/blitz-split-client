@@ -987,6 +987,239 @@ class GroupRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN two groups WHEN hiding one THEN the groups show only the other with its members and photos`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = twoGroups,
+            storedMembers = twoGroupsMembers,
+            storedPhotos = listOf(brunoPhoto),
+        )
+        val before = repository.observeGroups().first()
+
+        // When
+        repository.hideGroup("group-1")
+
+        // Then
+        val groups = repository.observeGroups().first()
+        assertEquals(listOf(before.single { it.id == "group-2" }), groups)
+        assertEquals(listOf("Bruno"), groups.single().members.map { it.name })
+        assertEquals(listOf("https://photos/bruno.jpg"), groups.single().members.map { it.photoUrl })
+    }
+
+    @Test
+    fun `GIVEN someone watching the groups WHEN hiding one THEN it leaves the groups at once`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = twoGroups,
+            storedMembers = twoGroupsMembers,
+            storedPhotos = listOf(brunoPhoto),
+        )
+        val emissions = mutableListOf<List<Group>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeGroups().collect(emissions::add)
+        }
+
+        // When
+        repository.hideGroup("group-1")
+
+        // Then
+        assertEquals(
+            listOf(listOf("group-1", "group-2"), listOf("group-2")),
+            emissions.map { groups -> groups.map { it.id } },
+        )
+    }
+
+    @Test
+    fun `GIVEN a group WHEN hiding it THEN its rows stay on the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = twoGroups,
+            storedMembers = twoGroupsMembers,
+            storedPhotos = listOf(brunoPhoto),
+        )
+
+        // When
+        repository.hideGroup("group-1")
+
+        // Then
+        assertEquals("Viagem Floripa", local.group("group-1")?.name)
+        assertEquals("Ana", local.member("m-1")?.name)
+    }
+
+    @Test
+    fun `GIVEN a hidden group WHEN showing it again THEN the groups are exactly as they were`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = twoGroups,
+            storedMembers = twoGroupsMembers,
+            storedPhotos = listOf(brunoPhoto),
+        )
+        val before = repository.observeGroups().first()
+        repository.hideGroup("group-1")
+
+        // When
+        repository.showGroup("group-1")
+
+        // Then
+        assertEquals(before, repository.observeGroups().first())
+    }
+
+    @Test
+    fun `GIVEN someone watching the groups and a hidden group WHEN showing it again THEN it comes back at once`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = twoGroups,
+                storedMembers = twoGroupsMembers,
+                storedPhotos = listOf(brunoPhoto),
+            )
+            repository.hideGroup("group-1")
+            val emissions = mutableListOf<List<Group>>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.observeGroups().collect(emissions::add)
+            }
+
+            // When
+            repository.showGroup("group-1")
+
+            // Then
+            assertEquals(
+                listOf(listOf("group-2"), listOf("group-1", "group-2")),
+                emissions.map { groups -> groups.map { it.id } },
+            )
+        }
+
+    @Test
+    fun `GIVEN a hidden group WHEN it changes on the device meanwhile THEN it stays hidden`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = twoGroups,
+            storedMembers = twoGroupsMembers,
+            storedPhotos = listOf(brunoPhoto),
+        )
+        repository.hideGroup("group-1")
+
+        // When
+        local.put(
+            group(
+                id = "group-1",
+                name = "Viagem Floripa 2",
+                updatedAt = 9L,
+            ),
+        )
+
+        // Then
+        assertEquals(listOf("group-2"), repository.observeGroups().first().map { it.id })
+    }
+
+    @Test
+    fun `GIVEN two groups WHEN hiding one THEN the device still has groups`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = twoGroups,
+            storedMembers = twoGroupsMembers,
+            storedPhotos = listOf(brunoPhoto),
+        )
+
+        // When
+        repository.hideGroup("group-1")
+
+        // Then
+        assertTrue(repository.observeHasGroups().first())
+    }
+
+    @Test
+    fun `GIVEN only one group WHEN hiding it THEN the device has no groups`() = runTest {
+        // Given
+        prepareScenario(storedGroups = listOf(group(id = "group-1")))
+
+        // When
+        repository.hideGroup("group-1")
+
+        // Then
+        assertFalse(repository.observeHasGroups().first())
+    }
+
+    @Test
+    fun `GIVEN someone watching whether there are groups WHEN hiding the only one THEN it turns false at once`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+            val emissions = mutableListOf<Boolean>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.observeHasGroups().collect(emissions::add)
+            }
+
+            // When
+            repository.hideGroup("group-1")
+
+            // Then
+            assertEquals(listOf(true, false), emissions)
+        }
+
+    @Test
+    fun `GIVEN the only group hidden WHEN showing it again THEN the device has groups again`() = runTest {
+        // Given
+        prepareScenario(storedGroups = listOf(group(id = "group-1")))
+        repository.hideGroup("group-1")
+
+        // When
+        repository.showGroup("group-1")
+
+        // Then
+        assertTrue(repository.observeHasGroups().first())
+    }
+
+    @Test
+    fun `GIVEN the only group hidden WHEN it changes on the device meanwhile THEN the device still has no groups`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+            repository.hideGroup("group-1")
+
+            // When
+            local.put(
+                group(
+                    id = "group-1",
+                    name = "Viagem Floripa 2",
+                    updatedAt = 9L,
+                ),
+            )
+
+            // Then
+            assertFalse(repository.observeHasGroups().first())
+        }
+
+    @Test
+    fun `GIVEN the only group hidden WHEN another group comes to the device THEN the device has groups again`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+            repository.hideGroup("group-1")
+
+            // When
+            local.put(group(id = "group-2"))
+
+            // Then
+            assertTrue(repository.observeHasGroups().first())
+        }
+
+    @Test
+    fun `GIVEN a hidden group WHEN signing out and a group with the same id comes back THEN it shows`() = runTest {
+        // Given
+        prepareScenario(storedGroups = listOf(group(id = "group-1")))
+        repository.hideGroup("group-1")
+        repository.clear()
+
+        // When
+        local.put(group(id = "group-1"))
+
+        // Then
+        assertEquals(listOf("group-1"), repository.observeGroups().first().map { it.id })
+        assertTrue(repository.observeHasGroups().first())
+    }
+
+    @Test
     fun `GIVEN a profile of an account WHEN creating a group THEN that account owns and created it`() = runTest {
         // Given
         prepareScenario(profileOwnerUserId = "user-1")
@@ -1182,6 +1415,7 @@ class GroupRepositoryImplTest {
                         groupId = "group-deleted",
                         groupName = "Viagem Floripa",
                         deletedByName = "Ana",
+                        failure = null,
                     ),
                 ),
                 deletions.observeDeletions().first(),
@@ -5865,6 +6099,31 @@ class GroupRepositoryImplTest {
     private val newPhotoJpeg = byteArrayOf(4, 5, 6)
     private val oldPhotoUrl = "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=1"
     private val serverPhotoUrl = "https://cdn.test/storage/v1/object/public/group-photos/group-1/photo.jpg?v=9"
+
+    private val twoGroups = listOf(
+        group(id = "group-1"),
+        group(
+            id = "group-2",
+            name = "Jantar",
+        ),
+    )
+    private val twoGroupsMembers = listOf(
+        member(
+            id = "m-1",
+            groupId = "group-1",
+            name = "Ana",
+        ),
+        member(
+            id = "m-2",
+            groupId = "group-2",
+            name = "Bruno",
+            userId = "user-2",
+        ),
+    )
+    private val brunoPhoto = MemberPhotoEntity(
+        userId = "user-2",
+        photoUrl = "https://photos/bruno.jpg",
+    )
 
     private suspend fun editGroup(
         shape: GroupShape = GroupShape.SQUARE,

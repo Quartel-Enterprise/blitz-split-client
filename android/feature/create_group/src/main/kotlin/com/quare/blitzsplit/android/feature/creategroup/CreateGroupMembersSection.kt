@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.creategroup
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
@@ -23,16 +23,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.personNameKeyboardOptions
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
@@ -149,12 +154,18 @@ private fun MemberRow(
     }
 }
 
+/*
+ * Why: a tap anywhere on the row, the + included, focuses the name and opens the keyboard, as a tap on the field does
+ * (beta feedback 3 item 6). The field and "Adicionar" take their own taps first.
+ */
 @Composable
 private fun AddMemberRow(
     state: CreateGroupUiState,
     onEvent: (CreateGroupUiEvent) -> Unit,
     shape: RoundedCornerShape,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
     Surface(
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -162,7 +173,13 @@ private fun AddMemberRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 56.dp)
+                .pointerInput(focusRequester, keyboard) {
+                    detectTapGestures {
+                        focusRequester.requestFocus()
+                        // Why: the field may already hold the focus with the keyboard put away.
+                        keyboard?.show()
+                    }
+                }.heightIn(min = 56.dp)
                 .padding(
                     start = 16.dp,
                     end = 8.dp,
@@ -193,14 +210,13 @@ private fun AddMemberRow(
                  * Why: no contentDescription, which TalkBack would read instead of the name typed; the placeholder
                  * below is the field's label while it is empty.
                  */
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                 singleLine = true,
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words,
-                    imeAction = ImeAction.Done,
-                ),
+                keyboardOptions = personNameKeyboardOptions.copy(imeAction = ImeAction.Done),
                 // Why: the keyboard stays open, so several names go in one after the other.
                 keyboardActions = KeyboardActions(onDone = { onEvent(CreateGroupUiEvent.OnAddMemberClicked) }),
                 decorationBox = { field ->

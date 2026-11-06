@@ -114,6 +114,8 @@ class JsGroupsState(
     val deletedGroupId: String?,
     val deletedGroupName: String?,
     val deletedGroupByName: String?,
+    // Why: "has-balance" or "failed" when it was this device's own deletion that didn't go through; null otherwise.
+    val deletedGroupFailure: String?,
     // Why: "Sair do grupo" and "Apagar grupo" from a row, the group's dialogs; offline both need the internet.
     val exit: JsGroupExit,
     // Why: the group those dialogs are about, whose currency their amounts are in.
@@ -126,8 +128,6 @@ class JsGroupsState(
     val canPickGridSize: Boolean,
     // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento opened by a row's Acertar closes.
     val recordedPayment: JsPaymentNotice?,
-    // Why: "Buscar…" and ⌘K only once there is a group; the dialog shows while isSearching.
-    val canSearch: Boolean,
     val isSearching: Boolean,
     val search: JsGroupsSearch,
 )
@@ -164,6 +164,7 @@ class GroupsPresenter {
                 deletedGroupId = state.deletedGroupNotice?.groupId,
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
+                deletedGroupFailure = state.deletedGroupNotice?.failure?.let(::toJsDeleteFailure),
                 exit = toJsGroupExit(state.exit),
                 exitGroup = state.exitGroup?.let(::toJsGroupRow),
                 display = state.layout.display.code,
@@ -171,7 +172,6 @@ class GroupsPresenter {
                 showsGrid = state.showsGrid,
                 canPickGridSize = state.canPickGridSize,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
-                canSearch = state.canSearch,
                 isSearching = state.isSearching,
                 search = toJsGroupsSearch(state.search),
             )
@@ -180,13 +180,12 @@ class GroupsPresenter {
         return JsWatch(watch::cancel)
     }
 
-    // Why: "coming-soon", "leave-error", "delete-error" and "change-error", a toast in the page's words.
+    // Why: "coming-soon", "leave-error" and "change-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GroupsUiAction.ShowComingSoon -> "coming-soon"
                 GroupsUiAction.ShowLeaveError -> "leave-error"
-                GroupsUiAction.ShowDeleteError -> "delete-error"
                 GroupsUiAction.ShowChangeError -> "change-error"
             }
         }

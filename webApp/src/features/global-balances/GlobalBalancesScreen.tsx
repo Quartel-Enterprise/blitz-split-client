@@ -57,7 +57,7 @@ const emptyWords: Record<string, { title: MessageKey; body: MessageKey; bodyOne:
 export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GlobalBalancesPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsGlobalBalancesState) => void) => p.observeState(onChange))
-  const search = useHomeSearch(presenter, state?.canSearch ?? false)
+  const search = useHomeSearch(presenter)
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), (action) =>
     toast(t(action === 'coming-soon' ? 'groups_comingSoon' : 'globalBalances_changeError')),
   )

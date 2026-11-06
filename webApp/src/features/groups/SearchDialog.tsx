@@ -33,12 +33,12 @@ export interface SearchActions {
 }
 
 /**
- * A home tab's "Buscar", once there is a group to look in: ⌘K (Ctrl+K off Apple devices) from anywhere on the tab,
+ * A home tab's "Buscar", there before the first group too: ⌘K (Ctrl+K off Apple devices) from anywhere on the tab,
  * and the sidebar's "Buscar… ⌘K" (the phone's magnifier), whose HomeShell prop it returns.
  */
-export function useHomeSearch(presenter: { openSearch(): void } | null, canSearch: boolean) {
+export function useHomeSearch(presenter: { openSearch(): void } | null, isShown = true) {
   useEffect(() => {
-    if (!presenter || !canSearch) return
+    if (!presenter || !isShown) return
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && !event.altKey && event.key.toLowerCase() === 'k') {
         event.preventDefault()
@@ -47,8 +47,8 @@ export function useHomeSearch(presenter: { openSearch(): void } | null, canSearc
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [presenter, canSearch])
-  if (!presenter || !canSearch) return undefined
+  }, [presenter, isShown])
+  if (!presenter || !isShown) return undefined
   return { ...homeSearchKeys, onOpen: () => presenter.openSearch() }
 }
 
