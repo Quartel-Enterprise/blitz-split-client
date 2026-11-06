@@ -137,7 +137,11 @@ struct StatsChart: View {
                 .font(.subheadline.weight(.semibold))
                 .monospacedDigit()
             Text(verbatim: bar.expenseCount == 0
-                ? String(localized: "No expenses", comment: "The group statistics: a picked bar of the chart without bills")
+                ? String(
+                    localized: "No expenses",
+                    bundle: .appLanguage,
+                    comment: "The group statistics: a picked bar of the chart without bills",
+                )
                 : GroupStatsCopy.expenseCount(bar.expenseCount))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
@@ -254,21 +258,24 @@ private struct StatsAudioGraph: AXChartDescriptorRepresentable {
         let names = state.bars.map { GroupStatsCopy.barName($0, grain: state.grain) }
         let top = Double(state.chartTopMinor)
         let currency = state.currency
-        let xAxis = AXCategoricalDataAxisDescriptor(title: String(localized: "Period"), categoryOrder: names)
+        let xAxis = AXCategoricalDataAxisDescriptor(title: String(
+            localized: "Period",
+            bundle: .appLanguage,
+        ), categoryOrder: names)
         let yAxis = AXNumericDataAxisDescriptor(
-            title: String(localized: "Amount"),
+            title: String(localized: "Amount", bundle: .appLanguage),
             range: 0...top,
             gridlinePositions: state.chartTicksMinor.map { Double(truncating: $0) },
         ) { value in currency.format(Int64(value)) }
         let series = AXDataSeriesDescriptor(
-            name: String(localized: "Over time"),
+            name: String(localized: "Over time", bundle: .appLanguage),
             isContinuous: state.chartType == .line,
             dataPoints: zip(names, state.bars).map { name, bar in
                 AXDataPoint(x: name, y: Double(bar.amountMinor))
             },
         )
         return AXChartDescriptor(
-            title: String(localized: "Over time"),
+            title: String(localized: "Over time", bundle: .appLanguage),
             summary: GroupStatsCopy.chartDescription(state),
             xAxis: xAxis,
             yAxis: yAxis,

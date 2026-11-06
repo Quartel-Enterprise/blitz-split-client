@@ -3,6 +3,7 @@ package com.quare.blitzsplit.push
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -16,6 +17,7 @@ import com.quare.blitzsplit.MainActivity
 import com.quare.blitzsplit.R
 import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import org.json.JSONArray
 import org.koin.android.ext.android.inject
 
@@ -25,6 +27,11 @@ import org.koin.android.ext.android.inject
  */
 class BlitzSplitMessagingService : FirebaseMessagingService() {
     private val setPushDevice: SetPushDevice by inject()
+
+    // Why: before Android 13 the notifications built here are in Profile › Language's pick, as the screens are.
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LegacyAppLocale.wrap(newBase))
+    }
 
     /*
      * Why: Firebase 26 deprecates the token for register()/onRegistered(), which need the installation id opted in

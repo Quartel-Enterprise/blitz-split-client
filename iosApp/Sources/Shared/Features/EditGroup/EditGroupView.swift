@@ -77,7 +77,7 @@ struct EditGroupView: View {
             }
             #endif
         }
-        .navigationTitle(showsConfirmationInPlace ? "" : String(localized: "Edit group"))
+        .navigationTitle(showsConfirmationInPlace ? "" : String(localized: "Edit group", bundle: .appLanguage))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif

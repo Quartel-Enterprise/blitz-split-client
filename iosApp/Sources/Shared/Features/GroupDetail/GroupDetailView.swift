@@ -304,7 +304,7 @@ private func payerText(_ row: ExpenseRow) -> String? {
 /// A bill's meta on a list of bills by day (the group's Expenses, a category's from the statistics).
 func billMeta(spentAt: Int64, isPending: Bool, payers: [(name: String?, isMe: Bool)]) -> String {
     let time = ExpenseFormat.time(spentAt)
-    let when = isPending ? String(localized: "\(time) · queued") : time
+    let when = isPending ? String(localized: "\(time) · queued", bundle: .appLanguage) : time
     guard let paid = ExpenseFormat.paid(payers, loneFormer: nil) else { return when }
     return "\(when) · \(paid)"
 }

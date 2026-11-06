@@ -271,10 +271,10 @@ struct GroupLoadingRows: View {
 
 /// "6 members · $2,418.60 in total" or "6 members · no expenses yet".
 func groupMeta(_ header: GroupHeader, hasExpenses: Bool) -> String {
-    let members = String(localized: "\(Int(header.memberCount)) members")
+    let members = String(localized: "\(Int(header.memberCount)) members", bundle: .appLanguage)
     let spent = hasExpenses
-        ? String(localized: "\(header.currency.format(header.totalSpentMinor)) in total")
-        : String(localized: "no expenses yet")
+        ? String(localized: "\(header.currency.format(header.totalSpentMinor)) in total", bundle: .appLanguage)
+        : String(localized: "no expenses yet", bundle: .appLanguage)
     return "\(members) · \(spent)"
 }
 
@@ -318,9 +318,9 @@ struct GroupFaces: View {
 
     /// "6 members, 1 hasn't joined yet".
     private var facesValue: Text {
-        let members = String(localized: "\(Int(header.memberCount)) members")
+        let members = String(localized: "\(Int(header.memberCount)) members", bundle: .appLanguage)
         guard header.notJoinedCount > 0 else { return Text(verbatim: members) }
-        return Text(verbatim: "\(members), \(String(localized: "\(Int(header.notJoinedCount)) hasn't joined yet"))")
+        return Text(verbatim: "\(members), \(String(localized: "\(Int(header.notJoinedCount)) hasn't joined yet", bundle: .appLanguage))")
     }
 }
 
@@ -393,14 +393,14 @@ struct BalanceCard: View {
     private var details: String {
         if balance.isSettled {
             return isEveryoneSettled
-                ? String(localized: "Nobody owes anybody anything here.")
-                : String(localized: "Others still have to settle up.")
+                ? String(localized: "Nobody owes anybody anything here.", bundle: .appLanguage)
+                : String(localized: "Others still have to settle up.", bundle: .appLanguage)
         }
         let receives = currency.format(balance.receivesMinor)
         let owes = currency.format(balance.owesMinor)
-        if balance.owesMinor == 0 { return String(localized: "You get \(receives)") }
-        if balance.receivesMinor == 0 { return String(localized: "You owe \(owes)") }
-        return String(localized: "You get \(receives) and owe \(owes)")
+        if balance.owesMinor == 0 { return String(localized: "You get \(receives)", bundle: .appLanguage) }
+        if balance.receivesMinor == 0 { return String(localized: "You owe \(owes)", bundle: .appLanguage) }
+        return String(localized: "You get \(receives) and owe \(owes)", bundle: .appLanguage)
     }
 }
 

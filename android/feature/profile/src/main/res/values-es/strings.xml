@@ -46,6 +46,9 @@
     <string name="profile_payment_keys_add_bitcoin">Clave Bitcoin</string>
     <string name="profile_section_preferences">Preferencias</string>
     <string name="profile_appearance">Apariencia</string>
+    <string name="profile_language">Idioma</string>
+    <string name="profile_language_system">Sistema</string>
+    <string name="profile_language_system_detail">Idioma del dispositivo</string>
     <string name="profile_notifications">Notificaciones</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d activa</item>

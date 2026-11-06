@@ -14,18 +14,18 @@ enum BillCopy {
 
     /// Someone in a bill who is no longer in the group.
     static var formerMember: String {
-        String(localized: "Former member")
+        String(localized: "Former member", bundle: .appLanguage)
     }
 
     /// "You" for this device's user, the name for anyone else, "Former member" for whoever left the group.
     static func name(_ row: BillShareRow) -> String {
-        if row.isMe { return String(localized: "You") }
+        if row.isMe { return String(localized: "You", bundle: .appLanguage) }
         return row.name ?? formerMember
     }
 
     /// "Bruno paid", "You paid", "A former member paid", "You and Ana paid" or "3 people paid".
     static func paid(_ payers: [BillPayer]) -> String {
-        let formerPaid = String(localized: "A former member paid")
+        let formerPaid = String(localized: "A former member paid", bundle: .appLanguage)
         return ExpenseFormat.paid(payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: formerPaid) ?? formerPaid
     }
 
@@ -33,19 +33,22 @@ enum BillCopy {
     static func splitHeader(_ mode: SplitMode, count: Int32) -> String {
         let count = Int(count)
         return switch mode {
-        case .amount: String(localized: "By amount among \(count)")
-        case .percent: String(localized: "By % among \(count)")
-        case .shares: String(localized: "By shares among \(count)")
-        case .items: String(localized: "By items among \(count)")
-        default: String(localized: "Split equally among \(count)")
+        case .amount: String(localized: "By amount among \(count)", bundle: .appLanguage)
+        case .percent: String(localized: "By % among \(count)", bundle: .appLanguage)
+        case .shares: String(localized: "By shares among \(count)", bundle: .appLanguage)
+        case .items: String(localized: "By items among \(count)", bundle: .appLanguage)
+        default: String(localized: "Split equally among \(count)", bundle: .appLanguage)
         }
     }
 
     /// A person's second line: "Paid R$ 642.00", "Hasn't joined yet", "Not in this bill" or nothing.
     static func subtitle(_ row: BillShareRow, currency: GroupCurrency) -> String? {
-        if let paid = row.paidMinor { return String(localized: "Paid \(currency.format(paid.int64Value))") }
-        if !row.hasJoined { return String(localized: "Hasn't joined yet") }
-        if row.shareMinor == nil { return String(localized: "Not in this bill") }
+        if let paid = row.paidMinor { return String(
+            localized: "Paid \(currency.format(paid.int64Value))",
+            bundle: .appLanguage,
+        ) }
+        if !row.hasJoined { return String(localized: "Hasn't joined yet", bundle: .appLanguage) }
+        if row.shareMinor == nil { return String(localized: "Not in this bill", bundle: .appLanguage) }
         return nil
     }
 
@@ -62,9 +65,9 @@ enum BillCopy {
 
     /// "you owe", "to get back" or "nothing to settle".
     static func myPartWord(_ minor: Int64) -> String {
-        if minor < 0 { return String(localized: "you owe") }
-        if minor > 0 { return String(localized: "to get back") }
-        return String(localized: "nothing to settle")
+        if minor < 0 { return String(localized: "you owe", bundle: .appLanguage) }
+        if minor > 0 { return String(localized: "to get back", bundle: .appLanguage) }
+        return String(localized: "nothing to settle", bundle: .appLanguage)
     }
 
     /// Under "Your share": who settles it with whom.
@@ -73,7 +76,7 @@ enum BillCopy {
         case let owes as MyPartNoteOwesPayers:
             // Kotlin hands a list of nullable names over as NSNull for each null
             let names = ExpenseFormat.names(owes.names.map { ($0 as? String) ?? formerMember })
-            return String(localized: "Counts toward what you owe \(names) in Balances.")
+            return String(localized: "Counts toward what you owe \(names) in Balances.", bundle: .appLanguage)
         case let owed as MyPartNoteOwedBy:
             // Kotlin hands a list of nullable names over as NSNull for each null
             let names = owed.names.map { ($0 as? String) ?? formerMember }
@@ -81,13 +84,13 @@ enum BillCopy {
             if let each = owed.eachMinor {
                 let amount = currency.format(each.int64Value)
                 return names.count == 1
-                    ? String(localized: "\(who) owes you \(amount).")
-                    : String(localized: "\(who) owe you \(amount) each.")
+                    ? String(localized: "\(who) owes you \(amount).", bundle: .appLanguage)
+                    : String(localized: "\(who) owe you \(amount) each.", bundle: .appLanguage)
             }
             let total = currency.format(owed.totalMinor)
             return names.count == 1
-                ? String(localized: "\(who) owes you \(total).")
-                : String(localized: "\(who) owe you \(total) in total.")
+                ? String(localized: "\(who) owes you \(total).", bundle: .appLanguage)
+                : String(localized: "\(who) owe you \(total) in total.", bundle: .appLanguage)
         default:
             return nil
         }
@@ -97,14 +100,17 @@ enum BillCopy {
     /// device's user: "You no longer owe R$ 118.00." or "You no longer get back R$ 249.60.", then the payment made
     /// after the bill that deleting it unsettles (7.4b).
     static func deletionMessage(_ deletion: BillDeletion, currency: GroupCurrency) -> String {
-        let leaves = String(localized: "“\(deletion.description_)” leaves the group and everyone's share of it stops counting.")
+        let leaves = String(
+            localized: "“\(deletion.description_)” leaves the group and everyone's share of it stops counting.",
+            bundle: .appLanguage,
+        )
         var sentences = [leaves]
         if let mine = deletion.myBalanceMinor?.int64Value, mine != 0 {
             let amount = currency.format(mine == .min ? .max : abs(mine))
             sentences.append(
                 mine < 0
-                    ? String(localized: "You no longer owe \(amount).")
-                    : String(localized: "You no longer get back \(amount).")
+                    ? String(localized: "You no longer owe \(amount).", bundle: .appLanguage)
+                    : String(localized: "You no longer get back \(amount).", bundle: .appLanguage)
             )
         }
         if let change = deletion.settledPair {
@@ -123,9 +129,15 @@ enum BillCopy {
     static func settledPairLead(_ change: SettledPairChange) -> String {
         let payer = change.payerName ?? formerMember
         let receiver = change.receiverName ?? formerMember
-        if change.payerIsMe { return String(localized: "You already settled up with \(receiver) after this bill") }
-        if change.receiverIsMe { return String(localized: "\(payer) already settled up with you after this bill") }
-        return String(localized: "\(payer) already settled up with \(receiver) after this bill")
+        if change.payerIsMe { return String(
+            localized: "You already settled up with \(receiver) after this bill",
+            bundle: .appLanguage,
+        ) }
+        if change.receiverIsMe { return String(
+            localized: "\(payer) already settled up with you after this bill",
+            bundle: .appLanguage,
+        ) }
+        return String(localized: "\(payer) already settled up with \(receiver) after this bill", bundle: .appLanguage)
     }
 
     /// "The payment still counts and the balance is worked out again: with the change, Elisa owes Bruno R$ 20.00
@@ -133,7 +145,10 @@ enum BillCopy {
     /// shrinks) or "… Elisa and Bruno are settled up.".
     static func settledPairDetail(_ change: SettledPairChange, currency: GroupCurrency) -> String {
         let outcome = settledPairOutcome(change, currency: currency)
-        return String(localized: "The payment still counts and the balance is worked out again: \(outcome)")
+        return String(
+            localized: "The payment still counts and the balance is worked out again: \(outcome)",
+            bundle: .appLanguage,
+        )
     }
 
     private static func settledPairOutcome(_ change: SettledPairChange, currency: GroupCurrency) -> String {
@@ -142,21 +157,51 @@ enum BillCopy {
         let amount = currency.format(change.amountMinor)
         switch change.outcome {
         case .owesAgain:
-            if change.debtorIsMe { return String(localized: "with the change, you owe \(creditor) \(amount) again.") }
-            if change.creditorIsMe { return String(localized: "with the change, \(debtor) owes you \(amount) again.") }
-            return String(localized: "with the change, \(debtor) owes \(creditor) \(amount) again.")
+            if change.debtorIsMe { return String(
+                localized: "with the change, you owe \(creditor) \(amount) again.",
+                bundle: .appLanguage,
+            ) }
+            if change.creditorIsMe { return String(
+                localized: "with the change, \(debtor) owes you \(amount) again.",
+                bundle: .appLanguage,
+            ) }
+            return String(
+                localized: "with the change, \(debtor) owes \(creditor) \(amount) again.",
+                bundle: .appLanguage,
+            )
         case .owes:
-            if change.debtorIsMe { return String(localized: "with the change, you now owe \(creditor) \(amount).") }
-            if change.creditorIsMe { return String(localized: "with the change, \(debtor) now owes you \(amount).") }
-            return String(localized: "with the change, \(debtor) now owes \(creditor) \(amount).")
+            if change.debtorIsMe { return String(
+                localized: "with the change, you now owe \(creditor) \(amount).",
+                bundle: .appLanguage,
+            ) }
+            if change.creditorIsMe { return String(
+                localized: "with the change, \(debtor) now owes you \(amount).",
+                bundle: .appLanguage,
+            ) }
+            return String(localized: "with the change, \(debtor) now owes \(creditor) \(amount).", bundle: .appLanguage)
         case .owesLess:
-            if change.debtorIsMe { return String(localized: "with the change, you are left owing \(amount) to \(creditor).") }
-            if change.creditorIsMe { return String(localized: "with the change, \(debtor) is left owing you \(amount).") }
-            return String(localized: "with the change, \(debtor) is left owing \(amount) to \(creditor).")
+            if change.debtorIsMe { return String(
+                localized: "with the change, you are left owing \(amount) to \(creditor).",
+                bundle: .appLanguage,
+            ) }
+            if change.creditorIsMe { return String(
+                localized: "with the change, \(debtor) is left owing you \(amount).",
+                bundle: .appLanguage,
+            ) }
+            return String(
+                localized: "with the change, \(debtor) is left owing \(amount) to \(creditor).",
+                bundle: .appLanguage,
+            )
         default:
-            if change.debtorIsMe { return String(localized: "with the change, you and \(creditor) are settled up.") }
-            if change.creditorIsMe { return String(localized: "with the change, you and \(debtor) are settled up.") }
-            return String(localized: "with the change, \(debtor) and \(creditor) are settled up.")
+            if change.debtorIsMe { return String(
+                localized: "with the change, you and \(creditor) are settled up.",
+                bundle: .appLanguage,
+            ) }
+            if change.creditorIsMe { return String(
+                localized: "with the change, you and \(debtor) are settled up.",
+                bundle: .appLanguage,
+            ) }
+            return String(localized: "with the change, \(debtor) and \(creditor) are settled up.", bundle: .appLanguage)
         }
     }
 
@@ -165,16 +210,19 @@ enum BillCopy {
     static func conflict(_ conflict: BillConflict, now: Date) -> (lead: String, detail: String) {
         let changedAt = ExpenseFormat.date(of: conflict.changedAt)
         let ago = now.timeIntervalSince(changedAt) < 60
-            ? String(localized: "just now")
+            ? String(localized: "just now", bundle: .appLanguage)
             : changedAt.formatted(.relative(presentation: .numeric, unitsStyle: .wide))
         let lead = if conflict.changerIsMe {
-            String(localized: "You changed this bill on another device \(ago).")
+            String(localized: "You changed this bill on another device \(ago).", bundle: .appLanguage)
         } else if let name = conflict.changerName {
-            String(localized: "\(name) changed this bill \(ago).")
+            String(localized: "\(name) changed this bill \(ago).", bundle: .appLanguage)
         } else {
-            String(localized: "Someone changed this bill \(ago).")
+            String(localized: "Someone changed this bill \(ago).", bundle: .appLanguage)
         }
-        let detail = String(localized: "The last saved edit wins: if you save now, your edit replaces that change.")
+        let detail = String(
+            localized: "The last saved edit wins: if you save now, your edit replaces that change.",
+            bundle: .appLanguage,
+        )
         return (lead, detail)
     }
 }

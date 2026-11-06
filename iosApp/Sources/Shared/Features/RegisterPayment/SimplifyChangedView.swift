@@ -51,7 +51,11 @@ private struct SimplifyChangedPayee: View {
                 Text("Pay \(name)")
                     .font(.title3.bold())
                     .accessibilityAddTraits(.isHeader)
-                Text(verbatim: String(localized: "\(change.groupName) · what you owed", comment: "13.5c: where the old debt came from"))
+                Text(verbatim: String(
+                    localized: "\(change.groupName) · what you owed",
+                    bundle: .appLanguage,
+                    comment: "13.5c: where the old debt came from",
+                ))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

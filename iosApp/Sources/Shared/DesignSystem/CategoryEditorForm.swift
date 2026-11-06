@@ -8,44 +8,71 @@ enum CategoryEditorCopy {
         let name = editor.form.name.trimmingCharacters(in: .whitespaces)
         if editor.isNameTaken {
             if let parent = editor.parent {
-                return String(localized: "\(name) already exists in \(CategoryCopy.name(parent)). Pick another name.")
+                return String(
+                    localized: "\(name) already exists in \(CategoryCopy.name(parent)). Pick another name.",
+                    bundle: .appLanguage,
+                )
             }
-            return String(localized: "\(name) already exists. Pick another name.")
+            return String(localized: "\(name) already exists. Pick another name.", bundle: .appLanguage)
         }
         if editor.form.isEditing {
             // Int, not KotlinInt's Int32, so the key is the catalog's "%lld" with its plural.
-            let used = editor.usage.map { String(localized: "used in \(Int(truncating: $0)) bills") }
-            let creator = editor.creatorName.map { String(localized: "Created by \($0)") }
+            let used = editor.usage.map { String(
+                localized: "used in \(Int(truncating: $0)) bills",
+                bundle: .appLanguage,
+            ) }
+            let creator = editor.creatorName.map { String(localized: "Created by \($0)", bundle: .appLanguage) }
             return [creator, used].compactMap(\.self).joined(separator: " · ")
         }
-        return String(localized: "Up to 30 letters. It can't repeat inside the same category.")
+        return String(localized: "Up to 30 letters. It can't repeat inside the same category.", bundle: .appLanguage)
     }
 
     static func parentHelp(_ editor: CategoryEditor) -> String {
-        if editor.isParentLocked { return String(localized: "It has subcategories, so it stays a main category.") }
+        if editor.isParentLocked { return String(
+            localized: "It has subcategories, so it stays a main category.",
+            bundle: .appLanguage,
+        ) }
         if let parent = editor.parent {
-            return String(localized: "A subcategory uses the icon of \(CategoryCopy.name(parent)).")
+            return String(
+                localized: "A subcategory uses the icon of \(CategoryCopy.name(parent)).",
+                bundle: .appLanguage,
+            )
         }
-        return String(localized: "Pick a category to create a subcategory.")
+        return String(localized: "Pick a category to create a subcategory.", bundle: .appLanguage)
     }
 
     static func groupNote(_ editor: CategoryEditor) -> String {
         if editor.form.isEditing, let usage = editor.usage {
             let name = editor.form.name.trimmingCharacters(in: .whitespaces)
-            return String(localized: "Changing the name or the place counts for all of \(editor.groupName) and for the \(Int(truncating: usage)) bills that already use \(name).")
+            return String(
+                localized: "Changing the name or the place counts for all of \(editor.groupName) and for the \(Int(truncating: usage)) bills that already use \(name).",
+                bundle: .appLanguage,
+            )
         }
-        return String(localized: "It belongs to all of \(editor.groupName): anyone in the group can use, edit and delete it.")
+        return String(
+            localized: "It belongs to all of \(editor.groupName): anyone in the group can use, edit and delete it.",
+            bundle: .appLanguage,
+        )
     }
 
     static func formTitle(_ form: CategoryForm) -> String {
-        if form.isEditing { return String(localized: "Edit category") }
-        return form.isSubcategory ? String(localized: "New subcategory") : String(localized: "New category")
+        if form.isEditing { return String(localized: "Edit category", bundle: .appLanguage) }
+        return form.isSubcategory ? String(localized: "New subcategory", bundle: .appLanguage) : String(
+            localized: "New category",
+            bundle: .appLanguage,
+        )
     }
 
     static func deletionMessage(_ deletion: CategoryDeletion, groupName: String) -> String {
         let name = CategoryCopy.name(deletion.category)
-        if deletion.billCount == 0 { return String(localized: "The category goes for all of \(groupName).") }
-        return String(localized: "The \(Int(deletion.billCount)) bills with \(name) move to \(CategoryCopy.name(deletion.movesTo)). The category goes for all of \(groupName).")
+        if deletion.billCount == 0 { return String(
+            localized: "The category goes for all of \(groupName).",
+            bundle: .appLanguage,
+        ) }
+        return String(
+            localized: "The \(Int(deletion.billCount)) bills with \(name) move to \(CategoryCopy.name(deletion.movesTo)). The category goes for all of \(groupName).",
+            bundle: .appLanguage,
+        )
     }
 }
 
@@ -190,7 +217,10 @@ extension View {
         onConfirm: @escaping () -> Void,
     ) -> some View {
         alert(
-            deletion.map { String(localized: "Delete “\(CategoryCopy.name($0.category))”?") } ?? "",
+            deletion.map { String(
+                localized: "Delete “\(CategoryCopy.name($0.category))”?",
+                bundle: .appLanguage,
+            ) } ?? "",
             isPresented: isShown,
         ) {
             Button("Delete", role: .destructive, action: onConfirm)

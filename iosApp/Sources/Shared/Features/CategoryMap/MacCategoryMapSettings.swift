@@ -142,7 +142,7 @@ struct MacCategoryMapSettings: View {
                     }
                 }
                 ForEach(editable, id: \.id) { category in
-                    Button(String(localized: "Edit “\(CategoryCopy.name(category))”…")) {
+                    Button(String(localized: "Edit “\(CategoryCopy.name(category))”…", bundle: .appLanguage)) {
                         model.send(CategoryMapUiEventOnEditCategoryClicked(categoryId: category.id))
                     }
                 }

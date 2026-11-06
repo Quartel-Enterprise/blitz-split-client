@@ -716,8 +716,14 @@ private struct AddToGroupSheet: View {
 
     private var footer: String {
         contact.isGuest
-            ? String(localized: "\(contact.name) joins the group as a name, with no part in the old bills.")
-            : String(localized: "\(contact.name) joins right away, with no part in the old bills, and sees the group in their list.")
+            ? String(
+                localized: "\(contact.name) joins the group as a name, with no part in the old bills.",
+                bundle: .appLanguage,
+            )
+            : String(
+                localized: "\(contact.name) joins right away, with no part in the old bills, and sees the group in their list.",
+                bundle: .appLanguage,
+            )
     }
 }
 

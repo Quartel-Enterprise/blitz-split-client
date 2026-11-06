@@ -82,13 +82,13 @@ private struct DeleteAccountContent: View {
     /// The canvas lists the provider's link only while there is one to name.
     private var deletedItems: [String] {
         var items = [
-            String(localized: "Your profile (name, photo and color)"),
-            String(localized: "Your Pix and Bitcoin keys"),
+            String(localized: "Your profile (name, photo and color)", bundle: .appLanguage),
+            String(localized: "Your Pix and Bitcoin keys", bundle: .appLanguage),
         ]
         if let provider = state.accountProvider.loaded(as: AccountProvider.self)?.displayName {
-            items.append(String(localized: "The link to your \(provider) account"))
+            items.append(String(localized: "The link to your \(provider) account", bundle: .appLanguage))
         }
-        items.append(String(localized: "The copy of your data on this \(DeviceName.current)"))
+        items.append(String(localized: "The copy of your data on this \(DeviceName.current)", bundle: .appLanguage))
         return items
     }
 
