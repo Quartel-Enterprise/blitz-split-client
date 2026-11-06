@@ -325,7 +325,6 @@ export const pt: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Você está em',
   groupDetail_joinedTitle: 'Você entrou como {name}',
   groupDetail_joinedMessage: 'Tudo que for lançado para você aparece aqui.',
-  groupDetail_joinedDismiss: 'Dispensar',
   groupDetail_protectTitle: 'Proteja seu acesso',
   groupDetail_protectMessage: 'Você entrou sem conta. Guarde o código ou conecte Google ou Apple.',
   groupDetail_metaTotal: '{members} · {total} no total',

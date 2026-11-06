@@ -156,7 +156,7 @@ function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: Grou
           <p className="font-semibold">{t('groupDetail_joinedTitle', { name })}</p>
           <p className="text-sm text-muted-foreground">{t('groupDetail_joinedMessage')}</p>
         </div>
-        <Button variant="ghost" size="icon-sm" aria-label={t('groupDetail_joinedDismiss')} className="-m-1 shrink-0 text-muted-foreground" onClick={() => presenter.dismissJoinedNotice()}>
+        <Button variant="ghost" size="icon-sm" aria-label={t('home_dismiss')} className="-m-1 shrink-0 text-muted-foreground" onClick={() => presenter.dismissJoinedNotice()}>
           <X />
         </Button>
       </section>
