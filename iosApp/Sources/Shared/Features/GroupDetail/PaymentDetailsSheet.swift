@@ -20,7 +20,7 @@ struct PaymentDetailsSheet: View {
                         .monospacedDigit()
                 }
                 LabeledContent("When") {
-                    Text(verbatim: "\(ExpenseFormat.shortDate(payment.paidAt)) · \(ExpenseFormat.time(payment.paidAt))")
+                    Text(verbatim: ExpenseFormat.when(payment.paidAt, relativeDay: payment.paidDay))
                 }
                 if payment.isPending {
                     LabeledContent("Status") { Text("Queued") }

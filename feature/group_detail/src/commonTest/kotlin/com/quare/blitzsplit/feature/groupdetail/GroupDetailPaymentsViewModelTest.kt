@@ -135,6 +135,7 @@ class GroupDetailPaymentsViewModelTest {
                 PaymentRow(
                     id = "pix-1",
                     paidAt = thisAfternoon,
+                    paidDay = RelativeDay.TODAY,
                     fromName = "Pierre",
                     fromIsMe = true,
                     toName = "Ana",
@@ -609,6 +610,42 @@ class GroupDetailPaymentsViewModelTest {
                     .single()
                     .entries
                     .map { it.id },
+            )
+        }
+
+    @Test
+    fun `GIVEN payments of today and yesterday and before WHEN loading THEN each names its day`() =
+        runTest(testDispatcher) {
+            // Given
+            val earlier = Instant.parse("2026-10-27T12:00:00Z").toEpochMilliseconds()
+            prepareScenario(
+                storedSettlements = listOf(
+                    settlement(
+                        id = "today",
+                        paidAt = thisAfternoon,
+                    ),
+                    settlement(
+                        id = "yesterday",
+                        paidAt = yesterdayNoon,
+                    ),
+                    settlement(
+                        id = "before",
+                        paidAt = earlier,
+                    ),
+                ),
+            )
+
+            // When
+            val days = paymentRows().associate { it.id to it.paidDay }
+
+            // Then
+            assertEquals(
+                mapOf(
+                    "today" to RelativeDay.TODAY,
+                    "yesterday" to RelativeDay.YESTERDAY,
+                    "before" to RelativeDay.OTHER,
+                ),
+                days,
             )
         }
 
