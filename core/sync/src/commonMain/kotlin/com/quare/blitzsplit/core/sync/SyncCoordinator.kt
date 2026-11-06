@@ -151,7 +151,9 @@ class SyncCoordinator(
      * trip per part, is what made deleting a group slow.
      */
     suspend fun <T> syncThen(request: suspend () -> Result<T>): Result<T> = runUnderSyncLock {
-        val synced = if (observeHasPendingChanges().first()) syncLocked() else Result.success(Unit)
+        val synced = suspendRunCatching {
+            if (observeHasPendingChanges().first()) syncLocked().getOrThrow()
+        }
         synced.fold(
             onSuccess = { suspendRunCatching { request().getOrThrow() } },
             onFailure = { Result.failure(it) },

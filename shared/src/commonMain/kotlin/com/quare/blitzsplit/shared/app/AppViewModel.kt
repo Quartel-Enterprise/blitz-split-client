@@ -322,7 +322,9 @@ class AppViewModel(
         isSynced: Boolean,
     ): Int? {
         val top = navigator.backStack.value
-        val event = link.eventId?.let { findActivityEvent(it) }
+        val event = link.eventId
+            ?.takeIf { routes.any { route -> route is Route.BillDetail } }
+            ?.let { findActivityEvent(it) }
         val focusCommentId = event?.takeUnless { it.isCommentDeleted }?.commentId
         val available = mutableListOf<Route>()
         for (route in routes) {
