@@ -229,6 +229,21 @@ class SharedBillRowsTest {
     }
 
     @Test
+    fun `GIVEN a photo signed and one not signed WHEN making the tiles of a link THEN none is loading`() {
+        // Given
+        val attachments = listOf(
+            attachment("photo-1"),
+            attachment("photo-2", imageUrl = null),
+        )
+
+        // When
+        val tiles = sharedTilesOf(attachments, now, TimeZone.UTC)
+
+        // Then
+        assertEquals(listOf(false, false), tiles.map { it.isImageLoading })
+    }
+
+    @Test
     fun `GIVEN a photo added by someone who left the group WHEN making the tiles THEN has no name`() {
         // Given
         val attachments = listOf(attachment("photo-1", addedByName = null))

@@ -47,6 +47,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryHint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategorySuggestionReason
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -2781,6 +2782,465 @@ class ReceiptViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN a photo from Inicio WHEN Rachar conta opens THEN takes it and reads it in the group currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = true),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(source.toList()), readSources)
+            assertEquals(listOf(GroupCurrency.BRL), readCurrencies)
+            assertNull(heldReceipt)
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.READING,
+                    itemCount = 0,
+                    hasPhoto = true,
+                    error = null,
+                ),
+                state.receipt,
+            )
+            assertNull(state.receiptRequest)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio being read WHEN Rachar conta shows THEN the form locks and no choice opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = true),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isReadingReceipt)
+            assertTrue(state.isFormLocked)
+            assertFalse(state.canSave)
+            assertFalse(state.showsReceiptSourceChoice)
+            assertFalse(state.isReceiptSourceRequested)
+            assertNull(state.shownReceiptSource)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio and a single group WHEN Rachar conta opens THEN reads it without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.groupSelection)
+            assertEquals(listOf(source.toList()), readSources)
+            assertEquals(listOf(GroupCurrency.BRL), readCurrencies)
+            assertEquals(ReceiptStatus.READING, state.receipt?.status)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio and two groups WHEN Rachar em qual grupo is open THEN the photo waits unread`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNotNull(state.groupSelection)
+            assertTrue(readSources.isEmpty())
+            assertNull(state.receipt)
+            assertEquals(ReceiptRequest.Picked, state.receiptRequest)
+            assertFalse(state.readsPickedReceipt)
+            assertFalse(state.showsReceiptSourceChoice)
+            assertFalse(state.isFormLocked)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio WHEN another group is confirmed THEN reads it once in that group currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertEquals(listOf(GroupCurrency.USD), readCurrencies)
+            assertEquals(listOf(source.toList()), readSources)
+            assertEquals(ReceiptStatus.READING, state.receipt?.status)
+            assertNull(state.receiptRequest)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio WHEN tapping Continuar on the same group THEN reads it in its currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            assertEquals(GROUP_ID, viewModel.uiState.value.groupId)
+            assertEquals(listOf(GroupCurrency.BRL), readCurrencies)
+            assertEquals(listOf(source.toList()), readSources)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio WHEN Rachar em qual grupo is dismissed THEN reads it in the bill currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDismissed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.groupSelection)
+            assertEquals(GROUP_ID, state.groupId)
+            assertEquals(listOf(GroupCurrency.BRL), readCurrencies)
+            assertEquals(ReceiptStatus.READING, state.receipt?.status)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio read WHEN the bill moves to another group THEN it is not read again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                scan = scanOf(reading()),
+                pickedReceipt = source,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(TRIP_ID, state.groupId)
+            assertEquals(listOf(source.toList()), readSources)
+            assertEquals(listOf(GroupCurrency.BRL), readCurrencies)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio for a bitcoin group WHEN Rachar conta opens THEN the bill opens alone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = true),
+                storedGroups = listOf(dinner.copy(currency = GroupCurrency.BTC)),
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertTrue(readSources.isEmpty())
+            assertNull(state.receipt)
+            assertNull(state.receiptRequest)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio WHEN a bitcoin group is confirmed THEN nothing is read and no choice opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, wallet),
+                pickedReceipt = source,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(WALLET_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(WALLET_ID, state.groupId)
+            assertTrue(readSources.isEmpty())
+            assertNull(state.receipt)
+            assertNull(state.receiptRequest)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN a photo dropped for a bitcoin group WHEN the bill moves to a real group THEN it is still not read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, wallet),
+                pickedReceipt = source,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(WALLET_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(GROUP_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(GROUP_ID, state.groupId)
+            assertTrue(readSources.isEmpty())
+            assertNull(state.receipt)
+            assertNull(state.receiptRequest)
+            assertFalse(state.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN no photo waiting from Inicio WHEN tapping Continuar THEN asks for the source and reads nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                pickedReceipt = null,
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(ReceiptRequest.Choice, state.receiptRequest)
+            assertTrue(state.showsReceiptSourceChoice)
+            assertFalse(state.readsPickedReceipt)
+            assertTrue(readSources.isEmpty())
+            assertNull(state.receipt)
+        }
+
+    @Test
+    fun `GIVEN a photo held and Editar conta asking to scan WHEN it opens THEN it is neither taken nor read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = editRoute(scansReceipt = true),
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertNotNull(heldReceipt)
+            assertTrue(readSources.isEmpty())
+            assertNull(state.receipt)
+            assertNull(state.receiptRequest)
+            assertEquals("100,00", state.amountText)
+        }
+
+    @Test
+    fun `GIVEN a photo held and a bill not asking to scan WHEN it opens THEN it is neither taken nor read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = false),
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNotNull(heldReceipt)
+            assertTrue(readSources.isEmpty())
+            assertNull(state.receipt)
+            assertNull(state.receiptRequest)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio offline WHEN Rachar conta opens THEN sends it and says it never got there`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = true),
+                online = false,
+                scan = ReceiptScan.Failed(ReceiptReadFailure.OFFLINE),
+                pickedReceipt = source,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(source.toList()), readSources)
+            assertEquals(ReceiptStatus.FAILED, state.receipt?.status)
+            assertEquals(ReceiptError.OFFLINE, state.receiptError)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio the reader did not answer WHEN tapping Tentar de novo THEN reads it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = true),
+                scan = ReceiptScan.Failed(ReceiptReadFailure.READER_UNAVAILABLE),
+                pickedReceipt = source,
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRetryClicked)
+
+            // Then
+            assertEquals(listOf(source.toList(), source.toList()), readSources)
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.BRL), readCurrencies)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio being read WHEN removing it THEN the scan button is back and nothing rereads`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = true),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptRemoved)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.receipt)
+            assertTrue(state.showsScanReceipt)
+            assertFalse(state.showsReceiptSourceChoice)
+            assertEquals(listOf(source.toList()), readSources)
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio read in another group WHEN saving THEN attaches it as the bill receipt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                scan = scanOf(reading()),
+                pickedReceipt = source,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            val created = expenses.createdExpenses.single()
+            assertEquals(TRIP_ID, created.groupId)
+            assertEquals(25_990L, created.amountMinor)
+            assertEquals("Bom Preço", created.description)
+            assertEquals(
+                listOf(
+                    RecordedAttachment(
+                        expenseId = created.id,
+                        groupId = TRIP_ID,
+                        kind = BillAttachmentKind.RECEIPT,
+                        source = encodedPhoto.jpeg.toList(),
+                        addedByMemberId = PIERRE_TRIP,
+                    ),
+                ),
+                attachments,
+            )
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio WHEN it is read THEN sends only the read and no photo picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = newRoute(scansReceipt = true),
+                scan = scanOf(reading()),
+                pickedReceipt = source,
+            )
+
+            // When
+            val sent = trackedEvents.toList()
+
+            // Then
+            assertEquals(
+                listOf("receipt_read" to mapOf<String, Any>("result" to "read", "items" to 2)),
+                sent,
+            )
+        }
+
+    @Test
+    fun `GIVEN a photo from Inicio and two groups WHEN its read ends THEN sends the read once and no photo picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, trip),
+                holdsReads = true,
+                pickedReceipt = source,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(TRIP_ID))
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // When
+            answerRead(0, scanOf(reading()))
+
+            // Then
+            assertTrue(trackedEvents.none { it.first == "photo_picked" })
+            assertEquals(
+                listOf(mapOf<String, Any>("result" to "read", "items" to 2)),
+                trackedEvents.filter { it.first == "receipt_read" }.map { it.second },
+            )
+        }
+
     private fun TestScope.answerRead(
         index: Int,
         scan: ReceiptScan,
@@ -2860,6 +3320,16 @@ class ReceiptViewModelTest {
         members = listOf(
             member(PIERRE_TRIP, "Pierre", isMe = true),
             member(CARLA, "Carla", isMe = false),
+        ),
+    )
+
+    private val wallet = group(
+        id = WALLET_ID,
+        name = "Carteira",
+        currency = GroupCurrency.BTC,
+        members = listOf(
+            member(PIERRE_WALLET, "Pierre", isMe = true),
+            member(DANI, "Dani", isMe = false),
         ),
     )
 
@@ -3088,6 +3558,9 @@ class ReceiptViewModelTest {
         const val BRUNO = "member-3"
         const val PIERRE_TRIP = "member-4"
         const val CARLA = "member-5"
+        const val WALLET_ID = "group-3"
+        const val PIERRE_WALLET = "member-6"
+        const val DANI = "member-7"
         const val PET_ID = "pet"
         const val PET_FOOD_ID = "pet-food"
         const val GYM_ID = "gym"

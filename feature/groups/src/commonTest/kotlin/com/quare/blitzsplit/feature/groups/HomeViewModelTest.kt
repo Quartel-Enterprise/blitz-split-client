@@ -53,6 +53,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.NotificationPermission
 import com.quare.blitzsplit.core.model.QrCode
+import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.StoreListing
 import com.quare.blitzsplit.core.model.SyncState
@@ -425,6 +426,393 @@ class HomeViewModelTest {
         assertEquals(listOf(Route.Home), navigator.backStack.value)
         assertFalse(viewModel.uiState.value.canScanReceipt)
     }
+
+    @Test
+    fun `GIVEN no internet WHEN tapping Ler cupom fiscal THEN neither asks for the photo nor tracks the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN tapping Ler cupom fiscal THEN neither asks for the photo nor tracks`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                groupsRead = false,
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the profile over Inicio WHEN a late tap on Ler cupom fiscal arrives THEN neither asks nor tracks`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(Route.Profile)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no group WHEN tapping Ler cupom fiscal THEN opens Novo grupo instead of asking for the photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.CreateGroup), navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN the photo choice WHEN picking the gallery THEN the choice closes and the gallery opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.PHOTOS, viewModel.uiState.value.receiptSource)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the photo choice WHEN picking the camera THEN tracks receipt_source_picked with the camera`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // Then
+            assertEquals(
+                listOf("receipt_source_picked" to mapOf<String, Any>("source" to ReceiptPhotoSource.CAMERA)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no photo choice open WHEN a late tap on a source arrives THEN opens no picker and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertNull(viewModel.uiState.value.receiptSource)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the photo choice without a camera WHEN it skips to the files THEN opens them and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertEquals(ReceiptPhotoSource.FILES, viewModel.uiState.value.receiptSource)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no photo choice open WHEN a late skip to the gallery arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.PHOTOS))
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the photo choice WHEN it closes without a pick THEN the choice goes and no picker opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptPickerDismissed)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertNull(viewModel.uiState.value.receiptSource)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the gallery open WHEN it closes without a photo THEN the gallery goes and Inicio stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptPickerDismissed)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertNull(viewModel.uiState.value.receiptSource)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+            assertTrue(heldReceipts.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an older group with a newer bill WHEN the photo comes THEN opens Rachar conta reading it there`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(
+                        id = "old",
+                        updatedAt = daysAgo(3),
+                    ),
+                    trio(
+                        id = "new",
+                        updatedAt = daysAgo(1),
+                    ),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "fresh",
+                        groupId = "old",
+                        spentAt = hoursAgo(1),
+                    ),
+                ),
+            )
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+            val photo = byteArrayOf(1, 2, 3)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(photo))
+
+            // Then
+            assertEquals(listOf(listOf<Byte>(1, 2, 3)), heldReceipts)
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.SplitBill(
+                        groupId = "old",
+                        expenseId = null,
+                        picksGroupFirst = true,
+                        scansReceipt = true,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertNull(viewModel.uiState.value.receiptSource)
+        }
+
+    @Test
+    fun `GIVEN the camera open WHEN a photo comes THEN tracks photo_picked from the home`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+        viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(byteArrayOf(7)))
+
+        // Then
+        assertEquals(listOf("photo_picked" to mapOf<String, Any>("source" to "home")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the gallery request already ended WHEN its photo comes later THEN still opens Rachar conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+            viewModel.onEvent(HomeUiEvent.OnReceiptPickerDismissed)
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(byteArrayOf(4, 5)))
+
+            // Then
+            assertEquals(listOf(listOf<Byte>(4, 5)), heldReceipts)
+            assertEquals(
+                listOf(Route.Home, Route.SplitBill.createPickingGroup(trio().id, scansReceipt = true)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the profile opened over Inicio WHEN the photo comes THEN drops it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+        viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+        navigator.navigate(Route.Profile)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(byteArrayOf(1)))
+
+        // Then
+        assertTrue(heldReceipts.isEmpty())
+        assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the only group gone while the gallery is open WHEN the photo comes THEN drops it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.PHOTOS))
+            groups.groups.value = emptyList()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(byteArrayOf(1)))
+
+            // Then
+            assertTrue(heldReceipts.isEmpty())
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a file that could not be read WHEN its empty photo comes THEN still opens Rachar conta with it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.FILES))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(ByteArray(0)))
+
+            // Then
+            assertEquals(listOf(emptyList<Byte>()), heldReceipts)
+            assertEquals(
+                listOf(Route.Home, Route.SplitBill.createPickingGroup(trio().id, scansReceipt = true)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the receipt camera open WHEN turning its flashlight on THEN tracks it on and changes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptTorchClicked(isOn = true))
+
+            // Then
+            assertEquals(
+                listOf("receipt_camera_torch_toggled" to mapOf<String, Any>("is_on" to true)),
+                trackedEvents,
+            )
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the receipt camera refused once WHEN tapping Permitir camera THEN only tracks it from the receipt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptCameraAllowClicked)
+
+            // Then
+            assertEquals(
+                listOf("camera_allow_clicked" to mapOf<String, Any>("source" to "receipt")),
+                trackedEvents,
+            )
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the camera refused for good WHEN tapping Abrir configuracoes THEN only tracks it from the receipt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            trackedEvents.clear()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnReceiptCameraSettingsClicked)
+
+            // Then
+            assertEquals(
+                listOf("camera_settings_clicked" to mapOf<String, Any>("source" to "receipt")),
+                trackedEvents,
+            )
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
+        }
 
     @Test
     fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Atividade above Inicio`() = runTest(testDispatcher) {

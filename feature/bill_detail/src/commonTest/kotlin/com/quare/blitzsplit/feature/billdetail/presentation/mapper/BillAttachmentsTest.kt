@@ -125,6 +125,126 @@ class BillAttachmentsTest {
     }
 
     @Test
+    fun `GIVEN online a synced photo without a signed URL yet WHEN making the tiles THEN its image is loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertTrue(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online the receipt without a signed URL yet WHEN making the tiles THEN its image is loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "receipt",
+                kind = BillAttachmentKind.RECEIPT,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertTrue(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN offline a synced photo without a signed URL WHEN making the tiles THEN its image is not loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online a synced photo with its signed URL WHEN making the tiles THEN its image is not loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+        val imageUrls = mapOf("photo-a" to "https://bucket/photo-a.jpg")
+
+        // When
+        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online only another photo has its signed URL WHEN making the tiles THEN this one is loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(id = "photo-a"),
+            attachment(id = "photo-b"),
+        )
+        val imageUrls = mapOf("photo-b" to "https://bucket/photo-b.jpg")
+
+        // When
+        val tiles = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = true)
+
+        // Then
+        assertEquals(listOf(true, false), tiles.map { it.isImageLoading })
+    }
+
+    @Test
+    fun `GIVEN online a photo added here not up yet WHEN making the tiles THEN its image is not loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                isPending = true,
+                hasPendingImage = true,
+            ),
+        )
+        val localImages = mapOf("photo-a" to byteArrayOf(1, 2, 3))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), localImages, group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online a photo added here already up WHEN making the tiles THEN its bytes draw and it is not loading`() {
+        // Given
+        val attachments = listOf(attachment(id = "photo-a"))
+        val localImages = mapOf("photo-a" to byteArrayOf(1, 2, 3))
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), localImages, group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
+    fun `GIVEN online a photo to go up whose bytes were not read WHEN making the tiles THEN it is not loading`() {
+        // Given
+        val attachments = listOf(
+            attachment(
+                id = "photo-a",
+                isPending = true,
+                hasPendingImage = true,
+            ),
+        )
+
+        // When
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = true).single()
+
+        // Then
+        assertFalse(tile.isImageLoading)
+    }
+
+    @Test
     fun `GIVEN a photo with its size and time WHEN making the tiles THEN keeps them`() {
         // Given
         val addedAt = now - HOUR
