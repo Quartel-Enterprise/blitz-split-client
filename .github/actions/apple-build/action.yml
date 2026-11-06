@@ -87,16 +87,20 @@ runs:
     - name: Decode the Firebase config and the App Store Connect key
       shell: bash
       env:
-        GOOGLE_SERVICE_INFO_PLIST: ${{ inputs.google-service-info-plist }}
         APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
       run: |
-        echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/Resources/GoogleService-Info.plist
+        cp "$RUNNER_TEMP/GoogleService-Info.plist" iosApp/Resources/GoogleService-Info.plist
         echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
 
     - name: Generate the Xcode project
       shell: bash
-      run: ./iosApp/generate-project.sh
+      run: |
+        ./iosApp/generate-project.sh
+        if ! grep -q 'GoogleService-Info.plist in Resources' iosApp/BoraRachar.xcodeproj/project.pbxproj; then
+          echo "::error::The generated project does not bundle GoogleService-Info.plist."
+          exit 1
+        fi
 
     # -allowProvisioningUpdates with the API key lets Xcode create the cloud-managed distribution certificate and the
     # profile itself, so there is no certificates repository to keep.

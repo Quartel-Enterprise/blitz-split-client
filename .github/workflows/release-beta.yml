@@ -158,18 +158,18 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       # Google sign in only works for a signing key whose SHA-1 is registered on the Firebase app
-      # (docs/release-process.md#google-sign-in), so the run says which one this APK carries. The
-      # APK has no v1 signature (minSdk 26), so keytool can't read it: apksigner reads the v2 and v3
-      # ones. The step fails when it finds nothing, instead of publishing an empty fingerprint.
-      # Invite links open the app only when the key's SHA-256 is in blitzsplit.com's assetlinks.json
+      # (docs/release-process.md#google-sign-in), so the run says which one this APK carries. Invite links open
+      # the app only when the key's SHA-256 is in blitzsplit.com's assetlinks.json
       # (docs/product/joining-and-folds.md): a key missing there warns, and the beta still publishes.
-      # build-tools 37 prints `V2 Signer: certificate SHA-1 digest:` where 36 printed `Signer #1 certificate SHA-1
-      # digest:`. After a key rotation it prints the original signer first and the rotated one (V3, V3.1 or an SDK
-      # range) after it, so the step takes the last signer, the key current devices verify, and reads both digests
-      # from it. The source stamp's certificate never matches. A failed verify or a missing digest prints what
-      # apksigner said. --verbose is kept because the run that failed, without it, printed no certificate.
+      # The digests come from the release keystore, whose keytool output is stable, and apksigner only confirms
+      # the APK carries that certificate by its SHA-256, whatever label or order its version prints (build-tools
+      # 37 changed both). A failed verify, or an APK signed with another key, prints what apksigner said and fails
+      # the step instead of publishing a fingerprint the APK doesn't have.
       - name: Show the signing certificate
         shell: bash
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)"
           shopt -s nullglob
@@ -179,21 +179,24 @@ jobs:
             exit 1
           fi
           apk="${apks[0]}"
-          if ! certs="$("$apksigner" verify --verbose --print-certs "$apk" 2>&1)"; then
-            echo "$certs"
-            echo "::error::apksigner could not verify the release APK's signature."
+          if ! keystore="$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -alias "$ANDROID_KEY_ALIAS" \
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" 2>&1)"; then
+            echo "$keystore"
+            echo "::error::keytool could not read the release keystore."
             exit 1
           fi
-          label="$(sed -n 's/^\(\(V[0-9.]* \)\{0,1\}Signer[^:]*:\{0,1\} \)certificate SHA-256 digest: .*/\1/p' <<< "$certs" | tail -1)"
-          digest() {
-            awk -v p="${label}certificate $1 digest: " 'index($0, p) == 1 { print substr($0, length(p) + 1); exit }' <<< "$certs"
-          }
-          sha1="$(digest SHA-1)"
-          sha256="$(digest SHA-256)"
-          if [ -z "$label" ] || [ -z "$sha1" ] || [ -z "$sha256" ]; then
+          hex() { sed -n "s/^[[:space:]]*$1: *//p" <<< "$keystore" | head -1 | tr -d ':' | tr 'A-F' 'a-f'; }
+          sha1="$(hex SHA1)"
+          sha256="$(hex SHA256)"
+          if [ -z "$sha1" ] || [ -z "$sha256" ]; then
+            echo "$keystore"
+            echo "::error::keytool printed no SHA-1 or SHA-256 for the release key."
+            exit 1
+          fi
+          if ! certs="$("$apksigner" verify --print-certs "$apk" 2>&1)" || ! grep -qiF "$sha256" <<< "$certs"; then
             echo "apksigner ${apksigner} printed:"
             echo "$certs"
-            echo "::error::apksigner printed no signing certificate for the release APK."
+            echo "::error::The release APK is not signed with the release keystore's certificate (SHA-256 $sha256)."
             exit 1
           fi
           # assetlinks.json lists AB:CD:…
