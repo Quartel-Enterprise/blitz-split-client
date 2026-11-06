@@ -13,7 +13,8 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     two, the currency with the most groups first (`GroupsSummary`); "To get back" and "To pay" sum the positive and the
     negative nets, are disabled at zero and open Balances (flow 8) on Owed to you and You owe; "To pay" goes straight to
     settling up when only one person is in You owe. "Split a bill"
-    (Android's FAB, iOS's +, the main button on the web and the Mac) opens New group while there's no group, and
+    (Android's FAB, iOS's +, the main button on the web and the Mac, ⌘N there, with ⇧⌘N for the toolbar's "New
+    group") opens New group while there's no group, and
     otherwise Split a bill asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Offline · 1 change queued" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
     (which also keep their group's "queued"). Pulling down syncs on Android and iOS. A new device's first download

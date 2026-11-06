@@ -11,7 +11,7 @@ struct DayEntryMenuItems: View {
     var body: some View {
         if entry is PaymentRow {
             Button(role: .destructive) {
-                model.send(GroupDetailUiEventOnPaymentClicked(paymentId: entry.id))
+                model.delete(entry)
             } label: {
                 deleteLabel
             }
@@ -24,7 +24,7 @@ struct DayEntryMenuItems: View {
             }
             Divider()
             Button(role: .destructive) {
-                model.send(GroupDetailUiEventOnExpenseDeleteClicked(expenseId: entry.id))
+                model.delete(entry)
             } label: {
                 deleteLabel
             }

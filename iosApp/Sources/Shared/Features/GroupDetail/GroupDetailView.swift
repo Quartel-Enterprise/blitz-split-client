@@ -81,6 +81,15 @@ final class GroupDetailModel {
         if current.billToDelete != nil { send(GroupDetailUiEventOnExpenseDeleteDismissed.shared) }
     }
 
+    /// A line's "Delete": a payment asks "Delete this payment?" as its tap does, a bill "Delete this bill?".
+    func delete(_ entry: any DayEntry) {
+        if entry is PaymentRow {
+            send(GroupDetailUiEventOnPaymentClicked(paymentId: entry.id))
+        } else {
+            send(GroupDetailUiEventOnExpenseDeleteClicked(expenseId: entry.id))
+        }
+    }
+
     func open(_ entry: any DayEntry) {
         if entry is PaymentRow {
             send(GroupDetailUiEventOnPaymentClicked(paymentId: entry.id))
@@ -673,6 +682,13 @@ private struct MacGroupExpenses: View {
             if let id = ids.first, let entry = entries.first(where: { $0.id == id }) {
                 model.open(entry)
             }
+        }
+        // Delete (⌫) asks what the line's "Delete…" asks, for one line picked
+        .onDeleteCommand {
+            let entries = state.days.flatMap(\.entries)
+            guard selection.count == 1, let id = selection.first,
+                  let entry = entries.first(where: { $0.id == id }) else { return }
+            model.delete(entry)
         }
     }
 }

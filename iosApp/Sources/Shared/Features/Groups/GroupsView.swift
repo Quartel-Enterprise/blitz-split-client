@@ -168,6 +168,8 @@ struct GroupsView: View {
                 Button("New group", systemImage: "plus.square.on.square") {
                     model.send(GroupsUiEventOnCreateGroupClicked.shared)
                 }
+                .keyboardShortcut("n", modifiers: [.command, .shift])
+                .help(Text("New group (⇧⌘N)"))
                 profileButton
             }
             if state.showsSplitBillButton {
@@ -175,6 +177,8 @@ struct GroupsView: View {
                     SplitBillButton {
                         model.send(GroupsUiEventOnSplitBillClicked.shared)
                     }
+                    .keyboardShortcut("n", modifiers: .command)
+                    .help(Text("Split a bill (⌘N)"))
                 }
             }
         }

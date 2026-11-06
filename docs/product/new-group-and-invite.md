@@ -5,7 +5,8 @@ Creating a group and inviting people.
   - "New group" opens full screen on an Android phone, in two columns lying down (the group, then "Who's
     in"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
-    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). The group's avatar is its rounded
+    with an iPad's room) and macOS, whose sheet opens on the name, ready to type, a dialog on the web (a drawer on a
+    phone). The group's avatar is its rounded
     square on every platform, Android included (the beta's feedback dropped Android's shapes), and tapping it steps
     its color through the palette ("Change the group's color"), and Currency starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. "Add by name"
     takes any name of 2 letters or more, one already in the group too (beta feedback 3, item 29: people are told apart by

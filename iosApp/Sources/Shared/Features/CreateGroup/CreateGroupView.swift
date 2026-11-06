@@ -97,6 +97,7 @@ private struct CreateGroupForm: View {
 
     /// The sheet's own size, which decides the columns.
     @State private var layout = ScreenLayout()
+    @FocusState private var isNameFocused: Bool
 
     private var state: CreateGroupUiState {
         model.state
@@ -132,6 +133,12 @@ private struct CreateGroupForm: View {
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
         .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(CreateGroupUiEventOnPhotoCrop(event: $0)) }
+        #if os(macOS)
+        // The Mac's sheet opens on the name, ready to type; iOS waits for a tap, which brings the keyboard up
+        .onAppear {
+            if model.current.name.isEmpty { isNameFocused = true }
+        }
+        #endif
     }
 
     /// The error, the avatar and the name, type and currency.
@@ -150,6 +157,7 @@ private struct CreateGroupForm: View {
         }
         Section {
             TextField("Group name", text: nameBinding)
+                .focused($isNameFocused)
             Picker("Type", selection: typeBinding) {
                 ForEach(state.types, id: \.self) { type in
                     Text(type.title).tag(type)

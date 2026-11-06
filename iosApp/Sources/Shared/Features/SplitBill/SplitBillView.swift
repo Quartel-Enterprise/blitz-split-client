@@ -934,6 +934,8 @@ private struct PayerAmountField: View {
 private struct MacSplitBill: View {
     let model: SplitBillModel
 
+    @Environment(\.windowLayout) private var window
+
     var body: some View {
         Group {
             if model.state.itemsEditor != nil {
@@ -947,10 +949,10 @@ private struct MacSplitBill: View {
         .frame(width: model.state.itemsEditor != nil ? itemsWidth : 520)
     }
 
-    /// "Bill Items" is 860 pt wide, 700 in a window too narrow for it.
+    /// "Bill Items" is 860 pt wide, 700 in a window too narrow for it: the window the sheet opened over, as the root
+    /// measures it (the key window is a sheet: this one, 520 pt while the form shows, or Item over it).
     private var itemsWidth: CGFloat {
-        let window = NSApplication.shared.keyWindow?.frame.width ?? .infinity
-        return window < 900 ? 700 : 860
+        window.size.width < 900 ? 700 : 860
     }
 }
 
