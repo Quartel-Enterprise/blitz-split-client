@@ -65,7 +65,7 @@ class JsActivityDebtChange(
     val name: String?,
     val beforeMinor: Double,
     val afterMinor: Double,
-    // Why: the currency this pair is in, null when unknown: the item's is used then.
+    // Why: the currency this pair is in, null when not even the group's is known: the amount is left out then.
     val currency: String?,
     val fractionDigits: Int,
 )

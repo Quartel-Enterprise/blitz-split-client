@@ -10,8 +10,9 @@ import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChan
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivitySimplification
 
 /*
- * Why: "7 pagamentos viraram 5. Agora Diego te paga R$ 64,00, e Ana não te deve mais." (13.7), the largest new pair
- * and the largest one gone for this device's user; just the counts when nothing changed for them.
+ * Why: "7 pagamentos viraram 5. Agora Diego te paga R$ 64,00, e Ana não te deve mais." (13.7), the first new pair
+ * and the first one gone for this device's user, each amount in its pair's currency; just the counts when nothing
+ * changed for them.
  */
 @Composable
 internal fun simplificationDetailOf(simplification: ActivitySimplification): String {

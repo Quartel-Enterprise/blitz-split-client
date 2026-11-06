@@ -1392,6 +1392,30 @@ class ActivityMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a pending bill saved with a blank currency WHEN reading it queued THEN it has no currency`() {
+        // Given
+        val row = billRow().copy(currency = "")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertNull(queued.currency)
+    }
+
+    @Test
+    fun `GIVEN a pending payment saved with a blank currency WHEN reading it queued THEN it has no currency`() {
+        // Given
+        val row = paymentRow(isDeleted = false).copy(currency = " ")
+
+        // When
+        val queued = mapper.toQueued(row)
+
+        // Then
+        assertNull(queued.currency)
+    }
+
+    @Test
     fun `GIVEN a pending group change WHEN reading it queued THEN it has no currency`() {
         // Given
         val row = groupRow(isNew = false)

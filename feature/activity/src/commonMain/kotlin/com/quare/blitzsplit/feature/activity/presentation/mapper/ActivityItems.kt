@@ -151,6 +151,9 @@ private fun eventEntryOf(
     val subjectMember = event.targetId
         ?.takeIf { event.kind.type in subjectMemberTypes }
         ?.let { id -> members.firstOrNull { it.id == id } }
+    val currency = currencyOf(event.currency, group?.currency)
+    // Why: an edit that moved the bill to another currency changed its amount from one in the currency it had.
+    val previousCurrency = currencyOf(event.previousCurrency, currency)
     val item = ActivityItem(
         id = event.id,
         kind = event.kind,
@@ -166,13 +169,13 @@ private fun eventEntryOf(
         occurredAt = event.occurredAt,
         subject = event.subject,
         amountMinor = event.amountMinor,
-        currency = currencyOf(event.currency, group?.currency),
+        currency = currency,
         code = event.code,
         fromName = from?.name,
         fromIsMe = from?.isMe == true,
         toName = to?.name,
         toIsMe = to?.isMe == true,
-        changes = event.changes.map { rowOf(it, event, group, categories) },
+        changes = event.changes.map { rowOf(it, group, previousCurrency, currency, categories) },
         body = event.body,
         commentId = event.commentId,
         isCommentDeleted = event.isCommentDeleted,
@@ -256,16 +259,17 @@ private fun simplificationOrNull(
      * Why: balances are one per currency, so each currency's pairs move apart from the others': the group's currency
      * first, then the others by code; an old pair with no currency is in the group's.
      */
-    val codes = (event.debtsBefore + event.debtsAfter)
-        .map { it.currency ?: groupCode }
-        .distinct()
+    val codeOf = { debt: ActivityDebt -> debt.currency ?: groupCode }
+    val beforeByCode = event.debtsBefore.groupBy(codeOf)
+    val afterByCode = event.debtsAfter.groupBy(codeOf)
+    val codes = (beforeByCode.keys + afterByCode.keys)
         .sortedWith(compareByDescending<String?> { it == groupCode }.thenBy { it.orEmpty() })
     val changes = codes.flatMap { code ->
         val shifts = meId
             ?.let {
                 DebtShifts.counterpartShiftsOf(
-                    before = event.debtsBefore.filter { (it.currency ?: groupCode) == code }.map(::toDebt),
-                    after = event.debtsAfter.filter { (it.currency ?: groupCode) == code }.map(::toDebt),
+                    before = beforeByCode[code].orEmpty().map(::toDebt),
+                    after = afterByCode[code].orEmpty().map(::toDebt),
                     memberId = it,
                 )
             }.orEmpty()
@@ -303,13 +307,11 @@ private fun toDebt(debt: ActivityDebt): Debt = Debt(
 
 private fun rowOf(
     change: ActivityChange,
-    event: ActivityEvent,
     group: Group?,
+    beforeCurrency: GroupCurrency?,
+    afterCurrency: GroupCurrency?,
     categories: CategoryTree,
 ): ActivityChangeRow {
-    // Why: an edit that moved the bill to another currency changed its amount from one in the currency it had.
-    val afterCurrency = currencyOf(event.currency, group?.currency)
-    val beforeCurrency = currencyOf(event.previousCurrency, afterCurrency)
     val categoryOf = { value: ActivityValue ->
         categories.resolve(value.code).takeIf { change.field == ActivityField.CATEGORY }
     }
