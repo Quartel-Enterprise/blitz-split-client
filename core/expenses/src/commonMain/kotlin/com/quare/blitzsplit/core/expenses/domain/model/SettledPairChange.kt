@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -21,6 +22,8 @@ data class SettledPairChange(
     val debtorIsPayer: Boolean,
     // Why: what the debtor owes the other once the change counts, 0 while EVEN.
     val amountMinor: Long,
+    // Why: the payment's own currency, which writes amountMinor.
+    val currency: GroupCurrency,
 ) {
     val debtorName: String?
         get() = if (debtorIsPayer) payerName else receiverName
@@ -62,10 +65,11 @@ data class SettledPairChange(
             val currency = saved.currency
             val inCurrency = settlements.filter { it.currency == currency }
             val others = expenses.filter { it.id != saved.id && it.currency == currency }
-            val before = GroupBalances.of(others + saved, inCurrency)
-            val after = GroupBalances.of(
+            val before = GroupBalances.createUnsimplified(others + saved, inCurrency, currency)
+            val after = GroupBalances.createUnsimplified(
                 others + listOfNotNull(changed?.takeIf { it.currency == currency }),
                 inCurrency,
+                currency,
             )
             val spentAt = changed?.spentAt ?: saved.spentAt
             val settlement = inCurrency
@@ -108,6 +112,7 @@ data class SettledPairChange(
                 outcome = outcomeOf(owedBeforeMinor, owedAfterMinor),
                 debtorIsPayer = owedAfterMinor >= 0,
                 amountMinor = abs(owedAfterMinor),
+                currency = settlement.currency,
             )
         }
 

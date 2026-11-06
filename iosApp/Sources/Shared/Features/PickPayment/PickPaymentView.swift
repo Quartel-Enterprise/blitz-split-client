@@ -69,13 +69,14 @@ private struct PickPaymentList: View {
     var body: some View {
         let state = model.state
         list {
-            ForEach(state.groups, id: \.groupId) { group in
+            ForEach(state.groups, id: \.self) { group in
                 Section {
                     ForEach(group.pairs, id: \.self) { pair in
                         let choice = PairChoice(
                             groupId: group.groupId,
                             fromMemberId: pair.fromMemberId,
                             toMemberId: pair.toMemberId,
+                            currency: group.currency,
                         )
                         PairRow(pair: pair, currency: group.currency) { pick(choice) }
                             .tag(choice)
@@ -85,6 +86,11 @@ private struct PickPaymentList: View {
                         GroupAvatar(initials: group.initials, color: group.color, size: 22)
                             .accessibilityHidden(true)
                         Text(verbatim: group.name)
+                        // A group owing in two currencies shows twice: the code tells the two apart
+                        if state.groups.count(where: { $0.groupId == group.groupId }) > 1 {
+                            Text(verbatim: group.currency.code)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
@@ -156,6 +162,7 @@ private extension PickPaymentList {
             groupId: choice.groupId,
             fromMemberId: choice.fromMemberId,
             toMemberId: choice.toMemberId,
+            currency: choice.currency,
         ))
     }
 }
@@ -165,6 +172,7 @@ private struct PairChoice: Hashable {
     let groupId: String
     let fromMemberId: String
     let toMemberId: String
+    let currency: GroupCurrency
 }
 
 /// "Ana → You": both faces, then "Ana owes you $162.30", "You owe Bruno $98.00" or "Carla owes Bruno $30.00".

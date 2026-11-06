@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.registerpayment.presentation.model
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
@@ -17,6 +18,8 @@ sealed interface PickPaymentUiEvent : UiEvent {
         val groupId: String,
         val fromMemberId: String,
         val toMemberId: String,
+        // Why: a group with open pairs in two currencies lists once for each, and the pair opens in its own.
+        val currency: GroupCurrency,
     ) : PickPaymentUiEvent
 
     // Why: the sheet's ✕, a swipe down, Esc or the scrim.

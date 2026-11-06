@@ -113,6 +113,8 @@ sealed interface Route {
     data class CategoryExpenses(
         val groupId: String,
         val categoryId: String,
+        // Why: the statistics' currency chip: the list and its total hold the bills in that currency only.
+        val currency: GroupCurrency,
         val periodStartMillis: Long?,
         val periodEndMillis: Long?,
         // Why: the period was "This month" or "Last month", which the statistics name as a month ("October 2026").
@@ -199,6 +201,8 @@ sealed interface Route {
         val groupId: String,
         val fromMemberId: String,
         val toMemberId: String,
+        // Why: the pair owes in one currency at a time; a pair in two is two payments.
+        val currency: GroupCurrency,
         /*
          * Why: Acertar opens "Pagar Ana" (4.5) first, the receiver's keys, while this device's user pays someone who
          * has one; Início's "Quem pagou a quem?" only records a payment, so it opens the form straight away.

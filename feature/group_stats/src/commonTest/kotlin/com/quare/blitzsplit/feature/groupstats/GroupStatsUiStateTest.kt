@@ -108,6 +108,7 @@ class GroupStatsUiStateTest {
     ): GroupStatsUiState = GroupStatsUiState(
         groupName = "Viagem Floripa",
         currency = GroupCurrency.BRL,
+        currencies = listOf(GroupCurrency.BRL),
         isTrip = true,
         period = StatsPeriod.ALL,
         periodStartMillis = 0L,

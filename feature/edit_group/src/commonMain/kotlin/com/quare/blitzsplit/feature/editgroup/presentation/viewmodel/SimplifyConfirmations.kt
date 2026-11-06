@@ -45,7 +45,7 @@ internal fun simplifyConfirmationOf(
         people = shown.map { toPersonChange(it, group) },
         othersChangingCount = if (isTurningOn) 0 else shifts.count { it.memberId != meId },
         queuedPayments = settlements
-            .filter { it.isPending }
+            .filter { it.isPending && it.currency == group.currency }
             .map {
                 SimplifyQueuedPayment(
                     from = nameOf(it.fromMemberId, group),

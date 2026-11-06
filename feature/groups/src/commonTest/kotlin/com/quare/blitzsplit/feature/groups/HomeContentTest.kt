@@ -429,7 +429,7 @@ class HomeContentTest {
                 groupName = "Viagem Floripa",
                 description = "Jantar",
                 totalMinor = 9000L,
-                currency = GroupCurrency.USD,
+                currency = GroupCurrency.BRL,
                 payers = listOf(
                     SearchBillPayer(
                         name = "Pierre",

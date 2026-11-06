@@ -20,8 +20,10 @@ data class MembersMember(
      * until the sync brings the codes the server makes for the group and the member, offline for one added here.
      */
     val personalLink: String?,
-    // Why: "+R$ 223,50 a receber" or "−R$ 118,00 deve", null while the group has no bill.
+    // Why: "+R$ 223,50 a receber" or "−R$ 118,00 deve" in the currency picked, null while the group has no bill.
     val balance: MemberBalance?,
+    // Why: owes or is owed in any currency of the group, not only the one picked.
+    val hasOpenBalance: Boolean,
     /*
      * Why: "Liberar nome", for the group's creator only, on someone else who joined: whoever joined as them leaves,
      * so the right person can pick the name. Bills and balances stay with the member.
@@ -31,10 +33,6 @@ data class MembersMember(
     // Why: someone who still owes or is owed stays, or their part of the bills would vanish from the balances.
     val canBeRemoved: Boolean
         get() = !isMe && !hasJoined && !hasOpenBalance
-
-    // Why: "Carla tem saldo em aberto" under the disabled "Remover do grupo".
-    val hasOpenBalance: Boolean
-        get() = balance?.isSettled == false
 
     // Why: "Convite pessoal para Carla" is only for someone nobody joined as.
     val canBeInvited: Boolean

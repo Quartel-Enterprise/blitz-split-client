@@ -40,6 +40,8 @@ class JsGroupHeader(
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
+    // Why: the currency chips, drawn only with more than one: the codes of the currencies the group has money in.
+    val currencies: Array<String>,
     val faces: Array<JsGroupFace>,
     val extraMemberCount: Int,
     val memberCount: Int,
@@ -58,6 +60,7 @@ internal fun toJsGroupHeader(header: GroupHeader): JsGroupHeader = JsGroupHeader
     groupPhotoUrl = header.groupPhotoUrl,
     currency = header.currency.code,
     fractionDigits = header.currency.fractionDigits,
+    currencies = header.currencies.toCurrencyCodes(),
     faces = header.faces.map(::toJsGroupFace).toTypedArray(),
     extraMemberCount = header.extraMemberCount,
     memberCount = header.memberCount,

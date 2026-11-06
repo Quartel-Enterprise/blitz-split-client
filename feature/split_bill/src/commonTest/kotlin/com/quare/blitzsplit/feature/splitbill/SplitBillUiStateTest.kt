@@ -187,6 +187,7 @@ class SplitBillUiStateTest {
                 outcome = SettledPairOutcome.OWES_AGAIN,
                 debtorIsPayer = true,
                 amountMinor = 2_000L,
+                currency = GroupCurrency.BRL,
             ),
         )
 

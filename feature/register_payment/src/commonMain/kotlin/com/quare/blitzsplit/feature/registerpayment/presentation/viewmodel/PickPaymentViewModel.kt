@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
@@ -49,7 +50,7 @@ class PickPaymentViewModel(
 
     init {
         combine(observeGroupsByActivity(), observeGroupsMoney(), observeFirstDownload()) { groups, money, download ->
-            val picks = groups.mapNotNull { group -> pickGroupOrNull(group, money[group.id] ?: GroupMoney.NONE) }
+            val picks = groups.flatMap { group -> pickGroups(group, money[group.id] ?: GroupMoney.NONE) }
             PickPaymentUiState(
                 isLoaded = download == null || picks.isNotEmpty(),
                 isWaitingForInternet = download?.isWaitingForInternet == true,
@@ -68,6 +69,7 @@ class PickPaymentViewModel(
                         groupId = event.groupId,
                         fromMemberId = event.fromMemberId,
                         toMemberId = event.toMemberId,
+                        currency = event.currency,
                         offersReceiverKeys = false,
                     ),
                 )
@@ -81,15 +83,23 @@ class PickPaymentViewModel(
 
     // Why: a pair a sync just settled is gone from the list, and a late tap on it opens nothing.
     private fun hasPair(event: PickPaymentUiEvent.OnPairClicked): Boolean = uiState.value.groups
-        .firstOrNull { it.groupId == event.groupId }
+        .firstOrNull { it.groupId == event.groupId && it.currency == event.currency }
         ?.pairs
         ?.any { it.fromMemberId == event.fromMemberId && it.toMemberId == event.toMemberId } == true
 
-    private fun pickGroupOrNull(
+    // Why: a group lists once for each currency it has an open pair in; they are never added up.
+    private fun pickGroups(
         group: Group,
         money: GroupMoney,
+    ): List<PickPaymentGroup> = GroupBalances
+        .getByCurrency(group, money.expenses, money.settlements)
+        .mapNotNull { (currency, balances) -> pickGroupOrNull(group, currency, balances.debts) }
+
+    private fun pickGroupOrNull(
+        group: Group,
+        currency: GroupCurrency,
+        debts: List<Debt>,
     ): PickPaymentGroup? {
-        val debts = GroupBalances.of(group, money.expenses, money.settlements).debts
         if (debts.isEmpty()) return null
         val meId = group.members.firstOrNull { it.isMe }?.id
         val pairs = debts
@@ -111,7 +121,7 @@ class PickPaymentViewModel(
             name = group.name,
             initials = Initials.of(group.name),
             color = group.color,
-            currency = group.currency,
+            currency = currency,
             pairs = pairs,
         )
     }

@@ -168,6 +168,7 @@ private struct StatsScroll: View {
             FoldHalves(splits: model.state.showsStats) {
                 VStack(alignment: .leading, spacing: 0) {
                     StatsTopLine(model: model, pickDates: pickDates)
+                    StatsCurrencyChips(model: model)
                     StatsHeroCard(state: model.state)
                     StatsOverTimeSection(model: model)
                 }
@@ -204,6 +205,7 @@ private struct StatsScroll: View {
                 #if os(iOS)
                 StatsTopLine(model: model, pickDates: pickDates)
                 #endif
+                StatsCurrencyChips(model: model)
                 if state.showsStats {
                     if usesTwoColumns {
                         #if os(macOS)
@@ -265,6 +267,21 @@ private struct StatsScroll: View {
             .frame(maxWidth: .infinity)
         }
         .background(Palette.groupedBackground)
+    }
+}
+
+/// The currency picked, above every figure of the screen, while the group has money in more than one.
+private struct StatsCurrencyChips: View {
+    let model: GroupStatsModel
+
+    var body: some View {
+        if model.state.currencies.count > 1 {
+            CurrencyChips(
+                currencies: model.state.currencies,
+                selected: model.state.currency,
+            ) { model.send(GroupStatsUiEventOnCurrencySelected(currency: $0)) }
+                .padding(.vertical, 8)
+        }
     }
 }
 

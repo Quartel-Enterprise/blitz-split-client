@@ -25,6 +25,7 @@ class DebtRowTest {
         // When
         val row = debtRowOf(
             debt,
+            GroupCurrency.BRL,
             group,
             meId = CARLA,
             balances = balances,
@@ -46,6 +47,7 @@ class DebtRowTest {
         // When
         val row = debtRowOf(
             debt,
+            GroupCurrency.BRL,
             group,
             meId = PIERRE,
             balances = balances,
@@ -64,6 +66,7 @@ class DebtRowTest {
         // When
         val row = debtRowOf(
             debt,
+            GroupCurrency.BRL,
             group,
             meId = PIERRE,
             balances = balances,
@@ -71,6 +74,25 @@ class DebtRowTest {
 
         // Then
         assertFalse(row.isSimplified)
+    }
+
+    @Test
+    fun `GIVEN a pair in dollars in a group in reais WHEN drawing its row THEN the row carries the dollars`() {
+        // Given
+        val debt = Debt(ANA, BRUNO, 700L)
+
+        // When
+        val row = debtRowOf(
+            debt,
+            GroupCurrency.USD,
+            group,
+            meId = PIERRE,
+            balances = raw(debt),
+        )
+
+        // Then
+        assertEquals(GroupCurrency.USD, row.currency)
+        assertEquals(700L, row.amountMinor)
     }
 
     private val group = Group(

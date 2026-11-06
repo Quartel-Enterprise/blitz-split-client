@@ -44,7 +44,6 @@ internal fun LazyListScope.balanceItems(
     )
     betweenOthersItems(
         state = state,
-        money = money,
         onEvent = onEvent,
     )
 }
@@ -99,7 +98,6 @@ internal fun LazyListScope.withYouItems(
     debtSection(
         key = "with-you",
         debts = state.myDebts,
-        money = money,
         onEvent = onEvent,
         title = { stringResource(R.string.group_detail_balances_with_you) },
         hint = { state.header.myBalance?.let { withYouHintOf(it, money) } },
@@ -109,13 +107,11 @@ internal fun LazyListScope.withYouItems(
 // Why: "Entre os outros", then the note on how the pairs are netted.
 internal fun LazyListScope.betweenOthersItems(
     state: GroupDetailUiState,
-    money: MoneyFormatter,
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
     debtSection(
         key = "between-others",
         debts = state.otherDebts,
-        money = money,
         onEvent = onEvent,
         title = { stringResource(R.string.group_detail_balances_between_others) },
         hint = {
@@ -152,7 +148,6 @@ internal fun LazyListScope.betweenOthersItems(
 private fun LazyListScope.debtSection(
     key: String,
     debts: List<DebtRow>,
-    money: MoneyFormatter,
     onEvent: (GroupDetailUiEvent) -> Unit,
     title: @Composable () -> String,
     hint: @Composable () -> String?,
@@ -174,7 +169,6 @@ private fun LazyListScope.debtSection(
                 index = index,
                 count = debts.size,
             ),
-            money = money,
             onClick = { onEvent(GroupDetailUiEvent.OnDebtClicked(debt.fromMemberId, debt.toMemberId)) },
             modifier = Modifier.padding(
                 start = 16.dp,

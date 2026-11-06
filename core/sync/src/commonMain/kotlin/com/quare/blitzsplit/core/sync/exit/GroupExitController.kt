@@ -1,11 +1,14 @@
 package com.quare.blitzsplit.core.sync.exit
 
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
+import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
+import com.quare.blitzsplit.core.expenses.domain.model.openDebts
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
 import com.quare.blitzsplit.core.sync.domain.usecase.LeaveGroup
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +27,12 @@ class GroupExitController(
     private val leaveGroup: LeaveGroup,
     private val deleteGroup: DeleteGroup,
     private val scope: CoroutineScope,
-    private val openRegisterPayment: (groupId: String, fromMemberId: String, toMemberId: String) -> Unit,
+    private val openRegisterPayment: (
+        groupId: String,
+        fromMemberId: String,
+        toMemberId: String,
+        currency: GroupCurrency,
+    ) -> Unit,
     private val openBalances: (groupId: String) -> Unit,
     private val onExited: () -> Unit,
     private val showLeaveError: suspend () -> Unit,
@@ -86,7 +94,7 @@ class GroupExitController(
     fun askToDelete() {
         if (!state.value.canLeaveOrDelete) return
         val target = target ?: return
-        val dialog = if (target.balances.debts.isEmpty()) {
+        val dialog = if (target.balances.openDebts.isEmpty()) {
             GroupExitDialog.ConfirmDelete(
                 groupName = target.group.name,
                 billCount = target.billCount,
@@ -157,8 +165,11 @@ class GroupExitController(
     // Why: "Acertar": this person pays whoever they owe the most.
     private fun settle(target: GroupExitTarget) {
         val meId = target.meIdOrNull() ?: return
-        val creditorId = target.balances.findLargestCreditorOrNull(meId) ?: return
-        openRegisterPayment(target.group.id, meId, creditorId)
+        // Why: the first currency (the group's default) this person owes in; each is paid on its own.
+        val (currency, balances) = target.balances.firstOrNull { it.balances.findLargestCreditorOrNull(meId) != null }
+            ?: return
+        val creditorId = balances.findLargestCreditorOrNull(meId) ?: return
+        openRegisterPayment(target.group.id, meId, creditorId, currency)
     }
 
     // Why: the screen moves on first, so the group leaving what it observes right after never closes it a second time.
@@ -219,21 +230,27 @@ class GroupExitController(
         target: GroupExitTarget,
         meId: String,
     ): GroupExitDialog.LeaveBlocked {
-        val myDebts = target.debtsOf(meId).sortedBy { it.fromMemberId != meId }
+        val myDebts = target.debtsOf(meId).sortedBy { (_, debt) -> debt.fromMemberId != meId }
         return GroupExitDialog.LeaveBlocked(
             groupName = target.group.name,
-            debts = myDebts.map { debtRowOf(it, target.group, meId, target.balances) },
-            canSettle = myDebts.any { it.fromMemberId == meId },
+            debts = myDebts.map { (currency, debt) -> target.rowOf(currency, debt, meId) },
+            canSettle = myDebts.any { (_, debt) -> debt.fromMemberId == meId },
         )
     }
 
     private fun deleteBlockedOf(target: GroupExitTarget): GroupExitDialog.DeleteBlocked = GroupExitDialog.DeleteBlocked(
         groupName = target.group.name,
-        debts = target.balances.debts.map { debtRowOf(it, target.group, target.meIdOrNull(), target.balances) },
+        debts = target.balances.openDebts.map { (currency, debt) -> target.rowOf(currency, debt, target.meIdOrNull()) },
     )
 
-    private fun GroupExitTarget.debtsOf(meId: String): List<Debt> =
-        balances.debts.filter { it.fromMemberId == meId || it.toMemberId == meId }
+    private fun GroupExitTarget.debtsOf(meId: String): List<Pair<GroupCurrency, Debt>> =
+        balances.openDebts.filter { (_, debt) -> debt.fromMemberId == meId || debt.toMemberId == meId }
+
+    private fun GroupExitTarget.rowOf(
+        currency: GroupCurrency,
+        debt: Debt,
+        meId: String?,
+    ): DebtRow = debtRowOf(debt, currency, group, meId, balances.first { it.currency == currency }.balances)
 
     private fun GroupExitTarget.meIdOrNull(): String? = group.members.firstOrNull { it.isMe }?.id
 }

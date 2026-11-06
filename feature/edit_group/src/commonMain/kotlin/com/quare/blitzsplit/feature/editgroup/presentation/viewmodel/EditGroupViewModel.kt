@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
@@ -99,8 +100,12 @@ class EditGroupViewModel(
     // Why: the group as Room has it now, a sync from another member included.
     private var latest: Group? = null
 
-    // Why: the pairs as each bill makes them and the payments on the device, which "Simplificar dívidas" reads.
-    private var rawBalances: GroupBalances? = null
+    /*
+     * Why: the bills and payments on the device, which "Simplificar dívidas" reads. Its line and confirmation show the
+     * group's own currency, the one the form's amounts are written in; the switch itself covers every currency, each on
+     * its own (SetSimplifiesDebtsUseCase).
+     */
+    private var expenses: List<Expense>? = null
     private var settlements: List<Settlement> = emptyList()
 
     // Why: the conflict shows once, not again from an emission that came before its consume landed.
@@ -148,7 +153,7 @@ class EditGroupViewModel(
             observeSettlements(route.groupId),
             ::Pair,
         ).onEach { (expenses, settlements) ->
-            rawBalances = GroupBalances.of(expenses, settlements)
+            this.expenses = expenses
             this.settlements = settlements
             latest?.let(::showSimplification)
         }.launchIn(viewModelScope)
@@ -243,7 +248,7 @@ class EditGroupViewModel(
 
     // Why: the switch is the group's, as Room has it, a sync's change included; it is no change of the form's.
     private fun showSimplification(group: Group) {
-        val raw = rawBalances
+        val raw = rawOf(group)
         val shown = raw?.takeIf { group.simplifiesDebts }?.toSimplified(group.members.map { it.id })
         uiState.update { state ->
             state.copy(
@@ -272,10 +277,14 @@ class EditGroupViewModel(
         }
     }
 
+    // Why: the pairs as each bill makes them in the group's currency, never with another's added.
+    private fun rawOf(group: Group): GroupBalances? =
+        expenses?.let { GroupBalances.createUnsimplified(it, settlements, group.currency) }
+
     private fun openSimplifyConfirmation() {
         val state = uiState.value
         val group = latest ?: return
-        val raw = rawBalances ?: return
+        val raw = rawOf(group) ?: return
         if (!state.canChangeSimplifyDebts) return
         uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raw, settlements)) }
     }

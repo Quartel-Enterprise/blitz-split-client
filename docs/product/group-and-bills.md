@@ -91,6 +91,14 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     profile, else Profile) and the link opens again when the browser's Google or Apple sign in comes back within 15
     minutes, or once Welcome makes the profile on the page ("Use without an account"). A link only the group opens
     offers "Sign in" until the device has a Google or Apple account; a member with the bill on the device gets "Open in the app".
+  - Currencies (Pierre's call: the currency belongs to each bill and payment, see [General rules](general.md)): while the
+    group has money in more than one currency, a chip row with each currency's code sits in the header and over
+    Balances (`GroupHeader.currencies`, `OnCurrencySelected`), the group's default currency first and then the one with
+    the most bills; the header's total spent, "Your balance in this group" and Balances' pairs are the chip's currency
+    only (`GroupHeader.currency`), and "Everyone is settled up" and "Delete group" wait for every currency to be
+    settled. Each bill row and payment row writes its amounts in its own currency (`ExpenseRow.currency`,
+    `PaymentRow.currency`), as do the bill's details and the "Search" and Home bill rows. Statistics have their own chip
+    row and read the bills and payments of that currency only; its category list opens the bills of that currency.
   - "Statistics" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Expenses and Balances;
     "Statistics" with text on the web from the tablet up), with Back and no "Split a bill". It counts only the bills
     on the device, those in the queue too ("7 expenses, 1 queued", the amber dot), never the payments of Balances

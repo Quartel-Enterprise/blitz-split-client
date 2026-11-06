@@ -158,7 +158,6 @@ struct SplitBillView: View {
         #endif
         .billDeletionAlert(
             model?.state.deletion,
-            currency: model?.state.currency,
             isDeleting: model?.state.isDeleting == true,
             onConfirm: { model?.send(SplitBillUiEventOnDeleteConfirmed.shared) },
             onDismiss: { model?.dismissDeletion() },
@@ -171,7 +170,7 @@ struct SplitBillView: View {
         // each digit of the amount (7.4b).
         .onChange(of: model?.state.settledPair?.announcementKey) { _, key in
             guard key != nil, let model, let settledPair = model.state.settledPair else { return }
-            AccessibilityNotification.Announcement(BillCopy.settledPair(settledPair, currency: model.state.currency)).post()
+            AccessibilityNotification.Announcement(BillCopy.settledPair(settledPair)).post()
         }
         .onAppear {
             if model == nil { model = SplitBillModel(route: route) }
@@ -230,13 +229,12 @@ private struct ConflictText: View {
 /// The Mac's alert: "Elisa already settled up with Bruno after this bill" in bold, then what the change does (7.4b).
 private struct SettledPairText: View {
     let change: SettledPairChange
-    let currency: GroupCurrency
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: BillCopy.settledPairLead(change))
                 .fontWeight(.semibold)
-            Text(verbatim: BillCopy.settledPairDetail(change, currency: currency))
+            Text(verbatim: BillCopy.settledPairDetail(change))
         }
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -564,7 +562,7 @@ private struct PhoneSplitBill: View {
     private var settledPairSection: some View {
         if let settledPair = state.settledPair {
             Section {
-                Text(verbatim: BillCopy.settledPair(settledPair, currency: state.currency))
+                Text(verbatim: BillCopy.settledPair(settledPair))
                     .font(.subheadline)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -1008,7 +1006,7 @@ private struct MacBillForm: View {
                 .background(Palette.negative.opacity(0.12), in: .rect(cornerRadius: 10))
             }
             if let settledPair = state.settledPair {
-                SettledPairText(change: settledPair, currency: state.currency)
+                SettledPairText(change: settledPair)
                     .font(.callout)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)

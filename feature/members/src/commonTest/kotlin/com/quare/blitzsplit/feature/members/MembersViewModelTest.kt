@@ -127,6 +127,7 @@ class MembersViewModelTest {
                         hasJoined = true,
                         personalLink = null,
                         balance = null,
+                        hasOpenBalance = false,
                         canBeReleased = false,
                     ),
                     MembersMember(
@@ -139,6 +140,7 @@ class MembersViewModelTest {
                         hasJoined = false,
                         personalLink = null,
                         balance = null,
+                        hasOpenBalance = false,
                         canBeReleased = false,
                     ),
                     MembersMember(
@@ -151,6 +153,7 @@ class MembersViewModelTest {
                         hasJoined = true,
                         personalLink = null,
                         balance = null,
+                        hasOpenBalance = false,
                         canBeReleased = true,
                     ),
                     MembersMember(
@@ -163,6 +166,7 @@ class MembersViewModelTest {
                         hasJoined = false,
                         personalLink = null,
                         balance = null,
+                        hasOpenBalance = false,
                         canBeReleased = false,
                     ),
                 ),
@@ -3369,6 +3373,568 @@ class MembersViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN a group with no bill WHEN the screen opens THEN lists only its default currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL), state.currencies)
+            assertEquals(GroupCurrency.BRL, state.currency)
+        }
+
+    @Test
+    fun `GIVEN bills in Reais and Dollars WHEN the screen opens THEN lists both and shows the default one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), state.currencies)
+            assertEquals(GroupCurrency.BRL, state.currency)
+        }
+
+    @Test
+    fun `GIVEN more bills in other currencies than the default WHEN the screen opens THEN the default is first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.USD),
+                    expense(
+                        "bill-3",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.USD),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), state.currencies)
+        }
+
+    @Test
+    fun `GIVEN other currencies with different bill counts WHEN the screen opens THEN the busiest is first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.USD),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.EUR),
+                    expense(
+                        "bill-3",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.USD),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD, GroupCurrency.EUR), state.currencies)
+        }
+
+    @Test
+    fun `GIVEN other currencies with as many bills each WHEN the screen opens THEN orders them by code`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.USD),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.EUR),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.EUR, GroupCurrency.USD), state.currencies)
+        }
+
+    @Test
+    fun `GIVEN a payment in Dollars and no bill in them WHEN the screen opens THEN Dollars are listed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                ),
+                storedSettlements = listOf(
+                    settlement(
+                        "pay-1",
+                        from = "member-4",
+                        to = "member-1",
+                        amountMinor = 1_000,
+                    ).copy(currency = GroupCurrency.USD),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), state.currencies)
+        }
+
+    @Test
+    fun `GIVEN bills in two currencies WHEN the screen opens THEN each member shows the default currency balance`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 0,
+                ),
+                state.members[0].balance,
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 5_000,
+                ),
+                state.members[1].balance,
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                state.members[3].balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN bills in two currencies WHEN picking Dollars THEN shows the currency and the balances in it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(GroupCurrency.USD, state.currency)
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), state.currencies)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 1_500,
+                ),
+                state.members[0].balance,
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                state.members[1].balance,
+            )
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 1_500,
+                    owesMinor = 0,
+                ),
+                state.members[3].balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN Dollars picked WHEN picking Reais again THEN goes back to the balances in Reais`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.BRL))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(GroupCurrency.BRL, state.currency)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 0,
+                ),
+                state.members[0].balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN bills in two currencies WHEN picking one the group has no money in THEN nothing changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.JPY))
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `GIVEN a pick the group has no money in WHEN picking Dollars after it THEN Dollars show`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.JPY))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
+        }
+
+    @Test
+    fun `GIVEN Dollars picked WHEN a sync brings another bill THEN Dollars stay picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = reaisAndDollarBills)
+        viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+        // When
+        expenses.expenses.value = expenses.expenses.value +
+            expense(
+                "bill-9",
+                paidBy = "member-1",
+                splitWith = listOf("member-1", "member-2"),
+            )
+
+        // Then
+        assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
+    }
+
+    @Test
+    fun `GIVEN Dollars picked WHEN a sync leaves the group with no money in Dollars THEN falls back to Reais`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            expenses.expenses.value = expenses.expenses.value.filter { it.currency == GroupCurrency.BRL }
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(GroupCurrency.BRL, state.currency)
+            assertEquals(listOf(GroupCurrency.BRL), state.currencies)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 0,
+                ),
+                state.members[0].balance,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla has a balance only in Dollars WHEN Reais are shown THEN she cannot be removed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // Then
+            val carla = viewModel.uiState.value.members
+                .first { it.id == "member-4" }
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 0,
+                    owesMinor = 0,
+                ),
+                carla.balance,
+            )
+            assertTrue(carla.hasOpenBalance)
+            assertFalse(carla.canBeRemoved)
+            assertNull(viewModel.uiState.value.memberToRemove)
+        }
+
+    @Test
+    fun `GIVEN Carla has a balance only in Dollars WHEN Dollars are picked THEN she still cannot be removed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // Then
+            assertTrue(
+                viewModel.uiState.value.members
+                    .first { it.id == "member-4" }
+                    .hasOpenBalance,
+            )
+            assertNull(viewModel.uiState.value.memberToRemove)
+        }
+
+    @Test
+    fun `GIVEN Carla owes only in Reais WHEN Dollars are picked THEN she still cannot be removed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ),
+                    expense(
+                        "bill-2",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-2"),
+                    ).copy(currency = GroupCurrency.USD),
+                ),
+            )
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // Then
+            assertTrue(
+                viewModel.uiState.value.members
+                    .first { it.id == "member-4" }
+                    .hasOpenBalance,
+            )
+            assertNull(viewModel.uiState.value.memberToRemove)
+        }
+
+    @Test
+    fun `GIVEN Carla settled in every currency WHEN removing her THEN asks to remove her`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = reaisAndDollarBills,
+            storedSettlements = listOf(
+                settlement(
+                    "pay-1",
+                    from = "member-1",
+                    to = "member-4",
+                    amountMinor = 1_500,
+                ).copy(currency = GroupCurrency.USD),
+            ),
+        )
+        viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+        // When
+        viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+        // Then
+        assertFalse(
+            viewModel.uiState.value.members
+                .first { it.id == "member-4" }
+                .hasOpenBalance,
+        )
+        assertEquals(
+            "member-4",
+            viewModel.uiState.value.memberToRemove
+                ?.id,
+        )
+    }
+
+    @Test
+    fun `GIVEN removal of Carla asked WHEN a sync brings her a debt in another currency THEN the question closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(MembersUiEvent.OnRemoveClicked("member-4"))
+
+            // When
+            expenses.expenses.value = listOf(
+                expense(
+                    "bill-1",
+                    paidBy = "member-1",
+                    splitWith = listOf("member-1", "member-4"),
+                ).copy(currency = GroupCurrency.USD),
+            )
+
+            // Then
+            assertNull(viewModel.uiState.value.memberToRemove)
+        }
+
+    @Test
+    fun `GIVEN Carla with a Reais bill and a Dollars bill WHEN opening her personal invite THEN counts only Reais`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes,
+                storedExpenses = carlaInTwoCurrencies,
+            )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // Then
+            val invite = viewModel.uiState.value.personalInvite
+            assertEquals(1, invite?.billCount)
+            assertEquals(5_000L, invite?.billShareMinor)
+        }
+
+    @Test
+    fun `GIVEN Dollars picked WHEN opening the personal invite of Carla THEN counts only the Dollars bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes,
+                storedExpenses = carlaInTwoCurrencies,
+            )
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // Then
+            val invite = viewModel.uiState.value.personalInvite
+            assertEquals(2, invite?.billCount)
+            assertEquals(3_000L, invite?.billShareMinor)
+        }
+
+    @Test
+    fun `GIVEN the personal invite of Carla open WHEN picking Dollars THEN the invite counts the Dollars bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes,
+                storedExpenses = carlaInTwoCurrencies,
+            )
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val invite = viewModel.uiState.value.personalInvite
+            assertEquals(carlaLink, invite?.link)
+            assertEquals(2, invite?.billCount)
+            assertEquals(3_000L, invite?.billShareMinor)
+        }
+
+    @Test
+    fun `GIVEN a Dollars bill for Carla WHEN opening her invite with Reais shown THEN counts no bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = tripWithCodes,
+                storedExpenses = listOf(
+                    expense(
+                        "bill-1",
+                        paidBy = "member-1",
+                        splitWith = listOf("member-1", "member-4"),
+                    ).copy(currency = GroupCurrency.USD),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnPersonalInviteClicked("member-4"))
+
+            // Then
+            val invite = viewModel.uiState.value.personalInvite
+            assertEquals(0, invite?.billCount)
+            assertEquals(0L, invite?.billShareMinor)
+        }
+
+    @Test
+    fun `GIVEN a currency chip WHEN tapping Dollars THEN sends the currency event from Membros`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = reaisAndDollarBills)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            assertEquals(listOf("balances_currency_clicked" to fromMembers), trackedEvents)
+        }
+
+    // Why: Ana owes Pierre in Reais, and Pierre owes Carla in Dollars: nobody is in both.
+    private val reaisAndDollarBills = listOf(
+        expense(
+            "bill-1",
+            paidBy = "member-1",
+            splitWith = listOf("member-1", "member-2"),
+        ),
+        expense(
+            "bill-2",
+            paidBy = "member-4",
+            splitWith = listOf("member-4", "member-1"),
+            amountMinor = 3_000,
+        ).copy(currency = GroupCurrency.USD),
+    )
+
+    // Why: Carla has one part in Reais and two in Dollars.
+    private val carlaInTwoCurrencies = listOf(
+        expense(
+            "bill-1",
+            paidBy = "member-1",
+            splitWith = listOf("member-1", "member-4"),
+        ),
+        expense(
+            "bill-2",
+            paidBy = "member-1",
+            splitWith = listOf("member-1", "member-4"),
+            amountMinor = 2_000,
+        ).copy(currency = GroupCurrency.USD),
+        expense(
+            "bill-3",
+            paidBy = "member-2",
+            splitWith = listOf("member-2", "member-4"),
+            amountMinor = 4_000,
+        ).copy(currency = GroupCurrency.USD),
+    )
+
     private val noParams = emptyMap<String, Any>()
 
     // Why: the params of the events that name the screen they come from.
@@ -3445,6 +4011,7 @@ class MembersViewModelTest {
         hasJoined = false,
         personalLink = null,
         balance = null,
+        hasOpenBalance = false,
         canBeReleased = false,
     )
 
@@ -3458,6 +4025,7 @@ class MembersViewModelTest {
         hasJoined = true,
         personalLink = null,
         balance = null,
+        hasOpenBalance = false,
         canBeReleased = true,
     )
 

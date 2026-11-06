@@ -292,6 +292,7 @@ class GroupDetailBillMenuViewModelTest {
                 BillDeletion(
                     description = "Conta dinner",
                     myBalanceMinor = -6_000,
+                    currency = GroupCurrency.USD,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.billToDelete,
@@ -347,6 +348,7 @@ class GroupDetailBillMenuViewModelTest {
                 BillDeletion(
                     description = "Conta taxi",
                     myBalanceMinor = null,
+                    currency = GroupCurrency.USD,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.billToDelete,
@@ -371,6 +373,7 @@ class GroupDetailBillMenuViewModelTest {
                 BillDeletion(
                     description = "Conta dinner",
                     myBalanceMinor = -6_000,
+                    currency = GroupCurrency.USD,
                     settledPair = anaOwesPierreBack,
                 ),
                 viewModel.uiState.value.billToDelete,
@@ -858,6 +861,7 @@ class GroupDetailBillMenuViewModelTest {
         outcome = SettledPairOutcome.OWES,
         debtorIsPayer = false,
         amountMinor = 6_000,
+        currency = GroupCurrency.USD,
     )
 
     private fun member(

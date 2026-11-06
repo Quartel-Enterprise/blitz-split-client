@@ -23,7 +23,11 @@ class GroupBalancesTest {
         val expenses = emptyList<Expense>()
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertTrue(balances.debts.isEmpty())
@@ -47,7 +51,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(
@@ -81,7 +89,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(
@@ -113,7 +125,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(266L, balances.balanceOf(PIERRE).receivesMinor)
@@ -139,7 +155,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(listOf(Debt(ANA, PIERRE, 70L)), balances.debts)
@@ -162,7 +182,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertTrue(balances.debts.isEmpty())
@@ -186,7 +210,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(
@@ -225,7 +253,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(
@@ -252,7 +284,7 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements)
+        val balances = GroupBalances.createUnsimplified(expenses, settlements, currency = GroupCurrency.BRL)
 
         // Then
         assertEquals(listOf(Debt(ANA, PIERRE, 60L)), balances.debts)
@@ -271,7 +303,7 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements)
+        val balances = GroupBalances.createUnsimplified(expenses, settlements, currency = GroupCurrency.BRL)
 
         // Then
         assertTrue(balances.debts.isEmpty())
@@ -291,7 +323,7 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements)
+        val balances = GroupBalances.createUnsimplified(expenses, settlements, currency = GroupCurrency.BRL)
 
         // Then
         assertEquals(listOf(Debt(PIERRE, ANA, 50L)), balances.debts)
@@ -315,7 +347,7 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements)
+        val balances = GroupBalances.createUnsimplified(expenses, settlements, currency = GroupCurrency.BRL)
 
         // Then
         assertEquals(listOf(Debt(ANA, PIERRE, 50L)), balances.debts)
@@ -333,8 +365,9 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(
+        val balances = GroupBalances.createUnsimplified(
             expenses = emptyList(),
+            currency = GroupCurrency.BRL,
             settlements = settlements,
         )
 
@@ -346,7 +379,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN a member owed by one and owing another WHEN reading their balance THEN sums both`() {
         // Given
-        val balances = GroupBalances.of(listOf(anaOwesBia100, biaOwesCarla30), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesBia100, biaOwesCarla30),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val balance = balances.balanceOf(BIA)
@@ -364,7 +401,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN a member in no debt WHEN reading their balance THEN receives and owes nothing`() {
         // Given
-        val balances = GroupBalances.of(listOf(anaOwesBia100), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesBia100),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val balance = balances.balanceOf(PIERRE)
@@ -387,7 +428,11 @@ class GroupBalancesTest {
             payers = listOf(paid(ANA, 30L)),
             shares = listOf(share(PIERRE, 30L)),
         )
-        val balances = GroupBalances.of(listOf(anaOwesPierre100, pierreOwesAna30), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesPierre100, pierreOwesAna30),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val debt = balances.debtOf(
@@ -402,7 +447,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN Ana owes Pierre WHEN reading the debt from Pierre to Ana THEN it is zero`() {
         // Given
-        val balances = GroupBalances.of(listOf(anaOwesPierre100), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesPierre100),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val debt = balances.debtOf(
@@ -417,7 +466,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN two members with no debt between them WHEN reading their debt THEN it is zero`() {
         // Given
-        val balances = GroupBalances.of(listOf(anaOwesPierre100), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesPierre100),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val debt = balances.debtOf(
@@ -437,7 +490,11 @@ class GroupBalancesTest {
             payers = listOf(paid(CARLA, 300L)),
             shares = listOf(share(ANA, 300L)),
         )
-        val balances = GroupBalances.of(listOf(anaOwesPierre100, anaOwesCarla300), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesPierre100, anaOwesCarla300),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val creditor = balances.findLargestCreditorOrNull(ANA)
@@ -449,7 +506,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN a member who is only owed WHEN finding their largest creditor THEN there is none`() {
         // Given
-        val balances = GroupBalances.of(listOf(anaOwesPierre100), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesPierre100),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val creditor = balances.findLargestCreditorOrNull(PIERRE)
@@ -461,8 +522,9 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN no bills nor payments WHEN reading the balance or null of a member THEN there is none`() {
         // Given
-        val balances = GroupBalances.of(
+        val balances = GroupBalances.createUnsimplified(
             expenses = emptyList(),
+            currency = GroupCurrency.BRL,
             settlements = emptyList(),
         )
 
@@ -476,8 +538,9 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN only a payment WHEN reading the balance or null of the payer THEN gets what the payment moved`() {
         // Given
-        val balances = GroupBalances.of(
+        val balances = GroupBalances.createUnsimplified(
             expenses = emptyList(),
+            currency = GroupCurrency.BRL,
             settlements = listOf(
                 payment(
                     from = ANA,
@@ -503,7 +566,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN bills WHEN reading the balance or null of no member THEN there is none`() {
         // Given
-        val balances = GroupBalances.of(listOf(anaOwesPierre100), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaOwesPierre100),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val balance = balances.balanceOrNull(null)
@@ -525,7 +592,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(listOf(anaPaidHerPartBiaOwesPierre, taxi), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaPaidHerPartBiaOwesPierre, taxi),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(listOf(Debt(BIA, PIERRE, 70L)), balances.debts)
@@ -534,7 +605,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN a payer who paid exactly their part WHEN reading their balance THEN they are settled`() {
         // Given
-        val balances = GroupBalances.of(listOf(anaPaidHerPartBiaOwesPierre), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(anaPaidHerPartBiaOwesPierre),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val balance = balances.balanceOf(ANA)
@@ -570,7 +645,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(listOf(trip, hotel), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(trip, hotel),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(listOf(Debt(ANA, BIA, 400L)), balances.debts)
@@ -580,7 +659,11 @@ class GroupBalancesTest {
     @Test
     fun `GIVEN a member owing two payers of a bill WHEN finding their largest creditor THEN gets the one owed most`() {
         // Given
-        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            listOf(biaOwesPierre60AndAna40),
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
         val creditor = balances.findLargestCreditorOrNull(BIA)
@@ -601,7 +684,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements)
+        val balances = GroupBalances.createUnsimplified(
+            listOf(biaOwesPierre60AndAna40),
+            settlements,
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(listOf(Debt(BIA, PIERRE, 60L)), balances.debts)
@@ -631,7 +718,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements)
+        val balances = GroupBalances.createUnsimplified(
+            listOf(biaOwesPierre60AndAna40),
+            settlements,
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertTrue(balances.debts.isEmpty())
@@ -650,7 +741,11 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(listOf(biaOwesPierre60AndAna40), settlements)
+        val balances = GroupBalances.createUnsimplified(
+            listOf(biaOwesPierre60AndAna40),
+            settlements,
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(
@@ -685,7 +780,7 @@ class GroupBalancesTest {
         )
 
         // When
-        val balances = GroupBalances.of(expenses, settlements)
+        val balances = GroupBalances.createUnsimplified(expenses, settlements, currency = GroupCurrency.BRL)
 
         // Then
         assertEquals(

@@ -193,6 +193,36 @@ class GroupsSearchTest {
         }
 
     @Test
+    fun `GIVEN a bill in a currency other than its group WHEN searching it THEN the hit is in the bill currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    bill(
+                        id = "trip",
+                        groupId = "ape",
+                        description = "Hotel",
+                        paidBy = "Carla",
+                        splitOver = listOf("Pierre", "Carla"),
+                        updatedAt = 1_000L,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("hotel")))
+
+            // Then
+            assertEquals(
+                listOf(GroupCurrency.USD),
+                viewModel.uiState.value.search.results.bills
+                    .map { it.currency },
+            )
+        }
+
+    @Test
     fun `GIVEN a settled group with a matching bill WHEN searching everything THEN the bill comes as its group`() =
         runTest(testDispatcher) {
             // Given
@@ -1213,11 +1243,12 @@ class GroupsSearchTest {
         paidBy: String,
         splitOver: List<String>,
         updatedAt: Long,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
         description = description,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = 600L,
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer("$groupId-$paidBy", 600L)),

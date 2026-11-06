@@ -7,7 +7,7 @@ The home tab, its shortcuts and pinned groups.
     the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net
     (`Route.SettleUp`, Pierre's call: it stays so after beta feedback 18), whose two faces open the profiles, and a
     guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego is a guest and doesn't have the app…".
-    "Overall balance" as Groups' (big in the first currency with a net, a line for each other one with a net,
+    "Overall balance" as Groups' (both are the global Balances' totals, `PeopleBalances.totals`, so the three never differ: big in the first currency with a net, a line for each other one with a net,
     `HomeSummary.main` and `others`), with "Owed to you" and "You owe", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Balances filtered (You owe straight to settling up while only
     one person is in it), disabled at zero. Three shortcuts: "Scan receipt", which first asks right on Home where the

@@ -109,6 +109,7 @@ class EditAfterPaymentViewModelTest {
                     outcome = SettledPairOutcome.OWES_AGAIN,
                     debtorIsPayer = true,
                     amountMinor = 10_400L,
+                    currency = GroupCurrency.BRL,
                 ),
                 viewModel.uiState.value.settledPair,
             )

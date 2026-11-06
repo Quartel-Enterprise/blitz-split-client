@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.presentation.UiEvent
@@ -19,6 +20,11 @@ sealed interface GroupDetailUiEvent : UiEvent {
             OnInviteClicked -> EventAnalytics.Automatic("invite_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
             OnStatsClicked -> EventAnalytics.Automatic("group_stats_clicked")
+
+            is OnCurrencySelected -> EventAnalytics.Automatic(
+                "balances_currency_clicked",
+                mapOf("source" to GROUP_DETAIL_SOURCE),
+            )
 
             is OnTabSelected -> EventAnalytics.Automatic("group_tab_clicked", mapOf("tab" to tab))
 
@@ -138,6 +144,11 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: "Estatísticas" in the top bar, next to "Convidar pessoas".
     data object OnStatsClicked : GroupDetailUiEvent
+
+    // Why: a currency chip of the header and Saldos, drawn while the group has money in more than one.
+    data class OnCurrencySelected(
+        val currency: GroupCurrency,
+    ) : GroupDetailUiEvent
 
     // Why: Despesas, Saldos or Membros under the header, and the faces under the name (Membros).
     data class OnTabSelected(

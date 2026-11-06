@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.members.presentation.model
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
@@ -10,6 +11,8 @@ sealed interface MembersUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             OnShareClicked -> EventAnalytics.Automatic("members_share_clicked")
+
+            is OnCurrencySelected -> EventAnalytics.Automatic("balances_currency_clicked", mapOf("source" to SOURCE))
 
             OnAddClicked -> EventAnalytics.Automatic("member_add_clicked")
 
@@ -56,6 +59,11 @@ sealed interface MembersUiEvent : UiEvent {
 
             OnEditorDismissed -> EventAnalytics.NotTracked
         }
+
+    // Why: a currency chip over the members' balances, drawn while the group has money in more than one.
+    data class OnCurrencySelected(
+        val currency: GroupCurrency,
+    ) : MembersUiEvent
 
     // Why: "Compartilhar" on the link card opens "Convidar", with the QR code.
     data object OnShareClicked : MembersUiEvent

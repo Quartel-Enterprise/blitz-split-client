@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
@@ -306,9 +307,14 @@ class RegisterPaymentViewModel(
          */
         is Route.RegisterPayment -> combine(observeGroup(route.groupId), observeGroupBalances(route.groupId)) {
             group,
-            balances,
+            byCurrency,
             ->
-            group?.let { pairTargetOf(route, it, balances.toShownFor(it)) }
+            group?.let {
+                // Why: a pair owes in one currency at a time; the form pays the one it was opened for.
+                val balances = byCurrency.firstOrNull { it.currency == route.currency }?.balances
+                    ?: GroupBalances.of(it, emptyList(), emptyList(), route.currency)
+                pairTargetOf(route, it, balances.toShownFor(it))
+            }
         }
 
         is Route.SettleUp -> observePeopleBalances().map { people -> personTargetOf(route, people) }

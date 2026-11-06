@@ -24,7 +24,7 @@ class SimplifiedPairNotesTest {
     fun `GIVEN the switch off WHEN reading the note of a pair THEN there is none`() {
         // Given
         val group = group(simplifiesDebts = false)
-        val balances = GroupBalances.of(group, grownBills, emptyList())
+        val balances = GroupBalances.of(group, grownBills, emptyList(), currency = group.currency)
 
         // When
         val note = simplifiedPairNoteOrNull(pair(DIEGO, BRUNO), group, balances)
@@ -37,7 +37,7 @@ class SimplifiedPairNotesTest {
     fun `GIVEN the switch on and a pair no bill made WHEN reading its note THEN it is new naming the old creditor`() {
         // Given
         val group = group()
-        val balances = GroupBalances.of(group, simplifiedBills, emptyList())
+        val balances = GroupBalances.of(group, simplifiedBills, emptyList(), currency = group.currency)
 
         // When
         val note = simplifiedPairNoteOrNull(pair(DIEGO, PIERRE), group, balances)
@@ -61,7 +61,7 @@ class SimplifiedPairNotesTest {
     fun `GIVEN the switch on and a pair as the bills made it WHEN reading its note THEN there is none`() {
         // Given
         val group = group()
-        val balances = GroupBalances.of(group, simplifiedBills, emptyList())
+        val balances = GroupBalances.of(group, simplifiedBills, emptyList(), currency = group.currency)
 
         // When
         val note = simplifiedPairNoteOrNull(pair(ANA, PIERRE), group, balances)
@@ -88,7 +88,7 @@ class SimplifiedPairNotesTest {
                 2_000L,
             ),
         )
-        val balances = GroupBalances.of(group, bills, emptyList())
+        val balances = GroupBalances.of(group, bills, emptyList(), currency = group.currency)
 
         // When
         val note = simplifiedPairNoteOrNull(pair(DIEGO, BRUNO), group, balances)
@@ -136,7 +136,7 @@ class SimplifiedPairNotesTest {
                 3_000L,
             ),
         )
-        val balances = GroupBalances.of(group, bills, emptyList())
+        val balances = GroupBalances.of(group, bills, emptyList(), currency = group.currency)
 
         // When
         val note = simplifiedPairNoteOrNull(pair(DIEGO, BRUNO), group, balances)
@@ -181,7 +181,7 @@ class SimplifiedPairNotesTest {
                 3_000L,
             ),
         )
-        val balances = GroupBalances.of(group, bills, emptyList())
+        val balances = GroupBalances.of(group, bills, emptyList(), currency = group.currency)
 
         // When
         val note = simplifiedPairNoteOrNull(pair(ANA, BRUNO), group, balances)
@@ -247,6 +247,7 @@ class SimplifiedPairNotesTest {
         GROUP_ID,
         fromMemberId = from,
         toMemberId = to,
+        currency = GroupCurrency.BRL,
         offersReceiverKeys = true,
     )
 

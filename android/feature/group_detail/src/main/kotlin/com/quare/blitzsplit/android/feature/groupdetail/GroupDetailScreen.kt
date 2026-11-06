@@ -16,7 +16,6 @@ import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
-import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
@@ -113,7 +112,6 @@ fun GroupDetailScreen(
     state.paymentToView?.let { payment ->
         PaymentDetailsSheet(
             payment = payment,
-            money = rememberMoneyFormatter(state.header.currency),
             onEvent = viewModel::onEvent,
         )
     }
@@ -127,14 +125,13 @@ fun GroupDetailScreen(
             myBalanceMinor = deletion.myBalanceMinor,
             settledPair = deletion.settledPair,
             isDeleting = state.isDeletingBill,
-            money = rememberMoneyFormatter(state.header.currency),
+            currency = deletion.currency,
             onConfirm = { viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteConfirmed) },
             onDismiss = { viewModel.onEvent(GroupDetailUiEvent.OnExpenseDeleteDismissed) },
         )
     }
     GroupExitAlertDialog(
         exit = state.exit,
-        money = rememberMoneyFormatter(state.header.currency),
         onConfirm = { viewModel.onEvent(GroupDetailUiEvent.OnGroupExitConfirmed) },
         onDismiss = { viewModel.onEvent(GroupDetailUiEvent.OnGroupExitDismissed) },
         onBackToGroups = { viewModel.onEvent(GroupDetailUiEvent.OnBackToGroupsClicked) },

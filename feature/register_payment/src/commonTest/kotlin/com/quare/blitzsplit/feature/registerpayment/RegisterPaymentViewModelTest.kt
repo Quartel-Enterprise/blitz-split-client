@@ -1,10 +1,10 @@
 package com.quare.blitzsplit.feature.registerpayment
 
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
-import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
@@ -2242,6 +2242,178 @@ class RegisterPaymentViewModelTest {
         assertEquals(listOf(confirmClicked), trackedEvents)
     }
 
+    @Test
+    fun `GIVEN a debt in reais and another in dollars WHEN the form opens for dollars THEN shows only the dollars`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = defaultBills + dollarDinner,
+                routeCurrency = GroupCurrency.USD,
+                keepsBillCurrencies = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isLoaded)
+            assertEquals(GroupCurrency.USD, state.currency)
+            assertEquals(2_000L, state.debtMinor)
+            assertEquals("20,00", state.amountText)
+        }
+
+    @Test
+    fun `GIVEN a debt in reais and another in dollars WHEN the form opens for reais THEN shows only the reais`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = defaultBills + dollarDinner,
+                routeCurrency = GroupCurrency.BRL,
+                keepsBillCurrencies = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.BRL, state.currency)
+            assertEquals(16_230L, state.debtMinor)
+            assertEquals("162,30", state.amountText)
+        }
+
+    @Test
+    fun `GIVEN a debt in dollars WHEN confirming the form opened for dollars THEN records the payment in dollars`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = defaultBills + dollarDinner,
+                routeCurrency = GroupCurrency.USD,
+                keepsBillCurrencies = true,
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            val recorded = settlements.recordedSettlements.single()
+            assertEquals(GroupCurrency.USD, recorded.currency)
+            assertEquals(2_000L, recorded.amountMinor)
+            assertEquals(ANA, recorded.fromMemberId)
+            assertEquals(PIERRE, recorded.toMemberId)
+        }
+
+    @Test
+    fun `GIVEN a currency the group has nothing in WHEN the form opens for it THEN there is no debt and it closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(routeCurrency = GroupCurrency.EUR)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertFalse(state.canConfirm)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the form open for dollars WHEN a sync brings a payment in reais THEN the dollar debt stays whole`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = defaultBills + dollarDinner,
+                routeCurrency = GroupCurrency.USD,
+                keepsBillCurrencies = true,
+            )
+
+            // When
+            settlements.settlements.update {
+                it + settlement(
+                    from = ANA,
+                    to = PIERRE,
+                    amountMinor = 16_230L,
+                    currency = GroupCurrency.BRL,
+                )
+            }
+
+            // Then
+            assertEquals(2_000L, viewModel.uiState.value.debtMinor)
+            assertEquals(route, navigator.backStack.value.last())
+        }
+
+    @Test
+    fun `GIVEN the form open for dollars WHEN a sync brings the dollar payment THEN the form closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = defaultBills + dollarDinner,
+                routeCurrency = GroupCurrency.USD,
+                keepsBillCurrencies = true,
+            )
+
+            // When
+            settlements.settlements.update {
+                it + settlement(
+                    from = ANA,
+                    to = PIERRE,
+                    amountMinor = 2_000L,
+                    currency = GroupCurrency.USD,
+                )
+            }
+
+            // Then
+            assertTrue(route !in navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Simplificar dividas on WHEN the form opens for dollars THEN simplifies only the dollar bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = ANA,
+                to = BRUNO,
+                storedGroup = trip.copy(simplifiesDebts = true),
+                storedExpenses = defaultBills + dollarDinner + bill(
+                    "dollar-taxi",
+                    payer = BRUNO,
+                    debtor = PIERRE,
+                    2_000L,
+                    currency = GroupCurrency.USD,
+                ),
+                routeCurrency = GroupCurrency.USD,
+                keepsBillCurrencies = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.USD, state.currency)
+            assertEquals(2_000L, state.debtMinor)
+        }
+
+    // Why: Ana owes Pierre 20,00 in dollars, on top of the 162,30 in reais she owes him.
+    // Why: a getter, since bill() reads properties declared below, which the JS target has not set yet here.
+    private val dollarDinner: Expense
+        get() = bill(
+            "dollar-dinner",
+            payer = PIERRE,
+            debtor = ANA,
+            2_000L,
+            currency = GroupCurrency.USD,
+        )
+
     private val confirmClicked = "payment_confirm_clicked" to emptyMap<String, Any>()
 
     // Why: a pair of one group always records a single payment through the form.
@@ -2351,11 +2523,12 @@ class RegisterPaymentViewModelTest {
         payer: String,
         debtor: String,
         amountMinor: Long,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = GROUP_ID,
         description = id,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = SplitMode.AMOUNT,
         payers = listOf(ExpensePayer(payer, amountMinor)),
@@ -2372,12 +2545,13 @@ class RegisterPaymentViewModelTest {
         from: String,
         to: String,
         amountMinor: Long,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Settlement = Settlement(
         id = "settlement-$from-$to-$amountMinor",
         groupId = GROUP_ID,
         fromMemberId = from,
         toMemberId = to,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         method = SettlementMethod.CASH,
         paidAt = nowMillis - HOUR,
@@ -2401,6 +2575,8 @@ class RegisterPaymentViewModelTest {
         recordError: Throwable? = null,
         recordGate: CompletableDeferred<Unit>? = null,
         showsSats: Boolean = false,
+        routeCurrency: GroupCurrency = storedGroup.currency,
+        keepsBillCurrencies: Boolean = false,
     ) {
         bitcoinInSats.value = showsSats
         clockMillis = nowMillis
@@ -2408,10 +2584,20 @@ class RegisterPaymentViewModelTest {
             GROUP_ID,
             fromMemberId = from,
             toMemberId = to,
+            currency = routeCurrency,
             offersReceiverKeys = true,
         )
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
-        expenses = FakeExpenseRepository(initialExpenses = storedExpenses.inCurrencyOf(listOf(storedGroup)))
+        expenses =
+            FakeExpenseRepository(
+                initialExpenses = if (keepsBillCurrencies) {
+                    storedExpenses
+                } else {
+                    storedExpenses.inCurrencyOf(
+                        listOf(storedGroup),
+                    )
+                },
+            )
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements).also {
             it.recordError = recordError
             it.recordGate = recordGate
@@ -2429,7 +2615,7 @@ class RegisterPaymentViewModelTest {
             it.navigate(route)
         }
         val groupNeverAnswers = MutableSharedFlow<Group?>()
-        val balancesNeverAnswer = MutableSharedFlow<GroupBalances>()
+        val balancesNeverAnswer = MutableSharedFlow<List<CurrencyBalances>>()
         viewModel = RegisterPaymentViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,

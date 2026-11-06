@@ -14,8 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 import com.quare.blitzsplit.android.designsystem.R as DesignR
@@ -25,11 +25,12 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 internal fun PaymentEntryRow(
     payment: PaymentRow,
     shape: Shape,
-    money: MoneyFormatter,
     dates: DateTimeTextFormatter,
     onEvent: (GroupDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Why: the payment's own currency, not the one picked above the balances.
+    val money = rememberMoneyFormatter(payment.currency)
     EntryFrameRow(
         icon = Icons.Outlined.Payments,
         title = paymentTitleOf(payment),

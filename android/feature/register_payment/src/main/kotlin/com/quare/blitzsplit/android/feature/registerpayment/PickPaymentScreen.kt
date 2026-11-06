@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -156,11 +157,20 @@ private fun ColumnScope.PickPaymentList(
         PickPaymentEmptyMessage()
         return
     }
+    // Why: a group with open pairs in two currencies lists once for each; the code tells them apart.
+    val repeatedGroupIds = state.groups
+        .groupingBy { it.groupId }
+        .eachCount()
+        .filterValues { it > 1 }
+        .keys
     state.groups.forEach { group ->
-        PickPaymentGroupSection(
-            group = group,
-            onEvent = onEvent,
-        )
+        key(group.groupId, group.currency) {
+            PickPaymentGroupSection(
+                group = group,
+                showsCurrency = group.groupId in repeatedGroupIds,
+                onEvent = onEvent,
+            )
+        }
     }
 }
 
@@ -191,6 +201,7 @@ private fun PickPaymentEmptyMessage() {
 @Composable
 private fun PickPaymentGroupSection(
     group: PickPaymentGroup,
+    showsCurrency: Boolean,
     onEvent: (PickPaymentUiEvent) -> Unit,
 ) {
     val money = rememberMoneyFormatter(group.currency)
@@ -211,6 +222,13 @@ private fun PickPaymentGroupSection(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (showsCurrency) {
+                Text(
+                    text = group.currency.code,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             group.pairs.forEachIndexed { index, pair ->
@@ -227,6 +245,7 @@ private fun PickPaymentGroupSection(
                                 groupId = group.groupId,
                                 fromMemberId = pair.fromMemberId,
                                 toMemberId = pair.toMemberId,
+                                currency = group.currency,
                             ),
                         )
                     },

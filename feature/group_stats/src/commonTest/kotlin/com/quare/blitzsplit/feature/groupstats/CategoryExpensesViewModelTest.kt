@@ -195,6 +195,7 @@ class CategoryExpensesViewModelTest {
                 route = Route.CategoryExpenses(
                     groupId = GROUP_ID,
                     categoryId = AppCategory.FOOD.key,
+                    currency = GroupCurrency.BRL,
                     periodStartMillis = millisOf("2026-09-01T00:00:00Z"),
                     periodEndMillis = millisOf("2026-09-30T00:00:00Z"),
                     isMonthPeriod = false,
@@ -216,6 +217,7 @@ class CategoryExpensesViewModelTest {
                 route = Route.CategoryExpenses(
                     groupId = GROUP_ID,
                     categoryId = AppCategory.FOOD.key,
+                    currency = GroupCurrency.BRL,
                     periodStartMillis = millisOf("2026-01-01T00:00:00Z"),
                     periodEndMillis = millisOf("2026-10-29T00:00:00Z"),
                     isMonthPeriod = false,
@@ -572,6 +574,7 @@ class CategoryExpensesViewModelTest {
                 route = Route.CategoryExpenses(
                     GROUP_ID,
                     AppCategory.FOOD.key,
+                    currency = GroupCurrency.BRL,
                     periodStartMillis = millisOf("2026-10-01T03:00:00Z"),
                     periodEndMillis = millisOf("2026-10-29T03:00:00Z"),
                     isMonthPeriod = false,
@@ -930,14 +933,119 @@ class CategoryExpensesViewModelTest {
             assertTrue(trackedEvents.isEmpty())
         }
 
+    @Test
+    fun `GIVEN Food in dollars WHEN the list opens THEN lists only the dollar bills of Food`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = thisMonth(AppCategory.FOOD.key, GroupCurrency.USD),
+                stored = octoberBills + usdBills,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(listOf("usd-market")), idsByDay(state))
+            assertEquals(7_000L, state.totalMinor)
+            assertEquals(1, state.expenseCount)
+        }
+
+    @Test
+    fun `GIVEN Food in dollars in a group in reais WHEN the list opens THEN the amounts are in dollars`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = thisMonth(AppCategory.FOOD.key, GroupCurrency.USD),
+                stored = octoberBills + usdBills,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.USD, state.currency)
+        }
+
+    @Test
+    fun `GIVEN Food in reais with dollar bills WHEN the list opens THEN the dollar bills are not added`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = octoberBills + usdBills)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.BRL, state.currency)
+            assertEquals(listOf(listOf("lunch", "market"), listOf("dinner")), idsByDay(state))
+            assertEquals(45_000L, state.totalMinor)
+            assertEquals(3, state.expenseCount)
+        }
+
+    @Test
+    fun `GIVEN Food in dollars WHEN the list opens THEN the chips are the main categories of the dollar bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = thisMonth(AppCategory.FOOD.key, GroupCurrency.USD),
+                stored = octoberBills + usdBills,
+            )
+
+            // When
+            val chips = viewModel.uiState.value.chips
+
+            // Then
+            assertEquals(
+                listOf(AppCategory.TRAVEL.key to false, AppCategory.FOOD.key to true),
+                chips.map { it.category.id to it.isSelected },
+            )
+        }
+
+    @Test
+    fun `GIVEN Food in a currency the group has no bill in WHEN the list opens THEN it is empty in that currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(route = thisMonth(AppCategory.FOOD.key, GroupCurrency.EUR))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.EUR, state.currency)
+            assertTrue(state.days.isEmpty())
+            assertEquals(0L, state.totalMinor)
+            assertEquals(0, state.expenseCount)
+        }
+
+    @Test
+    fun `GIVEN Food in dollars WHEN the bills are not read yet THEN the state already names the dollar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = thisMonth(AppCategory.FOOD.key, GroupCurrency.USD),
+                areBillsRead = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.USD, state.currency)
+        }
+
     private fun rowsOf(state: CategoryExpensesUiState): List<CategoryExpenseRow> = state.days.flatMap { it.expenses }
 
     private fun idsByDay(state: CategoryExpensesUiState): List<List<String>> =
         state.days.map { day -> day.expenses.map { it.id } }
 
-    private fun thisMonth(categoryId: String): Route.CategoryExpenses = Route.CategoryExpenses(
+    private fun thisMonth(
+        categoryId: String,
+        currency: GroupCurrency = GroupCurrency.BRL,
+    ): Route.CategoryExpenses = Route.CategoryExpenses(
         groupId = GROUP_ID,
         categoryId = categoryId,
+        currency = currency,
         periodStartMillis = millisOf("2026-10-01T00:00:00Z"),
         periodEndMillis = millisOf("2026-10-29T00:00:00Z"),
         isMonthPeriod = true,
@@ -946,6 +1054,7 @@ class CategoryExpensesViewModelTest {
     private fun wholeHistory(categoryId: String): Route.CategoryExpenses = Route.CategoryExpenses(
         groupId = GROUP_ID,
         categoryId = categoryId,
+        currency = GroupCurrency.BRL,
         periodStartMillis = null,
         periodEndMillis = null,
         isMonthPeriod = false,
@@ -993,11 +1102,12 @@ class CategoryExpensesViewModelTest {
         payers: List<ExpensePayer> = listOf(paid(PIERRE, amountMinor)),
         shares: List<ExpenseShare> = listOf(share(PIERRE, amountMinor)),
         isPending: Boolean = false,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = GROUP_ID,
         description = id,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = SplitMode.EQUAL,
         payers = payers,
@@ -1089,6 +1199,24 @@ class CategoryExpensesViewModelTest {
         amountMinor = 80_000,
         spentAt = millisOf("2026-09-20T12:00:00Z"),
         categoryId = AppCategory.TRAVEL_LODGING.key,
+    )
+
+    // Why: a US$ 70 market and a US$ 900 boat of the same month, in a group whose default currency is the real.
+    private val usdBills = listOf(
+        expense(
+            id = "usd-market",
+            amountMinor = 7_000,
+            spentAt = millisOf("2026-10-27T10:00:00Z"),
+            categoryId = AppCategory.FOOD_MARKET.key,
+            currency = GroupCurrency.USD,
+        ),
+        expense(
+            id = "usd-boat",
+            amountMinor = 90_000,
+            spentAt = millisOf("2026-10-28T16:00:00Z"),
+            categoryId = AppCategory.TRAVEL_TOURS.key,
+            currency = GroupCurrency.USD,
+        ),
     )
 
     private val statsRoute = Route.GroupStats(GROUP_ID)

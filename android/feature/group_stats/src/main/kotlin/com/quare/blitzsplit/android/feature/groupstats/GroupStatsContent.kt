@@ -146,6 +146,7 @@ private fun GroupStatsScaffold(
             )
         }
     }
+    val currencyChips = @Composable { chipModifier: Modifier -> StatsCurrencyChipRow(state, onEvent, chipModifier) }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -174,7 +175,10 @@ private fun GroupStatsScaffold(
                     title = title,
                     subtitle = subtitle,
                     navigationIcon = back,
-                    actions = { periodChip(Modifier.padding(end = 12.dp)) },
+                    actions = {
+                        currencyChips(Modifier.padding(end = 8.dp))
+                        periodChip(Modifier.padding(end = 12.dp))
+                    },
                 )
             } else {
                 MediumFlexibleTopAppBar(
@@ -194,12 +198,15 @@ private fun GroupStatsScaffold(
         ) {
             val chip = @Composable {
                 if (!isTabletop) {
-                    periodChip(
-                        Modifier.padding(
-                            top = 12.dp,
-                            bottom = 12.dp,
-                        ),
-                    )
+                    Column {
+                        currencyChips(Modifier.padding(top = 12.dp))
+                        periodChip(
+                            Modifier.padding(
+                                top = 12.dp,
+                                bottom = 12.dp,
+                            ),
+                        )
+                    }
                 }
             }
             val empty = @Composable {

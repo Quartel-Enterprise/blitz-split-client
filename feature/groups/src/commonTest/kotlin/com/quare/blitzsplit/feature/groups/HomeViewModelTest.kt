@@ -5090,6 +5090,7 @@ class HomeViewModelTest {
         groupId = "trio",
         fromMemberId = "member-Ana",
         toMemberId = "member-Pierre",
+        currency = GroupCurrency.BRL,
         offersReceiverKeys = true,
     )
 

@@ -9,9 +9,10 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     "Settled up" (`GroupRow.isSettled`), collapsed under the open ones on Android and iOS, a tab (a segment in the Mac's
     toolbar) on the web and the Mac. With no filter, an empty Open says "No open groups" on every platform
     and an empty Settled up tab "No settled groups" on the web and the Mac (`GroupsUiState.showsNoOpenGroups`,
-    `showsNoSettledGroups`); a phone hides an empty Settled up. "Overall balance" sums the nets per currency, never across
-    two, the currency with the most groups first (`GroupsSummary`); "To get back" and "To pay" sum the positive and the
-    negative nets, are disabled at zero and open Balances (flow 8) on Owed to you and You owe; "To pay" goes straight to
+    `showsNoSettledGroups`); a phone hides an empty Settled up. "Overall balance" is the global Balances' totals per currency (`PeopleBalances.totals`, never across two), the
+    currency with the most groups first (`GroupsSummary`, built by `summaryOf(PeopleBalances)`); a row shows one amount,
+    in the group's default currency or the first one with something open for this person; "To get back" and "To pay" are the
+    same totals, as the global Balances sums them, are disabled at zero and open Balances (flow 8) on Owed to you and You owe; "To pay" goes straight to
     settling up when only one person is in You owe. "Split a bill"
     (Android's FAB, iOS's +, the main button on the web and the Mac, ⌘N there, with ⇧⌘N for the toolbar's "New
     group") opens New group while there's no group, and

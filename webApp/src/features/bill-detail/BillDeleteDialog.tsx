@@ -1,6 +1,7 @@
 import type { JsBillDeletion } from 'blitzsplit-shared'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { t } from '@/i18n'
+import { formatMoney } from '@/lib/money'
 import { settledPairSentence } from './settledPairText'
 
 /**
@@ -11,24 +12,23 @@ import { settledPairSentence } from './settledPairText'
 export function BillDeleteDialog({
   deletion,
   isDeleting,
-  money,
   onConfirm,
   onDismiss,
 }: {
   deletion: JsBillDeletion
   isDeleting: boolean
-  money: (minor: number) => string
   onConfirm: () => void
   onDismiss: () => void
 }) {
   const balance = deletion.myBalanceMinor
+  const money = (minor: number) => formatMoney(minor, deletion.currency, deletion.fractionDigits)
   const balanceNote =
     balance != null && balance < 0
       ? t('billDelete_noLongerOwe', { amount: money(-balance) })
       : balance != null && balance > 0
         ? t('billDelete_noLongerGetBack', { amount: money(balance) })
         : null
-  const settledNote = deletion.settledPair ? settledPairSentence(deletion.settledPair, money) : null
+  const settledNote = deletion.settledPair ? settledPairSentence(deletion.settledPair) : null
   return (
     <ConfirmDialog
       title={t('billDelete_title')}

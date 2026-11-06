@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.GroupCurrency
 
 // Why: a pair in Saldos, already netted: "Você deve a Bruno", "Ana te deve" or "Diego deve a Bruno".
 data class DebtRow(
@@ -12,6 +13,8 @@ data class DebtRow(
     val toName: String?,
     val toFace: GroupFace?,
     val amountMinor: Long,
+    // Why: the pair's amount is in the currency of the bills and payments it comes from.
+    val currency: GroupCurrency,
     val kind: DebtKind,
     // Why: the icon of 13.4 on a pair "Simplificar dívidas" made, which no bill did: "Diego → você".
     val isSimplified: Boolean,
@@ -20,6 +23,7 @@ data class DebtRow(
 // Why: a pair as Saldos and the dialogs of "Sair do grupo" and "Apagar grupo" show it.
 fun debtRowOf(
     debt: Debt,
+    currency: GroupCurrency,
     group: Group,
     meId: String?,
     balances: GroupBalances,
@@ -34,6 +38,7 @@ fun debtRowOf(
         toName = to?.name,
         toFace = to?.let(::faceOf),
         amountMinor = debt.amountMinor,
+        currency = currency,
         kind = when (meId) {
             debt.fromMemberId -> DebtKind.YOU_OWE
             debt.toMemberId -> DebtKind.OWES_YOU

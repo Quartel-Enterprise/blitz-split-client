@@ -141,6 +141,7 @@ class GroupDetailPaymentsViewModelTest {
                     toName = "Ana",
                     toIsMe = false,
                     amountMinor = 5_000,
+                    currency = GroupCurrency.USD,
                     method = SettlementMethod.PIX,
                     isPending = true,
                 ),
@@ -904,7 +905,13 @@ class GroupDetailPaymentsViewModelTest {
                     Route.Home,
                     Route.Groups,
                     route,
-                    Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO, offersReceiverKeys = true),
+                    Route.RegisterPayment(
+                        GROUP_ID,
+                        PIERRE,
+                        BRUNO,
+                        currency = GroupCurrency.USD,
+                        offersReceiverKeys = true,
+                    ),
                 ),
                 navigator.backStack.value,
             )
@@ -936,7 +943,13 @@ class GroupDetailPaymentsViewModelTest {
                     Route.Home,
                     Route.Groups,
                     route,
-                    Route.RegisterPayment(GROUP_ID, PIERRE, ANA, offersReceiverKeys = true),
+                    Route.RegisterPayment(
+                        GROUP_ID,
+                        PIERRE,
+                        ANA,
+                        currency = GroupCurrency.USD,
+                        offersReceiverKeys = true,
+                    ),
                 ),
                 navigator.backStack.value,
             )
@@ -1027,7 +1040,15 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE, offersReceiverKeys = true))
+            navigator.navigate(
+                Route.RegisterPayment(
+                    GROUP_ID,
+                    ANA,
+                    PIERRE,
+                    currency = GroupCurrency.USD,
+                    offersReceiverKeys = true,
+                ),
+            )
             val settlementId = record(
                 from = ANA,
                 to = PIERRE,
@@ -1054,7 +1075,15 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, PIERRE, BRUNO, offersReceiverKeys = true))
+            navigator.navigate(
+                Route.RegisterPayment(
+                    GROUP_ID,
+                    PIERRE,
+                    BRUNO,
+                    currency = GroupCurrency.USD,
+                    offersReceiverKeys = true,
+                ),
+            )
             val settlementId = record(
                 from = PIERRE,
                 to = BRUNO,
@@ -1080,7 +1109,15 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.RegisterPayment(GROUP_ID, ANA, PIERRE, offersReceiverKeys = true))
+            navigator.navigate(
+                Route.RegisterPayment(
+                    GROUP_ID,
+                    ANA,
+                    PIERRE,
+                    currency = GroupCurrency.USD,
+                    offersReceiverKeys = true,
+                ),
+            )
 
             // When
             val settlementId = record(

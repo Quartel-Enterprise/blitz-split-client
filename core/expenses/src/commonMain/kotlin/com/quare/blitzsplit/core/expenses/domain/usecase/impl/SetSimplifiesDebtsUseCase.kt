@@ -29,20 +29,22 @@ class SetSimplifiesDebtsUseCase(
         val group = checkNotNull(groupRepository.observeGroups().first().firstOrNull { it.id == groupId }) {
             "No group $groupId"
         }
-        val raw = GroupBalances.of(
-            expenses = expenseRepository.observeExpenses(groupId).first(),
-            settlements = settlementRepository.observeSettlements(groupId).first(),
-        )
-        val simplified = raw.toSimplified(group.members.map { it.id })
-        val before = if (group.simplifiesDebts) simplified else raw
-        val after = if (simplifiesDebts) simplified else raw
+        val expenses = expenseRepository.observeExpenses(groupId).first()
+        val settlements = settlementRepository.observeSettlements(groupId).first()
+        // Why: each currency simplifies on its own; their pairs are listed side by side, never added.
+        val raws = GroupBalances
+            .currenciesOf(group, expenses, settlements)
+            .map { GroupBalances.createUnsimplified(expenses, settlements, it) }
+        val simplified = raws.map { it.toSimplified(group.members.map { member -> member.id }) }
+        val before = if (group.simplifiesDebts) simplified else raws
+        val after = if (simplifiesDebts) simplified else raws
         groupRepository
             .updateSimplifiesDebts(
                 groupId = groupId,
                 simplifiesDebts = simplifiesDebts,
                 change = SimplifyDebtsChange(
-                    before = before.debts.map(::toPair),
-                    after = after.debts.map(::toPair),
+                    before = before.flatMap { it.debts }.map(::toPair),
+                    after = after.flatMap { it.debts }.map(::toPair),
                 ),
                 changedAt = currentTimeMillis(),
             ).getOrThrow()

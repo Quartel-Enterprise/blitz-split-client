@@ -1858,6 +1858,7 @@ class GroupStatsViewModelTest {
             statsStack + Route.CategoryExpenses(
                 GROUP_ID,
                 AppCategory.FOOD.key,
+                currency = GroupCurrency.BRL,
                 periodStartMillis = null,
                 periodEndMillis = null,
                 isMonthPeriod = false,
@@ -1881,6 +1882,7 @@ class GroupStatsViewModelTest {
                 statsStack + Route.CategoryExpenses(
                     GROUP_ID,
                     AppCategory.FOOD.key,
+                    currency = GroupCurrency.BRL,
                     periodStartMillis = millisOf("2026-10-01T00:00:00Z"),
                     periodEndMillis = millisOf("2026-10-29T00:00:00Z"),
                     isMonthPeriod = true,
@@ -1909,6 +1911,7 @@ class GroupStatsViewModelTest {
                 statsStack + Route.CategoryExpenses(
                     GROUP_ID,
                     AppCategory.FOOD.key,
+                    currency = GroupCurrency.BRL,
                     periodStartMillis = millisOf("2026-10-24T00:00:00Z"),
                     periodEndMillis = millisOf("2026-10-26T00:00:00Z"),
                     isMonthPeriod = false,
@@ -1963,6 +1966,7 @@ class GroupStatsViewModelTest {
                 statsStack + Route.CategoryExpenses(
                     GROUP_ID,
                     AppCategory.FOOD.key,
+                    currency = GroupCurrency.BRL,
                     periodStartMillis = null,
                     periodEndMillis = null,
                     isMonthPeriod = false,
@@ -2027,6 +2031,491 @@ class GroupStatsViewModelTest {
             assertEquals(listOf("stats_category_clicked" to mapOf<String, Any>("target" to "row")), trackedEvents)
         }
 
+    // Why: a US$ 1.500 hotel of the 20th, before the trip's reais, paid by Pierre and split in three.
+    private val usdHotel = expense(
+        id = "hotel-usd",
+        amountMinor = 150_000,
+        spentAt = millisOf("2026-10-20T12:00:00Z"),
+        payers = listOf(paid(PIERRE, 150_000)),
+        shares = listOf(share(PIERRE, 50_000), share(ANA, 50_000), share(BRUNO, 50_000)),
+        categoryId = AppCategory.TRAVEL_LODGING.key,
+        currency = GroupCurrency.USD,
+    )
+
+    // Why: the trip's dinner and boat again, in dollars, so each currency has the same debts to settle.
+    private val usdTripBills = tripBills.map {
+        it.copy(
+            id = "usd-${it.id}",
+            currency = GroupCurrency.USD,
+        )
+    }
+
+    @Test
+    fun `GIVEN bills only in the default currency WHEN the statistics open THEN lists that one currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL), state.currencies)
+            assertEquals(GroupCurrency.BRL, state.currency)
+        }
+
+    @Test
+    fun `GIVEN bills in several currencies WHEN opening THEN lists the default then the most bills then code`() =
+        runTest(testDispatcher) {
+            // Given
+            val eurBills = listOf(
+                expense("eur-1", 1_000, today, currency = GroupCurrency.EUR),
+                expense("eur-2", 1_000, today, currency = GroupCurrency.EUR),
+            )
+            val gbpBills = listOf(
+                expense("gbp-1", 1_000, today, currency = GroupCurrency.GBP),
+                expense("gbp-2", 1_000, today, currency = GroupCurrency.GBP),
+            )
+            prepareScenario(stored = tripBills + usdHotel + gbpBills + eurBills)
+
+            // When
+            val currencies = viewModel.uiState.value.currencies
+
+            // Then
+            assertEquals(
+                listOf(GroupCurrency.BRL, GroupCurrency.EUR, GroupCurrency.GBP, GroupCurrency.USD),
+                currencies,
+            )
+        }
+
+    @Test
+    fun `GIVEN a payment in a currency without bills WHEN the statistics open THEN that currency is listed too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(payments = listOf(anaPaysTheBoat.copy(currency = GroupCurrency.USD)))
+
+            // When
+            val currencies = viewModel.uiState.value.currencies
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), currencies)
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN the statistics open THEN the figures leave out the dollars`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.BRL, state.currency)
+            assertEquals(90_000L, state.totalMinor)
+            assertEquals(2, state.expenseCount)
+            assertEquals(60_000L, state.myPaidMinor)
+            assertEquals(25_000L, state.myShareMinor)
+            assertEquals("boat", state.biggestExpense?.expenseId)
+            assertEquals(millisOf("2026-10-24T00:00:00Z"), state.allStartMillis)
+            assertEquals(millisOf("2026-10-28T00:00:00Z"), state.allEndMillis)
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN picking the dollar THEN the total and counts are of the dollar bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(GroupCurrency.USD, state.currency)
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), state.currencies)
+            assertEquals(150_000L, state.totalMinor)
+            assertEquals(1, state.expenseCount)
+            assertEquals(3, state.memberCount)
+            assertEquals(50_000L, state.averagePerPersonMinor)
+            assertEquals(50_000L, state.myShareMinor)
+            assertEquals(33, state.mySharePercent)
+            assertEquals(150_000L, state.myPaidMinor)
+            assertEquals(1, state.myPaidCount)
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN picking the dollar THEN the dates are of the dollar bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(millisOf("2026-10-20T00:00:00Z"), state.periodStartMillis)
+            assertEquals(millisOf("2026-10-20T00:00:00Z"), state.periodEndMillis)
+            assertEquals(millisOf("2026-10-20T00:00:00Z"), state.allStartMillis)
+            assertEquals(millisOf("2026-10-20T00:00:00Z"), state.allEndMillis)
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN picking the dollar THEN Por pessoa adds up only the dollar bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val people = viewModel.uiState.value.people
+            assertEquals(
+                mapOf(PIERRE to 50_000L, ANA to 50_000L, BRUNO to 50_000L),
+                people.associate { it.memberId to it.amountMinor },
+            )
+        }
+
+    @Test
+    fun `GIVEN Pagou in dollars WHEN picking the dollar THEN only the dollar payer is listed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+            viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.PAID))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val people = viewModel.uiState.value.people
+            assertEquals(150_000L, people.single { it.memberId == PIERRE }.amountMinor)
+            assertEquals(0L, people.single { it.memberId == ANA }.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN picking the dollar THEN the chart draws only the dollar bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(150_000L, state.bars.sumOf { it.amountMinor })
+            assertEquals(1, state.bars.sumOf { it.expenseCount })
+            assertTrue(state.chartTicksMinor.last() >= 150_000L)
+            assertTrue(state.chartTicksMinor.last() < 300_000L)
+        }
+
+    @Test
+    fun `GIVEN a dollar bill larger than the reais WHEN the statistics open THEN the biggest is a bill of reais`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            val biggest = viewModel.uiState.value.biggestExpense
+
+            // Then
+            assertEquals("boat", biggest?.expenseId)
+            assertEquals(60_000L, biggest?.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN picking the dollar THEN the biggest expense is the dollar bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val biggest = viewModel.uiState.value.biggestExpense
+            assertEquals("hotel-usd", biggest?.expenseId)
+            assertEquals(150_000L, biggest?.amountMinor)
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN picking the dollar THEN the categories are of the dollar bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills + usdHotel)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val rows = viewModel.uiState.value.categories
+            assertEquals(listOf(AppCategory.TRAVEL.key to 150_000L), rows.map { it.category.id to it.amountMinor })
+            assertEquals(listOf(100), rows.map { it.percent })
+        }
+
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN the statistics open THEN the categories are only those of the reais`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills + usdHotel)
+
+            // When
+            val rows = viewModel.uiState.value.categories
+
+            // Then
+            assertEquals(
+                listOf(AppCategory.TRAVEL.key to 60_000L, AppCategory.FOOD.key to 30_000L),
+                rows.map { it.category.id to it.amountMinor },
+            )
+        }
+
+    @Test
+    fun `GIVEN a dollar bill still in the queue WHEN picking the dollar THEN counts it as pending`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel.copy(isPending = true))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            assertEquals(1, viewModel.uiState.value.pendingCount)
+        }
+
+    @Test
+    fun `GIVEN a payment in dollars WHEN the statistics open in reais THEN Acertos ignores that payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = tripBills + usdTripBills,
+                payments = listOf(anaPaysTheBoat.copy(currency = GroupCurrency.USD)),
+            )
+
+            // When
+            val settling = assertNotNull(viewModel.uiState.value.settling)
+
+            // Then
+            assertEquals(PIERRE, settling.fastest.memberId)
+            assertEquals(BRUNO, settling.slowest.memberId)
+            assertEquals(30_000L, settling.slowest.openMinor)
+        }
+
+    @Test
+    fun `GIVEN a payment in dollars WHEN picking the dollar THEN Acertos counts that payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = tripBills + usdTripBills,
+                payments = listOf(anaPaysTheBoat.copy(currency = GroupCurrency.USD)),
+            )
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val settling = assertNotNull(viewModel.uiState.value.settling)
+            assertEquals(ANA, settling.fastest.memberId)
+            assertEquals(0L, settling.fastest.openMinor)
+            assertEquals(BRUNO, settling.slowest.memberId)
+            assertEquals(30_000L, settling.slowest.openMinor)
+        }
+
+    @Test
+    fun `GIVEN a payment in reais WHEN picking the dollar THEN Acertos ignores that payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                stored = tripBills + usdTripBills,
+                payments = listOf(anaPaysTheBoat),
+            )
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            val settling = assertNotNull(viewModel.uiState.value.settling)
+            assertEquals(PIERRE, settling.fastest.memberId)
+            assertEquals(BRUNO, settling.slowest.memberId)
+        }
+
+    @Test
+    fun `GIVEN the dollar picked WHEN picking the default currency again THEN shows the default figures`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.BRL))
+
+            // Then
+            assertEquals(GroupCurrency.BRL, viewModel.uiState.value.currency)
+            assertEquals(90_000L, viewModel.uiState.value.totalMinor)
+        }
+
+    @Test
+    fun `GIVEN a currency the group has no money in WHEN picking it THEN keeps the currency shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.EUR))
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `GIVEN a currency the group has no money in WHEN picking it THEN a later bill in it does not bring it back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.EUR))
+
+            // When
+            expenses.expenses.value = tripBills + expense("eur-1", 1_000, today, currency = GroupCurrency.EUR)
+
+            // Then
+            assertEquals(GroupCurrency.BRL, viewModel.uiState.value.currency)
+        }
+
+    @Test
+    fun `GIVEN the group not loaded yet WHEN picking a currency THEN nothing changes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            stored = tripBills + usdHotel,
+            arePaymentsReadAtStart = false,
+        )
+        val before = viewModel.uiState.value
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+        // Then
+        assertEquals(before, viewModel.uiState.value)
+        assertTrue(before.currencies.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the dollar picked WHEN a bill in reais arrives THEN keeps showing the dollar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            expenses.expenses.value = tripBills + usdHotel + expense("taxi", 5_000, today)
+
+            // Then
+            assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
+            assertEquals(150_000L, viewModel.uiState.value.totalMinor)
+        }
+
+    @Test
+    fun `GIVEN the dollar picked WHEN its last bill goes THEN falls back to the default currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            expenses.expenses.value = tripBills
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(GroupCurrency.BRL, state.currency)
+            assertEquals(listOf(GroupCurrency.BRL), state.currencies)
+            assertEquals(90_000L, state.totalMinor)
+        }
+
+    @Test
+    fun `GIVEN a group in dollars with bills only in reais WHEN the statistics open THEN the default is shown empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(group = trip.copy(currency = GroupCurrency.USD))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.USD, state.currency)
+            assertEquals(listOf(GroupCurrency.USD, GroupCurrency.BRL), state.currencies)
+            assertEquals(0L, state.totalMinor)
+            assertNull(state.allStartMillis)
+        }
+
+    @Test
+    fun `GIVEN a group in dollars with bills only in reais WHEN picking the real THEN shows the reais figures`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(group = trip.copy(currency = GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.BRL))
+
+            // Then
+            assertEquals(GroupCurrency.BRL, viewModel.uiState.value.currency)
+            assertEquals(90_000L, viewModel.uiState.value.totalMinor)
+            assertEquals(2, viewModel.uiState.value.expenseCount)
+        }
+
+    @Test
+    fun `GIVEN the dollar picked WHEN tapping Travel THEN opens its bills in dollars`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stored = categorizedTripBills + usdHotel)
+        viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.TRAVEL.key, StatsCategoryTarget.ROW))
+
+        // Then
+        assertEquals(
+            statsStack + Route.CategoryExpenses(
+                GROUP_ID,
+                AppCategory.TRAVEL.key,
+                currency = GroupCurrency.USD,
+                periodStartMillis = null,
+                periodEndMillis = null,
+                isMonthPeriod = false,
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN the dollar picked WHEN tapping a category only the reais have THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = categorizedTripBills + usdHotel)
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.ROW))
+
+            // Then
+            assertEquals(statsStack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a currency chip WHEN picking it THEN sends the currency clicked from the statistics`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = tripBills + usdHotel)
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(GroupCurrency.USD))
+
+            // Then
+            assertEquals(
+                listOf("balances_currency_clicked" to mapOf<String, Any>("source" to "group_stats")),
+                trackedEvents,
+            )
+        }
+
     // Why: the trip's dinner at a restaurant, under Food, and its boat tour, under Travel.
     private val categorizedTripBills: List<Expense>
         get() = listOf(
@@ -2050,11 +2539,12 @@ class GroupStatsViewModelTest {
         shares: List<ExpenseShare> = listOf(share(PIERRE, amountMinor)),
         isPending: Boolean = false,
         categoryId: String? = null,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = GROUP_ID,
         description = id,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = SplitMode.EQUAL,
         payers = payers,

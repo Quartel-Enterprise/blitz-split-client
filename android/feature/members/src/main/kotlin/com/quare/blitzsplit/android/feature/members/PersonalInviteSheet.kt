@@ -239,6 +239,7 @@ private fun createPreviewInvite(
         hasJoined = false,
         personalLink = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=a1B2c3",
         balance = null,
+        hasOpenBalance = false,
         canBeReleased = false,
     ),
     link = "https://blitzsplit.com/g/7Hk2pQ8x/c3Rt9z?from=a1B2c3",

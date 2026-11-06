@@ -14,6 +14,8 @@ struct GroupScreenActions {
     let deleteGroup: () -> Void
     let splitBill: () -> Void
     let settle: () -> Void
+    /// A currency chip of the header and Balances, shown while the group has money in more than one.
+    let selectCurrency: (GroupCurrency) -> Void
     /// The main button, the cancel and "Back to Groups" of the dialogs Leave and Delete open.
     let confirmExit: () -> Void
     let dismissExit: () -> Void
@@ -30,6 +32,7 @@ struct GroupScreenActions {
         deleteGroup: {},
         splitBill: {},
         settle: {},
+        selectCurrency: { _ in },
         confirmExit: {},
         dismissExit: {},
         backToGroups: {},
@@ -64,7 +67,7 @@ extension View {
                 actions: actions,
             ),
         )
-        .groupExitDialogs(exit: exit, currency: header?.currency, actions: actions)
+        .groupExitDialogs(exit: exit, actions: actions)
     }
 }
 
@@ -244,19 +247,28 @@ struct GroupBalanceSlot: View {
     let header: GroupHeader
     let isMyBalanceLoading: Bool
     let onSettle: () -> Void
+    let onSelectCurrency: (GroupCurrency) -> Void
+    /// Members draws its own chips, with its own pick, so the header's stay out of that tab
+    let showsCurrencyChips: Bool
 
     var body: some View {
-        if let balance = header.myBalance {
-            BalanceCard(
-                balance: balance,
-                currency: header.currency,
-                isEveryoneSettled: header.isEveryoneSettled,
-                onSettle: onSettle,
-            )
-        } else if isMyBalanceLoading {
-            ShimmerCard(showsButtons: false)
-                .shimmering()
-                .background(Palette.card, in: .rect(cornerRadius: 26))
+        VStack(alignment: .leading, spacing: 14) {
+            // The header's amounts and the balance below are in the chip picked
+            if showsCurrencyChips {
+                CurrencyChips(currencies: header.currencies, selected: header.currency, onSelect: onSelectCurrency)
+            }
+            if let balance = header.myBalance {
+                BalanceCard(
+                    balance: balance,
+                    currency: header.currency,
+                    isEveryoneSettled: header.isEveryoneSettled,
+                    onSettle: onSettle,
+                )
+            } else if isMyBalanceLoading {
+                ShimmerCard(showsButtons: false)
+                    .shimmering()
+                    .background(Palette.card, in: .rect(cornerRadius: 26))
+            }
         }
     }
 }
@@ -496,7 +508,13 @@ struct PhoneGroupScaffold<Sections: View>: View {
     }
 
     private var balanceCard: some View {
-        GroupBalanceSlot(header: header, isMyBalanceLoading: isMyBalanceLoading, onSettle: actions.settle)
+        GroupBalanceSlot(
+            header: header,
+            isMyBalanceLoading: isMyBalanceLoading,
+            onSettle: actions.settle,
+            onSelectCurrency: actions.selectCurrency,
+            showsCurrencyChips: tab != .members
+        )
     }
 
     private func list(withHeader: Bool) -> some View {
@@ -553,7 +571,13 @@ struct MacGroupTop: View {
                 GroupFaces(header: header, size: 24) { actions.select(.members) }
                 Spacer()
             }
-            GroupBalanceSlot(header: header, isMyBalanceLoading: isMyBalanceLoading, onSettle: actions.settle)
+            GroupBalanceSlot(
+                header: header,
+                isMyBalanceLoading: isMyBalanceLoading,
+                onSettle: actions.settle,
+                onSelectCurrency: actions.selectCurrency,
+                showsCurrencyChips: tab != .members
+            )
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)

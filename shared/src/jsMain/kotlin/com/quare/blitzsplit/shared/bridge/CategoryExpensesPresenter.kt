@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -111,7 +112,7 @@ private fun toJsCategoryExpensesState(state: CategoryExpensesUiState): JsCategor
                 JsCategoryExpenseDay(
                     dayStartMillis = day.dayStartMillis.toDouble(),
                     relativeDay = toJsRelativeDay(day.relativeDay),
-                    expenses = day.expenses.map(::toJsCategoryExpenseRow).toTypedArray(),
+                    expenses = day.expenses.map { toJsCategoryExpenseRow(it, state.currency) }.toTypedArray(),
                 )
             }.toTypedArray(),
         totalMinor = state.totalMinor.toDouble(),
@@ -125,13 +126,18 @@ private fun toJsCategoryExpensesState(state: CategoryExpensesUiState): JsCategor
     )
 
 // Why: the group's Expenses' row as the page draws it, which its table takes as it is.
-private fun toJsCategoryExpenseRow(row: CategoryExpenseRow): JsExpenseRow = with(row) {
+private fun toJsCategoryExpenseRow(
+    row: CategoryExpenseRow,
+    currency: GroupCurrency,
+): JsExpenseRow = with(row) {
     JsExpenseRow(
         id,
         description,
         spentAt.toDouble(),
         payers.map { JsExpenseRowPayer(it.name, it.isMe) }.toTypedArray(),
         totalMinor.toDouble(),
+        currency.code,
+        currency.fractionDigits,
         myBalanceMinor?.toDouble(),
         toJsCategory(category),
         isPending,

@@ -64,10 +64,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     on the `expense` and `settlement` rows (Room 40, which gave every row its group's) and synced as the API's
     `currency`. A group's currency (`Group.currency`, New group's and Edit group's "Currency") stays as the default
     of its new bills. Balances are never added across currencies: a group with bills in two currencies shows one
-    balance per currency, "you owe R$ 50 and US$ 20". First step, shipped: every bill and payment is saved in its
-    group's currency, so nothing changes on screen yet. Next steps: the bill form's currency picker and the
-    per-currency balances, debts, settling up, simplification, statistics and activity amounts, which land together
-    (a bill in another currency would otherwise drop out of the balances).
+    balance per currency, "you owe R$ 50 and US$ 20". Shipped: every bill and payment is saved in its own currency;
+    the group's own screens (header, Balances, Members, settling up, Statistics, the group exit card) show one balance
+    per currency with a currency chip row (the code, "BRL", "USD") that appears only while the group has money in more
+    than one (`GroupBalances.getByCurrency`, the group's default currency first; every figure under a chip is that
+    currency's only), and every amount of a bill row, a payment row, a debt row and a detail is in the bill's or
+    payment's own currency, never the group's. The home's overall balance is the global Balances' computation
+    (`PeopleBalances.totals`). Still to come: the bill form's currency picker and the activity amounts.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): Currency (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

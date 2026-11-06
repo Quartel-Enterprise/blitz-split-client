@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.model
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
@@ -38,6 +39,8 @@ sealed interface GroupStatsUiEvent : UiEvent {
             // Why: only a grain the chart takes that changes it, or the period it switches to the whole one.
             is OnGrainPicked -> EventAnalytics.Manual("stats_grain_selected")
 
+            is OnCurrencySelected -> EventAnalytics.Automatic("balances_currency_clicked", mapOf("source" to SOURCE))
+
             is OnPersonClicked -> EventAnalytics.Automatic("person_clicked", mapOf("source" to SOURCE))
 
             OnBiggestExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
@@ -59,6 +62,11 @@ sealed interface GroupStatsUiEvent : UiEvent {
 
     // Why: the rail's last item, "Buscar", as on the home's rail: the search over the tab the group was opened from.
     data object OnRailSearchClicked : GroupStatsUiEvent
+
+    // Why: a currency chip over every figure, drawn while the group has money in more than one.
+    data class OnCurrencySelected(
+        val currency: GroupCurrency,
+    ) : GroupStatsUiEvent
 
     // Why: an entry of the period menu; "Escolher datas…" opens each platform's date picker instead.
     data class OnPeriodPicked(

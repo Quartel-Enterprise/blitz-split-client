@@ -96,7 +96,7 @@ internal fun homeBillsOf(
             groupName = group.name,
             description = expense.description,
             totalMinor = expense.amountMinor,
-            currency = group.currency,
+            currency = expense.currency,
             payers = PayersOfGroup(group).of(expense),
             myBalanceMinor = myBalanceMinor,
             category = categories.resolve(expense.categoryId),

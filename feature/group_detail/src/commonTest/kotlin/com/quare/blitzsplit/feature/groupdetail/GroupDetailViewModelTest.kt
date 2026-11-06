@@ -551,6 +551,7 @@ class GroupDetailViewModelTest {
                         ),
                     ),
                     totalMinor = 64_200,
+                    currency = GroupCurrency.USD,
                     myBalanceMinor = -16_050,
                     category = CategoryTree.appOnly.other,
                     isPending = true,
@@ -1779,7 +1780,13 @@ class GroupDetailViewModelTest {
                     Route.Home,
                     Route.Groups,
                     route,
-                    Route.RegisterPayment(GROUP_ID, PIERRE, ANA, offersReceiverKeys = true),
+                    Route.RegisterPayment(
+                        GROUP_ID,
+                        PIERRE,
+                        ANA,
+                        currency = GroupCurrency.USD,
+                        offersReceiverKeys = true,
+                    ),
                 ),
                 navigator.backStack.value,
             )

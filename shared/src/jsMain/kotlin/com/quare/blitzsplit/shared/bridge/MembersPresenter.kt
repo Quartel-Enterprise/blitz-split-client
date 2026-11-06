@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -65,6 +66,8 @@ class JsMembersState(
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
+    // Why: the currency chips over the balances, drawn only with more than one.
+    val currencies: Array<String>,
     val displayLink: String?,
     val members: Array<JsMembersMember>,
     val editor: JsMemberNameEditor?,
@@ -95,6 +98,7 @@ class MembersPresenter(
                 groupName = state.groupName,
                 currency = state.currency.code,
                 fractionDigits = state.currency.fractionDigits,
+                currencies = state.currencies.toCurrencyCodes(),
                 displayLink = state.displayLink,
                 members = state.members.map(::toJsMembersMember).toTypedArray(),
                 editor = state.editor?.let(::toJsMemberNameEditor),
@@ -128,6 +132,12 @@ class MembersPresenter(
         }
         val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
+    }
+
+    // Why: a currency chip over the members' balances.
+    fun selectCurrency(code: String) {
+        val currency = GroupCurrency.fromCodeOrNull(code) ?: return
+        viewModel.onEvent(MembersUiEvent.OnCurrencySelected(currency))
     }
 
     fun share() {

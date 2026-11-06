@@ -1537,6 +1537,7 @@ class BillDetailViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = -16_000,
+                    currency = GroupCurrency.USD,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
@@ -1563,6 +1564,7 @@ class BillDetailViewModelTest {
                     outcome = SettledPairOutcome.OWES,
                     debtorIsPayer = false,
                     amountMinor = 16_000,
+                    currency = GroupCurrency.USD,
                 ),
                 viewModel.uiState.value.deletion
                     ?.settledPair,
@@ -1623,6 +1625,7 @@ class BillDetailViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = null,
+                    currency = GroupCurrency.USD,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
@@ -1763,6 +1766,7 @@ class BillDetailViewModelTest {
                 BillDeletion(
                     description = "Feira",
                     myBalanceMinor = -10_000,
+                    currency = GroupCurrency.USD,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,

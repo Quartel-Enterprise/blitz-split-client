@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain
 
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -8,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.isEveryoneSettled
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
@@ -35,7 +37,7 @@ class ObserveGroupBalancesUseCaseTest {
     private lateinit var settlements: FakeSettlementRepository
     private lateinit var groups: FakeGroupRepository
     private lateinit var useCase: ObserveGroupBalancesUseCase
-    private val seen = mutableListOf<GroupBalances>()
+    private val seen = mutableListOf<List<CurrencyBalances>>()
 
     @Test
     fun `GIVEN bills and payments of the group and of another WHEN observing the group THEN counts only its own`() =
@@ -69,7 +71,7 @@ class ObserveGroupBalancesUseCaseTest {
             )
 
             // When
-            val balances = useCase(GROUP_ID).first()
+            val balances = useCase(GROUP_ID).first().first().balances
 
             // Then
             assertEquals(
@@ -85,10 +87,13 @@ class ObserveGroupBalancesUseCaseTest {
     @Test
     fun `GIVEN an open group with no bills WHEN observing it THEN nobody owes anything`() = runTest {
         // Given
-        prepareScenario(storedExpenses = emptyList())
+        prepareScenario(
+            storedExpenses = emptyList(),
+            storedGroups = listOf(group(simplifiesDebts = false)),
+        )
 
         // When
-        val balances = useCase(GROUP_ID).first()
+        val balances = useCase(GROUP_ID).first().first().balances
 
         // Then
         assertFalse(balances.hasBills)
@@ -110,7 +115,13 @@ class ObserveGroupBalancesUseCaseTest {
         }
 
         // Then
-        assertEquals(listOf(Debt(ANA, PIERRE, 100L)), seen.last().debts)
+        assertEquals(
+            listOf(Debt(ANA, PIERRE, 100L)),
+            seen
+                .last()
+                .first()
+                .balances.debts,
+        )
         assertEquals(2, seen.size)
     }
 
@@ -136,7 +147,12 @@ class ObserveGroupBalancesUseCaseTest {
         }
 
         // Then
-        assertTrue(seen.last().isEveryoneSettled)
+        assertTrue(
+            seen
+                .last()
+                .first()
+                .balances.isEveryoneSettled,
+        )
         assertEquals(2, seen.size)
     }
 
@@ -163,7 +179,13 @@ class ObserveGroupBalancesUseCaseTest {
         settlements.settlements.value = emptyList()
 
         // Then
-        assertEquals(listOf(Debt(ANA, PIERRE, 100L)), seen.last().debts)
+        assertEquals(
+            listOf(Debt(ANA, PIERRE, 100L)),
+            seen
+                .last()
+                .first()
+                .balances.debts,
+        )
     }
 
     @Test
@@ -202,7 +224,7 @@ class ObserveGroupBalancesUseCaseTest {
             )
 
             // When
-            val balances = useCase(GROUP_ID).first()
+            val balances = useCase(GROUP_ID).first().first().balances
 
             // Then
             assertEquals(listOf(Debt(BRUNO, PIERRE, 100L)), balances.debts)
@@ -220,7 +242,7 @@ class ObserveGroupBalancesUseCaseTest {
             )
 
             // When
-            val balances = useCase(GROUP_ID).first()
+            val balances = useCase(GROUP_ID).first().first().balances
 
             // Then
             assertEquals(listOf(Debt(ANA, PIERRE, 100L), Debt(BRUNO, ANA, 100L)), balances.debts)
@@ -240,7 +262,13 @@ class ObserveGroupBalancesUseCaseTest {
         groups.groups.value = listOf(group(simplifiesDebts = true))
 
         // Then
-        assertEquals(listOf(Debt(BRUNO, PIERRE, 100L)), seen.last().debts)
+        assertEquals(
+            listOf(Debt(BRUNO, PIERRE, 100L)),
+            seen
+                .last()
+                .first()
+                .balances.debts,
+        )
         assertEquals(2, seen.size)
     }
 
@@ -258,8 +286,19 @@ class ObserveGroupBalancesUseCaseTest {
             groups.groups.value = listOf(group(simplifiesDebts = false))
 
             // Then
-            assertEquals(listOf(Debt(ANA, PIERRE, 100L), Debt(BRUNO, ANA, 100L)), seen.last().debts)
-            assertFalse(seen.last().isSimplified)
+            assertEquals(
+                listOf(Debt(ANA, PIERRE, 100L), Debt(BRUNO, ANA, 100L)),
+                seen
+                    .last()
+                    .first()
+                    .balances.debts,
+            )
+            assertFalse(
+                seen
+                    .last()
+                    .first()
+                    .balances.isSimplified,
+            )
         }
 
     @Test
@@ -276,8 +315,19 @@ class ObserveGroupBalancesUseCaseTest {
             groups.groups.value = emptyList()
 
             // Then
-            assertEquals(listOf(Debt(ANA, PIERRE, 100L), Debt(BRUNO, ANA, 100L)), seen.last().debts)
-            assertFalse(seen.last().isSimplified)
+            assertEquals(
+                listOf(Debt(ANA, PIERRE, 100L), Debt(BRUNO, ANA, 100L)),
+                seen
+                    .last()
+                    .first()
+                    .balances.debts,
+            )
+            assertFalse(
+                seen
+                    .last()
+                    .first()
+                    .balances.isSimplified,
+            )
         }
 
     @Test
@@ -308,6 +358,188 @@ class ObserveGroupBalancesUseCaseTest {
         assertEquals(1, seen.size)
     }
 
+    @Test
+    fun `GIVEN bills in reais and dollars WHEN observing the group THEN lists one balance per currency`() = runTest {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                anaOwesPierre(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+                anaOwesPierre(
+                    id = "hotel",
+                    amountMinor = 700L,
+                    currency = GroupCurrency.USD,
+                ),
+            ),
+            storedGroups = listOf(group(simplifiesDebts = false)),
+        )
+
+        // When
+        val byCurrency = useCase(GROUP_ID).first()
+
+        // Then
+        assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), byCurrency.map { it.currency })
+        assertEquals(listOf(Debt(ANA, PIERRE, 100L)), byCurrency[0].balances.debts)
+        assertEquals(listOf(Debt(ANA, PIERRE, 700L)), byCurrency[1].balances.debts)
+    }
+
+    @Test
+    fun `GIVEN a group in dollars with bills in reais WHEN observing it THEN lists dollars first with nothing owed`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    anaOwesPierre(
+                        id = "dinner",
+                        amountMinor = 100L,
+                    ),
+                ),
+                storedGroups = listOf(
+                    group(
+                        simplifiesDebts = false,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            val byCurrency = useCase(GROUP_ID).first()
+
+            // Then
+            assertEquals(listOf(GroupCurrency.USD, GroupCurrency.BRL), byCurrency.map { it.currency })
+            assertFalse(byCurrency[0].balances.hasBills)
+            assertTrue(byCurrency[0].balances.debts.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a payment in dollars WHEN observing the group THEN it does not settle the debt in reais`() = runTest {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                anaOwesPierre(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+            ),
+            storedSettlements = listOf(
+                anaPaysPierre(
+                    id = "pix",
+                    amountMinor = 100L,
+                    currency = GroupCurrency.USD,
+                ),
+            ),
+            storedGroups = listOf(group(simplifiesDebts = false)),
+        )
+
+        // When
+        val byCurrency = useCase(GROUP_ID).first()
+
+        // Then
+        assertEquals(listOf(Debt(ANA, PIERRE, 100L)), byCurrency.first().balances.debts)
+        assertFalse(byCurrency.isEveryoneSettled)
+    }
+
+    @Test
+    fun `GIVEN a group with simplifying on WHEN observing it with two currencies THEN simplifies each on its own`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    owes(BRUNO, ANA, 100L, id = "uber"),
+                    owes(ANA, PIERRE, 100L, id = "pousada"),
+                    owes(ANA, PIERRE, 50L, id = "museu").copy(currency = GroupCurrency.USD),
+                ),
+                storedGroups = listOf(group(simplifiesDebts = true)),
+            )
+
+            // When
+            val byCurrency = useCase(GROUP_ID).first()
+
+            // Then
+            assertEquals(listOf(Debt(BRUNO, PIERRE, 100L)), byCurrency[0].balances.debts)
+            assertEquals(listOf(Debt(ANA, PIERRE, 50L)), byCurrency[1].balances.debts)
+        }
+
+    @Test
+    fun `GIVEN a group gone from the device WHEN observing it THEN lists the currency with the most bills first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedExpenses = listOf(
+                    anaOwesPierre(
+                        id = "dinner",
+                        amountMinor = 100L,
+                    ),
+                    anaOwesPierre(
+                        id = "hotel",
+                        amountMinor = 700L,
+                        currency = GroupCurrency.USD,
+                    ),
+                    anaOwesPierre(
+                        id = "taxi",
+                        amountMinor = 300L,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                storedGroups = emptyList(),
+            )
+
+            // When
+            val byCurrency = useCase(GROUP_ID).first()
+
+            // Then
+            assertEquals(listOf(GroupCurrency.USD, GroupCurrency.BRL), byCurrency.map { it.currency })
+            assertEquals(listOf(Debt(ANA, PIERRE, 1_000L)), byCurrency[0].balances.debts)
+        }
+
+    @Test
+    fun `GIVEN a group gone with no bills WHEN observing it THEN lists no currency`() = runTest {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        val byCurrency = useCase(GROUP_ID).first()
+
+        // Then
+        assertTrue(byCurrency.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN open balances in reais WHEN a bill in dollars is added THEN a balance in dollars appears`() = runTest {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(
+                anaOwesPierre(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+            ),
+            storedGroups = listOf(group(simplifiesDebts = false)),
+        )
+        watchBalances()
+
+        // When
+        expenses.expenses.update {
+            it + anaOwesPierre(
+                id = "hotel",
+                amountMinor = 700L,
+                currency = GroupCurrency.USD,
+            )
+        }
+
+        // Then
+        assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), seen.last().map { it.currency })
+        assertEquals(
+            listOf(Debt(ANA, PIERRE, 100L)),
+            seen
+                .last()
+                .first()
+                .balances.debts,
+        )
+    }
+
     // Why: Bruno owes Ana and Ana owes Pierre the same, which simplifying turns into Bruno paying Pierre.
     private val chain = listOf(
         owes(BRUNO, ANA, 100L, id = "uber"),
@@ -317,6 +549,7 @@ class ObserveGroupBalancesUseCaseTest {
     private fun group(
         simplifiesDebts: Boolean,
         id: String = GROUP_ID,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Group = Group(
         id = id,
         name = "Viagem Floripa",
@@ -324,7 +557,7 @@ class ObserveGroupBalancesUseCaseTest {
         color = AvatarColor.GREEN,
         shape = GroupShape.SQUARE,
         photo = null,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         members = listOf(PIERRE, ANA, BRUNO).map { memberId ->
             GroupMember(
                 id = memberId,
@@ -376,11 +609,12 @@ class ObserveGroupBalancesUseCaseTest {
         id: String,
         amountMinor: Long,
         groupId: String = GROUP_ID,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
         description = "Jantar",
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = SplitMode.AMOUNT,
         payers = listOf(
@@ -408,12 +642,13 @@ class ObserveGroupBalancesUseCaseTest {
         id: String,
         amountMinor: Long,
         groupId: String = GROUP_ID,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Settlement = Settlement(
         id = id,
         groupId = groupId,
         fromMemberId = ANA,
         toMemberId = PIERRE,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         method = SettlementMethod.PIX,
         paidAt = 2_000L,

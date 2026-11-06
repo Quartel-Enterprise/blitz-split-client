@@ -113,7 +113,6 @@ struct GroupsView: View {
         // What Leave and Delete open from a row, the same alerts as inside the group (a sheet on the Mac's window)
         .groupExitDialogs(
             exit: state.exit,
-            currency: state.exitGroup?.currency,
             onConfirm: { model.send(GroupsUiEventOnGroupExitConfirmed.shared) },
             onDismiss: { model.send(GroupsUiEventOnGroupExitDismissed.shared) },
         )

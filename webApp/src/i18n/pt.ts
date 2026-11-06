@@ -801,6 +801,7 @@ export const pt: Record<MessageKey, string> = {
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Criptomoedas',
+  currency_chipsLabel: 'Moeda',
   profile_themeSystem: 'Sistema',
   profile_themeLight: 'Claro',
   profile_themeDark: 'Escuro',

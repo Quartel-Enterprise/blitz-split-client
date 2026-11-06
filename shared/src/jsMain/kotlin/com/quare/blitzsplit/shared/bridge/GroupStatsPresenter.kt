@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.Route
@@ -106,6 +107,8 @@ class JsGroupStatsState(
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
+    // Why: the currency chips over every figure, drawn only with more than one.
+    val currencies: Array<String>,
     val isTrip: Boolean,
     val period: String,
     val periodStartMillis: Double,
@@ -226,6 +229,12 @@ class GroupStatsPresenter(
         viewModel.onEvent(GroupStatsUiEvent.OnGrainPicked(grain))
     }
 
+    // Why: a currency chip over every figure.
+    fun selectCurrency(code: String) {
+        val currency = GroupCurrency.fromCodeOrNull(code) ?: return
+        viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(currency))
+    }
+
     fun openPerson(memberId: String) {
         viewModel.onEvent(GroupStatsUiEvent.OnPersonClicked(memberId))
     }
@@ -260,6 +269,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
     groupName = state.groupName,
     currency = state.currency.code,
     fractionDigits = state.currency.fractionDigits,
+    currencies = state.currencies.toCurrencyCodes(),
     isTrip = state.isTrip,
     period = toPeriodCode(state.period),
     periodStartMillis = state.periodStartMillis.toDouble(),

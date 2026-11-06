@@ -99,14 +99,14 @@ enum BillCopy {
     /// "“Groceries” leaves the group and everyone's share of it stops counting.", then what it meant for this
     /// device's user: "You no longer owe R$ 118.00." or "You no longer get back R$ 249.60.", then the payment made
     /// after the bill that deleting it unsettles (7.4b).
-    static func deletionMessage(_ deletion: BillDeletion, currency: GroupCurrency) -> String {
+    static func deletionMessage(_ deletion: BillDeletion) -> String {
         let leaves = String(
             localized: "“\(deletion.description_)” leaves the group and everyone's share of it stops counting.",
             bundle: .appLanguage,
         )
         var sentences = [leaves]
         if let mine = deletion.myBalanceMinor?.int64Value, mine != 0 {
-            let amount = currency.format(mine == .min ? .max : abs(mine))
+            let amount = deletion.currency.format(mine == .min ? .max : abs(mine))
             sentences.append(
                 mine < 0
                     ? String(localized: "You no longer owe \(amount).", bundle: .appLanguage)
@@ -114,14 +114,14 @@ enum BillCopy {
             )
         }
         if let change = deletion.settledPair {
-            sentences.append(settledPair(change, currency: currency))
+            sentences.append(settledPair(change))
         }
         return sentences.joined(separator: " ")
     }
 
     /// "Elisa already settled up with Bruno after this bill. The payment still counts …", in one go.
-    static func settledPair(_ change: SettledPairChange, currency: GroupCurrency) -> String {
-        "\(settledPairLead(change)). \(settledPairDetail(change, currency: currency))"
+    static func settledPair(_ change: SettledPairChange) -> String {
+        "\(settledPairLead(change)). \(settledPairDetail(change))"
     }
 
     /// "Elisa already settled up with Bruno after this bill", "You already settled up with Bruno …" or "Elisa already
@@ -143,18 +143,18 @@ enum BillCopy {
     /// "The payment still counts and the balance is worked out again: with the change, Elisa owes Bruno R$ 20.00
     /// again.", "… Bruno now owes Elisa R$ 98.00.", "… Elisa is left owing R$ 30.00 to Bruno." (a remaining debt that
     /// shrinks) or "… Elisa and Bruno are settled up.".
-    static func settledPairDetail(_ change: SettledPairChange, currency: GroupCurrency) -> String {
-        let outcome = settledPairOutcome(change, currency: currency)
+    static func settledPairDetail(_ change: SettledPairChange) -> String {
+        let outcome = settledPairOutcome(change)
         return String(
             localized: "The payment still counts and the balance is worked out again: \(outcome)",
             bundle: .appLanguage,
         )
     }
 
-    private static func settledPairOutcome(_ change: SettledPairChange, currency: GroupCurrency) -> String {
+    private static func settledPairOutcome(_ change: SettledPairChange) -> String {
         let debtor = change.debtorName ?? formerMember
         let creditor = change.creditorName ?? formerMember
-        let amount = currency.format(change.amountMinor)
+        let amount = change.currency.format(change.amountMinor)
         switch change.outcome {
         case .owesAgain:
             if change.debtorIsMe { return String(
@@ -232,7 +232,6 @@ extension View {
     /// than "Delete" (Cancel, Esc, a tap outside on iPad) dismisses it in the ViewModel too.
     func billDeletionAlert(
         _ deletion: BillDeletion?,
-        currency: GroupCurrency?,
         isDeleting: Bool,
         onConfirm: @escaping () -> Void,
         onDismiss: @escaping () -> Void,
@@ -254,9 +253,7 @@ extension View {
             .disabled(isDeleting)
             Button("Cancel", role: .cancel, action: onDismiss)
         } message: { deletion in
-            if let currency {
-                Text(verbatim: BillCopy.deletionMessage(deletion, currency: currency))
-            }
+            Text(verbatim: BillCopy.deletionMessage(deletion))
         }
     }
 }

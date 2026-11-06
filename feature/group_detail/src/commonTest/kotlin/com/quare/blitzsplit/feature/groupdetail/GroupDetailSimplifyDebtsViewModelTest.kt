@@ -140,6 +140,7 @@ class GroupDetailSimplifyDebtsViewModelTest {
                         toName = "Pierre",
                         toFace = GroupFace("P", AvatarColor.BLUE, photoUrl = null),
                         amountMinor = 4_000,
+                        currency = GroupCurrency.USD,
                         kind = DebtKind.OWES_YOU,
                         isSimplified = true,
                     ),
@@ -305,7 +306,13 @@ class GroupDetailSimplifyDebtsViewModelTest {
                     Route.Home,
                     Route.Groups,
                     route,
-                    Route.RegisterPayment(GROUP_ID, PIERRE, ANA, offersReceiverKeys = true),
+                    Route.RegisterPayment(
+                        GROUP_ID,
+                        PIERRE,
+                        ANA,
+                        currency = GroupCurrency.USD,
+                        offersReceiverKeys = true,
+                    ),
                 ),
                 navigator.backStack.value,
             )
@@ -335,7 +342,13 @@ class GroupDetailSimplifyDebtsViewModelTest {
                     Route.Home,
                     Route.Groups,
                     route,
-                    Route.RegisterPayment(GROUP_ID, DIEGO, PIERRE, offersReceiverKeys = true),
+                    Route.RegisterPayment(
+                        GROUP_ID,
+                        DIEGO,
+                        PIERRE,
+                        currency = GroupCurrency.USD,
+                        offersReceiverKeys = true,
+                    ),
                 ),
                 navigator.backStack.value,
             )

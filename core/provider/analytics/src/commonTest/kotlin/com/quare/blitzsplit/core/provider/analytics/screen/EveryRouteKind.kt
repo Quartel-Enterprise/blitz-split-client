@@ -42,6 +42,7 @@ internal val everyRouteKind: List<Route> = listOf(
     Route.CategoryExpenses(
         groupId = "secret-group",
         categoryId = "secret-category",
+        currency = GroupCurrency.BRL,
         periodStartMillis = 1L,
         periodEndMillis = 2L,
         isMonthPeriod = false,
@@ -72,6 +73,7 @@ internal val everyRouteKind: List<Route> = listOf(
         groupId = "secret-group",
         fromMemberId = "secret-from",
         toMemberId = "secret-to",
+        currency = GroupCurrency.BRL,
         offersReceiverKeys = true,
     ),
     Route.PickPayment,

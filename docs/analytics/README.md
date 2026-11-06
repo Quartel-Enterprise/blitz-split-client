@@ -252,6 +252,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `app_link_clicked` | `source` (`home`, `home_banner`, `app_download`, `profile`) | The app's link the browser opens (web): beside the QR code of Home's invite card, "Open in the app" of the phone's banner, under the app's code, or "Download" / "Open in the app" of Profile's "App on your phone" row in a phone's browser | `:feature:groups`, `:feature:app_download`, `:feature:profile` |
 | `group_stats_clicked` | none | The group's Statistics | `:feature:group_detail` |
 | `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Expenses, Balances or Members | `:feature:group_detail` |
+| `balances_currency_clicked` | `source` (`group_detail`, `members`, `group_stats`) | A currency chip, drawn while the group has money in more than one currency | `:feature:group_detail`, `:feature:members`, `:feature:group_stats` |
 | `edit_group_clicked` | none | "Edit group" | `:feature:group_detail` |
 | `group_pin_toggled` | `is_pinned` | "Pin to Home" or "Unpin from Home" | `:feature:group_detail` |
 | `group_deleted_back_clicked` | none | "Back to Groups" on "Group deleted", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |

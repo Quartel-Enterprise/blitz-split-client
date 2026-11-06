@@ -25,8 +25,8 @@ import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
@@ -38,7 +38,6 @@ internal const val META_SEPARATOR = ENTRY_META_SEPARATOR
 // Why: each day under "Hoje", "Ontem" or its date, its bills and payments read as one card.
 internal fun LazyListScope.expenseDayItems(
     days: List<ExpenseDay>,
-    money: MoneyFormatter,
     dates: DateTimeTextFormatter,
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
@@ -69,7 +68,6 @@ internal fun LazyListScope.expenseDayItems(
                 is ExpenseRow -> ExpenseEntryRow(
                     expense = entry,
                     shape = shape,
-                    money = money,
                     dates = dates,
                     onEvent = onEvent,
                     modifier = rowModifier,
@@ -78,7 +76,6 @@ internal fun LazyListScope.expenseDayItems(
                 is PaymentRow -> PaymentEntryRow(
                     payment = entry,
                     shape = shape,
-                    money = money,
                     dates = dates,
                     onEvent = onEvent,
                     modifier = rowModifier,
@@ -92,11 +89,12 @@ internal fun LazyListScope.expenseDayItems(
 private fun ExpenseEntryRow(
     expense: ExpenseRow,
     shape: Shape,
-    money: MoneyFormatter,
     dates: DateTimeTextFormatter,
     onEvent: (GroupDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Why: the bill's own currency, not the one picked above the balances.
+    val money = rememberMoneyFormatter(expense.currency)
     EntryFrameRow(
         icon = Icons.AutoMirrored.Outlined.ReceiptLong,
         leading = { CategoryBadge(category = expense.category) },

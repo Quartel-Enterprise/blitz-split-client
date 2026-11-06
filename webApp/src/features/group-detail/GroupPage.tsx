@@ -2,6 +2,7 @@ import { ArrowLeft, BarChart3, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, Us
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar, GroupTabs, SplitBillIcon, type GroupTab } from '@/components/common'
+import { CurrencyChips } from '@/components/CurrencyChips'
 import { groupPageContentClass, HomeTabCrumb, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
@@ -31,6 +32,7 @@ export interface GroupPageEvents extends GroupExitEvents {
   deleteGroup(): void
   splitBill(): void
   settle(): void
+  selectCurrency(code: string): void
 }
 
 /**
@@ -145,6 +147,9 @@ export function GroupPage({
             </div>
           </div>
 
+          {/* Why: Membros keeps its own chips over its balances; these pick the currency of the header's amounts and Saldos. */}
+          {tab !== 'members' && <CurrencyChips currencies={header.currencies} selected={header.currency} onSelect={(code) => events.selectCurrency(code)} />}
+
           {!header.myBalance && isBalanceLoading && <BalanceCardSkeleton />}
           {header.myBalance && (
             <BalanceCard
@@ -169,7 +174,7 @@ export function GroupPage({
             </Button>
           </div>
         )}
-        <GroupExitDialog exit={exit} currency={header.currency} fractionDigits={header.fractionDigits} events={events} />
+        <GroupExitDialog exit={exit} events={events} />
       </div>
     </PageShell>
   )

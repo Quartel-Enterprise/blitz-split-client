@@ -14,6 +14,9 @@ class JsDebtRow(
     val toName: String?,
     val toFace: JsGroupFace?,
     val amountMinor: Double,
+    // Why: the pair's own currency, which a group in more than one mixes in its exit dialogs: the ISO 4217 code and its digits.
+    val currency: String,
+    val fractionDigits: Int,
     // Why: "you-owe", "owes-you" or "between-others".
     val kind: String,
     // Why: a pair "Simplificar dívidas" made, which no bill did, with the icon of 13.4.
@@ -28,6 +31,8 @@ internal fun toJsDebtRow(row: DebtRow): JsDebtRow = JsDebtRow(
     toName = row.toName,
     toFace = row.toFace?.let(::toJsGroupFace),
     amountMinor = row.amountMinor.toDouble(),
+    currency = row.currency.code,
+    fractionDigits = row.currency.fractionDigits,
     kind = when (row.kind) {
         DebtKind.YOU_OWE -> "you-owe"
         DebtKind.OWES_YOU -> "owes-you"

@@ -17,6 +17,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalv
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
@@ -91,7 +92,6 @@ fun SplitBillContent(
                 if (state.isEditing) {
                     BillEditingFooter(
                         state = state,
-                        money = money,
                         onEvent = onEvent,
                     )
                 }
@@ -162,6 +162,7 @@ private fun SplitBillContentSettledPairPreview() {
                 outcome = SettledPairOutcome.OWES_AGAIN,
                 debtorIsPayer = true,
                 amountMinor = PREVIEW_SETTLED_PAIR_MINOR,
+                currency = GroupCurrency.BRL,
             ),
         ),
     )
