@@ -9,9 +9,6 @@ inputs:
   scheme:
     description: 'The Xcode scheme: BoraRachar-iOS or BoraRachar-macOS'
     required: true
-  platform:
-    description: "The scheme's platform for fastlane match: ios or macos"
-    required: true
   destination:
     description: "The xcodebuild destination: 'generic/platform=iOS' or 'generic/platform=macOS'"
     required: true
@@ -94,14 +91,20 @@ runs:
       shell: bash
       run: brew install xcodegen
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.3'
-
-    - name: Install fastlane
+    # The xcode-27 image ships Ruby and fastlane; this version is the one the signing lane was checked with, and a
+    # newer image keeps it until someone moves FASTLANE_VERSION on purpose
+    - name: Check fastlane
       shell: bash
-      run: gem install fastlane --no-document
+      env:
+        FASTLANE_VERSION: '2.241.2'
+      run: |
+        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
+          gem install fastlane -v "$FASTLANE_VERSION" --no-document
+        fi
+        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
+          echo "::error::The fastlane on the PATH is not $FASTLANE_VERSION."
+          exit 1
+        fi
 
     - name: Prepare SSH access to the certificates repository
       shell: bash
@@ -141,7 +144,7 @@ runs:
         APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
         MATCH_PASSWORD: ${{ inputs.match-password }}
         GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ssh -o IdentitiesOnly=yes
-      run: fastlane apple_signing platform:${{ inputs.platform }} export_options:"$RUNNER_TEMP/ExportOptions.plist"
+      run: fastlane apple_signing scheme:${{ inputs.scheme }} export_options:"$RUNNER_TEMP/ExportOptions.plist"
 
     # No -clonedSourcePackagesDirPath: a Release build with the Firebase plist runs the Crashlytics dSYM script of
     # project.yml, which looks for the Firebase checkout in ${BUILD_DIR%/Build/*}/SourcePackages, that is, under the
@@ -169,4 +172,7 @@ runs:
       shell: bash
       run: |
         rm -f "${KEY_PATH:-}" "$RUNNER_TEMP/match_ssh"
+        # setup_ci made the temporary keychain the default and the only one searched: give both back to the login one
+        security default-keychain -s login.keychain-db 2> /dev/null || true
+        security list-keychains -d user -s login.keychain-db 2> /dev/null || true
         security delete-keychain fastlane_tmp_keychain-db 2> /dev/null || true

@@ -10,22 +10,27 @@ TEAM_ID = "TTV2A365LG".freeze
 BUNDLE_ID = "com.quare.blitzsplit".freeze
 CERTS_REPO = "git@github.com:Quartel-Enterprise/bible-planner-certs.git".freeze
 PROJECT = File.expand_path("../iosApp/BoraRachar.xcodeproj", __dir__)
-TARGETS = { "ios" => "BoraRachar-iOS", "macos" => "BoraRachar-macOS" }.freeze
-# XcodeGen writes these with "development", which an App Store profile refuses under manual signing
+# The scheme and its app target share a name; match and the entitlements key by platform
+PLATFORMS = { "BoraRachar-iOS" => "ios", "BoraRachar-macOS" => "macos" }.freeze
+KEYCHAIN = "fastlane_tmp_keychain".freeze
+# XcodeGen writes these with "development", which an App Store profile refuses under manual signing. PlistBuddy's
+# Set fails when the file or the key is gone, so a change in project.yml stops the lane instead of shipping development
 APS_ENVIRONMENT = {
   "ios" => ["iosApp/Generated/iOS.entitlements", "aps-environment"],
   "macos" => ["iosApp/Generated/macOS.entitlements", "com.apple.developer.aps-environment"],
 }.freeze
 
 desc "Fetch the distribution certificate and the App Store profile, sign the target manually, write ExportOptions.plist"
-desc "Options: platform (ios|macos), export_options (path of the plist to write)"
+desc "Options: scheme (BoraRachar-iOS|BoraRachar-macOS), export_options (path of the plist to write)"
 lane :apple_signing do |options|
-  platform = options.fetch(:platform)
-  target = TARGETS.fetch(platform)
+  target = options.fetch(:scheme)
+  platform = PLATFORMS.fetch(target)
   repo_root = File.expand_path("..", __dir__)
 
-  # A temporary keychain on CI, so the certificate never lands in the login one; nothing outside CI
+  # A temporary keychain on CI, so the certificate never lands in the login one; nothing outside CI. setup_ci locks
+  # it after an hour, and the archive compiles Kotlin/Native and Firebase before it signs: no timeout instead
   setup_ci
+  sh("security", "set-keychain-settings", KEYCHAIN) if is_ci
 
   api_key = app_store_connect_api_key(
     key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),

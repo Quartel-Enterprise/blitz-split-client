@@ -368,7 +368,6 @@ jobs:
         uses: ./.github/actions/apple-build
         with:
           scheme: BoraRachar-iOS
-          platform: ios
           destination: generic/platform=iOS
           export-path: build/ios
           version: ${{ needs.plan.outputs.display_version }}
@@ -435,7 +434,6 @@ jobs:
         uses: ./.github/actions/apple-build
         with:
           scheme: BoraRachar-macOS
-          platform: macos
           destination: generic/platform=macOS
           # :shared only declares macosArm64(), and a Release archive of a generic destination also builds x86_64.
           build-settings: ARCHS=arm64
