@@ -152,12 +152,8 @@ struct HomeView: View {
         .readingVerticalBar($hasVerticalBar)
         // The notification card asks, never Home on its own: it only reads what the system says
         .checkingNotificationPermission { model.checkNotificationPermission() }
-        // The pickers; the choice points at the shortcut's tile on iPhone and iPad, and the Mac's comes from its toolbar
-        #if os(macOS)
-        .receiptSourcePickers(model.receiptSourceRequest)
-        #else
+        // The pickers; the choice itself points at "Scan a receipt"'s tile, on every platform
         .receiptSourcePickers(model.receiptSourceRequest, showsDialog: false)
-        #endif
         // Record payment, which "Who paid whom?" or a face's settling up opened over Home, just closed
         .recordedPaymentNotice(
             state.recordedPayment,
@@ -296,13 +292,16 @@ struct HomeView: View {
     /// From this width the Mac's window holds the canvas' two rows of two columns.
     private static let macWideWidth: CGFloat = 860
 
-    /// The overall balance beside the people, then the latest bills beside your groups.
+    /// The overall balance over the shortcuts beside the people, then the latest bills beside your groups.
     private var macWide: some View {
         VStack(alignment: .leading, spacing: 12) {
             recoveryCard
             HStack(alignment: .top, spacing: 12) {
-                summary(stacksButtons: true)
-                    .frame(width: 300)
+                VStack(spacing: 12) {
+                    summary(stacksButtons: true)
+                    shortcuts
+                }
+                .frame(width: 300)
                 people
             }
             HStack(alignment: .top, spacing: 12) {
@@ -316,11 +315,12 @@ struct HomeView: View {
         .padding(20)
     }
 
-    /// One column: the overall balance, the people, then your groups as a grid over the bills.
+    /// One column: the overall balance, the shortcuts, the people, then your groups as a grid over the bills.
     private var macNarrow: some View {
         VStack(alignment: .leading, spacing: 12) {
             recoveryCard
             summary(stacksButtons: false)
+            shortcuts
             people
             if !state.groups.isEmpty {
                 HomeGroupsSection(groups: state.groups, style: .grid, send: model.send)
@@ -383,11 +383,8 @@ struct HomeView: View {
         }
     }
 
-    @ViewBuilder
     private var shortcuts: some View {
-        #if os(iOS)
         HomeShortcuts(canScanReceipt: state.canScanReceipt, receiptRequest: model.receiptSourceRequest, send: model.send)
-        #endif
     }
 
     /// The recovery code's card, or the notifications' once there is a group: never both at once.
@@ -447,33 +444,14 @@ struct HomeView: View {
         }
     }
 
-    /// "Try again" while the server doesn't answer, the shortcuts grouped in glass, the profile, and "Split a bill"
-    /// as the prominent item, ⌘N.
+    /// "Try again" while the server doesn't answer, search, the bell, the profile, and "Split a bill" as the
+    /// prominent item, ⌘N. The shortcuts sit in the content, spelled out, as on the other platforms.
     @ToolbarContentBuilder
     private var macToolbar: some ToolbarContent {
         if state.canRetrySync {
             ToolbarItem(placement: .primaryAction) {
                 Button("Try again", systemImage: "arrow.clockwise") {
                     model.send(HomeUiEventOnRetrySyncClicked.shared)
-                }
-            }
-        }
-        if state.showsHome {
-            ToolbarItem(placement: .primaryAction) {
-                ControlGroup {
-                    Button("Scan a receipt", systemImage: "doc.text.viewfinder") {
-                        model.send(HomeUiEventOnScanReceiptClicked.shared)
-                    }
-                    .disabled(!state.canScanReceipt)
-                    .help(state.canScanReceipt ? Text("Scan a receipt") : Text("Scan a receipt · needs internet"))
-                    Button("Record payment", systemImage: "banknote") {
-                        model.send(HomeUiEventOnRecordPaymentClicked.shared)
-                    }
-                    .help(Text("Record payment"))
-                    Button("New group", systemImage: "person.badge.plus") {
-                        model.send(HomeUiEventOnCreateGroupClicked.shared)
-                    }
-                    .help(Text("New group"))
                 }
             }
         }
