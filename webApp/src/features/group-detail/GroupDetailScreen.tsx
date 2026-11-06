@@ -1,4 +1,4 @@
-import { ChevronRight, CircleCheck, HandCoins, X, Pencil, ReceiptText, Share2, ShieldCheck, Trash2 } from 'lucide-react'
+import { ChevronRight, CircleCheck, HandCoins, Pencil, ReceiptText, Share2, ShieldCheck, Trash2, X } from 'lucide-react'
 import {
   GroupDetailPresenter,
   type JsExpenseRow,
@@ -152,13 +152,13 @@ function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: Grou
     <>
       <section role="status" className="flex gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4">
         <CircleCheck className="mt-0.5 size-5 shrink-0 text-primary" />
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <p className="font-semibold">{t('groupDetail_joinedTitle', { name })}</p>
           <p className="text-sm text-muted-foreground">{t('groupDetail_joinedMessage')}</p>
         </div>
-        <button type="button" aria-label={t('groupDetail_joinedDismiss')} onClick={() => presenter.dismissJoinedNotice()} className="-m-1 flex size-8 shrink-0 items-center justify-center rounded-full hover:bg-primary/10">
-          <X className="size-4" />
-        </button>
+        <Button variant="ghost" size="icon-sm" aria-label={t('groupDetail_joinedDismiss')} className="-m-1 shrink-0 text-muted-foreground" onClick={() => presenter.dismissJoinedNotice()}>
+          <X />
+        </Button>
       </section>
       {showsProtectAccess && (
         <button type="button" onClick={() => presenter.protectAccess()} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left hover:bg-muted/60">
