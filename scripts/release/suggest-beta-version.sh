@@ -13,7 +13,7 @@
 # when the merge-back of the previous one did not reach main. It needs the GitHub CLI and a token (GH_TOKEN),
 # which the workflow has; run locally without one, only the file counts.
 #
-# Inside GitHub Actions, writes `version`, `display_version`, `version_code` and `branch` to
+# Inside GitHub Actions, writes `display_version`, `version_code` and `branch` to
 # $GITHUB_OUTPUT and a human-readable plan to $GITHUB_STEP_SUMMARY.
 set -euo pipefail
 
@@ -74,7 +74,6 @@ echo "Resolved version: ${display_version} (versionCode ${version_code})"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
-    echo "version=${version}"
     echo "display_version=${display_version}"
     echo "version_code=${version_code}"
     echo "branch=${branch}"
@@ -88,7 +87,7 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "| Field | Value |"
     echo "|---|---|"
     echo "| Tag and release | \`${display_version}\` |"
-    echo "| Version name | \`${version}\` (Android: \`${display_version}\`) |"
+    echo "| Version name | \`${display_version}\` (Apple version string: \`${version}\`) |"
     echo "| Version code | \`${version_code}\` |"
     echo "| Merge-back branch | \`${branch}\` |"
   } >> "$GITHUB_STEP_SUMMARY"
