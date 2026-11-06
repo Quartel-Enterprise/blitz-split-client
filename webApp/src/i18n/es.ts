@@ -787,6 +787,8 @@ export const es: Record<MessageKey, string> = {
   profile_signOutScheduled: 'Cierre de sesión programado',
   profile_signOutScheduledDetail: 'Cierra la sesión en cuanto todo se haya subido',
   profile_appearance: 'Apariencia',
+  profile_language: 'Idioma',
+  profile_languageSystem: 'Sistema',
   profile_bitcoinInSats: 'Bitcoin en satoshis',
   profile_bitcoinInSatsDetail: 'Muestra y escribe los montos de bitcoin en sats (1 ₿ = 100,000,000 sats).',
   money_sats: '{amount} sats',

@@ -215,7 +215,6 @@ private fun SearchGroupRow(
             GroupBadge(
                 initials = group.initials,
                 color = group.color,
-                shape = group.shape,
                 photoUrl = group.photoUrl,
             )
         },

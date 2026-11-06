@@ -14,14 +14,14 @@ struct StatsSettlingSection: View {
                     .padding(.top, 18)
                 VStack(spacing: 0) {
                     StatsSettlerLine(
-                        label: String(localized: "Settles fastest"),
+                        label: String(localized: "Settles fastest", bundle: .appLanguage),
                         settler: settling.fastest,
                         currency: state.currency,
                         onOpen: { model.send(GroupStatsUiEventOnPersonClicked(memberId: settling.fastest.memberId)) },
                     )
                     Divider().padding(.leading, 64)
                     StatsSettlerLine(
-                        label: String(localized: "Slowest to settle"),
+                        label: String(localized: "Slowest to settle", bundle: .appLanguage),
                         settler: settling.slowest,
                         currency: state.currency,
                         onOpen: { model.send(GroupStatsUiEventOnPersonClicked(memberId: settling.slowest.memberId)) },
@@ -81,11 +81,17 @@ private struct StatsSettlerLine: View {
     /// "same day on average" for 0, else "2 days on average".
     private var days: String {
         let days = Int(settler.averageDays)
-        return days == 0 ? String(localized: "same day on average") : String(localized: "\(days) days on average")
+        return days == 0 ? String(localized: "same day on average", bundle: .appLanguage) : String(
+            localized: "\(days) days on average",
+            bundle: .appLanguage,
+        )
     }
 
     /// "$80 still open", nothing once every debt of the period is covered.
     private var open: String? {
-        settler.openMinor > 0 ? String(localized: "\(currency.format(settler.openMinor)) still open") : nil
+        settler.openMinor > 0 ? String(
+            localized: "\(currency.format(settler.openMinor)) still open",
+            bundle: .appLanguage,
+        ) : nil
     }
 }

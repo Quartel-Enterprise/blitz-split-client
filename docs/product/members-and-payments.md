@@ -93,19 +93,21 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pay Ana · R$ 98"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Edit group, Leave group and Delete group. "Edit
-    group" (`Route.EditGroup`) has New group's fields, the icon being a shape and a color or a photo (6.4d): on
-    Android and iOS the avatar or "Change icon or photo" opens "Group icon" (Android's bottom sheet: Shape, Color,
-    "Choose photo", "Take photo" and "Use this icon", a 480 dp dialog where Edit group is one, in a book's right
+    group" (`Route.EditGroup`) has New group's fields, the icon being a color or a photo (6.4d): on
+    Android and iOS the avatar or "Change icon or photo" opens "Group icon" (Android's bottom sheet: the group's
+    square in the color picked, Color, "Choose photo", "Take photo" and "Use this icon", a 480 dp dialog where Edit group is one, in a book's right
     half; iOS's medium sheet: the colors as tiles, the photo's two
-    sources and ✓), the shape and color picked there reaching the form only on "Use this icon"; the web ("Icon color", "Use a photo" and, with a camera, "Take photo") and the Mac (the colors and "Choose photo…", a file) pick the color in the form.
-    Only Android draws and picks the shape (Cookie, Petal, Square, Circle, as the boards draw them, a group
-    made before shapes as the old Square); the Apple apps and the web keep every group in their rounded square.
+    sources and ✓), the color picked there reaching the form only on "Use this icon"; the web ("Icon color", "Use a photo" and, with a camera, "Take photo") and the Mac (the colors and "Choose photo…", a file) pick the color in the form.
+    Every group is its rounded square on every platform: Android no longer offers or draws the shapes it had (Cookie,
+    Petal, Square, Circle; the beta's feedback), and a group an older Android build gave another shape draws the
+    square too. The shape stays a field of the group row, which Room, the API and Activity keep and Edit group never
+    changes, so an older build's choice survives untouched.
     The photo is the profile's 512x512 JPEG framed in "Adjust photo" (`PrepareProfilePhoto`), drawn in place of the color and initials in the
-    group's shape, and picking a color or a shape takes it off. A new photo waits on the device and goes up with
+    group's square, and picking a color takes it off. A new photo waits on the device and goes up with
     the group's next sync, offline too ("A new photo goes up with it."), to the public `group-photos` bucket
-    (`{groupId}/photo.jpg?v=<updated_at>`, which only members write); the shape and the photo are fields of the
-    group row like the color, saved only when this person changed them, and Activity says "Shape" and "Photo"
-    ("Previous photo", "New photo", "No photo"). The photo and the shape show wherever the group's own badge does:
+    (`{groupId}/photo.jpg?v=<updated_at>`, which only members write); the photo is a field of the group row like the
+    color, saved only when this person changed it, and Activity says "Photo" ("Previous photo", "New photo", "No
+    photo"), and "Shape" for a change an older Android build made. The photo shows wherever the group's own badge does:
     Groups' rows and cards, Home, the search, Expenses' header, Split a bill and "Split in which group?", and the
     web's and the Mac's "Open"; Invite (the invite, read before joining), Activity's dot, "Who paid
     whom?" and the groups listed under a person (Balances, Contacts) keep the color. The name has 1 to 40 letters and

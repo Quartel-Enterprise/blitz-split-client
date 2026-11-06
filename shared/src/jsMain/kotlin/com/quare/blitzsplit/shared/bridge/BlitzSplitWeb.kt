@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
@@ -26,6 +27,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -42,6 +44,7 @@ import kotlin.time.Duration.Companion.minutes
  */
 private const val SHARED_BILL_LEFT_TO_SIGN_IN = "blitzsplit.sharedBillLeftToSignIn"
 private val sharedBillSignInWindow = 15.minutes
+private const val PROFILE_LEFT_FOR_LANGUAGE = "blitzsplit.profileLeftForLanguage"
 
 /*
  * Why: what React calls. Only plain types cross into TypeScript: strings, booleans, arrays,
@@ -67,6 +70,7 @@ fun startBlitzSplit(
     MainScope().launch { handleBrowserCallback(launchUrl) }
     openInviteLink(launchUrl)
     openSharedBillOnceProfileMade()
+    reopenProfileAfterLanguage()
 }
 
 /*
@@ -141,6 +145,36 @@ private fun openSharedBillOnceProfileMade() {
         .filter { hasProfile -> hasProfile }
         .onEach { takeSharedBillLeftToSignIn()?.let(inbox::receive) }
         .launchIn(MainScope())
+}
+
+/*
+ * Why: Profile › Language reloads the page in the language picked, which comes back to the profile rather than Início:
+ * once Início is in place, as the start route puts it, the profile opens over it as before the reload.
+ */
+private fun reopenProfileAfterLanguage() {
+    val wasInProfile = try {
+        window.sessionStorage.getItem(PROFILE_LEFT_FOR_LANGUAGE)?.also {
+            window.sessionStorage.removeItem(PROFILE_LEFT_FOR_LANGUAGE)
+        } != null
+    } catch (_: Throwable) {
+        false
+    }
+    if (!wasInProfile) return
+    val navigator = KoinPlatform.getKoin().get<Navigator>()
+    MainScope().launch {
+        // Why: only the start route's own Início, never one a later back reaches after a link opened over it.
+        val start = navigator.backStack.first { it.firstOrNull() == Route.Home }
+        if (start.lastOrNull() == Route.Home) navigator.navigate(Route.Profile)
+    }
+}
+
+// Why: kept before Profile reloads the page for a language picked.
+internal fun keepProfileForLanguage() {
+    try {
+        window.sessionStorage.setItem(PROFILE_LEFT_FOR_LANGUAGE, "1")
+    } catch (_: Throwable) {
+        // Why: storage blocked: the page still reloads in the language picked, on Início.
+    }
 }
 
 // Why: the browser's sign in leaves the page, so a bill's link is kept, with when, for the load it comes back on.

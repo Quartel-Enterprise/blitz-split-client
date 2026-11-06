@@ -105,21 +105,31 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
         #endif
     }
 
-    /// Shown with the app open too, as Atividade's badge doesn't say what happened.
+    /// Shown with the app open too, as Atividade's badge doesn't say what happened. Answered at once, on the thread
+    /// the system called, for the same reason as the tap below.
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification
-    ) async -> UNNotificationPresentationOptions {
-        [.banner, .list, .sound]
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .list, .sound])
     }
 
+    /// The completion handler, not the async form: Swift calls an async delegate's handler from the executor the method
+    /// ended on, off the main thread, and UIKit throws "Call must be made on main thread" when the tap brings the app
+    /// back from the background. Both the link and the handler go to the main queue instead.
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse
-    ) async {
-        guard let link = response.notification.request.content.userInfo["link"] as? String,
-              let url = URL(string: link) else { return }
-        await MainActor.run { BlitzSplitApple.shared.handleDeepLink(url: url) }
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping @Sendable () -> Void
+    ) {
+        let link = response.notification.request.content.userInfo["link"] as? String
+        DispatchQueue.main.async {
+            if let link, let url = URL(string: link) {
+                BlitzSplitApple.shared.handleDeepLink(url: url)
+            }
+            completionHandler()
+        }
     }
 }
 

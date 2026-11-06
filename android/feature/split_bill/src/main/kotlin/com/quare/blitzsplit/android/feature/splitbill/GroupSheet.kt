@@ -70,7 +70,6 @@ private fun GroupColumn(
                     GroupBadge(
                         initials = group.initials,
                         color = group.color,
-                        shape = group.shape,
                         photoUrl = group.photoUrl,
                         size = 40.dp,
                     )

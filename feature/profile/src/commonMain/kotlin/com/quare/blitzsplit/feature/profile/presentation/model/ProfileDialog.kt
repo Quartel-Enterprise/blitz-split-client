@@ -21,4 +21,7 @@ enum class ProfileDialog {
 
     // Why: what "Cores dinâmicas" does, opened from Aparência's info button; closing it goes back to Aparência.
     DYNAMIC_COLORS_INFO,
+
+    // Why: Android's "Language", System and each language with a radio, as Bible Planner's language sheet.
+    LANGUAGE,
 }

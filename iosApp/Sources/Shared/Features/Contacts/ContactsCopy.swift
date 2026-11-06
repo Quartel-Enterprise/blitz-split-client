@@ -6,8 +6,11 @@ import SwiftUI
 enum ContactsCopy {
     /// "Floripa trip" for one group, "3 groups" for more, and "· guest" for someone who never joined.
     static func meta(_ row: ContactRow) -> String {
-        let groups = row.groupCount > 1 ? String(localized: "\(Int(row.groupCount)) groups") : row.firstGroupName
-        return row.isGuest ? String(localized: "\(groups) · guest") : groups
+        let groups = row.groupCount > 1 ? String(
+            localized: "\(Int(row.groupCount)) groups",
+            bundle: .appLanguage,
+        ) : row.firstGroupName
+        return row.isGuest ? String(localized: "\(groups) · guest", bundle: .appLanguage) : groups
     }
 
     /// "+R$ 32,90", "−R$ 98,00" or "R$ 0,00", with its word under it.
@@ -30,30 +33,34 @@ enum ContactsCopy {
     /// "Carla owes you", "You owe Bruno" or "You're settled up", over the profile's net.
     static func balanceTitle(_ contact: Contact) -> String {
         let amount = contact.net.amountMinor
-        if amount > 0 { return String(localized: "\(contact.name) owes you") }
+        if amount > 0 { return String(localized: "\(contact.name) owes you", bundle: .appLanguage) }
         if amount < 0 {
             return String(
                 localized: "You owe %@ (a member)",
                 defaultValue: "You owe \(contact.name)",
+                bundle: .appLanguage,
                 comment: "A pair in Balances; %@ is whom this device's user owes",
             )
         }
-        return String(localized: "You're settled up")
+        return String(localized: "You're settled up", bundle: .appLanguage)
     }
 
     /// Under the net: "Already offset across 3 groups", the one group's name, or nothing open anywhere.
     static func balanceNote(_ state: ContactProfileUiState, contact: Contact) -> String {
         switch state.balanceNote {
-        case .nothingOpen: return String(localized: "Nothing open in any group")
-        case .offsetAcrossGroups: return String(localized: "Already offset across \(contact.groups.count) groups")
+        case .nothingOpen: return String(localized: "Nothing open in any group", bundle: .appLanguage)
+        case .offsetAcrossGroups: return String(
+            localized: "Already offset across \(contact.groups.count) groups",
+            bundle: .appLanguage,
+        )
         default: return contact.groups.first?.groupName ?? ""
         }
     }
 
     /// "Uses Blitz Split · 3 groups in common", or a guest's "Guest · not on the app yet".
     static func profileMeta(_ contact: Contact) -> String {
-        guard !contact.isGuest else { return String(localized: "Guest · not on the app yet") }
-        return String(localized: "Uses Blitz Split · \(contact.groups.count) groups in common")
+        guard !contact.isGuest else { return String(localized: "Guest · not on the app yet", bundle: .appLanguage) }
+        return String(localized: "Uses Blitz Split · \(contact.groups.count) groups in common", bundle: .appLanguage)
     }
 
     /// "Oct 30" or "30 de out.", the day of something in the history.
@@ -65,18 +72,21 @@ enum ContactsCopy {
     static func billMeta(_ bill: ContactHistoryItemBill) -> String {
         let total = bill.currency.format(bill.totalMinor)
         let payer = if bill.isPaidByMe {
-            String(localized: "you paid \(total)")
+            String(localized: "you paid \(total)", bundle: .appLanguage)
         } else if bill.payerCount > 1 {
-            String(localized: "\(Int(bill.payerCount)) people paid \(total)")
+            String(localized: "\(Int(bill.payerCount)) people paid \(total)", bundle: .appLanguage)
         } else {
-            String(localized: "\(PaymentCopy.name(bill.payerName)) paid \(total)")
+            String(localized: "\(PaymentCopy.name(bill.payerName)) paid \(total)", bundle: .appLanguage)
         }
         return "\(bill.groupName) · \(shortDate(bill.at)) · \(payer)"
     }
 
     /// A payment in the history: "Carla paid you" or "You paid Felipe".
     static func paymentTitle(_ payment: ContactHistoryItemPayment, name: String) -> String {
-        payment.isFromMe ? String(localized: "You paid \(name)") : String(localized: "\(name) paid you")
+        payment.isFromMe ? String(localized: "You paid \(name)", bundle: .appLanguage) : String(
+            localized: "\(name) paid you",
+            bundle: .appLanguage,
+        )
     }
 
     /// "Floripa trip · Oct 30 · Pix".
@@ -89,9 +99,9 @@ enum ContactsCopy {
         let date = ExpenseFormat.date(of: merge.requestedAt)
         let time = ExpenseFormat.time(merge.requestedAt)
         let day = Calendar.current.isDateInToday(date)
-            ? String(localized: "today, \(time)")
+            ? String(localized: "today, \(time)", bundle: .appLanguage)
             : "\(shortDate(merge.requestedAt)), \(time)"
-        return String(localized: "Personal invite sent \(day)")
+        return String(localized: "Personal invite sent \(day)", bundle: .appLanguage)
     }
 
     /// The invite's message around the link: for someone named, or for whoever gets it.

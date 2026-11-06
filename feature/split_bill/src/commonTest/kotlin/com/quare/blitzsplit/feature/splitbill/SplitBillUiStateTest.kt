@@ -7,7 +7,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -855,7 +854,6 @@ class SplitBillUiStateTest {
         name = "Viagem Floripa",
         initials = "VF",
         color = AvatarColor.GREEN,
-        shape = GroupShape.COOKIE,
         photoUrl = null,
         memberCount = 2,
     )
@@ -911,7 +909,6 @@ class SplitBillUiStateTest {
         groupName = "Viagem Floripa",
         groupInitials = "VF",
         groupColor = AvatarColor.GREEN,
-        groupShape = GroupShape.COOKIE,
         groupPhotoUrl = null,
         groups = groups,
         groupSelection = groupSelection,

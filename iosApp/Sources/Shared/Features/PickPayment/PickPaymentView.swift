@@ -152,9 +152,15 @@ private struct PairRow: View {
 
     private var debt: String {
         let amount = currency.format(pair.amountMinor)
-        if pair.to?.isMe == true { return String(localized: "\(name(pair.from)) owes you \(amount)") }
-        if pair.from?.isMe == true { return String(localized: "You owe \(name(pair.to)) \(amount)") }
-        return String(localized: "\(name(pair.from)) owes \(name(pair.to)) \(amount)")
+        if pair.to?.isMe == true { return String(
+            localized: "\(name(pair.from)) owes you \(amount)",
+            bundle: .appLanguage,
+        ) }
+        if pair.from?.isMe == true { return String(
+            localized: "You owe \(name(pair.to)) \(amount)",
+            bundle: .appLanguage,
+        ) }
+        return String(localized: "\(name(pair.from)) owes \(name(pair.to)) \(amount)", bundle: .appLanguage)
     }
 
     private func name(_ person: PaymentPerson?) -> String {

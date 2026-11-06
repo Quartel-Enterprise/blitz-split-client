@@ -80,6 +80,10 @@ targetTemplates:
         basedOnDependencyAnalysis: false
         script: |
           /usr/bin/python3 -I "$SRCROOT/check-prominent-labels.py" "$SRCROOT/Sources"
+      - name: Check the localized bundle
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/check-localized-bundle.py" "$SRCROOT/Sources"
     postBuildScripts:
       # Xcode compiles es-ES.lproj with only the words Spain says differently, and an es-ES app would show English
       # for the rest: this fills each es-ES table with the neutral es one, Spain's keys winning, before signing

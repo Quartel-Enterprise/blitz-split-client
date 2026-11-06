@@ -195,7 +195,6 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_with_link_clear_clicked` | none | The link field cleared | `:feature:join` |
 | `join_with_link_open_clicked` | none | "Open invite" or the keyboard's Go, for a link typed; also a Go the screen refuses (a blank field) | `:feature:join` |
 | `group_color_clicked` | `source` (`create_group`) | The group's avatar tapped, stepping its color | `:feature:create_group` |
-| `group_shape_and_color_clicked` | `source` (`create_group`) | Android's "Change the group's shape and color" | `:feature:create_group` |
 | `photo_removed` | `source` (`create_group`, `edit_profile`, `profile_photo`) | "Remove photo" | `:feature:create_group`, `:feature:edit_profile` |
 | `group_type_selected` | `type`, `source` (`create_group`, `edit_group`) | A group type picked | `:feature:create_group`, `:feature:edit_group` |
 | `group_currency_selected` | `currency`, `source` (`create_group`, `edit_group`) | A currency picked, one Edit group takes (not once the group has a bill) | `:feature:create_group`, `:feature:edit_group` |
@@ -213,7 +212,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `search_suggestion_clicked` | `source` (`search`, `groups`) | "Did you mean “Larissa”?" tapped | `:feature:groups` |
 | `sync_retry_clicked` | `source` (`home`, `groups`, `profile`) | The sync chip's "try again" | `:feature:groups`, `:feature:profile` |
 | `pull_to_refresh` | `source` (`home`, `groups`, `activity`) | Pulled down on Android and iOS | `:feature:groups`, `:feature:activity` |
-| `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
+| `split_bill_clicked` | `source` (`home`, `groups`, `global_balances`, `contacts`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `balances_to_receive_clicked` | `source` (`home`, `groups`) | "To get back" or "Owed to you" | `:feature:groups` |
 | `balances_to_pay_clicked` | `source` (`home`, `groups`) | "To pay" or "You owe" | `:feature:groups` |
 | `balances_overall_clicked` | `source` (`groups`) | The Groups tab's "Overall balance" card (web, Mac), which opens Balances | `:feature:groups` |
@@ -270,7 +269,6 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `simplify_conflict_activity_clicked` | `source` (`group_detail`, `edit_group`) | "See in Activity" on the simplify conflict's notice | `:feature:group_detail`, `:feature:edit_group` |
 | `group_icon_clicked` | none | The avatar or "Change icon or photo", which opens "Group icon" | `:feature:edit_group` |
 | `group_icon_color_picked` | `color` | A color in "Group icon", while it is open | `:feature:edit_group` |
-| `group_icon_shape_picked` | `shape` | A shape in "Group icon" (Android), while it is open | `:feature:edit_group` |
 | `group_icon_confirmed` | none | "Use this icon" | `:feature:edit_group` |
 | `group_color_selected` | `color`, `source` (`edit_group`) | "Icon color" on the web and the Mac | `:feature:edit_group` |
 | `default_split_clicked` | none | Edit group's "Default split" | `:feature:edit_group` |
@@ -475,6 +473,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out or unlinks | `:feature:profile` |
 | `theme_selected` | `theme` (`system`, `light`, `dark`) | A theme, another than the one picked | `:feature:profile` |
 | `profile_appearance_clicked` | none | "Appearance", once the theme was read | `:feature:profile` |
+| `profile_language_clicked` | none | Android's "Language" row, once the profile was read | `:feature:profile` |
+| `language_selected` | `language` (`system`, `english`, `portuguese`, `spanish`) | A language, another than the one picked | `:feature:profile` |
 | `profile_dynamic_colors_info_clicked` | none | The ⓘ of "Dynamic colors", over Appearance | `:feature:profile` |
 | `dynamic_colors_toggled` | `is_on` | "Dynamic colors", where the device draws them (Android 12 and later) | `:feature:profile` |
 | `check_for_updates_clicked` | none | "Check for updates", while not already checking | `:feature:profile` |

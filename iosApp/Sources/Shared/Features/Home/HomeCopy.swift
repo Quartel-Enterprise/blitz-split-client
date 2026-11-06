@@ -7,17 +7,30 @@ import SwiftUI
 enum HomeCopy {
     /// "Home", the tab and the screen. Its own key: "Home" alone is the group type, "Casa" in Portuguese.
     static var tabTitle: String {
-        String(localized: "Home tab", defaultValue: "Home", comment: "The home's first tab and its title (Início)")
+        String(
+            localized: "Home tab",
+            defaultValue: "Home",
+            bundle: .appLanguage,
+            comment: "The home's first tab and its title (Início)",
+        )
     }
 
     /// "See all" beside "Your groups", its own key: Contacts' "See all" opens a history, said differently in Portuguese.
     static var seeAllGroups: String {
-        String(localized: "See all groups", defaultValue: "See all", comment: "Home: opens the Groups tab")
+        String(
+            localized: "See all groups",
+            defaultValue: "See all",
+            bundle: .appLanguage,
+            comment: "Home: opens the Groups tab",
+        )
     }
 
     /// "Balances with people", with how many once the row of faces runs past the screen: "Balances with people · 9".
     static func peopleTitle(count: Int, isCounted: Bool) -> String {
-        isCounted ? String(localized: "Balances with people · \(count)") : String(localized: "Balances with people")
+        isCounted ? String(localized: "Balances with people · \(count)", bundle: .appLanguage) : String(
+            localized: "Balances with people",
+            bundle: .appLanguage,
+        )
     }
 
     /// Someone no longer in the group is "Former member".
@@ -32,21 +45,27 @@ enum HomeCopy {
 
     /// Under the amount: "you owe" or "owes you".
     static func word(_ person: HomePerson) -> String {
-        person.netMinor < 0 ? String(localized: "you owe") : String(localized: "owes you")
+        person.netMinor < 0 ? String(localized: "you owe", bundle: .appLanguage) : String(
+            localized: "owes you",
+            bundle: .appLanguage,
+        )
     }
 
     /// "You owe Bruno $126.00" or "Diego owes you $45.00, guest without the app", as VoiceOver reads the face.
     static func accessibilityLabel(_ person: HomePerson) -> String {
         let amount = person.currency.format(abs(person.netMinor))
         let label = person.netMinor < 0
-            ? String(localized: "You owe \(name(person)) \(amount)")
-            : String(localized: "\(name(person)) owes you \(amount)")
-        return person.isGuest ? String(localized: "\(label), guest without the app") : label
+            ? String(localized: "You owe \(name(person)) \(amount)", bundle: .appLanguage)
+            : String(localized: "\(name(person)) owes you \(amount)", bundle: .appLanguage)
+        return person.isGuest ? String(localized: "\(label), guest without the app", bundle: .appLanguage) : label
     }
 
     /// What tapping a face opens: settling up with whom you owe, recording what someone paid you.
     static func accessibilityHint(_ person: HomePerson) -> String {
-        person.netMinor < 0 ? String(localized: "Settle up") : String(localized: "Record payment")
+        person.netMinor < 0 ? String(localized: "Settle up", bundle: .appLanguage) : String(
+            localized: "Record payment",
+            bundle: .appLanguage,
+        )
     }
 
     /// A guest's long press (a hover on the Mac): they have no app, so they never hear of the payment, whichever way
@@ -55,23 +74,35 @@ enum HomeCopy {
         let youOwe = person.netMinor < 0
         #if os(macOS)
         return youOwe
-            ? String(localized: "\(name(person)) is a guest without the app. Click to note what you paid them; they get no notice.")
-            : String(localized: "\(name(person)) is a guest without the app. Click to note what they paid you; they get no notice.")
+            ? String(
+                localized: "\(name(person)) is a guest without the app. Click to note what you paid them; they get no notice.",
+                bundle: .appLanguage,
+            )
+            : String(
+                localized: "\(name(person)) is a guest without the app. Click to note what they paid you; they get no notice.",
+                bundle: .appLanguage,
+            )
         #else
         return youOwe
-            ? String(localized: "\(name(person)) is a guest without the app. Tap to note what you paid them; they get no notice.")
-            : String(localized: "\(name(person)) is a guest without the app. Tap to note what they paid you; they get no notice.")
+            ? String(
+                localized: "\(name(person)) is a guest without the app. Tap to note what you paid them; they get no notice.",
+                bundle: .appLanguage,
+            )
+            : String(
+                localized: "\(name(person)) is a guest without the app. Tap to note what they paid you; they get no notice.",
+                bundle: .appLanguage,
+            )
         #endif
     }
 
     /// Under "Overall balance": "to get back, already offset", "to pay, already offset", "all settled up", or "so far
     /// · the rest is on its way" while the first download fills the device.
     static func summaryHint(_ summary: HomeSummary, isFirstDownload: Bool) -> String {
-        if isFirstDownload { return String(localized: "so far · the rest is on its way") }
+        if isFirstDownload { return String(localized: "so far · the rest is on its way", bundle: .appLanguage) }
         switch summary.kind {
-        case .toReceive: return String(localized: "to get back, already offset")
-        case .youOwe: return String(localized: "to pay, already offset")
-        default: return String(localized: "all settled up")
+        case .toReceive: return String(localized: "to get back, already offset", bundle: .appLanguage)
+        case .youOwe: return String(localized: "to pay, already offset", bundle: .appLanguage)
+        default: return String(localized: "all settled up", bundle: .appLanguage)
         }
     }
 
@@ -99,21 +130,30 @@ enum HomeCopy {
 
     /// "Save your recovery code"'s message, with the device the person would switch.
     static var recoveryMessage: String {
-        String(localized: "You use the app without an account. If you switch \(DeviceName.current)s, this code is what brings your groups back.")
+        String(
+            localized: "You use the app without an account. If you switch \(DeviceName.current)s, this code is what brings your groups back.",
+            bundle: .appLanguage,
+        )
     }
 
     /// The blocked notification card's message, with where the system keeps the app's notifications.
     static var notificationsOffMessage: String {
         #if os(macOS)
-        String(localized: "Turn them on in System Settings to know when someone adds a bill with you.")
+        String(
+            localized: "Turn them on in System Settings to know when someone adds a bill with you.",
+            bundle: .appLanguage,
+        )
         #else
-        String(localized: "Turn them on in Settings to know when someone adds a bill with you.")
+        String(localized: "Turn them on in Settings to know when someone adds a bill with you.", bundle: .appLanguage)
         #endif
     }
 
     /// The first use's message, with the device everything stays on.
     static var firstUseMessage: String {
-        String(localized: "Create a group to split the first bill, or join one through the link or QR code someone sent you. Everything is saved on this \(DeviceName.current), even without internet.")
+        String(
+            localized: "Create a group to split the first bill, or join one through the link or QR code someone sent you. Everything is saved on this \(DeviceName.current), even without internet.",
+            bundle: .appLanguage,
+        )
     }
 
     /// A pinned group's card: "Floripa trip, pinned: +$214.90 to get back".
@@ -121,7 +161,7 @@ enum HomeCopy {
         let row = group.row
         let balance = "\(row.currency.formatSigned(row.netMinor)) \(GroupsCopy.balanceLabel(row.balanceKind))"
         return group.isPinned
-            ? String(localized: "\(row.name), pinned: \(balance)")
+            ? String(localized: "\(row.name), pinned: \(balance)", bundle: .appLanguage)
             : "\(row.name): \(balance)"
     }
 
@@ -130,7 +170,7 @@ enum HomeCopy {
     static func meta(_ bill: HomeBill) -> String {
         let payers = bill.payers.map { (name: $0.name, isMe: $0.isMe) }
         let meta = ExpenseFormat.paid(payers, loneFormer: nil).map { "\(bill.groupName) · \($0)" } ?? bill.groupName
-        return bill.isPending ? String(localized: "queued · \(meta)") : meta
+        return bill.isPending ? String(localized: "queued · \(meta)", bundle: .appLanguage) : meta
     }
 
     /// What the bill does to this person's balance: "+$249.60 to get back", "−$29.20 you owe", or a plain zero.

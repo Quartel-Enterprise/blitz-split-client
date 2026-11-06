@@ -52,6 +52,9 @@ final class ProfileModel {
             // Only Google Play downloads inside the app
             default: break
             }
+        // The windows already redraw in it (`AppLocale`)
+        case is ProfileUiActionApplyLanguage:
+            break
         case is ProfileUiActionLaunchNativeSignIn:
             Task {
                 switch await appleSignIn.signIn() {
@@ -357,6 +360,17 @@ private struct PreferencesSection: View {
                 Text("Light").tag(ThemePreference.light)
                 Text("Dark").tag(ThemePreference.dark)
             }
+            Picker(
+                "Language",
+                selection: Binding(
+                    get: { model.state.language },
+                    set: { model.send(ProfileUiEventOnLanguageSelected(language: $0)) },
+                ),
+            ) {
+                ForEach(model.state.languageOptions, id: \.self) { language in
+                    LanguageName(language: language).tag(language)
+                }
+            }
             Toggle(
                 isOn: Binding(
                     get: { model.state.showsBitcoinInSats },
@@ -389,6 +403,20 @@ private struct PreferencesSection: View {
             .foregroundStyle(.primary)
             #endif
             CategoryMapRow(model: model)
+        }
+    }
+}
+
+/// Each language in its own name, so whoever can't read the current one still finds theirs.
+private struct LanguageName: View {
+    let language: AppLanguage
+
+    var body: some View {
+        switch language {
+        case .english: Text(verbatim: "English")
+        case .portuguese: Text(verbatim: "Português")
+        case .spanish: Text(verbatim: "Español")
+        default: Text("System")
         }
     }
 }

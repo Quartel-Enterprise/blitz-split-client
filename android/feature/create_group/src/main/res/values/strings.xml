@@ -3,7 +3,7 @@
     <string name="create_group_title">New group</string>
     <string name="create_group_close">Close</string>
     <string name="create_group_create">Create</string>
-    <string name="create_group_change_shape_and_color">Change the group\'s shape and color</string>
+    <string name="create_group_change_color">Change the group\'s color</string>
     <string name="create_group_name_label">Group name</string>
     <string name="create_group_type_label">Group type</string>
     <string name="create_group_members_title">Who\'s in</string>

@@ -49,45 +49,60 @@ enum ExceptionCopy {
         switch row.exception.mode {
         case .shares:
             let text = values.count == 2
-                ? String(localized: "\(values[0]) to \(values[1])")
+                ? String(localized: "\(values[0]) to \(values[1])", bundle: .appLanguage)
                 : values.map { String($0) }.joined(separator: " · ")
-            return String(localized: "Shares, \(text)")
+            return String(localized: "Shares, \(text)", bundle: .appLanguage)
         case .percent:
-            return String(localized: "Percentage, \(values.map { "\($0)%" }.joined(separator: " · "))")
+            return String(
+                localized: "Percentage, \(values.map { "\($0)%" }.joined(separator: " · "))",
+                bundle: .appLanguage,
+            )
         default:
-            if row.includedCount >= row.totalCount { return String(localized: "Equally among everyone") }
-            return String(localized: "Equally among \(Int(row.includedCount))")
+            if row.includedCount >= row.totalCount { return String(
+                localized: "Equally among everyone",
+                bundle: .appLanguage,
+            ) }
+            return String(localized: "Equally among \(Int(row.includedCount))", bundle: .appLanguage)
         }
     }
 
     static func modeLabel(_ mode: DefaultSplitMode) -> String {
         switch mode {
-        case .shares: String(localized: "Shares")
-        case .percent: String(localized: "Percentage")
-        default: String(localized: "Equal")
+        case .shares: String(localized: "Shares", bundle: .appLanguage)
+        case .percent: String(localized: "Percentage", bundle: .appLanguage)
+        default: String(localized: "Equal", bundle: .appLanguage)
         }
     }
 
     /// What is missing, else "On a R$ 100,00 bill in Groceries: Pierre R$ 50,00 · Ana R$ 50,00".
     static func status(_ state: DefaultSplitUiState, editor: ExceptionEditor) -> String {
-        guard let category = state.exceptionCategory else { return String(localized: "Pick a category for the exception.") }
+        guard let category = state.exceptionCategory else { return String(
+            localized: "Pick a category for the exception.",
+            bundle: .appLanguage,
+        ) }
         let name = CategoryCopy.name(category)
-        if state.isExceptionCategoryTaken { return String(localized: "\(name) already has an exception.") }
+        if state.isExceptionCategoryTaken { return String(
+            localized: "\(name) already has an exception.",
+            bundle: .appLanguage,
+        ) }
         if editor.showsPercentError {
             let sum = Int(editor.percentSum)
             let remaining = Int(editor.remainingPercent)
-            if remaining > 0 { return String(localized: "It adds up to \(sum)%. \(remaining)% missing.") }
-            return String(localized: "It adds up to \(sum)%. \(-remaining)% too much.")
+            if remaining > 0 { return String(
+                localized: "It adds up to \(sum)%. \(remaining)% missing.",
+                bundle: .appLanguage,
+            ) }
+            return String(localized: "It adds up to \(sum)%. \(-remaining)% too much.", bundle: .appLanguage)
         }
         let parts = editor.figures.rows
             .compactMap { row -> String? in
                 guard let minor = row.exampleMinor?.int64Value, minor > 0 else { return nil }
-                let who = row.person.isMe ? String(localized: "You") : row.person.name
+                let who = row.person.isMe ? String(localized: "You", bundle: .appLanguage) : row.person.name
                 return "\(who) \(state.currency.format(minor))"
             }
             .joined(separator: " · ")
         let total = state.currency.format(editor.figures.exampleTotalMinor)
-        return String(localized: "On a \(total) bill in \(name): \(parts)")
+        return String(localized: "On a \(total) bill in \(name): \(parts)", bundle: .appLanguage)
     }
 }
 
@@ -191,7 +206,7 @@ struct ExceptionSheet: View {
             }
             AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)
                 .accessibilityHidden(true)
-            Text(verbatim: person.isMe ? String(localized: "You") : person.name)
+            Text(verbatim: person.isMe ? String(localized: "You", bundle: .appLanguage) : person.name)
             Spacer()
             switch mode {
             case .shares:

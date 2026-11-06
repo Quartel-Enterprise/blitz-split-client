@@ -49,7 +49,6 @@ internal fun rowOf(
         name = group.name,
         initials = Initials.of(group.name),
         color = group.color,
-        shape = group.shape,
         photoUrl = group.photo?.toImageUrl(),
         faces = group.members.take(MAX_FACES).map {
             MemberFace(
