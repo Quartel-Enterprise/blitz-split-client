@@ -66,8 +66,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (the brand badge's currency, a new group's) stays the device's, whatever the language. The Apple apps pick it in
     Preferences' menu, Settings on the Mac, and every window redraws in it at once, the Mac's menu bar too
     (`AppLocale`, and every `String(localized:)` reading `bundle: .appLanguage`), a window with a sheet open once it
-    closes, so a form in it keeps what was typed; what the system formats itself (dates, amounts) and Spain's own
-    words in SwiftUI's literals follow at the next launch. The web picks it in the Appearance card's segments and
+    closes, so a form in it keeps what was typed; what the system formats itself (dates, amounts) follows at the next
+    launch. The web picks it in the Appearance card's segments and
     reloads the page in it, back on the profile.
   - "Dynamic colors" (Material You) shows in Appearance only where the platform draws a scheme from the wallpaper,
     Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off by default, it swaps the

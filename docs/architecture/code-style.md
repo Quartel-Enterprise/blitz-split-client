@@ -286,6 +286,9 @@ No linter runs on Swift yet; follow what the app already does.
   for a reason.
 - User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR,
   es and (where Spain differs) es-ES translations in `Localizable.xcstrings` (the development language is English).
+  Never copy an es word into es-ES: Xcode compiles `es-ES.lproj` with only Spain's words, and the build's "Fill the
+  regional tables with their language's" phase (`iosApp/merge-regional-strings.py`) fills it with the rest of `es`,
+  since an es-ES app reads its tables from `es-ES.lproj` alone and would show English for the missing keys.
 - A Kotlin `Int` is a Swift `Int32`: interpolate it as `Int(count)` in a localized literal, and a Kotlin `Float` as
   `Double(value)`. An `Int32` makes the key `%d …` and a `Float` `%f …`, which miss the catalog's `%lld …` and
   `%lf …` entries and their pt-BR and plural forms, so the build's "Check the localized keys" phase

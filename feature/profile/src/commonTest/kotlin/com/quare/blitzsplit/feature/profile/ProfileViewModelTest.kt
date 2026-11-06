@@ -66,7 +66,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
-import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileAppInvite
@@ -1670,7 +1669,7 @@ class ProfileViewModelTest {
         viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
 
         // Then
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl("https://blitzsplit.com/privacy")), actions)
     }
 
     @Test
@@ -1682,7 +1681,7 @@ class ProfileViewModelTest {
         viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
 
         // Then
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl("https://blitzsplit.com/terms")), actions)
     }
 
     @Test
