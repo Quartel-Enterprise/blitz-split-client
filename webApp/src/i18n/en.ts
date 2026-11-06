@@ -2041,6 +2041,8 @@ export const en = {
   editGroup_payments: 'Payments',
   editGroup_simplifyOff: "Combines the group's debts into fewer payments. Nobody pays or receives more.",
   editGroup_simplifyOn: 'On · {count} payments instead of {before}',
+  editGroup_simplifyCurrencyRowOne: '{currency} · {before} → {after} payment',
+  editGroup_simplifyCurrencyRowOther: '{currency} · {before} → {after} payments',
   editGroup_simplifyOnMinimal: 'On · already the fewest payments',
   editGroup_simplifyPendingOn: 'On in this browser · waiting to upload',
   editGroup_simplifyPendingOff: 'Off in this browser · waiting to upload',

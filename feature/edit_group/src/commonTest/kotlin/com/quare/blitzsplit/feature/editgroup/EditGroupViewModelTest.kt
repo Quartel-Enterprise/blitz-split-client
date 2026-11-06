@@ -34,6 +34,7 @@ import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.editgroup.presentation.model.CurrencySimplification
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyAmount
@@ -1651,11 +1652,16 @@ class EditGroupViewModelTest {
             assertEquals(SimplifyDebtsStatus.ON, state.simplifyStatus)
             assertEquals(3, state.memberCount)
             assertEquals(
-                DebtSimplificationSummary(
-                    paymentCount = 1,
-                    unsimplifiedPaymentCount = 2,
+                listOf(
+                    CurrencySimplification(
+                        currency = GroupCurrency.BRL,
+                        summary = DebtSimplificationSummary(
+                            paymentCount = 1,
+                            unsimplifiedPaymentCount = 2,
+                        ),
+                    ),
                 ),
-                state.simplification,
+                state.simplifications,
             )
         }
 
@@ -1674,7 +1680,7 @@ class EditGroupViewModelTest {
             // Then
             assertFalse(state.simplifiesDebts)
             assertEquals(SimplifyDebtsStatus.OFF, state.simplifyStatus)
-            assertNull(state.simplification)
+            assertTrue(state.simplifications.isEmpty())
             assertTrue(state.canChangeSimplifyDebts)
         }
 
@@ -1714,6 +1720,60 @@ class EditGroupViewModelTest {
         }
 
     @Test
+    fun `GIVEN bills in two currencies WHEN the switch is on THEN the line has a row for each of them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(
+                    simplifiesDebts = true,
+                    currency = GroupCurrency.EUR,
+                ),
+                storedExpenses = listOf(
+                    pierrePaidForBruno,
+                    brunoPaidForAna.copy(
+                        id = "expense-usd",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            val rows = viewModel.uiState.value.simplifications
+
+            // Then
+            assertEquals(
+                setOf(GroupCurrency.BRL, GroupCurrency.USD),
+                rows.map { it.currency }.toSet(),
+            )
+        }
+
+    @Test
+    fun `GIVEN bills in two currencies WHEN tapping the switch THEN the confirmation counts each currency apart`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = threePeople.copy(currency = GroupCurrency.EUR),
+                storedExpenses = listOf(
+                    pierrePaidForBruno,
+                    brunoPaidForAna.copy(
+                        id = "expense-usd",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            val confirmation = checkNotNull(viewModel.uiState.value.simplifyConfirmation)
+            assertEquals(
+                setOf(GroupCurrency.BRL, GroupCurrency.USD),
+                confirmation.currencies.map { it.currency }.toSet(),
+            )
+        }
+
+    @Test
     fun `GIVEN the switch on WHEN a new bill arrives THEN the payments line follows it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -1726,11 +1786,16 @@ class EditGroupViewModelTest {
 
         // Then
         assertEquals(
-            DebtSimplificationSummary(
-                paymentCount = 1,
-                unsimplifiedPaymentCount = 2,
+            listOf(
+                CurrencySimplification(
+                    currency = GroupCurrency.BRL,
+                    summary = DebtSimplificationSummary(
+                        paymentCount = 1,
+                        unsimplifiedPaymentCount = 2,
+                    ),
+                ),
             ),
-            viewModel.uiState.value.simplification,
+            viewModel.uiState.value.simplifications,
         )
     }
 
@@ -1753,11 +1818,16 @@ class EditGroupViewModelTest {
 
         // Then
         assertEquals(
-            DebtSimplificationSummary(
-                paymentCount = 1,
-                unsimplifiedPaymentCount = 1,
+            listOf(
+                CurrencySimplification(
+                    currency = GroupCurrency.BRL,
+                    summary = DebtSimplificationSummary(
+                        paymentCount = 1,
+                        unsimplifiedPaymentCount = 1,
+                    ),
+                ),
             ),
-            viewModel.uiState.value.simplification,
+            viewModel.uiState.value.simplifications,
         )
     }
 
@@ -1777,11 +1847,16 @@ class EditGroupViewModelTest {
             val state = viewModel.uiState.value
             assertTrue(state.simplifiesDebts)
             assertEquals(
-                DebtSimplificationSummary(
-                    paymentCount = 1,
-                    unsimplifiedPaymentCount = 2,
+                listOf(
+                    CurrencySimplification(
+                        currency = GroupCurrency.BRL,
+                        summary = DebtSimplificationSummary(
+                            paymentCount = 1,
+                            unsimplifiedPaymentCount = 2,
+                        ),
+                    ),
                 ),
-                state.simplification,
+                state.simplifications,
             )
             assertFalse(state.canSave)
         }
@@ -1801,7 +1876,7 @@ class EditGroupViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertFalse(state.simplifiesDebts)
-            assertNull(state.simplification)
+            assertTrue(state.simplifications.isEmpty())
         }
 
     @Test
@@ -1865,8 +1940,8 @@ class EditGroupViewModelTest {
             val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
             assertTrue(confirmation.isTurningOn)
             assertEquals("Viagem Floripa", confirmation.groupName)
-            assertEquals(2, confirmation.paymentsBefore)
-            assertEquals(1, confirmation.paymentsAfter)
+            assertEquals(2, confirmation.currencies.single().paymentsBefore)
+            assertEquals(1, confirmation.currencies.single().paymentsAfter)
             assertFalse(confirmation.isAlreadyMinimal)
             assertEquals(0, confirmation.othersChangingCount)
             assertEquals(listOf(PIERRE, ANA, BRUNO), confirmation.people.map { it.memberId })
@@ -1953,8 +2028,8 @@ class EditGroupViewModelTest {
             // Then
             val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
             assertTrue(confirmation.isAlreadyMinimal)
-            assertEquals(2, confirmation.paymentsBefore)
-            assertEquals(2, confirmation.paymentsAfter)
+            assertEquals(2, confirmation.currencies.single().paymentsBefore)
+            assertEquals(2, confirmation.currencies.single().paymentsAfter)
             assertEquals(emptyList(), confirmation.people)
         }
 
@@ -1973,8 +2048,8 @@ class EditGroupViewModelTest {
             // Then
             val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
             assertFalse(confirmation.isTurningOn)
-            assertEquals(1, confirmation.paymentsBefore)
-            assertEquals(2, confirmation.paymentsAfter)
+            assertEquals(1, confirmation.currencies.single().paymentsBefore)
+            assertEquals(2, confirmation.currencies.single().paymentsAfter)
             assertEquals(listOf(PIERRE), confirmation.people.map { it.memberId })
             assertEquals(2, confirmation.othersChangingCount)
             assertFalse(confirmation.isAlreadyMinimal)
@@ -2019,6 +2094,7 @@ class EditGroupViewModelTest {
                             isMe = false,
                         ),
                         amountMinor = 1_000,
+                        currency = GroupCurrency.BRL,
                     ),
                 ),
                 viewModel.uiState.value.simplifyConfirmation
@@ -2058,8 +2134,8 @@ class EditGroupViewModelTest {
 
             // Then
             val confirmation = assertNotNull(viewModel.uiState.value.simplifyConfirmation)
-            assertEquals(2, confirmation.paymentsBefore)
-            assertEquals(1, confirmation.paymentsAfter)
+            assertEquals(2, confirmation.currencies.single().paymentsBefore)
+            assertEquals(1, confirmation.currencies.single().paymentsAfter)
         }
 
     @Test
@@ -2263,7 +2339,7 @@ class EditGroupViewModelTest {
         assertEquals(listOf(false), groups.simplifyDebtsChanges.map { it.second })
         val state = viewModel.uiState.value
         assertFalse(state.simplifiesDebts)
-        assertNull(state.simplification)
+        assertTrue(state.simplifications.isEmpty())
         assertNull(state.simplifyConfirmation)
     }
 

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -29,6 +30,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.editgroup.presentation.model.CurrencySimplification
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
@@ -76,7 +78,7 @@ class EditGroupViewModel(
                 hasChanges = false,
                 simplifiesDebts = false,
                 isSimplifyDebtsPending = false,
-                simplification = null,
+                simplifications = emptyList(),
                 memberCount = 0,
                 simplifyConfirmation = null,
                 isChangingSimplifyDebts = false,
@@ -229,18 +231,25 @@ class EditGroupViewModel(
 
     // Why: the switch is the group's, as Room has it, a sync's change included; it is no change of the form's.
     private fun showSimplification(group: Group) {
-        val raw = rawOf(group)
-        val shown = raw?.takeIf { group.simplifiesDebts }?.toSimplified(group.members.map { it.id })
+        val raws = rawsOf(group)
+        val order = group.members.map { it.id }
         uiState.update { state ->
             state.copy(
                 simplifiesDebts = group.simplifiesDebts,
                 isSimplifyDebtsPending = group.isSimplifyDebtsPending,
-                simplification = shown?.let(DebtSimplificationSummary::ofOrNull),
+                simplifications = raws
+                    .orEmpty()
+                    .filter { group.simplifiesDebts }
+                    .mapNotNull { (currency, raw) ->
+                        DebtSimplificationSummary.ofOrNull(raw.toSimplified(order))?.let {
+                            CurrencySimplification(currency, it)
+                        }
+                    },
                 memberCount = group.members.size,
                 // Why: a sync turning it the other way meanwhile closes the question, which no longer asks the same.
                 simplifyConfirmation = state.simplifyConfirmation
-                    ?.takeIf { it.isTurningOn != group.simplifiesDebts && raw != null }
-                    ?.let { simplifyConfirmationOf(group, checkNotNull(raw), settlements) },
+                    ?.takeIf { it.isTurningOn != group.simplifiesDebts && raws != null }
+                    ?.let { simplifyConfirmationOf(group, checkNotNull(raws), settlements) },
             )
         }
     }
@@ -258,16 +267,24 @@ class EditGroupViewModel(
         }
     }
 
-    // Why: the pairs as each bill makes them in the group's currency, never with another's added.
-    private fun rawOf(group: Group): GroupBalances? =
-        expenses?.let { GroupBalances.createUnsimplified(it, settlements, group.currency) }
+    /*
+     * Why: the pairs as each bill makes them, one set per currency the group has bills or payments in (its default
+     * currency alone while it has none), never with another currency's added.
+     */
+    private fun rawsOf(group: Group): List<CurrencyBalances>? = expenses?.let { bills ->
+        val used = (bills.map { it.currency } + settlements.map { it.currency }).toSet()
+        GroupBalances
+            .currenciesOf(group, bills, settlements)
+            .filter { used.isEmpty() || it in used }
+            .map { CurrencyBalances(it, GroupBalances.createUnsimplified(bills, settlements, it)) }
+    }
 
     private fun openSimplifyConfirmation() {
         val state = uiState.value
         val group = latest ?: return
-        val raw = rawOf(group) ?: return
+        val raws = rawsOf(group) ?: return
         if (!state.canChangeSimplifyDebts) return
-        uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raw, settlements)) }
+        uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raws, settlements)) }
     }
 
     private fun selectCurrency(currency: GroupCurrency) {

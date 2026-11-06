@@ -114,6 +114,11 @@
         <item quantity="many">Activé · %1$d paiements au lieu de %2$d</item>
         <item quantity="other">Activé · %1$d paiements au lieu de %2$d</item>
     </plurals>
+    <plurals name="simplify_status_currency_row">
+        <item quantity="one">%1$s · %2$d → %3$d paiement</item>
+        <item quantity="many">%1$s · %2$d → %3$d paiements</item>
+        <item quantity="other">%1$s · %2$d → %3$d paiements</item>
+    </plurals>
     <string name="simplify_status_on_minimal">Activé · déjà le minimum de paiements</string>
     <string name="simplify_status_pending_on">Activé sur cet appareil · en attente d’envoi</string>
     <string name="simplify_status_pending_off">Désactivé sur cet appareil · en attente d’envoi</string>

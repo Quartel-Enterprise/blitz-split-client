@@ -2043,6 +2043,8 @@ export const fr: Record<MessageKey, string> = {
   editGroup_payments: 'Paiements',
   editGroup_simplifyOff: 'Regroupe les dettes du groupe en moins de paiements. Personne ne paie ni ne reçoit plus.',
   editGroup_simplifyOn: 'Activé · {count} paiements au lieu de {before}',
+  editGroup_simplifyCurrencyRowOne: '{currency} · {before} → {after} paiement',
+  editGroup_simplifyCurrencyRowOther: '{currency} · {before} → {after} paiements',
   editGroup_simplifyOnMinimal: 'Activé · déjà le minimum de paiements',
   editGroup_simplifyPendingOn: 'Activé dans ce navigateur · en attente d’envoi',
   editGroup_simplifyPendingOff: 'Désactivé dans ce navigateur · en attente d’envoi',

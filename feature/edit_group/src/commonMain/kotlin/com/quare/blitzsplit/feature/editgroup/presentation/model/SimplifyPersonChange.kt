@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 
 /*
  * Why: one row of "O que muda" (13.3), which each UI words from the four lists in this order: "Não paga mais R$ 118,00
@@ -8,6 +9,8 @@ import com.quare.blitzsplit.core.model.AvatarColor
  */
 data class SimplifyPersonChange(
     val memberId: String,
+    // Why: the currency of the amounts and names below; someone changing in two currencies has a row for each.
+    val currency: GroupCurrency,
     val person: SimplifyName,
     val initials: String,
     val avatarColor: AvatarColor,

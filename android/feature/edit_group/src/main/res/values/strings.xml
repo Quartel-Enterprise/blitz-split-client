@@ -108,6 +108,10 @@
         <item quantity="one">On · %1$d payment instead of %2$d</item>
         <item quantity="other">On · %1$d payments instead of %2$d</item>
     </plurals>
+    <plurals name="simplify_status_currency_row">
+        <item quantity="one">%1$s · %2$d → %3$d payment</item>
+        <item quantity="other">%1$s · %2$d → %3$d payments</item>
+    </plurals>
     <string name="simplify_status_on_minimal">On · already the fewest payments</string>
     <string name="simplify_status_pending_on">On on this device · waiting to upload</string>
     <string name="simplify_status_pending_off">Off on this device · waiting to upload</string>

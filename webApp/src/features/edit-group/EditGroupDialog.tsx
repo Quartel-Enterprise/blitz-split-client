@@ -67,8 +67,6 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
   const simplifyConfirmation = state.simplifyConfirmation && (
     <SimplifyDebtsConfirmDialog
       confirmation={state.simplifyConfirmation}
-      currency={state.currency}
-      fractionDigits={state.fractionDigits}
       isBusy={state.isChangingSimplifyDebts}
       isDesktop={isDesktop}
       events={presenter}
@@ -225,7 +223,13 @@ function simplifyStatusText(state: JsEditGroupState): string {
     case 'needs-third-person':
       return t('editGroup_simplifyNeedsThird')
     case 'on': {
-      const simplification = state.simplification
+      // Why: one row per currency, each simplifying on its own: "BRL · 7 → 5 pagamentos".
+      if (state.simplifications.length > 1) {
+        return state.simplifications
+          .map((row) => t(row.paymentCount === 1 ? 'editGroup_simplifyCurrencyRowOne' : 'editGroup_simplifyCurrencyRowOther', { currency: row.currency, before: row.unsimplifiedPaymentCount, after: row.paymentCount }))
+          .join('\n')
+      }
+      const simplification = state.simplifications[0]
       if (!simplification || simplification.isAlreadyMinimal) return t('editGroup_simplifyOnMinimal')
       return t('editGroup_simplifyOn', { count: simplification.paymentCount, before: simplification.unsimplifiedPaymentCount })
     }
@@ -253,7 +257,7 @@ function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter;
           <Label htmlFor={simplifyId}>{t('simplify_title')}</Label>
           <span
             id={simplifyStatusId}
-            className={cn('flex items-center gap-1.5 text-[13px] leading-[18px]', isPending ? 'text-pending' : 'text-muted-foreground')}
+            className={cn('flex items-center gap-1.5 text-[13px] leading-[18px] whitespace-pre-line', isPending ? 'text-pending' : 'text-muted-foreground')}
           >
             {isPending && <PendingDot />}
             {simplifyStatusText(state)}

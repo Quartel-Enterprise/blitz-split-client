@@ -111,6 +111,10 @@
         <item quantity="one">Ligado · %1$d pagamento em vez de %2$d</item>
         <item quantity="other">Ligado · %1$d pagamentos em vez de %2$d</item>
     </plurals>
+    <plurals name="simplify_status_currency_row">
+        <item quantity="one">%1$s · %2$d → %3$d pagamento</item>
+        <item quantity="other">%1$s · %2$d → %3$d pagamentos</item>
+    </plurals>
     <string name="simplify_status_on_minimal">Ligado · já no mínimo de pagamentos</string>
     <string name="simplify_status_pending_on">Ligado neste aparelho · aguardando envio</string>
     <string name="simplify_status_pending_off">Desligado neste aparelho · aguardando envio</string>

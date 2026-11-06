@@ -9,8 +9,10 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.feature.editgroup.presentation.model.CurrencySimplification
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyAmount
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyCurrencyChange
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsConfirmation
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyName
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyPersonChange
@@ -71,9 +73,14 @@ private fun EditGroupSimplifiedPreview() {
                 isOnline = true,
             ).copy(
                 simplifiesDebts = true,
-                simplification = DebtSimplificationSummary(
-                    paymentCount = 5,
-                    unsimplifiedPaymentCount = 7,
+                simplifications = listOf(
+                    CurrencySimplification(
+                        currency = GroupCurrency.BRL,
+                        summary = DebtSimplificationSummary(
+                            paymentCount = 5,
+                            unsimplifiedPaymentCount = 7,
+                        ),
+                    ),
                 ),
             ),
             isDialog = rememberUsesEditGroupDialog(),
@@ -123,7 +130,6 @@ private fun SimplifyDebtsDialogOnPreview() {
     BlitzSplitTheme {
         SimplifyDebtsDialog(
             confirmation = buildPreviewConfirmation(isTurningOn = true),
-            currency = GroupCurrency.BRL,
             isChanging = false,
             onEvent = {},
         )
@@ -137,8 +143,13 @@ private fun SimplifyDebtsDialogOffPreview() {
     BlitzSplitTheme {
         SimplifyDebtsDialog(
             confirmation = buildPreviewConfirmation(isTurningOn = false).copy(
-                paymentsBefore = 5,
-                paymentsAfter = 7,
+                currencies = listOf(
+                    SimplifyCurrencyChange(
+                        currency = GroupCurrency.BRL,
+                        paymentsBefore = 5,
+                        paymentsAfter = 7,
+                    ),
+                ),
                 people = listOf(
                     buildPreviewChange(
                         name = "Pierre",
@@ -149,7 +160,6 @@ private fun SimplifyDebtsDialogOffPreview() {
                 ),
                 othersChangingCount = 5,
             ),
-            currency = GroupCurrency.BRL,
             isChanging = false,
             onEvent = {},
         )
@@ -164,8 +174,13 @@ private fun SimplifyDebtsDialogMinimalPreview() {
         SimplifyDebtsDialog(
             confirmation = buildPreviewConfirmation(isTurningOn = true).copy(
                 groupName = "Futebol de quinta",
-                paymentsBefore = 2,
-                paymentsAfter = 2,
+                currencies = listOf(
+                    SimplifyCurrencyChange(
+                        currency = GroupCurrency.BRL,
+                        paymentsBefore = 2,
+                        paymentsAfter = 2,
+                    ),
+                ),
                 people = emptyList(),
                 queuedPayments = listOf(
                     SimplifyQueuedPayment(
@@ -175,10 +190,10 @@ private fun SimplifyDebtsDialogMinimalPreview() {
                             isMe = true,
                         ),
                         amountMinor = 5_000L,
+                        currency = GroupCurrency.BRL,
                     ),
                 ),
             ),
-            currency = GroupCurrency.BRL,
             isChanging = false,
             onEvent = {},
         )
@@ -199,6 +214,7 @@ private fun buildPreviewChange(
     receivesFrom: List<SimplifyName> = emptyList(),
 ): SimplifyPersonChange = SimplifyPersonChange(
     memberId = name,
+    currency = GroupCurrency.BRL,
     person = SimplifyName(
         name = name,
         isMe = isMe,
@@ -216,8 +232,13 @@ private fun buildPreviewChange(
 private fun buildPreviewConfirmation(isTurningOn: Boolean): SimplifyDebtsConfirmation = SimplifyDebtsConfirmation(
     isTurningOn = isTurningOn,
     groupName = "Viagem Floripa",
-    paymentsBefore = 7,
-    paymentsAfter = 5,
+    currencies = listOf(
+        SimplifyCurrencyChange(
+            currency = GroupCurrency.BRL,
+            paymentsBefore = 7,
+            paymentsAfter = 5,
+        ),
+    ),
     people = listOf(
         buildPreviewChange(
             name = "Pierre",
@@ -274,7 +295,7 @@ private fun buildPreviewState(
     hasChanges = true,
     simplifiesDebts = false,
     isSimplifyDebtsPending = false,
-    simplification = null,
+    simplifications = emptyList(),
     memberCount = 6,
     simplifyConfirmation = null,
     isChangingSimplifyDebts = false,

@@ -482,7 +482,7 @@ class EditGroupUiStateTest {
         hasChanges = hasChanges,
         simplifiesDebts = simplifiesDebts,
         isSimplifyDebtsPending = isSimplifyDebtsPending,
-        simplification = null,
+        simplifications = emptyList(),
         memberCount = memberCount,
         simplifyConfirmation = null,
         isChangingSimplifyDebts = isChangingSimplifyDebts,

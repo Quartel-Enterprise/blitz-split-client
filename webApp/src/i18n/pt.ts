@@ -2042,6 +2042,8 @@ export const pt: Record<MessageKey, string> = {
   editGroup_payments: 'Pagamentos',
   editGroup_simplifyOff: 'Junta as dívidas do grupo para dar menos pagamentos. Ninguém paga nem recebe a mais.',
   editGroup_simplifyOn: 'Ligado · {count} pagamentos em vez de {before}',
+  editGroup_simplifyCurrencyRowOne: '{currency} · {before} → {after} pagamento',
+  editGroup_simplifyCurrencyRowOther: '{currency} · {before} → {after} pagamentos',
   editGroup_simplifyOnMinimal: 'Ligado · já no mínimo de pagamentos',
   editGroup_simplifyPendingOn: 'Ligado neste navegador · aguardando envio',
   editGroup_simplifyPendingOff: 'Desligado neste navegador · aguardando envio',

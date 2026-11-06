@@ -59,7 +59,6 @@ struct EditGroupView: View {
             if let model, let confirmation = model.state.simplifyConfirmation {
                 SimplifyDebtsConfirmationView(
                     confirmation: confirmation,
-                    currency: model.state.currency,
                     isChanging: model.state.isChangingSimplifyDebts,
                     onConfirm: { model.send(EditGroupUiEventOnSimplifyDebtsConfirmed.shared) },
                     onDismiss: { model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared) },
@@ -197,7 +196,6 @@ private struct EditGroupForm: View {
             if let confirmation = state.simplifyConfirmation {
                 SimplifyDebtsConfirmationView(
                     confirmation: confirmation,
-                    currency: state.currency,
                     isChanging: state.isChangingSimplifyDebts,
                     onConfirm: { model.send(EditGroupUiEventOnSimplifyDebtsConfirmed.shared) },
                     onDismiss: { model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared) },

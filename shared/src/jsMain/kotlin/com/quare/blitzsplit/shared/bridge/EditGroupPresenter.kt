@@ -25,9 +25,28 @@ class JsSimplifyAmount(
     val amountMinor: Double,
 )
 
+// Why: "BRL · 7 → 5": the payments of one currency before and after, each currency simplifying on its own.
+class JsSimplifyCurrencyChange(
+    val currency: String,
+    val fractionDigits: Int,
+    val paymentsBefore: Int,
+    val paymentsAfter: Int,
+)
+
+// Why: a row of the line under "Simplificar dívidas", for one currency the group has bills or payments in.
+class JsCurrencySimplification(
+    val currency: String,
+    val paymentCount: Int,
+    val unsimplifiedPaymentCount: Int,
+    val isAlreadyMinimal: Boolean,
+)
+
 // Why: a row of "O que muda", which the page words from the four lists in this order.
 class JsSimplifyPersonChange(
     val memberId: String,
+    // Why: the ISO 4217 code of the amounts of this row, and its digits after the decimal separator.
+    val currency: String,
+    val fractionDigits: Int,
     val person: JsSimplifyName,
     val initials: String,
     val color: String,
@@ -45,14 +64,15 @@ class JsSimplifyQueuedPayment(
     val from: JsSimplifyName,
     val to: JsSimplifyName,
     val amountMinor: Double,
+    val currency: String,
+    val fractionDigits: Int,
 )
 
 // Why: "Simplificar dívidas?" (13.3, 13.3c) or "Desligar Simplificar dívidas?" (13.3b), open while not null.
 class JsSimplifyConfirmation(
     val isTurningOn: Boolean,
     val groupName: String,
-    val paymentsBefore: Int,
-    val paymentsAfter: Int,
+    val currencies: Array<JsSimplifyCurrencyChange>,
     val people: Array<JsSimplifyPersonChange>,
     // Why: "Mais 5 pessoas mudam.", turning off.
     val othersChangingCount: Int,
@@ -99,7 +119,7 @@ class JsEditGroupState(
     // Why: "off", "on", "pending" or "needs-third-person", the line under the switch.
     val simplifyStatus: String,
     // Why: "Ligado · 5 pagamentos em vez de 7"; null while it is off.
-    val simplification: JsDebtSimplification?,
+    val simplifications: Array<JsCurrencySimplification>,
     val canChangeSimplifyDebts: Boolean,
     // Why: "Sem internet: os pagamentos sugeridos já mudaram…" in place of the note (13.1d).
     val showsSimplifyOfflineNotice: Boolean,
@@ -155,7 +175,15 @@ class EditGroupPresenter(
                     SimplifyDebtsStatus.PENDING -> "pending"
                     SimplifyDebtsStatus.NEEDS_THIRD_PERSON -> "needs-third-person"
                 },
-                simplification = state.simplification?.let(::toJsDebtSimplification),
+                simplifications = state.simplifications
+                    .map {
+                        JsCurrencySimplification(
+                            currency = it.currency.code,
+                            paymentCount = it.summary.paymentCount,
+                            unsimplifiedPaymentCount = it.summary.unsimplifiedPaymentCount,
+                            isAlreadyMinimal = it.summary.isAlreadyMinimal,
+                        )
+                    }.toTypedArray(),
                 canChangeSimplifyDebts = state.canChangeSimplifyDebts,
                 showsSimplifyOfflineNotice = state.showsSimplifyOfflineNotice,
                 simplifyConfirmation = state.simplifyConfirmation?.let(::toJsSimplifyConfirmation),
@@ -255,6 +283,8 @@ private fun toJsSimplifyAmount(amount: SimplifyAmount): JsSimplifyAmount = JsSim
 
 private fun toJsSimplifyPersonChange(change: SimplifyPersonChange): JsSimplifyPersonChange = JsSimplifyPersonChange(
     memberId = change.memberId,
+    currency = change.currency.code,
+    fractionDigits = change.currency.fractionDigits,
     person = toJsSimplifyName(change.person),
     initials = change.initials,
     color = change.avatarColor.code,
@@ -270,8 +300,15 @@ private fun toJsSimplifyConfirmation(confirmation: SimplifyDebtsConfirmation): J
     JsSimplifyConfirmation(
         isTurningOn = confirmation.isTurningOn,
         groupName = confirmation.groupName,
-        paymentsBefore = confirmation.paymentsBefore,
-        paymentsAfter = confirmation.paymentsAfter,
+        currencies = confirmation.currencies
+            .map {
+                JsSimplifyCurrencyChange(
+                    currency = it.currency.code,
+                    fractionDigits = it.currency.fractionDigits,
+                    paymentsBefore = it.paymentsBefore,
+                    paymentsAfter = it.paymentsAfter,
+                )
+            }.toTypedArray(),
         people = confirmation.people.map(::toJsSimplifyPersonChange).toTypedArray(),
         othersChangingCount = confirmation.othersChangingCount,
         queuedPayments = confirmation.queuedPayments
@@ -280,6 +317,8 @@ private fun toJsSimplifyConfirmation(confirmation: SimplifyDebtsConfirmation): J
                     from = toJsSimplifyName(it.from),
                     to = toJsSimplifyName(it.to),
                     amountMinor = it.amountMinor.toDouble(),
+                    currency = it.currency.code,
+                    fractionDigits = it.currency.fractionDigits,
                 )
             }.toTypedArray(),
         isAlreadyMinimal = confirmation.isAlreadyMinimal,

@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -42,8 +41,8 @@ data class EditGroupUiState(
     val simplifiesDebts: Boolean,
     // Why: changed on this device and not up yet (13.1d).
     val isSimplifyDebtsPending: Boolean,
-    // Why: "Ligado · 5 pagamentos em vez de 7"; null while it is off.
-    val simplification: DebtSimplificationSummary?,
+    // Why: "Ligado · 5 pagamentos em vez de 7", one row per currency the group has bills or payments in; empty while off.
+    val simplifications: List<CurrencySimplification>,
     // Why: with 2 people it is already one payment (13.1c).
     val memberCount: Int,
     // Why: the confirmation the switch opens (13.3, 13.3b); null while closed.

@@ -31,14 +31,18 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     hinge, and the pairs under it, "With you" beside "Between the others" while both have one, with no "Split a bill".
   - "Simplify debts" (page 13, `GroupBalances.toSimplified`, `SetSimplifiesDebts`): a group's switch, off in every
     group, in Edit group's "Payments" under "Default currency" and Default split, free. Each currency simplifies on its own, so
-    the switch's line and confirmation show the group's own currency (the one the form is in) while the change itself
-    covers every currency (`SetSimplifiesDebtsUseCase`); amounts of two currencies are never netted.
+    the switch's line and its confirmation show one row per currency the group has bills or payments in (Pierre's call,
+    never only the default currency): "BRL · 7 → 5 payments" under the switch, and "7 payments → 5 payments" per
+    currency in the confirmation, with the code above each count only while there are two or more, and the people's
+    rows and the queued payments in their own currency (a person changing in two currencies has a row for each, with
+    the code after the name). "Turn on anyway" only when no currency saves a payment. The change itself covers every
+    currency (`SetSimplifiesDebtsUseCase`); amounts of two currencies are never netted.
     While on, the group's pairs are the fewest payments that keep each one's net: the greatest debtor pays the greatest creditor until even, at most
     members − 1, ties by the order they joined, so every device gets the same pairs offline; payments recorded only
     move the nets, and a group already at its fewest payments keeps its pairs (13.3c). Any member turns it on or off,
     offline too, at once and apart from Save ("Waiting to upload" with the amber dot meanwhile); with 2 people it is
     off and disabled with the reason (13.1c), and a group already on can still turn it off. The switch opens its
-    confirmation first: "7 payments → 5 payments" and what changes for each person (you first, a guest with
+    confirmation first: "7 payments → 5 payments" (per currency) and what changes for each person (you first, a guest with
     "let them know with Request", the payments still in the queue, 13.3d), "Turn on anyway" when it saves none; turning off
     names only what changes for you and counts the others (13.3b); "How it works" (13.2, `Route.SimplifyDebtsInfo`)
     explains it. It syncs with its own Last-Write-Wins stamp (`groups.simplify_debts_at`), apart from the row's

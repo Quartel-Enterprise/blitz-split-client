@@ -40950,6 +40950,29 @@
         }
       }
     },
+    "%@ · %lld → %@" : {
+      "comment" : "Edit group: Simplify debts is on, one currency's row; %1$@ is the currency code, %3$@ how many payments now",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$lld → %3$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$lld → %3$@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$lld → %3$@"
+          }
+        }
+      }
+    },
     "On · already the fewest payments" : {
       "comment" : "Edit group: Simplify debts is on",
       "localizations" : {
