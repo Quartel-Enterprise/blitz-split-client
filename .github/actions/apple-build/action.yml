@@ -84,6 +84,12 @@ runs:
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
       run: |
         echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/Resources/GoogleService-Info.plist
+        # The Crashlytics dSYM phase of the archive reads GOOGLE_APP_ID from this file and fails the build after
+        # ten minutes when it is missing (a google-services.json or a mis-encoded secret): fail here instead.
+        if ! plutil -extract GOOGLE_APP_ID raw iosApp/Resources/GoogleService-Info.plist > /dev/null; then
+          echo "::error::The GOOGLE_SERVICE_INFO_PLIST secret has no GOOGLE_APP_ID: set it to the base64 of the iOS GoogleService-Info.plist (base64 -i GoogleService-Info.plist)."
+          exit 1
+        fi
         echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
 
     # -allowProvisioningUpdates with the API key lets Xcode create the cloud-managed distribution certificate and the
