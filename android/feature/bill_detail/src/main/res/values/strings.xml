@@ -16,6 +16,7 @@
     <string name="bill_detail_nothing_to_settle">nothing to settle</string>
     <string name="bill_detail_owes_payer">Counts toward what you owe %s in Balances.</string>
     <string name="bill_detail_you">You</string>
+    <string name="bill_detail_history_you">You</string>
     <string name="bill_detail_former_member">Former member</string>
     <string name="bill_detail_paid">Paid %s</string>
     <string name="bill_detail_not_joined">Hasn\'t joined yet</string>

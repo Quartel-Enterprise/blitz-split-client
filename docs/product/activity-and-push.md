@@ -34,7 +34,10 @@ The feed, unread state, real time and push notifications.
   - In Spanish the verb of an Activity row and of a bill's History line is conjugated to "tú" when the user is the
     actor ("Tú dividiste Cena", "Tú te uniste a Viaje", "Tú cambiaste la categoría"), on every platform: the first word
     of the verb phrase moves to the second person singular preterite ("dividió" to "dividiste", "se unió a" to "te
-    uniste a", "deshizo" to "deshiciste"); other languages and other people's rows keep the verb as it is.
+    uniste a", "deshizo" to "deshiciste"); other languages and other people's rows keep the verb as it is. French does
+    it with its auxiliary: every French verb phrase is a passé composé that starts with "a" ("Ana a divisé Dîner"), and
+    the user's rows say "Tu as divisé Dîner" (the leading "a" becomes "as"), so a French verb phrase never starts with
+    another word.
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

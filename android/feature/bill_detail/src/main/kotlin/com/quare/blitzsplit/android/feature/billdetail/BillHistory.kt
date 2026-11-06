@@ -220,7 +220,11 @@ private fun EntryHeadlineRow(
     entry: BillHistoryEntry,
     dates: DateTimeTextFormatter,
 ) {
-    val who = personNameOf(entry.actorName, entry.actorIsMe)
+    val who = if (entry.actorIsMe) {
+        stringResource(R.string.bill_detail_history_you)
+    } else {
+        personNameOf(entry.actorName, entry.actorIsMe)
+    }
     val what = verbForActorOf(historyVerbOf(entry), entry.actorIsMe)
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -1,8 +1,8 @@
 import { locale, pickLocale } from '@/i18n'
 import { browserLanguages } from '@/lib/platform'
 
-// Why: pickLocale answers English for a tag it doesn't know ("fr"), which must not pick that tag for the picker.
-const isSupportedTag = (tag: string) => /^(en|pt|es)(-|$)/i.test(tag)
+// Why: pickLocale answers English for a tag it doesn't know ("de"), which must not pick that tag for the picker.
+const isSupportedTag = (tag: string) => /^(en|pt|es|fr)(-|$)/i.test(tag)
 const supportedTag = browserLanguages().find((tag) => isSupportedTag(tag) && pickLocale([tag]) === locale)
 /**
  * The tag currencies are named in: the app's language, with the region of the first browser language in it

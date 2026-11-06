@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Lien d’invitation</string>
+    <string name="members_link_pending">Pas encore créé</string>
+    <string name="members_share">Partager</string>
+    <string name="members_me">%s (toi)</string>
+    <string name="members_status_this_device">Cet appareil</string>
+    <string name="members_status_joined">A rejoint</string>
+    <string name="members_status_not_joined">N’a pas encore rejoint</string>
+    <string name="members_options">Options pour %s</string>
+    <string name="members_rename">Renommer</string>
+    <string name="members_personal_invite">Invitation personnelle pour %s</string>
+    <string name="members_personal_message">Quiconque ouvre ce lien rejoint directement le groupe en tant que %s, sans choisir dans la liste. Il ne fonctionne qu’une fois.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Quiconque ouvre ce lien rejoint directement le groupe en tant que %1$s, sans choisir dans la liste, et voit déjà sa part de %2$s dans la dépense ajoutée jusqu’ici. Il ne fonctionne qu’une fois.</item>
+        <item quantity="many">Quiconque ouvre ce lien rejoint directement le groupe en tant que %1$s, sans choisir dans la liste, et voit déjà sa part de %2$s dans les %3$d dépenses ajoutées jusqu’ici. Il ne fonctionne qu’une fois.</item>
+        <item quantity="other">Quiconque ouvre ce lien rejoint directement le groupe en tant que %1$s, sans choisir dans la liste, et voit déjà sa part de %2$s dans les %3$d dépenses ajoutées jusqu’ici. Il ne fonctionne qu’une fois.</item>
+    </plurals>
+    <string name="members_personal_copy">Copier le lien</string>
+    <string name="members_personal_copied">Copié</string>
+    <string name="members_personal_share">Partager avec %s</string>
+    <string name="members_personal_share_message">Rejoins %1$s en tant que %2$s sur Blitz Split : %3$s</string>
+    <string name="members_remove">Retirer du groupe</string>
+    <string name="members_remove_joined">%s a déjà rejoint le groupe</string>
+    <string name="members_remove_title">Retirer %s du groupe ?</string>
+    <string name="members_remove_message">%s n’a pas encore rejoint le groupe. Tu pourras l’ajouter à nouveau plus tard.</string>
+    <string name="members_remove_confirm">Retirer</string>
+    <string name="members_release">Libérer le nom</string>
+    <string name="members_release_title">Libérer le nom de %s ?</string>
+    <string name="members_release_message">La personne qui a rejoint le groupe en tant que %1$s le quitte. Le nom, la couleur et les dépenses de %1$s restent, et ce nom peut être choisi à nouveau via le lien du groupe.</string>
+    <string name="members_release_confirm">Libérer</string>
+    <string name="members_release_error">Impossible de libérer le nom. Vérifie ta connexion et réessaie.</string>
+    <string name="members_add">Ajouter une personne</string>
+    <string name="members_invite_instead">Elle a l’app ? Invite-la avec le lien</string>
+    <string name="members_name_label">Nom</string>
+    <string name="members_save">Enregistrer</string>
+    <string name="members_cancel">Annuler</string>
+    <string name="members_change_error">Impossible d’enregistrer la modification. Réessaie.</string>
+    <string name="members_remove_open_balance">%s a un solde en cours</string>
+    <string name="members_balance_to_get_back">%s à récupérer</string>
+    <string name="members_balance_owes">doit %s</string>
+    <string name="members_balance_settled">Tout est réglé</string>
+</resources>

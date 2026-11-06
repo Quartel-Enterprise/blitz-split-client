@@ -27,12 +27,12 @@ so the three platforms walk the same flow.
 
 Write code, comments, docs, commit messages and pull requests in English, even when the conversation is in
 another language. User-facing strings are the exception: each one exists in English (the fallback for every
-language but Portuguese and Spanish), Portuguese and Spanish, in each platform's own place for them —
-`res/values/strings.xml`, `res/values-pt/strings.xml` and `res/values-es/strings.xml` (plus `values-es-rES` for the
-few words Spain says differently) of the `:android:*` module, the English SwiftUI literals of the Apple app with their
-pt-BR, es (Latin American) and es-ES translations in `Localizable.xcstrings`, and the `en` / `pt` / `es` / `esES`
-dictionaries of `webApp/src/i18n` on the web. The product is "Bora Rachar" in Portuguese and "Blitz Split" in
-English and Spanish. Never send UI copy from Kotlin: the
+language but Portuguese, Spanish and French), Portuguese, Spanish and French, in each platform's own place for them —
+`res/values/strings.xml`, `res/values-pt/strings.xml`, `res/values-es/strings.xml` (plus `values-es-rES` for the
+few words Spain says differently) and `res/values-fr/strings.xml` of the `:android:*` module, the English SwiftUI
+literals of the Apple app with their pt-BR, es (Latin American), es-ES and fr translations in `Localizable.xcstrings`,
+and the `en` / `pt` / `es` / `esES` / `fr` dictionaries of `webApp/src/i18n` on the web. The product is "Bora Rachar"
+in Portuguese and "Blitz Split" in every other language. To add a language, follow the `add-language` skill. Never send UI copy from Kotlin: the
 shared code hands the UIs enums and booleans (`RestoreError`, `SyncBadge`, `showsOfflineNotice`) and each platform
 picks its words.
 

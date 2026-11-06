@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Fermer</string>
+    <string name="invite_group_created">Groupe créé</string>
+    <string name="invite_title">Invite tout le monde dans %s</string>
+    <string name="invite_qr_description">QR code du lien d’invitation du groupe</string>
+    <string name="invite_copy">Copier</string>
+    <string name="invite_copied">Copié</string>
+    <string name="invite_who_picks">Quiconque ouvre le lien choisit qui il est dans la liste : %s. Aucun compte nécessaire.</string>
+    <string name="invite_names_or">%1$s ou %2$s</string>
+    <string name="invite_anyone_joins">Quiconque ouvre le lien rejoint le groupe. Aucun compte nécessaire.</string>
+    <string name="invite_pending_title">Lien en attente</string>
+    <string name="invite_pending_offline">Il est créé dès que tu es en ligne.</string>
+    <string name="invite_pending_online">Création du lien…</string>
+    <string name="invite_failed_title">Impossible de créer le lien</string>
+    <string name="invite_failed_body">Une erreur s’est produite pendant la synchronisation du groupe.</string>
+    <string name="invite_retry">Réessayer</string>
+    <string name="invite_share">Partager le lien</string>
+    <string name="invite_see_who_joined">Voir qui a rejoint</string>
+    <string name="invite_add_person">Ajouter quelqu’un sans l’app</string>
+    <string name="invite_go_to_group">Aller au groupe</string>
+    <string name="invite_change_link">Changer le lien</string>
+    <string name="invite_change_link_title">Changer le lien d’invitation ?</string>
+    <string name="invite_change_link_message">Le lien actuel et le QR code ne fonctionnent plus, invitations personnelles non utilisées comprises. Les personnes qui ont déjà rejoint restent dans le groupe.</string>
+    <string name="invite_change_link_failed">Impossible de changer le lien. Réessaie.</string>
+    <string name="invite_share_message">Partageons les dépenses de %1$s sur Blitz Split. Rejoins-nous avec ce lien : %2$s</string>
+</resources>

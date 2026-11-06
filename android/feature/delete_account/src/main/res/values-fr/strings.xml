@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Supprimer le compte</string>
+    <string name="delete_account_offline_title">Pas d’internet.</string>
+    <string name="delete_account_offline_body">Supprimer ton compte nécessite une connexion internet. Connecte-toi et réessaie.</string>
+    <string name="delete_account_heading">Supprimer ton compte et tes données ?</string>
+    <string name="delete_account_deleted_title">Ce qui est supprimé</string>
+    <string name="delete_account_deleted_profile">Ton profil (nom, photo et couleur)</string>
+    <string name="delete_account_deleted_keys">Tes clés Pix et Bitcoin</string>
+    <string name="delete_account_deleted_provider">Le lien avec ton compte %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Ton code de récupération</string>
+    <string name="delete_account_deleted_device">La copie de tes données sur cet appareil</string>
+    <string name="delete_account_export">Exporter d’abord mes données</string>
+    <string name="delete_account_confirm">Je comprends que c’est irréversible</string>
+    <string name="delete_account_delete">Supprimer le compte</string>
+    <string name="delete_account_cancel">Annuler</string>
+    <string name="delete_account_failed">Impossible de supprimer ton compte. Réessaie.</string>
+</resources>

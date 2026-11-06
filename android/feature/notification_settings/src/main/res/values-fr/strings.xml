@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_denied_title">Les notifications de Blitz Split sont désactivées sur Android.</string>
+    <string name="notification_settings_denied_body">Active-les dans les réglages du système pour recevoir les notifications push ci-dessous. La cloche continue de fonctionner.</string>
+    <string name="notification_settings_open_settings">Ouvrir les réglages</string>
+    <string name="notification_settings_refused_body">Android te permet de les autoriser une fois de plus pour recevoir les notifications push ci-dessous. La cloche continue de fonctionner.</string>
+    <string name="notification_settings_turn_on">Activer</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Bloqué dans Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Ouvrir les réglages Android pour %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Notifications push</string>
+    <string name="notification_settings_push_switch_detail">Sur cet appareil uniquement</string>
+    <string name="notification_settings_section">Me prévenir pour</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Dans l’app</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push envoie une notification à cet appareil. Dans l’app la marque comme nouvelle sur la cloche et dans Activité ; désactivée, elle s’affiche quand même dans Activité, déjà lue.</string>
+    <string name="notification_settings_bills">Dépenses</string>
+    <string name="notification_settings_bills_detail">Dépenses ajoutées, modifiées ou supprimées auxquelles tu participes</string>
+    <string name="notification_settings_payments">Paiements et règlements</string>
+    <string name="notification_settings_payments_detail">Paiements envoyés ou reçus, et dettes simplifiées</string>
+    <string name="notification_settings_comments">Commentaires</string>
+    <string name="notification_settings_comments_detail">Sur les dépenses auxquelles tu participes et les fils où tu as écrit</string>
+    <string name="notification_settings_people_and_groups">Personnes et groupes</string>
+    <string name="notification_settings_people_and_groups_detail">Qui rejoint ou quitte tes groupes, et ce qui change dedans</string>
+    <string name="notification_settings_payment_requests">Demandes de paiement</string>
+    <string name="notification_settings_payment_requests_detail">Quand quelqu’un te demande de payer</string>
+    <string name="notification_settings_balance_reminder">Rappel de solde en cours</string>
+    <string name="notification_settings_balance_reminder_detail">Une fois par semaine, s’il y a un solde en cours</string>
+    <string name="notification_settings_footer">Les notifications arrivent quand il y a internet. Pour mettre un groupe en sourdine, utilise le menu à l’intérieur.</string>
+</resources>

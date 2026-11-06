@@ -127,7 +127,7 @@ function amountOf(item: JsActivityItem): string {
 }
 
 function personName(name: string | null | undefined, isMe: boolean): string {
-  if (isMe) return t('activity_you')
+  if (isMe) return t('splitBill_you')
   return name ?? t('balance_formerMember')
 }
 

@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLocale
 
 private const val SPANISH = "es"
+private const val FRENCH = "fr"
+private const val FRENCH_THIRD_PERSON_AUXILIARY = "a"
+private const val FRENCH_SECOND_PERSON_AUXILIARY = "as"
 private const val SINGULAR_SUFFIX_IO = "ió"
 private const val SINGULAR_SUFFIX_O = "ó"
 private val irregularSecondPerson = mapOf(
@@ -18,20 +21,32 @@ private val irregularSecondPerson = mapOf(
 
 /*
  * Why: "Ana dividió", but "Tú dividiste": Spanish conjugates the verb for the person, and one message serves them all.
- * "dividió" becomes "dividiste" and "se unió a" "te uniste a"; any other language keeps the verb as it is. Same rules
- * as the web's and the Apple app's `verbForYou`.
+ * "dividió" becomes "dividiste" and "se unió a" "te uniste a". French does the same with its auxiliary, every verb
+ * phrase being a passé composé that starts with "a": "Ana a divisé", "Tu as divisé". Any other language keeps the
+ * verb as it is. Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
     language: String,
-): String {
-    if (language != SPANISH) return verb
+): String = when (language) {
+    SPANISH -> toSpanishSecondPerson(verb)
+    FRENCH -> toFrenchSecondPerson(verb)
+    else -> verb
+}
+
+private fun toFrenchSecondPerson(verb: String): String {
+    val words = verb.split(' ')
+    if (words.first() != FRENCH_THIRD_PERSON_AUXILIARY) return verb
+    return (listOf(FRENCH_SECOND_PERSON_AUXILIARY) + words.drop(1)).joinToString(" ")
+}
+
+private fun toSpanishSecondPerson(verb: String): String {
     val words = verb.split(' ')
     val first = words.first()
     val rest = words.drop(1)
     return when {
         first == "se" && rest.isNotEmpty() ->
-            (listOf("te", toSecondPerson(rest.first(), language)) + rest.drop(1)).joinToString(" ")
+            (listOf("te", toSpanishSecondPerson(rest.first())) + rest.drop(1)).joinToString(" ")
 
         first in irregularSecondPerson -> (listOf(irregularSecondPerson.getValue(first)) + rest).joinToString(" ")
 
@@ -43,8 +58,10 @@ fun toSecondPerson(
     }
 }
 
+// Why: Spanish and French say "Tú"/"Tu" and conjugate the verb after it, unlike the other languages.
 @Composable
-fun isSpanishUi(): Boolean = LocalLocale.current.platformLocale.language == SPANISH
+fun isYouSubjectUi(): Boolean = LocalLocale.current.platformLocale.language
+    .let { it == SPANISH || it == FRENCH }
 
 // Why: only the user is "Tú"; the verb of someone else stays in the third person.
 @Composable

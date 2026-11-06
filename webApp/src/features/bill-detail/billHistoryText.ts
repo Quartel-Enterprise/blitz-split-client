@@ -51,9 +51,9 @@ const fieldLabels: Record<string, MessageKey> = {
   split: 'activity_fieldSplit',
 }
 
-/** "Você" for this browser's person, "Alguém" when the server kept no name. */
+/** "Você" for this browser's person, "Alguém" when the server kept no name. The subject of the verb: French's "Tu". */
 export function historyActor(entry: JsBillHistoryEntry): string {
-  if (entry.actorIsMe) return t('splitBill_you')
+  if (entry.actorIsMe) return t('activity_you')
   return entry.actorName ?? t('billDetail_commentSomeone')
 }
 

@@ -432,6 +432,7 @@ private struct LanguageName: View {
         case .english: Text(verbatim: "English")
         case .portuguese: Text(verbatim: "Português")
         case .spanish: Text(verbatim: "Español")
+        case .french: Text(verbatim: "Français")
         default: Text("System")
         }
     }

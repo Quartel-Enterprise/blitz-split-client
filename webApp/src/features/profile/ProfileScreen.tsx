@@ -30,7 +30,12 @@ const themes: { code: string; label: MessageKey }[] = [
 ]
 
 /** Each language in its own name, so whoever can't read the current one still finds theirs. */
-const languageNames: Record<string, string> = { en: 'English', 'pt-BR': 'Português', es: 'Español' }
+const languageNames: Record<string, string> = {
+  en: 'English',
+  'pt-BR': 'Português',
+  es: 'Español',
+  fr: 'Français',
+}
 
 /**
  * The profile page, in the home's frame with its footer selected. Name, photo and color are edited right here, in
@@ -354,7 +359,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
             <span id="language" className="text-sm font-medium">
               {t('profile_language')}
             </span>
-            <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-4">
+            <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-5">
               {state.languageOptions.map((code) => {
                 const isSelected = code === state.language
                 const name = languageNames[code]
