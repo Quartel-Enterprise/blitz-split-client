@@ -346,6 +346,8 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnProtectAccessClicked -> screen.open(Route.Profile)
 
+            GroupDetailUiEvent.OnJoinedNoticeDismissed -> uiState.update { it.copy(joinedAs = null) }
+
             GroupDetailUiEvent.OnSimplifyDebtsInfoClicked -> screen.open(
                 Route.SimplifyDebtsInfo(uiState.value.header.currency),
             )

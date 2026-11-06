@@ -70,6 +70,7 @@
     <string name="group_detail_teach_error">Não deu para ensinar o mapa. Tente de novo.</string>
     <string name="group_detail_joined_title">Você entrou como %s</string>
     <string name="group_detail_joined_message">Tudo que for lançado para você aparece aqui.</string>
+    <string name="group_detail_joined_dismiss">Dispensar</string>
     <string name="group_detail_protect_title">Proteja seu acesso</string>
     <string name="group_detail_protect_message">Você entrou sem conta. Guarde o código ou conecte Google ou Apple.</string>
     <plurals name="group_detail_simplified_text">

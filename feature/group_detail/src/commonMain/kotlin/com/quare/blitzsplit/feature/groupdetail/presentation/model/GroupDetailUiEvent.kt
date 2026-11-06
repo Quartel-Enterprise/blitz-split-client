@@ -123,6 +123,8 @@ sealed interface GroupDetailUiEvent : UiEvent {
                 mapOf("source" to GROUP_DETAIL_SOURCE),
             )
 
+            OnJoinedNoticeDismissed -> EventAnalytics.Automatic("joined_notice_dismissed")
+
             OnSimplifyDebtsInfoClicked -> EventAnalytics.Automatic(
                 "simplify_debts_info_clicked",
                 mapOf("source" to GROUP_DETAIL_SOURCE),
@@ -266,6 +268,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: "Proteja seu acesso", which opens the profile, where the code is kept and Google or Apple connected.
     data object OnProtectAccessClicked : GroupDetailUiEvent
+
+    // Why: the X of "Você entrou como Bruno", which leaves with "Proteja seu acesso" under it.
+    data object OnJoinedNoticeDismissed : GroupDetailUiEvent
 
     // Why: "Como funciona" on Saldos' "Dívidas simplificadas" (13.4).
     data object OnSimplifyDebtsInfoClicked : GroupDetailUiEvent
