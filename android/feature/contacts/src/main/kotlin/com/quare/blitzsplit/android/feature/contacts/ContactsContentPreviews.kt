@@ -80,7 +80,6 @@ private fun createPreviewState(
     pickedKey = null,
     isAgendaPicked = false,
     canSearch = true,
-    showsSplitBillButton = true,
 )
 
 // Why: a stand-in pattern for the previews, which can't run the shared encoder.

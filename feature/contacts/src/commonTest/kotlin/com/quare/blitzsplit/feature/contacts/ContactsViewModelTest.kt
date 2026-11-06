@@ -9,15 +9,16 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.SetContactHiddenUseCase
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecentGroupId
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.GetRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -1725,16 +1726,17 @@ class ContactsViewModelTest {
             ),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
-            observeRecentGroupId = if (areGroupsRead) {
-                ObserveRecentGroupIdUseCase(
-                    ObserveGroupsByActivityUseCase(
-                        ObserveGroupsUseCase(groups),
-                        ObserveGroupsMoneyUseCase(expenses, settlements),
-                    ),
-                )
+            observeHasGroups = if (areGroupsRead) {
+                ObserveHasGroupsUseCase(groups)
             } else {
-                ObserveRecentGroupId { MutableSharedFlow() }
+                ObserveHasGroups { MutableSharedFlow() }
             },
+            getRecentGroupId = GetRecentGroupIdUseCase(
+                ObserveGroupsByActivityUseCase(
+                    ObserveGroupsUseCase(groups),
+                    ObserveGroupsMoneyUseCase(expenses, settlements),
+                ),
+            ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

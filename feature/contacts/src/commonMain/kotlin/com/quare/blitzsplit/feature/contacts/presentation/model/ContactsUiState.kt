@@ -38,9 +38,11 @@ data class ContactsUiState(
     val isAgendaPicked: Boolean,
     // Why: "Buscar" (5.2), the same search as Grupos', only once there is a group to look in.
     val canSearch: Boolean,
-    // Why: Android's "Rachar conta", once there is a group to split in, as on Início.
-    val showsSplitBillButton: Boolean,
 ) {
+    // Why: Android's "Rachar conta" needs a group to split in, as "Buscar" needs one to look in.
+    val showsSplitBillButton: Boolean
+        get() = canSearch
+
     // Why: a profile whose person a sync took away (they left every group shared) leaves the pane to its placeholder.
     val selectedKey: String?
         get() = pickedKey?.takeIf { key -> (contacts + hiddenContacts).any { it.key == key } }

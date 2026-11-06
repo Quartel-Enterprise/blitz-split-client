@@ -83,6 +83,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DisableBillShareLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditSharedBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.GetRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.LikeBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LikeSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentImage
@@ -104,7 +105,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
@@ -135,6 +135,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSharedBillCo
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DisableBillShareLinkUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditSharedBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.GetRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeSharedBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
@@ -156,7 +157,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByAct
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
@@ -206,7 +206,7 @@ val expenseModule = module {
     factoryOf(::ObserveGroupBalancesUseCase).bind<ObserveGroupBalances>()
     factoryOf(::ObserveGroupsMoneyUseCase).bind<ObserveGroupsMoney>()
     factoryOf(::ObserveGroupsByActivityUseCase).bind<ObserveGroupsByActivity>()
-    factoryOf(::ObserveRecentGroupIdUseCase).bind<ObserveRecentGroupId>()
+    factoryOf(::GetRecentGroupIdUseCase).bind<GetRecentGroupId>()
     factoryOf(::RecordSettlementUseCase).bind<RecordSettlement>()
     factoryOf(::DeleteSettlementUseCase).bind<DeleteSettlement>()
     factoryOf(::ObserveRecordedPaymentUseCase).bind<ObserveRecordedPayment>()

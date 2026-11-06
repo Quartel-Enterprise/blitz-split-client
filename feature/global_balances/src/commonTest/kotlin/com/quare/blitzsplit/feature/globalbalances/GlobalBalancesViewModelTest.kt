@@ -8,18 +8,19 @@ import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.GetRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -2159,13 +2160,14 @@ class GlobalBalancesViewModelTest {
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             // Why: Room not read yet is a flow that hasn't emitted.
-            observeRecentGroupId = if (groupsRead) {
-                ObserveRecentGroupIdUseCase(
-                    ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
-                )
+            observeHasGroups = if (groupsRead) {
+                ObserveHasGroupsUseCase(groups)
             } else {
-                ObserveRecentGroupId { flow { awaitCancellation() } }
+                ObserveHasGroups { flow { awaitCancellation() } }
             },
+            getRecentGroupId = GetRecentGroupIdUseCase(
+                ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
+            ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

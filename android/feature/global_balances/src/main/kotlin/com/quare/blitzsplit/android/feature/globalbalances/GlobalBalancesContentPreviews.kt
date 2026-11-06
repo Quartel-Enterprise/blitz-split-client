@@ -149,7 +149,6 @@ private fun createPreviewState(
     recordedPayment = null,
     pickedPersonId = null,
     canSearch = true,
-    showsSplitBillButton = true,
 )
 
 @DevicePreviews
