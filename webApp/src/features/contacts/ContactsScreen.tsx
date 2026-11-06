@@ -33,7 +33,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: ContactsPresenter) => void>
 export function ContactsScreen({ profileRoute }: { profileRoute?: JsRoute }) {
   const presenter = usePresenter(() => new ContactsPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsContactsState) => void) => p.observeState(onChange))
-  const search = useHomeSearch(presenter, (state?.canSearch ?? false) && !profileRoute)
+  const search = useHomeSearch(presenter, !profileRoute)
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), () =>
     toast(t('contacts_changeError')),
   )

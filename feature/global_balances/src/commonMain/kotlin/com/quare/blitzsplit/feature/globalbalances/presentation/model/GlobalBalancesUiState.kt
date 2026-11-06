@@ -40,12 +40,11 @@ data class GlobalBalancesUiState(
      * inspector) shows beside the list, as last picked; null until someone is picked.
      */
     val pickedPersonId: String?,
-    // Why: "Buscar" only once there is a group to look in, as on Grupos.
-    val canSearch: Boolean,
+    // Why: Android's "Rachar conta" needs a group to split in, settled ones included.
+    val hasGroups: Boolean,
 ) {
-    // Why: Android's "Rachar conta" needs a group to split in, as "Buscar" needs one to look in.
     val showsSplitBillButton: Boolean
-        get() = canSearch
+        get() = hasGroups
 
     // Why: the people and the totals load together; until then nothing reads as settled or zero.
     val isLoaded: Boolean

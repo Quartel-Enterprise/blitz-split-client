@@ -60,6 +60,50 @@ function typeLabel(key: JsReceiverKey): string {
   return t(`paymentKey_type${key.type as PaymentKeyType}`)
 }
 
+/**
+ * "Outras chaves de Ana", and the form's "Chaves Pix de Ana" with Pix picked, each with its own copy button; onCopy
+ * tells the shared code which copy it was before the page writes the clipboard.
+ */
+export function ReceiverKeysList({
+  title,
+  keys,
+  name,
+  onCopy,
+}: {
+  title: string
+  keys: JsReceiverKey[]
+  name: string
+  onCopy: () => void
+}) {
+  return (
+    <section className="flex flex-col gap-1.5">
+      <h3 className="text-sm text-muted-foreground">{title}</h3>
+      <ul className="divide-y rounded-xl border">
+        {keys.map((key) => (
+          <li key={key.id} className="flex items-center gap-2 py-2 pr-1 pl-4">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-muted-foreground">{typeLabel(key)}</p>
+              <p className="font-medium break-all">{key.text}</p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={t('payWithKey_copyOther', { type: typeLabel(key), name })}
+              onClick={() => {
+                onCopy()
+                copy(key.value)
+              }}
+            >
+              <Copy aria-hidden />
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 function PayWithKeyBody({
   presenter,
   state,
@@ -127,30 +171,12 @@ function PayWithKeyBody({
       )}
 
       {state.otherKeys.length > 0 && (
-        <section className="flex flex-col gap-1.5">
-          <h3 className="text-sm text-muted-foreground">{t('payWithKey_otherKeys', { name })}</h3>
-          <ul className="divide-y rounded-xl border">
-            {state.otherKeys.map((other) => (
-              <li key={other.id} className="flex items-center gap-2 py-2 pr-1 pl-4">
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-muted-foreground">{typeLabel(other)}</p>
-                  <p className="font-medium break-all">{other.text}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t('payWithKey_copyOther', { type: typeLabel(other), name })}
-                  onClick={() => {
-                    presenter.trackOtherKeyCopy()
-                    copy(other.value)
-                  }}
-                >
-                  <Copy aria-hidden />
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <ReceiverKeysList
+          title={t('payWithKey_otherKeys', { name })}
+          keys={state.otherKeys}
+          name={name}
+          onCopy={() => presenter.trackOtherKeyCopy()}
+        />
       )}
 
       <p className="text-[13px] leading-[18px] text-muted-foreground">

@@ -178,7 +178,7 @@ sealed interface GroupsUiEvent : UiEvent {
     // Why: the notice went away without Desfazer.
     data object OnRecordedPaymentNoticeShown : GroupsUiEvent
 
-    // Why: Android's magnifier, iOS's search tab, the web's "Buscar…" or ⌘K, the Mac's toolbar field.
+    // Why: Android's magnifier, Apple's search tab (the Mac's ⌘K too), the web's "Buscar…" or ⌘K.
     data object OnSearchOpened : GroupsUiEvent
 
     /*

@@ -1,3 +1,6 @@
+#if os(macOS)
+import AppKit
+#endif
 import Observation
 import Shared
 import SwiftUI
@@ -31,6 +34,8 @@ final class AppModel {
     /// The section of Ajustes the last of those asked for (the profile, Notifications from Activity, or Categories for the map), until Ajustes picks
     /// it (`SettingsView`).
     var requestedSettingsPane: ProfileSettingsPane?
+    /// Whether the shared history has a screen back closed to open again (`ForwardHistory`).
+    private var hasForward = false
     #endif
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
@@ -52,6 +57,11 @@ final class AppModel {
         watches.add(viewModel.backStackWatcher.observe { [weak self] routes in
             self?.backStackChanged(routes)
         })
+        #if os(macOS)
+        watches.add(viewModel.canGoForwardWatcher.observe { [weak self] hasForward in
+            self?.hasForward = hasForward.boolValue
+        })
+        #endif
         watches.add(viewModel.themeWatcher.observe { [weak self] theme in
             self?.theme = theme
         })
@@ -98,6 +108,36 @@ final class AppModel {
     }
 
     #if os(macOS)
+    /// No sheet covers the main window (the back stack's own, an invite's popover, Ajustes' key or account deletion,
+    /// an alert or sheet a screen presents itself): what the window's menu shortcuts (⌘K, ⌘[, ⌘], the mouse's buttons)
+    /// need, since each moves the back stack under whatever is on top and would close it with its draft.
+    var isWindowUncovered: Bool {
+        settingsEntryCount == 0 && sheet == nil && stackedSheet == nil && invitePopover == nil
+    }
+
+    /// Whether the mouse's back button (or ⌘[) has a screen to close: the main window's top, while no sheet covers it.
+    var canGoBack: Bool {
+        windowStack.count > 1 && isWindowUncovered
+    }
+
+    /// Whether the mouse's forward button (or ⌘]) has a screen to open again.
+    var canGoForward: Bool {
+        hasForward && isWindowUncovered
+    }
+
+    /// The mouse's back button: closes the screen on top, as its back button and Esc do; never under a sheet, nor an
+    /// alert a screen presents itself, which the back stack doesn't hold.
+    func goBack() {
+        guard canGoBack, !NSApplication.hasSheetOpen else { return }
+        holder.viewModel.goBack()
+    }
+
+    /// The mouse's forward button: opens again the last screen its back button closed.
+    func goForward() {
+        guard canGoForward, !NSApplication.hasSheetOpen else { return }
+        holder.viewModel.goForward()
+    }
+
     /// Keeps what the main window opened over Ajustes' entries from `index` up, in its order, without them.
     private func closeSettingsEntries(from index: Int, of value: Any?) {
         let above = ((value as? [Any])?.compactMap { $0 as? any Route } ?? [])

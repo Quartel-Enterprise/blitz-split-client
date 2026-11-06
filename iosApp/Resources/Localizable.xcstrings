@@ -1693,6 +1693,23 @@
         }
       }
     },
+    "Forward" : {
+      "comment" : "The Mac's Go menu: opens again the screen Back closed (the mouse's forward button, ⌘])",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adelante"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avançar"
+          }
+        }
+      }
+    },
     "Gallery" : {
       "comment" : "The profile photo viewer: choose a photo",
       "localizations" : {
@@ -1706,6 +1723,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Galeria"
+          }
+        }
+      }
+    },
+    "Go" : {
+      "comment" : "The Mac's Go menu, with Back and Forward",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir"
           }
         }
       }
@@ -4094,6 +4128,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esse comentário é de um grupo em que você não está. Peça o convite a quem te mandou o link."
+          }
+        }
+      }
+    },
+    "Toggle Sidebar" : {
+      "comment" : "The Mac's button at the detail's leading edge that shows or hides the sidebar, in the main window and in Settings",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar u ocultar la barra lateral"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar ou ocultar a barra lateral"
           }
         }
       }
@@ -11898,7 +11949,7 @@
       }
     },
     "Search" : {
-      "comment" : "The search tab, its title and the Mac toolbar field",
+      "comment" : "The search tab, its title, and the Mac's sidebar item and Edit › Search (⌘K)",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -11944,23 +11995,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Procura em grupos, pessoas e despesas deste %@, inclusive nos grupos quitados, sem precisar de internet."
-          }
-        }
-      }
-    },
-    "Searching groups, people and expenses" : {
-      "comment" : "The Mac window's subtitle while searching",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buscando en grupos, personas y gastos"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Buscando em grupos, pessoas e despesas"
           }
         }
       }
@@ -32274,6 +32308,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Notificações ativadas"
+          }
+        }
+      }
+    },
+    "%@'s Pix keys" : {
+      "comment" : "Record payment, Pix picked: the receiver's Pix keys",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claves Pix de %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaves Pix de %@"
+          }
+        }
+      }
+    },
+    "%@ has no Pix key in the app." : {
+      "comment" : "Record payment, Pix picked: the receiver has no Pix key",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no tiene clave Pix en la app."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ não tem chave Pix no app."
+          }
+        }
+      }
+    },
+    "Pix keys:" : {
+      "comment" : "Record payment on the Mac, Pix picked: the label of the receiver's Pix keys",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claves Pix:"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaves Pix:"
           }
         }
       }

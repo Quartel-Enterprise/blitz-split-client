@@ -79,7 +79,7 @@ private fun createPreviewState(
     isDetailPaneShown = false,
     pickedKey = null,
     isAgendaPicked = false,
-    canSearch = true,
+    hasGroups = true,
 )
 
 // Why: a stand-in pattern for the previews, which can't run the shared encoder.

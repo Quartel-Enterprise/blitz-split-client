@@ -102,14 +102,11 @@ data class HomeUiState(
     val onlyPersonToPay: HomePerson?
         get() = people.valueOrNull()?.singleOrNull { it.netMinor < 0 }
 
-    // Why: "Rachar conta" and "Buscar" (5.2) need a group, settled ones included, to split in or look in.
+    // Why: "Rachar conta" needs a group, settled ones included, to split in; the notification ask, one to be notified about.
     private val hasGroups: Boolean
         get() = isLoaded && groupCount > 0
 
     val showsSplitBillButton: Boolean
-        get() = hasGroups
-
-    val canSearch: Boolean
         get() = hasGroups
 
     /*

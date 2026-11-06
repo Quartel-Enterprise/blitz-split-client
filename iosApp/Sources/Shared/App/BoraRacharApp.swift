@@ -60,6 +60,8 @@ struct BoraRacharApp: App {
         .commands {
             GroupsCommands(language: app.language)
             ActivityCommands(language: app.language)
+            SearchCommands(language: app.language)
+            NavigationCommands(language: app.language)
         }
         #endif
 

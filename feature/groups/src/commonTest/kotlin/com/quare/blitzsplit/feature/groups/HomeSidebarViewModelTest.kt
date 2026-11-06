@@ -584,106 +584,6 @@ class HomeSidebarViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group on the device WHEN the sidebar opens THEN Buscar is not offered`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = emptyList())
-
-        // When
-        val canSearch = viewModel.uiState.value.canSearch
-
-        // Then
-        assertFalse(canSearch)
-    }
-
-    @Test
-    fun `GIVEN a group on the device WHEN the sidebar opens THEN Buscar is offered`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = listOf(trio()))
-
-        // When
-        val canSearch = viewModel.uiState.value.canSearch
-
-        // Then
-        assertTrue(canSearch)
-    }
-
-    @Test
-    fun `GIVEN only a group where everyone settled WHEN the sidebar opens THEN Buscar is still offered`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = listOf(trio()),
-                storedExpenses = listOf(bill("b1")),
-                storedSettlements = listOf(
-                    payment(
-                        "p1",
-                        from = "Ana",
-                        to = "Pierre",
-                        amountMinor = 3000L,
-                    ),
-                    payment(
-                        "p2",
-                        from = "Bruno",
-                        to = "Pierre",
-                        amountMinor = 3000L,
-                    ),
-                ),
-            )
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertTrue(state.openGroups.isEmpty())
-            assertTrue(state.canSearch)
-        }
-
-    @Test
-    fun `GIVEN no group on the device WHEN a sync brings the first one THEN Buscar is offered`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroups = emptyList())
-            val arrived = trio()
-
-            // When
-            groups.groups.value += arrived
-
-            // Then
-            assertTrue(viewModel.uiState.value.canSearch)
-        }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN tapping Buscar THEN it is not offered and nothing opens`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                groupsRead = false,
-                stack = listOf(Route.Home, Route.Profile),
-            )
-
-            // When
-            viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
-
-            // Then
-            assertFalse(viewModel.uiState.value.canSearch)
-            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
-            assertTrue(trackedEvents.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN a group on the device WHEN the last group leaves the device THEN Buscar is no longer offered`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroups = listOf(trio()))
-
-            // When
-            groups.groups.value = emptyList()
-
-            // Then
-            assertFalse(viewModel.uiState.value.canSearch)
-        }
-
-    @Test
     fun `GIVEN a group opened from Grupos WHEN tapping Buscar THEN goes back to Grupos and opens the search over it`() =
         runTest(testDispatcher) {
             // Given
@@ -757,7 +657,7 @@ class HomeSidebarViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group on the device WHEN a late tap on Buscar arrives THEN stays where it is`() =
+    fun `GIVEN no group on the device WHEN tapping Buscar THEN goes back to Inicio and opens the search over it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -769,11 +669,11 @@ class HomeSidebarViewModelTest {
             viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
         }
 
     @Test
-    fun `GIVEN no group on the device WHEN a late tap on Buscar arrives THEN tracks nothing`() =
+    fun `GIVEN no group on the device WHEN tapping Buscar THEN tracks search_opened from the sidebar`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -785,7 +685,7 @@ class HomeSidebarViewModelTest {
             viewModel.onEvent(HomeSidebarUiEvent.OnSearchClicked)
 
             // Then
-            assertTrue(trackedEvents.isEmpty())
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "sidebar")), trackedEvents)
         }
 
     @Test

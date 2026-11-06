@@ -159,8 +159,8 @@ export interface HomeShellChrome {
   onProfile: () => void
   /** The logo: opens Home, the tracked way where the screen has a presenter that counts it. */
   onBrand?: () => void
-  // Why: "Buscar" on the four tabs and the pages outside them, once there is a group to look in; a page's has no
-  // shortcut (an empty one), as ⌘K there could close a dialog over it.
+  // Why: "Buscar" on the four tabs and the pages outside them, before the first group too; a page's has no shortcut
+  // (an empty one), as ⌘K there could close a dialog over it.
   search?: { shortcut: string; keyShortcuts: string; onOpen: () => void }
   // Why: Início's bell in the phone's top bar; from the tablet up Início draws it in its title row.
   bell?: { unreadCount: number; onOpen: () => void }

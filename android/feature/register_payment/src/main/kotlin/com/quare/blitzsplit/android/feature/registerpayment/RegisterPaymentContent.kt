@@ -37,6 +37,7 @@ import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 
@@ -110,6 +111,10 @@ private fun FormPane(
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val onCopy = rememberKeyCopy(
+        snackbarHostState = snackbarHostState,
+        onEvent = onEvent,
+    )
     when (presentation) {
         FormPresentation.Dialog -> DialogContent(
             state = state,
@@ -117,6 +122,7 @@ private fun FormPane(
             dates = dates,
             snackbarHostState = snackbarHostState,
             onWhenClick = onWhenClick,
+            onCopy = onCopy,
             onEvent = onEvent,
             modifier = modifier,
         )
@@ -127,6 +133,7 @@ private fun FormPane(
             dates = dates,
             snackbarHostState = snackbarHostState,
             onWhenClick = onWhenClick,
+            onCopy = onCopy,
             onEvent = onEvent,
             modifier = modifier,
         )
@@ -137,6 +144,7 @@ private fun FormPane(
             dates = dates,
             snackbarHostState = snackbarHostState,
             onWhenClick = onWhenClick,
+            onCopy = onCopy,
             onEvent = onEvent,
             modifier = modifier,
         )
@@ -150,6 +158,7 @@ private fun DialogContent(
     dates: DateTimeTextFormatter,
     snackbarHostState: SnackbarHostState,
     onWhenClick: () -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -183,6 +192,7 @@ private fun DialogContent(
                 money = money,
                 dates = dates,
                 onWhenClick = onWhenClick,
+                onCopy = onCopy,
                 onEvent = onEvent,
             )
         }
@@ -202,6 +212,7 @@ private fun SheetContent(
     dates: DateTimeTextFormatter,
     snackbarHostState: SnackbarHostState,
     onWhenClick: () -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -235,6 +246,7 @@ private fun SheetContent(
                         state = state,
                         dates = dates,
                         onWhenClick = onWhenClick,
+                        onCopy = onCopy,
                         onEvent = onEvent,
                     )
                     SheetButtonsRow(
@@ -253,6 +265,7 @@ private fun SheetContent(
                     money = money,
                     dates = dates,
                     onWhenClick = onWhenClick,
+                    onCopy = onCopy,
                     onEvent = onEvent,
                 )
                 SheetButtonsRow(
@@ -279,6 +292,7 @@ private fun TabletopContent(
     dates: DateTimeTextFormatter,
     snackbarHostState: SnackbarHostState,
     onWhenClick: () -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -325,6 +339,7 @@ private fun TabletopContent(
                             state = state,
                             dates = dates,
                             onWhenClick = onWhenClick,
+                            onCopy = onCopy,
                             onEvent = onEvent,
                         )
                         TextButtonsRow(

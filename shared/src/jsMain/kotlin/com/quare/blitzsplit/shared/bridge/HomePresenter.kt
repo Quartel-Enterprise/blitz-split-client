@@ -137,8 +137,6 @@ class JsHomeState(
     val deletedGroupByName: String?,
     // Why: the count on the bell, every unread event of Atividade.
     val activityUnreadCount: Int,
-    // Why: "Buscar…" and ⌘K only once there is a group to look in.
-    val canSearch: Boolean,
     // Why: NotificationPrompt's name, "SOFT_ASK" or "BLOCKED" (the web never refuses once), or null with no card.
     val notificationPrompt: String?,
     // Why: "Get the app" (page 14): null where it never shows; the phone width draws its banner (14.3) from it too.
@@ -201,7 +199,6 @@ class HomePresenter {
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
                 activityUnreadCount = state.activityUnreadCount,
-                canSearch = state.canSearch,
                 notificationPrompt = state.notificationPrompt?.name,
                 appInvite = state.appInvite?.let(::toJsAppInvite),
                 showsAppInviteCard = state.showsAppInviteCard,

@@ -162,22 +162,36 @@ jobs:
       # (docs/release-process.md#google-sign-in), so the run says which one this APK carries. The
       # APK has no v1 signature (minSdk 26), so keytool can't read it: apksigner reads the v2 and v3
       # ones. The step fails when it finds nothing, instead of publishing an empty fingerprint.
+      # Invite links open the app only when the key's SHA-256 is in blitzsplit.com's assetlinks.json
+      # (docs/product/joining-and-folds.md): a key missing there warns, and the beta still publishes.
       - name: Show the signing certificate
         shell: bash
         run: |
           apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)"
-          sha1="$("$apksigner" verify --print-certs androidApp/build/outputs/apk/release/*.apk | sed -n 's/^Signer #1 certificate SHA-1 digest: *//p' | head -1)"
-          if [ -z "$sha1" ]; then
+          certs="$("$apksigner" verify --print-certs androidApp/build/outputs/apk/release/*.apk)"
+          sha1="$(sed -n 's/^Signer #1 certificate SHA-1 digest: *//p' <<< "$certs" | head -1)"
+          sha256="$(sed -n 's/^Signer #1 certificate SHA-256 digest: *//p' <<< "$certs" | head -1)"
+          if [ -z "$sha1" ] || [ -z "$sha256" ]; then
             echo "::error::apksigner printed no signing certificate for the release APK."
             exit 1
           fi
+          # assetlinks.json lists AB:CD:…
+          fingerprint="$(sed 's/../&:/g; s/:$//' <<< "${sha256^^}")"
+          # The package the APK declares, so the check follows the applicationId.
+          package="$("$(dirname "$apksigner")/aapt2" dump packagename androidApp/build/outputs/apk/release/*.apk)"
+          if ! app_links="$(./scripts/release/app-links-status.sh "$package" "$fingerprint")"; then
+            echo "::warning title=App Links::$app_links"
+          fi
           echo "::notice title=APK signing SHA-1::$sha1"
+          echo "::notice title=APK signing SHA-256::$fingerprint"
           {
             echo "### APK signing certificate"
             echo ""
             echo "SHA-1: \`$sha1\`"
             echo ""
-            echo "Google sign in needs this fingerprint on the Firebase Android app."
+            echo "SHA-256: \`$fingerprint\`"
+            echo ""
+            echo "Google sign in needs the SHA-1 on the Firebase Android app. $app_links"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload the APK as a build artifact

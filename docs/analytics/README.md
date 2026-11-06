@@ -206,7 +206,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `update_dismissed` | `source` (`startup`, `manual`) | "Not now" or Esc on "Update available" (iOS, macOS) | `in_app_update` |
 | `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
 | `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
-| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`, `category_expenses`) | Search opened: its navigation item (Android's bar or rail, the web's), iOS's search tab, the Mac's magnifier or field, or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
+| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`, `category_expenses`) | Search opened: its navigation item (Android's bar or rail, the web's), Apple's search tab (the Mac's sidebar item), or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `contact`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped: `contact` is the person's profile, `person` their row in a group | `:feature:groups` |
 | `search_suggestion_clicked` | `source` (`search`, `groups`) | "Did you mean “Larissa”?" tapped | `:feature:groups` |
@@ -297,7 +297,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_mark_as_paid_clicked` | none | "Mark as paid" | `:feature:register_payment` |
 | `payment_pay_otherwise_clicked` | none | "I paid another amount or another way" | `:feature:register_payment` |
 | `payment_paid_anyway_clicked` | none | "I paid anyway" (13.5c) | `:feature:register_payment` |
-| `payment_copy_clicked` | `target` (`key`, `pix_code`, `other_key`) | A copy on "Pay Ana": "Copy key", "Copy code" of the Pix code, or the copy of one of "Ana's other keys" | `:feature:register_payment` |
+| `payment_copy_clicked` | `target` (`key`, `pix_code`, `other_key`, `form_pix_key`) | A copy on "Pay Ana": "Copy key", "Copy code" of the Pix code, or the copy of one of "Ana's other keys"; or the copy of one of "Ana's Pix keys" in the form, with Pix picked | `:feature:register_payment` |
 | `payment_recorded` | `method`, `way` (`form`, `mark_as_paid`, `paid_anyway`), `kind` (`paid`, `received`, `between_others`), `groups` (how many payments, one per group), `is_full_debt` | A payment saved | `:feature:register_payment` |
 | `balances_filter_selected` | `filter` (`all`, `you_owe`, `owes_you`), `source` (`global_balances`) | All, You owe or Owe you, another than the one picked | `:feature:global_balances` |
 | `balances_person_expand_toggled` | `is_expanded` | "By group" opened or closed on a row | `:feature:global_balances` |

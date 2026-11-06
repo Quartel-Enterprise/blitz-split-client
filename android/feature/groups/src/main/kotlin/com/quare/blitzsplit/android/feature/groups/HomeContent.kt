@@ -77,7 +77,7 @@ private fun homeBarsOf(
         kind = homeBarsKindOf(usesRail),
         selected = HomeTab.HOME,
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
-        onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
+        onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) },
         railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
     )
 }

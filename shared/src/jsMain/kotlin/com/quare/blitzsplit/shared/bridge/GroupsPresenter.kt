@@ -126,8 +126,6 @@ class JsGroupsState(
     val canPickGridSize: Boolean,
     // Why: "Pagamento de Ana registrado." with Desfazer, once Registrar pagamento opened by a row's Acertar closes.
     val recordedPayment: JsPaymentNotice?,
-    // Why: "Buscar…" and ⌘K only once there is a group; the dialog shows while isSearching.
-    val canSearch: Boolean,
     val isSearching: Boolean,
     val search: JsGroupsSearch,
 )
@@ -171,7 +169,6 @@ class GroupsPresenter {
                 showsGrid = state.showsGrid,
                 canPickGridSize = state.canPickGridSize,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
-                canSearch = state.canSearch,
                 isSearching = state.isSearching,
                 search = toJsGroupsSearch(state.search),
             )

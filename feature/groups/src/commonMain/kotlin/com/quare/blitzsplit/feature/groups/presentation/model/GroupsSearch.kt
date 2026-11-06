@@ -2,7 +2,7 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 
 /*
  * Why: "Buscar" (5.2), over the groups, people and bills on this device, the settled groups included, offline too:
- * Android's search bar, iOS's search tab, the web's ⌘K and the Mac's toolbar field.
+ * Android's search bar, Apple's search tab (the Mac's sidebar item and ⌘K), the web's ⌘K.
  */
 data class GroupsSearch(
     val isOpen: Boolean,

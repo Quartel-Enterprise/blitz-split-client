@@ -91,7 +91,7 @@ class GroupsSearchTest {
     }
 
     @Test
-    fun `GIVEN no group yet WHEN opening the search THEN it stays closed`() = runTest(testDispatcher) {
+    fun `GIVEN no group yet WHEN opening the search THEN opens the search over the groups`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             storedGroups = emptyList(),
@@ -102,8 +102,7 @@ class GroupsSearchTest {
         viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
         // Then
-        assertFalse(viewModel.uiState.value.canSearch)
-        assertFalse(viewModel.uiState.value.isSearching)
+        assertTrue(viewModel.uiState.value.isSearching)
     }
 
     @Test
@@ -125,20 +124,19 @@ class GroupsSearchTest {
     }
 
     @Test
-    fun `GIVEN the search open WHEN the last group goes and a new one comes THEN the search stays closed`() =
+    fun `GIVEN the search open WHEN the last group goes THEN the search stays open with what was typed`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
             viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
-            groups.groups.value = emptyList()
 
             // When
-            groups.groups.value = listOf(ape)
+            groups.groups.value = emptyList()
 
             // Then
-            assertFalse(viewModel.uiState.value.isSearching)
-            assertEquals("", viewModel.uiState.value.search.query)
+            assertTrue(viewModel.uiState.value.isSearching)
+            assertEquals("chur", viewModel.uiState.value.search.query)
         }
 
     @Test
@@ -542,23 +540,6 @@ class GroupsSearchTest {
         }
 
     @Test
-    fun `GIVEN no group yet and a screen over the list WHEN tapping the search tab THEN nothing moves`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = emptyList(),
-                backStack = listOf(Route.Home, Route.Groups, Route.Profile),
-            )
-
-            // When
-            viewModel.onEvent(GroupsUiEvent.OnSearchTabClicked)
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Groups, Route.Profile), navigator.backStack.value)
-            assertFalse(viewModel.uiState.value.isSearching)
-        }
-
-    @Test
     fun `GIVEN the search open in the groups WHEN typing and closing it THEN tracks only the opening`() =
         runTest(testDispatcher) {
             // Given
@@ -574,19 +555,20 @@ class GroupsSearchTest {
         }
 
     @Test
-    fun `GIVEN no group yet WHEN opening the search THEN tracks nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            storedExpenses = emptyList(),
-        )
+    fun `GIVEN no group yet WHEN opening the search THEN tracks search_opened from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                storedExpenses = emptyList(),
+            )
 
-        // When
-        viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
 
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
+            // Then
+            assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "groups")), trackedEvents)
+        }
 
     @Test
     fun `GIVEN a screen pushed over the groups WHEN opening the search THEN tracks nothing`() =
@@ -824,44 +806,6 @@ class GroupsSearchTest {
             navigator.navigate(Route.Search)
 
             // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN no group on the device WHEN the search route is pushed over the groups THEN the route stays`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = emptyList(),
-                storedExpenses = emptyList(),
-                backStack = listOf(Route.Home, Route.Groups),
-            )
-
-            // When
-            navigator.navigate(Route.Search)
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Groups, Route.Search), navigator.backStack.value)
-            assertFalse(viewModel.uiState.value.search.isOpen)
-        }
-
-    @Test
-    fun `GIVEN the search route over the groups and no group WHEN a sync brings one THEN the groups take it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = emptyList(),
-                storedExpenses = emptyList(),
-                backStack = listOf(Route.Home, Route.Groups),
-            )
-            navigator.navigate(Route.Search)
-
-            // When
-            groups.groups.value = listOf(ape)
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
-            assertTrue(viewModel.uiState.value.isSearching)
             assertTrue(trackedEvents.isEmpty())
         }
 

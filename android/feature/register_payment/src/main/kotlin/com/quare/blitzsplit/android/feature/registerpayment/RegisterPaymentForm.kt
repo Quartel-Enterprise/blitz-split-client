@@ -48,6 +48,7 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
@@ -63,6 +64,7 @@ internal fun RegisterPaymentFormColumn(
     money: MoneyFormatter,
     dates: DateTimeTextFormatter,
     onWhenClick: () -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -75,6 +77,7 @@ internal fun RegisterPaymentFormColumn(
             state = state,
             dates = dates,
             onWhenClick = onWhenClick,
+            onCopy = onCopy,
             onEvent = onEvent,
         )
     }
@@ -111,6 +114,7 @@ internal fun RegisterPaymentDetailsColumn(
     state: RegisterPaymentUiState,
     dates: DateTimeTextFormatter,
     onWhenClick: () -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -121,6 +125,10 @@ internal fun RegisterPaymentDetailsColumn(
         MethodSection(
             method = state.method,
             onEvent = onEvent,
+        )
+        FormPixKeysSection(
+            state = state,
+            onCopy = onCopy,
         )
         Surface(
             onClick = onWhenClick,

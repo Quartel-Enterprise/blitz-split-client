@@ -84,7 +84,7 @@ class GlobalBalancesViewModel(
                 isOnline = true,
                 recordedPayment = null,
                 pickedPersonId = null,
-                canSearch = false,
+                hasGroups = false,
             ),
         )
 
@@ -133,9 +133,9 @@ class GlobalBalancesViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-        // Why: "Buscar" and "Rachar conta" both need a group, settled ones included.
+        // Why: "Rachar conta" needs a group, settled ones included.
         observeHasGroups()
-            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
+            .onEach { hasGroups -> uiState.update { it.copy(hasGroups = hasGroups) } }
             .launchIn(viewModelScope)
         connectivityObserver
             .observe()
@@ -210,10 +210,8 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
 
-            GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch) {
-                if (navigator.openSearchOver(HomeTab.BALANCES)) {
-                    trackEvent("search_opened", mapOf("source" to GLOBAL_BALANCES_SOURCE))
-                }
+            GlobalBalancesUiEvent.OnSearchClicked -> if (navigator.openSearchOver(HomeTab.BALANCES)) {
+                trackEvent("search_opened", mapOf("source" to GLOBAL_BALANCES_SOURCE))
             }
 
             GlobalBalancesUiEvent.OnUndoPaymentClicked -> undoSettledUp()
