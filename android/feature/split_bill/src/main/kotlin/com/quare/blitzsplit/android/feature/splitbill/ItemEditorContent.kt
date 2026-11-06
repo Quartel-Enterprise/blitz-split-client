@@ -27,12 +27,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptions
 import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -95,10 +95,7 @@ internal fun ItemEditorContent(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.split_bill_item_name)) },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Next,
-                ),
+                keyboardOptions = freeTextKeyboardOptions.copy(imeAction = ImeAction.Next),
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),

@@ -11,6 +11,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { t } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
 import { categoryIconLabel, categoryIconOf, categoryName } from '@/lib/categories'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
 const nameId = 'category-name'
@@ -102,10 +103,9 @@ function CategoryFormBody({ actions, form, icons, groupField }: { actions: Categ
             id={nameId}
             autoComplete="off"
             maxLength={30}
-            value={name}
+            {...freeTextProps(name, setName)}
             aria-invalid={form.isNameTaken}
             aria-describedby={nameHelpId}
-            onChange={(event) => setName(event.target.value)}
           />
           <p id={nameHelpId} className={cn('text-[13px]', form.isNameTaken ? 'text-destructive' : 'text-muted-foreground')}>
             {nameHelp}

@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
+import { freeTextProps } from '@/lib/freeText'
 import type { AccountProvider } from '@/lib/platform'
 
 const nameErrors: Record<string, MessageKey> = {
@@ -118,10 +119,9 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
             <Input
               id="edit-profile-name"
               autoComplete="name"
-              value={name}
+              {...freeTextProps(name, setName, 'words')}
               aria-invalid={nameError !== null}
               aria-describedby="edit-profile-name-help"
-              onChange={(event) => setName(event.target.value)}
             />
             <div className="flex justify-between gap-2 text-xs">
               <span id="edit-profile-name-help" role="alert" className="text-destructive">

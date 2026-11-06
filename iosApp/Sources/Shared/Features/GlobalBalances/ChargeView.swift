@@ -198,8 +198,9 @@ private struct ChargeContent: View {
     /// The message, with the Pix key under it in one column, as before; two columns move the key beside it.
     private func messageSection(includesPixKey: Bool) -> some View {
         Section {
-            TextField("Message", text: messageBinding, axis: .vertical)
+            TextField("Message", text: messageBinding.firstLetterCapitalized, axis: .vertical)
                 .lineLimit(3...8)
+                .capitalizesFirstLetter()
             if includesPixKey, let pixKey = model.state.pixKey {
                 pixToggle(pixKey)
             }

@@ -23,6 +23,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
 const formId = 'edit-group-form'
@@ -170,12 +171,11 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
         <Label htmlFor={nameId}>{t('editGroup_nameLabel')}</Label>
         <Input
           id={nameId}
-          value={name}
+          {...freeTextProps(name, setName)}
           placeholder={t('editGroup_namePlaceholder')}
           aria-invalid={state.showsNameError}
           aria-describedby={nameHelpId}
           autoComplete="off"
-          onChange={(event) => setName(event.target.value)}
         />
         <span id={nameHelpId} className={cn('flex justify-between gap-3 text-[13px]', state.showsNameError ? 'text-destructive' : 'text-muted-foreground')}>
           <span>{t(state.showsNameError ? 'editGroup_nameError' : 'editGroup_nameHelp')}</span>

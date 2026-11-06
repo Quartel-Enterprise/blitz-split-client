@@ -14,6 +14,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
 /** What "Comentários" reads: Conta's state, or a bill's link page's, which names the same things the same way. */
@@ -436,10 +437,9 @@ export function CommentComposer({ presenter, state, inputRef, className }: { pre
         <Textarea
           ref={inputRef}
           rows={1}
-          value={draft}
+          {...freeTextProps(draft, setDraft)}
           aria-label={t('billDetail_commentPlaceholder')}
           placeholder={t('billDetail_commentPlaceholder')}
-          onChange={(event) => setDraft(event.target.value)}
           onKeyDown={onKeyDown}
           className="max-h-32 min-h-9 resize-none py-[7px]"
         />

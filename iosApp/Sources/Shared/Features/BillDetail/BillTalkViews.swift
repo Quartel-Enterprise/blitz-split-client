@@ -546,13 +546,14 @@ struct BillCommentComposer: View {
 
     private var field: some View {
         TextField(
-            text: model.commentDraft,
+            text: model.commentDraft.firstLetterCapitalized,
             prompt: Text("Write a comment"),
             axis: .vertical,
         ) {
             Text("Comment", comment: "The bill's comment field, for a screen reader")
         }
         .lineLimit(1 ... 5)
+        .capitalizesFirstLetter()
         .focused(focus)
     }
 
