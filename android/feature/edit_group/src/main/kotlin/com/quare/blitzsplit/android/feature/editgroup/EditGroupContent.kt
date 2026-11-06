@@ -426,7 +426,7 @@ private fun CurrencyRow(
             value = groupCurrencyLabel(state.currency, locale),
             icon = Icons.Outlined.KeyboardArrowDown,
             isTop = true,
-            isEnabled = true,
+            isEnabled = !state.isSaving,
             onClick = { isMenuOpen = true },
         )
         DropdownMenu(
