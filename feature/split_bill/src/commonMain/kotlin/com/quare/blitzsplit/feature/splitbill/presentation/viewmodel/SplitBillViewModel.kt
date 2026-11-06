@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
+import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -66,6 +67,7 @@ class SplitBillViewModel(
     private val saveSplitAsDefault: SaveSplitAsDefault,
     readReceipt: ReadReceipt,
     attachBillImage: AttachBillImage,
+    takePickedReceipt: TakePickedReceipt,
     navigator: Navigator,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
@@ -77,12 +79,17 @@ class SplitBillViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<SplitBillUiEvent>(trackEvent) {
+    // Why: the receipt's photo Início's "Ler cupom fiscal" picked before opening a new bill, read once it can be.
+    private val pickedReceipt: ByteArray? =
+        if (route.scansReceipt && route.expenseId == null) takePickedReceipt() else null
+
     val uiState: StateFlow<SplitBillUiState>
         field = MutableStateFlow(
             createInitialBillState(
                 route = route,
                 now = currentTimeMillis(),
                 showsSats = false,
+                hasPickedReceipt = pickedReceipt != null,
             ),
         )
 
@@ -173,6 +180,7 @@ class SplitBillViewModel(
         },
         onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },
         onReadStarted = items::forget,
+        pickedPhoto = pickedReceipt,
         trackEvent = trackEvent,
     )
 

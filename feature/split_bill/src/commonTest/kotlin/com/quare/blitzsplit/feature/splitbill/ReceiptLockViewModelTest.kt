@@ -109,6 +109,7 @@ class ReceiptLockViewModelTest {
             ),
             saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
+            takePickedReceipt = { null },
             readReceipt = { _, _, _ -> CompletableDeferred<ReceiptScan>().also { pendingReads += it }.await() },
             attachBillImage = { _, _, _, _, _ -> Result.failure(IllegalStateException("not attached here")) },
             observeBitcoinInSats = { flowOf(false) },

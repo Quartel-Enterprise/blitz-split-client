@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.HoldPickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
@@ -147,6 +148,7 @@ class HomeViewModelTest {
 
     // Why: every link a QR code was encoded for, in order.
     private val encodedLinks = mutableListOf<String>()
+    private val heldReceipts = mutableListOf<List<Byte>>()
     private lateinit var viewModel: HomeViewModel
     private val actions = mutableListOf<HomeUiAction>()
     private var retryCount = 0
@@ -395,7 +397,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet WHEN tapping Ler cupom fiscal THEN opens Rachar conta on the camera asking the group first`() =
+    fun `GIVEN internet WHEN tapping Ler cupom fiscal THEN asks where the photo comes from and stays on Inicio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
@@ -404,18 +406,8 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
 
             // Then
-            assertEquals(
-                listOf(
-                    Route.Home,
-                    Route.SplitBill(
-                        groupId = trio().id,
-                        expenseId = null,
-                        picksGroupFirst = true,
-                        scansReceipt = true,
-                    ),
-                ),
-                navigator.backStack.value,
-            )
+            assertTrue(viewModel.uiState.value.showsReceiptSourceChoice)
+            assertEquals(listOf<Route>(Route.Home), navigator.backStack.value)
         }
 
     @Test
@@ -5661,6 +5653,7 @@ class HomeViewModelTest {
         appInvite = MutableStateFlow(invite)
         appInviteDismissals = 0
         encodedLinks.clear()
+        heldReceipts.clear()
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = HomeViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
@@ -5686,6 +5679,7 @@ class HomeViewModelTest {
                 qrCodeOf(link)
             },
             observeAppInvite = ObserveAppInvite { appInvite },
+            holdPickedReceipt = HoldPickedReceipt { heldReceipts += it.toList() },
             updateLastNotificationPromptAt = UpdateLastNotificationPromptAt {
                 notificationPromptWrites += it
                 lastNotificationPromptAt.value = it

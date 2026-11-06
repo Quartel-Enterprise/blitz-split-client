@@ -55,10 +55,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
+import com.quare.blitzsplit.android.designsystem.component.shimmer
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -191,23 +193,38 @@ private fun AttachmentTile(
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             contentAlignment = Alignment.Center,
         ) {
-            // Why: under the image, so it shows while the image loads, and offline for one never loaded here.
-            Icon(
-                imageVector = if (attachment.isReceipt) {
-                    Icons.AutoMirrored.Outlined.ReceiptLong
-                } else {
-                    Icons.Outlined.Image
-                },
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
             // Why: the photo added here until it is up, else the bucket's signed URL.
-            (attachment.localImage ?: attachment.imageUrl)?.let { image ->
+            val image = attachment.localImage ?: attachment.imageUrl
+            var isImageDownloading by remember(image) { mutableStateOf(image != null) }
+            /*
+             * Why: under the image, shimmering while its URL is signed or it downloads (beta feedback, part 3, item
+             * 21); still offline, or for one that couldn't load.
+             */
+            if (attachment.isImageLoading || isImageDownloading) {
+                ShimmerBox(
+                    modifier = Modifier.matchParentSize(),
+                    isDelayed = false,
+                ) {
+                    Box(modifier = Modifier.matchParentSize().shimmer(thumbShape))
+                }
+            } else {
+                Icon(
+                    imageVector = if (attachment.isReceipt) {
+                        Icons.AutoMirrored.Outlined.ReceiptLong
+                    } else {
+                        Icons.Outlined.Image
+                    },
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            image?.let {
                 AsyncImage(
-                    model = image,
+                    model = it,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.matchParentSize(),
+                    onState = { imageState -> isImageDownloading = imageState is AsyncImagePainter.State.Loading },
                 )
             }
             when {

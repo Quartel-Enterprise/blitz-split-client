@@ -356,14 +356,6 @@ private struct PhoneSplitBill: View {
                 .foldSheetPlacement()
         }
         .receiptSourceChoice(model: model, isSettled: isSettled, isAnchoredAtButton: isScanButtonShown)
-        .fullScreenCover(isPresented: model.receiptSourceShown(.camera, isSettled: isSettled)) {
-            ReceiptCameraView(
-                onPhoto: { data in model.receiptPicked(data) },
-                onDismiss: { model.send(SplitBillUiEventOnReceiptPickerDismissed.shared) },
-                onTorchToggled: { isOn in model.send(SplitBillUiEventOnReceiptTorchClicked(isOn: isOn)) },
-                onSettingsOpened: { model.send(SplitBillUiEventOnReceiptCameraSettingsClicked.shared) },
-            )
-        }
         .sheet(isPresented: payerShown) {
             // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.
             if model.state.payerSelection == nil, model.shownPayerAmounts != nil {
@@ -1180,12 +1172,6 @@ private struct MacBillForm: View {
         }
         // "Ler Cupom Fiscal…" picks the receipt's photo from Photos or a file, as the Mac has no camera to frame it (7.1e)
         .receiptSourceChoice(model: model, isSettled: isSettled)
-        .fileImporter(isPresented: model.receiptSourceShown(.files, isSettled: isSettled), allowedContentTypes: [.image]) { result in
-            guard case let .success(url) = result else { return }
-            Task {
-                model.receiptPicked(await Self.readFile(url))
-            }
-        }
         .sheet(isPresented: groupShown) {
             MacGroupPicker(model: model)
         }
@@ -1196,15 +1182,6 @@ private struct MacBillForm: View {
             }
             .frame(width: 480, height: 560)
         }
-    }
-
-    /// The picked file's bytes, read off the main actor since a large photo or one on iCloud Drive takes a while
-    /// (@concurrent: with approachable concurrency a nonisolated async function runs on its caller's actor).
-    @concurrent
-    private nonisolated static func readFile(_ url: URL) async -> Data? {
-        let isScoped = url.startAccessingSecurityScopedResource()
-        defer { if isScoped { url.stopAccessingSecurityScopedResource() } }
-        return try? Data(contentsOf: url)
     }
 
     private var categoryFormShown: Binding<Bool> {

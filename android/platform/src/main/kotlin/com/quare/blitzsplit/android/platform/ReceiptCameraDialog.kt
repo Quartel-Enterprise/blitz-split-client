@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.android.feature.splitbill
+package com.quare.blitzsplit.android.platform
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -52,11 +52,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import com.quare.blitzsplit.android.platform.ReceiptCameraDisplay
-import com.quare.blitzsplit.android.platform.rememberCameraPermissionAccess
-import com.quare.blitzsplit.android.platform.rememberPhotoPickers
-import com.quare.blitzsplit.android.platform.rememberReceiptCamera
-import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 
 private val shutterSize = 76.dp
 private val sideButtonSize = 48.dp
@@ -68,15 +63,15 @@ private const val FRAME_HEIGHT_FRACTION = 0.9f
 private enum class CameraView { PICTURE, ASKING, DENIED, DENIED_FOR_GOOD, UNAVAILABLE }
 
 /*
- * Why: "Ler cupom fiscal" (7.1e), the board's own camera over the bill, black in both themes: the frame to fit the
- * receipt in, the flash, the gallery and the shutter. The photo taken or picked goes to the shared code as it came; a
- * gallery file that can't be read goes too, and reads as a receipt that couldn't be read.
+ * Why: "Ler cupom fiscal" (7.1e), the board's own camera over the bill or Início, black in both themes: the frame to fit
+ * the receipt in, the flash, the gallery and the shutter. The photo taken or picked goes to the shared code as it came;
+ * a gallery file that can't be read goes too, and reads as a receipt that couldn't be read.
  */
 @Composable
-internal fun ReceiptCameraDialog(
+fun ReceiptCameraDialog(
     onPhoto: (ByteArray) -> Unit,
     onDismiss: () -> Unit,
-    onEvent: (SplitBillUiEvent) -> Unit,
+    taps: ReceiptCameraTaps,
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -88,7 +83,7 @@ internal fun ReceiptCameraDialog(
         ReceiptCameraContent(
             onPhoto = onPhoto,
             onDismiss = onDismiss,
-            onEvent = onEvent,
+            taps = taps,
         )
     }
 }
@@ -97,7 +92,7 @@ internal fun ReceiptCameraDialog(
 private fun ReceiptCameraContent(
     onPhoto: (ByteArray) -> Unit,
     onDismiss: () -> Unit,
-    onEvent: (SplitBillUiEvent) -> Unit,
+    taps: ReceiptCameraTaps,
 ) {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -133,7 +128,7 @@ private fun ReceiptCameraContent(
     }
     val toggleTorch = {
         isTorchOn = !isTorchOn
-        onEvent(SplitBillUiEvent.OnReceiptTorchClicked(isTorchOn))
+        taps.onTorchClicked(isTorchOn)
     }
     val takePhoto = {
         if (!isTaking) {
@@ -161,11 +156,11 @@ private fun ReceiptCameraContent(
                     view = view,
                     modifier = modifier,
                     onAllow = {
-                        onEvent(SplitBillUiEvent.OnReceiptCameraAllowClicked)
+                        taps.onAllowClicked()
                         permission.request()
                     },
                     onOpenSettings = {
-                        onEvent(SplitBillUiEvent.OnReceiptCameraSettingsClicked)
+                        taps.onSettingsClicked()
                         permission.openSettings()
                     },
                 ) { pictureModifier ->
@@ -236,12 +231,12 @@ private fun CameraHeader(
         IconButton(onClick = onDismiss) {
             Icon(
                 imageVector = Icons.Outlined.Close,
-                contentDescription = stringResource(R.string.split_bill_receipt_camera_close),
+                contentDescription = stringResource(R.string.platform_receipt_camera_close),
                 tint = Color.White,
             )
         }
         Text(
-            text = stringResource(R.string.split_bill_receipt_camera_title),
+            text = stringResource(R.string.platform_receipt_camera_title),
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleLarge,
             color = Color.White,
@@ -252,9 +247,9 @@ private fun CameraHeader(
                     imageVector = if (isTorchOn) Icons.Outlined.FlashOff else Icons.Outlined.FlashOn,
                     contentDescription = stringResource(
                         if (isTorchOn) {
-                            R.string.split_bill_receipt_camera_flash_off
+                            R.string.platform_receipt_camera_flash_off
                         } else {
-                            R.string.split_bill_receipt_camera_flash_on
+                            R.string.platform_receipt_camera_flash_on
                         },
                     ),
                     tint = Color.White,
@@ -310,9 +305,9 @@ private fun CameraMessage(
         Text(
             text = stringResource(
                 if (view == CameraView.UNAVAILABLE) {
-                    R.string.split_bill_receipt_camera_unavailable
+                    R.string.platform_receipt_camera_unavailable
                 } else {
-                    R.string.split_bill_receipt_camera_permission
+                    R.string.platform_receipt_camera_permission
                 },
             ),
             style = MaterialTheme.typography.bodyLarge,
@@ -321,11 +316,11 @@ private fun CameraMessage(
         )
         when (view) {
             CameraView.DENIED -> FilledTonalButton(onClick = onAllow) {
-                Text(stringResource(R.string.split_bill_receipt_camera_allow))
+                Text(stringResource(R.string.platform_receipt_camera_allow))
             }
 
             CameraView.DENIED_FOR_GOOD -> FilledTonalButton(onClick = onOpenSettings) {
-                Text(stringResource(R.string.split_bill_receipt_camera_settings))
+                Text(stringResource(R.string.platform_receipt_camera_settings))
             }
 
             else -> Unit
@@ -336,7 +331,7 @@ private fun CameraMessage(
 @Composable
 private fun HintText(modifier: Modifier = Modifier) {
     Text(
-        text = stringResource(R.string.split_bill_receipt_camera_hint),
+        text = stringResource(R.string.platform_receipt_camera_hint),
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 32.dp),
@@ -366,12 +361,12 @@ private fun CameraControlsBar(
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Outlined.PhotoLibrary,
-                    contentDescription = stringResource(R.string.split_bill_receipt_camera_gallery),
+                    contentDescription = stringResource(R.string.platform_receipt_camera_gallery),
                 )
             }
         }
     }
-    val shutterLabel = stringResource(R.string.split_bill_receipt_camera_shutter)
+    val shutterLabel = stringResource(R.string.platform_receipt_camera_shutter)
     val shutter = @Composable {
         Surface(
             onClick = onShutter,

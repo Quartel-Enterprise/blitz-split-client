@@ -66,6 +66,8 @@ internal fun sharedTilesOf(
             isReceipt = isReceipt,
             localImage = null,
             imageUrl = attachment.imageUrl,
+            // Why: a link's page comes with its URLs signed, so a photo without one has none to wait for.
+            isImageLoading = false,
             width = attachment.width,
             height = attachment.height,
             photoNumber = if (isReceipt) null else ++photoNumber,

@@ -276,6 +276,7 @@ class BillDetailViewModel(
             .onEach { isOnline ->
                 uiState.update { it.copy(isOnline = isOnline) }
                 historyRead.onConnectivityChanged(isOnline)
+                showAttachments()
             }.launchIn(viewModelScope)
         // Why: "Hoje" becomes "Ontem" at midnight on a bill left open.
         minuteTicks()
@@ -286,9 +287,7 @@ class BillDetailViewModel(
                 showHistory()
                 showAttachments()
             }.launchIn(viewModelScope)
-        navigator.backStack
-            .onEach { if (isGone) leave() }
-            .launchIn(viewModelScope)
+        navigator.backStack.onEach { if (isGone) leave() }.launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: BillDetailUiEvent) {
@@ -412,6 +411,7 @@ class BillDetailViewModel(
             group = group,
             nowMillis = currentTimeMillis(),
             timeZone = currentTimeZone(),
+            isOnline = uiState.value.isOnline,
         )
         uiState.update { it.copy(attachments = if (isCopyWhole) tiles.toLoaded() else Loadable.Loading) }
     }

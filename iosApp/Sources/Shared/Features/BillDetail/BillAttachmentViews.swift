@@ -217,11 +217,16 @@ private struct BillAttachmentTileView: View {
     }
 
     private var thumbnail: some View {
-        AttachmentImage(attachment: attachment, contentMode: .fill) {
-            Image(systemName: attachment.isReceipt ? "receipt" : "photo")
-                .font(.title3)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        AttachmentImage(attachment: attachment, contentMode: .fill) { isLoading in
+            if isLoading {
+                ShimmerBlock(width: metrics.tile.width, height: metrics.tile.height, cornerRadius: metrics.cornerRadius)
+                    .shimmering(appearsAfter: nil)
+            } else {
+                Image(systemName: attachment.isReceipt ? "receipt" : "photo")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
         .frame(width: metrics.tile.width, height: metrics.tile.height)
         .background(Palette.card)

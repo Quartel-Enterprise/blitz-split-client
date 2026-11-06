@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 
 data class SplitBillUiState(
     // Why: "Editar conta" rather than "Rachar conta", with "Apagar conta" under the form.
@@ -214,6 +215,10 @@ data class SplitBillUiState(
      */
     val showsReceiptSourceChoice: Boolean
         get() = isReceiptSourceRequested && canOpenReceiptSource
+
+    // Why: Início's photo, read once the same conditions as the choice hold (beta feedback, part 3, item 16).
+    val readsPickedReceipt: Boolean
+        get() = receiptRequest == ReceiptRequest.Picked && canOpenReceiptSource
 
     // Why: the choice asked for, shown or still waiting for its conditions.
     val isReceiptSourceRequested: Boolean

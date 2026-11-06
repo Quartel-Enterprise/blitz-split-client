@@ -5,4 +5,18 @@
     <string name="platform_export_file_name">bora-rachar-dados-%1$s.json</string>
     <string name="platform_camera_denied">Permita a câmera nas configurações para tirar a foto.</string>
     <string name="platform_camera_settings">Configurações</string>
+    <string name="platform_receipt_source_camera">Tirar foto</string>
+    <string name="platform_receipt_source_gallery">Escolher da galeria</string>
+    <string name="platform_receipt_source_file">Escolher arquivo</string>
+    <string name="platform_receipt_camera_title">Ler cupom fiscal</string>
+    <string name="platform_receipt_camera_close">Fechar</string>
+    <string name="platform_receipt_camera_flash_on">Ligar o flash</string>
+    <string name="platform_receipt_camera_flash_off">Desligar o flash</string>
+    <string name="platform_receipt_camera_hint">Enquadre o cupom inteiro. A gente preenche o valor, a data e a descrição; você confere antes de salvar.</string>
+    <string name="platform_receipt_camera_gallery">Escolher da galeria</string>
+    <string name="platform_receipt_camera_shutter">Tirar foto</string>
+    <string name="platform_receipt_camera_unavailable">A câmera não está disponível. Escolha uma foto do cupom na galeria.</string>
+    <string name="platform_receipt_camera_permission">Permita a câmera para ler o cupom, ou escolha uma foto da galeria.</string>
+    <string name="platform_receipt_camera_allow">Permitir câmera</string>
+    <string name="platform_receipt_camera_settings">Abrir configurações</string>
 </resources>

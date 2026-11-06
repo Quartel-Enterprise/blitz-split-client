@@ -54,6 +54,29 @@ final class HomeModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    /// The state as the ViewModel holds it now, for a binding that closes a beat later.
+    var current: HomeUiState {
+        (holder.viewModel.uiState.value as? HomeUiState) ?? state
+    }
+
+    /// "Scan a receipt" asks where the photo comes from on Home, then opens Split a bill reading it (beta feedback,
+    /// part 3, item 16), as Split a bill's own "Scan receipt" asks.
+    var receiptSourceRequest: ReceiptSourceRequest {
+        ReceiptSourceRequest(
+            showsChoice: state.showsReceiptSourceChoice,
+            shownSource: state.receiptSource,
+            current: { (self.current.showsReceiptSourceChoice, self.current.receiptSource) },
+            pick: { self.send(HomeUiEventOnReceiptSourcePicked(source: $0)) },
+            skipChoice: { self.send(HomeUiEventOnReceiptChoiceSkipped(source: .photos)) },
+            dismiss: { self.send(HomeUiEventOnReceiptPickerDismissed.shared) },
+            photoPicked: { data in
+                self.send(HomeUiEventOnReceiptPhotoPicked(photo: BlitzSplitApple.shared.toByteArray(data: data ?? Data())))
+            },
+            torchToggled: { self.send(HomeUiEventOnReceiptTorchClicked(isOn: $0)) },
+            settingsOpened: { self.send(HomeUiEventOnReceiptCameraSettingsClicked.shared) },
+        )
+    }
+
     /// On appear, on every return to the app and after the system's prompt: the card follows what the system says.
     func checkNotificationPermission() {
         Task {
@@ -129,6 +152,7 @@ struct HomeView: View {
         .readingVerticalBar($hasVerticalBar)
         // The notification card asks, never Home on its own: it only reads what the system says
         .checkingNotificationPermission { model.checkNotificationPermission() }
+        .receiptSourcePickers(model.receiptSourceRequest)
         // Record payment, which "Who paid whom?" or a face's settling up opened over Home, just closed
         .recordedPaymentNotice(
             state.recordedPayment,

@@ -52,6 +52,7 @@ import com.quare.blitzsplit.core.expenses.data.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryPickedReceiptRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.data.repository.ReceiptRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.SettlementRepositoryImpl
@@ -64,6 +65,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTeachReposit
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.DeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.PickedReceiptRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ReceiptRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
@@ -84,6 +86,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DisableBillShareLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.GetRecentGroupId
+import com.quare.blitzsplit.core.expenses.domain.usecase.HoldPickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.LikeBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LikeSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentImage
@@ -119,6 +122,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.SetBillShareLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.SetSimplifiesDebts
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
+import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
@@ -136,6 +140,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DisableBillShareLi
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditSharedBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.GetRecentGroupIdUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.HoldPickedReceiptUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeSharedBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachmentImageUseCase
@@ -171,6 +176,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryU
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetBillShareLinkUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetSimplifiesDebtsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.TakePickedReceiptUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.factoryOf
@@ -196,6 +202,10 @@ val expenseModule = module {
     factoryOf(::NoticeBillGoneUseCase).bind<NoticeBillGone>()
     factoryOf(::ObserveDeletedBillNoticeUseCase).bind<ObserveDeletedBillNotice>()
     factoryOf(::ConsumeDeletedBillNoticeUseCase).bind<ConsumeDeletedBillNotice>()
+    // Why: one for the whole app, since Início holds the receipt's photo and Split a bill takes it.
+    singleOf(::InMemoryPickedReceiptRepository).bind<PickedReceiptRepository>()
+    factoryOf(::HoldPickedReceiptUseCase).bind<HoldPickedReceipt>()
+    factoryOf(::TakePickedReceiptUseCase).bind<TakePickedReceipt>()
     singleOf(::RoomSettlementLocalDataSource).bind<SettlementLocalDataSource>()
     singleOf(::SupabaseSettlementRemoteDataSource).bind<SettlementRemoteDataSource>()
     singleOf(::SettlementMapperImpl).bind<SettlementMapper>()

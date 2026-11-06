@@ -27,6 +27,7 @@ internal fun createInitialBillState(
     route: Route.SplitBill,
     now: Long,
     showsSats: Boolean,
+    hasPickedReceipt: Boolean,
 ): SplitBillUiState {
     val currency = GroupCurrency.BRL
     return SplitBillUiState(
@@ -74,10 +75,15 @@ internal fun createInitialBillState(
         receipt = null,
         receiptCategoryId = null,
         /*
-         * Why: Início's "Ler cupom fiscal" opens Rachar conta straight on "Tirar foto" or the gallery's choice, after
-         * "Rachar em qual grupo?".
+         * Why: Início's "Ler cupom fiscal" picks the photo first and opens Rachar conta reading it, after "Rachar em
+         * qual grupo?" (beta feedback, part 3, item 16). Without the photo (the app restored after the system closed
+         * it) it asks for one again.
          */
-        receiptRequest = ReceiptRequest.Choice.takeIf { route.scansReceipt && route.expenseId == null },
+        receiptRequest = when {
+            !route.scansReceipt || route.expenseId != null -> null
+            hasPickedReceipt -> ReceiptRequest.Picked
+            else -> ReceiptRequest.Choice
+        },
         conflict = null,
         settledPair = null,
         deletion = null,

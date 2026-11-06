@@ -793,5 +793,7 @@ class HomeUiStateTest {
         appInvite = appInvite,
         hasBills = hasBills,
         isAppBannerDismissed = false,
+        showsReceiptSourceChoice = false,
+        receiptSource = null,
     )
 }

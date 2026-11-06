@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -7,9 +8,13 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
+import com.quare.blitzsplit.android.platform.ReceiptCameraTaps
+import com.quare.blitzsplit.android.platform.ReceiptSourcePicker
+import com.quare.blitzsplit.android.platform.ReceiptSourceRequest
 import com.quare.blitzsplit.android.platform.rememberNotificationPermissionAccess
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -56,7 +61,40 @@ fun HomeScreen(
         onEvent = viewModel::onEvent,
         snackbarHostState = snackbarHostState,
     )
+    ReceiptSourceComponent(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onEvent = viewModel::onEvent,
+    )
     if (state.showsRecoveryCodePrompt) recoveryCodeSheet()
+}
+
+/*
+ * Why: "Ler cupom fiscal" asks where the photo comes from on Início, as Rachar conta's own does; the photo then opens
+ * Rachar conta reading it (beta feedback, part 3, item 16).
+ */
+@Composable
+private fun ReceiptSourceComponent(
+    state: HomeUiState,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (HomeUiEvent) -> Unit,
+) {
+    ReceiptSourcePicker(
+        request = ReceiptSourceRequest(
+            showsChoice = state.showsReceiptSourceChoice,
+            shownSource = state.receiptSource,
+            onSourcePicked = { onEvent(HomeUiEvent.OnReceiptSourcePicked(it)) },
+            onChoiceSkipped = { onEvent(HomeUiEvent.OnReceiptChoiceSkipped(it)) },
+            onDismissed = { onEvent(HomeUiEvent.OnReceiptPickerDismissed) },
+            onPhotoPicked = { onEvent(HomeUiEvent.OnReceiptPhotoPicked(it)) },
+            cameraTaps = ReceiptCameraTaps(
+                onTorchClicked = { onEvent(HomeUiEvent.OnReceiptTorchClicked(it)) },
+                onAllowClicked = { onEvent(HomeUiEvent.OnReceiptCameraAllowClicked) },
+                onSettingsClicked = { onEvent(HomeUiEvent.OnReceiptCameraSettingsClicked) },
+            ),
+        ),
+        snackbarHostState = snackbarHostState,
+    )
 }
 
 // Why: read on every return too, since the person may change it in the system settings, and after the system's dialog.

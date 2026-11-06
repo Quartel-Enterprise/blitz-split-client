@@ -5,4 +5,18 @@
     <string name="platform_export_file_name">blitz-split-datos-%1$s.json</string>
     <string name="platform_camera_denied">Permite el acceso a la cámara en Configuración para tomar una foto.</string>
     <string name="platform_camera_settings">Configuración</string>
+    <string name="platform_receipt_source_camera">Tomar foto</string>
+    <string name="platform_receipt_source_gallery">Elegir de la galería</string>
+    <string name="platform_receipt_source_file">Elegir archivo</string>
+    <string name="platform_receipt_camera_title">Escanear recibo</string>
+    <string name="platform_receipt_camera_close">Cerrar</string>
+    <string name="platform_receipt_camera_flash_on">Encender el flash</string>
+    <string name="platform_receipt_camera_flash_off">Apagar el flash</string>
+    <string name="platform_receipt_camera_hint">Encuadra todo el recibo. Completamos el monto, la fecha y la descripción; tú lo revisas antes de guardar.</string>
+    <string name="platform_receipt_camera_gallery">Elegir de la galería</string>
+    <string name="platform_receipt_camera_shutter">Tomar foto</string>
+    <string name="platform_receipt_camera_unavailable">La cámara no está disponible. Elige una foto del recibo de la galería.</string>
+    <string name="platform_receipt_camera_permission">Permite el acceso a la cámara para escanear el recibo, o elige una foto de la galería.</string>
+    <string name="platform_receipt_camera_allow">Permitir cámara</string>
+    <string name="platform_receipt_camera_settings">Abrir configuración</string>
 </resources>

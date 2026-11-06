@@ -39,6 +39,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.provider.image.BillImage
@@ -46,7 +47,6 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryHint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategorySuggestionReason
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
-import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -3002,6 +3002,9 @@ class ReceiptViewModelTest {
         photoUrl = null,
     )
 
+    // Why: the photo Início held for Rachar conta, which the ViewModel takes once as it opens.
+    private var heldReceipt: ByteArray? = null
+
     private fun prepareScenario(
         route: Route.SplitBill = newRoute(),
         storedGroups: List<Group> = listOf(dinner),
@@ -3011,7 +3014,9 @@ class ReceiptViewModelTest {
         attachResult: Result<BillAttachmentAddition> = Result.success(BillAttachmentAddition.ADDED),
         groupCategories: List<GroupCategory> = emptyList(),
         termChanges: List<CategoryTermChange> = emptyList(),
+        pickedReceipt: ByteArray? = null,
     ) {
+        heldReceipt = pickedReceipt
         isOnline = MutableStateFlow(online)
         groups = FakeGroupRepository(initialGroups = storedGroups)
         categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
@@ -3054,6 +3059,7 @@ class ReceiptViewModelTest {
             ),
             saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
+            takePickedReceipt = { heldReceipt.also { heldReceipt = null } },
             readReceipt = { photo, currency, hints ->
                 readSources += photo.toList()
                 readCurrencies += currency
