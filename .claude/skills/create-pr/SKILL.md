@@ -428,7 +428,10 @@ every review conversation is resolved, including the checks of the fix commit th
 - **With the `ccd_pr` tools** (a session in the Claude desktop app), turn on the app's Auto-fix
   instead of the loop below. Call `get_status`; if it doesn't report this pull request, bind it with
   `bind_pr` and its URL. Then call `set_monitor` with `auto_fix: true` and the URL: opening the pull
-  request through this skill is the user's request for that switch, so don't ask. End the turn:
+  request through this skill is the user's request for that switch, so don't ask. The app turns it
+  on only for a pull request it is sure this session opened, and may refuse one it isn't (e.g. one
+  opened from a worktree the session didn't start in): then tell the user they can turn Auto-fix on
+  from the PR bar themselves, and wait with the loop below meanwhile. Once Auto-fix is on, end the turn:
   the app wakes the session with a `<ci-monitor-event>` on a failed check, a conflict with `main`
   or a review comment, and the comment `merge-when-green` leaves when it removes its label is one
   of them. Handle each event as the outcomes below say, with the loop's filter: a failed
