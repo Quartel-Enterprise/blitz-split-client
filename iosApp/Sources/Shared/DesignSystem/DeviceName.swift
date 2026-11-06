@@ -18,11 +18,11 @@ enum DeviceName {
 
     /// Where the person connects an account later: the profile, pushed over the groups everywhere.
     static var accountPlace: String {
-        String(localized: "Profile")
+        String(localized: "Profile", bundle: .appLanguage)
     }
 
     /// Where the recovery code stays available after the sheet.
     static var recoveryPlace: String {
-        String(localized: "Profile › Recovery")
+        String(localized: "Profile › Recovery", bundle: .appLanguage)
     }
 }

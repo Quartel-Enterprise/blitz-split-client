@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -40,6 +41,10 @@ class JsProfileState(
     val theme: String,
     // Why: Preferências' "Bitcoin em satoshis".
     val showsBitcoinInSats: Boolean,
+    // Why: Preferences' "Language": "system", or the tag of the language picked ("en", "pt-BR").
+    val language: String,
+    // Why: the codes of the options, in the order every UI lists them.
+    val languageOptions: Array<String>,
     // Why: null while it loads, also while a restored account's choices haven't come down.
     val activeNotificationCount: Int?,
     // Why: the ProfileDialog's name, null while none is open.
@@ -81,7 +86,7 @@ class JsPaymentKeyItem(
 )
 
 class JsProfileAction(
-    // Why: "copy" with the code, "open" with a URL, or "export" with the JSON to save.
+    // Why: "copy" with the code, "open" with a URL, "export" with the JSON to save, or "reload" for a language picked.
     val type: String,
     val value: String,
 )
@@ -114,6 +119,8 @@ class ProfilePresenter {
                 isSignOutScheduled = state.isSignOutScheduled,
                 theme = state.theme.code,
                 showsBitcoinInSats = state.showsBitcoinInSats,
+                language = state.language.code,
+                languageOptions = state.languageOptions.map { it.code }.toTypedArray(),
                 activeNotificationCount = state.activeNotificationCount.valueOrNull(),
                 dialog = state.dialog?.name,
                 hasConfirmedCodeSaved = state.hasConfirmedCodeSaved,
@@ -161,6 +168,12 @@ class ProfilePresenter {
                 is ProfileUiAction.SaveExport -> JsProfileAction("export", action.json)
 
                 is ProfileUiAction.LaunchNativeSignIn -> null
+
+                // Why: the page reads its language once, before it draws; the reload comes back to the profile.
+                ProfileUiAction.ApplyLanguage -> {
+                    keepProfileForLanguage()
+                    JsProfileAction("reload", "")
+                }
 
                 // Why: the web never checks for updates, since it always serves the latest version.
                 is ProfileUiAction.ShowUpdateCheckResult -> null
@@ -226,6 +239,11 @@ class ProfilePresenter {
     fun selectTheme(themeCode: String) {
         val theme = ThemePreference.fromCodeOrNull(themeCode) ?: return
         viewModel.onEvent(ProfileUiEvent.OnThemeSelected(theme))
+    }
+
+    fun selectLanguage(languageCode: String) {
+        val language = AppLanguage.entries.firstOrNull { it.code == languageCode } ?: return
+        viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(language))
     }
 
     fun toggleBitcoinInSats(isOn: Boolean) {
@@ -298,3 +316,7 @@ class ProfilePresenter {
         holder.clear()
     }
 }
+
+// Why: "system" for System, as the theme's code, or the language's tag.
+private val AppLanguage.code: String
+    get() = tag ?: "system"

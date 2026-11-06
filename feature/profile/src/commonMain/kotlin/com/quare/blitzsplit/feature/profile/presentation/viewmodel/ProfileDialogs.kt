@@ -34,6 +34,12 @@ internal class ProfileDialogs(
         }
     }
 
+    fun openLanguage() {
+        if (uiState.value.isLoaded && show(ProfileDialog.LANGUAGE)) {
+            trackEvent("profile_language_clicked", emptyMap())
+        }
+    }
+
     // Why: only where the switch it explains shows, and over Appearance, where its button is.
     fun openDynamicColorsInfo() {
         val state = uiState.value
@@ -61,7 +67,7 @@ internal class ProfileDialogs(
 
     /*
      * Why: the info over Appearance goes back to it; any other closes to the profile. Only a confirmation's close
-     * counts as cancelled: the info dialogs close with their only button and Appearance has none.
+     * counts as cancelled: the info dialogs close with their only button, and Appearance and Language have none.
      */
     fun close() {
         if (uiState.value.isSigningOut || uiState.value.isUnlinking) return

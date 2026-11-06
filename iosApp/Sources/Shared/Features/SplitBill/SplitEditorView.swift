@@ -62,24 +62,27 @@ private struct DefaultSplitNotice: View {
 
     private var title: String {
         state.isSplitEditorOffDefault
-            ? String(localized: "Different from the group's default")
+            ? String(localized: "Different from the group's default", bundle: .appLanguage)
             : state.defaultSplitException.map {
-                String(localized: "Group exception for \(CategoryCopy.name($0)): \(summary)")
-            } ?? String(localized: "\(state.groupName) default: \(summary)")
+                String(localized: "Group exception for \(CategoryCopy.name($0)): \(summary)", bundle: .appLanguage)
+            } ?? String(localized: "\(state.groupName) default: \(summary)", bundle: .appLanguage)
     }
 
     private var detail: String {
         guard state.isSplitEditorOffDefault else {
-            return String(localized: "It came this way. Changing it here only counts for this bill.")
+            return String(
+                localized: "It came this way. Changing it here only counts for this bill.",
+                bundle: .appLanguage,
+            )
         }
-        let base = String(localized: "\(state.groupName)'s default is \(summary).")
+        let base = String(localized: "\(state.groupName)'s default is \(summary).", bundle: .appLanguage)
         guard editor.mode != split.editor.mode else { return base }
         let now = switch editor.mode {
-        case .amount: String(localized: "This bill splits by amounts.")
-        case .percent: String(localized: "This bill splits by percentage.")
-        case .shares: String(localized: "This bill splits by shares.")
-        case .items: String(localized: "This bill splits by items.")
-        default: String(localized: "This bill splits equally.")
+        case .amount: String(localized: "This bill splits by amounts.", bundle: .appLanguage)
+        case .percent: String(localized: "This bill splits by percentage.", bundle: .appLanguage)
+        case .shares: String(localized: "This bill splits by shares.", bundle: .appLanguage)
+        case .items: String(localized: "This bill splits by items.", bundle: .appLanguage)
+        default: String(localized: "This bill splits equally.", bundle: .appLanguage)
         }
         return "\(base) \(now)"
     }
@@ -111,8 +114,8 @@ private struct SplitAsDefaultToggle: View {
     /// "Use as the group default for Groceries" while the bill opened with that category's exception.
     private var title: String {
         state.splitEditorDefaultException.map {
-            String(localized: "Use as the group default for \(CategoryCopy.name($0))")
-        } ?? String(localized: "Use as the group default")
+            String(localized: "Use as the group default for \(CategoryCopy.name($0))", bundle: .appLanguage)
+        } ?? String(localized: "Use as the group default", bundle: .appLanguage)
     }
 
     private var isOn: Binding<Bool> {

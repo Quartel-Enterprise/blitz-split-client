@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
 import androidx.compose.material.icons.outlined.SystemUpdate
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -59,6 +60,21 @@ internal fun PreferencesSection(
             modifier = Modifier.clickable(enabled = state.isLoaded) { onEvent(ProfileUiEvent.OnAppearanceClicked) },
             supporting = appearanceSummary(state),
             isSupportingLoading = !state.isLoaded,
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
+        HorizontalDivider()
+        // Why: opens Language (System and each language), as Bible Planner's language row does.
+        SectionRow(
+            icon = Icons.Outlined.Translate,
+            headline = stringResource(R.string.profile_language),
+            modifier = Modifier.clickable(enabled = state.isLoaded) { onEvent(ProfileUiEvent.OnLanguageClicked) },
+            supporting = languageName(state.language),
             trailing = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,

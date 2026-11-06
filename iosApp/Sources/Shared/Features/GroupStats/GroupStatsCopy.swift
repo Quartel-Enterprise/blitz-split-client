@@ -6,18 +6,24 @@ import Shared
 enum GroupStatsCopy {
     /// "Total spent so far" (5.1d) while a new device's first download still brings bills down, else "Total spent".
     static func totalLabel(_ state: GroupStatsUiState) -> String {
-        state.isFirstDownload ? String(localized: "Total spent so far") : String(localized: "Total spent")
+        state.isFirstDownload ? String(localized: "Total spent so far", bundle: .appLanguage) : String(
+            localized: "Total spent",
+            bundle: .appLanguage,
+        )
     }
 
     /// "The whole trip" in a trip, "All time" in any other group, and the other periods by name.
     static func period(_ period: StatsPeriod, isTrip: Bool) -> String {
         if period == .all {
-            return isTrip ? String(localized: "The whole trip") : String(localized: "All time")
+            return isTrip ? String(localized: "The whole trip", bundle: .appLanguage) : String(
+                localized: "All time",
+                bundle: .appLanguage,
+            )
         }
-        if period == .thisYear { return String(localized: "This year") }
-        if period == .thisMonth { return String(localized: "This month") }
-        if period == .lastMonth { return String(localized: "Last month") }
-        return String(localized: "Pick dates…")
+        if period == .thisYear { return String(localized: "This year", bundle: .appLanguage) }
+        if period == .thisMonth { return String(localized: "This month", bundle: .appLanguage) }
+        if period == .lastMonth { return String(localized: "Last month", bundle: .appLanguage) }
+        return String(localized: "Pick dates…", bundle: .appLanguage)
     }
 
     /// "no expenses", "1 expense" or "7 expenses".
@@ -26,16 +32,17 @@ enum GroupStatsCopy {
             return String(
                 localized: "Statistics without expenses",
                 defaultValue: "no expenses",
+                bundle: .appLanguage,
                 comment: "How many bills a period of the statistics has, when it has none",
             )
         }
-        return String(localized: "\(Int(count)) expenses")
+        return String(localized: "\(Int(count)) expenses", bundle: .appLanguage)
     }
 
     /// Under a period of the menu: "Oct 24 – 29 · 7 expenses", or "From one day to another" before any dates.
     static func hint(_ option: StatsPeriodOption) -> String {
         guard let start = option.startMillis?.int64Value, let end = option.endMillis?.int64Value else {
-            return String(localized: "From one day to another")
+            return String(localized: "From one day to another", bundle: .appLanguage)
         }
         return "\(range(option.rangeStyle, start: start, end: end)) · \(expenseCount(option.expenseCount))"
     }
@@ -63,7 +70,7 @@ enum GroupStatsCopy {
     static func barLabel(_ bar: StatsBar, grain: StatsGrain, isSparse: Bool) -> String {
         let date = ExpenseFormat.date(of: bar.startMillis)
         if grain == .day {
-            return bar.isToday ? String(localized: "today") : date.formatted(.dateTime.day())
+            return bar.isToday ? String(localized: "today", bundle: .appLanguage) : date.formatted(.dateTime.day())
         }
         if grain == .week {
             return isSparse ? date.formatted(.dateTime.month(.abbreviated)) : week(bar)
@@ -90,18 +97,18 @@ enum GroupStatsCopy {
     /// "Most expensive day: Oct 28,", before the amount.
     static func peak(_ bar: StatsBar, grain: StatsGrain) -> String {
         let name = barName(bar, grain: grain)
-        if grain == .week { return String(localized: "Most expensive week: \(name),") }
-        if grain == .month { return String(localized: "Most expensive month: \(name),") }
-        if grain == .year { return String(localized: "Most expensive year: \(name),") }
-        return String(localized: "Most expensive day: \(name),")
+        if grain == .week { return String(localized: "Most expensive week: \(name),", bundle: .appLanguage) }
+        if grain == .month { return String(localized: "Most expensive month: \(name),", bundle: .appLanguage) }
+        if grain == .year { return String(localized: "Most expensive year: \(name),", bundle: .appLanguage) }
+        return String(localized: "Most expensive day: \(name),", bundle: .appLanguage)
     }
 
     /// "Average per day:", before the amount of the chart's dashed average line.
     static func average(grain: StatsGrain) -> String {
-        if grain == .week { return String(localized: "Average per week:") }
-        if grain == .month { return String(localized: "Average per month:") }
-        if grain == .year { return String(localized: "Average per year:") }
-        return String(localized: "Average per day:")
+        if grain == .week { return String(localized: "Average per week:", bundle: .appLanguage) }
+        if grain == .month { return String(localized: "Average per month:", bundle: .appLanguage) }
+        if grain == .year { return String(localized: "Average per year:", bundle: .appLanguage) }
+        return String(localized: "Average per day:", bundle: .appLanguage)
     }
 
     /// "R$ 1,5 mil" or "R$1.5K": the short amount of a value line of the chart. Bitcoin and ether, which have no
@@ -115,38 +122,47 @@ enum GroupStatsCopy {
 
     /// The chart's whole text for VoiceOver: "Spending by day: Oct 24 $561.00; Oct 25 nothing; …".
     static func chartDescription(_ state: GroupStatsUiState) -> String {
-        let nothing = String(localized: "nothing")
+        let nothing = String(localized: "nothing", bundle: .appLanguage)
         let values = state.bars.map { bar in
             let amount = bar.amountMinor > 0 ? state.currency.format(bar.amountMinor) : nothing
             return "\(barName(bar, grain: state.grain)) \(amount)"
         }.joined(separator: "; ")
-        if state.grain == .week { return String(localized: "Spending by week: \(values)") }
-        if state.grain == .month { return String(localized: "Spending by month: \(values)") }
-        if state.grain == .year { return String(localized: "Spending by year: \(values)") }
-        return String(localized: "Spending by day: \(values)")
+        if state.grain == .week { return String(localized: "Spending by week: \(values)", bundle: .appLanguage) }
+        if state.grain == .month { return String(localized: "Spending by month: \(values)", bundle: .appLanguage) }
+        if state.grain == .year { return String(localized: "Spending by year: \(values)", bundle: .appLanguage) }
+        return String(localized: "Spending by day: \(values)", bundle: .appLanguage)
     }
 
     /// Why some grains are off, one sentence per reason.
     static func grainNote(_ state: GroupStatsUiState) -> String? {
         let sentences = state.grainNotes.map { note -> String in
             if note == .weekMonthAndYearNeedLongerPeriod {
-                return String(localized: "Week, Month and Year show up in periods longer than a week.")
+                return String(
+                    localized: "Week, Month and Year show up in periods longer than a week.",
+                    bundle: .appLanguage,
+                )
             }
             if note == .monthAndYearNeedLongerPeriod {
-                return String(localized: "Month and Year show up in periods longer than a month.")
+                return String(localized: "Month and Year show up in periods longer than a month.", bundle: .appLanguage)
             }
             if note == .weekNeedsLongerPeriod {
-                return String(localized: "Week shows up in periods longer than a week.")
+                return String(localized: "Week shows up in periods longer than a week.", bundle: .appLanguage)
             }
             if note == .yearNeedsLongerPeriod {
-                return String(localized: "Year shows up in periods longer than a year.")
+                return String(localized: "Year shows up in periods longer than a year.", bundle: .appLanguage)
             }
             if note == .yearSwitchesPeriod {
                 return state.isTrip
-                    ? String(localized: "To compare years, pick Year: the period becomes The whole trip.")
-                    : String(localized: "To compare years, pick Year: the period becomes All time.")
+                    ? String(
+                        localized: "To compare years, pick Year: the period becomes The whole trip.",
+                        bundle: .appLanguage,
+                    )
+                    : String(
+                        localized: "To compare years, pick Year: the period becomes All time.",
+                        bundle: .appLanguage,
+                    )
             }
-            return String(localized: "Day works for periods of up to 3 months.")
+            return String(localized: "Day works for periods of up to 3 months.", bundle: .appLanguage)
         }
         return sentences.isEmpty ? nil : sentences.joined(separator: " ")
     }
@@ -155,23 +171,23 @@ enum GroupStatsCopy {
     static func periodEmptyTitle(_ state: GroupStatsUiState) -> String {
         let date = ExpenseFormat.date(of: state.periodStartMillis)
         if state.period == .thisMonth || state.period == .lastMonth {
-            return String(localized: "No expenses in \(date.formatted(.dateTime.month(.wide)))")
+            return String(localized: "No expenses in \(date.formatted(.dateTime.month(.wide)))", bundle: .appLanguage)
         }
         if state.period == .thisYear {
-            return String(localized: "No expenses in \(date.formatted(.dateTime.year()))")
+            return String(localized: "No expenses in \(date.formatted(.dateTime.year()))", bundle: .appLanguage)
         }
-        return String(localized: "No expenses in that period")
+        return String(localized: "No expenses in that period", bundle: .appLanguage)
     }
 
     /// "Bruno (you)" for this device's user, "Former member" for someone who left the group.
     static func name(_ person: StatsPersonRow) -> String {
-        guard let name = person.name else { return String(localized: "Former member") }
+        guard let name = person.name else { return String(localized: "Former member", bundle: .appLanguage) }
         return self.name(name, isMe: person.isMe)
     }
 
     /// "Bruno (you)" for this device's user, the name as it is otherwise.
     static func name(_ name: String, isMe: Bool) -> String {
-        isMe ? String(localized: "\(name) (you)") : name
+        isMe ? String(localized: "\(name) (you)", bundle: .appLanguage) : name
     }
 
     /// "Oct 28, 3:00 PM · You paid", the biggest bill's day, time and who paid it.
@@ -183,9 +199,9 @@ enum GroupStatsCopy {
     }
 
     static func grain(_ grain: StatsGrain) -> String {
-        if grain == .week { return String(localized: "Week") }
-        if grain == .month { return String(localized: "Month") }
-        if grain == .year { return String(localized: "Year") }
-        return String(localized: "Day")
+        if grain == .week { return String(localized: "Week", bundle: .appLanguage) }
+        if grain == .month { return String(localized: "Month", bundle: .appLanguage) }
+        if grain == .year { return String(localized: "Year", bundle: .appLanguage) }
+        return String(localized: "Day", bundle: .appLanguage)
     }
 }

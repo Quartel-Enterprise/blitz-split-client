@@ -14,27 +14,39 @@ enum CategoryPickerCopy {
         let term = state.categoryMatches.first?.term ?? ""
         switch state.categoryHint {
         case .byTerm:
-            return String(localized: "\(path) by the word “\(term)” in your map. Tap the icon to change it.")
+            return String(
+                localized: "\(path) by the word “\(term)” in your map. Tap the icon to change it.",
+                bundle: .appLanguage,
+            )
         case .byReceipt:
-            return String(localized: "\(path) from the receipt. Tap the icon to change it.")
+            return String(localized: "\(path) from the receipt. Tap the icon to change it.", bundle: .appLanguage)
         case .byLongestTerm:
-            return String(localized: "\(state.categoryMatches.count) words of the map matched. “\(term)” wins, the longest: \(path).")
+            return String(
+                localized: "\(state.categoryMatches.count) words of the map matched. “\(term)” wins, the longest: \(path).",
+                bundle: .appLanguage,
+            )
         case .noTerm:
-            return String(localized: "No word of your map. The bill stays in Other; tap the icon to pick one.")
+            return String(
+                localized: "No word of your map. The bill stays in Other; tap the icon to pick one.",
+                bundle: .appLanguage,
+            )
         case .changed:
             let mapPath = state.mapCategory.map { self.path($0, in: state) } ?? ""
-            return String(localized: "You picked \(path). By the map it would be \(mapPath) (“\(term)”). On saving, we ask whether the map learns.")
+            return String(
+                localized: "You picked \(path). By the map it would be \(mapPath) (“\(term)”). On saving, we ask whether the map learns.",
+                bundle: .appLanguage,
+            )
         default:
-            return String(localized: "Category: \(path). Tap the icon to change it.")
+            return String(localized: "Category: \(path). Tap the icon to change it.", bundle: .appLanguage)
         }
     }
 
     static func reason(_ reason: CategorySuggestionReason) -> String? {
         switch reason {
-        case .description_: String(localized: "From the description")
-        case .mostUsed: String(localized: "Most used in the group")
-        case .group: String(localized: "From the group")
-        case .receipt: String(localized: "From the receipt")
+        case .description_: String(localized: "From the description", bundle: .appLanguage)
+        case .mostUsed: String(localized: "Most used in the group", bundle: .appLanguage)
+        case .group: String(localized: "From the group", bundle: .appLanguage)
+        case .receipt: String(localized: "From the receipt", bundle: .appLanguage)
         default: nil
         }
     }
@@ -47,12 +59,12 @@ enum CategoryPickerCopy {
         }
         if category.isGroupCategory {
             if let creator = state.people.first(where: { $0.id == category.createdByMemberId }) {
-                return String(localized: "Created by \(creator.name) · from the group")
+                return String(localized: "Created by \(creator.name) · from the group", bundle: .appLanguage)
             }
-            return String(localized: "From the group")
+            return String(localized: "From the group", bundle: .appLanguage)
         }
-        if branch.subcategories.isEmpty { return String(localized: "No subcategories") }
-        return String(localized: "\(branch.subcategories.count) subcategories")
+        if branch.subcategories.isEmpty { return String(localized: "No subcategories", bundle: .appLanguage) }
+        return String(localized: "\(branch.subcategories.count) subcategories", bundle: .appLanguage)
     }
 }
 
@@ -178,7 +190,10 @@ struct CategoryPickerView: View {
         Button {
             model.send(SplitBillUiEventOnCategoryPicked(categoryId: main.id))
         } label: {
-            SubcategoryLabel(title: String(localized: "Only \(CategoryCopy.name(main))"), isSelected: state.category.id == main.id)
+            SubcategoryLabel(title: String(
+                localized: "Only \(CategoryCopy.name(main))",
+                bundle: .appLanguage,
+            ), isSelected: state.category.id == main.id)
         }
         .buttonStyle(.plain)
         ForEach(branch.subcategories, id: \.id) { sub in
@@ -243,7 +258,7 @@ struct CategoryPickerView: View {
                             title: CategoryCopy.name(category),
                             subtitle: category.parentId
                                 .flatMap { state.categories.findOrNull(id: $0) }
-                                .map { String(localized: "in \(CategoryCopy.name($0))") },
+                                .map { String(localized: "in \(CategoryCopy.name($0))", bundle: .appLanguage) },
                             isSelected: category.id == state.category.id,
                         )
                     }

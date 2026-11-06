@@ -1,7 +1,9 @@
 package com.quare.blitzsplit.android.feature.profile
 
 import android.content.Context
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +36,7 @@ fun ProfileScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val activity = LocalActivity.current
     val uriHandler = LocalUriHandler.current
     val saver = remember(context) { RecoveryCodeSaver(context) }
     val appVersion = remember(context) { context.getAppVersion() }
@@ -67,6 +70,11 @@ fun ProfileScreen(
                 is ProfileUiAction.OpenUrl -> uriHandler.openUri(action.url)
 
                 is ProfileUiAction.SaveExport -> saveExport(action.json)
+
+                // Why: Android 13 and later open the activity again in the new language themselves.
+                ProfileUiAction.ApplyLanguage -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    activity?.recreate()
+                }
 
                 is ProfileUiAction.ShowUpdateCheckResult -> showReplacingSnackbar(
                     snackbarHostState = snackbarHostState,

@@ -17,7 +17,7 @@ extension BillCopy {
 
     /// "Comments · 3", or just "Comments" while there is none.
     static func commentsHeader(_ count: KotlinInt?) -> String {
-        let title = String(localized: "Comments", comment: "The bill's comments section")
+        let title = String(localized: "Comments", bundle: .appLanguage, comment: "The bill's comments section")
         // No count while the comments load
         guard let count = count?.intValue, count > 0 else { return title }
         return "\(title) · \(count)"
@@ -25,27 +25,43 @@ extension BillCopy {
 
     /// "You", the author's name, or "Someone" when the server kept no name.
     static func author(_ comment: BillCommentRow) -> String {
-        if comment.isMe { return String(localized: "You") }
-        return comment.authorName ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
+        if comment.isMe { return String(localized: "You", bundle: .appLanguage) }
+        return comment.authorName ?? String(
+            localized: "Someone",
+            bundle: .appLanguage,
+            comment: "Who did something in Activity, unnamed",
+        )
     }
 
     /// "Today, 10:40 PM", "Yesterday, 10:40 PM" or "Oct 27, 10:40 PM", then "· edited" once its author changed it.
     static func posted(_ comment: BillCommentRow) -> String {
         let posted = ExpenseFormat.dayTime(comment.postedAt, relativeDay: comment.postedDay)
         guard comment.isEdited else { return posted }
-        let edited = String(localized: "edited", comment: "After a comment's time, once its author changed it")
+        let edited = String(
+            localized: "edited",
+            bundle: .appLanguage,
+            comment: "After a comment's time, once its author changed it",
+        )
         return "\(posted) · \(edited)"
     }
 
     /// "3 likes" or "1 like", for VoiceOver beside the heart.
     static func likes(_ count: Int32) -> String {
-        String(localized: "\(Int(count)) likes", comment: "VoiceOver: how many people liked a comment")
+        String(
+            localized: "\(Int(count)) likes",
+            bundle: .appLanguage,
+            comment: "VoiceOver: how many people liked a comment",
+        )
     }
 
     /// One name of "Likes": "You", the member's name, or "Someone" when the server kept none.
     static func liker(_ liker: BillCommentLiker) -> String {
-        if liker.isMe { return String(localized: "You") }
-        return liker.name ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
+        if liker.isMe { return String(localized: "You", bundle: .appLanguage) }
+        return liker.name ?? String(
+            localized: "Someone",
+            bundle: .appLanguage,
+            comment: "Who did something in Activity, unnamed",
+        )
     }
 
     /// What "Share" on a comment sends: "Ana commented on “Dinner”: “…” <link>".
@@ -56,17 +72,20 @@ extension BillCopy {
         if share.isMe {
             return String(
                 localized: "I commented on “\(bill)”: “\(body)” \(link)",
+                bundle: .appLanguage,
                 comment: "A comment shared by its author: the bill, the comment and its link",
             )
         }
         guard let author = share.authorName else {
             return String(
                 localized: "Comment on “\(bill)”: “\(body)” \(link)",
+                bundle: .appLanguage,
                 comment: "A comment shared whose author has no name: the bill, the comment and its link",
             )
         }
         return String(
             localized: "\(author) commented on “\(bill)”: “\(body)” \(link)",
+            bundle: .appLanguage,
             comment: "A comment shared: its author, the bill, the comment and its link",
         )
     }
@@ -83,14 +102,22 @@ extension BillCopy {
 
     /// "Editing comment", over the composer while it holds the user's own comment.
     static var editing: String {
-        String(localized: "Editing comment", comment: "Over the bill's comment field while editing your own comment")
+        String(
+            localized: "Editing comment",
+            bundle: .appLanguage,
+            comment: "Over the bill's comment field while editing your own comment",
+        )
     }
 
     /// "Replying to Diego" or "Replying to you", over the composer.
     static func replying(_ target: BillReplyTarget) -> String {
-        if target.isMe { return String(localized: "Replying to you") }
-        let name = target.name ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
-        return String(localized: "Replying to \(name)")
+        if target.isMe { return String(localized: "Replying to you", bundle: .appLanguage) }
+        let name = target.name ?? String(
+            localized: "Someone",
+            bundle: .appLanguage,
+            comment: "Who did something in Activity, unnamed",
+        )
+        return String(localized: "Replying to \(name)", bundle: .appLanguage)
     }
 
     // MARK: - History
@@ -103,8 +130,12 @@ extension BillCopy {
     /// "You", "Ana" or "Someone": who did a line of History.
     static func actor(_ entry: BillHistoryEntry) -> String {
         entry.actorIsMe
-            ? String(localized: "You")
-            : entry.actorName ?? String(localized: "Someone", comment: "Who did something in Activity, unnamed")
+            ? String(localized: "You", bundle: .appLanguage)
+            : entry.actorName ?? String(
+                localized: "Someone",
+                bundle: .appLanguage,
+                comment: "Who did something in Activity, unnamed",
+            )
     }
 
     /// "**Ana** changed the category": what someone did, their name bolder. In Spanish, when the user did it, the verb
@@ -120,29 +151,50 @@ extension BillCopy {
         switch entry.kind {
         case .created:
             return entry.isPending
-                ? String(localized: "\(who) created the bill offline", comment: "Bill history: created and not up yet")
-                : String(localized: "\(who) created the bill", comment: "Bill history")
+                ? String(
+                    localized: "\(who) created the bill offline",
+                    bundle: .appLanguage,
+                    comment: "Bill history: created and not up yet",
+                )
+                : String(localized: "\(who) created the bill", bundle: .appLanguage, comment: "Bill history")
         case .attachmentsAdded:
-            if entry.isReceipt { return String(localized: "\(who) attached the receipt", comment: "Bill history") }
+            if entry.isReceipt { return String(
+                localized: "\(who) attached the receipt",
+                bundle: .appLanguage,
+                comment: "Bill history",
+            ) }
             let count = Int(entry.attachmentCount)
             return count > 1
-                ? String(localized: "\(who) attached \(count) photos", comment: "Bill history: photos added in a row")
-                : String(localized: "\(who) attached a photo", comment: "Bill history")
+                ? String(
+                    localized: "\(who) attached \(count) photos",
+                    bundle: .appLanguage,
+                    comment: "Bill history: photos added in a row",
+                )
+                : String(localized: "\(who) attached a photo", bundle: .appLanguage, comment: "Bill history")
         case .attachmentRemoved:
             return entry.isReceipt
-                ? String(localized: "\(who) removed the receipt", comment: "Bill history")
-                : String(localized: "\(who) removed a photo", comment: "Bill history")
+                ? String(localized: "\(who) removed the receipt", bundle: .appLanguage, comment: "Bill history")
+                : String(localized: "\(who) removed a photo", bundle: .appLanguage, comment: "Bill history")
         case .linkChanged:
             if entry.linkVisibility == .anyone {
-                return String(localized: "\(who) turned on the link for anyone", comment: "Bill history: the share link")
+                return String(
+                    localized: "\(who) turned on the link for anyone",
+                    bundle: .appLanguage,
+                    comment: "Bill history: the share link",
+                )
             }
             if entry.linkVisibility == .members {
                 return String(
                     localized: "\(who) made the link only for people in the bill",
+                    bundle: .appLanguage,
                     comment: "Bill history: the share link",
                 )
             }
-            return String(localized: "\(who) turned off the link", comment: "Bill history: the share link")
+            return String(
+                localized: "\(who) turned off the link",
+                bundle: .appLanguage,
+                comment: "Bill history: the share link",
+            )
         default:
             return edited(entry.changes.first, who: who, isPending: entry.isPending)
         }
@@ -151,16 +203,44 @@ extension BillCopy {
     /// An edit is named by its first change: "changed the category", "changed the split"…
     private static func edited(_ change: (any BillHistoryChange)?, who: String, isPending: Bool) -> String {
         switch change {
-        case is BillHistoryChangeAmount: String(localized: "\(who) changed the amount", comment: "Bill history")
-        case is BillHistoryChangeDescription: String(localized: "\(who) changed the description", comment: "Bill history")
-        case is BillHistoryChangeSpentAt: String(localized: "\(who) changed the date", comment: "Bill history")
-        case is BillHistoryChangeCategory: String(localized: "\(who) changed the category", comment: "Bill history")
-        case is BillHistoryChangePayers: String(localized: "\(who) changed who paid", comment: "Bill history")
-        case is BillHistoryChangeSplit: String(localized: "\(who) changed the split", comment: "Bill history")
+        case is BillHistoryChangeAmount: String(
+            localized: "\(who) changed the amount",
+            bundle: .appLanguage,
+            comment: "Bill history",
+        )
+        case is BillHistoryChangeDescription: String(
+            localized: "\(who) changed the description",
+            bundle: .appLanguage,
+            comment: "Bill history",
+        )
+        case is BillHistoryChangeSpentAt: String(
+            localized: "\(who) changed the date",
+            bundle: .appLanguage,
+            comment: "Bill history",
+        )
+        case is BillHistoryChangeCategory: String(
+            localized: "\(who) changed the category",
+            bundle: .appLanguage,
+            comment: "Bill history",
+        )
+        case is BillHistoryChangePayers: String(
+            localized: "\(who) changed who paid",
+            bundle: .appLanguage,
+            comment: "Bill history",
+        )
+        case is BillHistoryChangeSplit: String(
+            localized: "\(who) changed the split",
+            bundle: .appLanguage,
+            comment: "Bill history",
+        )
         default:
             isPending
-                ? String(localized: "\(who) edited the bill offline", comment: "Bill history: edited and not up yet")
-                : String(localized: "\(who) edited the bill", comment: "Bill history")
+                ? String(
+                    localized: "\(who) edited the bill offline",
+                    bundle: .appLanguage,
+                    comment: "Bill history: edited and not up yet",
+                )
+                : String(localized: "\(who) edited the bill", bundle: .appLanguage, comment: "Bill history")
         }
     }
 
@@ -209,33 +289,36 @@ extension BillCopy {
         switch change {
         case let amount as BillHistoryChangeAmount:
             return line(
-                String(localized: "Amount"),
+                String(localized: "Amount", bundle: .appLanguage),
                 amount.beforeMinor.map { currency.format($0.int64Value) },
                 amount.afterMinor.map { currency.format($0.int64Value) },
             )
         case let description as BillHistoryChangeDescription:
             return line(
-                String(localized: "Description"),
+                String(localized: "Description", bundle: .appLanguage),
                 description.before.map { "“\($0)”" },
                 description.after.map { "“\($0)”" },
             )
         case let spentAt as BillHistoryChangeSpentAt:
             return line(
-                String(localized: "When"),
+                String(localized: "When", bundle: .appLanguage),
                 spentAt.beforeMillis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other) },
                 spentAt.afterMillis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other) },
             )
         case let category as BillHistoryChangeCategory:
             // A null category is "Other", as the bill reads it
             return line(
-                String(localized: "Category"),
+                String(localized: "Category", bundle: .appLanguage),
                 CategoryCopy.name(categories.resolve(id: category.beforeId)),
                 CategoryCopy.name(categories.resolve(id: category.afterId)),
             )
         case let payers as BillHistoryChangePayers:
             // The same payers paying other amounts say each amount that moved, as the split's parts do
             guard payers.parts.isEmpty else { return partDiffs(payers.parts, currency: currency) }
-            return line(String(localized: "Who paid"), payerNames(payers.before), payerNames(payers.after))
+            return line(String(
+                localized: "Who paid",
+                bundle: .appLanguage,
+            ), payerNames(payers.before), payerNames(payers.after))
         case let split as BillHistoryChangeSplit:
             return splitDiffs(split, isFirst: isFirst, currency: currency)
         default:
@@ -251,7 +334,7 @@ extension BillCopy {
         currency: GroupCurrency,
     ) -> [BillHistoryDiff] {
         var lines: [BillHistoryDiff] = []
-        let field = String(localized: "Split")
+        let field = String(localized: "Split", bundle: .appLanguage)
         if let before = split.beforeMode, let after = split.afterMode, before != after {
             lines.append(BillHistoryDiff(field: isFirst ? nil : field, before: modeName(before), after: modeName(after)))
         } else if !isFirst {
@@ -262,10 +345,14 @@ extension BillCopy {
 
     /// "Carla R$ 112.00 → R$ 98.00" for each part that moved, "out" on the side someone wasn't in.
     private static func partDiffs(_ parts: [BillHistoryPart], currency: GroupCurrency) -> [BillHistoryDiff] {
-        let out = String(localized: "out", comment: "Bill history: someone not in the split on that side")
+        let out = String(
+            localized: "out",
+            bundle: .appLanguage,
+            comment: "Bill history: someone not in the split on that side",
+        )
         return parts.map { part in
             BillHistoryDiff(
-                field: part.isMe ? String(localized: "You") : part.name ?? formerMember,
+                field: part.isMe ? String(localized: "You", bundle: .appLanguage) : part.name ?? formerMember,
                 before: part.beforeMinor.map { currency.format($0.int64Value) } ?? out,
                 after: part.afterMinor.map { currency.format($0.int64Value) } ?? out,
             )
@@ -281,11 +368,11 @@ extension BillCopy {
     /// "Equal", "Amounts", "Percentage", "Shares" or "Items".
     static func modeName(_ mode: SplitMode) -> String {
         switch mode {
-        case .amount: String(localized: "Amounts")
-        case .percent: String(localized: "Percentage")
-        case .shares: String(localized: "Shares")
-        case .items: String(localized: "Items")
-        default: String(localized: "Equal")
+        case .amount: String(localized: "Amounts", bundle: .appLanguage)
+        case .percent: String(localized: "Percentage", bundle: .appLanguage)
+        case .shares: String(localized: "Shares", bundle: .appLanguage)
+        case .items: String(localized: "Items", bundle: .appLanguage)
+        default: String(localized: "Equal", bundle: .appLanguage)
         }
     }
 }

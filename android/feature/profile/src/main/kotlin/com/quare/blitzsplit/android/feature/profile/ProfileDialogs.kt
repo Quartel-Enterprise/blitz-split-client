@@ -57,6 +57,12 @@ internal fun ProfileDialogsOverlay(
             onEvent = onEvent,
         )
     }
+    if (state.dialog == ProfileDialog.LANGUAGE) {
+        LanguageSheet(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
     when (state.dialog) {
         ProfileDialog.VISIBILITY_INFO -> FoldAlertDialog(
             onDismissRequest = onDismiss,
@@ -153,7 +159,7 @@ internal fun ProfileDialogsOverlay(
             placement = placement,
         )
 
-        ProfileDialog.APPEARANCE, null -> Unit
+        ProfileDialog.APPEARANCE, ProfileDialog.LANGUAGE, null -> Unit
     }
 }
 

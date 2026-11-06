@@ -264,7 +264,7 @@ private struct DefaultSplitPersonRow: View {
     }
 
     private var name: String {
-        person.isMe ? String(localized: "\(person.name) (you)") : person.name
+        person.isMe ? String(localized: "\(person.name) (you)", bundle: .appLanguage) : person.name
     }
 
     private var content: some View {
@@ -295,19 +295,29 @@ private struct DefaultSplitPersonRow: View {
         let share = Double(row.basisPoints) / 10000
         let text: String = switch mode {
         case .shares:
-            String(localized: "\(share.formatted(.percent.precision(.fractionLength(0)))) of each bill")
+            String(
+                localized: "\(share.formatted(.percent.precision(.fractionLength(0)))) of each bill",
+                bundle: .appLanguage,
+            )
         case .percent:
             String(
                 localized: "\(state.currency.format(row.exampleMinor?.int64Value ?? 0)) of each \(state.currency.format(state.exampleTotalMinor))",
+                bundle: .appLanguage,
             )
         case .income:
-            String(localized: "Income per month · \(SplitBillCopy.percent(row.weight)) of each bill")
+            String(
+                localized: "Income per month · \(SplitBillCopy.percent(row.weight)) of each bill",
+                bundle: .appLanguage,
+            )
         default:
             row.weight > 0
-                ? String(localized: "1 of \(Int(state.includedCount)) · \(share.formatted(.percent.precision(.fractionLength(1))))")
-                : String(localized: "Out of the split by default")
+                ? String(
+                    localized: "1 of \(Int(state.includedCount)) · \(share.formatted(.percent.precision(.fractionLength(1))))",
+                    bundle: .appLanguage,
+                )
+                : String(localized: "Out of the split by default", bundle: .appLanguage)
         }
-        return person.isNew ? String(localized: "\(text) · just joined") : text
+        return person.isNew ? String(localized: "\(text) · just joined", bundle: .appLanguage) : text
     }
 
     @ViewBuilder
@@ -401,22 +411,28 @@ private struct DefaultSplitExample: View {
             let sum = SplitBillCopy.percent(state.percentSum)
             let gap = SplitBillCopy.percent(abs(state.remainingPercent))
             return state.remainingPercent > 0
-                ? String(localized: "The sum is \(sum). \(gap) missing.")
-                : String(localized: "The sum is \(sum). \(gap) over.")
+                ? String(localized: "The sum is \(sum). \(gap) missing.", bundle: .appLanguage)
+                : String(localized: "The sum is \(sum). \(gap) over.", bundle: .appLanguage)
         }
         let total = currency.format(state.exampleTotalMinor)
         if state.mode == .equal, state.includedCount > 0 {
-            return String(localized: "On a \(total) bill: \(currency.format(state.exampleEachMinor)) each")
+            return String(
+                localized: "On a \(total) bill: \(currency.format(state.exampleEachMinor)) each",
+                bundle: .appLanguage,
+            )
         }
-        return String(localized: "On a \(total) bill:")
+        return String(localized: "On a \(total) bill:", bundle: .appLanguage)
     }
 
     private var detail: String {
         if state.showsPercentError {
-            return String(localized: "Adjust the percentages until they add up to \(SplitBillCopy.percent(100)) to save.")
+            return String(
+                localized: "Adjust the percentages until they add up to \(SplitBillCopy.percent(100)) to save.",
+                bundle: .appLanguage,
+            )
         }
         if state.mode == .equal {
-            return String(localized: "Whoever isn't in an expense leaves it when splitting.")
+            return String(localized: "Whoever isn't in an expense leaves it when splitting.", bundle: .appLanguage)
         }
         return state.rows
             .filter { $0.weight > 0 }
