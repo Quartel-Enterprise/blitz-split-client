@@ -482,12 +482,12 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `dynamic_colors_toggled` | `is_on` | "Dynamic colors", where the device draws them (Android 12 and later) | `:feature:profile` |
 | `check_for_updates_clicked` | none | "Check for updates", while not already checking | `:feature:profile` |
 | `sign_out_clicked` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | "Sign out" or "Erase profile and sign out", with the dialog it opens | `:feature:profile` |
-| `sign_out_confirmed` | none | "Sign out" on "Sign out?", when the sign out starts | `:feature:profile` |
+| `sign_out_confirmed` | none | "Sign out" on a Google or Apple account's "Sign out?", when the sign out starts | `:feature:profile` |
 | `sign_out_when_synced_clicked` | none | "Sign out once synced" | `:feature:profile` |
 | `sign_out_now_clicked` | none | "Sign out now and lose the changes", when the sign out starts | `:feature:profile` |
 | `erase_code_copy_clicked` | none | Copy of the recovery code on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `erase_connect_instead_clicked` | none | "Connect Google or Apple instead" there, while it can connect | `:feature:profile` |
-| `profile_erase_confirmed` | none | "Erase and sign out", when the erase starts | `:feature:profile` |
+| `profile_erase_confirmed` | none | "Erase and sign out", or "Sign out" on an anonymous account's "Sign out?", when the erase starts | `:feature:profile` |
 | `account_photo_selected` | `source` (`edit_profile`, `profile_photo`) | "Use Google account photo" or Apple's, while the account has one | `:feature:edit_profile` |
 | `edit_profile_discard_clicked` | none | Cancel on the web's and the Mac's inline form, putting back what was saved | `:feature:edit_profile` |
 | `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |

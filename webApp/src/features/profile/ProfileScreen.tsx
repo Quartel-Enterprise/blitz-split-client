@@ -436,7 +436,7 @@ function LegalFooter({ presenter }: { presenter: ProfilePresenter }) {
   )
 }
 
-/** "Delete account and data", at the very end and apart from "Sign out": only an account has one to delete. */
+/** "Delete account and data", at the very end and apart from "Sign out": every account the server keeps, an anonymous one too, has one to delete. */
 function DeleteAccountCard({ presenter, className }: { presenter: ProfilePresenter; className?: string }) {
   return (
     <Card className={cn('border-destructive', className)}>
