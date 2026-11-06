@@ -62,8 +62,8 @@ if (( recorded >= version_code )); then
   version_code=$(( recorded + 1 ))
 fi
 
-# Apple refuses a suffixed version string, so its version string drops the suffix the tag, the GitHub release,
-# the Android versionName and Profile's version (iosApp/generate-project.sh) carry.
+# Apple refuses a suffixed version string, so only the tag, the GitHub release and the Android
+# versionName carry the suffix.
 last_beta="$(git tag --list "${version}-beta_*" | sed "s/^${version}-beta_//" | grep -E '^[0-9]+$' | sort -n | tail -1 || true)"
 display_version="${version}-beta_$(( ${last_beta:-0} + 1 ))"
 # One branch for every merge-back: a pull request a failed run left open is rebuilt by the next one, not

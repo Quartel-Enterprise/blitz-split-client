@@ -32,7 +32,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     and the web's page under both columns. The version is the whole versionName, a beta's suffix too
     ("Version 3.0.0-beta_7", beta feedback 19): Android and the web read it as built, and the Apple apps from the
     Info.plist's `BlitzSplitVersionName`, since Apple refuses a suffix in the version string
-    ([release-process.md](../release-process.md#versions)).
+    ([release-process.md](../release-process.md#versions)); the Apple betas only carry the suffix once the release
+    workflow hands it to their builds (#239, which Pierre merges, since a workflow change needs the `workflow` scope).
   - On the web and the Mac, "App on your phone" (Settings › iPhone on the Mac) sits right under the profile once a
     store lists the app, highlighted while the invite to the phone app stands ([get-the-app.md](get-the-app.md)).
   - The profile's avatar (Profile's on Android and iOS, the inline form's on the web and the Mac, never Edit profile's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,
