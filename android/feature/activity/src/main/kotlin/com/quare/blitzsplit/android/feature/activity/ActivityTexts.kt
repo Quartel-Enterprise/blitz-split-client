@@ -187,7 +187,7 @@ internal fun detailTextOf(item: ActivityItem): String? {
         ActivityKind.CHARGE_SENT -> amount?.let { stringResource(R.string.activity_detail_charge, it) }
 
         // Why: a change still in the queue has no pairs yet; its time already says "Aguardando envio".
-        ActivityKind.SIMPLIFY_DEBTS_CHANGED -> item.simplification?.let { simplificationDetailOf(it, money) }
+        ActivityKind.SIMPLIFY_DEBTS_CHANGED -> item.simplification?.let { simplificationDetailOf(it) }
 
         // Why: "“A cerveja que ficou comigo foi do Bruno…”", the comment under "Carla comentou em Jantar".
         ActivityKind.COMMENT_ADDED ->

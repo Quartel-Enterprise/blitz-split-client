@@ -7,6 +7,7 @@ data class QueuedPaymentRow(
     val fromMemberId: String,
     val toMemberId: String,
     val amountMinor: Long,
+    val currency: String,
     val method: String,
     val isDeleted: Boolean,
     val updatedAt: Long,

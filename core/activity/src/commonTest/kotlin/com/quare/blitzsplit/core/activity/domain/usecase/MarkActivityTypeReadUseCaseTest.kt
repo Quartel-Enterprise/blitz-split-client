@@ -374,6 +374,8 @@ class MarkActivityTypeReadUseCaseTest {
         occurredAt = 1_000L,
         subject = null,
         amountMinor = null,
+        currency = null,
+        previousCurrency = null,
         code = null,
         fromMemberId = null,
         toMemberId = null,

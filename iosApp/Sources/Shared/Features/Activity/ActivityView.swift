@@ -664,17 +664,17 @@ struct ActivityBeforeAfter {
     }
 
     /// "Diego  didn't owe you → owes you $64", what Simplify debts changed with someone (13.7b).
-    init(change: ActivityDebtChange, currency: GroupCurrency?) {
+    init(change: ActivityDebtChange) {
         label = PaymentCopy.name(change.name)
-        before = ActivityCopy.debtSide(change.beforeMinor, isBefore: true, currency: currency)
-        after = ActivityCopy.debtSide(change.afterMinor, isBefore: false, currency: currency)
+        before = ActivityCopy.debtSide(change.beforeMinor, isBefore: true, currency: change.currency)
+        after = ActivityCopy.debtSide(change.afterMinor, isBefore: false, currency: change.currency)
     }
 
     /// What an item lists under "See changes": what changed for this device's user for Simplify debts, never its
     /// field changes, and the fields an edit changed otherwise.
     static func of(_ item: ActivityItem) -> [ActivityBeforeAfter] {
         if let simplification = item.simplification {
-            return simplification.myChanges.map { ActivityBeforeAfter(change: $0, currency: item.currency) }
+            return simplification.myChanges.map { ActivityBeforeAfter(change: $0) }
         }
         return item.changes.map { ActivityBeforeAfter(change: $0) }
     }

@@ -327,10 +327,7 @@ internal fun ChangeList(
     ) {
         val simplification = item.simplification
         if (simplification != null) {
-            SimplificationChangeList(
-                item = item,
-                simplification = simplification,
-            )
+            SimplificationChangeList(simplification = simplification)
             return@Column
         }
         item.changes.forEach { change ->

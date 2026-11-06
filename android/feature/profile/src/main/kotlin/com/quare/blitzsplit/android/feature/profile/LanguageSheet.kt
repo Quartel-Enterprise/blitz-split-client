@@ -176,12 +176,12 @@ private fun LanguageChip(
     }
 }
 
-// Why: each language in its own name, so whoever can't read the app's current one still finds theirs.
+// Why: each language in the app's language, "Português (BR)" saying the region it is written for.
 @Composable
 internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
-    AppLanguage.ENGLISH -> "English"
-    AppLanguage.PORTUGUESE -> "Português"
-    AppLanguage.SPANISH -> "Español"
-    AppLanguage.FRENCH -> "Français"
+    AppLanguage.ENGLISH -> stringResource(R.string.profile_language_english)
+    AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_portuguese)
+    AppLanguage.SPANISH -> stringResource(R.string.profile_language_spanish)
+    AppLanguage.FRENCH -> stringResource(R.string.profile_language_french)
 }

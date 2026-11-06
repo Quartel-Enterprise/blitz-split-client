@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityActor
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
@@ -113,7 +114,7 @@ private fun queuedEntryOf(
         occurredAt = change.savedAt,
         subject = change.subject,
         amountMinor = change.amountMinor,
-        currency = group.currency,
+        currency = currencyOf(change.currency, group.currency),
         code = change.code,
         fromName = from?.name,
         fromIsMe = from?.isMe == true,
@@ -150,6 +151,9 @@ private fun eventEntryOf(
     val subjectMember = event.targetId
         ?.takeIf { event.kind.type in subjectMemberTypes }
         ?.let { id -> members.firstOrNull { it.id == id } }
+    val currency = currencyOf(event.currency, group?.currency)
+    // Why: an edit that moved the bill to another currency changed its amount from one in the currency it had.
+    val previousCurrency = currencyOf(event.previousCurrency, currency)
     val item = ActivityItem(
         id = event.id,
         kind = event.kind,
@@ -165,13 +169,13 @@ private fun eventEntryOf(
         occurredAt = event.occurredAt,
         subject = event.subject,
         amountMinor = event.amountMinor,
-        currency = group?.currency,
+        currency = currency,
         code = event.code,
         fromName = from?.name,
         fromIsMe = from?.isMe == true,
         toName = to?.name,
         toIsMe = to?.isMe == true,
-        changes = event.changes.map { rowOf(it, group, categories) },
+        changes = event.changes.map { rowOf(it, group, previousCurrency, currency, categories) },
         body = event.body,
         commentId = event.commentId,
         isCommentDeleted = event.isCommentDeleted,
@@ -250,27 +254,50 @@ private fun simplificationOrNull(
 ): ActivitySimplification? {
     if (event.kind != ActivityKind.SIMPLIFY_DEBTS_CHANGED) return null
     val meId = group?.members?.firstOrNull { it.isMe }?.id
-    val shifts = meId
-        ?.let {
-            DebtShifts.counterpartShiftsOf(
-                before = event.debtsBefore.map(::toDebt),
-                after = event.debtsAfter.map(::toDebt),
-                memberId = it,
-            )
-        }.orEmpty()
-    return ActivitySimplification(
-        paymentsBefore = event.debtsBefore.size,
-        paymentsAfter = event.debtsAfter.size,
-        myChanges = shifts.map { shift ->
+    val groupCode = group?.currency?.code
+    /*
+     * Why: balances are one per currency, so each currency's pairs move apart from the others': the group's currency
+     * first, then the others by code; an old pair with no currency is in the group's.
+     */
+    val codeOf = { debt: ActivityDebt -> debt.currency ?: groupCode }
+    val beforeByCode = event.debtsBefore.groupBy(codeOf)
+    val afterByCode = event.debtsAfter.groupBy(codeOf)
+    val codes = (beforeByCode.keys + afterByCode.keys)
+        .sortedWith(compareByDescending<String?> { it == groupCode }.thenBy { it.orEmpty() })
+    val changes = codes.flatMap { code ->
+        val shifts = meId
+            ?.let {
+                DebtShifts.counterpartShiftsOf(
+                    before = beforeByCode[code].orEmpty().map(::toDebt),
+                    after = afterByCode[code].orEmpty().map(::toDebt),
+                    memberId = it,
+                )
+            }.orEmpty()
+        shifts.map { shift ->
             ActivityDebtChange(
                 name = group?.members?.firstOrNull { it.id == shift.memberId }?.name
                     ?: event.memberNames[shift.memberId],
                 beforeMinor = shift.beforeMinor,
                 afterMinor = shift.afterMinor,
+                currency = currencyOf(code, group?.currency),
             )
-        },
+        }
+    }
+    return ActivitySimplification(
+        paymentsBefore = event.debtsBefore.size,
+        paymentsAfter = event.debtsAfter.size,
+        myChanges = changes,
     )
 }
+
+/*
+ * Why: the row's own currency when the event or the queued change says one, else the group's, as every event
+ * written before each bill and payment had its own currency.
+ */
+private fun currencyOf(
+    code: String?,
+    fallback: GroupCurrency?,
+): GroupCurrency? = code?.let(GroupCurrency::fromCodeOrNull) ?: fallback
 
 private fun toDebt(debt: ActivityDebt): Debt = Debt(
     fromMemberId = debt.fromMemberId,
@@ -281,6 +308,8 @@ private fun toDebt(debt: ActivityDebt): Debt = Debt(
 private fun rowOf(
     change: ActivityChange,
     group: Group?,
+    beforeCurrency: GroupCurrency?,
+    afterCurrency: GroupCurrency?,
     categories: CategoryTree,
 ): ActivityChangeRow {
     val categoryOf = { value: ActivityValue ->
@@ -288,20 +317,21 @@ private fun rowOf(
     }
     return ActivityChangeRow(
         field = change.field,
-        before = valueOf(change.before, group, categoryOf(change.before)),
-        after = valueOf(change.after, group, categoryOf(change.after)),
+        before = valueOf(change.before, group, beforeCurrency, categoryOf(change.before)),
+        after = valueOf(change.after, group, afterCurrency, categoryOf(change.after)),
     )
 }
 
 private fun valueOf(
     value: ActivityValue,
     group: Group?,
+    currency: GroupCurrency?,
     category: Category?,
 ): ActivityChangeValue {
     val names = value.memberIds.map { id -> group?.members?.firstOrNull { it.id == id }?.name }
     return ActivityChangeValue(
         minor = value.minor,
-        currency = group?.currency,
+        currency = currency,
         text = value.text,
         millis = value.millis,
         code = value.code,

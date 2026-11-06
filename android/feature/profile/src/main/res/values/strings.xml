@@ -50,6 +50,10 @@
     <string name="profile_appearance">Appearance</string>
     <string name="profile_language">Language</string>
     <string name="profile_language_system">System</string>
+    <string name="profile_language_english">English</string>
+    <string name="profile_language_portuguese">Portuguese (BR)</string>
+    <string name="profile_language_spanish">Spanish</string>
+    <string name="profile_language_french">French</string>
     <string name="profile_language_system_detail">Device language</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
