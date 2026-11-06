@@ -163,21 +163,36 @@ jobs:
       # ones. The step fails when it finds nothing, instead of publishing an empty fingerprint.
       # Invite links open the app only when the key's SHA-256 is in blitzsplit.com's assetlinks.json
       # (docs/product/joining-and-folds.md): a key missing there warns, and the beta still publishes.
+      # build-tools 37 printed no certificate for `verify --print-certs` on the runner, so the step reads the
+      # APK's certificate with the verbose output and, when apksigner prints none, the SHA-1 and SHA-256 of
+      # the keystore that signed it (the same key). Both print what they got, so a failure can be read.
       - name: Show the signing certificate
         shell: bash
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)"
-          certs="$("$apksigner" verify --print-certs androidApp/build/outputs/apk/release/*.apk)"
+          apk="$(ls androidApp/build/outputs/apk/release/*.apk)"
+          certs="$("$apksigner" verify --verbose --print-certs "$apk" 2>&1 || true)"
           sha1="$(sed -n 's/^Signer #1 certificate SHA-1 digest: *//p' <<< "$certs" | head -1)"
           sha256="$(sed -n 's/^Signer #1 certificate SHA-256 digest: *//p' <<< "$certs" | head -1)"
           if [ -z "$sha1" ] || [ -z "$sha256" ]; then
-            echo "::error::apksigner printed no signing certificate for the release APK."
+            echo "apksigner ${apksigner} printed:"
+            echo "$certs"
+            keystore="$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -alias "$ANDROID_KEY_ALIAS" \
+              -storepass "$ANDROID_KEYSTORE_PASSWORD" 2>&1 || true)"
+            sha1="$(sed -n 's/^[[:space:]]*SHA1: *//p' <<< "$keystore" | head -1 | tr -d ':' | tr 'A-F' 'a-f')"
+            sha256="$(sed -n 's/^[[:space:]]*SHA256: *//p' <<< "$keystore" | head -1 | tr -d ':' | tr 'A-F' 'a-f')"
+          fi
+          if [ -z "$sha1" ] || [ -z "$sha256" ]; then
+            echo "::error::Neither apksigner nor the keystore gave the signing certificate of the release APK."
             exit 1
           fi
           # assetlinks.json lists AB:CD:…
           fingerprint="$(sed 's/../&:/g; s/:$//' <<< "${sha256^^}")"
           # The package the APK declares, so the check follows the applicationId.
-          package="$("$(dirname "$apksigner")/aapt2" dump packagename androidApp/build/outputs/apk/release/*.apk)"
+          package="$("$(dirname "$apksigner")/aapt2" dump packagename "$apk")"
           if ! app_links="$(./scripts/release/app-links-status.sh "$package" "$fingerprint")"; then
             echo "::warning title=App Links::$app_links"
           fi
