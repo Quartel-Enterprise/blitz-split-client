@@ -1232,7 +1232,7 @@ class BillHistoriesTest {
     }
 
     @Test
-    fun `GIVEN a bill in a currency this build does not know WHEN undoing its latest edit THEN there is nothing to undo`() {
+    fun `GIVEN a bill in an unknown currency WHEN undoing its latest edit THEN there is nothing to undo`() {
         // Given
         val event = event(changes = listOf(change(ActivityField.DESCRIPTION, text("Feira"), text("Mercado"))))
         val bill = expense(currency = GroupCurrency.fromCode("XYZ"))

@@ -129,12 +129,16 @@ class SettleUpViewModelTest {
         runTest(testDispatcher) {
             // Given
             val unknown = GroupCurrency.fromCode("XYZ")
+            prepareScenario(
+                bills = defaultBills.map { it.copy(currency = unknown) },
+                currency = unknown,
+            )
 
             // When
-            prepareScenario(bills = defaultBills.map { it.copy(currency = unknown) }, currency = unknown)
+            val state = viewModel.uiState.value
 
             // Then
-            assertFalse(viewModel.uiState.value.isLoaded)
+            assertFalse(state.isLoaded)
             assertTrue(route !in navigator.backStack.value)
         }
 

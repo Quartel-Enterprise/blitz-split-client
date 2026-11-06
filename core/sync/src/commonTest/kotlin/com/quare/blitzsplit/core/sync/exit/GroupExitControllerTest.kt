@@ -399,7 +399,7 @@ class GroupExitControllerTest {
         }
 
     @Test
-    fun `GIVEN I owe only in an unknown currency WHEN tapping the dialog's button THEN opens the balances`() = runTest {
+    fun `GIVEN I owe only in an unknown currency WHEN tapping the dialog button THEN opens the balances`() = runTest {
         // Given
         prepareScenario(byCurrency = listOf(currencyBalances(GroupCurrency.fromCode("XYZ"), listOf(meOwesAna))))
         controller.askToLeave()
