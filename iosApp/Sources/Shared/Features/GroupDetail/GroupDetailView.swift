@@ -673,23 +673,25 @@ private struct MacGroupExpenses: View {
         }
         .contextMenu(forSelectionType: String.self) { ids in
             // One line's options; several picked at once have none in common
-            let entries = state.days.flatMap(\.entries)
-            if ids.count == 1, let id = ids.first, let entry = entries.first(where: { $0.id == id }) {
+            if ids.count == 1, let entry = entry(ids.first) {
                 DayEntryMenuItems(entry: entry, model: model)
             }
         } primaryAction: { ids in
-            let entries = state.days.flatMap(\.entries)
-            if let id = ids.first, let entry = entries.first(where: { $0.id == id }) {
-                model.open(entry)
-            }
+            if let entry = entry(ids.first) { model.open(entry) }
         }
         // Delete (⌫) asks what the line's "Delete…" asks, for one line picked
         .onDeleteCommand {
-            let entries = state.days.flatMap(\.entries)
-            guard selection.count == 1, let id = selection.first,
-                  let entry = entries.first(where: { $0.id == id }) else { return }
-            model.delete(entry)
+            if selection.count == 1, let entry = entry(selection.first) { model.delete(entry) }
         }
+    }
+
+    /// The bill or payment of a line, nil once it left the list.
+    private func entry(_ id: String?) -> (any DayEntry)? {
+        guard let id else { return nil }
+        for day in state.days {
+            if let entry = day.entries.first(where: { $0.id == id }) { return entry }
+        }
+        return nil
     }
 }
 #endif

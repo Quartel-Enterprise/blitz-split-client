@@ -94,7 +94,8 @@ struct JoinPickView: View {
                 Button("Back") {
                     model?.send(JoinPickUiEventOnBackClicked.shared)
                 }
-                .disabled(model?.state.showsJoinProgress == true)
+                // Popping clears the ViewModel, which would cancel any join in flight, an account's own included
+                .disabled(model?.state.isJoining == true)
             }
         }
         #endif
