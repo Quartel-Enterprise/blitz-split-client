@@ -71,7 +71,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     currency's only), and every amount of a bill row, a payment row, a debt row and a detail is in the bill's or
     payment's own currency, never the group's. The home's overall balance is the global Balances' computation
     (`PeopleBalances.totals`). The bill form picks the bill's currency beside the total (see
-    [Split a bill](split-bill.md)). Still to come: the activity amounts.
+    [Split a bill](split-bill.md)), and Activity shows each amount in its bill's or payment's own currency.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): Currency (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
