@@ -85,6 +85,19 @@ struct JoinPickView: View {
         .navigationTitle("Who are you in the group?")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #else
+        // Pushed inside the invite's sheet, as Default split inside Edit group's: its own Back (Esc), the one way back
+        // to the invite short of joining
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Back") {
+                    model?.send(JoinPickUiEventOnBackClicked.shared)
+                }
+                // Popping clears the ViewModel, which would cancel any join in flight, an account's own included
+                .disabled(model?.state.isJoining == true)
+            }
+        }
         #endif
         .sheet(isPresented: newMemberShown) {
             if let model {
@@ -113,6 +126,9 @@ struct JoinPickView: View {
                 PrimaryButton(title: "Join as \(selectedName)", isEnabled: state.canJoin, isLoading: state.showsJoinProgress) {
                     model?.send(JoinPickUiEventOnJoinClicked.shared)
                 }
+                #if os(macOS)
+                .keyboardShortcut(.defaultAction)
+                #endif
             } else {
                 PrimaryButton(title: "Choose a name", isEnabled: false) {}
             }

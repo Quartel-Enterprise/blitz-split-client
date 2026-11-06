@@ -72,7 +72,8 @@ struct SettingsView: View {
                             .simultaneousGesture(TapGesture().onEnded { pick(pane) })
                             .tag(pane)
                     }
-                    .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
+                    // Room for its longest section whole, "Keys to receive payments" (Pierre's beta screenshot cut it)
+                    .navigationSplitViewColumnWidth(min: 200, ideal: 250, max: 300)
                 } detail: {
                     Group {
                         if pane == .categories {

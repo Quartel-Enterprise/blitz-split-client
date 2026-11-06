@@ -80,6 +80,11 @@ The home's four tabs and the web's and the Mac's shell.
   - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
     page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
     `brand_clicked` where the screen's ViewModel tracks its events.
+  - The Mac has one window (the Settings window aside): every window would draw the one shared back stack, so the File
+    menu has no New Window and windows don't tab (no View › Show Tab Bar, whose "+" opened another; a closed window
+    comes back from the Dock), and ⌘N is "Split a bill", the toolbar's main button on Home, Groups (asking the group
+    first) and a group's screens (that group), with ⇧⌘N for Groups' "New group"; Settings' sidebar is 250 pt, room
+    for "Keys to receive payments" whole.
   - On the Mac, a link the app is opened with (the browser sign in coming back through `borarachar://auth-callback`, an
     invite link) goes to the main window already open, which updates in place, never to a second window opened on top
     of it (beta feedback 12, `handlesExternalEvents` on the main window's root); with none open, the app opens one.

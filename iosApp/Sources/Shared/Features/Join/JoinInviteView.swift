@@ -278,6 +278,9 @@ private struct JoinInviteContent: View {
                 PrimaryButton(title: "Join as \(member.name)", isEnabled: !state.isJoining, isLoading: state.isJoining) {
                     model.send(JoinInviteUiEventOnJoinClicked.shared)
                 }
+                #if os(macOS)
+                .keyboardShortcut(.defaultAction)
+                #endif
                 Button("I'm not \(member.name)") {
                     model.send(JoinInviteUiEventOnNotMeClicked.shared)
                 }
@@ -287,6 +290,10 @@ private struct JoinInviteContent: View {
                 PrimaryButton(title: "Join group") {
                     model.send(JoinInviteUiEventOnJoinClicked.shared)
                 }
+                // Return joins, as the window's main button
+                #if os(macOS)
+                .keyboardShortcut(.defaultAction)
+                #endif
                 Button("Not now") {
                     model.send(JoinInviteUiEventOnNotNowClicked.shared)
                 }

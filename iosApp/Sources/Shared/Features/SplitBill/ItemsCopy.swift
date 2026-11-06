@@ -48,10 +48,18 @@ enum ItemsCopy {
         switch status {
         case let status as ItemsStatusLoose:
             if status.isEveryItem {
+                // The Mac's table opens an item on a double click; a single one only selects it
+                #if os(macOS)
+                return String(
+                    localized: "Double-click each item and check who had it. Done unlocks once every item has someone.",
+                    bundle: .appLanguage,
+                )
+                #else
                 return String(
                     localized: "Tap each item and check who had it. Done unlocks once every item has someone.",
                     bundle: .appLanguage,
                 )
+                #endif
             }
             let names = ExpenseFormat.names(status.items.map(\.name))
             let left = currency.format(status.looseMinor)

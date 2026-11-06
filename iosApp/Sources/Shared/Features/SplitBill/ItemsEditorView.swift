@@ -823,10 +823,25 @@ struct MacItemsEditor: View {
             }
             .listStyle(.bordered)
             .alternatingRowBackgrounds()
-            .contextMenu(forSelectionType: String.self) { _ in
-                EmptyView()
+            // A right click offers what a double click and the − do
+            .contextMenu(forSelectionType: String.self) { ids in
+                if ids.count == 1, let id = ids.first {
+                    Button("Edit…") { model.send(SplitBillUiEventOnItemClicked(itemId: id)) }
+                    Divider()
+                    Button("Delete Item…", role: .destructive) {
+                        model.send(SplitBillUiEventOnItemDeleteClicked(itemId: id))
+                    }
+                }
             } primaryAction: { ids in
                 if let id = ids.first { model.send(SplitBillUiEventOnItemClicked(itemId: id)) }
+            }
+            // Delete (⌫) asks what the − asks
+            .onDeleteCommand {
+                if let id = selection { model.send(SplitBillUiEventOnItemDeleteClicked(itemId: id)) }
+            }
+            // An item deleted leaves no selection behind, which ⌫ or the − would ask to delete again
+            .onChange(of: items.rows.map(\.item.id)) { _, ids in
+                if let id = selection, !ids.contains(id) { selection = nil }
             }
             .frame(minHeight: 240, maxHeight: 360)
             HStack(spacing: 0) {
@@ -860,6 +875,8 @@ struct MacItemsEditor: View {
 struct MacItemEditor: View {
     let model: SplitBillModel
 
+    @FocusState private var isNameFocused: Bool
+
     var body: some View {
         if let editor = model.state.itemEditor ?? model.shownItem {
             VStack(alignment: .leading, spacing: 14) {
@@ -871,6 +888,7 @@ struct MacItemEditor: View {
                         TextField("Item", text: model.itemName.firstLetterCapitalized)
                             .labelsHidden()
                             .capitalizesFirstLetter()
+                            .focused($isNameFocused)
                     }
                     GridRow {
                         Text("Quantity:")
@@ -944,6 +962,10 @@ struct MacItemEditor: View {
             .padding(20)
             .frame(width: 540)
             .itemsAlerts(model)
+            // "Add item" opens on its name, ready to type
+            .onAppear {
+                if model.itemName.wrappedValue.isEmpty { isNameFocused = true }
+            }
         }
     }
 }

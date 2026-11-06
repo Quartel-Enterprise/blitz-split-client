@@ -8,28 +8,47 @@ enum CategoryPickerCopy {
         CategoryCopy.path(category, parent: category.parentId.flatMap { state.categories.findOrNull(id: $0) })
     }
 
-    /// The line under the description, what chose the bill's category (7.1, 7.1l to 7.1n).
+    /// The line under the description, what chose the bill's category (7.1, 7.1l to 7.1n). The Mac clicks the icon
+    /// (its menu beside the description) where a touch screen taps it.
     static func hint(_ state: SplitBillUiState) -> String {
         let path = CategoryCopy.path(state.category, parent: state.categoryParent)
         let term = state.categoryMatches.first?.term ?? ""
         switch state.categoryHint {
         case .byTerm:
+            #if os(macOS)
+            return String(
+                localized: "\(path) by the word “\(term)” in your map. Click the icon to change it.",
+                bundle: .appLanguage,
+            )
+            #else
             return String(
                 localized: "\(path) by the word “\(term)” in your map. Tap the icon to change it.",
                 bundle: .appLanguage,
             )
+            #endif
         case .byReceipt:
+            #if os(macOS)
+            return String(localized: "\(path) from the receipt. Click the icon to change it.", bundle: .appLanguage)
+            #else
             return String(localized: "\(path) from the receipt. Tap the icon to change it.", bundle: .appLanguage)
+            #endif
         case .byLongestTerm:
             return String(
                 localized: "\(state.categoryMatches.count) words of the map matched. “\(term)” wins, the longest: \(path).",
                 bundle: .appLanguage,
             )
         case .noTerm:
+            #if os(macOS)
+            return String(
+                localized: "No word of your map. The bill stays in Other; click the icon to pick one.",
+                bundle: .appLanguage,
+            )
+            #else
             return String(
                 localized: "No word of your map. The bill stays in Other; tap the icon to pick one.",
                 bundle: .appLanguage,
             )
+            #endif
         case .changed:
             let mapPath = state.mapCategory.map { self.path($0, in: state) } ?? ""
             return String(
@@ -37,7 +56,11 @@ enum CategoryPickerCopy {
                 bundle: .appLanguage,
             )
         default:
+            #if os(macOS)
+            return String(localized: "Category: \(path). Click the icon to change it.", bundle: .appLanguage)
+            #else
             return String(localized: "Category: \(path). Tap the icon to change it.", bundle: .appLanguage)
+            #endif
         }
     }
 

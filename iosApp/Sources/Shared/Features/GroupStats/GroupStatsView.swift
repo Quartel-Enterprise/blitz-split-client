@@ -369,12 +369,21 @@ private struct StatsHeroCard: View {
 #endif
 
 #if os(macOS)
-/// The Mac's four panels: total, bills, average per person and this person's part.
+/// The Mac's four panels: total, bills, average per person and this person's part; all in a row while each keeps
+/// 170 pt, two by two in a narrower window, so "38% of the total · you paid R$ 1.234,56" still reads whole.
 private struct StatsSummaryPanels: View {
     let state: GroupStatsUiState
 
+    /// The grid's width, wide until measured, the window's usual room
+    @State private var width = CGFloat.greatestFiniteMagnitude
+
+    private var columnCount: Int {
+        let panels = state.myShareMinor == nil ? 3 : 4
+        return width >= CGFloat(panels) * 170 + CGFloat(panels - 1) * 10 ? panels : 2
+    }
+
     var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4), spacing: 10) {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: columnCount), spacing: 10) {
             panel(
                 GroupStatsCopy.totalLabel(state),
                 state.currency.format(state.totalMinor),
@@ -405,6 +414,7 @@ private struct StatsSummaryPanels: View {
                 )
             }
         }
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.width }) { width = $0 }
         .padding(.bottom, 12)
     }
 
@@ -414,7 +424,8 @@ private struct StatsSummaryPanels: View {
             Text(verbatim: value).font(.title2.bold()).monospacedDigit().lineLimit(1).minimumScaleFactor(0.7)
             HStack(spacing: 5) {
                 if isPending { PendingDot(size: 7) }
-                Text(verbatim: hint).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                // Two lines kept for every panel, so a row's panels stay one height
+                Text(verbatim: hint).font(.caption).foregroundStyle(.secondary).lineLimit(2, reservesSpace: true)
             }
         }
         .padding(.horizontal, 14)

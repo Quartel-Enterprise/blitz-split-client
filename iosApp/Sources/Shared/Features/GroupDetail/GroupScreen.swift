@@ -153,7 +153,12 @@ private struct GroupScreenBars: ViewModifier {
                 .prefersVerticalBar()
         }
         #else
-        ToolbarItem(placement: .primaryAction) { splitBillButton }
+        ToolbarItem(placement: .primaryAction) {
+            // ⌘N, as on Home and Groups: a bill in this group
+            splitBillButton
+                .keyboardShortcut("n", modifiers: .command)
+                .help(Text("Split a bill (⌘N)"))
+        }
         #endif
     }
 

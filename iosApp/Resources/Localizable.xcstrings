@@ -1054,6 +1054,29 @@
         }
       }
     },
+    "%@ by the word “%@” in your map. Click the icon to change it." : {
+      "comment" : "Under a bill's description on the Mac: its category, chosen by a word of the map",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ por la palabra “%2$@” de tu mapa. Haz clic en el ícono para cambiar."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ por la palabra “%2$@” de tu mapa. Haz clic en el icono para cambiar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ pela palavra “%2$@” do seu mapa. Clique no ícone para trocar."
+          }
+        }
+      }
+    },
     "%@ came from the word “%@”. See and edit the words that pick the category." : {
       "comment" : "Category map card",
       "localizations" : {
@@ -6979,6 +7002,29 @@
         }
       }
     },
+    "Category: %@. Click the icon to change it." : {
+      "comment" : "Under a bill's description on the Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoría: %@. Haz clic en el ícono para cambiar."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoría: %@. Haz clic en el icono para cambiar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categoria: %@. Clique no ícone para trocar."
+          }
+        }
+      }
+    },
     "Changing it here moves the term to another category." : {
       "comment" : "Edit term",
       "localizations" : {
@@ -8399,6 +8445,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nenhuma palavra do seu mapa. A conta fica em Outros; toque no ícone para escolher."
+          }
+        }
+      }
+    },
+    "No word of your map. The bill stays in Other; click the icon to pick one." : {
+      "comment" : "Under a bill's description on the Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna palabra de tu mapa. El gasto queda en Otros; haz clic en el ícono para elegir una."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna palabra de tu mapa. El gasto queda en Otros; haz clic en el icono para elegir una."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma palavra do seu mapa. A conta fica em Outros; clique no ícone para escolher."
           }
         }
       }
@@ -18182,6 +18251,23 @@
         }
       }
     },
+    "New group (⇧⌘N)" : {
+      "comment" : "The Mac's tooltip on Groups' New group button, with its shortcut",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuevo grupo (⇧⌘N)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novo grupo (⇧⌘N)"
+          }
+        }
+      }
+    },
     "No access to contacts" : {
       "comment" : "The agenda was refused",
       "localizations" : {
@@ -27400,6 +27486,23 @@
         }
       }
     },
+    "Double-click each item and check who had it. Done unlocks once every item has someone." : {
+      "comment" : "Bill items on the Mac, where a double click opens an item: no item has anyone yet",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz doble clic en cada artículo y marca quién lo consumió. Listo se habilita cuando todos tengan a alguien."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clique duas vezes em cada item e marque quem consumiu. Pronto libera quando todos tiverem dono."
+          }
+        }
+      }
+    },
     "%@ has nobody yet: %@ out of the split." : {
       "comment" : "Bill items: the item nobody has, and its amount",
       "localizations" : {
@@ -29357,6 +29460,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ pelo cupom fiscal. Toque no ícone para trocar."
+          }
+        }
+      }
+    },
+    "%@ from the receipt. Click the icon to change it." : {
+      "comment" : "Split a bill on the Mac: the receipt chose the category",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ por el recibo. Haz clic en el ícono para cambiar."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ por el recibo. Haz clic en el icono para cambiar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pelo cupom fiscal. Clique no ícone para trocar."
           }
         }
       }

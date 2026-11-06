@@ -3,7 +3,7 @@
 Group expenses, Bill, comments, attachments, sharing, Statistics, editing and deleting a bill.
 
   - A group tapped on the home opens "Group expenses" (`Route.GroupDetail`): the bills by day, the most recent on
-    top, with "Split a bill" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS and the
+    top, with "Split a bill" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS, ⌘N, and the
     web), the group's main button on every tab, Members included, in the same place. Its tabs Expenses / Balances / Members are one screen (`Route.GroupDetail.tab` only says which it opens on):
     the header, "Your balance in this group" and the tabs stay, only what is under them changes, with no transition nor
     check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
@@ -14,14 +14,16 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     A bill's are Bill's own top bar, named as short (Pierre's call): "Edit" (Edit bill over the group), "Share" (Share
     bill) and "Delete", which asks Bill's "Delete this bill?" in the same words (`GroupDetailUiState.billToDelete`)
     and stays on the group, the bill leaving the list; a payment's is "Delete", the same "Delete this payment?" a tap
-    on it asks. The Mac's items end in "…", and the Mac's table shows the menu only for one line picked. Home's "Latest expenses" and
+    on it asks. The Mac's items end in "…", and the Mac's table shows the menu only for one line picked, whose Delete
+    key (⌫) asks the same "Delete this bill?" or "Delete this payment?". Home's "Latest expenses" and
     Activity have no ⋮: their lines open the bill, whose options are a tap away (Pierre's beta feedback asked for
     the group's list, where the bills are managed).
   - A bill tapped there opens "Bill" (`Route.BillDetail`): the bill, "Your share" and the split over every member,
     with its category over the title and Share, Edit and Delete in the top bar. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the
     main window's inspector (720 pt, 330 pt in a window under 1180 pt, the bill beside its split from 600 pt, ✕ and Esc
-    closing it, another bill or whatever the group opens taking its place), and the web as a side sheet (a drawer on a
+    closing it, another bill or whatever the group opens taking its place; the 330 pt one puts Share, Edit, Delete and
+    ✕ in a row above the bill's name, which beside them would be cut), and the web as a side sheet (a drawer on a
     phone), all over the group.
   - Bill's "Comments" (7.3c to 7.3f): anyone in the group comments, offline too (the comment waits in the queue,
     "Queued · goes out when you're back online", like a bill, `bill_comments`), and "Reply" answers a comment or a reply, one
@@ -137,7 +139,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     a small bar with the period, the total and "Over time" side by side in the top half, against the hinge,
     and "By category" beside "By person" and "Settling up" in the bottom half, scrolling, without the grains' note nor
     "Biggest expense". The web from the tablet up and the Mac put "Over time" and "Biggest expense" in a second
-    column, with four summary cards, "Settling up" under "By person".
+    column, with four summary cards, "Settling up" under "By person"; the Mac's cards go two by two where four in a
+    row would be under 170 pt each, and each keeps two lines for its note ("38% of the total · you paid R$ 1.234,56").
   - "Expenses by category" (`Route.CategoryExpenses`, `CategoryExpensesViewModel`), from a category of "By category":
     a screen of its own over Statistics, back returning to them, rather than the group's Expenses filtered (whose
     header, tabs and payments aren't about a category, and whose back would leave the statistics). Its subtitle is
