@@ -233,6 +233,10 @@ jobs:
       - name: Install the web dependencies
         run: npm --prefix webApp ci
 
+      # Every language holds English's messages, with its {placeholders}: tsc sees the keys, this the rest.
+      - name: Check the translations
+        run: npm --prefix webApp run check:messages
+
       # tsc type checks the app against the library's TypeScript definitions, then Vite bundles it.
       # Its prebuild builds the library again, up to date by now.
       - name: Build the web app

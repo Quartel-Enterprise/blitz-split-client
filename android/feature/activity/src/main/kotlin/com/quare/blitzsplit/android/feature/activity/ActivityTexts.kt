@@ -14,7 +14,7 @@ import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.format.groupCurrencyLabel
-import com.quare.blitzsplit.android.designsystem.format.isSpanishUi
+import com.quare.blitzsplit.android.designsystem.format.isYouSubjectUi
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -358,10 +358,10 @@ internal fun deletedNoticeTextOf(
     val subject = deletion.subject
         ?: stringResource(if (deletion.isGroup) R.string.activity_this_group else R.string.activity_this_bill)
     val atMillis = deletion.atMillis
-    // Why: in Spanish the sentence starts with who did it, "Tú eliminaste Pastel en la playa el viernes…".
-    val isSpanishYou = deletion.byMe && isSpanishUi()
+    // Why: in Spanish and French the sentence starts with who did it, "Tú eliminaste Pastel en la playa…".
+    val isYouSubject = deletion.byMe && isYouSubjectUi()
     val byName = when {
-        isSpanishYou -> stringResource(R.string.activity_you)
+        isYouSubject -> stringResource(R.string.activity_you)
         deletion.byMe -> stringResource(R.string.activity_you_lowercase)
         else -> deletion.byName
     }
@@ -381,7 +381,7 @@ internal fun deletedNoticeTextOf(
         R.string.activity_deleted_notice_bill
     }
     val date = dates.toWeekdayDateText(atMillis)
-    if (!isSpanishYou) return stringResource(noticeRes, subject, byName, date)
+    if (!isYouSubject) return stringResource(noticeRes, subject, byName, date)
     return templateForActorOf(
         stringResource(noticeRes),
         isMe = true,

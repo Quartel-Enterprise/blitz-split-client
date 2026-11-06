@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Aucun terme</string>
+    <string name="category_map_title">Carte des catégories</string>
+    <string name="category_map_search">Rechercher des termes</string>
+    <string name="category_map_add">Ajouter un terme</string>
+    <string name="category_map_more">Plus d’options</string>
+    <string name="category_map_restore">Restaurer par défaut</string>
+    <string name="category_map_back">Retour</string>
+    <string name="category_map_intro">Quand le titre d’une dépense contient l’un de ces mots, sa catégorie vient toute seule. « Uber maison » devient Transports.</string>
+    <string name="category_map_intro_offline">La carte fonctionne hors ligne : les modifications comptent tout de suite sur cet appareil et arrivent sur tes autres appareils à la reconnexion.</string>
+    <string name="category_map_device_only">Ta carte reste uniquement sur cet appareil. Pour l’emporter sur tes autres appareils, connecte-toi avec Google ou Apple dans ton Profil.</string>
+    <string name="category_map_open_profile">Ouvrir le profil</string>
+    <string name="category_map_longest_wins">Quand deux termes correspondent à un titre, le plus long l’emporte.</string>
+    <string name="category_map_no_result">Aucun terme avec « %1$s »</string>
+    <string name="category_map_no_result_body">Ajoute-le et les dépenses avec ce mot dans leur titre arriveront avec la bonne catégorie.</string>
+    <string name="category_map_add_query">Ajouter « %1$s »</string>
+    <string name="category_map_empty_title">Ta carte est vide</string>
+    <string name="category_map_empty_body">Sans termes, la catégorie ne vient pas du titre : tu la choisis sur chaque dépense.</string>
+    <string name="category_map_group_category"> · catégorie du groupe %1$s</string>
+    <string name="category_map_only_main">Seulement %1$s</string>
+    <string name="category_map_only_in_group">seulement dans %1$s</string>
+    <string name="category_map_no_terms_yet">Aucun terme pour l’instant.</string>
+    <string name="category_map_add_in">Ajouter un terme dans %1$s</string>
+    <string name="category_map_tip">Touche un terme pour changer sa catégorie ou le retirer. Il correspond au mot entier, sans tenir compte des accents ni de la casse.</string>
+    <string name="category_map_queued">en attente</string>
+    <string name="category_map_term_action">%1$s, %2$s. Modifier</string>
+    <string name="category_map_new_term">Nouveau terme</string>
+    <string name="category_map_edit_term">Modifier le terme</string>
+    <string name="category_map_term_label">Mot ou expression</string>
+    <string name="category_map_term_help">Correspond au mot entier, sans tenir compte des accents ni de la casse.</string>
+    <string name="category_map_term_help_app">Un terme de l’app. Restaurer par défaut le ramène tel qu’il était.</string>
+    <string name="category_map_term_duplicate">« %1$s » choisit déjà %2$s. Chaque terme a une seule catégorie.</string>
+    <string name="category_map_term_too_short">Utilise au moins 2 lettres.</string>
+    <string name="category_map_term_too_long">Utilise 30 lettres maximum.</string>
+    <string name="category_map_term_invalid">Utilise uniquement des lettres, des chiffres et des espaces.</string>
+    <string name="category_map_category">Catégorie</string>
+    <string name="category_map_category_help">Ce peut être la catégorie ou une sous-catégorie.</string>
+    <string name="category_map_category_help_edit">Le changer ici déplace le terme vers une autre catégorie.</string>
+    <string name="category_map_category_help_move">Déplacer retire le terme de la catégorie %1$s.</string>
+    <string name="category_map_example">Exemple</string>
+    <string name="category_map_example_move">S’il est déplacé</string>
+    <string name="category_map_remove">Retirer</string>
+    <string name="category_map_cancel">Annuler</string>
+    <string name="category_map_save">Enregistrer</string>
+    <string name="category_map_move_to">Déplacer vers %1$s</string>
+    <string name="category_map_removed">« %1$s » a quitté la carte</string>
+    <string name="category_map_undo">Annuler</string>
+    <string name="category_map_restore_title">Restaurer la carte par défaut ?</string>
+    <string name="category_map_restore_body">Les 60 termes de l’app reviennent tels qu’ils étaient, y compris ceux que tu as retirés ou déplacés.</string>
+    <string name="category_map_restore_own_one">Le terme que tu as créé, « %1$s », reste.</string>
+    <string name="category_map_restore_confirm">Restaurer</string>
+    <string name="category_map_save_error">Impossible d’enregistrer la carte. Réessaie.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d terme</item>
+        <item quantity="many">%d termes</item>
+        <item quantity="other">%d termes</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d sous-catégorie</item>
+        <item quantity="many">%d sous-catégories</item>
+        <item quantity="other">%d sous-catégories</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d terme avec « %2$s »</item>
+        <item quantity="many">%1$d termes avec « %2$s »</item>
+        <item quantity="other">%1$d termes avec « %2$s »</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Hors ligne · %d modification en attente</item>
+        <item quantity="many">Hors ligne · %d modifications en attente</item>
+        <item quantity="other">Hors ligne · %d modifications en attente</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Les %d termes que tu as créés restent.</item>
+        <item quantity="many">Les %d termes que tu as créés restent.</item>
+        <item quantity="other">Les %d termes que tu as créés restent.</item>
+    </plurals>
+    <string name="category_map_new_category">Nouvelle catégorie</string>
+    <string name="category_map_new_subcategory_in">Nouvelle sous-catégorie dans %s</string>
+    <string name="category_map_edit_category">Modifier %s</string>
+    <string name="category_map_category_group">Groupe</string>
+</resources>

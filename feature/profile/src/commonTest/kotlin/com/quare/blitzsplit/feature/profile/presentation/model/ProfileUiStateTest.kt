@@ -649,7 +649,13 @@ class ProfileUiStateTest {
 
         // Then
         assertEquals(
-            listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE, AppLanguage.SPANISH),
+            listOf(
+                AppLanguage.SYSTEM,
+                AppLanguage.ENGLISH,
+                AppLanguage.PORTUGUESE,
+                AppLanguage.SPANISH,
+                AppLanguage.FRENCH,
+            ),
             options,
         )
     }
@@ -664,7 +670,13 @@ class ProfileUiStateTest {
 
         // Then
         assertEquals(
-            listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE, AppLanguage.SPANISH),
+            listOf(
+                AppLanguage.SYSTEM,
+                AppLanguage.ENGLISH,
+                AppLanguage.PORTUGUESE,
+                AppLanguage.SPANISH,
+                AppLanguage.FRENCH,
+            ),
             options,
         )
     }

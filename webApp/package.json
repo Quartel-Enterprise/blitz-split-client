@@ -10,6 +10,7 @@
     "prebuild": "npm run shared",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
+    "check:messages": "node scripts/check-messages.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

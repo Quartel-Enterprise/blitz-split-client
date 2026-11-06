@@ -2,23 +2,25 @@ import { browserLanguages } from '@/lib/platform'
 import { en, type MessageKey } from './en'
 import { es } from './es'
 import { esES } from './esES'
+import { fr } from './fr'
 import { pt } from './pt'
 
 export type { MessageKey }
 /** `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently. */
-export type Locale = 'en' | 'pt' | 'es' | 'es-ES'
+export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES } }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr }
 
 /**
  * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
  * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
- * Latin-American Spanish, any `en` tag is English, and English when none matches.
+ * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `en` tag is English, and English when none
+ * matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
     const [language, ...rest] = tag.toLowerCase().split('-')
-    if (language === 'pt' || language === 'en') return language
+    if (language === 'pt' || language === 'en' || language === 'fr') return language
     if (language === 'es') return rest.length === 1 && rest[0] === 'es' ? 'es-ES' : 'es'
   }
   return 'en'
@@ -65,9 +67,11 @@ const irregularSecondPerson: Record<string, string> = {
 
 /**
  * An activity verb ("dividió", "se unió a", "cambió la división de") said to the user, who is "Tú" in Spanish:
- * "dividiste", "te uniste a". Other languages keep the verb as it is.
+ * "dividiste", "te uniste a". French verbs all start with the auxiliary "a" ("a divisé"), which becomes "as" for the
+ * user, who is "Tu" ("as divisé"). Other languages keep the verb as it is.
  */
 export function verbForYou(verb: string): string {
+  if (locale === 'fr') return verb.replace(/^a(?= |$)/, 'as')
   if (!isSpanish) return verb
   const [first, ...rest] = verb.split(' ')
   if (first === 'se' && rest.length > 0) return ['te', verbForYou(rest[0]), ...rest.slice(1)].join(' ')
@@ -78,7 +82,7 @@ export function verbForYou(verb: string): string {
   return verb
 }
 
-const documentLanguages: Record<Locale, string> = { en: 'en', pt: 'pt-BR', es: 'es-419', 'es-ES': 'es-ES' }
+const documentLanguages: Record<Locale, string> = { en: 'en', pt: 'pt-BR', es: 'es-419', 'es-ES': 'es-ES', fr: 'fr' }
 
 /** The page's language and title: Bora Rachar only in Portuguese, Blitz Split everywhere else. */
 export function applyDocumentLocale() {

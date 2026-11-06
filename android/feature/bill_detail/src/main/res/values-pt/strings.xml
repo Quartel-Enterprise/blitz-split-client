@@ -16,6 +16,7 @@
     <string name="bill_detail_nothing_to_settle">nada a acertar</string>
     <string name="bill_detail_owes_payer">Entra no que você deve a %s em Saldos.</string>
     <string name="bill_detail_you">Você</string>
+    <string name="bill_detail_history_you">Você</string>
     <string name="bill_detail_former_member">Ex-membro</string>
     <string name="bill_detail_paid">Pagou %s</string>
     <string name="bill_detail_not_joined">Ainda não entrou</string>

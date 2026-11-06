@@ -183,4 +183,5 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.ENGLISH -> "English"
     AppLanguage.PORTUGUESE -> "Português"
     AppLanguage.SPANISH -> "Español"
+    AppLanguage.FRENCH -> "Français"
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Rappel pour régler tes comptes</string>
+    <string name="push_bill_created">%1$s a ajouté « %2$s » avec toi</string>
+    <string name="push_bill_edited">%1$s a modifié « %2$s »</string>
+    <string name="push_bill_deleted">%1$s a supprimé « %2$s »</string>
+    <string name="push_comment_added">%1$s a commenté « %2$s » : %3$s</string>
+    <string name="push_payment_paid_you">%1$s a indiqué t’avoir payé</string>
+    <string name="push_payment_to_you">%1$s a indiqué que %2$s t’a payé</string>
+    <string name="push_payment_received_yours">%1$s a marqué ton paiement comme reçu</string>
+    <string name="push_payment_from_you">%1$s a indiqué que tu as payé %2$s</string>
+    <string name="push_payment_undone">%1$s a annulé un paiement avec toi</string>
+    <string name="push_charge_sent">%1$s t’a envoyé un rappel pour régler</string>
+    <string name="push_settle_reminder">Tu as un solde à régler dans %1$s</string>
+    <string name="push_settle_reminders">Tu as des soldes à régler dans %1$s groupes</string>
+    <string name="push_added_to_group">%1$s t’a ajouté au groupe</string>
+    <string name="push_member_joined">%1$s a rejoint le groupe</string>
+    <string name="push_debts_simplified_to_you">%1$s a simplifié les dettes. Maintenant, %2$s te paie %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s a simplifié les dettes. Maintenant, tu paies %3$s à %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s a simplifié les dettes. Découvre ce que ça change pour toi.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s a désactivé Simplifier les dettes. Maintenant, %2$s te paie %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s a désactivé Simplifier les dettes. Maintenant, tu paies %3$s à %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s a désactivé Simplifier les dettes. Découvre ce que ça change pour toi.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Tu n’es pas dans ce groupe</string>
+    <string name="bill_link_not_in_group_message">Ce commentaire est dans un groupe dont tu ne fais pas partie. Demande l’invitation à la personne qui t’a envoyé le lien.</string>
+    <string name="bill_link_offline_title">Pas d’internet</string>
+    <string name="bill_link_offline_message">Rouvre le lien dès que tu es de nouveau en ligne.</string>
+    <string name="bill_link_go_home">Aller à l’accueil</string>
+</resources>

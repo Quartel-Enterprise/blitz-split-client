@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · code de récupération</string>
+    <string name="platform_export_file_name">blitz-split-donnees-%1$s.json</string>
+    <string name="platform_camera_denied">Autorise l’appareil photo dans les Réglages pour prendre une photo.</string>
+    <string name="platform_camera_settings">Réglages</string>
+    <string name="platform_receipt_source_camera">Prendre une photo</string>
+    <string name="platform_receipt_source_gallery">Choisir dans la galerie</string>
+    <string name="platform_receipt_source_file">Choisir un fichier</string>
+    <string name="platform_receipt_camera_title">Scanner le reçu</string>
+    <string name="platform_receipt_camera_close">Fermer</string>
+    <string name="platform_receipt_camera_flash_on">Activer le flash</string>
+    <string name="platform_receipt_camera_flash_off">Désactiver le flash</string>
+    <string name="platform_receipt_camera_hint">Cadre tout le reçu. On remplit le montant, la date et la description ; tu vérifies avant d’enregistrer.</string>
+    <string name="platform_receipt_camera_gallery">Choisir dans la galerie</string>
+    <string name="platform_receipt_camera_shutter">Prendre une photo</string>
+    <string name="platform_receipt_camera_unavailable">L’appareil photo n’est pas disponible. Choisis une photo du reçu dans la galerie.</string>
+    <string name="platform_receipt_camera_permission">Autorise l’appareil photo pour scanner le reçu, ou choisis une photo dans la galerie.</string>
+    <string name="platform_receipt_camera_allow">Autoriser l’appareil photo</string>
+    <string name="platform_receipt_camera_settings">Ouvrir les réglages</string>
+</resources>
