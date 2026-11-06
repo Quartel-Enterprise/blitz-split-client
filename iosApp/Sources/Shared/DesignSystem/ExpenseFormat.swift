@@ -62,17 +62,17 @@ extension GroupCurrency {
         return symbol
     }
 
-    /// "₿" and "Ξ", which no locale knows as a currency's symbol; nil for every other currency.
+    /// "₿" and "Ξ", which no locale knows as a currency's symbol, or the raw code of a currency this version doesn't
+    /// know; nil for every other currency.
     private var cryptoSymbol: String? {
-        switch self {
-        case .btc: "₿"
-        case .eth: "Ξ"
-        default: nil
-        }
+        if self == GroupCurrency.companion.BTC { return "₿" }
+        if self == GroupCurrency.companion.ETH { return "Ξ" }
+        // A code this version doesn't know has no symbol: the raw code stands in its place ("XYZ 12,50").
+        return isKnown ? nil : code
     }
 
     private var showsSats: Bool {
-        self == .btc && BitcoinUnit.shared.showsSats
+        self == GroupCurrency.companion.BTC && BitcoinUnit.shared.showsSats
     }
 
     private var typedDigits: Int {

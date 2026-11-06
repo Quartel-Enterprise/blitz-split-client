@@ -260,7 +260,7 @@ class HomePresenter {
         key: String,
         currency: String,
     ) {
-        val groupCurrency = GroupCurrency.fromCodeOrNull(currency) ?: return
+        val groupCurrency = GroupCurrency.fromCode(currency)
         viewModel.onEvent(HomeUiEvent.OnPersonClicked(key, groupCurrency))
     }
 

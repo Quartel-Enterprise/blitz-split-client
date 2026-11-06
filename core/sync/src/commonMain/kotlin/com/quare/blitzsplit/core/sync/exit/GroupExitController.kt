@@ -166,8 +166,10 @@ class GroupExitController(
     private fun settle(target: GroupExitTarget) {
         val meId = target.meIdOrNull() ?: return
         // Why: the first currency (the group's default) this person owes in; each is paid on its own.
-        val (currency, balances) = target.balances.firstOrNull { it.balances.findLargestCreditorOrNull(meId) != null }
-            ?: return
+        val (currency, balances) = target.balances.firstOrNull {
+            // Why: a currency this version doesn't know takes no new payment (see `GroupCurrency.fromCode`).
+            it.currency.isKnown && it.balances.findLargestCreditorOrNull(meId) != null
+        } ?: return
         val creditorId = balances.findLargestCreditorOrNull(meId) ?: return
         openRegisterPayment(target.group.id, meId, creditorId, currency)
     }
@@ -234,7 +236,8 @@ class GroupExitController(
         return GroupExitDialog.LeaveBlocked(
             groupName = target.group.name,
             debts = myDebts.map { (currency, debt) -> target.rowOf(currency, debt, meId) },
-            canSettle = myDebts.any { (_, debt) -> debt.fromMemberId == meId },
+            // Why: a currency this version doesn't know takes no new payment, so it offers Ver saldos instead.
+            canSettle = myDebts.any { (currency, debt) -> currency.isKnown && debt.fromMemberId == meId },
         )
     }
 

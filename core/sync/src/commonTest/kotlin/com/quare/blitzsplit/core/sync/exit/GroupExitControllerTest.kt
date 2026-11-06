@@ -384,6 +384,37 @@ class GroupExitControllerTest {
         }
 
     @Test
+    fun `GIVEN I owe in an unknown currency and in dollars WHEN tapping Acertar THEN opens the payment in dollars`() =
+        runTest {
+            // Given
+            val unknown = currencyBalances(GroupCurrency.fromCode("XYZ"), listOf(meOwesAna))
+            prepareScenario(byCurrency = listOf(unknown, dollars(Debt("me", "ana", 700L))))
+            controller.askToLeave()
+
+            // When
+            controller.confirm()
+
+            // Then
+            assertEquals(listOf<List<Any>>(listOf("group-1", "me", "ana", GroupCurrency.USD)), payments)
+        }
+
+    @Test
+    fun `GIVEN I owe only in an unknown currency WHEN tapping the dialog button THEN opens the balances`() = runTest {
+        // Given
+        prepareScenario(byCurrency = listOf(currencyBalances(GroupCurrency.fromCode("XYZ"), listOf(meOwesAna))))
+        controller.askToLeave()
+        val dialog = assertIs<GroupExitDialog.LeaveBlocked>(controller.state.value.dialog)
+
+        // When
+        controller.confirm()
+
+        // Then
+        assertEquals(false, dialog.canSettle)
+        assertEquals(listOf("group-1"), balancesOpened)
+        assertEquals(emptyList(), payments)
+    }
+
+    @Test
     fun `GIVEN I am only owed in dollars WHEN tapping Ver saldos THEN opens the balances and no payment`() = runTest {
         // Given
         prepareScenario(byCurrency = listOf(reais(), dollars(anaOwesMe)))

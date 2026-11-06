@@ -297,10 +297,11 @@ internal fun changeValueTextOf(
             },
         )
 
-        ActivityField.CURRENCY ->
-            value.code
-                ?.let { code -> GroupCurrency.entries.firstOrNull { it.code == code } }
-                ?.let { groupCurrencyLabel(it, LocalLocale.current.platformLocale) }
+        // Why: a code this version doesn't know, which the platform may not name either, shows by its raw code.
+        ActivityField.CURRENCY -> value.code?.let { code ->
+            val currency = GroupCurrency.fromCode(code)
+            if (currency.isKnown) groupCurrencyLabel(currency, LocalLocale.current.platformLocale) else code
+        }
 
         ActivityField.DEFAULT_SPLIT -> value.code?.let(DefaultSplitMode::fromCodeOrNull)?.let {
             stringResource(it.labelRes)

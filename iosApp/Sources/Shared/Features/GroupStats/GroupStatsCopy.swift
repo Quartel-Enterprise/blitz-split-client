@@ -111,10 +111,10 @@ enum GroupStatsCopy {
         return String(localized: "Average per day:", bundle: .appLanguage)
     }
 
-    /// "R$ 1,5 mil" or "R$1.5K": the short amount of a value line of the chart. Bitcoin and ether, which have no
-    /// short currency format, write the whole amount.
+    /// "R$ 1,5 mil" or "R$1.5K": the short amount of a value line of the chart. Bitcoin, ether and a code this version
+    /// doesn't know, which have no short currency format, write the whole amount.
     static func compactAmount(_ minor: Int64, currency: GroupCurrency) -> String {
-        if currency.isCrypto { return currency.format(minor) }
+        if currency.isCrypto || !currency.isKnown { return currency.format(minor) }
         var major = Decimal(minor)
         for _ in 0..<Int(currency.fractionDigits) { major /= 10 }
         return major.formatted(.currency(code: currency.code).notation(.compactName).precision(.significantDigits(1...2)))

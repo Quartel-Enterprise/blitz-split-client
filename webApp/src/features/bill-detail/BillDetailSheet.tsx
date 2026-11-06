@@ -236,7 +236,7 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
         {/* Why: three actions beside the group's name leave the phone's header no room for a third label. */}
         <span className="max-sm:sr-only">{t('billDetail_share')}</span>
       </Button>
-      <Button variant="ghost" size="sm" disabled={!state.areActionsEnabled} onClick={() => presenter.edit()}>
+      <Button variant="ghost" size="sm" disabled={!state.canEdit} onClick={() => presenter.edit()}>
         <Pencil />
         {t('billDetail_edit')}
       </Button>
@@ -250,7 +250,7 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
 
 /** What the bill's body reads: Conta's state, or a bill's link page's, which has no "Sua parte" nor queue. */
 export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent' | 'totalMinor' | 'payers' | 'splitMode' | 'participantCount' | 'people'> &
-  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId'>>
+  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId' | 'showsUnknownCurrencyNote'>>
 
 /**
  * The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. A
@@ -301,6 +301,9 @@ export function BillBody({
             )}
             {paid}
           </PersonButton>
+          {state.showsUnknownCurrencyNote && (
+            <p className="text-sm text-muted-foreground">{t('billDetail_unknownCurrency')}</p>
+          )}
           {state.isPending && (
             <span
               role="status"

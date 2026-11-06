@@ -185,6 +185,8 @@ class JsBillDetailState(
     val deletion: JsBillDeletion?,
     val isDeleting: Boolean,
     val areActionsEnabled: Boolean,
+    val canEdit: Boolean,
+    val showsUnknownCurrencyNote: Boolean,
     val isLoaded: Boolean,
     // Why: "Comentários", in the order they were written, each with its replies; null while they load (shimmer).
     val threads: Array<JsBillCommentThread>?,
@@ -253,6 +255,8 @@ class BillDetailPresenter(
                 deletion = state.deletion?.let(::toJsBillDeletion),
                 isDeleting = state.isDeleting,
                 areActionsEnabled = state.areActionsEnabled,
+                canEdit = state.canEdit,
+                showsUnknownCurrencyNote = state.showsUnknownCurrencyNote,
                 isLoaded = state.isLoaded,
                 threads = state.threads
                     .valueOrNull()

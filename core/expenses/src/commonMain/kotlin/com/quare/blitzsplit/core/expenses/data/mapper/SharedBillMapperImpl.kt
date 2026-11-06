@@ -42,9 +42,9 @@ class SharedBillMapperImpl : SharedBillMapper {
                 isMember = dto.isMember == true,
                 groupId = groupId,
                 groupName = dto.groupName.orEmpty(),
-                currency = dto.currency?.let(
-                    GroupCurrency::fromCodeOrNull,
-                ) ?: error("Unknown currency ${dto.currency}"),
+                currency = GroupCurrency.fromCode(
+                    requireNotNull(dto.currency) { "A shared bill without its currency" },
+                ),
                 expenseId = bill.id,
                 description = bill.description,
                 amountMinor = bill.amountMinor,

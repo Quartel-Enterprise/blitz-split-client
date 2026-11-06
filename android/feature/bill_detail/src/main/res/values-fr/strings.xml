@@ -10,6 +10,7 @@
     <string name="bill_detail_someone_paid">%s a payé</string>
     <string name="bill_detail_former_member_paid">Un ancien membre a payé</string>
     <string name="bill_detail_pending">En attente · se synchronise à ta reconnexion</string>
+    <string name="bill_detail_unknown_currency">Cette dépense utilise une devise que cette version de l\'app ne connaît pas. Mets l\'app à jour pour la modifier.</string>
     <string name="bill_detail_my_part">Ta part</string>
     <string name="bill_detail_you_owe">tu dois</string>
     <string name="bill_detail_to_get_back">à récupérer</string>

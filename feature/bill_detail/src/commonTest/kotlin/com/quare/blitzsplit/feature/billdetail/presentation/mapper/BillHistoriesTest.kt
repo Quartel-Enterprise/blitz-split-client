@@ -1220,7 +1220,7 @@ class BillHistoriesTest {
     }
 
     @Test
-    fun `GIVEN a currency change with codes this build does not know WHEN building THEN those sides are null`() {
+    fun `GIVEN a currency change with a code this build does not know WHEN building THEN keeps its raw code`() {
         // Given
         val events = listOf(event(changes = listOf(change(ActivityField.CURRENCY, code("XXX"), code(null)))))
 
@@ -1228,7 +1228,22 @@ class BillHistoriesTest {
         val entry = entriesOf(events).single()
 
         // Then
-        assertEquals(listOf(BillHistoryChange.Currency(null, null)), entry.changes)
+        assertEquals(listOf(BillHistoryChange.Currency(GroupCurrency.fromCode("XXX"), null)), entry.changes)
+    }
+
+    @Test
+    fun `GIVEN a bill in an unknown currency WHEN undoing its latest edit THEN there is nothing to undo`() {
+        // Given
+        val event = event(changes = listOf(change(ActivityField.DESCRIPTION, text("Feira"), text("Mercado"))))
+        val bill = expense(currency = GroupCurrency.fromCode("XYZ"))
+
+        // When
+        val undo = undoOf(event, bill, group)
+        val entry = historyOf(listOf(event), bill, group, now, TimeZone.UTC).single().entries.single()
+
+        // Then
+        assertNull(undo)
+        assertFalse(entry.canUndo)
     }
 
     @Test

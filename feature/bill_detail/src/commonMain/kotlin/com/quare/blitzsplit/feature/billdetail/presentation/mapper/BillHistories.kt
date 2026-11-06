@@ -73,7 +73,8 @@ internal fun historyOf(
 /*
  * Why: what "Desfazer" saves for the latest edit, or null when it can't: the bill moved on since (another edit, one
  * waiting to go up), it is split by its items, the edit touched something it doesn't put back, or putting it back
- * would bring in someone who left the group, whose balance Sair do grupo had settled.
+ * would bring in someone who left the group, whose balance Sair do grupo had settled. A bill in a currency this
+ * version doesn't know is read-only (see `GroupCurrency.fromCode`), so it has nothing to undo either.
  */
 internal fun undoOf(
     event: ActivityEvent,
@@ -81,7 +82,7 @@ internal fun undoOf(
     group: Group,
 ): BillUndo? {
     if (event.kind != ActivityKind.BILL_EDITED || event.changes.isEmpty()) return null
-    if (expense.isPending || expense.items != null) return null
+    if (expense.isPending || expense.items != null || !expense.currency.isKnown) return null
     if (event.changes.any { it.field !in undoableFields || !expense.matches(it) }) return null
     // Why: a split by items is stored as Valores, so putting one back would lose its items.
     if (event.changes.any { it.field == ActivityField.SPLIT && it.before.code == SplitMode.AMOUNT.code }) return null
@@ -289,8 +290,9 @@ private fun changesOf(
             ActivityField.CATEGORY -> BillHistoryChange.Category(change.before.code, change.after.code)
 
             ActivityField.CURRENCY -> BillHistoryChange.Currency(
-                before = change.before.code?.let(GroupCurrency::fromCodeOrNull),
-                after = change.after.code?.let(GroupCurrency::fromCodeOrNull),
+                // Why: a code this version doesn't know still shows, by its raw code.
+                before = change.before.code?.let(GroupCurrency::fromCode),
+                after = change.after.code?.let(GroupCurrency::fromCode),
             )
 
             ActivityField.PAYERS -> payersChangeOf(change, group)

@@ -611,4 +611,16 @@ class ExpenseRulesTest {
         const val PIERRE = "pierre"
         const val ANA = "ana"
     }
+
+    @Test
+    fun `GIVEN an amount in a currency this version does not know WHEN checking it THEN it is invalid`() {
+        // Given
+        val currency = GroupCurrency.fromCode("XYZ")
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(1_000L, currency)
+
+        // Then
+        assertFalse(isValid)
+    }
 }

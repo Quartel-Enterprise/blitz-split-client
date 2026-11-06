@@ -48,7 +48,7 @@ class ExpenseMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a currency this version does not know WHEN mapping to the domain THEN skips the bill`() {
+    fun `GIVEN a currency this version does not know WHEN mapping to the domain THEN keeps the bill in its raw code`() {
         // Given
         val entity = entity(currency = "XYZ")
 
@@ -56,7 +56,9 @@ class ExpenseMapperImplTest {
         val expense = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
 
         // Then
-        assertNull(expense)
+        assertEquals("XYZ", expense?.currency?.code)
+        assertEquals(false, expense?.currency?.isKnown)
+        assertEquals("XYZ", mapper.toDto(mapper.toEntity(expense!!, createdAt = 1L), userId = "u").currency)
     }
 
     @Test

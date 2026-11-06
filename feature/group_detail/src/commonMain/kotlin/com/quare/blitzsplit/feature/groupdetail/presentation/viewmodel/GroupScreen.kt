@@ -216,6 +216,8 @@ internal class GroupScreen(
         toMemberId: String,
         currency: GroupCurrency,
     ) {
+        // Why: a currency this version doesn't know takes no new payment (see `GroupCurrency.fromCode`).
+        if (!currency.isKnown) return
         open(
             Route.RegisterPayment(
                 groupId = groupId,

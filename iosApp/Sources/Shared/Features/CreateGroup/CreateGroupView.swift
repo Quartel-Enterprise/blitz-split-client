@@ -446,11 +446,8 @@ extension GroupCurrency {
     /// reads every label each time the form redraws. Bitcoin and ether, which the system doesn't name, by their own
     /// names: "Bitcoin (₿)", "Ethereum (Ξ)".
     @MainActor var label: String {
-        switch self {
-        case .btc: return "Bitcoin (₿)"
-        case .eth: return "Ethereum (Ξ)"
-        default: break
-        }
+        if self == GroupCurrency.companion.BTC { return "Bitcoin (₿)" }
+        if self == GroupCurrency.companion.ETH { return "Ethereum (Ξ)" }
         if let label = Self.labels[code] { return label }
         let locale = Locale.current
         let name = locale.localizedString(forCurrencyCode: code) ?? code

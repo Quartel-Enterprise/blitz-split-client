@@ -117,6 +117,19 @@ class GroupDetailBillMenuViewModelTest {
         }
 
     @Test
+    fun `GIVEN a bill in an unknown currency WHEN tapping Edit bill THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(dinner.copy(currency = GroupCurrency.fromCode("XYZ"))))
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseEditClicked("dinner"))
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN the group on top WHEN tapping Edit bill THEN tracks bill_edit_clicked from the group`() =
         runTest(testDispatcher) {
             // Given

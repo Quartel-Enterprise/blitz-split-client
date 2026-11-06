@@ -360,6 +360,7 @@ export const pt: Record<MessageKey, string> = {
   billDetail_paidByFormer: 'Um ex-membro pagou',
   billDetail_paidBySeveral: '{names} pagaram',
   billDetail_pending: 'Na fila · sincroniza ao reconectar',
+  billDetail_unknownCurrency: 'Esta conta usa uma moeda que esta versão do app não conhece. Atualize o app para editá-la.',
   billDetail_myPart: 'Sua parte',
   billDetail_myPartOwe: 'você deve',
   billDetail_myPartGetBack: 'a receber',

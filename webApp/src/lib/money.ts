@@ -4,6 +4,14 @@ import { uiTag } from '@/lib/currency'
 // Why: lists redraw every row on each keystroke, and building the Intl formatters each time is costly.
 const formatters = new Map<string, Intl.NumberFormat>()
 
+/**
+ * The currencies this version lists (`GroupCurrency.entries` of the shared code). Any other code came from a newer app
+ * or server, and is written by its raw code ("XYZ 12,50"), never by the symbol a browser may have for it.
+ */
+const knownCurrencies = new Set([
+  'BRL', 'USD', 'EUR', 'GBP', 'ARS', 'CLP', 'COP', 'MXN', 'PEN', 'UYU', 'PYG', 'CAD', 'AUD', 'JPY', 'CHF', 'BTC', 'ETH',
+])
+
 function moneyFormat(currency: string, fractionDigits: number): Intl.NumberFormat {
   const key = `${currency}:${fractionDigits}`
   let format = formatters.get(key)
@@ -11,6 +19,7 @@ function moneyFormat(currency: string, fractionDigits: number): Intl.NumberForma
     format = new Intl.NumberFormat(uiTag, {
       style: 'currency',
       currency,
+      currencyDisplay: knownCurrencies.has(currency) ? 'symbol' : 'code',
       minimumFractionDigits: fractionDigits,
       maximumFractionDigits: fractionDigits,
     })
@@ -81,16 +90,17 @@ export function formatMoney(minor: number, currency: string, fractionDigits: num
       .map((part) => (part.type === 'currency' ? symbol : part.value))
       .join('')
   } catch {
-    return `${currency} ${major.toFixed(digits)}`
+    // Why: a code Intl refuses (not 3 letters, from a newer app) still takes the UI language's separators.
+    return `${currency} ${formatPlainMoney(minor, fractionDigits, currency)}`
   }
 }
 
 /**
- * "R$ 1,5 mil" or "R$1.5K": the short amount of a chart's value line. Bitcoin and ether, which have no short currency
- * format, write the whole amount.
+ * "R$ 1,5 mil" or "R$1.5K": the short amount of a chart's value line. Bitcoin, ether and a code this version
+ * doesn't know, which have no short currency format, write the whole amount.
  */
 export function formatCompactMoney(minor: number, currency: string, fractionDigits: number): string {
-  if (currency in cryptoSymbols) return formatMoney(minor, currency, fractionDigits)
+  if (currency in cryptoSymbols || !knownCurrencies.has(currency)) return formatMoney(minor, currency, fractionDigits)
   try {
     const key = `compact:${currency}`
     let format = formatters.get(key)

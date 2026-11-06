@@ -619,15 +619,15 @@ class SharedBillMapperImplTest {
     }
 
     @Test
-    fun `GIVEN an open answer of an unknown currency WHEN mapping the shared bill THEN fails`() {
+    fun `GIVEN an open answer of an unknown currency WHEN mapping the shared bill THEN keeps its raw code`() {
         // Given
         val dto = sharedBillDto(currency = "XYZ")
 
         // When
-        val result = runCatching { mapper.toDomain(dto, imageUrls = emptyMap()) }
+        val bill = mapper.toDomain(dto, imageUrls = emptyMap())
 
         // Then
-        assertIs<IllegalStateException>(result.exceptionOrNull())
+        assertEquals("XYZ", (bill as SharedBill.Open).currency.code)
     }
 
     @Test

@@ -1187,6 +1187,25 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN a bill in a currency this version does not know WHEN it opens THEN shows it read-only with a note`() =
+        runTest(testDispatcher) {
+            // Given
+            val unknown = GroupCurrency.fromCode("XYZ")
+            prepareScenario(storedExpense = expense().copy(currency = unknown))
+
+            // When
+            val state = viewModel.uiState.value
+            viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+
+            // Then
+            assertEquals(unknown, state.currency)
+            assertTrue(state.isLoaded)
+            assertTrue(state.showsUnknownCurrencyNote)
+            assertFalse(state.canEdit)
+            assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN Room not read yet WHEN tapping Editar THEN nothing opens`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isRoomRead = false)

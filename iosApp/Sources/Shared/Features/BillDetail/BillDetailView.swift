@@ -241,7 +241,7 @@ struct BillDetailView: View {
             Button("Edit") {
                 model?.send(BillDetailUiEventOnEditClicked.shared)
             }
-            .disabled(model?.state.areActionsEnabled != true)
+            .disabled(model?.state.canEdit != true)
         }
         ToolbarItem(placement: .primaryAction) {
             Button(role: .destructive) {
@@ -292,6 +292,15 @@ private struct PendingLine: View {
             PendingDot()
             Text("Queued · syncs when you're back online")
         }
+    }
+}
+
+/// Under a bill in a currency only a newer app knows, whose Edit is off.
+private struct UnknownCurrencyNote: View {
+    var body: some View {
+        Text("This bill uses a currency this app version doesn't know. Update the app to edit it.")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
     }
 }
 
@@ -506,6 +515,9 @@ private struct PhoneBillDetail: View {
                         PendingLine()
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                    }
+                    if state.showsUnknownCurrencyNote {
+                        UnknownCurrencyNote()
                     }
                 }
                 // The row clips to its rounded corner, which would cut the payer's face at its edge
@@ -803,7 +815,7 @@ private struct MacBillDetail: View {
             }
         }
         .help(Text("Edit…"))
-        .disabled(!state.areActionsEnabled)
+        .disabled(!state.canEdit)
         Button(role: .destructive) {
             model.send(BillDetailUiEventOnDeleteClicked.shared)
         } label: {
@@ -837,6 +849,9 @@ private struct MacBillDetail: View {
                 if state.isPending {
                     PendingLine()
                         .foregroundStyle(.secondary)
+                }
+                if state.showsUnknownCurrencyNote {
+                    UnknownCurrencyNote()
                 }
             }
             if state.showsMyPart {

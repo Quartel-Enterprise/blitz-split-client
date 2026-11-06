@@ -72,6 +72,19 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     payment's own currency, never the group's. The home's overall balance is the global Balances' computation
     (`PeopleBalances.totals`). The bill form picks the bill's currency beside the total (see
     [Split a bill](split-bill.md)), and Activity shows each amount in its bill's or payment's own currency.
+  - A bill or payment in a currency code this version does not know (only a newer app or server writes one) is never
+    skipped and never turned into another currency (Pierre's call): it shows with its raw code and two decimals, "XYZ
+    12,50", in the bill list, the detail, the balances, settle up and the activity (Android's `MoneyFormatter`, Apple's
+    `GroupCurrency.format`, the web's `formatMoney` write the code where the symbol would go). `GroupCurrency` is a
+    class, not an enum: `GroupCurrency.fromCode` gives the listed currency or a read-only one that carries the code
+    (`isKnown` false, equal only to the same code, never in `entries`, so never offered by a picker). It is its own
+    currency in every balance, with its own chip. It is read-only: Edit and Undo are off on the bill, with "This bill
+    uses a currency this app version doesn't know. Update the app to edit it.", no payment can be registered in it (a
+    tap on its debt row does nothing, the group's bill menu does not open the form for it, leaving the group offers
+    "See balances" rather than "Settle up" when it is all you owe, and a settle up opened in it leaves at once), and no
+    amount in it is valid (`ExpenseRules.isAmountValid`, and the expense and settlement repositories refuse to store
+    one); the stored code goes back to the server as it came. A group whose own default currency is unknown reads as
+    the fallback, USD (`GroupMapperImpl`), which only sets the default of a new bill.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

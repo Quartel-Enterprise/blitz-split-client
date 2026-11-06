@@ -5,8 +5,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 
 interface SettlementMapper {
-    // Why: null for a payment in a currency this version can't read, which the list skips like such a bill.
-    fun toDomain(entity: SettlementEntity): Settlement?
+    // Why: a currency this version doesn't know stays as its raw code (`GroupCurrency.fromCode`), never skipped.
+    fun toDomain(entity: SettlementEntity): Settlement
 
     fun toEntity(
         settlement: Settlement,

@@ -321,7 +321,7 @@ class GroupDetailPresenter(
 
     // Why: a currency chip of the header and Saldos, shown while the group has money in more than one.
     fun selectCurrency(code: String) {
-        val currency = GroupCurrency.fromCodeOrNull(code) ?: return
+        val currency = GroupCurrency.fromCode(code)
         viewModel.onEvent(GroupDetailUiEvent.OnCurrencySelected(currency))
     }
 
