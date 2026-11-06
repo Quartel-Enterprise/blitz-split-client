@@ -145,7 +145,7 @@ finish is the one that triggers the merge. GitHub loses some of those events: a 
 (`startup_failure`), or a `workflow_run` never sent. So it also runs a `sweep`: a job that lists the open pull requests
 with the label (drafts and forks left out) and checks each one the same way. GitHub's scheduler can't be what drives it:
 it fired about one run in 26 of the `schedule` here (GitHub drops scheduled runs under load, and the workflow has no
-`concurrency` setting that could cancel them). The sweep therefore runs on every push to `main` (each
+workflow-level `concurrency` that could cancel them; only the `merge` job has one, per branch). The sweep therefore runs on every push to `main` (each
 merge), when `build-and-test` completes on `main`, every 15 minutes when GitHub does fire the schedule, and by hand.
 Those only fire when something lands on `main`: with `main` idle, a pull request that missed its event waits for the
 schedule or for someone to dispatch the workflow. To check them right away, run
