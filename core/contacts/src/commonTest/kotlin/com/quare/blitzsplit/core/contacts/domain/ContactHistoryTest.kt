@@ -258,6 +258,7 @@ class ContactHistoryTest {
                         id = "paid",
                         paidAt = 200L,
                         updatedAt = 99L,
+                        currency = GroupCurrency.EUR,
                     ),
                 ),
             ),
@@ -288,6 +289,66 @@ class ContactHistoryTest {
 
         // Then
         assertTrue(history.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group with bills in reais and dollars WHEN reading her history THEN lists each in its currency`() {
+        // Given
+        val carla = contact(
+            key = "user:carla",
+            name = "Carla",
+            userId = "carla",
+            groups = listOf(
+                contactGroup("floripa", "carla-floripa", groupName = "Viagem Floripa"),
+                contactGroup(
+                    "floripa",
+                    "carla-floripa",
+                    groupName = "Viagem Floripa",
+                    currency = GroupCurrency.USD,
+                ),
+            ),
+        )
+        val money = mapOf(
+            "floripa" to moneyOf(
+                expenses = listOf(
+                    owes(
+                        "floripa",
+                        "carla-floripa",
+                        meId("floripa"),
+                        1_000L,
+                        id = "reais",
+                        spentAt = 100L,
+                    ),
+                    owes(
+                        "floripa",
+                        "carla-floripa",
+                        meId("floripa"),
+                        500L,
+                        id = "dollars",
+                        spentAt = 200L,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                settlements = listOf(
+                    payment(
+                        "floripa",
+                        "carla-floripa",
+                        meId("floripa"),
+                        500L,
+                        id = "paid",
+                        paidAt = 300L,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val history = ContactHistory.of(carla, groups, money)
+
+        // Then
+        assertEquals(listOf("paid", "dollars", "reais"), history.map { it.id })
+        assertEquals(listOf(GroupCurrency.USD, GroupCurrency.USD, GroupCurrency.BRL), history.map { it.currency })
     }
 
     private val groups = listOf(

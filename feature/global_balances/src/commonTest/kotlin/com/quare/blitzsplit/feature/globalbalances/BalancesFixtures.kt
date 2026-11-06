@@ -153,11 +153,12 @@ internal fun owes(
     amountMinor: Long,
     id: String = "bill-$groupId",
     description: String = "Bill",
+    currency: GroupCurrency = GroupCurrency.BRL,
 ): Expense = Expense(
     id = id,
     groupId = groupId,
     description = description,
-    currency = GroupCurrency.BRL,
+    currency = currency,
     amountMinor = amountMinor,
     splitMode = SplitMode.AMOUNT,
     payers = listOf(ExpensePayer(toMemberId, amountMinor)),

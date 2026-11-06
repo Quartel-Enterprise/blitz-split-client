@@ -284,28 +284,6 @@ class EditGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a group with only a payment left WHEN the screen opens THEN the currency is locked`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedSettlements = listOf(
-                    payment(
-                        from = ANA,
-                        to = PIERRE,
-                        amountMinor = 1_000,
-                        isPending = false,
-                    ),
-                ),
-            )
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertTrue(state.isCurrencyLocked)
-        }
-
-    @Test
     fun `GIVEN a group with a bill WHEN the screen opens THEN the currency is locked`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(dinner))

@@ -10,6 +10,6 @@ class FindPendingGuestMergeUseCase(
 ) : FindPendingGuestMerge {
     override suspend fun invoke(contact: Contact): Result<GuestMerge?> {
         if (!contact.isGuest) return Result.success(null)
-        return repository.findPending(contact.groups.map { it.memberId })
+        return repository.findPending(contact.groups.map { it.memberId }.distinct())
     }
 }

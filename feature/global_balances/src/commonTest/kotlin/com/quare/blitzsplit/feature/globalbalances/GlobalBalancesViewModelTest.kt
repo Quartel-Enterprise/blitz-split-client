@@ -154,7 +154,15 @@ class GlobalBalancesViewModelTest {
                     joined("carla-usa", "Carla", "carla"),
                     currency = GroupCurrency.USD,
                 ),
-                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+                bills =
+                    defaultBills + owes(
+                        "usa",
+                        "carla-usa",
+                        "me-usa",
+                        5_000L,
+                        id = "e7",
+                        currency = GroupCurrency.USD,
+                    ),
             )
 
             // When
@@ -515,7 +523,7 @@ class GlobalBalancesViewModelTest {
                 storedGroups = defaultGroups.map { group ->
                     if (group.id == CHURRASCO) group.copy(currency = GroupCurrency.USD) else group
                 },
-                bills = listOf(owes(CHURRASCO, CARLA_CHURRASCO, ME_CHURRASCO, 3_250L)),
+                bills = listOf(owes(CHURRASCO, CARLA_CHURRASCO, ME_CHURRASCO, 3_250L, currency = GroupCurrency.USD)),
             )
 
             // When
@@ -765,7 +773,15 @@ class GlobalBalancesViewModelTest {
                     joined("carla-usa", "Carla", "carla"),
                     currency = GroupCurrency.USD,
                 ),
-                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+                bills =
+                    defaultBills + owes(
+                        "usa",
+                        "carla-usa",
+                        "me-usa",
+                        5_000L,
+                        id = "e7",
+                        currency = GroupCurrency.USD,
+                    ),
             )
             val carlaInDollars = viewModel.uiState.value.people
                 .valueOrNull()
@@ -969,7 +985,15 @@ class GlobalBalancesViewModelTest {
                     joined("carla-usa", "Carla", "carla"),
                     currency = GroupCurrency.USD,
                 ),
-                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+                bills =
+                    defaultBills + owes(
+                        "usa",
+                        "carla-usa",
+                        "me-usa",
+                        5_000L,
+                        id = "e7",
+                        currency = GroupCurrency.USD,
+                    ),
             )
             val carlaInDollars = viewModel.uiState.value.people
                 .valueOrNull()
@@ -1996,7 +2020,7 @@ class GlobalBalancesViewModelTest {
         groupId = groupId,
         fromMemberId = if (groupId == FLORIPA) ME_FLORIPA else ME_APE,
         toMemberId = if (groupId == FLORIPA) BRUNO_FLORIPA else CARLA_APE,
-        currency = GroupCurrency.BRL,
+        currency = GroupCurrency.USD,
         amountMinor = 100L,
         method = SettlementMethod.PIX,
         paidAt = 0L,

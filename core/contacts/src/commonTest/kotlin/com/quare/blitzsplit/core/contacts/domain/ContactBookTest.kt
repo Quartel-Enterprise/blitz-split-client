@@ -298,7 +298,8 @@ class ContactBookTest {
                 color = AvatarColor.PEACH,
             ),
         )
-        val money = mapOf("ape" to moneyOf(listOf(owes("ape", diego.id, meId("ape"), 1_500L))))
+        val money =
+            mapOf("ape" to moneyOf(listOf(owes("ape", diego.id, meId("ape"), 1_500L, currency = GroupCurrency.EUR))))
 
         // When
         val contacts = ContactBook.of(groups, money, hidden = emptyList())
@@ -331,7 +332,8 @@ class ContactBookTest {
             group("ape", me("ape"), carla("ape")),
         )
         val money = mapOf(
-            "lisboa" to moneyOf(listOf(owes("lisboa", "carla-lisboa", meId("lisboa"), 700L))),
+            "lisboa" to
+                moneyOf(listOf(owes("lisboa", "carla-lisboa", meId("lisboa"), 700L, currency = GroupCurrency.EUR))),
             "floripa" to moneyOf(listOf(owes("floripa", "carla-floripa", meId("floripa"), 2_000L))),
             "ape" to moneyOf(listOf(owes("ape", meId("ape"), "carla-ape", 500L))),
         )
@@ -533,7 +535,10 @@ class ContactBookTest {
             group("floripa", me("floripa"), carla("floripa")),
             group("lisboa", me("lisboa"), carla("lisboa"), currency = GroupCurrency.EUR),
         )
-        val money = mapOf("lisboa" to moneyOf(listOf(owes("lisboa", "carla-lisboa", meId("lisboa"), 700L))))
+        val money = mapOf(
+            "lisboa" to
+                moneyOf(listOf(owes("lisboa", "carla-lisboa", meId("lisboa"), 700L, currency = GroupCurrency.EUR))),
+        )
         val hidden = listOf(
             HiddenContact(
                 "user:carla",

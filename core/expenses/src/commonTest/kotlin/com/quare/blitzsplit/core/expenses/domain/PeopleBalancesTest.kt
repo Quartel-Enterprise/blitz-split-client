@@ -225,7 +225,7 @@ class PeopleBalancesTest {
         val money = mapOf(
             "floripa" to moneyOf(owes("floripa", carla.id, me.id, 1_000L)),
             "ape" to moneyOf(owes("ape", me.id, ana.id, 0L)),
-            "lisboa" to moneyOf(owes("lisboa", me.id, carla.id, 700L)),
+            "lisboa" to moneyOf(owes("lisboa", me.id, carla.id, 700L, currency = GroupCurrency.EUR)),
         )
 
         // When
@@ -524,8 +524,10 @@ class PeopleBalancesTest {
         toMemberId: String,
         amountMinor: Long,
         id: String = "bill-$groupId",
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = bill(
         id = id,
+        currency = currency,
         groupId = groupId,
         description = id,
         payers = listOf(ExpensePayer(toMemberId, amountMinor)),
@@ -539,11 +541,12 @@ class PeopleBalancesTest {
         payers: List<ExpensePayer>,
         shares: List<ExpenseShare>,
         spentAt: Long = 0L,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
         description = description,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = payers.sumOf { it.amountMinor },
         splitMode = SplitMode.AMOUNT,
         payers = payers,

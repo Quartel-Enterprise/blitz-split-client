@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.GroupCurrency
 
 /*
  * Why: who owes whom in a group, from its bills' payers and shares and the payments recorded since. Each pair shows
@@ -132,12 +133,46 @@ data class GroupBalances(
         ?.toMemberId
 
     companion object {
-        // Why: the pairs as the group shows them, simplified while its "Simplificar dívidas" is on.
+        /*
+         * Why: the pairs as the group shows them, simplified while its "Simplificar dívidas" is on. Given a currency,
+         * only the bills and payments in it count: currencies are never added up (getByCurrency). Without one, every
+         * bill and payment counts, as the group screens still show them until they move to one balance per currency.
+         */
         fun of(
             group: Group,
             expenses: List<Expense>,
             settlements: List<Settlement>,
-        ): GroupBalances = of(expenses, settlements).toShownFor(group)
+            currency: GroupCurrency? = null,
+        ): GroupBalances = of(
+            expenses = expenses.filter { currency == null || it.currency == currency },
+            settlements = settlements.filter { currency == null || it.currency == currency },
+        ).toShownFor(group)
+
+        /*
+         * Why: one balance per currency the group has bills or payments in, its default currency first (also with
+         * none, "Ninguém deve nada ainda"), then the one with the most bills, then by code.
+         */
+        fun getByCurrency(
+            group: Group,
+            expenses: List<Expense>,
+            settlements: List<Settlement>,
+        ): List<CurrencyBalances> = currenciesOf(group, expenses, settlements).map { currency ->
+            CurrencyBalances(currency, of(group, expenses, settlements, currency))
+        }
+
+        // Why: the currencies a group's money is in, in the order getByCurrency lists them.
+        fun currenciesOf(
+            group: Group,
+            expenses: List<Expense>,
+            settlements: List<Settlement>,
+        ): List<GroupCurrency> {
+            val used = (expenses.map { it.currency } + settlements.map { it.currency }).distinct()
+            val billCount = expenses.groupingBy { it.currency }.eachCount()
+            val others = used
+                .filter { it != group.currency }
+                .sortedWith(compareByDescending<GroupCurrency> { billCount[it] ?: 0 }.thenBy { it.code })
+            return listOf(group.currency) + others
+        }
 
         // Why: the pairs as each bill and payment make them, whatever the group's "Simplificar dívidas".
         fun of(

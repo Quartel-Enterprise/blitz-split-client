@@ -20,11 +20,12 @@ object ContactHistory {
             billsOf(group, ofGroup, part) + paymentsOf(ofGroup, part)
         }.sortedWith(compareByDescending<ContactHistoryItem> { it.at }.thenBy { it.id })
 
+    // Why: a group has one part per currency, so each bill and payment is listed once, under its own currency's part.
     private fun billsOf(
         group: Group,
         money: GroupMoney,
         part: ContactGroup,
-    ): List<ContactHistoryItem> = money.expenses.mapNotNull { expense ->
+    ): List<ContactHistoryItem> = money.expenses.filter { it.currency == part.currency }.mapNotNull { expense ->
         val debts = GroupBalances.findDebtsWithin(expense)
         val effect = debts
             .filter { it.fromMemberId == part.memberId && it.toMemberId == part.meMemberId }
@@ -53,8 +54,11 @@ object ContactHistory {
         part: ContactGroup,
     ): List<ContactHistoryItem> = money.settlements
         .filter { settlement ->
-            (settlement.fromMemberId == part.meMemberId && settlement.toMemberId == part.memberId) ||
-                (settlement.fromMemberId == part.memberId && settlement.toMemberId == part.meMemberId)
+            settlement.currency == part.currency &&
+                (
+                    (settlement.fromMemberId == part.meMemberId && settlement.toMemberId == part.memberId) ||
+                        (settlement.fromMemberId == part.memberId && settlement.toMemberId == part.meMemberId)
+                )
         }.map { settlement ->
             ContactHistoryItem.Payment(
                 id = settlement.id,

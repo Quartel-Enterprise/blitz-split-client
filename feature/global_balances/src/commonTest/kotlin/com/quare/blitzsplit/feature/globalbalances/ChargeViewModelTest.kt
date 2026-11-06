@@ -100,7 +100,15 @@ class ChargeViewModelTest {
                     joined("carla-usa", "Carla", "carla"),
                     currency = GroupCurrency.USD,
                 ),
-                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+                bills =
+                    defaultBills + owes(
+                        "usa",
+                        "carla-usa",
+                        "me-usa",
+                        5_000L,
+                        id = "e7",
+                        currency = GroupCurrency.USD,
+                    ),
                 currency = GroupCurrency.USD,
             )
 
@@ -689,7 +697,15 @@ class ChargeViewModelTest {
                     joined("carla-usa", "Carla", "carla"),
                     currency = GroupCurrency.USD,
                 ),
-                bills = defaultBills + owes("usa", "carla-usa", "me-usa", 5_000L, id = "e7"),
+                bills =
+                    defaultBills + owes(
+                        "usa",
+                        "carla-usa",
+                        "me-usa",
+                        5_000L,
+                        id = "e7",
+                        currency = GroupCurrency.USD,
+                    ),
                 currency = GroupCurrency.USD,
             )
 

@@ -212,7 +212,12 @@ private fun LazyListScope.profileItems(
     item(key = "groups-title") {
         ProfileSectionTitle(stringResource(R.string.contacts_groups_title, contact.groups.size))
     }
-    itemsIndexed(contact.groups, key = { _, group -> "group-${group.groupId}" }) { index, group ->
+    itemsIndexed(contact.groups, key = {
+        _,
+        group,
+        ->
+        "group-${group.groupId}-${group.currency.code}"
+    }) { index, group ->
         CommonGroupRow(
             group = group,
             index = index,

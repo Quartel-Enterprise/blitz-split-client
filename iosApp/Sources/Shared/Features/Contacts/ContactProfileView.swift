@@ -514,7 +514,7 @@ private struct GroupsInCommon: View {
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
             VStack(spacing: 0) {
-                ForEach(Array(contact.groups.enumerated()), id: \.element.groupId) { index, group in
+                ForEach(Array(contact.groups.enumerated()), id: \.offset) { index, group in
                     Button {
                         model.send(ContactProfileUiEventOnGroupClicked(groupId: group.groupId))
                     } label: {

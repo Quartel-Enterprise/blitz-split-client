@@ -94,7 +94,7 @@ data class ContactProfileUiState(
 
     // Why: "Já compensado entre 3 grupos" under the net; one group says its name.
     val isNetOfSeveralGroups: Boolean
-        get() = (contact?.groups?.size ?: 0) > 1
+        get() = (contact?.groups?.distinctBy { it.groupId }?.size ?: 0) > 1
 
     val balanceNote: ContactBalanceNote
         get() = when {

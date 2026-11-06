@@ -122,7 +122,8 @@ class ContactInviteViewModel(
         } else {
             // Why: a guest a sync took away has nothing left to be invited to.
             val contact = snapshot.findOrNull(personKey)?.takeIf { it.isGuest } ?: return leave()
-            contact.groups.map { group ->
+            // Why: one option per group, though a group with bills in two currencies is a part in each.
+            contact.groups.distinctBy { it.groupId }.map { group ->
                 val link = if (group.groupInviteCode != null && group.memberInviteCode != null) {
                     InviteLink.personalOf(group.groupInviteCode!!, group.memberInviteCode!!, group.meInviteCode)
                 } else {

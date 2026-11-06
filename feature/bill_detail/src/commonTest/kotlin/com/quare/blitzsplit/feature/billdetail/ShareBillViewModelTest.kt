@@ -941,7 +941,7 @@ class ShareBillViewModelTest {
         id = EXPENSE_ID,
         groupId = GROUP_ID,
         description = "Jantar no Ostradamus",
-        currency = GroupCurrency.BRL,
+        currency = GroupCurrency.USD,
         amountMinor = 64_200,
         splitMode = SplitMode.EQUAL,
         payers = listOf(

@@ -11,6 +11,6 @@ class RequestGuestMergeUseCase(
 ) : RequestGuestMerge {
     override suspend fun invoke(contact: Contact): Result<GuestMerge> {
         if (!contact.isGuest) return Result.failure(IllegalArgumentException("Only a guest merges into an account"))
-        return repository.request(contact.groups.map { it.memberId })
+        return repository.request(contact.groups.map { it.memberId }.distinct())
     }
 }
