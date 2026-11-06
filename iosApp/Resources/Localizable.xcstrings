@@ -299,6 +299,12 @@
             "value" : "%@ cambió la moneda"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a modifié la devise"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2282,6 +2288,29 @@
         }
       }
     },
+    "English" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglés"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglais"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inglês"
+          }
+        }
+      }
+    },
     "Enlarge the QR code" : {
       "localizations" : {
         "es" : {
@@ -2346,6 +2375,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Avançar"
+          }
+        }
+      }
+    },
+    "French" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Francés"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Français"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Francês"
           }
         }
       }
@@ -5203,6 +5255,29 @@
         }
       }
     },
+    "Portuguese (BR)" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Portugués (BR)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Portugais (BR)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Português (BR)"
+          }
+        }
+      }
+    },
     "Privacy Policy" : {
       "comment" : "Profile: the legal footer's link",
       "localizations" : {
@@ -5513,6 +5588,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entre no app com a mesma conta Google e seus grupos estarão lá."
+          }
+        }
+      }
+    },
+    "Spanish" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Español"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espagnol"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espanhol"
           }
         }
       }
