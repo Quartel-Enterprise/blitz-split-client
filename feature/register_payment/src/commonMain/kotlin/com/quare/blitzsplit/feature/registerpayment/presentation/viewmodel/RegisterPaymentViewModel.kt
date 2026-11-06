@@ -330,18 +330,17 @@ class RegisterPaymentViewModel(
         shownSimplifies = target.simplifiesDebts
         val download = firstDownload
         /*
-         * Why: someone with no account has no key to wait for; one with keys cached already shows them. Offline nothing
-         * is coming, so the form opens rather than a wait that blocks recording the payment.
+         * Why: before the account's copy is whole, no key cached says nothing of whether there are any, offline or back
+         * online with the copy still coming down; someone with no account has none to wait for.
          */
-        val awaitsKeys = download != null &&
-            !download.isWaitingForInternet &&
-            target.toUserId != null &&
-            receiverKeys.isEmpty()
-        // Why: offline before the account's copy is whole, no key cached says nothing of whether there are any.
         val areKeysUnknown = download != null &&
-            download.isWaitingForInternet &&
             target.toUserId != null &&
             receiverKeys.isEmpty()
+        /*
+         * Why: one with keys cached already shows them. Offline nothing is coming, so the form opens rather than a wait
+         * that blocks recording the payment.
+         */
+        val awaitsKeys = areKeysUnknown && download?.isWaitingForInternet == false
         uiState.update {
             // Why: once known, the keys never go back to loading.
             val wereKeysKnown = it.receiverKeys.isLoaded()

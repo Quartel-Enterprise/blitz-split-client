@@ -63,7 +63,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     feedback 3 item 26, `RegisterPaymentUiState.formPixKeys`), the form lists "Ana's Pix keys" under "How it was paid",
     her default first, each with its type and a copy button (the "Copied" confirmation as in "Pay Ana", below), or
     says "Ana has no Pix key in the app." (`showsNoPixKeyNotice`), a guest with no account included; nothing while
-    the keys still load, offline before the account's first download is whole (none cached says nothing then), for
+    the keys still load, before the account's first download is whole, offline or back online with it still coming
+    down (none cached says nothing then), for
     a former member (whose keys the device can't know), and for "Got paid" or "Already
     paid", where the keys would be of no use. The keys are the ones "Pay Ana" reads (`member_payment_key`, below),
     so they need no sync of their own. "Settle up" opens it too, as "Pay Ana" while Ana has a key (4.5,

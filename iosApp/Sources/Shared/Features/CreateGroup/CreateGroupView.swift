@@ -319,15 +319,18 @@ private struct MembersSection: View {
         }
     }
 
-    /// Focuses the name field; one already focused with its keyboard put away loses the focus first, since setting
-    /// the same value again would bring nothing back.
+    /// Focuses the name field; on iOS one already focused with its keyboard put away loses the focus first, since
+    /// setting the same value again would bring nothing back. The Mac has no keyboard to bring back, and focusing its
+    /// field again would select the name typed so far, which the next key would replace.
     private func focusDraft() {
         guard isDraftFocused else {
             isDraftFocused = true
             return
         }
+        #if os(iOS)
         isDraftFocused = false
         Task { @MainActor in isDraftFocused = true }
+        #endif
     }
 
     private var draftBinding: Binding<String> {

@@ -446,6 +446,26 @@ class PayReceiverViewModelTest {
         }
 
     @Test
+    fun `GIVEN the form opened offline without the key of Bruno WHEN back online mid copy THEN still no notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                brunoKeys = emptyList(),
+                online = false,
+                downloading = awaitingFullSync.copy(isWaitingForInternet = true),
+            )
+
+            // When
+            firstDownload.value = awaitingFullSync
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.prefersForm)
+            assertFalse(state.showsNoPixKeyNotice)
+            assertTrue(state.formPixKeys.isEmpty())
+        }
+
+    @Test
     fun `GIVEN Bruno is a guest and the account copy not whole WHEN the screen opens THEN shows the form at once`() =
         runTest(testDispatcher) {
             // Given

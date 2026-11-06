@@ -360,7 +360,6 @@ struct PhonePayWithKey: View {
 struct MacPayWithKey: View {
     let model: RegisterPaymentModel
 
-
     private var state: RegisterPaymentUiState {
         model.state
     }

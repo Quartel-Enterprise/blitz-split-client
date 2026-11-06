@@ -49,8 +49,8 @@ data class RegisterPaymentUiState(
      */
     val receiverKeys: Loadable<List<ReceiverKey>>,
     /*
-     * Why: none cached while offline before the account's copy is whole, so the form can't say the receiver has no
-     * Pix key: they may well have one this device hasn't downloaded yet.
+     * Why: none cached before the account's copy is whole (offline, or back online with it still coming down), so the
+     * form can't say the receiver has no Pix key: they may well have one this device hasn't downloaded yet.
      */
     val areReceiverKeysUnknown: Boolean,
     // Why: "Apê 302 · você deve" under "Pagar Ana"; null across several groups ("3 grupos · você deve").

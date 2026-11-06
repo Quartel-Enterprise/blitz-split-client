@@ -174,7 +174,7 @@ private fun AddMemberRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .pointerInput(focusRequester) {
+                .pointerInput(focusRequester, keyboard) {
                     detectTapGestures {
                         focusRequester.requestFocus()
                         // Why: the field may already hold the focus with the keyboard put away.
