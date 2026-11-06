@@ -32,6 +32,7 @@ import { formatTimeAgo } from '@/lib/dates'
 import { amountPlaceholder, currencySymbol, formatMoney, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
 import { categoryHint, categoryPane } from './CategoryPane'
@@ -249,12 +250,11 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               <Input
                 id={descriptionId}
                 autoComplete="off"
-                value={description}
+                {...freeTextProps(description, setDescription)}
                 placeholder={t('splitBill_descriptionPlaceholder')}
                 aria-invalid={state.showsDescriptionError}
                 aria-describedby={descriptionHelpId}
                 autoFocus={!state.isEditing}
-                onChange={(event) => setDescription(event.target.value)}
               />
             </div>
             <p id={descriptionHelpId} className={cn('text-[13px]', state.showsDescriptionError ? 'text-destructive' : 'text-muted-foreground')}>

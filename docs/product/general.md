@@ -19,6 +19,18 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     paste reads as an amount ("12,5", "R$ 1.234,56"), and a bill moved to a group of another currency keeps its number
     with the decimals cut (`TypedText.toAmountText`, `toCurrency`). Percentages, parts and quantities stay whole
     numbers.
+  - A name, a description or a comment starts with a capital letter (Pierre's call, beta feedback 3 item 27): a
+    group's name, a member's (Add by name, Members' Name, joining as a new member), your own (the first profile, Edit
+    profile), a bill's description, an item's name, a comment, a category's name and Request's message. A phone's
+    or a tablet's keyboard capitalizes each sentence (Android's `freeTextKeyboardOptions`, Apple's
+    `.capitalizesFirstLetter(isPersonName:)`, the web's `autocapitalize` from `freeTextProps`); a person's name
+    capitalizes each word instead ("Maria Silva", `personNameKeyboardOptions`, `isPersonName`, `'words'`: chosen
+    without Pierre in item 27, keeping what Android already did, for him to confirm). The Mac and a computer's
+    browser, whose keyboard doesn't, uppercase the first letter as it is typed (Apple's `firstLetterCapitalized`
+    binding, the web's `freeTextProps`): only a lone lowercase letter that wasn't in the field already (an empty
+    field, a dead key's accent, a selected text typed over), the caret staying after it, so someone who lowercases
+    the capital, or deletes down to one letter, keeps it. Never an email, a payment key, an invite or recovery code,
+    a link, an amount, a search or a category map's word.
   - An amount shown, not typed, drops its decimals when they are all zero (Pierre's call, beta feedback 9): "R$ 500",
     "+R$ 125 to get back", "you get 120 and owe 218", and keeps every one otherwise ("R$ 12,50", never "R$ 12,5"),
     decided amount by amount, so one list may mix "R$ 125" and "R$ 12,50" (`GroupCurrency.getDisplayFractionDigits`,

@@ -104,10 +104,8 @@ struct CategoryEditorForm<GroupField: View>: View {
                 let form = editor.form
                 groupField()
                 Section {
-                    TextField("Name", text: actions.name)
-                    #if os(iOS)
-                        .textInputAutocapitalization(.sentences)
-                    #endif
+                    TextField("Name", text: actions.name.firstLetterCapitalized)
+                        .capitalizesFirstLetter()
                 } header: {
                     Text("Name")
                 } footer: {

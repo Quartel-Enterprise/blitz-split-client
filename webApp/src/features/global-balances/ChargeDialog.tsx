@@ -12,6 +12,7 @@ import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
+import { freeTextProps } from '@/lib/freeText'
 import { formatMoney } from '@/lib/money'
 import { chargeMessageOf } from './chargeMessage'
 
@@ -64,7 +65,7 @@ function ChargeContent({ presenter, state, charge }: { presenter: ChargePresente
             )}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor={messageId}>{t('globalBalances_chargeMessage')}</Label>
-              <Textarea id={messageId} value={message} onChange={(event) => setMessage(event.target.value)} rows={4} />
+              <Textarea id={messageId} {...freeTextProps(message, setMessage)} rows={4} />
             </div>
             {state.pixKeyValue && (
               <div className="flex items-center gap-4">
