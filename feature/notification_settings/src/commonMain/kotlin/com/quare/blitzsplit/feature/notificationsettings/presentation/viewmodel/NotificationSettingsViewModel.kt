@@ -10,7 +10,9 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.UpdateNotificationPreference
+import com.quare.blitzsplit.core.profile.domain.usecase.UpdatePushEnabled
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
@@ -29,14 +31,17 @@ import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 
 /*
- * Why: the choices and the system permission, for the Push and In app channel of each row. The server reads the
- * synced push choices to send; Activity reads the in-app ones for its bell. Opened from the profile and from Activity.
+ * Why: the choices and the system permission, for the Push and In app channel of each row, under the switch that lets
+ * this device take pushes at all. The server reads the synced push choices to send; Activity reads the in-app ones for
+ * its bell. Opened from the profile and from Activity.
  */
 class NotificationSettingsViewModel(
     private val navigator: Navigator,
     private val updateNotificationPreference: UpdateNotificationPreference,
     private val markActivityTypeRead: MarkActivityTypeRead,
+    private val updatePushEnabled: UpdatePushEnabled,
     observeNotificationPreferences: ObserveNotificationPreferences,
+    observePushEnabled: ObservePushEnabled,
     observeFirstDownload: ObserveFirstDownload,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<NotificationSettingsUiEvent>(trackEvent) {
@@ -44,6 +49,7 @@ class NotificationSettingsViewModel(
         field = MutableStateFlow(
             NotificationSettingsUiState(
                 preferences = Loadable.Loading,
+                devicePush = Loadable.Loading,
                 permission = null,
                 systemBlockedTypes = emptySet(),
             ),
@@ -62,6 +68,9 @@ class NotificationSettingsViewModel(
         combine(observeNotificationPreferences(), observeFirstDownload()) { preferences, firstDownload ->
             if (firstDownload != null) Loadable.Loading else preferences.toLoaded()
         }.onEach { preferences -> uiState.update { it.copy(preferences = preferences) } }
+            .launchIn(viewModelScope)
+        observePushEnabled()
+            .onEach { isEnabled -> uiState.update { it.copy(devicePush = isEnabled.toLoaded()) } }
             .launchIn(viewModelScope)
     }
 
@@ -82,6 +91,8 @@ class NotificationSettingsViewModel(
             }
 
             is NotificationSettingsUiEvent.OnToggled -> toggle(event.type, event.channel, event.isEnabled)
+
+            is NotificationSettingsUiEvent.OnPushToggled -> togglePush(event.isEnabled)
 
             NotificationSettingsUiEvent.OnOpenSettingsClicked -> emit(NotificationSettingsUiAction.OpenSystemSettings)
 
@@ -112,9 +123,9 @@ class NotificationSettingsViewModel(
     }
 
     /*
-     * Why: the system is asked only once a push is turned on, and only if it never was (or Apple delivers quietly); the
-     * bell needs no permission. With the choices still loading or the permission unknown (or, for a push, denied, all or
-     * the row's channel), the toggles are disabled, so a tap that still arrives changes nothing.
+     * Why: Apple's full prompt comes with a push turned on while it delivers quietly; the bell needs no permission. With
+     * the choices still loading or the permission unknown (or, for a push, the switch off or the row's channel denied),
+     * the toggles are disabled, so a tap that still arrives changes nothing.
      */
     private fun toggle(
         type: NotificationType,
@@ -133,11 +144,34 @@ class NotificationSettingsViewModel(
                 isEnabled = isEnabled,
             )
         }
-        // Why: Apple's full prompt too while it delivers quietly, for banners and sounds.
-        if (isEnabled && channel == NotificationChannel.PUSH &&
-            (state.permission == NotificationPermission.NOT_DETERMINED || state.showsQuietNotice)
-        ) {
-            requestPermission()
+        // Why: Apple's full prompt while it delivers quietly, for banners and sounds.
+        if (isEnabled && channel == NotificationChannel.PUSH && state.showsQuietNotice) requestPermission()
+    }
+
+    /*
+     * Why: saved on this device whatever the system answers, so the switch is on once it allows them. Turned on, the
+     * system is asked while it still can ask (never asked, or Android refused once); refused for good, only its
+     * settings can allow them. A tap that changes nothing (the switch already so) is dropped.
+     */
+    private fun togglePush(isEnabled: Boolean) {
+        val state = uiState.value
+        if (!state.isPushSwitchEnabled || isEnabled == state.isPushOn) return
+        trackEvent("notification_push_toggled", mapOf("is_enabled" to isEnabled))
+        // Why: shown at once, so a second tap before Room answers is taken for the same change and dropped.
+        uiState.update { it.copy(devicePush = isEnabled.toLoaded()) }
+        viewModelScope.launch { updatePushEnabled(isEnabled) }
+        if (!isEnabled) return
+        when (state.permission) {
+            NotificationPermission.NOT_DETERMINED,
+            NotificationPermission.REFUSED_ONCE,
+            -> requestPermission()
+
+            NotificationPermission.DENIED -> emit(NotificationSettingsUiAction.OpenSystemSettings)
+
+            NotificationPermission.GRANTED,
+            NotificationPermission.PROVISIONAL,
+            null,
+            -> Unit
         }
     }
 

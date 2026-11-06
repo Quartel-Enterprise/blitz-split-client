@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificati
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKeyChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
@@ -111,6 +112,7 @@ class ProfileViewModel(
     dynamicColorSupport: DynamicColorSupport,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
+    observePushEnabled: ObservePushEnabled,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
@@ -172,8 +174,13 @@ class ProfileViewModel(
             if (download != null) Loadable.Loading else keys.mapNotNull(::toItem).toLoaded()
         }.onEach { keys -> uiState.update { it.copy(paymentKeys = keys) } }
             .launchIn(viewModelScope)
-        combine(observeNotificationPreferences(), firstDownload) { preferences, download ->
-            if (download != null) Loadable.Loading else preferences.push.size.toLoaded()
+        // Why: none is active while Notifications' "Push notifications" switch is off on this device.
+        combine(
+            observeNotificationPreferences(),
+            observePushEnabled(),
+            firstDownload,
+        ) { preferences, isPushOn, download ->
+            if (download != null) Loadable.Loading else (if (isPushOn) preferences.push.size else 0).toLoaded()
         }.onEach { count -> uiState.update { it.copy(activeNotificationCount = count) } }
             .launchIn(viewModelScope)
         observeAppInvite()

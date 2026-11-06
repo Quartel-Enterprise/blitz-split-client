@@ -57,14 +57,23 @@ The feed, unread state, real time and push notifications.
     | Payment requests | a request sent from Balances | on | on |
     | Open balance reminder | the Monday reminder | on | none (no Activity event) |
 
-    The choices sync with the account (`notification_preferences`), the OS permission stays per device. With the
+    The choices sync with the account (`notification_preferences`), the OS permission stays per device. Over the
+    rows, a "Push notifications" switch ("On this device only"; "In this browser only" on the web) says whether this
+    device takes pushes at all (Pierre's call): kept per device and never synced, like the permission, on until turned
+    off (`PushDeviceRepository.observeIsEnabled`, the `push_settings` table), and still there after a sign out. It
+    shows on only while it is on and the system allows them (granted, or Apple's quiet delivery), so it is off until
+    the permission is granted, and while it is off every row's Push shows off and disabled, its choice kept and back
+    once it is on. Only the switch asks for the permission: turned on, it asks the system while it still can (never
+    asked, or Android refused once) and, refused for good, opens the system settings (the web, which can't, does
+    nothing more than its notice says); `notification_push_toggled`, with `is_enabled`. Turned off, the device's token
+    leaves the server once online (`registerPushDevice`), so no push reaches it while the other devices of the
+    account keep theirs, and Profile's row reads "0 active". With the
     permission denied the notice shows with "Open settings" and every Push toggle shows off and disabled, while the
-    In app toggles stay in reach ("The bell keeps working."); a Push turned on while the permission was never asked
-    asks for it, an In app one never does. On Android after a first refusal (`NotificationPermission.REFUSED_ONCE`),
+    In app toggles stay in reach ("The bell keeps working."); an In app toggle never asks for the permission. On Android after a first refusal (`NotificationPermission.REFUSED_ONCE`),
     which Android still lets the app ask once more, the same notice says so and its button is "Turn on", which asks
     again (`NotificationSettingsUiEvent.OnAskAgainClicked`, `notification_ask_again_clicked`); only a
     refusal for good shows "Open settings". While Apple delivers quietly (`NotificationPermission.PROVISIONAL`, below)
-    the Push toggles work as allowed, and a notice says "Blitz Split notifications arrive quietly in Notification
+    the switch is on and the Push toggles work as allowed, and a notice says "Blitz Split notifications arrive quietly in Notification
     Center, without a sound or banner." with "Turn on", which brings Apple's full prompt
     (`OnQuietTurnOnClicked`, `notification_quiet_turn_on_clicked`), as does a Push turned on meanwhile. On Android a
     row whose channel the person silenced in the system's settings (`PushChannel`, read on appear and on each return,
@@ -96,14 +105,17 @@ The feed, unread state, real time and push notifications.
     with you". A tap opens what the item's tap in Activity opens, over Activity over Home (`PushLink.homeTab` null, after a sync when its group isn't
     on the device yet) and marks it read; a reminder opens the group's Balances over Groups, or Balances. Each device
     registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
-    it while none is, a sign out made offline once back online. Android and Apple register their token at every launch
+    it while none is or while Notifications' "Push notifications" switch is off, a sign out made offline once back
+    online. Android and Apple register their token at every launch
     whatever the permission; the web subscribes as soon as the browser allows it, from its prompt, the site settings or
     on load (`watchNotificationPermission`).
   - Asking for the permission (Pierre's call, issue 208; per device, never synced): no platform asks on its own. Home
     shows a card under the shortcuts once there is a group to be notified about (created or joined), never on the first
     use, during a first download nor beside the recovery code's card or sheet (`HomeUiState.notificationPrompt`). Never asked
     (`SOFT_ASK`): "Know when a bill comes in", "Get notified when someone adds a bill with you or marks a payment to
-    you.", with "Not now" and "Turn on", which alone brings the system's prompt, so "Not now" never spends it. Android
+    you.", with "Not now" and "Turn on", which alone brings the system's prompt, so "Not now" never spends it. Any card's
+    "Turn on" also turns Notifications' "Push notifications" switch on for this device (Pierre's call), so its
+    "Notifications on" holds after the switch was turned off. Android
     refused once (`ASK_AGAIN`, its rationale flag): the same card says Android lets you allow them once more, and "Turn
     on" asks again. Refused for good (`BLOCKED`): "Notifications are off", where "Turn on" opens the app's notification
     settings on Android, iOS and macOS; the web, which can't open its settings, says "Notifications are blocked in this

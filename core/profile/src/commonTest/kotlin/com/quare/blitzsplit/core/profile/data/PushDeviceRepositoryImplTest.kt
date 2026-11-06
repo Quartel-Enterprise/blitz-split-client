@@ -1,18 +1,23 @@
 package com.quare.blitzsplit.core.profile.data
 
 import com.quare.blitzsplit.core.profile.data.datasource.PushDeviceRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.PushSettingsLocalDataSource
 import com.quare.blitzsplit.core.profile.data.dto.RegisterPushDeviceParamsDto
 import com.quare.blitzsplit.core.profile.data.mapper.PushDeviceMapperImpl
 import com.quare.blitzsplit.core.profile.data.repository.PushDeviceRepositoryImpl
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
+import com.quare.blitzsplit.core.provider.room.entity.PushSettingsEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -358,6 +363,30 @@ class PushDeviceRepositoryImplTest {
         webAuth = auth,
     )
 
+    @Test
+    fun `GIVEN the push switch never touched WHEN observing it THEN it is on`() = runTest {
+        // Given
+        prepareScenario(device = null)
+
+        // When
+        val isEnabled = repository.observeIsEnabled().first()
+
+        // Then
+        assertTrue(isEnabled)
+    }
+
+    @Test
+    fun `GIVEN the push switch on WHEN it is turned off THEN observing it gives off`() = runTest {
+        // Given
+        prepareScenario(device = null)
+
+        // When
+        repository.setEnabled(false)
+
+        // Then
+        assertFalse(repository.observeIsEnabled().first())
+    }
+
     private fun prepareScenario(
         device: PushDevice?,
         registerError: Throwable? = null,
@@ -370,6 +399,7 @@ class PushDeviceRepositoryImplTest {
         repository = PushDeviceRepositoryImpl(
             remoteDataSource = remote,
             mapper = PushDeviceMapperImpl(),
+            localDataSource = FakePushSettingsLocalDataSource(),
         )
         device?.let(repository::setDevice)
     }
@@ -393,5 +423,15 @@ private class FakePushDeviceRemoteDataSource : PushDeviceRemoteDataSource {
         unregisterCalls++
         unregisterError?.let { throw it }
         unregisteredTokens += token
+    }
+}
+
+private class FakePushSettingsLocalDataSource : PushSettingsLocalDataSource {
+    val entity = MutableStateFlow<PushSettingsEntity?>(null)
+
+    override fun observe(): Flow<PushSettingsEntity?> = entity
+
+    override suspend fun upsert(entity: PushSettingsEntity) {
+        this.entity.value = entity
     }
 }

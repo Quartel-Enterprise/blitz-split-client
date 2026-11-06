@@ -493,6 +493,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `edit_profile_save_clicked` | none | Edit profile's Save, also when it can't save yet | `:feature:edit_profile` |
 | `profile_saved` | `has_photo` | The profile saved | `:feature:edit_profile` |
 | `notification_toggled` | `type` (`BILLS`, `PAYMENTS`, `COMMENTS`, `PEOPLE_AND_GROUPS`, `PAYMENT_REQUESTS`, `BALANCE_REMINDER`), `channel` (`PUSH`, `IN_APP`), `is_enabled` | A Push or In app toggle of Notifications, while its channel's toggles take a change | `:feature:notification_settings` |
+| `notification_push_toggled` | `is_enabled` | The "Push notifications" switch of Notifications, for this device, once it and the permission are known and only when the tap changes it | `:feature:notification_settings` |
 | `notification_system_settings_clicked` | none | The button that opens the system's notification settings | `:feature:notification_settings` |
 | `notification_ask_again_clicked` | none | The notice's "Turn on" on Android after a first refusal, which shows the system's dialog once more | `:feature:notification_settings` |
 | `notification_quiet_turn_on_clicked` | none | The notice's "Turn on" while Apple delivers quietly, which shows its full prompt for banners and sounds | `:feature:notification_settings` |

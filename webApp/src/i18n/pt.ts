@@ -727,6 +727,8 @@ export const pt: Record<MessageKey, string> = {
   notifications_footer: 'Os avisos chegam quando há internet. Para silenciar um grupo, use o menu dentro dele.',
   notifications_deniedTitle: 'As notificações estão bloqueadas neste navegador.',
   notifications_deniedBody: 'Permita nas configurações do site, ao lado da barra de endereço, para receber os pushes abaixo. O sino continua funcionando.',
+  notifications_pushSwitch: 'Notificações push',
+  notifications_pushSwitchDetail: 'Só neste navegador',
   notifications_section: 'Avisar sobre',
   notifications_push: 'Push',
   notifications_inApp: 'No app',

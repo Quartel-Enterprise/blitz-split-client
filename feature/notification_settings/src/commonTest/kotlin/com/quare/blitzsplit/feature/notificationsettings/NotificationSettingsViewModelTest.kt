@@ -8,16 +8,22 @@ import com.quare.blitzsplit.core.model.NotificationType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePushEnabledUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdateNotificationPreferenceUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.UpdatePushEnabledUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
+import com.quare.blitzsplit.core.profile.testing.FakePushDeviceRepository
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -38,6 +44,7 @@ class NotificationSettingsViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var preferences: FakeNotificationPreferencesRepository
+    private lateinit var pushDevices: FakePushDeviceRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private lateinit var viewModel: NotificationSettingsViewModel
@@ -248,7 +255,7 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the permission never asked WHEN a notice is turned on THEN saves it and asks for the permission`() =
+    fun `GIVEN the permission never asked WHEN a row push is tapped on THEN saves nothing and asks nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
@@ -262,15 +269,12 @@ class NotificationSettingsViewModelTest {
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(
-                listOf(Triple(NotificationType.PEOPLE_AND_GROUPS, NotificationChannel.PUSH, true)),
-                preferences.updates,
-            )
-            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(actions.isEmpty())
         }
 
     @Test
-    fun `GIVEN the permission never asked WHEN a notice is turned off THEN saves it and asks nothing`() =
+    fun `GIVEN the permission never asked WHEN a row push is tapped off THEN saves nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
@@ -284,7 +288,7 @@ class NotificationSettingsViewModelTest {
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(listOf(Triple(NotificationType.BILLS, NotificationChannel.PUSH, false)), preferences.updates)
+            assertTrue(preferences.updates.isEmpty())
             assertTrue(actions.isEmpty())
         }
 
@@ -462,7 +466,7 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the permission never asked WHEN a notice is turned on THEN sends its type turned on`() =
+    fun `GIVEN the permission never asked WHEN a row push is tapped on THEN tracks nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
@@ -476,16 +480,7 @@ class NotificationSettingsViewModelTest {
             viewModel.onEvent(toggled)
 
             // Then
-            assertEquals(
-                listOf(
-                    "notification_toggled" to mapOf<String, Any>(
-                        "type" to NotificationType.PEOPLE_AND_GROUPS,
-                        "channel" to NotificationChannel.PUSH,
-                        "is_enabled" to true,
-                    ),
-                ),
-                trackedEvents,
-            )
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test
@@ -1581,11 +1576,11 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a notice turned on while never asked WHEN the system answers granted THEN sends the answer granted`() =
+    fun `GIVEN the switch turned on while never asked WHEN the system answers granted THEN sends the answer granted`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(switchOn)
             val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
 
             // When
@@ -1596,11 +1591,11 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a notice turned on while never asked WHEN the system answers denied THEN sends not granted`() =
+    fun `GIVEN the switch turned on while never asked WHEN the system answers denied THEN sends not granted`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(switchOn)
             val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.DENIED)
 
             // When
@@ -1611,11 +1606,11 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a notice turned on while never asked WHEN the dialog is dismissed THEN sends the answer not granted`() =
+    fun `GIVEN the switch turned on while never asked WHEN the dialog is dismissed THEN sends not granted`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(switchOn)
             val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.NOT_DETERMINED)
 
             // When
@@ -1716,11 +1711,11 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a notice turned on while never asked WHEN a read under way lands first THEN sends no answer yet`() =
+    fun `GIVEN the switch turned on while never asked WHEN a read under way lands first THEN sends no answer yet`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(switchOn)
             val staleRead = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.NOT_DETERMINED)
 
             // When
@@ -1736,7 +1731,7 @@ class NotificationSettingsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(switchOn)
             viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED))
             val checkedAgain = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
 
@@ -1748,12 +1743,12 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
-    fun `GIVEN two notices turned on before the answer WHEN the system answers THEN sends the answer once`() =
+    fun `GIVEN the switch turned on twice before the answer WHEN the system answers THEN sends the answer once`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
-            viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+            viewModel.onEvent(switchOn)
+            viewModel.onEvent(switchOn)
             val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.DENIED)
 
             // When
@@ -1811,9 +1806,9 @@ class NotificationSettingsViewModelTest {
     fun `GIVEN a first ask answered WHEN a second ask is answered THEN sends both answers`() = runTest(testDispatcher) {
         // Given
         prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
-        viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+        viewModel.onEvent(switchOn)
         viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.NOT_DETERMINED))
-        viewModel.onEvent(pushOn(NotificationType.PEOPLE_AND_GROUPS))
+        viewModel.onEvent(switchOn)
         val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
 
         // When
@@ -1821,6 +1816,790 @@ class NotificationSettingsViewModelTest {
 
         // Then
         assertEquals(listOf(answered(isGranted = false), answered(isGranted = true)), answeredEvents())
+    }
+
+    @Test
+    fun `GIVEN the switch on and granted WHEN the screen opens THEN shows the switch on with the saved choices`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.GRANTED,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isPushOn)
+            assertFalse(state.showsPushSwitchLoading)
+            assertTrue(state.isPushSwitchEnabled)
+            assertTrue(state.arePushTogglesEnabled)
+            assertEquals(newExpenseAndInvites.toList(), pushRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the switch saved on during quiet delivery WHEN the screen opens THEN shows the switch on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.PROVISIONAL,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isPushOn)
+            assertTrue(state.arePushTogglesEnabled)
+            assertEquals(newExpenseAndInvites.toList(), pushRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the switch off and granted WHEN the screen opens THEN shows every push off and disabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                savedInApp = billsAndComments,
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isPushOn)
+            assertTrue(state.isPushSwitchEnabled)
+            assertFalse(state.arePushTogglesEnabled)
+            assertTrue(state.types.none { state.isToggleEnabled(it, NotificationChannel.PUSH) })
+            assertTrue(pushRowsShownOn().isEmpty())
+            assertEquals(newExpenseAndInvites, state.preferences.valueOrNull()?.push)
+        }
+
+    @Test
+    fun `GIVEN the switch off and granted WHEN the screen opens THEN keeps the In app toggles working`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                savedInApp = billsAndComments,
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.areInAppTogglesEnabled)
+            assertEquals(billsAndComments.toList(), inAppRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the switch saved on and the permission never asked WHEN the screen opens THEN shows the switch off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.NOT_DETERMINED,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isPushOn)
+            assertTrue(state.isPushSwitchEnabled)
+            assertFalse(state.arePushTogglesEnabled)
+            assertTrue(pushRowsShownOn().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch saved on and the permission refused once WHEN the screen opens THEN shows the switch off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.REFUSED_ONCE,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isPushOn)
+            assertTrue(state.isPushSwitchEnabled)
+            assertTrue(pushRowsShownOn().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch on and denied WHEN the screen opens THEN shows the switch off and tappable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.DENIED,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isPushOn)
+            assertFalse(state.showsPushSwitchLoading)
+            assertTrue(state.isPushSwitchEnabled)
+            assertTrue(pushRowsShownOn().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch not read yet WHEN the screen opens THEN shimmers the switch and the toggles`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.GRANTED,
+                devicePush = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loading, state.devicePush)
+            assertFalse(state.isPushOn)
+            assertTrue(state.showsPushSwitchLoading)
+            assertFalse(state.isPushSwitchEnabled)
+            assertTrue(state.showsTogglesLoading)
+            assertFalse(state.arePushTogglesEnabled)
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN the screen opens THEN shimmers the switch and it takes no tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isPushOn)
+            assertTrue(state.showsPushSwitchLoading)
+            assertFalse(state.isPushSwitchEnabled)
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN it is reported granted THEN shows the switch on and tappable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = null,
+            )
+            val checked = NotificationSettingsUiEvent.OnPermissionChecked(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(checked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isPushOn)
+            assertFalse(state.showsPushSwitchLoading)
+            assertTrue(state.isPushSwitchEnabled)
+            assertFalse(state.showsTogglesLoading)
+            assertEquals(newExpenseAndInvites.toList(), pushRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the screen open with the switch on WHEN the device turns it off THEN the switch and the rows follow`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.GRANTED,
+            )
+
+            // When
+            pushDevices.isEnabled.value = false
+
+            // Then
+            assertFalse(viewModel.uiState.value.isPushOn)
+            assertFalse(viewModel.uiState.value.arePushTogglesEnabled)
+            assertTrue(pushRowsShownOn().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the screen open with the switch off WHEN the device turns it on THEN the switch and the rows follow`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+
+            // When
+            pushDevices.isEnabled.value = true
+
+            // Then
+            assertTrue(viewModel.uiState.value.isPushOn)
+            assertEquals(newExpenseAndInvites.toList(), pushRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the switch turned on before Room answers WHEN it is tapped on again THEN saves and tracks it once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+            pushDevices.holdsEnabledWrites = true
+            viewModel.onEvent(switchOn)
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(true), pushDevices.enabledUpdates)
+            assertEquals(
+                listOf("notification_push_toggled" to mapOf<String, Any>("is_enabled" to true)),
+                trackedEvents,
+            )
+            assertTrue(viewModel.uiState.value.isPushOn)
+        }
+
+    @Test
+    fun `GIVEN the switch off during quiet delivery WHEN the quiet turn on arrives THEN asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.PROVISIONAL,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(NotificationSettingsUiEvent.OnQuietTurnOnClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch off with the permission granted WHEN it is turned on THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(true), pushDevices.enabledUpdates)
+            assertTrue(actions.isEmpty())
+            assertTrue(viewModel.uiState.value.isPushOn)
+            assertEquals(newExpenseAndInvites.toList(), pushRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the switch off with the permission granted WHEN it is turned on THEN sends it turned on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(pushToggled(isEnabled = true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the switch off during quiet delivery WHEN it is turned on THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.PROVISIONAL,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(true), pushDevices.enabledUpdates)
+            assertTrue(actions.isEmpty())
+            assertTrue(viewModel.uiState.value.isPushOn)
+        }
+
+    @Test
+    fun `GIVEN the switch on and never asked WHEN it is turned on THEN saves it and asks the system`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(true), pushDevices.enabledUpdates)
+            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
+            assertEquals(listOf(pushToggled(isEnabled = true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the switch off and never asked WHEN it is turned on THEN saves it and asks the system`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.NOT_DETERMINED,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(true), pushDevices.enabledUpdates)
+            assertTrue(pushDevices.isEnabled.value)
+            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
+        }
+
+    @Test
+    fun `GIVEN the switch turned on while never asked WHEN granted THEN shows the switch on with the saved choices`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.NOT_DETERMINED,
+            )
+            viewModel.onEvent(switchOn)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isPushOn)
+            assertTrue(viewModel.uiState.value.arePushTogglesEnabled)
+            assertEquals(newExpenseAndInvites.toList(), pushRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the switch turned on while never asked WHEN denied THEN shows the switch off and keeps it saved on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.NOT_DETERMINED,
+                devicePush = false,
+            )
+            viewModel.onEvent(switchOn)
+            val answer = NotificationSettingsUiEvent.OnPermissionAnswered(NotificationPermission.DENIED)
+
+            // When
+            viewModel.onEvent(answer)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isPushOn)
+            assertTrue(pushDevices.isEnabled.value)
+            assertTrue(pushRowsShownOn().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission refused once WHEN the switch is turned on THEN saves it and asks the system again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.REFUSED_ONCE)
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(true), pushDevices.enabledUpdates)
+            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
+            assertEquals(listOf(pushToggled(isEnabled = true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the permission denied WHEN the switch is turned on THEN saves it and opens the system settings`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(true), pushDevices.enabledUpdates)
+            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.OpenSystemSettings), actions)
+            assertEquals(listOf(pushToggled(isEnabled = true)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the switch off and denied WHEN it is turned on THEN saves it on and opens the system settings`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.DENIED,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertTrue(pushDevices.isEnabled.value)
+            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.OpenSystemSettings), actions)
+            assertFalse(viewModel.uiState.value.isPushOn)
+        }
+
+    @Test
+    fun `GIVEN the switch on with the permission granted WHEN it is turned off THEN saves it off and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.GRANTED,
+            )
+
+            // When
+            viewModel.onEvent(switchOff)
+
+            // Then
+            assertEquals(listOf(false), pushDevices.enabledUpdates)
+            assertTrue(actions.isEmpty())
+            assertEquals(listOf(pushToggled(isEnabled = false)), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the switch on and granted WHEN it is turned off THEN shows every push off and keeps the choices`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                savedInApp = billsAndComments,
+                permission = NotificationPermission.GRANTED,
+            )
+
+            // When
+            viewModel.onEvent(switchOff)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isPushOn)
+            assertTrue(state.isPushSwitchEnabled)
+            assertFalse(state.arePushTogglesEnabled)
+            assertTrue(pushRowsShownOn().isEmpty())
+            assertTrue(preferences.updates.isEmpty())
+            assertEquals(newExpenseAndInvites, state.preferences.valueOrNull()?.push)
+            assertEquals(billsAndComments.toList(), inAppRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the switch on during quiet delivery WHEN it is turned off THEN saves it off and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.PROVISIONAL)
+
+            // When
+            viewModel.onEvent(switchOff)
+
+            // Then
+            assertEquals(listOf(false), pushDevices.enabledUpdates)
+            assertTrue(actions.isEmpty())
+            assertFalse(viewModel.uiState.value.isPushOn)
+        }
+
+    @Test
+    fun `GIVEN the switch turned off while granted WHEN turned on again THEN shows the saved choices again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = newExpenseAndInvites,
+                permission = NotificationPermission.GRANTED,
+            )
+            viewModel.onEvent(switchOff)
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf(false, true), pushDevices.enabledUpdates)
+            assertTrue(actions.isEmpty())
+            assertEquals(listOf(pushToggled(isEnabled = false), pushToggled(isEnabled = true)), trackedEvents)
+            assertTrue(viewModel.uiState.value.isPushOn)
+            assertEquals(newExpenseAndInvites.toList(), pushRowsShownOn())
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet WHEN the switch is turned off THEN saves nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = null)
+
+            // When
+            viewModel.onEvent(switchOff)
+
+            // Then
+            assertTrue(pushDevices.enabledUpdates.isEmpty())
+            assertTrue(pushDevices.isEnabled.value)
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the permission not read yet and the switch off WHEN it is turned on THEN saves and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = null,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertTrue(pushDevices.enabledUpdates.isEmpty())
+            assertFalse(pushDevices.isEnabled.value)
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch not read yet WHEN it is tapped THEN saves nothing asks nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.NOT_DETERMINED,
+                devicePush = null,
+            )
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertTrue(pushDevices.enabledUpdates.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch on with the permission granted WHEN an on arrives THEN saves nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.GRANTED)
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertTrue(pushDevices.enabledUpdates.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch off with the permission granted WHEN an off arrives THEN saves nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+
+            // When
+            viewModel.onEvent(switchOff)
+
+            // Then
+            assertTrue(pushDevices.enabledUpdates.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch saved on but shown off while denied WHEN an off arrives THEN keeps it saved on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.DENIED)
+
+            // When
+            viewModel.onEvent(switchOff)
+
+            // Then
+            assertTrue(pushDevices.enabledUpdates.isEmpty())
+            assertTrue(pushDevices.isEnabled.value)
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch saved on but shown off while never asked WHEN an off arrives THEN keeps it saved on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+
+            // When
+            viewModel.onEvent(switchOff)
+
+            // Then
+            assertTrue(pushDevices.enabledUpdates.isEmpty())
+            assertTrue(pushDevices.isEnabled.value)
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch WHEN reading its analytics THEN is sent by hand as notification_push_toggled`() {
+        // Given
+        val event = switchOn
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("notification_push_toggled"), analytics)
+    }
+
+    @Test
+    fun `GIVEN the switch off and granted WHEN a row push is turned on THEN saves nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+            val toggled = pushOn(NotificationType.PEOPLE_AND_GROUPS)
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch off with the permission granted WHEN a row push is turned off THEN saves nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.BILLS,
+                NotificationChannel.PUSH,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch off with the permission granted WHEN an In app notice is turned off THEN saves it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                savedInApp = billsAndComments,
+                permission = NotificationPermission.GRANTED,
+                devicePush = false,
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.COMMENTS,
+                NotificationChannel.IN_APP,
+                isEnabled = false,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(Triple(NotificationType.COMMENTS, NotificationChannel.IN_APP, false)),
+                preferences.updates,
+            )
+            assertEquals(listOf(NotificationType.BILLS), inAppRowsShownOn())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch off and never asked WHEN an In app notice is turned on THEN saves it and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                savedInApp = emptySet(),
+                permission = NotificationPermission.NOT_DETERMINED,
+                devicePush = false,
+            )
+            val toggled = NotificationSettingsUiEvent.OnToggled(
+                NotificationType.PAYMENTS,
+                NotificationChannel.IN_APP,
+                isEnabled = true,
+            )
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertEquals(
+                listOf(Triple(NotificationType.PAYMENTS, NotificationChannel.IN_APP, true)),
+                preferences.updates,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the switch off during quiet delivery WHEN a row push is turned on THEN saves and asks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                permission = NotificationPermission.PROVISIONAL,
+                devicePush = false,
+            )
+            val toggled = pushOn(NotificationType.PEOPLE_AND_GROUPS)
+
+            // When
+            viewModel.onEvent(toggled)
+
+            // Then
+            assertTrue(preferences.updates.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    private val switchOn = NotificationSettingsUiEvent.OnPushToggled(isEnabled = true)
+
+    private val switchOff = NotificationSettingsUiEvent.OnPushToggled(isEnabled = false)
+
+    private val newExpenseAndInvites = setOf(NotificationType.BILLS, NotificationType.PEOPLE_AND_GROUPS)
+
+    private val billsAndComments = setOf(NotificationType.BILLS, NotificationType.COMMENTS)
+
+    private fun pushToggled(isEnabled: Boolean): Pair<String, Map<String, Any>> =
+        "notification_push_toggled" to mapOf("is_enabled" to isEnabled)
+
+    private fun pushRowsShownOn(): List<NotificationType> = rowsShownOn(NotificationChannel.PUSH)
+
+    private fun inAppRowsShownOn(): List<NotificationType> = rowsShownOn(NotificationChannel.IN_APP)
+
+    private fun rowsShownOn(channel: NotificationChannel): List<NotificationType> {
+        val state = viewModel.uiState.value
+        return state.types.filter { state.isEnabled(it, channel) }
     }
 
     private fun pushOn(type: NotificationType): NotificationSettingsUiEvent.OnToggled =
@@ -1839,7 +2618,9 @@ class NotificationSettingsViewModelTest {
         insideProfile: Boolean = false,
         firstDownload: FirstDownloadProgress? = null,
         systemBlocked: Set<NotificationType> = emptySet(),
+        devicePush: Boolean? = true,
     ) {
+        pushDevices = FakePushDeviceRepository(isEnabled = devicePush ?: true)
         this@NotificationSettingsViewModelTest.firstDownload = MutableStateFlow(firstDownload)
         preferences =
             FakeNotificationPreferencesRepository(
@@ -1860,7 +2641,13 @@ class NotificationSettingsViewModelTest {
                 markedReadTypes += type
                 Result.success(Unit)
             },
+            updatePushEnabled = UpdatePushEnabledUseCase(pushDevices),
             observeNotificationPreferences = ObserveNotificationPreferencesUseCase(preferences),
+            observePushEnabled = if (devicePush == null) {
+                ObservePushEnabled { flow { awaitCancellation() } }
+            } else {
+                ObservePushEnabledUseCase(pushDevices)
+            },
             observeFirstDownload = ObserveFirstDownload { this@NotificationSettingsViewModelTest.firstDownload },
         )
         permission?.let { viewModel.onEvent(NotificationSettingsUiEvent.OnPermissionChecked(it)) }

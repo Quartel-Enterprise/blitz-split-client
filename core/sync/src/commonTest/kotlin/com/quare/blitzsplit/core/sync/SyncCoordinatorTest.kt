@@ -6487,6 +6487,47 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a push token and an account WHEN the push switch is turned off THEN unregisters the device`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.isEnabled.value = false
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+        assertEquals(1, pushDevices.unregisterCount)
+    }
+
+    @Test
+    fun `GIVEN the push switch off WHEN it is turned back on THEN registers the device again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+            storedPushDevice = androidDevice,
+        )
+        pushDevices.isEnabled.value = false
+        coordinator.start()
+        runCurrent()
+
+        // When
+        pushDevices.isEnabled.value = true
+        runCurrent()
+
+        // Then
+        assertEquals(1, pushDevices.unregisterCount)
+        assertEquals(listOf(FakeAccountRepository.CONNECTED_USER_ID), pushDevices.registeredUserIds)
+    }
+
+    @Test
     fun `GIVEN a push token and no account WHEN starting offline THEN touches nothing`() = runTest {
         // Given
         prepareScenario(
