@@ -74,15 +74,16 @@ internal class ReceiptScanning(
      * Why: Início's photo waits for "Rachar em qual grupo?" and for the group picked to be read, so it is read in that
      * group's currency, once. It is taken only then, so a ViewModel dropped before (React StrictMode's first mount)
      * leaves it to the next one; none there (an app restored after the system closed it) asks for one again. A request
-     * replaced meanwhile (a group in a cryptocurrency, "Ler cupom fiscal" tapped) stops waiting and leaves it unread.
+     * replaced meanwhile (a group in a cryptocurrency, "Ler cupom fiscal" tapped) stops waiting and drops it unread.
      */
     init {
         if (uiState.value.receiptRequest == ReceiptRequest.Picked) {
             scope.launch {
-                uiState
+                val ready = uiState
                     .takeWhile { it.receiptRequest == ReceiptRequest.Picked }
-                    .firstOrNull { it.readsPickedReceipt } ?: return@launch
+                    .firstOrNull { it.readsPickedReceipt }
                 val photo = takePickedReceipt()
+                if (ready == null) return@launch
                 if (photo == null) {
                     uiState.update { it.copy(receiptRequest = ReceiptRequest.Choice) }
                 } else {

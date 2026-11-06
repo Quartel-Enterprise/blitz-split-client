@@ -112,6 +112,13 @@ data class HomeUiState(
     val canSearch: Boolean
         get() = hasGroups
 
+    /*
+     * Why: "Ler cupom fiscal" asks where the photo comes from, which needs a group to read it in; the web opens its file
+     * chooser inside the tap only then, so a file is never picked for a tap that opens Novo grupo instead.
+     */
+    val canPickReceipt: Boolean
+        get() = canScanReceipt && hasGroups
+
     // Why: reading a receipt needs the internet; offline it shows disabled with "Precisa de internet" (7.1d).
     val canScanReceipt: Boolean
         get() = isOnline

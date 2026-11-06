@@ -24,6 +24,8 @@ export interface ReceiptSourcePresenter {
 export interface ReceiptSourceState {
   showsReceiptSourceChoice: boolean
   receiptSource?: string | null
+  /** Whether the tap can take a photo at all (Início with no group opens Novo grupo instead); unset means it can. */
+  canPickReceipt?: boolean
 }
 
 /** Where the receipt's photo comes from, and `pick`, which asks: "Tirar foto" or "Escolher foto". */
@@ -59,13 +61,16 @@ export function useReceiptPicker(presenter: ReceiptSourcePresenter | null, state
   useEffect(() => {
     if (source === 'files') presenter?.dismissReceiptPicker()
   }, [presenter, source])
+  const canPick = state?.canPickReceipt ?? true
   const pick = () => {
     if (!presenter) return
     // Why: without a camera the file chooser opens inside the click, which a browser may require; the ViewModel
-    // gets the tap and the skipped choice in the same task, so the choice never draws.
-    if (hasCamera === false) chooseFile()
+    // gets the tap and the skipped choice in the same task, so the choice never draws. Never for a tap that can't
+    // take the photo, whose file would be dropped.
+    const opensChooser = hasCamera === false && canPick
+    if (opensChooser) chooseFile()
     presenter.scanReceipt()
-    if (hasCamera === false) presenter.skipReceiptChoice()
+    if (opensChooser) presenter.skipReceiptChoice()
   }
   // Why: the camera closed by hand, or left for a photo taken or a file, ends the request.
   return { ...picker, pick, closeCamera: () => presenter?.dismissReceiptPicker() }

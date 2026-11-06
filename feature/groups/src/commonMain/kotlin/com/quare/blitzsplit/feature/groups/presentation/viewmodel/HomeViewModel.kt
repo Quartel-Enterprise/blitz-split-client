@@ -187,10 +187,12 @@ class HomeViewModel(
     // Why: "Ler cupom fiscal" asks where the photo comes from here, then opens Rachar conta reading it.
     private val receiptSource = HomeReceiptSource(
         uiState = uiState,
+        scope = viewModelScope,
         navigator = navigator,
         holdPickedReceipt = holdPickedReceipt,
         trackEvent = trackEvent,
         recentGroupId = { rows.firstOrNull()?.id },
+        isOnTop = ::isOnTop,
     )
 
     private val notificationPrompts = HomeNotificationPrompts(

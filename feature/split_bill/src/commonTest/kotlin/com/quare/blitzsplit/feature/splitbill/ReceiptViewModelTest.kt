@@ -3016,6 +3016,25 @@ class ReceiptViewModelTest {
         }
 
     @Test
+    fun `GIVEN a photo from Inicio WHEN a bitcoin group drops it THEN Inicio no longer holds it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = fromHome(scansReceipt = true),
+                storedGroups = listOf(dinner, wallet),
+                pickedReceipt = source,
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(WALLET_ID))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
+
+            // Then
+            assertNull(heldReceipt)
+            assertTrue(readSources.isEmpty())
+        }
+
+    @Test
     fun `GIVEN a photo dropped for a bitcoin group WHEN the bill moves to a real group THEN it is still not read`() =
         runTest(testDispatcher) {
             // Given

@@ -122,6 +122,8 @@ class JsHomeState(
     val showsReceiptSourceChoice: Boolean,
     // Why: the picker picked on that choice, to open: "camera" or "files"; null for none.
     val receiptSource: String?,
+    // Why: without a camera the file chooser opens inside the tap, only when a group can take the photo.
+    val canPickReceipt: Boolean,
     val showsSplitBillButton: Boolean,
     val showsRecoveryCodeCard: Boolean,
     val showsRecoveryCodePrompt: Boolean,
@@ -189,6 +191,7 @@ class HomePresenter {
                 canScanReceipt = state.canScanReceipt,
                 showsReceiptSourceChoice = state.showsReceiptSourceChoice,
                 receiptSource = state.receiptSource?.name?.lowercase(),
+                canPickReceipt = state.canPickReceipt,
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsRecoveryCodeCard = state.showsRecoveryCodeCard,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,

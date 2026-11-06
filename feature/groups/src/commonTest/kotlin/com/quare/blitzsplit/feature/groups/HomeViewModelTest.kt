@@ -143,6 +143,7 @@ class HomeViewModelTest {
     private lateinit var firstDownload: FirstDownload
     private lateinit var activityUnread: MutableStateFlow<Int>
     private lateinit var peopleGate: MutableStateFlow<Boolean>
+    private lateinit var groupsGate: MutableStateFlow<Boolean>
 
     // Why: "Get the app" as this platform offers it, which a sync or a dismissal changes.
     private lateinit var appInvite: MutableStateFlow<AppInvite?>
@@ -711,6 +712,58 @@ class HomeViewModelTest {
         assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
         assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN Inicio still being read WHEN the photo comes THEN opens Rachar conta once Inicio is read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                groupsRead = false,
+            )
+            viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(byteArrayOf(7)))
+
+            // When
+            groupsGate.value = true
+
+            // Then
+            assertEquals(listOf(listOf<Byte>(7)), heldReceipts)
+            assertEquals(
+                listOf(Route.Home, Route.SplitBill.createPickingGroup(trio().id, scansReceipt = true)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the camera open WHEN another screen opens over Inicio THEN the camera closes for good`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+            viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+            navigator.navigate(Route.Profile)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertNull(viewModel.uiState.value.receiptSource)
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+        }
+
+    @Test
+    fun `GIVEN the photo choice WHEN another screen opens over Inicio THEN the choice closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+
+            // When
+            navigator.navigate(Route.Profile)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsReceiptSourceChoice)
+        }
 
     @Test
     fun `GIVEN the only group gone while the gallery is open WHEN the photo comes THEN drops it`() =
@@ -6058,6 +6111,7 @@ class HomeViewModelTest {
             it.awaitsFullSync = awaitsFullSync
         }
         peopleGate = MutableStateFlow(peopleRead)
+        groupsGate = MutableStateFlow(groupsRead)
         groups = FakeGroupRepository(initialGroups = storedGroups)
         pins = FakeGroupPinRepository(initialPinnedGroupIds = pinnedGroupIds)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
@@ -6134,7 +6188,7 @@ class HomeViewModelTest {
                 connectivityObserver = NetworkConnectivityObserver { isOnline },
             ),
             // Why: a StateFlow is read at once, so the device not answering yet is a flow that has not emitted.
-            observeGroups = if (groupsRead) ObserveGroupsUseCase(groups) else ObserveGroups { MutableSharedFlow() },
+            observeGroups = ObserveGroups { groupsGate.filter { it }.flatMapLatest { ObserveGroupsUseCase(groups)() } },
             observeGroupsMoney = money,
             // Why: the balances are read apart from the groups, so they can still be on their way once the groups are.
             observePeopleBalances = ObservePeopleBalances {

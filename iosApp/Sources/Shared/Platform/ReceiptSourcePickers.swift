@@ -71,33 +71,7 @@ extension View {
         isActive: Bool = true,
         showsDialog: Bool = true,
     ) -> some View {
-        receiptSourceDialog(
-            isPresented: request.choiceShown(isActive: isActive && ReceiptSource.hasChoice && showsDialog),
-            pick: request.pick,
-        )
-        .onChange(of: isActive && request.showsChoice, initial: true) { _, shows in
-            if shows, !ReceiptSource.hasChoice { request.skipChoice() }
-        }
-        .photoLibraryPicker(isPresented: request.sourceShown(.photos, isActive: isActive)) { data in
-            request.photoPicked(data)
-        }
-        .fileImporter(
-            isPresented: request.sourceShown(.files, isActive: isActive),
-            allowedContentTypes: [.image],
-        ) { result in
-            guard case let .success(url) = result else { return }
-            Task { request.photoPicked(await ReceiptSource.readFile(url)) }
-        }
-        #if os(iOS)
-        .fullScreenCover(isPresented: request.sourceShown(.camera, isActive: isActive)) {
-            ReceiptCameraView(
-                onPhoto: { data in request.photoPicked(data) },
-                onDismiss: request.dismiss,
-                onTorchToggled: request.torchToggled,
-                onSettingsOpened: request.settingsOpened,
-            )
-        }
-        #endif
+        modifier(ReceiptSourcePickersModifier(request: request, isActive: isActive, showsDialog: showsDialog))
     }
 
     private var receiptSourceTitle: Text {
@@ -106,6 +80,68 @@ extension View {
         #else
         Text("Scan receipt")
         #endif
+    }
+}
+
+/// The photo reaches the shared code only once what picked it has closed: Home's photo opens Split a bill's sheet,
+/// which UIKit refuses to present while the camera's cover or the Photos sheet is still on its way out.
+private struct ReceiptSourcePickersModifier: ViewModifier {
+    let request: ReceiptSourceRequest
+    let isActive: Bool
+    let showsDialog: Bool
+
+    /// The camera's photo, handed over once its cover has closed.
+    @State private var takenPhoto: Data?
+
+    /// How long a sheet takes to slide away.
+    private static let settle: Duration = .milliseconds(500)
+
+    func body(content: Content) -> some View {
+        content
+            .receiptSourceDialog(
+                isPresented: request.choiceShown(isActive: isActive && ReceiptSource.hasChoice && showsDialog),
+                pick: request.pick,
+            )
+            .onChange(of: isActive && request.showsChoice, initial: true) { _, shows in
+                if shows, !ReceiptSource.hasChoice { request.skipChoice() }
+            }
+            .photoLibraryPicker(isPresented: request.sourceShown(.photos, isActive: isActive)) { data in
+                handOverSettled(data)
+            }
+            .fileImporter(
+                isPresented: request.sourceShown(.files, isActive: isActive),
+                allowedContentTypes: [.image],
+            ) { result in
+                guard case let .success(url) = result else { return }
+                Task { handOverSettled(await ReceiptSource.readFile(url)) }
+            }
+            #if os(iOS)
+            .fullScreenCover(isPresented: request.sourceShown(.camera, isActive: isActive), onDismiss: handOverTaken) {
+                ReceiptCameraView(
+                    onPhoto: { data in
+                        takenPhoto = data
+                        request.dismiss()
+                    },
+                    onDismiss: request.dismiss,
+                    onTorchToggled: request.torchToggled,
+                    onSettingsOpened: request.settingsOpened,
+                )
+            }
+            #endif
+    }
+
+    private func handOverTaken() {
+        guard let photo = takenPhoto else { return }
+        takenPhoto = nil
+        request.photoPicked(photo)
+    }
+
+    /// Photos and the file panel have no "closed" to wait for, so their photo waits for the sheet to slide away.
+    private func handOverSettled(_ data: Data?) {
+        Task {
+            try? await Task.sleep(for: Self.settle)
+            request.photoPicked(data)
+        }
     }
 }
 
