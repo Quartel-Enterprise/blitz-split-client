@@ -872,7 +872,7 @@ private struct MergeGuestSheet: View {
             Button("Merge") {
                 model.send(ContactProfileUiEventOnClaimAsMeConfirmed.shared)
             }
-            .disabled(sheet.isClaiming)
+            .disabled(sheet.isClaiming || !model.state.isOnline)
         } message: {
             Text("Everything in \(contact.name)'s name (bills, payments and the balance of \(ContactsCopy.amount(contact.net))) moves to your account, in every group, and the guest goes away. This can't be undone.")
         }

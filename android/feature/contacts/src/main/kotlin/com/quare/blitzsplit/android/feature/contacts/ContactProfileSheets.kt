@@ -195,6 +195,7 @@ internal fun HideContactDialog(
 internal fun ClaimGuestDialog(
     contact: Contact,
     sheet: GuestMergeSheet,
+    isOnline: Boolean,
     onEvent: (ContactProfileUiEvent) -> Unit,
 ) {
     val title = stringResource(R.string.contacts_claim_title, contact.name)
@@ -237,7 +238,8 @@ internal fun ClaimGuestDialog(
                     }
                     TextButton(
                         onClick = { onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed) },
-                        enabled = !sheet.isClaiming,
+                        // Why: the ViewModel ignores a confirmation offline, so the button says so.
+                        enabled = isOnline && !sheet.isClaiming,
                     ) {
                         Text(stringResource(R.string.contacts_claim_confirm))
                     }

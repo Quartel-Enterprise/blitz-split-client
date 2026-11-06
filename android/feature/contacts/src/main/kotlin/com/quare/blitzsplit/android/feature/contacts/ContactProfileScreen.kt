@@ -72,6 +72,7 @@ fun ContactProfileScreen(
                 ClaimGuestDialog(
                     contact = contact,
                     sheet = merge,
+                    isOnline = state.isOnline,
                     onEvent = viewModel::onEvent,
                 )
             }

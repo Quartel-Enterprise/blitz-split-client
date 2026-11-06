@@ -217,7 +217,17 @@ function RadioMark({ isChecked }: { isChecked: boolean }) {
 }
 
 /** "Juntar Diego com a sua conta?": "Eu sou Diego" can't be undone, so it asks first. */
-export function ClaimDialog({ presenter, sheet, contact }: { presenter: ContactProfilePresenter; sheet: JsGuestMergeSheet; contact: JsContact }) {
+export function ClaimDialog({
+  presenter,
+  sheet,
+  contact,
+  isOnline,
+}: {
+  presenter: ContactProfilePresenter
+  sheet: JsGuestMergeSheet
+  contact: JsContact
+  isOnline: boolean
+}) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const name = contact.name
   return (
@@ -233,7 +243,7 @@ export function ClaimDialog({ presenter, sheet, contact }: { presenter: ContactP
         body: null,
         footer: (
           <>
-            <Button disabled={sheet.isClaiming} onClick={() => presenter.confirmClaimAsMe()}>
+            <Button disabled={sheet.isClaiming || !isOnline} onClick={() => presenter.confirmClaimAsMe()}>
               {sheet.isClaiming && <Loader2 className="animate-spin" />}
               {t('contactProfile_claimConfirm')}
             </Button>

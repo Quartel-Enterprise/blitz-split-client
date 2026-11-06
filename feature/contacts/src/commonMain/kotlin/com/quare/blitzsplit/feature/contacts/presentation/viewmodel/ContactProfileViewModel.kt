@@ -204,7 +204,7 @@ class ContactProfileViewModel(
             ContactProfileUiEvent.OnMergeClicked -> openMerge()
 
             ContactProfileUiEvent.OnMergeRetryClicked -> {
-                uiState.update { state -> state.copy(merge = state.merge?.copy(hasFailed = false)) }
+                updateSheet { it.copy(hasFailed = false) }
                 if (requestMergeIfDue()) trackEvent("retry_clicked", mergeParams)
             }
 

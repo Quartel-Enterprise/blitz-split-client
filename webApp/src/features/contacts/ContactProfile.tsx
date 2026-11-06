@@ -186,7 +186,7 @@ export function ContactProfileView({
       )}
       {state.addToGroup && <AddToGroupDialog presenter={presenter} draft={state.addToGroup} contact={contact} />}
       {state.merge && <MergeDialog presenter={presenter} sheet={state.merge} contact={contact} isOnline={state.isOnline} />}
-      {state.merge?.isConfirmingClaim && <ClaimDialog presenter={presenter} sheet={state.merge} contact={contact} />}
+      {state.merge?.isConfirmingClaim && <ClaimDialog presenter={presenter} sheet={state.merge} contact={contact} isOnline={state.isOnline} />}
     </section>
   )
 }
