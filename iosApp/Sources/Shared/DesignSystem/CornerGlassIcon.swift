@@ -1,8 +1,12 @@
 import SwiftUI
 
 /// The round glass button on an avatar's corner (a pencil on a profile or a group, a camera on a new group): 32 pt
-/// to look at, 44 pt to tap. Wrap it in a Button or a Menu, and place it with `.overlay(alignment: .bottomTrailing)`.
+/// to look at, 44 pt to tap. Wrap it in a Button or a Menu, and place it with `.overlay(alignment: .bottomTrailing)`
+/// and an `.offset` that counts the `CornerGlassIcon.targetPadding` around the glass.
 struct CornerGlassIcon: View {
+    /// The clear ring around the 32 pt glass that brings the frame, and so the target, to 44 pt.
+    static let targetPadding: CGFloat = 6
+
     let systemName: String
     var iconSize: CGFloat = 14
 
@@ -11,7 +15,9 @@ struct CornerGlassIcon: View {
             .font(.system(size: iconSize, weight: .semibold))
             .frame(width: 32, height: 32)
             .glassEffect(.regular.interactive(), in: .circle)
-            // Why: the look stays 32 pt, the target reaches the 44 pt minimum around it.
-            .contentShape(Circle().inset(by: -6))
+            // Why: a Menu (UIKit and AppKit backed) taps only inside its frame, so the target is padding, not a
+            // content shape wider than the frame.
+            .padding(Self.targetPadding)
+            .contentShape(.circle)
     }
 }

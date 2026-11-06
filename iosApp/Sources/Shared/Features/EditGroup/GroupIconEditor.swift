@@ -95,7 +95,7 @@ struct EditGroupIconSection: View {
                 CornerGlassIcon(systemName: "pencil")
             }
             .buttonStyle(.plain)
-            .offset(x: 4, y: 4)
+            .offset(x: 4 + CornerGlassIcon.targetPadding, y: 4 + CornerGlassIcon.targetPadding)
             .accessibilityLabel("Change icon or photo")
         }
         #else
