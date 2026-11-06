@@ -19,13 +19,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -44,8 +41,9 @@ import com.quare.blitzsplit.android.designsystem.component.ActivityBellButton
 import com.quare.blitzsplit.android.designsystem.component.HomeBars
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
+import com.quare.blitzsplit.android.designsystem.component.SplitBillRailHeader
 import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
-import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
@@ -130,11 +128,9 @@ fun HomeContent(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
                     if (!homeLayout.usesRail && state.showsSplitBillButton) {
-                        ExtendedFloatingActionButton(
+                        SplitBillFab(
                             onClick = { onEvent(HomeUiEvent.OnSplitBillClicked) },
-                            icon = { Icon(splitBillIcon(), contentDescription = null) },
-                            text = { Text(stringResource(R.string.groups_split_bill)) },
-                            expanded = !scrollState.canScrollBackward,
+                            isExpanded = !scrollState.canScrollBackward,
                         )
                     }
                 },
@@ -183,10 +179,8 @@ private fun HomePane(
             onJoinWithLink = { onEvent(HomeUiEvent.OnJoinWithLinkClicked) },
             body = R.string.groups_home_first_use_body,
         ) {
-            HomeSyncStatusIndicator(
-                state = state,
-                onEvent = onEvent,
-            )
+            // Why: the chip is in the top bar the first use always has; only the first download's bar stays here.
+            HomeDownloadStatusLine(state = state)
         }
 
         homeLayout == HomeLayout.TWO_COLUMNS -> Row(modifier = Modifier.fillMaxSize()) {
@@ -267,9 +261,9 @@ private fun HomeSingleColumn(
                 .padding(top = 4.dp),
             verticalArrangement = Arrangement.spacedBy(sectionSpacing),
         ) {
-            HomeSyncStatusIndicator(
+            // Why: the chip is in the top bar; only the first download's bar stays at the top of the column.
+            HomeDownloadStatusLine(
                 state = state,
-                onEvent = onEvent,
                 modifier = Modifier.padding(horizontal = metrics.gutter),
             )
             HomePeopleSection(state, onEvent, metrics)
@@ -437,7 +431,22 @@ private fun HomeTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     TopAppBar(
-        title = { HomeTabTitle(stringResource(R.string.groups_home_title)) },
+        // Why: the sync chip takes the bar's empty leading area (a phone has no title), never the content's top.
+        title = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                HomeTabTitle(
+                    title = stringResource(R.string.groups_home_title),
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                HomeSyncChip(
+                    state = state,
+                    onEvent = onEvent,
+                )
+            }
+        },
         actions = {
             HomeBarActionsComponent(
                 state = state,

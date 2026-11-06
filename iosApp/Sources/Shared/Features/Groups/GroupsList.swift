@@ -328,6 +328,40 @@ struct SyncStatusRow: View {
     }
 }
 
+#if os(iOS)
+/// Home's sync status in its bar's leading side: one line that truncates, a button that tries again while the server
+/// doesn't answer and plain text otherwise.
+struct SyncStatusCapsule: View {
+    let status: String
+    let badge: SyncBadge?
+    let canRetry: Bool
+    let onRetry: () -> Void
+
+    var body: some View {
+        if canRetry {
+            Button(action: onRetry) { label }
+                .accessibilityHint(Text("Try again"))
+        } else {
+            label
+                .accessibilityElement(children: .combine)
+        }
+    }
+
+    private var label: some View {
+        HStack(spacing: 6) {
+            Image(systemName: badge == .offline ? "icloud.slash" : canRetry ? "exclamationmark.icloud" : "arrow.triangle.2.circlepath.icloud")
+                .accessibilityHidden(true)
+            Text(verbatim: status)
+                .lineLimit(1)
+                .truncationMode(.tail)
+        }
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 4)
+    }
+}
+#endif
+
 /// "To get back" or "To pay" beside an overall balance (Groups' and Home's): the amount in its color and a chevron,
 /// disabled while there is nothing in it.
 struct SummaryButton: View {

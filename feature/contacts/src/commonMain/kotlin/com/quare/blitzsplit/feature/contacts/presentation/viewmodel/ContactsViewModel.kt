@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
@@ -33,7 +34,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -56,6 +59,7 @@ class ContactsViewModel(
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
     observeHasGroups: ObserveHasGroups,
+    observeGroupsByActivity: ObserveGroupsByActivity,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactsUiEvent>(trackEvent) {
     // Why: the screen these events come from, as their source param says.
@@ -80,6 +84,7 @@ class ContactsViewModel(
                 pickedKey = null,
                 isAgendaPicked = false,
                 canSearch = false,
+                showsSplitBillButton = false,
             ),
         )
 
@@ -88,6 +93,9 @@ class ContactsViewModel(
 
     val stateWatcher: FlowWatcher<ContactsUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<ContactsUiAction> = FlowWatcher(uiAction)
+
+    // Why: the most recently used group, which "Rachar conta" marks in "Rachar em qual grupo?"; null with none.
+    private var splitBillGroupId: String? = null
 
     init {
         observeProfile()
@@ -133,6 +141,13 @@ class ContactsViewModel(
         observeHasGroups()
             .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
             .launchIn(viewModelScope)
+        observeGroupsByActivity()
+            .map { groups -> groups.firstOrNull()?.id }
+            .distinctUntilChanged()
+            .onEach { groupId ->
+                splitBillGroupId = groupId
+                uiState.update { it.copy(showsSplitBillButton = groupId != null) }
+            }.launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: ContactsUiEvent) {
@@ -140,6 +155,8 @@ class ContactsViewModel(
             is ContactsUiEvent.OnContactClicked -> openContact(event.key)
 
             is ContactsUiEvent.OnDetailPaneChanged -> uiState.update { it.copy(isDetailPaneShown = event.isShown) }
+
+            ContactsUiEvent.OnSplitBillClicked -> openSplitBill()
 
             ContactsUiEvent.OnSearchClicked -> if (uiState.value.canSearch &&
                 navigator.openSearchOver(HomeTab.CONTACTS)
@@ -279,6 +296,24 @@ class ContactsViewModel(
     private fun isTabShown(): Boolean {
         val stack = navigator.backStack.value
         return stack.getOrNull(stack.indexOf(Route.Home) + 1) == Route.Contacts && Route.Home in stack
+    }
+
+    /*
+     * Why: "Rachar em qual grupo?" first (7.1i), the most recently used group marked, as Início's button asks. The
+     * button stays beside a profile the pane shows, so it counts while Contatos is the tab.
+     */
+    private fun openSplitBill() {
+        val groupId = splitBillGroupId ?: return
+        if (!isTabShown()) return
+        trackEvent("split_bill_clicked", sourceParams)
+        navigator.navigate(
+            Route.SplitBill(
+                groupId = groupId,
+                expenseId = null,
+                picksGroupFirst = true,
+                scansReceipt = false,
+            ),
+        )
     }
 
     private fun closeOverTab() {

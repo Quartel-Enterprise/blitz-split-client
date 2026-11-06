@@ -165,12 +165,12 @@ export function SyncStatus({
     <>
       <span
         className={cn(
-          'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
+          'inline-flex h-6 min-w-0 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
           isOffline && state.pendingChangeCount > 0 ? pendingSurfaceClass : 'text-muted-foreground',
         )}
       >
-        {isOffline ? <CloudOff className="size-3.5" /> : state.syncBadge === 'SYNCING' && <RefreshCw className="size-3.5" />}
-        {label}
+        {isOffline ? <CloudOff className="size-3.5 shrink-0" /> : state.syncBadge === 'SYNCING' && <RefreshCw className="size-3.5 shrink-0" />}
+        <span className="truncate">{label}</span>
       </span>
       {state.canRetrySync && (
         <button onClick={() => presenter.retrySync()} className="h-6 rounded-md px-2 text-xs font-medium text-primary underline outline-none focus-visible:ring-[3px] focus-visible:ring-ring">

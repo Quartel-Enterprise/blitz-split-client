@@ -9,6 +9,8 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.SetContactHiddenUseCase
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -923,6 +925,264 @@ class ContactsViewModelTest {
         assertEquals(listOf(Route.Home, Route.Contacts, Route.ContactsAgenda), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN groups on the device WHEN Contatos opens THEN offers Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN no group WHEN Contatos opens THEN offers no Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN Contatos opens THEN offers no Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(areGroupsRead = false)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN no group WHEN a sync brings the first group THEN offers Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        groups.groups.value = listOf(ape())
+
+        // Then
+        assertTrue(viewModel.uiState.value.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN a single group WHEN a sync takes it away THEN offers no Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(ape()),
+            bills = emptyList(),
+        )
+
+        // When
+        groups.groups.value = emptyList()
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN Contatos on top WHEN Rachar conta is tapped THEN asks the group first with Viagem Floripa marked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, splitBillIn(FLORIPA)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill just saved in Futebol WHEN Rachar conta is tapped THEN marks Futebol`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = defaultBills() +
+                    owes(
+                        FUTEBOL,
+                        memberId("julia", FUTEBOL),
+                        meId(FUTEBOL),
+                        3_000L,
+                        id = "ball",
+                        updatedAt = 9_000L,
+                    ),
+            )
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, splitBillIn(FUTEBOL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a sync made Futebol the most recently used WHEN Rachar conta is tapped THEN marks Futebol`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            groups.groups.value = listOf(floripa(), ape(), futebol().copy(updatedAt = 9_000L))
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, splitBillIn(FUTEBOL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN no group WHEN a sync brings the first group and Rachar conta is tapped THEN marks that group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                bills = emptyList(),
+            )
+            groups.groups.value = listOf(ape())
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, splitBillIn(APE)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla profile over Contatos WHEN Rachar conta is tapped THEN opens it over her profile`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, Route.ContactProfile(CARLA_KEY), splitBillIn(FLORIPA)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla in the pane beside the list WHEN Rachar conta is tapped THEN opens it over Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(isShown = true))
+            viewModel.onEvent(ContactsUiEvent.OnContactClicked(CARLA_KEY))
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Contacts, splitBillIn(FLORIPA)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN no group WHEN Rachar conta is tapped THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN Rachar conta is tapped THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(areGroupsRead = false)
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a sync took the only group away WHEN Rachar conta is tapped THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(ape()),
+                bills = emptyList(),
+            )
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Saldos in place of Contatos WHEN a late Rachar conta tap arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnBalancesTabClicked)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Grupos in place of Contatos WHEN a late Rachar conta tap arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnGroupsTabClicked)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups), navigator.backStack.value)
+        }
+
     // region Analytics
 
     @Test
@@ -1355,6 +1615,43 @@ class ContactsViewModelTest {
             assertTrue(trackedEvents.isEmpty())
         }
 
+    @Test
+    fun `GIVEN Rachar conta WHEN reading its analytics THEN only the ViewModel sends it`() {
+        // Given
+        val event = ContactsUiEvent.OnSplitBillClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("split_bill_clicked"), analytics)
+    }
+
+    @Test
+    fun `GIVEN groups and Contatos on top WHEN Rachar conta is tapped THEN sends split_bill_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf("split_bill_clicked" to contactsSource), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no group WHEN Rachar conta is tapped THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     // endregion
 
     private val contactsSource: Map<String, Any> = mapOf("source" to "contacts")
@@ -1365,6 +1662,13 @@ class ContactsViewModelTest {
             isHidden = true,
             hiddenAt = 10L,
         ),
+    )
+
+    private fun splitBillIn(groupId: String): Route.SplitBill = Route.SplitBill(
+        groupId = groupId,
+        expenseId = null,
+        picksGroupFirst = true,
+        scansReceipt = false,
     )
 
     private fun TestScope.prepareScenario(
@@ -1411,6 +1715,14 @@ class ContactsViewModelTest {
                 ObserveHasGroupsUseCase(groups)
             } else {
                 ObserveHasGroups { MutableSharedFlow() }
+            },
+            observeGroupsByActivity = if (areGroupsRead) {
+                ObserveGroupsByActivityUseCase(
+                    ObserveGroupsUseCase(groups),
+                    ObserveGroupsMoneyUseCase(expenses, settlements),
+                )
+            } else {
+                ObserveGroupsByActivity { MutableSharedFlow() }
             },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

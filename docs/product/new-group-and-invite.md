@@ -5,9 +5,9 @@ Creating a group and inviting people.
   - "New group" opens full screen on an Android phone, in two columns lying down (the group, then "Who's
     in"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet
-    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). Tapping the group's avatar steps
-    its color through the palette, and on Android its shape too, both at once ("Change the group's shape and color": five
-    colors over four shapes go through all twenty), starting as a peach Cookie, and Currency starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
+    with an iPad's room) and macOS, a dialog on the web (a drawer on a phone). The group's avatar is its rounded
+    square on every platform, Android included (the beta's feedback dropped Android's shapes), and tapping it steps
+    its color through the palette ("Change the group's color"), and Currency starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. A name already in
     the group offers two nicknames, "Ana P." (the initial of whoever adds the name, so the creator's in "New
     group") and "Ana 2". The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
     photo, the Mac's "Choose photo…" a file, and Remove photo once there is one), which opens "Adjust photo"; while a

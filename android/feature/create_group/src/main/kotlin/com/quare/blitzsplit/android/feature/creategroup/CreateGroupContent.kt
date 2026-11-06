@@ -68,7 +68,6 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
@@ -323,8 +322,8 @@ private fun IdentitySection(
 }
 
 /*
- * Why: tapping the avatar steps through the shapes and the colors together while no photo covers them; the button on
- * its corner takes or picks a photo, which opens "Ajustar foto", or removes it.
+ * Why: the group's rounded square, as every group is drawn; tapping it steps through the colors while no photo covers
+ * it. The button on its corner takes or picks a photo, which opens "Ajustar foto", or removes it.
  */
 @Composable
 private fun GroupIconWithPhotoButton(
@@ -333,19 +332,18 @@ private fun GroupIconWithPhotoButton(
     photoPickers: PhotoPickers,
 ) {
     var isPhotoMenuOpen by rememberSaveable { mutableStateOf(false) }
-    val changeIconLabel = stringResource(R.string.create_group_change_shape_and_color)
+    val changeIconLabel = stringResource(R.string.create_group_change_color)
     Box(modifier = Modifier.size(76.dp)) {
         GroupBadge(
             initials = state.initials,
             color = state.color,
             size = 72.dp,
-            shape = state.shape,
             photoUrl = state.photoUrl,
             modifier = Modifier
                 .clickable(
                     enabled = state.canChangeColor,
                     role = Role.Button,
-                    onClick = { onEvent(CreateGroupUiEvent.OnShapeAndColorClicked) },
+                    onClick = { onEvent(CreateGroupUiEvent.OnColorClicked) },
                 ).semantics { contentDescription = changeIconLabel },
         )
         if (state.isPreparingPhoto) {
@@ -543,7 +541,6 @@ private fun buildPreviewState(
     name = "Viagem Floripa",
     initials = previewInitialsOf("Viagem Floripa"),
     color = AvatarColor.PEACH,
-    shape = GroupShape.COOKIE,
     photo = null,
     isPreparingPhoto = false,
     showsPhotoError = false,

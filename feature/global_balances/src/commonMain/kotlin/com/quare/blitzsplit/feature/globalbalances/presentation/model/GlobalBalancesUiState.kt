@@ -42,6 +42,8 @@ data class GlobalBalancesUiState(
     val pickedPersonId: String?,
     // Why: "Buscar" only once there is a group to look in, as on Grupos.
     val canSearch: Boolean,
+    // Why: Android's "Rachar conta", once there is a group to split in, as on Início.
+    val showsSplitBillButton: Boolean,
 ) {
     // Why: the people and the totals load together; until then nothing reads as settled or zero.
     val isLoaded: Boolean

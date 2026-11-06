@@ -2,7 +2,6 @@ package com.quare.blitzsplit.feature.editgroup.presentation.model
 
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.presentation.UiEvent
@@ -25,8 +24,6 @@ sealed interface EditGroupUiEvent : UiEvent {
 
             // Why: only a pick "Ícone do grupo" takes, while it is open.
             is OnIconColorPicked -> EventAnalytics.Manual("group_icon_color_picked")
-
-            is OnIconShapePicked -> EventAnalytics.Manual("group_icon_shape_picked")
 
             OnIconConfirmed -> EventAnalytics.Automatic("group_icon_confirmed")
 
@@ -99,11 +96,7 @@ sealed interface EditGroupUiEvent : UiEvent {
         val color: AvatarColor,
     ) : EditGroupUiEvent
 
-    data class OnIconShapePicked(
-        val shape: GroupShape,
-    ) : EditGroupUiEvent
-
-    // Why: "Usar este ícone" puts the shape and color picked in the form, in place of the photo.
+    // Why: "Usar este ícone" puts the color picked in the form, in place of the photo.
     data object OnIconConfirmed : EditGroupUiEvent
 
     // Why: the web's and the Mac's "Cor do ícone", in the form, which takes the photo off too.
