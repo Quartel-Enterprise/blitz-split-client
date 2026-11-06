@@ -593,7 +593,14 @@ class RoomSettlementLocalDataSourceTest {
             dataSource.applyRemote(listOf(serverPayment))
 
             // Then
-            assertEquals("USD", dataSource.observeSettlements(MY_GROUP).first().single().currency)
+            assertEquals(
+                "USD",
+                dataSource
+                    .observeSettlements(MY_GROUP)
+                    .first()
+                    .single()
+                    .currency,
+            )
         }
 
     private fun group(
