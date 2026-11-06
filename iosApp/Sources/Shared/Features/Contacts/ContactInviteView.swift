@@ -325,7 +325,7 @@ private struct InviteNotesAndButtons: View {
                     .disabled(true)
                 }
             }
-            .controlSize(.large)
+            .sheetButtonSize()
             .buttonBorderShape(.capsule)
             .disabled(state.link == nil)
         }

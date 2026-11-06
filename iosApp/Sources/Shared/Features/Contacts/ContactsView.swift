@@ -139,13 +139,19 @@ struct ContactsView: View {
     /// The column beside the list shows, so the row of what it shows is highlighted.
     let showsDetail: Bool
 
+    #if os(macOS)
+    /// The row the arrow keys moved to in a narrow window, where a person opens over the list only on Return or a
+    /// double click.
+    @State private var narrowSelection: String?
+    #endif
+
     var body: some View {
         let state = model.state
         Group {
             if state.isEmpty {
                 ContactsEmptyState(model: model)
             } else {
-                List {
+                list {
                     if state.showsOfflineNotice {
                         Section {
                             Label("Offline · contacts on this \(DeviceName.current)", systemImage: "wifi.slash")
@@ -161,6 +167,15 @@ struct ContactsView: View {
                 }
                 #if os(iOS)
                 .listStyle(.insetGrouped)
+                #else
+                // A right-click offers the profile (and Show for someone hidden); a double click or Return opens it
+                .contextMenu(forSelectionType: String.self) { keys in
+                    if let key = keys.first {
+                        ContactMenu(model: model, key: key)
+                    }
+                } primaryAction: { keys in
+                    if let key = keys.first { model.send(ContactsUiEventOnContactClicked(key: key)) }
+                }
                 #endif
                 .scrollContentBackground(.hidden)
             }
@@ -193,7 +208,52 @@ struct ContactsView: View {
             GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model.changeErrorCount),
         ])
     }
+
+    #if os(macOS)
+    /// The Mac's list moves its selection with the arrow keys, as Balances': beside the list it is the person shown in
+    /// the pane, which a click or an arrow picks; in a narrow window it only marks the row, Return or a double click
+    /// opening them over the list.
+    private func list(@ViewBuilder content: () -> some View) -> some View {
+        List(selection: selection, content: content)
+    }
+
+    private var selection: Binding<String?> {
+        .listDetailSelection(showsDetail: showsDetail, shown: model.state.selectedKey, narrow: $narrowSelection) {
+            model.send(ContactsUiEventOnContactClicked(key: $0))
+        }
+    }
+    #else
+    private func list(@ViewBuilder content: () -> some View) -> some View {
+        List(content: content)
+    }
+    #endif
 }
+
+#if os(macOS)
+/// A person's right-click menu on the Mac: their profile, and Show for someone hidden.
+private struct ContactMenu: View {
+    let model: ContactsModel
+    let key: String
+
+    var body: some View {
+        let state = model.state
+        if let row = state.contacts.first(where: { $0.key == key }) {
+            profileButton(row)
+        } else if let row = state.hiddenContacts.first(where: { $0.key == key }) {
+            profileButton(row)
+            Button("Show in Contacts", systemImage: "eye") {
+                model.send(ContactsUiEventOnShowContactClicked(key: key))
+            }
+        }
+    }
+
+    private func profileButton(_ row: ContactRow) -> some View {
+        Button("Open \(row.name)'s profile", systemImage: "person.crop.circle") {
+            model.send(ContactsUiEventOnContactClicked(key: row.key))
+        }
+    }
+}
+#endif
 
 /// The summary, the people, the invites and the hidden ones.
 private struct ContactsSections: View {
@@ -347,6 +407,11 @@ private struct ContactPickRow: View {
     let isSelected: Bool
 
     var body: some View {
+        #if os(macOS)
+        // The list's own selection opens them, by a click or the arrow keys, and draws them selected
+        ContactRowLabel(row: row)
+            .tag(row.key)
+        #else
         Button {
             model.send(ContactsUiEventOnContactClicked(key: row.key))
         } label: {
@@ -355,6 +420,7 @@ private struct ContactPickRow: View {
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .selectedRowBackground(isSelected)
+        #endif
     }
 }
 
@@ -424,12 +490,17 @@ private struct HiddenContactsSection: View {
             if state.isHiddenExpanded {
                 ForEach(state.hiddenContacts, id: \.key) { row in
                     HStack(spacing: 8) {
+                        #if os(macOS)
+                        // The list's own selection opens them, as the people above
+                        ContactRowLabel(row: row)
+                        #else
                         Button {
                             model.send(ContactsUiEventOnContactClicked(key: row.key))
                         } label: {
                             ContactRowLabel(row: row)
                         }
                         .buttonStyle(.plain)
+                        #endif
                         Button("Show") {
                             model.send(ContactsUiEventOnShowContactClicked(key: row.key))
                         }
@@ -437,7 +508,11 @@ private struct HiddenContactsSection: View {
                         .buttonBorderShape(.capsule)
                         .accessibilityLabel(Text("Show \(row.name) in Contacts"))
                     }
+                    #if os(macOS)
+                    .tag(row.key)
+                    #else
                     .selectedRowBackground(showsDetail && row.key == state.selectedKey)
+                    #endif
                 }
             }
         } header: {

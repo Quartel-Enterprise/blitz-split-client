@@ -67,6 +67,7 @@ struct GroupsView: View {
     let model: GroupsModel
     #if os(macOS)
     @Environment(\.isNarrowWindow) private var isNarrowWindow
+    @Environment(\.frontRoute) private var frontRoute
     #endif
 
     var body: some View {
@@ -168,7 +169,7 @@ struct GroupsView: View {
                 Button("New group", systemImage: "plus.square.on.square") {
                     model.send(GroupsUiEventOnCreateGroupClicked.shared)
                 }
-                .keyboardShortcut("n", modifiers: [.command, .shift])
+                // File › New Group (⇧⌘N) runs it (`NewItemCommands`)
                 .help(Text("New group (⇧⌘N)"))
                 profileButton
             }
@@ -177,11 +178,17 @@ struct GroupsView: View {
                     SplitBillButton {
                         model.send(GroupsUiEventOnSplitBillClicked.shared)
                     }
-                    .keyboardShortcut("n", modifiers: .command)
+                    // File › Split a Bill (⌘N) runs it (`NewItemCommands`)
                     .help(Text("Split a bill (⌘N)"))
                 }
             }
         }
+        // File › Split a Bill (⌘N) and New Group (⇧⌘N), while Groups is in front: nothing pushed over it, Search closed
+        .newItemCommands(
+            isInFront: frontRoute == .groups && !state.isSearching,
+            splitBill: state.showsSplitBillButton ? { model.send(GroupsUiEventOnSplitBillClicked.shared) } : nil,
+            newGroup: { model.send(GroupsUiEventOnCreateGroupClicked.shared) },
+        )
         #endif
     }
 

@@ -29,3 +29,45 @@ extension View {
         listRowBackground(isSelected ? Palette.accent.opacity(0.16) : nil)
     }
 }
+
+#if os(macOS)
+extension Binding where Value == String? {
+    /// A Mac list's selection, moved by a click or the arrow keys, beside the pane it opens into (Balances, Contacts):
+    /// with the pane shown it is what the pane shows, each pick sent on (`pick`); without it only the row the keys are
+    /// on (`narrow`), Return or a double click opening it over the list.
+    static func listDetailSelection(
+        showsDetail: Bool,
+        shown: String?,
+        narrow: Binding<String?>,
+        pick: @escaping (String) -> Void,
+    ) -> Binding<String?> {
+        Binding(
+            get: { showsDetail ? shown : narrow.wrappedValue },
+            set: { id in
+                if showsDetail {
+                    if let id { pick(id) }
+                } else {
+                    narrow.wrappedValue = id
+                }
+            },
+        )
+    }
+}
+
+extension View {
+    /// Takes the keyboard as it appears, so a sheet's list moves with the arrow keys before any click.
+    func focusedOnAppear() -> some View {
+        modifier(FocusedOnAppear())
+    }
+}
+
+private struct FocusedOnAppear: ViewModifier {
+    @FocusState private var isFocused: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .focused($isFocused)
+            .onAppear { isFocused = true }
+    }
+}
+#endif

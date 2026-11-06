@@ -108,7 +108,6 @@ struct SimplifyDebtsConfirmationView: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(isChanging)
             }
-            .controlSize(.large)
             .padding(16)
         }
         #else

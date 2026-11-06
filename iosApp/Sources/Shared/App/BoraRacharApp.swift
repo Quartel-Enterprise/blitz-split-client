@@ -69,8 +69,9 @@ struct BoraRacharApp: App {
         .windowResizability(.contentMinSize)
         .commands {
             // One window: a second one would draw the same shared back stack and move with it, so File › New Window
-            // goes, and ⌘N is "Split a bill", the main button of Home, Groups and a group's screens
-            CommandGroup(replacing: .newItem) {}
+            // goes, and ⌘N is "Split a bill", the main button of Home, Groups and a group's screens, ⇧⌘N Groups'
+            // "New group"
+            NewItemCommands(language: app.language)
             GroupsCommands(language: app.language)
             ActivityCommands(language: app.language)
             SearchCommands(language: app.language)

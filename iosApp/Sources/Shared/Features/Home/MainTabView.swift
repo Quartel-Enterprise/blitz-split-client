@@ -110,6 +110,8 @@ struct MainTabView: View {
         // ⌘K (Edit › Search) opens the search tab, or brings the focus back to its field; never under a sheet, which
         // the tab's move would close
         .focusedSceneValue(\.openSearch, searchCommand)
+        // Which screen publishes its menu commands: ⌘N and ⇧⌘N (`newItemCommands`), Activity's ⌘R
+        .environment(\.frontRoute, path.last)
         // The open groups as Groups lists them, where the boards draw them: over Groups and a group's screens
         .tabViewSidebarFooter {
             if showsOpenGroups {

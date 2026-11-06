@@ -18234,6 +18234,23 @@
         }
       }
     },
+    "New Group" : {
+      "comment" : "The Mac's File menu: Groups' New group (⇧⌘N), title case",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuevo grupo"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novo Grupo"
+          }
+        }
+      }
+    },
     "New group" : {
       "comment" : "The title of the new group sheet, and the home's button that opens it",
       "localizations" : {
@@ -23205,6 +23222,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registrar pagamento"
+          }
+        }
+      }
+    },
+    "Refresh" : {
+      "comment" : "The Mac's View menu: syncs Activity (⌘R)",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atualizar"
           }
         }
       }

@@ -24,6 +24,18 @@ extension View {
     }
 }
 
+extension View {
+    /// The buttons at the foot of a sheet shared with iOS: large on iPhone and iPad, where a thumb taps them, and the
+    /// regular size a Mac sheet's buttons have.
+    func sheetButtonSize() -> some View {
+        #if os(macOS)
+        controlSize(.regular)
+        #else
+        controlSize(.large)
+        #endif
+    }
+}
+
 extension ScreenLayout {
     /// A bill's sheet with an iPad's room: 820×640 where the window lies down and 620×860 upright, as the canvas draws
     /// them, never more than the window under it. Nil without an iPad's room.

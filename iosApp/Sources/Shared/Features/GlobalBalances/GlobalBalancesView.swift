@@ -255,6 +255,11 @@ private struct GlobalBalancesList: View {
     /// The overall balance and the filter heading the list, unless they stay still beside it (an iPhone lying down).
     let showsSummary: Bool
 
+    #if os(macOS)
+    /// The row the arrow keys moved to in a narrow window, where nothing shows beside the list.
+    @State private var narrowSelection: String?
+    #endif
+
     private var state: GlobalBalancesUiState {
         model.state
     }
@@ -264,56 +269,102 @@ private struct GlobalBalancesList: View {
     }
 
     var body: some View {
-        List {
-            #if os(iOS)
-            if showsSummary {
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        if state.showsOfflineNotice {
-                            OfflineNotice()
-                        }
-                        BalancesSummary(model: model, amountSize: 36)
-                    }
-                    .padding(.vertical, 4)
+        list
+            #if os(macOS)
+            // A right-click offers the row's actions and the profile; a double click or Return opens the profile
+            .contextMenu(forSelectionType: String.self) { ids in
+                if let row = row(ids.first) {
+                    PersonMenu(model: model, row: row)
                 }
-            }
-            #else
-            if state.showsOfflineNotice {
-                Section {
-                    Label("Offline · this \(DeviceName.current)'s balances", systemImage: "wifi.slash")
-                        .foregroundStyle(.secondary)
+            } primaryAction: { ids in
+                if let row = row(ids.first), row.opensProfile {
+                    model.send(GlobalBalancesUiEventOnPersonClicked(personId: row.id))
                 }
             }
             #endif
-            // Beside the list, the empty state takes the detail's column instead
-            if let emptyState = state.emptyState, let total = state.emptyStateTotal, !showsDetail {
-                Section {
-                    EmptyBalances(model: model, emptyState: emptyState, total: total)
+            .scrollContentBackground(.hidden)
+            .background(Palette.groupedBackground)
+    }
+
+    #if os(macOS)
+    /// The Mac's list moves its selection with the arrow keys, as Activity's: beside the detail it is the person shown
+    /// there, which a click or an arrow picks; in a narrow window, only where the keys are.
+    private var list: some View {
+        List(selection: selection) {
+            sections
+        }
+    }
+
+    private var selection: Binding<String?> {
+        .listDetailSelection(showsDetail: showsDetail, shown: state.selectedPerson?.id, narrow: $narrowSelection) {
+            model.send(GlobalBalancesUiEventOnPersonSelected(personId: $0))
+        }
+    }
+
+    private func row(_ id: String?) -> PersonRow? {
+        guard let id else { return nil }
+        return state.sections.lazy.flatMap(\.rows).first { $0.id == id }
+    }
+    #else
+    private var list: some View {
+        List {
+            sections
+        }
+    }
+    #endif
+
+    @ViewBuilder
+    private var sections: some View {
+        #if os(iOS)
+        if showsSummary {
+            Section {
+                VStack(alignment: .leading, spacing: 12) {
+                    if state.showsOfflineNotice {
+                        OfflineNotice()
+                    }
+                    BalancesSummary(model: model, amountSize: 36)
                 }
-                .listRowBackground(Color.clear)
+                .padding(.vertical, 4)
             }
-            ForEach(state.sections, id: \.isYouOwe) { section in
-                Section {
-                    ForEach(section.rows, id: \.id) { row in
+        }
+        #else
+        if state.showsOfflineNotice {
+            Section {
+                Label("Offline · this \(DeviceName.current)'s balances", systemImage: "wifi.slash")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        #endif
+        // Beside the list, the empty state takes the detail's column instead
+        if let emptyState = state.emptyState, let total = state.emptyStateTotal, !showsDetail {
+            Section {
+                EmptyBalances(model: model, emptyState: emptyState, total: total)
+            }
+            .listRowBackground(Color.clear)
+        }
+        ForEach(state.sections, id: \.isYouOwe) { section in
+            Section {
+                ForEach(section.rows, id: \.id) { row in
+                    Group {
                         if showsDetail {
                             PersonPickRow(model: model, row: row, isSelected: row.id == state.selectedPerson?.id)
                         } else {
                             PersonRowView(model: model, row: row)
                         }
                     }
-                } header: {
-                    HStack {
-                        Text(sectionTitle(section))
-                        Spacer()
-                        Text(verbatim: section.totals.map { $0.currency.format($0.amountMinor) }.joined(separator: " + "))
-                            .monospacedDigit()
-                            .textCase(nil)
-                    }
+                    // What the Mac's selection and right-click name the row by
+                    .tag(row.id)
+                }
+            } header: {
+                HStack {
+                    Text(sectionTitle(section))
+                    Spacer()
+                    Text(verbatim: section.totals.map { $0.currency.format($0.amountMinor) }.joined(separator: " + "))
+                        .monospacedDigit()
+                        .textCase(nil)
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .background(Palette.groupedBackground)
     }
 }
 
@@ -468,6 +519,11 @@ private struct PersonPickRow: View {
     let isSelected: Bool
 
     var body: some View {
+        #if os(macOS)
+        // The list's own selection picks it, by a click or the arrow keys, and draws it selected
+        PersonSummary(row: row, name: PaymentCopy.name(row.name))
+            .padding(.vertical, 2)
+        #else
         Button {
             model.send(GlobalBalancesUiEventOnPersonSelected(personId: row.id))
         } label: {
@@ -478,8 +534,29 @@ private struct PersonPickRow: View {
         .padding(.vertical, 2)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .selectedRowBackground(isSelected)
+        #endif
     }
 }
+
+#if os(macOS)
+/// A person's right-click menu on the Mac: Got paid and Request for someone who owes you, else Settle up, then their
+/// profile.
+private struct PersonMenu: View {
+    let model: GlobalBalancesModel
+    let row: PersonRow
+
+    var body: some View {
+        // The row's own buttons, which a menu draws as its items
+        PersonActions(model: model, row: row, name: PaymentCopy.name(row.name))
+        if row.opensProfile {
+            Divider()
+            Button("Open \(PaymentCopy.name(row.name))'s profile", systemImage: "person.crop.circle") {
+                model.send(GlobalBalancesUiEventOnPersonClicked(personId: row.id))
+            }
+        }
+    }
+}
+#endif
 
 /// The column beside the list (the Mac's inspector): the person picked, every group they are in, what they owe or are
 /// owed with the actions, "By group" and why one amount settles every group; with nothing open, the empty state.

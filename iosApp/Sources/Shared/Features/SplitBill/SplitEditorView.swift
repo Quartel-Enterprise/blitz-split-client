@@ -519,7 +519,6 @@ struct MacSplitEditor: View {
                     .keyboardShortcut(.defaultAction)
                     .disabled(!editor.addsUp)
                 }
-                .controlSize(.large)
             }
             .padding(20)
         }

@@ -320,7 +320,7 @@ private struct ShareBillButtons: View {
                 .disabled(true)
             }
         }
-        .controlSize(.large)
+        .sheetButtonSize()
         .buttonBorderShape(.capsule)
     }
 }

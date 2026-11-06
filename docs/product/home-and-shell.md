@@ -82,9 +82,13 @@ The home's four tabs and the web's and the Mac's shell.
     `brand_clicked` where the screen's ViewModel tracks its events.
   - The Mac has one window (the Settings window aside): every window would draw the one shared back stack, so the File
     menu has no New Window and windows don't tab (no View › Show Tab Bar, whose "+" opened another; a closed window
-    comes back from the Dock), and ⌘N is "Split a bill", the toolbar's main button on Home, Groups (asking the group
-    first) and a group's screens (that group), with ⇧⌘N for Groups' "New group"; Settings' sidebar is 250 pt, room
-    for "Keys to receive payments" whole.
+    comes back from the Dock). The File menu holds New Window's place with Split a Bill (⌘N) and New Group (⇧⌘N), one
+    command each that runs the toolbar's button of the screen in front (`NewItemCommands`): "Split a bill" on Home,
+    Groups (asking the group first) and a group's screens (that group, only while its screen is the one in front), "New
+    group" on Groups; each is disabled where the screen in front has no such button (Balances, Contacts, Activity,
+    Search) and under a sheet. The toolbar's buttons keep their tooltips with the shortcut. View › Refresh (⌘R) syncs
+    Activity while it is open, as pulling its feed down does on iPhone and iPad. Settings' sidebar is 250 pt, room for
+    "Keys to receive payments" whole, and its form stops at 720 pt, centred, in a wider window (full screen).
   - On the Mac, a link the app is opened with (the browser sign in coming back through `borarachar://auth-callback`, an
     invite link) goes to the main window already open, which updates in place, never to a second window opened on top
     of it (beta feedback 12, `handlesExternalEvents` on the main window's root); with none open, the app opens one.

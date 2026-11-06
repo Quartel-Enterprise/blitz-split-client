@@ -404,7 +404,6 @@ struct MacPayWithKey: View {
                     .keyboardShortcut(.defaultAction)
                     .disabled(!state.canMarkAsPaid)
             }
-            .controlSize(.large)
         }
         .padding(20)
         .frame(width: 440)

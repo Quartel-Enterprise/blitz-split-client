@@ -582,7 +582,6 @@ private struct MacRegisterPayment: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(!state.canConfirm)
             }
-            .controlSize(.large)
         }
         .padding(20)
         .frame(width: 480)

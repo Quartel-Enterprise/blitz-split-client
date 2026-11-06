@@ -99,6 +99,8 @@ struct ProfileView: View {
     /// Made once the settings appear, as the other screens make theirs: SwiftUI rebuilds this view's value
     /// whenever its parent redraws.
     @State private var notificationModel: NotificationSettingsModel?
+    /// The form's width, whose room past `ScreenLayout.macSettingsWidth` goes to its side margins.
+    @State private var formWidth: CGFloat = 0
 
     init(model: ProfileModel, pane: ProfileSettingsPane?, scrollRequest: Int) {
         self.model = model
@@ -161,6 +163,12 @@ struct ProfileView: View {
     }
 
     #if os(macOS)
+    /// Half the room past a settings pane's width, nil (the form's own margins) in a window narrower than that.
+    private var settingsMargin: CGFloat? {
+        let margin = (formWidth - ScreenLayout.macSettingsWidth) / 2
+        return margin > 0 ? margin : nil
+    }
+
     private var content: some View {
         ScrollViewReader { proxy in
             Form {
@@ -194,6 +202,11 @@ struct ProfileView: View {
                 LegalFooter(model: model)
             }
             .formStyle(.grouped)
+            // A wide Ajustes window (full screen) keeps the rows at a settings pane's width, centred, rather than
+            // stretching them across it; the form itself, the scroll view, stays the window's width, so its scroll bar
+            // sits at the edge and the margins scroll too
+            .contentMargins(.horizontal, settingsMargin, for: .scrollContent)
+            .onGeometryChange(for: CGFloat.self, of: \.size.width) { formWidth = $0 }
             // Also as the form comes back from Ajustes' Categories, which drew the map in its place
             .onChange(of: scrollRequest, initial: true) {
                 guard let pane, scrollRequest > 0 else { return }
@@ -670,6 +683,14 @@ private struct PaymentKeysSection: View {
                         PaymentKeyRow(key: key)
                     }
                     .buttonStyle(.plain)
+                    #if os(macOS)
+                    // A right-click opens the key as its click does, where its default and Delete live
+                    .contextMenu {
+                        Button("Edit…", systemImage: "pencil") {
+                            model.send(ProfileUiEventOnPaymentKeyClicked(keyId: key.id))
+                        }
+                    }
+                    #endif
                 }
             } else {
                 // A restored account's keys come with its first full sync: never "no key" before them

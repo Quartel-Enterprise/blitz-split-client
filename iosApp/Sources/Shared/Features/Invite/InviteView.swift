@@ -49,6 +49,17 @@ struct InviteView: View {
     @State private var model: InviteModel?
     @Environment(\.windowLayout) private var window
 
+    /// The bar's Close. The Mac's sheet has its Close in the bottom row (`MacInviteButtons`) once the invite is read;
+    /// until then, in the bar, so Esc closes it. The popover has none.
+    private var showsToolbarClose: Bool {
+        guard !isPopover else { return false }
+        #if os(macOS)
+        return model?.state.isLoaded != true
+        #else
+        return !isPushed || route.isNewGroup
+        #endif
+    }
+
     /// Pushed full screen with an iPad's room, where the system's back goes back to the group; the new group's
     /// invite keeps its close button, as the board draws it.
     private var isPushed: Bool {
@@ -86,7 +97,7 @@ struct InviteView: View {
         .navigationBarBackButtonHidden(isPushed && route.isNewGroup)
         #endif
         .toolbar {
-            if !isPopover, !isPushed || route.isNewGroup {
+            if showsToolbarClose {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close", systemImage: "xmark", role: .cancel) {
                         model?.send(InviteUiEventOnCloseClicked.shared)
@@ -219,12 +230,22 @@ private struct InviteContent: View {
                         InviteHeading(state: state, isLarge: false)
                         card(qrMaxWidth: 240)
                         WhoPicksText(names: state.notJoinedNames)
+                        #if os(iOS)
                         InviteButtons(model: model, spacing: 20)
+                        #endif
                     }
                     .padding(20)
                     .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
                     .frame(maxWidth: .infinity)
                 }
+                #if os(macOS)
+                // The Mac's sheet keeps its buttons at the bottom, as its other sheets do, whatever the scroll
+                .safeAreaInset(edge: .bottom) {
+                    InviteButtons(model: model)
+                        .padding(20)
+                        .background(Palette.groupedBackground)
+                }
+                #endif
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -294,8 +315,17 @@ private struct InviteButtons: View {
     var spacing: CGFloat = 8
 
     var body: some View {
+        #if os(macOS)
+        MacInviteButtons(model: model)
+        #else
+        phoneButtons
+        #endif
+    }
+
+    #if os(iOS)
+    private var phoneButtons: some View {
         let state = model.state
-        VStack(spacing: spacing) {
+        return VStack(spacing: spacing) {
             if let link = state.link, state.displayLink != nil, state.qrCode != nil {
                 ShareLink(item: link, message: inviteShareMessage(groupName: state.groupName)) {
                     Label("Share invite", systemImage: "square.and.arrow.up")
@@ -328,7 +358,52 @@ private struct InviteButtons: View {
             AddWithoutAppButton(model: model)
         }
     }
+    #endif
 }
+
+#if os(macOS)
+/// The Mac's sheet right after creating a group: "Add someone without the app" as a link, then a trailing row of
+/// regular buttons as the personal invite's, Close, "See who joined" (or "Go to the group" while the link waits) and
+/// "Share…", the default one, on Return.
+private struct MacInviteButtons: View {
+    let model: InviteModel
+
+    var body: some View {
+        let state = model.state
+        VStack(alignment: .leading, spacing: 16) {
+            Button("Add someone without the app") {
+                model.send(InviteUiEventOnAddPersonClicked.shared)
+            }
+            .buttonStyle(.link)
+            HStack(spacing: 8) {
+                Spacer()
+                Button("Close") {
+                    model.send(InviteUiEventOnCloseClicked.shared)
+                }
+                .keyboardShortcut(.cancelAction)
+                if let link = state.link, state.displayLink != nil, state.qrCode != nil {
+                    Button("See who joined") {
+                        model.send(InviteUiEventOnSeeWhoJoinedClicked.shared)
+                    }
+                    ShareLink(item: link, message: inviteShareMessage(groupName: state.groupName)) {
+                        Text("Share…")
+                    }
+                    .onShareTap { model.send(InviteUiEventOnShareClicked.shared) }
+                    .buttonStyle(.borderedProminent)
+                    .prominentLabel()
+                    .keyboardShortcut(.defaultAction)
+                } else {
+                    Button("Go to the group") {
+                        model.send(InviteUiEventOnGoToGroupClicked.shared)
+                    }
+                    .keyboardShortcut(.defaultAction)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+#endif
 
 /// Someone without the app goes in by name, as in "New group", from the group's Members.
 private struct AddWithoutAppButton: View {
