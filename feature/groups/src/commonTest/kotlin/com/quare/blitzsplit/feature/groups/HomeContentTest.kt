@@ -622,7 +622,6 @@ class HomeContentTest {
         name = id,
         initials = "G",
         color = AvatarColor.BLUE,
-        shape = GroupShape.COOKIE,
         photoUrl = null,
         faces = emptyList(),
         extraMemberCount = 0,

@@ -426,6 +426,39 @@ internal fun BottomClearanceSpacer(height: Dp) {
     Spacer(modifier = Modifier.height(height))
 }
 
+/*
+ * Why: the chip alone, in the top bar's empty leading area (beside the title on a tablet), so it comes and goes
+ * without pushing the content down.
+ */
+@Composable
+internal fun HomeSyncChip(
+    state: HomeUiState,
+    onEvent: (HomeUiEvent) -> Unit,
+) {
+    SyncBadgeChip(
+        badge = state.syncBadge,
+        pendingChangeCount = state.pendingChangeCount,
+        canRetry = state.canRetrySync,
+        onRetry = { onEvent(HomeUiEvent.OnRetrySyncClicked) },
+        downloadProgress = state.firstDownload,
+        isSingleLine = true,
+    )
+}
+
+// Why: the first download's bar, which fills as the groups come ("3 de 7 grupos"), under the top bar's chip.
+@Composable
+internal fun HomeDownloadStatusLine(
+    state: HomeUiState,
+    modifier: Modifier = Modifier,
+) {
+    state.firstDownload?.let {
+        DownloadStatusLine(
+            progress = it,
+            modifier = modifier,
+        )
+    }
+}
+
 // Why: the chip, and under it the first download's bar, which fills as the groups come ("3 de 7 grupos").
 @Composable
 internal fun HomeSyncStatusIndicator(
@@ -445,6 +478,6 @@ internal fun HomeSyncStatusIndicator(
             onRetry = { onEvent(HomeUiEvent.OnRetrySyncClicked) },
             downloadProgress = state.firstDownload,
         )
-        state.firstDownload?.let { DownloadStatusLine(progress = it) }
+        HomeDownloadStatusLine(state = state)
     }
 }

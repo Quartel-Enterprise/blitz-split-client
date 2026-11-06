@@ -10,6 +10,8 @@ data class InviteDto(
     @SerialName("type") val type: String,
     @SerialName("color") val color: String,
     @SerialName("currency") val currency: String,
+    // Why: null for no photo; get_invite answers the key every time (blitz-split-api#48).
+    @SerialName("photo_url") val photoUrl: String?,
     @SerialName("creator_name") val creatorName: String?,
     @SerialName("is_member") val isMember: Boolean,
     @SerialName("members") val members: List<InviteMemberDto>,

@@ -21,6 +21,7 @@ class InviteMapperImpl : InviteMapper {
         groupName = dto.name,
         groupType = GroupType.fromCodeOrNull(dto.type) ?: GroupType.OTHER,
         groupColor = AvatarColor.fromCodeOrNull(dto.color) ?: AvatarColor.default,
+        groupPhotoUrl = dto.photoUrl,
         currency = GroupCurrency.fromCodeOrNull(dto.currency) ?: GroupCurrency.fallback,
         creatorName = dto.creatorName,
         isMember = dto.isMember,
@@ -35,7 +36,6 @@ class InviteMapperImpl : InviteMapper {
         ALREADY_MEMBER -> JoinOutcome.AlreadyMember(requireNotNull(dto.groupId), dto.memberId)
         TAKEN -> JoinOutcome.MemberTaken
         MEMBER_GONE -> JoinOutcome.MemberGone
-        NAME_TAKEN -> JoinOutcome.NameTaken
         else -> JoinOutcome.InvalidLink
     }
 
@@ -44,6 +44,7 @@ class InviteMapperImpl : InviteMapper {
         name = dto.name,
         avatarColor = AvatarColor.fromCodeOrNull(dto.avatarColor) ?: AvatarColor.default,
         hasJoined = dto.hasJoined,
+        photoUrl = dto.photoUrl,
     )
 
     private companion object {
@@ -51,6 +52,5 @@ class InviteMapperImpl : InviteMapper {
         const val ALREADY_MEMBER = "already_member"
         const val TAKEN = "taken"
         const val MEMBER_GONE = "member_gone"
-        const val NAME_TAKEN = "name_taken"
     }
 }

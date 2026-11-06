@@ -31,7 +31,6 @@ import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -59,11 +58,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
-import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
+import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -145,11 +145,9 @@ fun GroupsContent(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
                     if (!layout.usesNavigationRail && !state.isSearching && state.showsSplitBillButton) {
-                        ExtendedFloatingActionButton(
+                        SplitBillFab(
                             onClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) },
-                            icon = { Icon(splitBillIcon(), contentDescription = null) },
-                            text = { Text(stringResource(R.string.groups_split_bill)) },
-                            expanded = !listState.canScrollBackward,
+                            isExpanded = !listState.canScrollBackward,
                         )
                     }
                 },
@@ -442,6 +440,8 @@ internal fun SyncBadgeChip(
     onRetry: () -> Unit,
     // Why: "Sincronizando… 3 de 7 grupos" while a first download knows how many groups are coming.
     downloadProgress: DownloadProgress? = null,
+    // Why: in a top bar, one line that ellipsizes instead of wrapping to a second one.
+    isSingleLine: Boolean = false,
 ) {
     val (icon, label) = when (badge) {
         null -> return
@@ -492,6 +492,8 @@ internal fun SyncBadgeChip(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelLarge,
+                maxLines = if (isSingleLine) 1 else Int.MAX_VALUE,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

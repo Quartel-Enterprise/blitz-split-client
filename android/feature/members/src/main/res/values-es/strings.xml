@@ -33,8 +33,6 @@
     <string name="members_add">Agregar persona</string>
     <string name="members_invite_instead">¿Tiene la app? Invítalo con el enlace</string>
     <string name="members_name_label">Nombre</string>
-    <string name="members_name_taken">%s ya está en el grupo. Usa un apodo para distinguirlos.</string>
-    <string name="members_use_nickname">Usar “%s”</string>
     <string name="members_save">Guardar</string>
     <string name="members_cancel">Cancelar</string>
     <string name="members_change_error">No se pudo guardar el cambio. Inténtalo de nuevo.</string>

@@ -8,8 +8,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.GetRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
@@ -46,6 +48,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
@@ -54,6 +57,7 @@ import software.quare.loadable.valueOrNull
 class GlobalBalancesViewModel(
     private val route: Route.GlobalBalances,
     private val navigator: Navigator,
+    private val getRecentGroupId: GetRecentGroupId,
     consumeRecordedPayment: ConsumeRecordedPayment,
     deleteSettlement: DeleteSettlement,
     observePeopleBalances: ObservePeopleBalances,
@@ -62,6 +66,7 @@ class GlobalBalancesViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
+    observeHasGroups: ObserveHasGroups,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<GlobalBalancesUiEvent>(trackEvent) {
     val uiState: StateFlow<GlobalBalancesUiState>
@@ -79,6 +84,7 @@ class GlobalBalancesViewModel(
                 isOnline = true,
                 recordedPayment = null,
                 pickedPersonId = null,
+                hasGroups = false,
             ),
         )
 
@@ -105,6 +111,9 @@ class GlobalBalancesViewModel(
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 
+    // Why: the most recently used group is read once per tap, so a second tap meanwhile opens nothing.
+    private var isOpeningSplitBill = false
+
     init {
         combine(observePeopleBalances(), observeFirstDownload()) { people, download ->
             balances = people
@@ -124,6 +133,10 @@ class GlobalBalancesViewModel(
                 )
             }
         }.launchIn(viewModelScope)
+        // Why: "Rachar conta" needs a group, settled ones included.
+        observeHasGroups()
+            .onEach { hasGroups -> uiState.update { it.copy(hasGroups = hasGroups) } }
+            .launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -184,6 +197,8 @@ class GlobalBalancesViewModel(
             is GlobalBalancesUiEvent.OnChargeClicked -> openCharge(event.personId)
 
             GlobalBalancesUiEvent.OnEmptyActionClicked -> handleEmptyAction()
+
+            GlobalBalancesUiEvent.OnSplitBillClicked -> openSplitBill()
 
             GlobalBalancesUiEvent.OnHomeTabClicked, GlobalBalancesUiEvent.OnBrandClicked -> navigator.openHomeTab(
                 Route.Home,
@@ -321,6 +336,19 @@ class GlobalBalancesViewModel(
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
+
+    // Why: "Rachar em qual grupo?" first (7.1i), the most recently used group marked, as Início's button asks.
+    private fun openSplitBill() {
+        if (!uiState.value.showsSplitBillButton || isOpeningSplitBill || !isOnTop()) return
+        isOpeningSplitBill = true
+        viewModelScope.launch {
+            val groupId = getRecentGroupId()
+            isOpeningSplitBill = false
+            if (groupId == null || !isOnTop()) return@launch
+            trackEvent("split_bill_clicked", mapOf("source" to GLOBAL_BALANCES_SOURCE))
+            navigator.navigate(Route.SplitBill.createPickingGroup(groupId))
+        }
+    }
 
     private fun zeroTotalOf(currency: GroupCurrency): PeopleTotal = PeopleTotal(
         currency = currency,

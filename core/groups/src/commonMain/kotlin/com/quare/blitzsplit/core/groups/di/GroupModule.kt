@@ -37,6 +37,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
 import com.quare.blitzsplit.core.groups.domain.usecase.ReleaseMember
 import com.quare.blitzsplit.core.groups.domain.usecase.RemoveMember
@@ -59,6 +60,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveAddPersonRequ
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObservePinnedGroupIdsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ReleaseMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.RemoveMemberUseCase
@@ -83,6 +85,7 @@ val groupModule = module {
     singleOf(::InviteMapperImpl).bind<InviteMapper>()
     singleOf(::InviteRepositoryImpl).bind<InviteRepository>()
     factoryOf(::ObserveGroupsUseCase).bind<ObserveGroups>()
+    factoryOf(::ObserveHasGroupsUseCase).bind<ObserveHasGroups>()
     factoryOf(::CreateGroupUseCase).bind<CreateGroup>()
     factoryOf(::CheckMemberNameUseCase).bind<CheckMemberName>()
     factoryOf(::ObserveGroupUseCase).bind<ObserveGroup>()

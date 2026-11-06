@@ -6108,6 +6108,8 @@ private class FakeGroupLocalDataSource(
 
     override fun observeGroups(): Flow<List<GroupEntity>> = groups
 
+    override fun observeHasGroups(): Flow<Boolean> = groups.map { it.isNotEmpty() }
+
     override fun observeMembers(): Flow<List<GroupMemberEntity>> = members
 
     override fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>> = photos

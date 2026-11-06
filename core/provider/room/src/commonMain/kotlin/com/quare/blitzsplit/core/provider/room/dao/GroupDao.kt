@@ -19,6 +19,9 @@ interface GroupDao {
     @Query("SELECT * FROM split_group ORDER BY updatedAt DESC, id")
     fun observeGroups(): Flow<List<GroupEntity>>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM split_group)")
+    fun observeHasGroups(): Flow<Boolean>
+
     @Query("SELECT * FROM group_member ORDER BY addedAt, id")
     fun observeMembers(): Flow<List<GroupMemberEntity>>
 

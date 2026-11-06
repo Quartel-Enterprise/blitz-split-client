@@ -10,13 +10,17 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.GetRecentGroupIdUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -37,7 +41,9 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBala
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -1197,6 +1203,227 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN groups on the device WHEN Saldos opens THEN shows Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val showsSplitBill = viewModel.uiState.value.showsSplitBillButton
+
+        // Then
+        assertTrue(showsSplitBill)
+    }
+
+    @Test
+    fun `GIVEN no group at all WHEN Saldos opens THEN hides Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        val showsSplitBill = viewModel.uiState.value.showsSplitBillButton
+
+        // Then
+        assertFalse(showsSplitBill)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN Saldos opens THEN hides Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(groupsRead = false)
+
+        // When
+        val showsSplitBill = viewModel.uiState.value.showsSplitBillButton
+
+        // Then
+        assertFalse(showsSplitBill)
+    }
+
+    @Test
+    fun `GIVEN no group at all WHEN a sync brings the first group THEN shows Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+        val firstGroup = defaultGroups.first()
+
+        // When
+        groups.groups.value = listOf(firstGroup)
+
+        // Then
+        assertTrue(viewModel.uiState.value.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN a single group WHEN a sync takes it away THEN hides Rachar conta`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = defaultGroups.take(1),
+            bills = emptyList(),
+        )
+        val noGroups = emptyList<Group>()
+
+        // When
+        groups.groups.value = noGroups
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsSplitBillButton)
+    }
+
+    @Test
+    fun `GIVEN a bill just added to the Ape WHEN tapping Rachar conta THEN asks the group first with the Ape marked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(floripaChangedLast, apeCreatedFirst),
+                bills = listOf(
+                    owes(FLORIPA, ANA_FLORIPA, ME_FLORIPA, 1_000L, id = "old").copy(updatedAt = 300L),
+                    owes(APE, ME_APE, CARLA_APE, 2_000L, id = "new").copy(updatedAt = 500L),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, splitBillIn(APE)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no bill and the Ape edited last WHEN tapping Rachar conta THEN marks the Ape`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    floripaChangedLast.copy(updatedAt = 100L),
+                    apeCreatedFirst.copy(updatedAt = 400L),
+                ),
+                bills = emptyList(),
+            )
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, splitBillIn(APE)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the Ape used last WHEN a bill lands in Floripa THEN Rachar conta marks Floripa`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(floripaChangedLast, apeCreatedFirst),
+                bills = listOf(owes(APE, ME_APE, CARLA_APE, 2_000L, id = "ape-bill").copy(updatedAt = 500L)),
+            )
+            expenses.expenses.update {
+                it + owes(FLORIPA, ANA_FLORIPA, ME_FLORIPA, 1_000L, id = "floripa-bill").copy(updatedAt = 900L)
+            }
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, splitBillIn(FLORIPA)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group at all WHEN a sync brings one and tapping Rachar conta THEN asks with it marked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                bills = emptyList(),
+            )
+            groups.groups.value = listOf(apeCreatedFirst)
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, splitBillIn(APE)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no group at all WHEN Rachar conta is asked for THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = emptyList(),
+            bills = emptyList(),
+        )
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the groups not read yet WHEN Rachar conta is asked for THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(groupsRead = false)
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a sync took the last group WHEN a late Rachar conta arrives THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = defaultGroups.take(1),
+                bills = emptyList(),
+            )
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN settling up open over Saldos WHEN a late Rachar conta arrives THEN nothing stacks over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val settleUp = Route.SettleUp("user:bruno", GroupCurrency.BRL)
+            navigator.navigate(settleUp)
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, settleUp), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN Rachar conta already open WHEN a second tap arrives THEN opens no second one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(apeCreatedFirst),
+                bills = emptyList(),
+            )
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, route, splitBillIn(APE)), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN no internet WHEN Saldos opens THEN works on the device balances and says so`() =
         runTest(testDispatcher) {
             // Given
@@ -1689,6 +1916,34 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN groups on the device WHEN tapping Rachar conta THEN sends split bill clicked from Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf("split_bill_clicked" to mapOf<String, Any>("source" to "global_balances")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN no group WHEN tapping Rachar conta THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = emptyList())
+
+        // When
+        viewModel.onEvent(GlobalBalancesUiEvent.OnSplitBillClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN Saldos WHEN tapping the Inicio tab THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1748,6 +2003,18 @@ class GlobalBalancesViewModelTest {
         updatedAt = 0L,
     )
 
+    // Why: the Apê was created before Floripa, whose own last change lists it first; activity decides which is marked.
+    private val apeCreatedFirst = defaultGroups.single { it.id == APE }.copy(updatedAt = 10L)
+
+    private val floripaChangedLast = defaultGroups.single { it.id == FLORIPA }.copy(updatedAt = 20L)
+
+    private fun splitBillIn(groupId: String): Route.SplitBill = Route.SplitBill(
+        groupId = groupId,
+        expenseId = null,
+        picksGroupFirst = true,
+        scansReceipt = false,
+    )
+
     private val route = Route.GlobalBalances(BalancesFilter.ALL)
 
     private fun TestScope.prepareScenario(
@@ -1756,6 +2023,7 @@ class GlobalBalancesViewModelTest {
         bills: List<Expense> = defaultBills,
         storedSettlements: List<Settlement> = emptyList(),
         online: Boolean = true,
+        groupsRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -1786,6 +2054,15 @@ class GlobalBalancesViewModelTest {
             ),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
+            // Why: Room not read yet is a flow that hasn't emitted.
+            observeHasGroups = if (groupsRead) {
+                ObserveHasGroupsUseCase(groups)
+            } else {
+                ObserveHasGroups { flow { awaitCancellation() } }
+            },
+            getRecentGroupId = GetRecentGroupIdUseCase(
+                ObserveGroupsByActivityUseCase(ObserveGroupsUseCase(groups), money),
+            ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

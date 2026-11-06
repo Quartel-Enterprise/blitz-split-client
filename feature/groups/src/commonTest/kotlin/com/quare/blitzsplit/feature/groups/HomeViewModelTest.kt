@@ -64,6 +64,7 @@ import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
 import com.quare.blitzsplit.core.profile.domain.model.PhoneUse
 import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
+import com.quare.blitzsplit.core.profile.domain.usecase.UpdatePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.DismissAppBanner
@@ -162,6 +163,7 @@ class HomeViewModelTest {
 
     // Why: every time the card's answer was stored, in order.
     private val notificationPromptWrites = mutableListOf<Long>()
+    private val pushSwitchWrites = mutableListOf<Boolean>()
 
     @BeforeTest
     fun setUp() {
@@ -3213,6 +3215,43 @@ class HomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN the soft ask card WHEN tapping Turn on THEN turns the push switch on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(
+            HomeUiEvent.OnNotificationPermissionChecked(
+                NotificationPermission.NOT_DETERMINED,
+                canAskQuietly = false,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(HomeUiEvent.OnNotificationPromptTurnOnClicked)
+
+        // Then
+        assertEquals(listOf(true), pushSwitchWrites)
+    }
+
+    @Test
+    fun `GIVEN the soft ask card WHEN tapping Not now THEN leaves the push switch as it is`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(
+                HomeUiEvent.OnNotificationPermissionChecked(
+                    NotificationPermission.NOT_DETERMINED,
+                    canAskQuietly = false,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnNotificationPromptDismissed)
+
+            // Then
+            assertTrue(pushSwitchWrites.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the soft ask card WHEN tapping Turn on THEN asks the system for the permission`() =
         runTest(testDispatcher) {
             // Given
@@ -5644,6 +5683,7 @@ class HomeViewModelTest {
                 notificationPromptWrites += it
                 lastNotificationPromptAt.value = it
             },
+            updatePushEnabled = UpdatePushEnabled { pushSwitchWrites += it },
             // Why: like the groups, the settings row not read yet is a flow that has not emitted.
             dismissAppBanner = DismissAppBanner { appBannerDismissed.value = true },
             observeAppBannerDismissed = ObserveAppBannerDismissed { appBannerDismissed },

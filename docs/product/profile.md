@@ -42,7 +42,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update
     is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks and
     keeps "Version".
-  - Profile › Preferences › "Notifications" ("5 active", the rows whose Push is on) opens Notifications: a row per
+  - Profile › Preferences › "Notifications" ("5 active", the rows whose Push is on; "0 active" while its "Push notifications" switch is off on this device) opens Notifications: a row per
     kind of Activity and the weekly reminder, each with a Push and an In app toggle. Activity's bar opens the same
     screen; see [activity-and-push.md](activity-and-push.md) for the rows, the defaults and how each platform draws
     it (the Mac and the web keep it inside the profile, as before).
@@ -83,7 +83,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Edit profile, the Mac's Settings) or a group (New group, Edit group) opens it before it becomes the avatar,
     never the Google or Apple account's photo. Dark, full screen on Android, iOS and a phone's browser, a 560×720
     sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
-    for a profile and a rounded square for a group (the group's one shape off Android, its badge's 32% corners): drag,
+    for a profile and a rounded square for a group (the group's one shape, its badge's 32% corners): drag,
     pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Rotate" turns it 90°
     clockwise, "Horizontal" and "Vertical" mirror it; the photo always covers the frame. "Done" makes the 512x512
     JPEG of what the frame holds; ✕, Cancel or back leave the photo shown as it was. The framing is the shared

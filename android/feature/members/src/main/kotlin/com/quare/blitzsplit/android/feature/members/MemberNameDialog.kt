@@ -2,13 +2,9 @@ package com.quare.blitzsplit.android.feature.members
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,10 +24,9 @@ import com.quare.blitzsplit.feature.members.presentation.model.MemberNameEditor
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 
 /*
- * Why: "Adicionar pessoa" and "Renomear" ask the same thing, a name free in the group, with nicknames when it isn't.
+ * Why: "Adicionar pessoa" and "Renomear" ask the same thing, a name, which may repeat another member's.
  * A book asks in its right half, over the group.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun MemberNameDialog(
     editor: MemberNameEditor,
@@ -51,14 +46,6 @@ internal fun MemberNameDialog(
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
                     label = { Text(stringResource(R.string.members_name_label)) },
-                    isError = editor.takenName != null,
-                    supportingText = editor.takenName?.let {
-                        {
-                            Text(
-                                stringResource(R.string.members_name_taken, it),
-                            )
-                        }
-                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words,
@@ -66,16 +53,6 @@ internal fun MemberNameDialog(
                     ),
                     keyboardActions = KeyboardActions(onDone = { onEvent(MembersUiEvent.OnSaveClicked) }),
                 )
-                if (editor.nicknameSuggestions.isNotEmpty()) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        editor.nicknameSuggestions.forEach { suggestion ->
-                            OutlinedButton(
-                                onClick = { onEvent(MembersUiEvent.OnSuggestionClicked(suggestion)) },
-                                shape = MaterialTheme.shapes.small,
-                            ) { Text(stringResource(R.string.members_use_nickname, suggestion)) }
-                        }
-                    }
-                }
                 // Why: someone who has the app joins through the link instead, and picks their own name.
                 if (editor.isAdding) {
                     TextButton(onClick = { onEvent(MembersUiEvent.OnInviteInsteadClicked) }) {

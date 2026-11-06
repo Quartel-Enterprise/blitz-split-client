@@ -5,7 +5,6 @@
     <string name="edit_group_save">Save</string>
     <string name="edit_group_change_icon">Change icon or photo</string>
     <string name="edit_group_icon_title">Group icon</string>
-    <string name="edit_group_icon_shape">Shape</string>
     <string name="edit_group_icon_color">Color</string>
     <string name="edit_group_choose_photo">Choose photo</string>
     <string name="edit_group_take_photo">Take photo</string>

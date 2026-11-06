@@ -11,6 +11,8 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -29,7 +31,8 @@ private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape
  * that look; the options only keep what the sheets drawn before it already did: a dialog on fewer devices
  * (usesDialog), a sheet that opens half way or narrower lying down, a narrower dialog (dialogMaxWidth only narrows it:
  * with a title the pane stays within 560dp), its shape and color, a dialog that a tap outside leaves open (the sheet's
- * scrim still closes it), and no pane title.
+ * scrim still closes it), and no pane title. isDismissible false keeps it open against a swipe, the scrim, a tap
+ * outside and back, while what it started is on its way.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,16 +46,23 @@ fun AdaptiveSheet(
     dialogShape: Shape = RoundedCornerShape(28.dp),
     dialogColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     dialogDismissOnClickOutside: Boolean = true,
+    isDismissible: Boolean = true,
     content: @Composable () -> Unit,
 ) {
+    // Why: the sheet state keeps the check it was made with, so it reads the flag of the latest composition.
+    val currentIsDismissible by rememberUpdatedState(isDismissible)
+    val confirmValueChange: (SheetValue) -> Boolean = { it != SheetValue.Hidden || currentIsDismissible }
     if (!usesDialog) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
             // Why: ModalBottomSheet's own default, not the deprecated rememberModalBottomSheetState's legacy half way.
             sheetState = if (skipPartiallyExpanded) {
-                rememberFullSheetState()
+                rememberFullSheetState(confirmValueChange)
             } else {
-                rememberBottomSheetState(initialValue = SheetValue.Hidden)
+                rememberBottomSheetState(
+                    initialValue = SheetValue.Hidden,
+                    confirmValueChange = confirmValueChange,
+                )
             },
             sheetMaxWidth = sheetMaxWidth,
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -64,7 +74,8 @@ fun AdaptiveSheet(
         FoldDialog(
             onDismissRequest = onDismissRequest,
             properties = DialogProperties(
-                dismissOnClickOutside = dialogDismissOnClickOutside,
+                dismissOnBackPress = isDismissible,
+                dismissOnClickOutside = dialogDismissOnClickOutside && isDismissible,
                 usePlatformDefaultWidth = false,
             ),
         ) {

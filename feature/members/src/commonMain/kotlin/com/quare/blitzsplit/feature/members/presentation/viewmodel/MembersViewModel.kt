@@ -190,8 +190,6 @@ class MembersViewModel(
 
             is MembersUiEvent.OnDraftChanged -> changeDraft(event.draft)
 
-            is MembersUiEvent.OnSuggestionClicked -> saveSuggestion(event.name)
-
             MembersUiEvent.OnSaveClicked -> save()
 
             MembersUiEvent.OnEditorDismissed -> closeEditor()
@@ -236,13 +234,9 @@ class MembersViewModel(
                 isLoaded = true,
             )
         }
-        // Why: the member being renamed may be gone, and a name the draft took may be free or taken by now.
+        // Why: the member being renamed may be gone.
         val editor = uiState.value.editor ?: return
-        if (editor.memberId != null && uiState.value.members.none { it.id == editor.memberId }) {
-            closeEditor()
-        } else {
-            checkDraft()
-        }
+        if (editor.memberId != null && uiState.value.members.none { it.id == editor.memberId }) closeEditor()
     }
 
     private fun toMembersMember(
@@ -348,12 +342,9 @@ class MembersViewModel(
                 editor = MemberNameEditor(
                     memberId = memberId,
                     draft = draft,
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
             )
         }
-        checkDraft()
     }
 
     // Why: the ask goes before the editor does, since an editor closing may open the next ask's right away.
@@ -375,46 +366,11 @@ class MembersViewModel(
         uiState.update { state ->
             state.copy(editor = state.editor?.copy(draft = GroupNameRules.toCapped(draft)))
         }
-        checkDraft()
-    }
-
-    private fun checkDraft() {
-        val editor = uiState.value.editor ?: return
-        val taken = checkOf(editor.draft, editor.memberId) as? MemberNameCheck.Taken
-        uiState.update { state ->
-            state.copy(
-                editor = state.editor?.copy(
-                    takenName = taken?.existingName,
-                    nicknameSuggestions = taken?.suggestions.orEmpty(),
-                ),
-            )
-        }
-    }
-
-    // Why: a member's own name is free for them, and the nickname's initial ("Ana P.") is this device's user's.
-    private fun checkOf(
-        name: String,
-        memberId: String?,
-    ): MemberNameCheck {
-        val members = uiState.value.members
-        return checkMemberName(
-            name = name,
-            takenNames = members.filterNot { it.id == memberId }.map(MembersMember::name),
-            adderName = members.firstOrNull { it.isMe }?.name.orEmpty(),
-        )
     }
 
     private fun save() {
         val editor = uiState.value.editor ?: return
-        val check = checkOf(editor.draft, editor.memberId) as? MemberNameCheck.Available ?: return
-        save(editor, check.name)
-    }
-
-    // Why: a suggestion is free when offered, but the members may have changed since.
-    private fun saveSuggestion(name: String) {
-        val editor = uiState.value.editor ?: return
-        if (name !in editor.nicknameSuggestions) return
-        val check = checkOf(name, editor.memberId) as? MemberNameCheck.Available ?: return
+        val check = checkMemberName(editor.draft) as? MemberNameCheck.Available ?: return
         save(editor, check.name)
     }
 

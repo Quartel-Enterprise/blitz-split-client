@@ -115,6 +115,10 @@ fun NotificationSettingsContent(
                         onEvent = onEvent,
                     )
                 }
+                PushSwitchRow(
+                    state = state,
+                    onEvent = onEvent,
+                )
                 ChannelHeader()
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     state.types.forEachIndexed { index, type ->
@@ -457,6 +461,7 @@ private fun NotificationSettingsPreview() {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                devicePush = true.toLoaded(),
                 permission = NotificationPermission.GRANTED,
                 systemBlockedTypes = emptySet(),
             ),
@@ -472,6 +477,7 @@ private fun NotificationSettingsLoadingPreview() {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
                 preferences = Loadable.Loading,
+                devicePush = Loadable.Loading,
                 permission = null,
                 systemBlockedTypes = emptySet(),
             ),
@@ -487,6 +493,7 @@ private fun NotificationSettingsBlockedChannelPreview() {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                devicePush = true.toLoaded(),
                 permission = NotificationPermission.GRANTED,
                 systemBlockedTypes = setOf(NotificationType.COMMENTS),
             ),
@@ -502,7 +509,24 @@ private fun NotificationSettingsDeniedPreview() {
         NotificationSettingsContent(
             state = NotificationSettingsUiState(
                 preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                devicePush = true.toLoaded(),
                 permission = NotificationPermission.DENIED,
+                systemBlockedTypes = emptySet(),
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@DevicePreviews
+@Composable
+private fun NotificationSettingsNeverAskedPreview() {
+    BlitzSplitTheme {
+        NotificationSettingsContent(
+            state = NotificationSettingsUiState(
+                preferences = NotificationPreferences.DEFAULT.toLoaded(),
+                devicePush = true.toLoaded(),
+                permission = NotificationPermission.NOT_DETERMINED,
                 systemBlockedTypes = emptySet(),
             ),
             onEvent = {},

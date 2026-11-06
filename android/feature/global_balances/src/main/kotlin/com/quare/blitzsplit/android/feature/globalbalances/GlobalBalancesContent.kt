@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,13 +35,17 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBars
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
+import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
+import com.quare.blitzsplit.android.designsystem.component.SplitBillRailHeader
 import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
+import com.quare.blitzsplit.android.designsystem.component.splitBillFabClearance
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -52,6 +58,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.model.PeopleSect
 private val columnMaxWidth = 640.dp
 private val sideColumnWidth = 320.dp
 private val railWidth = 80.dp
+private val listBottomPadding = 24.dp
 
 private fun eventOf(tab: HomeTab): GlobalBalancesUiEvent? = when (tab) {
     HomeTab.HOME -> GlobalBalancesUiEvent.OnHomeTabClicked
@@ -61,10 +68,11 @@ private fun eventOf(tab: HomeTab): GlobalBalancesUiEvent? = when (tab) {
 }
 
 /*
- * Why: titled only on a wide screen (HomeTabTitle), and no "Rachar conta": the actions are on
- * each person. Upright, one column with "Por grupo" opening in the row; a phone lying down puts the filter on the left
- * and the people on the right, as the app's other screens split. A tablet lying down and an unfolded book list the
- * people beside the one picked, whose groups and actions fill the pane on the right.
+ * Why: titled only on a wide screen (HomeTabTitle), with "Rachar conta" floating on a phone and on top of the rail
+ * otherwise, as on every home tab; the other actions are on each person. Upright, one column with "Por grupo" opening
+ * in the row; a phone lying down puts the filter on the left and the people on the right, as the app's other screens
+ * split. A tablet lying down and an unfolded book list the people beside the one picked, whose groups and actions fill
+ * the pane on the right.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,13 +86,18 @@ fun GlobalBalancesContent(
     val profile = stringResource(R.string.global_balances_profile)
     val onTabClick: (HomeTab) -> Unit = { tab -> eventOf(tab)?.let(onEvent) }
     val listDetail = rememberListDetailLayout()
+    val listState = rememberLazyListState()
+    val onSplitBillClick = { onEvent(GlobalBalancesUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
+        // Why: the single list only, whose bottom padding makes room for it; beside a rail or a pane the rail has it.
+        val onFabClick = onSplitBillClick?.takeIf { !layout.usesNavigationRail && listDetail == null }
         HomeBarsScaffold(
             bars = HomeBars(
                 kind = homeBarsKindOf(layout.usesNavigationRail),
                 selected = HomeTab.BALANCES,
                 onTabClick = onTabClick,
                 onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) },
+                railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
             ),
             // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
             modifier = Modifier.semantics { paneTitle = title },
@@ -106,6 +119,14 @@ fun GlobalBalancesContent(
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
+                floatingActionButton = {
+                    if (onFabClick != null) {
+                        SplitBillFab(
+                            onClick = onFabClick,
+                            isExpanded = !listState.canScrollBackward,
+                        )
+                    }
+                },
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentWindowInsets = WindowInsets.safeDrawing,
             ) { padding ->
@@ -124,6 +145,8 @@ fun GlobalBalancesContent(
                     state = state,
                     layout = layout,
                     onEvent = onEvent,
+                    listState = listState,
+                    bottomPadding = if (onFabClick != null) splitBillFabClearance else listBottomPadding,
                     modifier = Modifier
                         .padding(padding)
                         .consumeWindowInsets(padding),
@@ -138,6 +161,8 @@ private fun BalancesPane(
     state: GlobalBalancesUiState,
     layout: DeviceLayout,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
+    listState: LazyListState,
+    bottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     if (layout.usesTwoColumns) {
@@ -158,6 +183,8 @@ private fun BalancesPane(
             PeopleList(
                 state = state,
                 onEvent = onEvent,
+                listState = listState,
+                bottomPadding = bottomPadding,
                 modifier = Modifier.weight(1f),
                 header = {},
             )
@@ -171,6 +198,8 @@ private fun BalancesPane(
         PeopleList(
             state = state,
             onEvent = onEvent,
+            listState = listState,
+            bottomPadding = bottomPadding,
             modifier = Modifier.widthIn(max = columnMaxWidth),
             header = {
                 item(key = "filter") {
@@ -329,12 +358,15 @@ private fun FilterHeaderColumn(
 private fun PeopleList(
     state: GlobalBalancesUiState,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
+    listState: LazyListState,
+    bottomPadding: Dp,
     header: LazyListScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(bottom = 24.dp),
+        state = listState,
+        contentPadding = PaddingValues(bottom = bottomPadding),
     ) {
         header()
         if (!state.isLoaded) {

@@ -164,6 +164,8 @@ export interface HomeShellChrome {
   search?: { shortcut: string; keyShortcuts: string; onOpen: () => void }
   // Why: Início's bell in the phone's top bar; from the tablet up Início draws it in its title row.
   bell?: { unreadCount: number; onOpen: () => void }
+  // Why: Início's sync status left of the phone top bar's bell, so it comes and goes without moving the page.
+  syncStatus?: ReactNode
   // Why: 'loading' while the sidebar is still read, a shimmer in the open groups' place.
   openGroups?: ShellOpenGroups | 'loading'
   // Why: the home's tabs have the brand's bar and the bottom navigation; Perfil its own bar over the navigation, and
@@ -216,6 +218,7 @@ export function HomeShellView({
   onBrand,
   search,
   bell,
+  syncStatus,
   openGroups,
   phoneBars = 'home',
   isOutsideTabs = phoneBars !== 'home',
@@ -316,6 +319,7 @@ export function HomeShellView({
             >
               <BrandMark />
             </button>
+            {syncStatus && <div className="flex min-w-0 items-center gap-1">{syncStatus}</div>}
             {bell && <ActivityBell unreadCount={bell.unreadCount} onOpen={bell.onOpen} />}
             <button aria-label={t('groups_profile')} onClick={onProfile} className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
               {profile ? (

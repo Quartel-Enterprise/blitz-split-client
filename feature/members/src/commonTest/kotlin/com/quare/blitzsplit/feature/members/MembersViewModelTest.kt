@@ -1107,8 +1107,6 @@ class MembersViewModelTest {
             MemberNameEditor(
                 memberId = null,
                 draft = "",
-                takenName = null,
-                nicknameSuggestions = emptyList(),
             ),
             editor,
         )
@@ -1132,8 +1130,6 @@ class MembersViewModelTest {
                 MemberNameEditor(
                     memberId = "member-2",
                     draft = "Ana",
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
                 editor,
             )
@@ -1174,91 +1170,18 @@ class MembersViewModelTest {
         }
 
     @Test
-    fun `GIVEN the add editor WHEN typing a member name in other case and spacing THEN offers nicknames`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
+    fun `GIVEN renaming a member WHEN typing the name of another member THEN can save it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-2"))
 
-            // When
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("  ana "))
+        // When
+        viewModel.onEvent(MembersUiEvent.OnDraftChanged("bruno"))
 
-            // Then
-            val editor = viewModel.uiState.value.editor!!
-            assertEquals("  ana ", editor.draft)
-            assertEquals("Ana", editor.takenName)
-            assertEquals(listOf("Ana P.", "Ana 2"), editor.nicknameSuggestions)
-            assertFalse(editor.canSave)
-        }
-
-    @Test
-    fun `GIVEN this device user not first WHEN typing a taken name THEN the nickname has the initial of this user`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroup = trip.copy(members = listOf(bruno, ana, pierre, carla)))
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-
-            // Then
-            assertEquals(
-                listOf("Ana P.", "Ana 2"),
-                viewModel.uiState.value.editor
-                    ?.nicknameSuggestions,
-            )
-        }
-
-    @Test
-    fun `GIVEN a taken name typed WHEN typing a free name THEN the name is no longer taken`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Diego"))
-
-            // Then
-            val editor = viewModel.uiState.value.editor!!
-            assertNull(editor.takenName)
-            assertTrue(editor.nicknameSuggestions.isEmpty())
-            assertTrue(editor.canSave)
-        }
-
-    @Test
-    fun `GIVEN renaming a member WHEN typing their own name in other case THEN the name is not taken`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-2"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("ANA"))
-
-            // Then
-            val editor = viewModel.uiState.value.editor!!
-            assertNull(editor.takenName)
-            assertTrue(editor.canSave)
-        }
-
-    @Test
-    fun `GIVEN renaming a member WHEN typing the name of another member THEN the name is taken`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-2"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("bruno"))
-
-            // Then
-            val editor = viewModel.uiState.value.editor!!
-            assertEquals("Bruno", editor.takenName)
-            assertEquals(listOf("Bruno P.", "Bruno 2"), editor.nicknameSuggestions)
-            assertFalse(editor.canSave)
-        }
+        // Then
+        val editor = viewModel.uiState.value.editor!!
+        assertTrue(editor.canSave)
+    }
 
     @Test
     fun `GIVEN a free name typed in the add editor WHEN saving THEN closes the editor and adds the name normalized`() =
@@ -1382,7 +1305,7 @@ class MembersViewModelTest {
         }
 
     @Test
-    fun `GIVEN a taken name typed WHEN saving THEN keeps the editor open and writes nothing`() =
+    fun `GIVEN the name of another member typed WHEN saving THEN closes the editor and adds them`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -1393,12 +1316,8 @@ class MembersViewModelTest {
             viewModel.onEvent(MembersUiEvent.OnSaveClicked)
 
             // Then
-            assertEquals(
-                "Carla",
-                viewModel.uiState.value.editor
-                    ?.takenName,
-            )
-            assertTrue(groups.addedMembers.isEmpty())
+            assertNull(viewModel.uiState.value.editor)
+            assertEquals(listOf("Carla"), groups.addedMembers.map { it.second.name })
         }
 
     @Test
@@ -1417,79 +1336,6 @@ class MembersViewModelTest {
     }
 
     @Test
-    fun `GIVEN nicknames offered in the add editor WHEN tapping one THEN closes the editor and adds that nickname`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana P."))
-
-            // Then
-            assertNull(viewModel.uiState.value.editor)
-            assertEquals(listOf("Ana P."), groups.addedMembers.map { it.second.name })
-        }
-
-    @Test
-    fun `GIVEN nicknames offered while renaming WHEN tapping one THEN closes the editor and renames to it`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnRenameClicked("member-4"))
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana 2"))
-
-            // Then
-            assertNull(viewModel.uiState.value.editor)
-            assertEquals(listOf("member-4" to "Ana 2"), groups.renamedMembers)
-        }
-
-    @Test
-    fun `GIVEN nicknames offered WHEN tapping a name not offered THEN writes nothing and keeps the editor`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana Z."))
-
-            // Then
-            assertEquals(
-                "Ana",
-                viewModel.uiState.value.editor
-                    ?.draft,
-            )
-            assertTrue(groups.addedMembers.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN a nickname taken by a sync after it was offered WHEN tapping it THEN writes nothing`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-            groups.groups.value = listOf(trip.copy(members = trip.members + anaP))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana P."))
-
-            // Then
-            assertTrue(groups.addedMembers.isEmpty())
-            assertEquals(
-                listOf("Ana 2"),
-                viewModel.uiState.value.editor
-                    ?.nicknameSuggestions,
-            )
-        }
-
-    @Test
     fun `GIVEN the editor open WHEN dismissing it THEN closes it without a write`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1503,42 +1349,6 @@ class MembersViewModelTest {
         assertNull(viewModel.uiState.value.editor)
         assertTrue(groups.addedMembers.isEmpty())
     }
-
-    @Test
-    fun `GIVEN a free name typed WHEN a sync adds someone with that name THEN the name becomes taken`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("diego"))
-
-            // When
-            groups.groups.value = listOf(trip.copy(members = trip.members + diego))
-
-            // Then
-            val editor = viewModel.uiState.value.editor!!
-            assertEquals("diego", editor.draft)
-            assertEquals("Diego", editor.takenName)
-            assertEquals(listOf("Diego P.", "Diego 2"), editor.nicknameSuggestions)
-        }
-
-    @Test
-    fun `GIVEN a taken name typed WHEN a sync removes the member with that name THEN the name becomes free`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Carla"))
-
-            // When
-            groups.groups.value = listOf(trip.copy(members = listOf(pierre, ana, bruno)))
-
-            // Then
-            val editor = viewModel.uiState.value.editor!!
-            assertNull(editor.takenName)
-            assertTrue(editor.nicknameSuggestions.isEmpty())
-            assertTrue(editor.canSave)
-        }
 
     @Test
     fun `GIVEN renaming a member WHEN a sync removes that member THEN closes the editor`() = runTest(testDispatcher) {
@@ -1569,8 +1379,6 @@ class MembersViewModelTest {
                 MemberNameEditor(
                     memberId = "member-2",
                     draft = "Aninha",
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
                 viewModel.uiState.value.editor,
             )
@@ -3094,48 +2902,6 @@ class MembersViewModelTest {
     }
 
     @Test
-    fun `GIVEN nicknames offered WHEN tapping one THEN sends the suggestion event from Membros without the name`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana P."))
-
-            // Then
-            assertEquals(
-                listOf(
-                    "member_add_clicked" to noParams,
-                    "member_name_suggestion_clicked" to fromMembers,
-                ),
-                trackedEvents,
-            )
-        }
-
-    @Test
-    fun `GIVEN nicknames offered WHEN tapping a name not offered THEN still sends the suggestion event`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(MembersUiEvent.OnAddClicked)
-            viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
-
-            // When
-            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana Z."))
-
-            // Then
-            assertEquals(
-                listOf(
-                    "member_add_clicked" to noParams,
-                    "member_name_suggestion_clicked" to fromMembers,
-                ),
-                trackedEvents,
-            )
-        }
-
-    @Test
     fun `GIVEN a free name typed in the add editor WHEN saving THEN sends the save event without the name`() =
         runTest(testDispatcher) {
             // Given
@@ -3204,8 +2970,6 @@ class MembersViewModelTest {
                 MemberNameEditor(
                     memberId = null,
                     draft = "",
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
                 state.editor,
             )
@@ -3226,8 +2990,6 @@ class MembersViewModelTest {
                 MemberNameEditor(
                     memberId = null,
                     draft = "",
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
                 viewModel.uiState.value.editor,
             )
@@ -3278,8 +3040,6 @@ class MembersViewModelTest {
                 MemberNameEditor(
                     memberId = null,
                     draft = "",
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
                 viewModel.uiState.value.editor,
             )
@@ -3343,18 +3103,18 @@ class MembersViewModelTest {
         }
 
     @Test
-    fun `GIVEN nicknames offered in Add person opened from the ask WHEN tapping one THEN adds it and drops the ask`() =
+    fun `GIVEN Add person from the ask WHEN saving a name already in the group THEN adds it and drops the ask`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(askedGroupId = "group-1")
             viewModel.onEvent(MembersUiEvent.OnDraftChanged("Ana"))
 
             // When
-            viewModel.onEvent(MembersUiEvent.OnSuggestionClicked("Ana P."))
+            viewModel.onEvent(MembersUiEvent.OnSaveClicked)
 
             // Then
             assertNull(viewModel.uiState.value.editor)
-            assertEquals(listOf("Ana P."), groups.addedMembers.map { it.second.name })
+            assertEquals(listOf("Ana"), groups.addedMembers.map { it.second.name })
             assertNull(addPersonRequests.observeRequest().first())
         }
 
@@ -3406,8 +3166,6 @@ class MembersViewModelTest {
                 MemberNameEditor(
                     memberId = null,
                     draft = "",
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
                 viewModel.uiState.value.editor,
             )
@@ -3429,8 +3187,6 @@ class MembersViewModelTest {
                 MemberNameEditor(
                     memberId = null,
                     draft = "",
-                    takenName = null,
-                    nicknameSuggestions = emptyList(),
                 ),
                 state.editor,
             )
@@ -3500,7 +3256,7 @@ class MembersViewModelTest {
             viewModel.onEvent(MembersUiEvent.OnEditorDismissed)
 
             // Then
-            assertEquals(MemberNameEditor(null, "", null, emptyList()), viewModel.uiState.value.editor)
+            assertEquals(MemberNameEditor(null, ""), viewModel.uiState.value.editor)
             assertEquals("group-1", addPersonRequests.observeRequest().first())
         }
 
@@ -3518,7 +3274,7 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(listOf("Diego"), groups.addedMembers.map { it.second.name })
-            assertEquals(MemberNameEditor(null, "", null, emptyList()), viewModel.uiState.value.editor)
+            assertEquals(MemberNameEditor(null, ""), viewModel.uiState.value.editor)
             assertEquals("group-1", addPersonRequests.observeRequest().first())
         }
 
@@ -3537,7 +3293,7 @@ class MembersViewModelTest {
 
             // Then
             assertNull(editorBeforeRead)
-            assertEquals(MemberNameEditor(null, "", null, emptyList()), viewModel.uiState.value.editor)
+            assertEquals(MemberNameEditor(null, ""), viewModel.uiState.value.editor)
         }
 
     @Test

@@ -31,7 +31,7 @@ sealed interface JoinPickUiEvent : UiEvent {
     // Why: "Entrar como Bruno".
     data object OnJoinClicked : JoinPickUiEvent
 
-    // Why: "Não estou na lista", which opens "Entrar com outro nome".
+    // Why: "Não estou na lista": joins at once with a Google or Apple account, else opens "Entrar com outro nome".
     data object OnNotInListClicked : JoinPickUiEvent
 
     data class OnNewNameChanged(

@@ -48,7 +48,7 @@
     <string name="join_pick_new_title">Join with another name</string>
     <string name="join_pick_new_message">You join as a new member. Expenses added before don\'t include you.</string>
     <string name="join_pick_new_name">Your name</string>
-    <string name="join_pick_new_helper">At least 2 letters, and not a name already in the group.</string>
+    <string name="join_pick_new_helper">At least 2 letters.</string>
     <string name="join_pick_cancel">Cancel</string>
     <string name="join_pick_new_join">Join group</string>
     <string name="join_pick_error">Couldn\'t join. Check your connection and try again.</string>

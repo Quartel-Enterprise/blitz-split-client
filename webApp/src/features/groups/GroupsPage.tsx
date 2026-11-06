@@ -134,6 +134,11 @@ export function GroupsActions({ presenter, state }: { presenter: GroupsPresenter
   )
 }
 
+/** Whether `SyncStatus` draws anything, so a page can leave out the place it would take. */
+export function showsSyncStatus(state: SyncState, downloadProgress?: JsDownloadProgress | null): boolean {
+  return Boolean(state.syncBadge) || (downloadProgress?.isWaitingForInternet ?? false)
+}
+
 /**
  * The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" ("Sincronizando…
  * 3 de 7 grupos" while Início's first download knows how many are coming) or "Sem resposta do servidor" with "Tentar
@@ -148,8 +153,8 @@ export function SyncStatus({
   presenter: { retrySync(): void }
   downloadProgress?: JsDownloadProgress | null
 }) {
+  if (!showsSyncStatus(state, downloadProgress)) return null
   const isWaitingForInternet = downloadProgress?.isWaitingForInternet ?? false
-  if (!state.syncBadge && !isWaitingForInternet) return null
   const isOffline = state.syncBadge === 'OFFLINE' || isWaitingForInternet
   // Why: offline midway through Início's first download, what is missing only comes once the browser reconnects.
   const label = isWaitingForInternet
@@ -165,12 +170,12 @@ export function SyncStatus({
     <>
       <span
         className={cn(
-          'inline-flex h-6 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
+          'inline-flex h-6 min-w-0 items-center gap-1.5 rounded-md border px-2 text-xs font-medium',
           isOffline && state.pendingChangeCount > 0 ? pendingSurfaceClass : 'text-muted-foreground',
         )}
       >
-        {isOffline ? <CloudOff className="size-3.5" /> : state.syncBadge === 'SYNCING' && <RefreshCw className="size-3.5" />}
-        {label}
+        {isOffline ? <CloudOff className="size-3.5 shrink-0" /> : state.syncBadge === 'SYNCING' && <RefreshCw className="size-3.5 shrink-0" />}
+        <span className="truncate">{label}</span>
       </span>
       {state.canRetrySync && (
         <button onClick={() => presenter.retrySync()} className="h-6 rounded-md px-2 text-xs font-medium text-primary underline outline-none focus-visible:ring-[3px] focus-visible:ring-ring">

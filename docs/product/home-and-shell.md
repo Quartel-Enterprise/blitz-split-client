@@ -8,7 +8,7 @@ The home's four tabs and the web's and the Mac's shell.
     each puts it, in [groups-home.md](groups-home.md)). Home (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
     lying down and a tabletop, where it also draws "Split a bill" as the small button so the tabs and Search fit its
-    height, and its items scroll should they still not (Search, the last, is never cut off); it stays, without "Split a bill", beside a group's Expenses, Balances, Members and
+    height (Android has "Split a bill" on all four tabs: the FAB on a phone upright, the rail's button anywhere wider), and its items scroll should they still not (Search, the last, is never cut off); it stays, without "Split a bill", beside a group's Expenses, Balances, Members and
     Statistics drawn alone anywhere wider than a phone upright (a phone lying down, a tablet or a foldable upright,
     Statistics over a whole book; never on a tabletop, nor beside the home's list, which has its own), the
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
@@ -29,8 +29,9 @@ The home's four tabs and the web's and the Mac's shell.
     the tabs, and the web one frame (`HomeFrame`), so their bars never redraw either.
   - What a tab keeps once shown. Apple's tabs keep their content: back on Balances or Contacts, the screen is already
     read, never blank nor shimmering again, and keeps the person picked beside the list and the rows opened
-    (`MainTabView`). Android keeps Groups and Contacts the same way (their list, its scroll, the person picked), and
-    opens Balances afresh. Balances still comes back on the filter it was opened with, "All" from its tab, on every
+    (`MainTabView`). Android keeps Groups, Balances and Contacts the same way (their list, its scroll, the person picked,
+    `rememberAppNavEntries`): Balances opened afresh at every switch used to flash its shimmer under the tab's fade (the
+    beta's flicker between Groups and Balances). Balances still comes back on the filter it was opened with, "All" from its tab, on every
     platform, so a shortcut always lands on the filter it names (`GlobalBalancesViewModel`); one opened with another
     filter (Home's totals, Contacts' "You owe" and "Owe you") reads its people afresh, as its ViewModel is the
     route's. The web opens each tab afresh, its picks and opened rows included.

@@ -58,6 +58,8 @@ class GroupRepositoryImpl(
         .distinctUntilChanged()
         .map { it?.toImageUrl() }
 
+    override fun observeHasGroups(): Flow<Boolean> = local.observeHasGroups().distinctUntilChanged()
+
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
     /*

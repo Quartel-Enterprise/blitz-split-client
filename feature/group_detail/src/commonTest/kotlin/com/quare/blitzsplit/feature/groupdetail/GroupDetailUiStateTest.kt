@@ -9,7 +9,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
@@ -430,7 +429,6 @@ class GroupDetailUiStateTest {
             groupName = "Viagem de Floripa",
             groupInitials = "VF",
             groupColor = AvatarColor.LILAC,
-            groupShape = GroupShape.COOKIE,
             groupPhotoUrl = null,
             currency = GroupCurrency.BRL,
             faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH, photoUrl = null) },

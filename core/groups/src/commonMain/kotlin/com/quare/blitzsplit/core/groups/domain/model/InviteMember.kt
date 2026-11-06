@@ -8,4 +8,6 @@ data class InviteMember(
     val name: String,
     val avatarColor: AvatarColor,
     val hasJoined: Boolean,
+    // Why: the profile photo of whoever joined as this member; null for a name nobody joined as and for no photo.
+    val photoUrl: String?,
 )

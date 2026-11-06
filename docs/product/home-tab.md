@@ -16,10 +16,12 @@ The home tab, its shortcuts and pinned groups.
     "Needs internet"),
     "Record payment", which asks "Who paid whom?" first (`Route.PickPayment`: every open pair of every
     group, the most recent group first, pairs with you first; the pair opens Record payment in its place), and
-    "New group". "Your groups": up to three open groups, the pinned first, then the latest activity, as Groups draws
-    them; "See all" opens Groups. "Latest expenses": the five latest bills you paid or take part in, by day, with
-    your share and its category's badge exactly as the group's Expenses rows draw it (Pierre's call, the category as
-    it reads now, `HomeBill.category`); a bill opens its Bill over its group, and "See all" opens Activity over Home, as the bell in Home's bar does.
+    "New group". Every platform draws them in the page, each with its name, never as bare icons in a bar (on the Mac
+    under Overall balance, beside the faces in a wide window). "Your groups": up to three open groups, the pinned
+    first, then the latest activity, as Groups draws them; "See all" opens Groups. "Latest expenses": the five latest
+    bills you paid or take part in, by day, with your share and its category's badge exactly as the group's Expenses
+    rows draw it (Pierre's call, the category as it reads now, `HomeBill.category`); a bill opens its Bill over its
+    group, and "See all" opens Activity over Home, as the bell in Home's bar does.
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
     the top bar, never floating over the tab bar: its icon alone on an iPhone upright, as on Groups, and in an iPhone
     Duo's vertical bar, under the profile; spelled out lying down and on iPad. "Search" is the home's (5.2), over
@@ -31,7 +33,11 @@ The home tab, its shortcuts and pinned groups.
     `first_download_groups`, then each group comes down whole, the most recent activity first; until it answered,
     and after a relaunch midway, "Syncing…" and a bar that runs), what already came with skeletons under it and
     "so far · the rest is on its way"; offline the skeletons stay with "No internet. Your groups show up once you're back
-    online." (Mac: the window's subtitle); the sync chip as Groups'; an account with
+    online." (Mac: the window's subtitle); the sync chip as Groups', but in the top bar's empty leading side (Android's
+    title slot, beside the title on a tablet; iOS's and iPadOS's leading toolbar item, a button while "No response from
+    the server" offers to try again; the web's phone top bar left of the bell, and its title row from the tablet up), so
+    it comes and goes without moving the content (the beta's feedback), only the first download's bar staying above the
+    sections; the wide Android layouts keep it in their first column's header, beside the title; an account with
     neither Google nor Apple shows "Save your recovery code" once the code was snoozed ("Remind me later"), ✕
     hiding it until the next launch; otherwise, once there is a group, the notification card while the system doesn't
     allow them ("Know when a bill comes in", or on Apple "Notifications arrive quietly" while it delivers quietly, in

@@ -50,7 +50,6 @@ class CreateGroupViewModel(
                 name = "",
                 initials = "",
                 color = AvatarColor.default,
-                shape = GroupShape.default,
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
@@ -59,8 +58,6 @@ class CreateGroupViewModel(
                 currency = GroupCurrency.ofRegion(deviceRegion()),
                 members = emptyList(),
                 draft = "",
-                takenName = null,
-                nicknameSuggestions = emptyList(),
                 isCreating = false,
                 showsCreateError = false,
             ),
@@ -80,9 +77,6 @@ class CreateGroupViewModel(
         isBusy = { uiState.value.isCreating },
     )
 
-    // Why: the nickname's initial ("Ana P."), the creator's.
-    private var creatorName = ""
-
     /*
      * Why: the creator is the group's first member, with the name and color of their profile, and the group starts
      * in the first color that isn't theirs. Read once, so a sync landing while someone types changes nothing here.
@@ -90,7 +84,7 @@ class CreateGroupViewModel(
     init {
         viewModelScope.launch {
             val profile = observeProfile().filterNotNull().first()
-            creatorName = profile.displayName.trim()
+            val creatorName = profile.displayName.trim()
             val me = CreateGroupMember(
                 id = Uuid.random().toString(),
                 name = creatorName,
@@ -104,7 +98,6 @@ class CreateGroupViewModel(
                     members = listOf(me) + state.members,
                 )
             }
-            checkDraft()
         }
     }
 
@@ -116,13 +109,6 @@ class CreateGroupViewModel(
             is CreateGroupUiEvent.OnNameChanged -> changeName(event.name)
 
             CreateGroupUiEvent.OnColorClicked -> changeColor { it.copy(color = it.color.toNextColor()) }
-
-            CreateGroupUiEvent.OnShapeAndColorClicked -> changeColor {
-                it.copy(
-                    color = it.color.toNextColor(),
-                    shape = it.shape.toNext(),
-                )
-            }
 
             is CreateGroupUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
 
@@ -139,8 +125,6 @@ class CreateGroupViewModel(
             is CreateGroupUiEvent.OnDraftChanged -> changeDraft(event.draft)
 
             CreateGroupUiEvent.OnAddMemberClicked -> addDraft()
-
-            is CreateGroupUiEvent.OnSuggestionClicked -> addSuggestion(event.name)
 
             is CreateGroupUiEvent.OnRemoveMemberClicked -> removeMember(event.memberId)
 
@@ -199,34 +183,11 @@ class CreateGroupViewModel(
 
     private fun changeDraft(draft: String) {
         uiState.update { it.copy(draft = GroupNameRules.toCapped(draft)) }
-        checkDraft()
     }
 
-    private fun checkDraft() {
-        val check = checkOf(uiState.value.draft)
-        uiState.update {
-            it.copy(
-                takenName = (check as? MemberNameCheck.Taken)?.existingName,
-                nicknameSuggestions = (check as? MemberNameCheck.Taken)?.suggestions.orEmpty(),
-            )
-        }
-    }
-
-    private fun checkOf(name: String): MemberNameCheck = checkMemberName(
-        name = name,
-        takenNames = uiState.value.members.map(CreateGroupMember::name),
-        adderName = creatorName,
-    )
-
+    // Why: a name may repeat in the group (beta feedback 3, item 29); people are told apart by their member ids.
     private fun addDraft() {
-        val check = checkOf(uiState.value.draft) as? MemberNameCheck.Available ?: return
-        add(check.name)
-    }
-
-    // Why: a suggestion is free when offered, but the members may have changed since.
-    private fun addSuggestion(name: String) {
-        if (name !in uiState.value.nicknameSuggestions) return
-        val check = checkOf(name) as? MemberNameCheck.Available ?: return
+        val check = checkMemberName(uiState.value.draft) as? MemberNameCheck.Available ?: return
         add(check.name)
     }
 
@@ -243,7 +204,6 @@ class CreateGroupViewModel(
                 draft = "",
             )
         }
-        checkDraft()
     }
 
     private fun findLeastUsedColor(members: List<CreateGroupMember>): AvatarColor =
@@ -251,14 +211,13 @@ class CreateGroupViewModel(
 
     private fun removeMember(memberId: String) {
         uiState.update { state -> state.copy(members = state.members.filterNot { it.id == memberId && !it.isMe }) }
-        checkDraft()
     }
 
     private fun create() {
         trackEvent("create_group_create_clicked", emptyMap())
         val state = uiState.value
         if (!state.canCreate) return
-        val draft = checkOf(state.draft) as? MemberNameCheck.Available
+        val draft = checkMemberName(state.draft) as? MemberNameCheck.Available
         uiState.update {
             it.copy(
                 isCreating = true,
@@ -285,7 +244,8 @@ class CreateGroupViewModel(
                 name = state.name,
                 type = state.type,
                 color = state.color,
-                shape = state.shape,
+                // Why: every group is the same rounded square; the shape stays in the data for the groups made before.
+                shape = GroupShape.fallback,
                 photo = state.photo,
                 currency = state.currency,
                 members = members,

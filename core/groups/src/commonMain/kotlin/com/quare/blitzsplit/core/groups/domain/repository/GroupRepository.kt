@@ -16,6 +16,9 @@ interface GroupRepository {
     // Why: the most recently changed first.
     fun observeGroups(): Flow<List<Group>>
 
+    // Why: whether the device has a group, settled ones included, without reading the groups and their members.
+    fun observeHasGroups(): Flow<Boolean>
+
     fun observeHasPendingChanges(): Flow<Boolean>
 
     // Why: the group and its members in one write, so nobody sees the group without them.

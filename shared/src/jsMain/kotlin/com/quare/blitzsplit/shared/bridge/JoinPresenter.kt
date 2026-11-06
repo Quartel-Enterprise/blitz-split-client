@@ -22,6 +22,7 @@ class JsJoinMember(
     val initials: String,
     val color: String,
     val hasJoined: Boolean,
+    val photoUrl: String?,
 )
 
 class JsJoinInviteState(
@@ -30,6 +31,8 @@ class JsJoinInviteState(
     val groupName: String,
     val groupInitials: String,
     val groupColor: String,
+    // Why: drawn in place of the color and the initials, null for none.
+    val groupPhotoUrl: String?,
     val creatorName: String?,
     // Why: the faces next to "Pierre e Ana já estão no grupo".
     val joined: Array<JsJoinMember>,
@@ -60,6 +63,7 @@ class JoinInvitePresenter(
                 groupName = state.groupName,
                 groupInitials = state.groupInitials,
                 groupColor = state.groupColor.code,
+                groupPhotoUrl = state.groupPhotoUrl,
                 creatorName = state.creatorName,
                 joined = state.joined.map(::toJsJoinMember).toTypedArray(),
                 memberCount = state.memberCount,
@@ -119,7 +123,6 @@ class JoinInvitePresenter(
 
 class JsNewMemberDraft(
     val name: String,
-    val isNameTaken: Boolean,
 )
 
 class JsJoinPickState(
@@ -133,6 +136,10 @@ class JsJoinPickState(
     val creatorName: String?,
     val newMember: JsNewMemberDraft?,
     val isJoining: Boolean,
+    // Why: the join on its way is a new member's, whose button ("Não estou na lista", or the sheet's) shows it.
+    val isJoiningAsNewMember: Boolean,
+    val showsJoinProgress: Boolean,
+    val showsNotInListProgress: Boolean,
     val canJoin: Boolean,
     val canJoinAsNewMember: Boolean,
 )
@@ -157,8 +164,11 @@ class JoinPickPresenter(
                 selectedName = state.selectedName,
                 takenName = state.takenName,
                 creatorName = state.creatorName,
-                newMember = state.newMember?.let { JsNewMemberDraft(it.name, it.isNameTaken) },
+                newMember = state.newMember?.let { JsNewMemberDraft(it.name) },
                 isJoining = state.isJoining,
+                isJoiningAsNewMember = state.isJoiningAsNewMember,
+                showsJoinProgress = state.showsJoinProgress,
+                showsNotInListProgress = state.showsNotInListProgress,
                 canJoin = state.canJoin,
                 canJoinAsNewMember = state.canJoinAsNewMember,
             )
@@ -222,4 +232,5 @@ private fun toJsJoinMember(member: JoinMember): JsJoinMember = JsJoinMember(
     initials = member.initials,
     color = member.avatarColor.code,
     hasJoined = member.hasJoined,
+    photoUrl = member.photoUrl,
 )

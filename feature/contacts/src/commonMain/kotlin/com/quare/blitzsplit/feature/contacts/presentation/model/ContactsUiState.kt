@@ -36,7 +36,12 @@ data class ContactsUiState(
     // Why: what the pane beside the list shows: a person, the agenda, or nothing yet (it says what will show there).
     val pickedKey: String?,
     val isAgendaPicked: Boolean,
+    // Why: Android's "Rachar conta" needs a group to split in, settled ones included.
+    val hasGroups: Boolean,
 ) {
+    val showsSplitBillButton: Boolean
+        get() = hasGroups
+
     // Why: a profile whose person a sync took away (they left every group shared) leaves the pane to its placeholder.
     val selectedKey: String?
         get() = pickedKey?.takeIf { key -> (contacts + hiddenContacts).any { it.key == key } }

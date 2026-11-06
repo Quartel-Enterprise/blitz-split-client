@@ -5,7 +5,9 @@ import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
+import com.quare.blitzsplit.core.expenses.domain.usecase.GetRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -33,6 +35,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -48,12 +51,14 @@ import software.quare.loadable.valueOrNull
 class ContactsViewModel(
     private val navigator: Navigator,
     private val setContactHidden: SetContactHidden,
+    private val getRecentGroupId: GetRecentGroupId,
     observeContactBook: ObserveContactBook,
     observePeopleBalances: ObservePeopleBalances,
     observeProfile: ObserveProfile,
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
+    observeHasGroups: ObserveHasGroups,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactsUiEvent>(trackEvent) {
     // Why: the screen these events come from, as their source param says.
@@ -77,6 +82,7 @@ class ContactsViewModel(
                 isDetailPaneShown = false,
                 pickedKey = null,
                 isAgendaPicked = false,
+                hasGroups = false,
             ),
         )
 
@@ -85,6 +91,9 @@ class ContactsViewModel(
 
     val stateWatcher: FlowWatcher<ContactsUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<ContactsUiAction> = FlowWatcher(uiAction)
+
+    // Why: the most recently used group is read once per tap, so a second tap meanwhile opens nothing.
+    private var isOpeningSplitBill = false
 
     init {
         observeProfile()
@@ -127,6 +136,10 @@ class ContactsViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
+        // Why: "Rachar conta" needs a group, settled ones included.
+        observeHasGroups()
+            .onEach { hasGroups -> uiState.update { it.copy(hasGroups = hasGroups) } }
+            .launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: ContactsUiEvent) {
@@ -134,6 +147,8 @@ class ContactsViewModel(
             is ContactsUiEvent.OnContactClicked -> openContact(event.key)
 
             is ContactsUiEvent.OnDetailPaneChanged -> uiState.update { it.copy(isDetailPaneShown = event.isShown) }
+
+            ContactsUiEvent.OnSplitBillClicked -> openSplitBill()
 
             ContactsUiEvent.OnSearchClicked -> if (navigator.openSearchOver(HomeTab.CONTACTS)) {
                 trackEvent("search_opened", sourceParams)
@@ -272,6 +287,26 @@ class ContactsViewModel(
         val stack = navigator.backStack.value
         return stack.getOrNull(stack.indexOf(Route.Home) + 1) == Route.Contacts && Route.Home in stack
     }
+
+    /*
+     * Why: "Rachar em qual grupo?" first (7.1i), the most recently used group marked, as Início's button asks. The
+     * button stays beside a profile the pane shows, so it counts while Contatos is the tab, but never a second tap over
+     * the bill it already opened, which would count twice.
+     */
+    private fun openSplitBill() {
+        if (!uiState.value.showsSplitBillButton || isOpeningSplitBill || !canOpenSplitBill()) return
+        isOpeningSplitBill = true
+        viewModelScope.launch {
+            val groupId = getRecentGroupId()
+            isOpeningSplitBill = false
+            if (groupId == null || !canOpenSplitBill()) return@launch
+            trackEvent("split_bill_clicked", sourceParams)
+            navigator.navigate(Route.SplitBill.createPickingGroup(groupId))
+        }
+    }
+
+    // Why: while Contatos is the tab, and never twice over a Split a bill already open.
+    private fun canOpenSplitBill(): Boolean = isTabShown() && navigator.backStack.value.lastOrNull() !is Route.SplitBill
 
     private fun closeOverTab() {
         navigator.popTo(navigator.backStack.value.indexOf(Route.Contacts) + 1)

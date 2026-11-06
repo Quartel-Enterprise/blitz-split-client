@@ -97,6 +97,8 @@ function sidebarChrome(chrome: HomeShellChrome, presenter: HomeSidebarPresenter 
     onBrand: () => presenter?.openBrand(),
     search: chrome.search && { ...chrome.search, onOpen: () => presenter?.openSearch() },
     bell: chrome.bell && { ...chrome.bell, onOpen: nothing },
+    // Why: its "Try again" belongs to the page that left; the next page draws its own.
+    syncStatus: undefined,
     openGroups:
       chrome.openGroups && chrome.openGroups !== 'loading' ? { ...chrome.openGroups, onOpen: (id) => presenter?.openGroup(id) } : chrome.openGroups,
   }
