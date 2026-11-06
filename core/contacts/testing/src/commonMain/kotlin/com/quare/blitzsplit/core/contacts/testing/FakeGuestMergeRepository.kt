@@ -17,6 +17,9 @@ class FakeGuestMergeRepository(
     var cancelError: Throwable? = null
     val claimedMemberIds = mutableListOf<List<String>>()
     var claimError: Throwable? = null
+
+    // Why: how many members the server says it moved; every one asked by default.
+    var claimedCount: Int? = null
     var requestedAt = 0L
 
     override suspend fun request(memberIds: List<String>): Result<GuestMerge> {
@@ -45,10 +48,10 @@ class FakeGuestMergeRepository(
         return Result.success(Unit)
     }
 
-    override suspend fun requestClaim(memberIds: List<String>): Result<Unit> {
+    override suspend fun requestClaim(memberIds: List<String>): Result<Int> {
         claimedMemberIds += memberIds
         claimError?.let { return Result.failure(it) }
         pending = pending?.takeIf { merge -> merge.memberIds.none { it in memberIds } }
-        return Result.success(Unit)
+        return Result.success(claimedCount ?: memberIds.size)
     }
 }

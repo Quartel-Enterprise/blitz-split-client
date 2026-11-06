@@ -820,7 +820,7 @@ private struct MergeGuestSheet: View {
                     }
                     .buttonStyle(.glassProminent)
                     .prominentLabel()
-                    .disabled(!model.state.isOnline)
+                    .disabled(!model.state.isOnline || sheet.isClaiming)
                 }
                 Section {
                     VStack(alignment: .leading, spacing: 2) {

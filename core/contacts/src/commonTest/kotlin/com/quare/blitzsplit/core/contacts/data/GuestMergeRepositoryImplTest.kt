@@ -121,12 +121,12 @@ class GuestMergeRepositoryImplTest {
         val result = repository.requestClaim(listOf("diego-ape", "diego-futebol"))
 
         // Then
-        assertTrue(result.isSuccess)
+        assertEquals(Result.success(2), result)
         assertEquals(listOf(listOf("diego-ape", "diego-futebol")), remote.claimedMemberIds)
     }
 
     @Test
-    fun `GIVEN the server moved no member WHEN claiming a guest THEN still succeeds`() = runTest {
+    fun `GIVEN the server moved no member WHEN claiming a guest THEN returns zero as a success`() = runTest {
         // Given
         prepareScenario(claimedCount = 0)
 
@@ -134,7 +134,7 @@ class GuestMergeRepositoryImplTest {
         val result = repository.requestClaim(listOf("diego-ape"))
 
         // Then
-        assertTrue(result.isSuccess)
+        assertEquals(Result.success(0), result)
     }
 
     @Test

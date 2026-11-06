@@ -5,7 +5,6 @@ import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
 import com.quare.blitzsplit.core.contacts.domain.usecase.CancelGuestMerge
-import com.quare.blitzsplit.core.contacts.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.RequestGuestMerge
@@ -21,7 +20,7 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.core.sync.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
@@ -56,7 +55,6 @@ class ContactProfileViewModel(
     private val findPendingGuestMerge: FindPendingGuestMerge,
     private val cancelGuestMerge: CancelGuestMerge,
     private val claimGuestAsMe: ClaimGuestAsMe,
-    private val syncNow: SyncNow,
     observeContactBook: ObserveContactBook,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
@@ -421,18 +419,29 @@ class ContactProfileViewModel(
         val sheet = state.merge ?: return
         val contact = state.contact?.takeIf { it.isGuest } ?: return
         if (!state.isOnline || !sheet.isConfirmingClaim || sheet.isClaiming) return
-        updateSheet { it.copy(isClaiming = true) }
+        // Why: the question closes as the claim starts, so a platform that closes it itself on a tap agrees with this state.
+        updateSheet {
+            it.copy(
+                isClaiming = true,
+                isConfirmingClaim = false,
+            )
+        }
         trackEvent("contact_claim_confirmed", emptyMap())
         viewModelScope.launch {
             val result = claimGuestAsMe(contact)
-            if (result.isSuccess) syncNow()
-            updateSheet {
-                it.copy(
-                    isClaiming = false,
-                    isConfirmingClaim = result.isFailure && it.isConfirmingClaim,
-                )
+            // Why: a guest the server moved leaves with its waiting request, and the sync has taken it from the device.
+            if (result.getOrNull().let { it != null && it > 0 }) {
+                uiState.update {
+                    it.copy(
+                        merge = null,
+                        pendingMerge = null.toLoaded(),
+                    )
+                }
+            } else {
+                updateSheet { it.copy(isClaiming = false) }
+                // Why: no member moved is no success: the guest only exists here, or another device claimed it first.
+                uiAction.emit(ContactProfileUiAction.ShowClaimError)
             }
-            result.onFailure { uiAction.emit(ContactProfileUiAction.ShowClaimError) }
         }
     }
 

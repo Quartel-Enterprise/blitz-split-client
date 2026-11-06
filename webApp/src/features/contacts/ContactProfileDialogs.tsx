@@ -105,7 +105,7 @@ export function MergeDialog({
         description: t('contactProfile_mergeBody', { name, amount: formatSignedMoney(contact.netMinor, contact.currency, contact.fractionDigits) }),
         body: (
           <div className="flex flex-col gap-4">
-            <Button variant="secondary" disabled={!isOnline} onClick={() => presenter.claimAsMe()}>
+            <Button variant="secondary" disabled={!isOnline || sheet.isClaiming} onClick={() => presenter.claimAsMe()}>
               <User />
               {t('contactProfile_claimButton', { name })}
             </Button>

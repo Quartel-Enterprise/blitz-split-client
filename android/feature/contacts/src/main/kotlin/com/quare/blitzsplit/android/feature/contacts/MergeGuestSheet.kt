@@ -70,7 +70,7 @@ internal fun MergeGuestSheet(
         )
         FilledTonalButton(
             onClick = { onEvent(ContactProfileUiEvent.OnClaimAsMeClicked) },
-            enabled = isOnline,
+            enabled = isOnline && !sheet.isClaiming,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 48.dp),

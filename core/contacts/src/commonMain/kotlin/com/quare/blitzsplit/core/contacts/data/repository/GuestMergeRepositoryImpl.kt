@@ -19,7 +19,6 @@ class GuestMergeRepositoryImpl(
 
     override suspend fun cancel(mergeId: String): Result<Unit> = suspendRunCatching { remote.cancel(mergeId) }.map { }
 
-    override suspend fun requestClaim(memberIds: List<String>): Result<Unit> = suspendRunCatching {
-        remote.requestClaim(memberIds)
-    }.map { }
+    override suspend fun requestClaim(memberIds: List<String>): Result<Int> =
+        suspendRunCatching { remote.requestClaim(memberIds) }
 }

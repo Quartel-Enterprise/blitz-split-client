@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.sync.data.repository.RemoteChangeRepositoryImpl
 import com.quare.blitzsplit.core.sync.domain.repository.RemoteChangeRepository
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ChangeInviteLink
+import com.quare.blitzsplit.core.sync.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteGroup
@@ -31,6 +32,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CancelSignOutWhenSyncedUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ChangeInviteLinkUseCase
+import com.quare.blitzsplit.core.sync.domain.usecase.impl.ClaimGuestAsMeUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CompleteSignInUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteAccountUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.DeleteGroupUseCase
@@ -110,4 +112,5 @@ val syncModule = module {
     factoryOf(::ChangeInviteLinkUseCase).bind<ChangeInviteLink>()
     factoryOf(::LeaveGroupUseCase).bind<LeaveGroup>()
     factoryOf(::DeleteGroupUseCase).bind<DeleteGroup>()
+    factoryOf(::ClaimGuestAsMeUseCase).bind<ClaimGuestAsMe>()
 }
