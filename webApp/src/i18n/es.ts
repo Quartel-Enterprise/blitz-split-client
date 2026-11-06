@@ -1793,6 +1793,7 @@ export const es: Record<MessageKey, string> = {
   categoryIcon_gym: 'Mancuerna',
   categoryIcon_dots: 'Otro',
   category_path: '{parent} › {name}',
+  splitBill_currencyChange: 'Moneda: {code}. Cámbiala',
   splitBill_categoryChange: 'Categoría: {name}. Cámbiala',
   splitBill_categoryByTerm: '{path} por la palabra “{term}” de tu mapa. Toca el ícono para cambiarla.',
   splitBill_categoryByLongest: 'Coincidieron {count} palabras del mapa. Gana “{term}”, la más larga: {path}.',

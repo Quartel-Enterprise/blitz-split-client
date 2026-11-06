@@ -1792,6 +1792,7 @@ export const pt: Record<MessageKey, string> = {
   categoryIcon_gym: 'Haltere',
   categoryIcon_dots: 'Outros',
   category_path: '{parent} › {name}',
+  splitBill_currencyChange: 'Moeda: {code}. Trocar',
   splitBill_categoryChange: 'Categoria: {name}. Trocar',
   splitBill_categoryByTerm: '{path} pela palavra “{term}” do seu mapa. Toque no ícone para trocar.',
   splitBill_categoryByLongest: '{count} palavras do mapa casaram. Vale “{term}”, a mais longa: {path}.',

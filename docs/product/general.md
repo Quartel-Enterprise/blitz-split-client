@@ -15,7 +15,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
-    keyboard, digits coming in from the right with the group currency's decimals fixed (`GroupCurrency.fractionDigits`:
+    keyboard, digits coming in from the right with the bill's currency's decimals fixed (`GroupCurrency.fractionDigits`:
     "0,01", "0,12", "1,23"; yen "1", "12", "1.234"), the caret at the end, a comma or a dot typed changing nothing,
     and the device language's separators whatever the currency ("1.234,56" in Portuguese, "1,234.56" in English). A
     paste reads as an amount ("12,5", "R$ 1.234,56"), and a bill moved to a group of another currency keeps its number
@@ -70,7 +70,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     than one (`GroupBalances.getByCurrency`, the group's default currency first; every figure under a chip is that
     currency's only), and every amount of a bill row, a payment row, a debt row and a detail is in the bill's or
     payment's own currency, never the group's. The home's overall balance is the global Balances' computation
-    (`PeopleBalances.totals`). Still to come: the bill form's currency picker and the activity amounts.
+    (`PeopleBalances.totals`). The bill form picks the bill's currency beside the total (see
+    [Split a bill](split-bill.md)), and Activity shows each amount in its bill's or payment's own currency.
+>>>>>>> 63368e3a4e2fc12766564ef6093de9960b8180f8
   - A bill or payment in a currency code this version does not know (only a newer app or server writes one) is never
     skipped and never turned into another currency (Pierre's call): it shows with its raw code and two decimals, "XYZ
     12,50", in the bill list, the detail, the balances, settle up and the activity (Android's `MoneyFormatter`, Apple's

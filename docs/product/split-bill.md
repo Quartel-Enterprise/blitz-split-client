@@ -2,6 +2,19 @@
 
 Splitting a bill: payers, Split, Items, categories, Category map, receipts and choosing the group.
 
+  - The bill's currency (Pierre's call: the currency belongs to each bill, see [General rules](general.md)): a
+    currency control beside the total, the code ("BRL") with a menu that is New group's "Currency" list, the
+    cryptocurrencies under their own header (`SplitBillUiEvent.OnCurrencyPicked`; Android a menu on a chip, SwiftUI a
+    menu "Currency" row under the total, the web a menu button, labeled "Currency: BRL. Change it" for a screen
+    reader). A new bill opens in the group's currency (`Group.currency`, only the default), a bill being edited in
+    its own (`Expense.currency`); the state's `currency` is the one source, so saving an edit never moves the bill to
+    the group's. Nothing remembers the last pick: the next bill opens in the group's again, and a bill moved to
+    another group starts in that group's. Changing it re-bases the form as moving the bill to a group of another
+    currency does: the typed total, "Amounts" values and what each one paid keep their number with the decimals cut
+    (`TypedText.toCurrency`) and follow the new currency's decimals and cap (bitcoin whole sats while "Bitcoin in
+    satoshis" is on), and a split by Items starts over, since its prices were in the old minor unit. A payment
+    recorded for the bill's balance later is in the same currency. A bill in bitcoin or ether offers no "Scan
+    receipt". The control is disabled while a receipt is being read or the bill is saving.
   - "Split a bill" (`Route.SplitBill`): "Who paid" picks one person, who paid the whole bill, or "Several people",
     which opens "Several people paid" in its place: each person's amount, adding up to the total exactly ("R$
     312 of R$ 312. Adds up.", else "R$ X left" / "R$ X over"), and Done waits until it does
@@ -9,7 +22,8 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     someone makes it add up again; one person holding the whole total is one payer again. "When"
     picks date and time, never after now. The form asks what it was before how much (Pierre's call, beta feedback
     10): "Description" with its category's icon and the line saying why, then "Amount", in every layout, a new bill
-    opening on the description. A bill is 0.01 to 100 million in the group's currency with a
+    opening on the description. A bill is 0.01 to 100 million in its own currency (the bitcoin and ether caps of
+    `ExpenseRules.maxAmountMinorFor`) with a
     description; Save stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Expenses in its place. "Split" splits by Equal,
     Amounts, % (whole numbers adding up to 100), Shares or Items, and only changes the bill on "Done". A new bill starts

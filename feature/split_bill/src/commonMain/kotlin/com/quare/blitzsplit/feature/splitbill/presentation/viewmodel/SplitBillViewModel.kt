@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
@@ -250,6 +251,8 @@ class SplitBillViewModel(
         when (event) {
             is SplitBillUiEvent.OnAmountChanged -> changeAmount(event.text)
 
+            is SplitBillUiEvent.OnCurrencyPicked -> changeCurrency(event.currency)
+
             SplitBillUiEvent.OnGroupClicked -> groupPicking.open()
 
             is SplitBillUiEvent.OnGroupPicked -> groupPicking.pick(event.groupId)
@@ -457,19 +460,22 @@ class SplitBillViewModel(
     }
 
     private fun changeAmount(text: String) {
-        uiState.update { state ->
-            state
-                .copy(
-                    amountText = TypedText.toAmountText(
-                        state.amountText,
-                        text,
-                        state.currency,
-                        state.showsSats,
-                        separator,
-                    ),
-                    hasEditedAmount = true,
-                ).withBillTotal()
-        }
+        uiState.update { it.withAmountTyped(text, amountAnchor, separator) }
+    }
+
+    // Why: the currency beside "Valor" (CurrencyEdits) re-bases the bill as another group's currency does.
+    private fun changeCurrency(currency: GroupCurrency) {
+        val state = uiState.value
+        val group = shownGroup ?: return
+        if (!state.canChangeCurrency || currency == state.currency) return
+        trackEvent("split_bill_currency_picked", mapOf("currency" to currency.code))
+        amountAnchor = null
+        items.forget()
+        if (state.split.mode == SplitMode.ITEMS) hasPickedSplit = false
+        uiState.update { it.withCurrencyPicked(currency, separator) }
+        show(group)
+        // Why: "Valores" kept their numbers in the new currency, so a new total rescales from them as they are now.
+        amountAnchor = uiState.value.valoresAnchorOrNull()
     }
 
     private fun SplitBillUiState.withBillTotal(): SplitBillUiState = withBillTotal(amountAnchor, separator)

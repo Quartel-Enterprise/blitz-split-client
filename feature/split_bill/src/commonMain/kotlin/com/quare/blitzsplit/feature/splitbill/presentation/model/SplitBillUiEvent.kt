@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.splitbill.presentation.model
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
@@ -45,6 +46,9 @@ sealed interface SplitBillUiEvent : UiEvent {
             -> EventAnalytics.NotTracked
 
             OnGroupClicked -> EventAnalytics.Automatic("split_bill_group_clicked")
+
+            // Why: only a pick that changes the bill's currency, never the one already there.
+            is OnCurrencyPicked -> EventAnalytics.Manual("split_bill_currency_picked")
 
             // Why: only a pick the sheet takes, never a late tap once it closed.
             is OnGroupPicked -> EventAnalytics.Manual("split_bill_group_picked")
@@ -231,6 +235,10 @@ sealed interface SplitBillUiEvent : UiEvent {
 
             OnDeleteDismissed -> EventAnalytics.Manual("bill_delete_cancelled")
         }
+
+    data class OnCurrencyPicked(
+        val currency: GroupCurrency,
+    ) : SplitBillUiEvent
 
     data class OnAmountChanged(
         val text: String,

@@ -36,7 +36,10 @@ data class SplitBillUiState(
     val groups: List<BillGroup>,
     // Why: the "Rachar em qual grupo?" sheet, open while not null, with what is marked in it until "Continuar".
     val groupSelection: GroupSelection?,
+    // Why: the bill's own currency, the single source of every amount rule below; the group's until one is picked.
     val currency: GroupCurrency,
+    // Why: the currency picked beside "Valor" (or the one a bill being edited was saved in); null follows the group's.
+    val pickedCurrency: GroupCurrency?,
     // Why: bitcoin typed in whole satoshis while Preferências' "Bitcoin em satoshis" is on.
     val showsSats: Boolean,
     // Why: in the order they were added to the group, the creator first.
@@ -191,6 +194,17 @@ data class SplitBillUiState(
     // Why: who paid is settled: one person (or one who left a bill being edited), or several adding up to the total.
     val isPayerValid: Boolean
         get() = severalPayers?.addsUp ?: (payer != null || isPayerFormerMember)
+
+    // Why: the list the currency beside "Valor" offers, as "Moeda" of Novo grupo does, the cryptocurrencies last.
+    val currencies: List<GroupCurrency>
+        get() = GroupCurrency.entries
+
+    /*
+     * Why: the currency beside "Valor" is changed until the bill is saved, but not while a receipt is being read, nor
+     * while the group picked is read, whose arrival would put the bill back in that group's currency.
+     */
+    val canChangeCurrency: Boolean
+        get() = isLoaded && !isSaving && !isDeleting && !isFormLocked && !isPickedGroupLoading
 
     // Why: Salvar stays disabled until the bill can be saved.
     val canSave: Boolean
