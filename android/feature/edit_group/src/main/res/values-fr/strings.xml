@@ -15,9 +15,8 @@
     <string name="edit_group_name_error">Donne un nom au groupe, 40 caractères maximum.</string>
     <string name="edit_group_name_count">%1$d/%2$d</string>
     <string name="edit_group_type_label">Type</string>
-    <string name="edit_group_currency">Devise</string>
-    <string name="edit_group_currency_lock">Ne change plus après la première dépense</string>
-    <string name="edit_group_currency_locked">Verrouillée</string>
+    <string name="edit_group_currency">Devise par défaut</string>
+    <string name="edit_group_currency_caption">Les nouvelles dépenses démarrent dans cette devise ; chaque dépense peut en utiliser une autre.</string>
     <string name="edit_group_note">Tout le monde dans le groupe peut changer le nom, l’icône, le type et Simplifier les dettes. Activité montre qui a fait la modification.</string>
     <string name="edit_group_offline_note">Pas d’internet : la modification est gardée sur cet appareil et arrive chez les autres à ta reconnexion. Une nouvelle photo part avec.</string>
     <string name="edit_group_save_error">Impossible d’enregistrer le groupe. Réessaie.</string>
@@ -114,6 +113,11 @@
         <item quantity="one">Activé · %1$d paiement au lieu de %2$d</item>
         <item quantity="many">Activé · %1$d paiements au lieu de %2$d</item>
         <item quantity="other">Activé · %1$d paiements au lieu de %2$d</item>
+    </plurals>
+    <plurals name="simplify_status_currency_row">
+        <item quantity="one">%1$s · %2$d → %3$d paiement</item>
+        <item quantity="many">%1$s · %2$d → %3$d paiements</item>
+        <item quantity="other">%1$s · %2$d → %3$d paiements</item>
     </plurals>
     <string name="simplify_status_on_minimal">Activé · déjà le minimum de paiements</string>
     <string name="simplify_status_pending_on">Activé sur cet appareil · en attente d’envoi</string>

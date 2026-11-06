@@ -116,19 +116,34 @@ internal fun SimplifyDebtsSection(
 
 @Composable
 private fun simplifyStatusTextOf(state: EditGroupUiState): String {
-    val simplification = state.simplification
+    val simplifications = state.simplifications
     return when (state.simplifyStatus) {
         SimplifyDebtsStatus.OFF -> stringResource(R.string.simplify_status_off)
 
-        SimplifyDebtsStatus.ON -> if (simplification == null || simplification.isAlreadyMinimal) {
-            stringResource(R.string.simplify_status_on_minimal)
-        } else {
-            pluralStringResource(
-                R.plurals.simplify_status_on,
-                simplification.paymentCount,
-                simplification.paymentCount,
-                simplification.unsimplifiedPaymentCount,
-            )
+        SimplifyDebtsStatus.ON -> when {
+            simplifications.size > 1 ->
+                simplifications
+                    .map {
+                        pluralStringResource(
+                            R.plurals.simplify_status_currency_row,
+                            it.summary.paymentCount,
+                            it.currency.code,
+                            it.summary.unsimplifiedPaymentCount,
+                            it.summary.paymentCount,
+                        )
+                    }.joinToString("\n")
+
+            simplifications.isEmpty() || simplifications.single().summary.isAlreadyMinimal ->
+                stringResource(R.string.simplify_status_on_minimal)
+
+            else -> simplifications.single().summary.let {
+                pluralStringResource(
+                    R.plurals.simplify_status_on,
+                    it.paymentCount,
+                    it.paymentCount,
+                    it.unsimplifiedPaymentCount,
+                )
+            }
         }
 
         SimplifyDebtsStatus.PENDING -> stringResource(

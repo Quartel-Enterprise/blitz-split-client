@@ -15,9 +15,8 @@
     <string name="edit_group_name_error">Give the group a name, up to 40 characters.</string>
     <string name="edit_group_name_count">%1$d/%2$d</string>
     <string name="edit_group_type_label">Type</string>
-    <string name="edit_group_currency">Currency</string>
-    <string name="edit_group_currency_lock">Doesn\'t change after the first expense</string>
-    <string name="edit_group_currency_locked">Locked</string>
+    <string name="edit_group_currency">Default currency</string>
+    <string name="edit_group_currency_caption">New bills start in this currency; each bill can use another.</string>
     <string name="edit_group_note">Anyone in the group can change the name, icon, type and Simplify debts. Activity shows who changed it.</string>
     <string name="edit_group_offline_note">No internet: the change holds on this device now and reaches the others once it reconnects. A new photo goes up with it.</string>
     <string name="edit_group_save_error">Couldn’t save the group. Try again.</string>
@@ -108,6 +107,10 @@
     <plurals name="simplify_status_on">
         <item quantity="one">On · %1$d payment instead of %2$d</item>
         <item quantity="other">On · %1$d payments instead of %2$d</item>
+    </plurals>
+    <plurals name="simplify_status_currency_row">
+        <item quantity="one">%1$s · %2$d → %3$d payment</item>
+        <item quantity="other">%1$s · %2$d → %3$d payments</item>
     </plurals>
     <string name="simplify_status_on_minimal">On · already the fewest payments</string>
     <string name="simplify_status_pending_on">On on this device · waiting to upload</string>

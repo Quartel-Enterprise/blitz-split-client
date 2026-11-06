@@ -43,7 +43,7 @@ final class EditGroupModel {
 
 /// "Edit group": a sheet over the group on iPhone, iPad and Mac, with Cancel and Save (✓) in the bar, the canvas' 540 pt
 /// form sheet with an iPad's room. The same fields as "New group": the icon is a color or a photo (EditGroupIconSection),
-/// and the currency locks once the group has a bill. "Simplify debts" (13.1) applies apart from Save: its confirmation
+/// and the default currency stays editable, bills or not. "Simplify debts" (13.1) applies apart from Save: its confirmation
 /// is a sheet over the form on iPhone and iPad, and takes the form's place on the Mac. An iPhone lying down draws two
 /// columns and puts the avatar and "Change icon or photo" in one compact row.
 struct EditGroupView: View {
@@ -59,7 +59,6 @@ struct EditGroupView: View {
             if let model, let confirmation = model.state.simplifyConfirmation {
                 SimplifyDebtsConfirmationView(
                     confirmation: confirmation,
-                    currency: model.state.currency,
                     isChanging: model.state.isChangingSimplifyDebts,
                     onConfirm: { model.send(EditGroupUiEventOnSimplifyDebtsConfirmed.shared) },
                     onDismiss: { model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared) },
@@ -197,7 +196,6 @@ private struct EditGroupForm: View {
             if let confirmation = state.simplifyConfirmation {
                 SimplifyDebtsConfirmationView(
                     confirmation: confirmation,
-                    currency: state.currency,
                     isChanging: state.isChangingSimplifyDebts,
                     onConfirm: { model.send(EditGroupUiEventOnSimplifyDebtsConfirmed.shared) },
                     onDismiss: { model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared) },
@@ -261,18 +259,8 @@ private struct EditGroupForm: View {
                     Text(type.title).tag(type)
                 }
             }
-            if state.isCurrencyLocked {
-                LabeledContent("Currency") {
-                    HStack(spacing: 6) {
-                        Text(verbatim: state.currency.label)
-                        Image(systemName: "lock")
-                            .accessibilityLabel("Locked")
-                    }
-                }
-            } else {
-                Picker("Currency", selection: currencyBinding) {
-                    CurrencyOptions(currencies: state.currencies)
-                }
+            Picker("Default currency", selection: currencyBinding) {
+                CurrencyOptions(currencies: state.currencies)
             }
             // Pushes "Default split" inside this sheet, which keeps what is typed here
             Button {
@@ -294,7 +282,7 @@ private struct EditGroupForm: View {
             .accessibilityHint("How new expenses split")
         } footer: {
             VStack(alignment: .leading, spacing: 12) {
-                Text("The currency doesn’t change after the first expense.")
+                Text("New bills start in this currency; each bill can use another.")
                 if state.showsOfflineNotice {
                     Text(
                         "No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects. A new photo goes up with it.",

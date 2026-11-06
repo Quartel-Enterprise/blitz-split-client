@@ -1,5 +1,5 @@
 import { ArrowRight, Loader2 } from 'lucide-react'
-import type { JsSimplifyAmount, JsSimplifyConfirmation, JsSimplifyName, JsSimplifyPersonChange, JsSimplifyQueuedPayment } from 'blitzsplit-shared'
+import type { JsSimplifyAmount, JsSimplifyConfirmation, JsSimplifyCurrencyChange, JsSimplifyName, JsSimplifyPersonChange, JsSimplifyQueuedPayment } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { Avatar, PendingDot, pendingSurfaceClass } from '@/components/common'
 import {
@@ -20,6 +20,8 @@ import { cn } from '@/lib/utils'
 
 type Money = (minor: number) => string
 
+const moneyOf = (currency: string, fractionDigits: number): Money => (minor) => formatMoney(minor, currency, fractionDigits)
+
 /** What the confirmation asks of Editar grupo's ViewModel. */
 export interface SimplifyConfirmEvents {
   confirmSimplifyDebts(): void
@@ -33,20 +35,15 @@ export interface SimplifyConfirmEvents {
  */
 export function SimplifyDebtsConfirmDialog({
   confirmation,
-  currency,
-  fractionDigits,
   isBusy,
   isDesktop,
   events,
 }: {
   confirmation: JsSimplifyConfirmation
-  currency: string
-  fractionDigits: number
   isBusy: boolean
   isDesktop: boolean
   events: SimplifyConfirmEvents
 }) {
-  const money: Money = (minor) => formatMoney(minor, currency, fractionDigits)
   const title = t(confirmation.isTurningOn ? 'simplifyConfirm_titleOn' : 'simplifyConfirm_titleOff')
   const body = confirmation.isAlreadyMinimal
     ? t('simplifyConfirm_bodyMinimal', { group: confirmation.groupName })
@@ -56,12 +53,14 @@ export function SimplifyDebtsConfirmDialog({
   }
   const content = (
     <>
-      <Counts before={confirmation.paymentsBefore} after={confirmation.paymentsAfter} />
-      {confirmation.people.length > 0 && <WhatChanges people={confirmation.people} money={money} />}
+      {confirmation.currencies.map((change) => (
+        <Counts key={change.currency} change={change} showsCurrency={confirmation.currencies.length > 1} />
+      ))}
+      {confirmation.people.length > 0 && <WhatChanges people={confirmation.people} showsCurrency={confirmation.currencies.length > 1} />}
       {confirmation.queuedPayments.length > 0 && (
         <p className={cn('flex gap-2 rounded-lg border px-3 py-2.5 text-[13px] leading-relaxed', pendingSurfaceClass)}>
           <PendingDot className="mt-1.5" />
-          <span>{queuedText(confirmation.queuedPayments, money)}</span>
+          <span>{queuedText(confirmation.queuedPayments)}</span>
         </p>
       )}
       <p className="text-[13px] leading-relaxed text-muted-foreground">{footText(confirmation)}</p>
@@ -115,9 +114,11 @@ function confirmLabel(confirmation: JsSimplifyConfirmation): MessageKey {
   return confirmation.isAlreadyMinimal ? 'simplifyConfirm_turnOnAnyway' : 'simplifyConfirm_simplify'
 }
 
-/** "7 pagamentos → 5 pagamentos", read as "7 pagamentos viram 5 pagamentos". */
-function Counts({ before, after }: { before: number; after: number }) {
-  const label = t(before === 1 ? 'simplifyConfirm_countsOne' : 'simplifyConfirm_countsOther', { before: paymentCount(before), after: paymentCount(after) })
+/** "7 pagamentos → 5 pagamentos" of one currency, read as "7 pagamentos viram 5 pagamentos", the code above it when there are several. */
+function Counts({ change, showsCurrency }: { change: JsSimplifyCurrencyChange; showsCurrency: boolean }) {
+  const { paymentsBefore: before, paymentsAfter: after } = change
+  const counts = t(before === 1 ? 'simplifyConfirm_countsOne' : 'simplifyConfirm_countsOther', { before: paymentCount(before), after: paymentCount(after) })
+  const label = showsCurrency ? `${change.currency}: ${counts}` : counts
   const side = (count: number, tone: string) => (
     <span className="flex items-baseline gap-1.5">
       <strong className={`text-[28px] leading-8 font-bold tabular-nums ${tone}`}>{count}</strong>
@@ -125,16 +126,19 @@ function Counts({ before, after }: { before: number; after: number }) {
     </span>
   )
   return (
-    <div role="img" aria-label={label} className="flex items-center justify-center gap-4 rounded-lg bg-muted px-4 py-3.5">
-      {side(before, 'text-muted-foreground')}
-      <ArrowRight aria-hidden className="size-5 text-muted-foreground" />
-      {side(after, 'text-foreground')}
+    <div role="img" aria-label={label} className="flex flex-col items-center gap-1 rounded-lg bg-muted px-4 py-3.5">
+      {showsCurrency && <span className="text-xs font-semibold text-muted-foreground">{change.currency}</span>}
+      <div className="flex items-center justify-center gap-4">
+        {side(before, 'text-muted-foreground')}
+        <ArrowRight aria-hidden className="size-5 text-muted-foreground" />
+        {side(after, 'text-foreground')}
+      </div>
     </div>
   )
 }
 
 /** "O que muda": each person, this browser's user first, with what they stop and start paying or receiving. */
-function WhatChanges({ people, money }: { people: JsSimplifyPersonChange[]; money: Money }) {
+function WhatChanges({ people, showsCurrency }: { people: JsSimplifyPersonChange[]; showsCurrency: boolean }) {
   return (
     <section aria-labelledby="simplify-what-changes" className="flex flex-col gap-2">
       <h3 id="simplify-what-changes" className="text-sm font-semibold">
@@ -145,7 +149,7 @@ function WhatChanges({ people, money }: { people: JsSimplifyPersonChange[]; mone
           <li key={person.memberId} className="flex items-start gap-2.5 px-3 py-2">
             <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
             <span className="min-w-0 flex-1 text-[13px] leading-[1.45]">
-              <PersonName person={person} /> <span className="text-muted-foreground">{changeText(person, money)}</span>
+              <PersonName person={person} />{showsCurrency && <span className="text-muted-foreground"> · {person.currency}</span>} <span className="text-muted-foreground">{changeText(person)}</span>
             </span>
           </li>
         ))}
@@ -166,7 +170,8 @@ function PersonName({ person }: { person: JsSimplifyPersonChange }): ReactNode {
 }
 
 /** "Não paga mais R$ 118 a Bruno. Paga R$ 29,50 a você. Não recebe mais de Carla. Recebe de Carla, Diego e Elisa." */
-function changeText(person: JsSimplifyPersonChange, money: Money): string {
+function changeText(person: JsSimplifyPersonChange): string {
+  const money = moneyOf(person.currency, person.fractionDigits)
   const isMe = person.person.isMe
   const amounts = (list: JsSimplifyAmount[]) =>
     formatNames(list.map((amount) => t('simplifyConfirm_amountTo', { amount: money(amount.amountMinor), name: simplifyName(amount.to) })))
@@ -183,10 +188,10 @@ function changeText(person: JsSimplifyPersonChange, money: Money): string {
 }
 
 /** "Você tem 1 pagamento na fila: Elisa te pagou R$ 50. A simplificação conta com ele…" (13.3d) */
-function queuedText(queued: JsSimplifyQueuedPayment[], money: Money): string {
+function queuedText(queued: JsSimplifyQueuedPayment[]): string {
   if (queued.length > 1) return t('simplifyConfirm_queuedOther', { count: queued.length })
-  const { from, to, amountMinor } = queued[0]
-  const amount = money(amountMinor)
+  const { from, to, amountMinor, currency, fractionDigits } = queued[0]
+  const amount = moneyOf(currency, fractionDigits)(amountMinor)
   const payment = to.isMe
     ? t('simplifyConfirm_queuedPaidYou', { from: simplifyName(from), amount })
     : from.isMe

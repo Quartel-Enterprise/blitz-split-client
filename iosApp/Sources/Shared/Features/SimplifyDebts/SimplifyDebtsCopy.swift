@@ -49,7 +49,18 @@ enum SimplifyDebtsCopy {
     static func status(_ state: EditGroupUiState) -> String {
         switch state.simplifyStatus {
         case .on:
-            if let simplification = state.simplification, !simplification.isAlreadyMinimal {
+            if state.simplifications.count > 1 {
+                // One row per currency: "BRL · 7 → 5 payments"
+                return state.simplifications.map { row in
+                    let after = payments(row.summary.paymentCount)
+                    return String(
+                        localized: "\(row.currency.code) · \(Int(row.summary.unsimplifiedPaymentCount)) → \(after)",
+                        bundle: .appLanguage,
+                        comment: "Edit group: Simplify debts is on, one currency's row; %1$@ is the currency code, %3$@ how many payments now",
+                    )
+                }.joined(separator: "\n")
+            }
+            if let simplification = state.simplifications.first?.summary, !simplification.isAlreadyMinimal {
                 let count = payments(simplification.paymentCount)
                 return String(
                     localized: "On · \(count) instead of \(Int(simplification.unsimplifiedPaymentCount))",
@@ -96,10 +107,10 @@ enum SimplifyDebtsCopy {
     }
 
     /// "7 payments become 5 payments", what the counts block reads as.
-    static func countsLabel(_ confirmation: SimplifyDebtsConfirmation) -> String {
-        let before = payments(confirmation.paymentsBefore)
-        let after = payments(confirmation.paymentsAfter)
-        if confirmation.isAlreadyMinimal {
+    static func countsLabel(_ confirmation: SimplifyDebtsConfirmation, change: SimplifyCurrencyChange) -> String {
+        let before = payments(change.paymentsBefore)
+        let after = payments(change.paymentsAfter)
+        if confirmation.isTurningOn && change.isAlreadyMinimal {
             return String(
                 localized: "\(before) stay \(after)",
                 bundle: .appLanguage,
@@ -143,7 +154,8 @@ enum SimplifyDebtsCopy {
 
     /// What changes for one person, in the shared code's order: "No longer pays $118 to Bruno. Receives from Carla,
     /// Diego and Elisa." This device's user reads it without the third person in English.
-    static func personText(_ change: SimplifyPersonChange, currency: GroupCurrency) -> String {
+    static func personText(_ change: SimplifyPersonChange) -> String {
+        let currency = change.currency
         let isMe = change.person.isMe
         var sentences: [String] = []
         if !change.stopsPaying.isEmpty {
@@ -186,7 +198,7 @@ enum SimplifyDebtsCopy {
     }
 
     /// "Elisa paid you $50": a payment waiting to go up (13.3d).
-    static func queued(_ payments: [SimplifyQueuedPayment], currency: GroupCurrency) -> String? {
+    static func queued(_ payments: [SimplifyQueuedPayment]) -> String? {
         guard let first = payments.first else { return nil }
         guard payments.count == 1 else {
             return String(
@@ -194,7 +206,7 @@ enum SimplifyDebtsCopy {
                 bundle: .appLanguage,
             )
         }
-        let amount = currency.format(first.amountMinor)
+        let amount = first.currency.format(first.amountMinor)
         let from = name(first.from.name, isMe: first.from.isMe)
         let to = name(first.to.name, isMe: first.to.isMe)
         let payment = if first.to.isMe {

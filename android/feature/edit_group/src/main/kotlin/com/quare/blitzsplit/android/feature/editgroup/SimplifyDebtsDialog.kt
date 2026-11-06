@@ -36,11 +36,9 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
-import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyCurrencyChange
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsConfirmation
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyPersonChange
 
@@ -54,11 +52,9 @@ private val changeFaceSize = 28.dp
 @Composable
 internal fun SimplifyDebtsDialog(
     confirmation: SimplifyDebtsConfirmation,
-    currency: GroupCurrency,
     isChanging: Boolean,
     onEvent: (EditGroupUiEvent) -> Unit,
 ) {
-    val money = rememberMoneyFormatter(currency)
     FoldAlertDialog(
         onDismissRequest = { if (!isChanging) onEvent(EditGroupUiEvent.OnSimplifyDebtsDismissed) },
         title = confirmationTitleOf(confirmation),
@@ -70,10 +66,7 @@ internal fun SimplifyDebtsDialog(
             )
         },
         text = {
-            SimplifyDebtsDialogColumn(
-                confirmation = confirmation,
-                money = money,
-            )
+            SimplifyDebtsDialogColumn(confirmation)
         },
         confirmButton = {
             Button(
@@ -101,15 +94,18 @@ internal fun SimplifyDebtsDialog(
 }
 
 @Composable
-private fun SimplifyDebtsDialogColumn(
-    confirmation: SimplifyDebtsConfirmation,
-    money: MoneyFormatter,
-) {
+private fun SimplifyDebtsDialogColumn(confirmation: SimplifyDebtsConfirmation) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        PaymentCountsRow(confirmation)
+        confirmation.currencies.forEach { change ->
+            PaymentCountsRow(
+                change = change,
+                isTurningOn = confirmation.isTurningOn,
+                showsCurrency = confirmation.currencies.size > 1,
+            )
+        }
         Text(confirmationBodyOf(confirmation))
         if (confirmation.people.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -122,7 +118,7 @@ private fun SimplifyDebtsDialogColumn(
                 confirmation.people.forEach { change ->
                     PersonChangeRow(
                         change = change,
-                        money = money,
+                        showsCurrency = confirmation.currencies.size > 1,
                     )
                 }
             }
@@ -141,7 +137,7 @@ private fun SimplifyDebtsDialogColumn(
                 ) {
                     PendingIndicator(modifier = Modifier.padding(top = 6.dp))
                     Text(
-                        text = queuedTextOf(confirmation.queuedPayments, money),
+                        text = queuedTextOf(confirmation.queuedPayments),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -154,49 +150,62 @@ private fun SimplifyDebtsDialogColumn(
     }
 }
 
-// Why: "7 pagamentos → 5 pagamentos", the new count in the primary color while turning on saves some.
+// Why: "7 pagamentos → 5 pagamentos" of one currency, the new count in the primary color while turning on saves some.
 @Composable
-private fun PaymentCountsRow(confirmation: SimplifyDebtsConfirmation) {
-    val before = pluralStringResource(
-        R.plurals.simplify_payments,
-        confirmation.paymentsBefore,
-        confirmation.paymentsBefore,
-    )
-    val after = pluralStringResource(
-        R.plurals.simplify_payments,
-        confirmation.paymentsAfter,
-        confirmation.paymentsAfter,
-    )
-    val description = stringResource(R.string.simplify_confirm_counts, before, after)
-    val highlightsAfter = confirmation.isTurningOn && !confirmation.isAlreadyMinimal
-    Row(
+private fun PaymentCountsRow(
+    change: SimplifyCurrencyChange,
+    isTurningOn: Boolean,
+    showsCurrency: Boolean,
+) {
+    val before = pluralStringResource(R.plurals.simplify_payments, change.paymentsBefore, change.paymentsBefore)
+    val after = pluralStringResource(R.plurals.simplify_payments, change.paymentsAfter, change.paymentsAfter)
+    val counts = stringResource(R.string.simplify_confirm_counts, before, after)
+    val description = if (showsCurrency) "${change.currency.code}: $counts" else counts
+    val highlightsAfter = isTurningOn && !change.isAlreadyMinimal
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clearAndSetSemantics { contentDescription = description },
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        PaymentCountBox(
-            count = confirmation.paymentsBefore,
-            container = MaterialTheme.colorScheme.surfaceContainerLowest,
-            content = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f),
-        )
-        Icon(
-            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        PaymentCountBox(
-            count = confirmation.paymentsAfter,
-            container = if (highlightsAfter) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.surfaceContainerLowest
-            },
-            content = if (highlightsAfter) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
+        if (showsCurrency) {
+            Text(
+                text = change.currency.code,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            PaymentCountBox(
+                count = change.paymentsBefore,
+                container = MaterialTheme.colorScheme.surfaceContainerLowest,
+                content = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            PaymentCountBox(
+                count = change.paymentsAfter,
+                container = if (highlightsAfter) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerLowest
+                },
+                content = if (highlightsAfter) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 
@@ -237,10 +246,10 @@ private fun PaymentCountBox(
 @Composable
 private fun PersonChangeRow(
     change: SimplifyPersonChange,
-    money: MoneyFormatter,
+    showsCurrency: Boolean,
 ) {
     val name = changeNameOf(change)
-    val text = changeTextOf(change, money)
+    val text = changeTextOf(change)
     Row(
         modifier = Modifier.semantics(mergeDescendants = true) {},
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -260,6 +269,7 @@ private fun PersonChangeRow(
                         fontWeight = FontWeight.SemiBold,
                     ),
                 ) { append(name) }
+                if (showsCurrency) append(" · ${change.currency.code}")
                 append(" ")
                 append(text)
             },

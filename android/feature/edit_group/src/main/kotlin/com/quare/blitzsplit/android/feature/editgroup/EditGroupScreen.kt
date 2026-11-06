@@ -55,7 +55,6 @@ fun EditGroupScreen(
     state.simplifyConfirmation?.let { confirmation ->
         SimplifyDebtsDialog(
             confirmation = confirmation,
-            currency = state.currency,
             isChanging = state.isChangingSimplifyDebts,
             onEvent = viewModel::onEvent,
         )

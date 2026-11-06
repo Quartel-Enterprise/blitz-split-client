@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -26,9 +25,8 @@ data class EditGroupUiState(
     // Why: "Ajustar foto" while a picked photo is being framed, drawn over the form in the group's rounded square.
     val photoCrop: PhotoCropEditor?,
     val type: GroupType,
+    // Why: only the default of the group's new bills; each bill and payment keeps its own.
     val currency: GroupCurrency,
-    // Why: "Não muda depois da primeira despesa", once the group has a bill.
-    val isCurrencyLocked: Boolean,
     // Why: the "Divisão padrão" row's value ("Igual", "Partes"…), as the group has it now; saved from its own screen.
     val defaultSplitMode: DefaultSplitMode,
     val isOnline: Boolean,
@@ -43,8 +41,8 @@ data class EditGroupUiState(
     val simplifiesDebts: Boolean,
     // Why: changed on this device and not up yet (13.1d).
     val isSimplifyDebtsPending: Boolean,
-    // Why: "Ligado · 5 pagamentos em vez de 7"; null while it is off.
-    val simplification: DebtSimplificationSummary?,
+    // Why: "Ligado · 5 pagamentos em vez de 7", one row per currency the group has bills or payments in; empty while off.
+    val simplifications: List<CurrencySimplification>,
     // Why: with 2 people it is already one payment (13.1c).
     val memberCount: Int,
     // Why: the confirmation the switch opens (13.3, 13.3b); null while closed.

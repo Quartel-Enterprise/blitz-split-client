@@ -164,9 +164,11 @@ private struct CreateGroupForm: View {
                     Text(type.title).tag(type)
                 }
             }
-            Picker("Currency", selection: currencyBinding) {
+            Picker("Default currency", selection: currencyBinding) {
                 CurrencyOptions(currencies: state.currencies)
             }
+        } footer: {
+            Text("New bills start in this currency; each bill can use another.")
         }
     }
 
@@ -423,7 +425,7 @@ extension GroupType {
     }
 }
 
-/// The "Currency" picker's options: the fiat currencies, then bitcoin and ether under "Cryptocurrencies".
+/// The "Default currency" picker's options: the fiat currencies, then bitcoin and ether under "Cryptocurrencies".
 struct CurrencyOptions: View {
     let currencies: [GroupCurrency]
 

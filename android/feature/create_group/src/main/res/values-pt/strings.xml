@@ -16,7 +16,8 @@
     <string name="create_group_add_placeholder">Adicionar pelo nome</string>
     <string name="create_group_add">Adicionar</string>
     <string name="create_group_no_app_notice">Ninguém precisa ter o app agora. Você já pode lançar despesas para todos e mandar o link depois.</string>
-    <string name="create_group_currency">Moeda</string>
+    <string name="create_group_currency">Moeda padrão</string>
+    <string name="create_group_currency_caption">Novas despesas começam nesta moeda; cada despesa pode usar outra.</string>
     <string name="create_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
     <string name="create_group_photo">Foto do grupo</string>
     <string name="create_group_take_photo">Tirar foto</string>
