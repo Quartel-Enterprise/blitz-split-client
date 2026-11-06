@@ -125,6 +125,20 @@ class SettleUpViewModelTest {
     }
 
     @Test
+    fun `GIVEN Carla owes in a currency this version does not know WHEN settling up opens THEN it leaves`() =
+        runTest(testDispatcher) {
+            // Given
+            val unknown = GroupCurrency.fromCode("XYZ")
+
+            // When
+            prepareScenario(bills = defaultBills.map { it.copy(currency = unknown) }, currency = unknown)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isLoaded)
+            assertTrue(route !in navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a settling up across groups WHEN typing another amount THEN keeps the whole net`() =
         runTest(testDispatcher) {
             // Given
@@ -681,10 +695,11 @@ class SettleUpViewModelTest {
         carlaUserId: String? = CARLA_USER,
         carlaKeys: List<PaymentKey> = emptyList(),
         clockMillis: Long = NOW,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ) {
         route = Route.SettleUp(
             personKey = carlaUserId?.let { "user:$it" } ?: "name:carla",
-            currency = GroupCurrency.BRL,
+            currency = currency,
         )
         paymentKeys = FakePaymentKeyRepository().also {
             it.memberKeys.value = mapOf(CARLA_USER to carlaKeys)

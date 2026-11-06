@@ -327,7 +327,8 @@ class RegisterPaymentViewModel(
         // Why: once saved, the debt drops by the payment; the form is on its way out and keeps what it shows.
         if (uiState.value.isSaving) return
         if (showsSimplifyChange(target)) return
-        isDebtGone = target == null || target.debtMinor == 0L
+        // Why: a currency this version doesn't know takes no new payment (see `GroupCurrency.fromCode`), wherever from.
+        isDebtGone = target == null || target.debtMinor == 0L || !target.currency.isKnown
         if (target == null || isDebtGone) {
             leave()
             return

@@ -90,7 +90,8 @@ export function formatMoney(minor: number, currency: string, fractionDigits: num
       .map((part) => (part.type === 'currency' ? symbol : part.value))
       .join('')
   } catch {
-    return `${currency} ${major.toFixed(digits)}`
+    // Why: a code Intl refuses (not 3 letters, from a newer app) still takes the UI language's separators.
+    return `${currency} ${formatPlainMoney(minor, fractionDigits, currency)}`
   }
 }
 

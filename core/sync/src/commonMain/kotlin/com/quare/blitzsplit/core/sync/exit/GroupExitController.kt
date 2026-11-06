@@ -236,7 +236,8 @@ class GroupExitController(
         return GroupExitDialog.LeaveBlocked(
             groupName = target.group.name,
             debts = myDebts.map { (currency, debt) -> target.rowOf(currency, debt, meId) },
-            canSettle = myDebts.any { (_, debt) -> debt.fromMemberId == meId },
+            // Why: a currency this version doesn't know takes no new payment, so it offers Ver saldos instead.
+            canSettle = myDebts.any { (currency, debt) -> currency.isKnown && debt.fromMemberId == meId },
         )
     }
 

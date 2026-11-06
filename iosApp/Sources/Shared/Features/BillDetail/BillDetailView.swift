@@ -295,6 +295,15 @@ private struct PendingLine: View {
     }
 }
 
+/// Under a bill in a currency only a newer app knows, whose Edit is off.
+private struct UnknownCurrencyNote: View {
+    var body: some View {
+        Text("This bill uses a currency this app version doesn't know. Update the app to edit it.")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+    }
+}
+
 /// "−R$ 118,00 you owe" in the negative color, "+R$ 249,60 to get back" in the positive green, zero muted, and who
 /// settles it.
 private struct MyPartContent: View {
@@ -508,9 +517,7 @@ private struct PhoneBillDetail: View {
                             .foregroundStyle(.secondary)
                     }
                     if state.showsUnknownCurrencyNote {
-                        Text("This bill uses a currency this app version doesn't know. Update the app to edit it.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        UnknownCurrencyNote()
                     }
                 }
                 // The row clips to its rounded corner, which would cut the payer's face at its edge
@@ -844,9 +851,7 @@ private struct MacBillDetail: View {
                         .foregroundStyle(.secondary)
                 }
                 if state.showsUnknownCurrencyNote {
-                    Text("This bill uses a currency this app version doesn't know. Update the app to edit it.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    UnknownCurrencyNote()
                 }
             }
             if state.showsMyPart {
