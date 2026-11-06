@@ -285,23 +285,22 @@ class RoomExpenseLocalDataSourceTest {
     }
 
     @Test
-    fun `GIVEN a bill in reais WHEN a newer server row brings it in dollars THEN it is stored in dollars`() =
-        runTest {
-            // Given
-            prepareScenario(stored = listOf(expense(id = "bill-1")))
-            val serverBill = expense(
-                id = "bill-1",
-                currency = "USD",
-                updatedAt = 9_000L,
-            )
+    fun `GIVEN a bill in reais WHEN a newer server row brings it in dollars THEN it is stored in dollars`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(expense(id = "bill-1")))
+        val serverBill = expense(
+            id = "bill-1",
+            currency = "USD",
+            updatedAt = 9_000L,
+        )
 
-            // When
-            dataSource.applyRemote(listOf(serverBill))
+        // When
+        dataSource.applyRemote(listOf(serverBill))
 
-            // Then
-            val stored = checkNotNull(dataSource.observeExpense("bill-1").first()).expense
-            assertEquals("USD", stored.currency)
-        }
+        // Then
+        val stored = checkNotNull(dataSource.observeExpense("bill-1").first()).expense
+        assertEquals("USD", stored.currency)
+    }
 
     @Test
     fun `GIVEN a bill last saved on a device with its clock ahead WHEN editing it THEN its version still moves past`() =
