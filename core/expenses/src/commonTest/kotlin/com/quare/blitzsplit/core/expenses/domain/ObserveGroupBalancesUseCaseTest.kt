@@ -380,6 +380,7 @@ class ObserveGroupBalancesUseCaseTest {
         id = id,
         groupId = groupId,
         description = "Jantar",
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         splitMode = SplitMode.AMOUNT,
         payers = listOf(
@@ -412,6 +413,7 @@ class ObserveGroupBalancesUseCaseTest {
         groupId = groupId,
         fromMemberId = ANA,
         toMemberId = PIERRE,
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         method = SettlementMethod.PIX,
         paidAt = 2_000L,

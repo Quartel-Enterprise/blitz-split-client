@@ -616,6 +616,7 @@ class SettleUpViewModelTest {
         id = "bill-$groupId",
         groupId = groupId,
         description = "Bill",
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         splitMode = SplitMode.AMOUNT,
         payers = listOf(ExpensePayer(toMemberId, amountMinor)),

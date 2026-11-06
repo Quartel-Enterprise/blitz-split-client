@@ -11,6 +11,8 @@ data class ExpenseDto(
     @SerialName("created_by") val createdBy: String?,
     @SerialName("description") val description: String,
     @SerialName("amount_minor") val amountMinor: Long,
+    // Why: the ISO code of the currency the amount is in; the server keeps one per bill and per payment.
+    @SerialName("currency") val currency: String,
     @SerialName("split_mode") val splitMode: String,
     @SerialName("payers") val payers: List<ExpensePayerDto>,
     @SerialName("shares") val shares: List<ExpenseShareDto>,

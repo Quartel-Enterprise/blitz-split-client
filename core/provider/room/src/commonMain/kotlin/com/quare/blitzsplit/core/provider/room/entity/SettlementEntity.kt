@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.room.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
@@ -30,8 +31,14 @@ data class SettlementEntity(
     // Why: the member who paid and the member who received.
     val fromMemberId: String,
     val toMemberId: String,
-    // Why: in the minor unit of the group's currency.
+    // Why: in the minor unit of its currency.
     val amountMinor: Long,
+    /*
+     * Why: the ISO code of the currency the amount is in, set per bill and per payment; the migration to 40 gave
+     * every row its group's.
+     */
+    @ColumnInfo(defaultValue = "")
+    val currency: String,
     // Why: "Como foi pago", the server's code ("pix", "cash", "transfer", "other").
     val method: String,
     // Why: "Quando", which the group's list sorts by among the bills.

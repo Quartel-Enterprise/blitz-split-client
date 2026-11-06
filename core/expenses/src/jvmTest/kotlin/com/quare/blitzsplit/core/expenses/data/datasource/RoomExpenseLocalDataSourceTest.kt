@@ -268,6 +268,41 @@ class RoomExpenseLocalDataSourceTest {
         }
 
     @Test
+    fun `GIVEN a bill in reais WHEN editing it into dollars THEN it is stored in dollars`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(expense(id = "bill-1")))
+        val edit = expense(
+            id = "bill-1",
+            currency = "USD",
+        )
+
+        // When
+        dataSource.updateExpense(edit, now = 9_000L)
+
+        // Then
+        val stored = checkNotNull(dataSource.observeExpense("bill-1").first()).expense
+        assertEquals("USD", stored.currency)
+    }
+
+    @Test
+    fun `GIVEN a bill in reais WHEN a newer server row brings it in dollars THEN it is stored in dollars`() = runTest {
+        // Given
+        prepareScenario(stored = listOf(expense(id = "bill-1")))
+        val serverBill = expense(
+            id = "bill-1",
+            currency = "USD",
+            updatedAt = 9_000L,
+        )
+
+        // When
+        dataSource.applyRemote(listOf(serverBill))
+
+        // Then
+        val stored = checkNotNull(dataSource.observeExpense("bill-1").first()).expense
+        assertEquals("USD", stored.currency)
+    }
+
+    @Test
     fun `GIVEN a bill last saved on a device with its clock ahead WHEN editing it THEN its version still moves past`() =
         runTest {
             // Given
@@ -556,6 +591,7 @@ class RoomExpenseLocalDataSourceTest {
         createdBy: String? = USER_ID,
         description: String = "Mercado",
         amountMinor: Long = 1_000L,
+        currency: String = "BRL",
         isDeleted: Boolean = false,
         addedAt: Long = 1L,
         pendingSync: Boolean = false,
@@ -566,6 +602,7 @@ class RoomExpenseLocalDataSourceTest {
         groupId = groupId,
         createdBy = createdBy,
         description = description,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = "equal",
         payersJson = "[]",

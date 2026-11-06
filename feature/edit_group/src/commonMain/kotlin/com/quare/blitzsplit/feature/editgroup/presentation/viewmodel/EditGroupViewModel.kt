@@ -127,8 +127,11 @@ class EditGroupViewModel(
         val expenses = observeExpenses(route.groupId).shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         combine(
             observeGroup(route.groupId),
-            expenses
-                .map { it.isNotEmpty() }
+            // Why: a payment is in the group's currency too, so one left after its bills are gone still locks it.
+            combine(
+                expenses.map { it.isNotEmpty() },
+                observeSettlements(route.groupId).map { it.isNotEmpty() },
+            ) { hasBills, hasPayments -> hasBills || hasPayments }
                 .distinctUntilChanged(),
             ::Pair,
         ).onEach { (group, hasExpenses) ->

@@ -57,6 +57,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `#95CDF7` it is `#00344E` (the system's white reads at 1.7:1, so every prominent button on Apple sets
     `.prominentLabel()`, which a build phase checks), and on the dark negative `#FFB599` it is `#552108`. Android's
     scheme sets every Material role, the fixed ones included, so none falls back to Material's baseline purple.
+  - The currency belongs to each bill and each payment, not to the group (Pierre's call, as Splitwise does it, made
+    before the app is in production): `Expense.currency`, `Settlement.currency` and `SettlementLeg.currency`, stored
+    on the `expense` and `settlement` rows (Room 40, which gave every row its group's) and synced as the API's
+    `currency`. A group's currency (`Group.currency`, New group's and Edit group's "Currency") stays as the default
+    of its new bills. Balances are never added across currencies: a group with bills in two currencies shows one
+    balance per currency, "you owe R$ 50 and US$ 20". First step, shipped: every bill and payment is saved in its
+    group's currency, so nothing changes on screen yet. Next steps: the bill form's currency picker and the
+    per-currency balances, debts, settling up, simplification, statistics and activity amounts, which land together
+    (a bill in another currency would otherwise drop out of the balances).
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): Currency (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

@@ -1702,6 +1702,7 @@ class BillDetailAttachmentsTest {
         id = EXPENSE_ID,
         groupId = GROUP_ID,
         description = "Mercado",
+        currency = GroupCurrency.BRL,
         amountMinor = 30_000,
         splitMode = SplitMode.EQUAL,
         payers = listOf(

@@ -36,6 +36,7 @@ data class PersonBalance(
                 fromMemberId = if (part.amountMinor > 0) part.memberId else part.meMemberId,
                 toMemberId = if (part.amountMinor > 0) part.meMemberId else part.memberId,
                 amountMinor = abs(part.amountMinor),
+                currency = currency,
             )
         }
 }

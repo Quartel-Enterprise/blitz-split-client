@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -173,6 +174,7 @@ class PaymentNoticeTest {
         groupId = "group-1",
         fromMemberId = ANA,
         toMemberId = BRUNO,
+        currency = GroupCurrency.BRL,
         amountMinor = 5_000L,
         method = SettlementMethod.PIX,
         paidAt = 1_000L,

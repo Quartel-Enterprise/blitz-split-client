@@ -730,6 +730,7 @@ class RoomBillAttachmentLocalDataSourceTest {
         groupId = groupId,
         createdBy = USER_ID,
         description = "Mercado",
+        currency = "BRL",
         amountMinor = 1_000L,
         splitMode = "equal",
         payersJson = "[]",

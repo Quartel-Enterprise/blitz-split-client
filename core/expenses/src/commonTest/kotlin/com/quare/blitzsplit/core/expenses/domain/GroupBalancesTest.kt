@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -748,6 +749,7 @@ class GroupBalancesTest {
         id = id,
         groupId = GROUP_ID,
         description = "Conta",
+        currency = GroupCurrency.BRL,
         amountMinor = payers.sumOf { it.amountMinor },
         splitMode = SplitMode.AMOUNT,
         payers = payers,
@@ -786,6 +788,7 @@ class GroupBalancesTest {
         groupId = GROUP_ID,
         fromMemberId = from,
         toMemberId = to,
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         method = SettlementMethod.PIX,
         paidAt = 2_000L,

@@ -33,6 +33,7 @@ internal fun pairTargetOf(
                 fromMemberId = route.fromMemberId,
                 toMemberId = route.toMemberId,
                 amountMinor = debtMinor,
+                currency = group.currency,
             ),
         ),
         groupParts = emptyList(),

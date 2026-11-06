@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase
 
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.GroupCurrency
 
 fun interface RecordSettlement {
     // Why: the new payment's id.
@@ -9,6 +10,7 @@ fun interface RecordSettlement {
         fromMemberId: String,
         toMemberId: String,
         amountMinor: Long,
+        currency: GroupCurrency,
         method: SettlementMethod,
         paidAt: Long,
     ): Result<String>

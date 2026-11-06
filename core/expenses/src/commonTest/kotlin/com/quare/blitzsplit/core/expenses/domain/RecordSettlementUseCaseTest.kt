@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -41,6 +42,7 @@ class RecordSettlementUseCaseTest {
                     groupId = GROUP_ID,
                     fromMemberId = ANA,
                     toMemberId = BRUNO,
+                    currency = GroupCurrency.BRL,
                     amountMinor = 5_000L,
                     method = SettlementMethod.PIX,
                     paidAt = 3_000L,
@@ -112,6 +114,7 @@ class RecordSettlementUseCaseTest {
         groupId = GROUP_ID,
         fromMemberId = ANA,
         toMemberId = BRUNO,
+        currency = GroupCurrency.BRL,
         amountMinor = 5_000L,
         method = SettlementMethod.PIX,
         paidAt = 3_000L,

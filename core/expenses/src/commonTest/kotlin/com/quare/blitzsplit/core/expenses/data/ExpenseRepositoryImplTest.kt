@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.StoredBill
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import com.quare.blitzsplit.core.provider.room.entity.StoredBillRow
@@ -714,6 +715,7 @@ class ExpenseRepositoryImplTest {
         id = "bill-new",
         groupId = GROUP_ID,
         description = "Mercado",
+        currency = GroupCurrency.BRL,
         amountMinor = 1_000L,
         splitMode = SplitMode.EQUAL,
         payers = listOf(
@@ -757,6 +759,7 @@ class ExpenseRepositoryImplTest {
         groupId = groupId,
         createdBy = createdBy,
         description = "Mercado",
+        currency = "BRL",
         amountMinor = 1_000L,
         splitMode = splitMode,
         payersJson = "[]",
@@ -781,6 +784,7 @@ class ExpenseRepositoryImplTest {
         groupId = groupId,
         createdBy = "user-2",
         description = "Pizza",
+        currency = "BRL",
         amountMinor = 9_000L,
         splitMode = splitMode,
         payers = listOf(

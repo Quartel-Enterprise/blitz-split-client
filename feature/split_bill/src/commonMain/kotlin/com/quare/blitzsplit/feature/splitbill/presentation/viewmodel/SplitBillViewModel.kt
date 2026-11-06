@@ -512,6 +512,7 @@ class SplitBillViewModel(
                     groupId = state.groupId,
                     description = state.description,
                     amountMinor = amountMinor,
+                    currency = state.currency,
                     payers = payers,
                     splitMode = state.split.mode,
                     shares = shares,
@@ -529,6 +530,8 @@ class SplitBillViewModel(
                     groupId = route.groupId,
                     description = state.description,
                     amountMinor = amountMinor,
+                    // Why: saving keeps the bill's own currency, whatever the group's default is.
+                    currency = editedExpense?.currency ?: state.currency,
                     payers = payers,
                     splitMode = state.split.mode,
                     shares = shares,

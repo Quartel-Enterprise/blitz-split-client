@@ -3,11 +3,13 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 import com.quare.blitzsplit.core.expenses.data.dto.SettlementDto
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class SettlementMapperImplTest {
     private val mapper = SettlementMapperImpl()
@@ -30,6 +32,7 @@ class SettlementMapperImplTest {
                 groupId = GROUP_ID,
                 fromMemberId = "ana",
                 toMemberId = "bruno",
+                currency = GroupCurrency.BRL,
                 amountMinor = 5_000L,
                 method = SettlementMethod.TRANSFER,
                 paidAt = 3_000L,
@@ -41,6 +44,30 @@ class SettlementMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a payment in a currency this version does not know WHEN mapping to the domain THEN skips it`() {
+        // Given
+        val entity = entity(currency = "XYZ")
+
+        // When
+        val settlement = mapper.toDomain(entity)
+
+        // Then
+        assertNull(settlement)
+    }
+
+    @Test
+    fun `GIVEN a payment in euros WHEN mapping to the domain THEN keeps its currency`() {
+        // Given
+        val entity = entity(currency = "EUR")
+
+        // When
+        val settlement = mapper.toDomain(entity)
+
+        // Then
+        assertEquals(GroupCurrency.EUR, settlement?.currency)
+    }
+
+    @Test
     fun `GIVEN a method this version does not know WHEN mapping to the domain THEN it is other`() {
         // Given
         val entity = entity(method = "crypto")
@@ -49,7 +76,7 @@ class SettlementMapperImplTest {
         val settlement = mapper.toDomain(entity)
 
         // Then
-        assertEquals(SettlementMethod.OTHER, settlement.method)
+        assertEquals(SettlementMethod.OTHER, settlement?.method)
     }
 
     @Test
@@ -60,6 +87,7 @@ class SettlementMapperImplTest {
             groupId = GROUP_ID,
             fromMemberId = "ana",
             toMemberId = "bruno",
+            currency = GroupCurrency.BRL,
             amountMinor = 5_000L,
             method = SettlementMethod.CASH,
             paidAt = 3_000L,
@@ -159,6 +187,7 @@ class SettlementMapperImplTest {
                 "from_member_id",
                 "to_member_id",
                 "amount_minor",
+                "currency",
                 "method",
                 "paid_at",
                 "is_deleted",
@@ -170,6 +199,7 @@ class SettlementMapperImplTest {
     }
 
     private fun entity(
+        currency: String = "BRL",
         createdBy: String? = "user-1",
         method: String = "pix",
         isDeleted: Boolean = false,
@@ -182,6 +212,7 @@ class SettlementMapperImplTest {
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = currency,
         amountMinor = 5_000L,
         method = method,
         paidAt = 3_000L,
@@ -200,6 +231,7 @@ class SettlementMapperImplTest {
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = "BRL",
         amountMinor = 5_000L,
         method = "pix",
         paidAt = 3_000L,

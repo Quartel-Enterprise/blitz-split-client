@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -279,6 +280,7 @@ class DebtsWithinBillTest {
         id = "trip",
         groupId = "group-1",
         description = "Viagem",
+        currency = GroupCurrency.BRL,
         amountMinor = payers.sumOf { it.amountMinor },
         splitMode = SplitMode.AMOUNT,
         payers = payers,

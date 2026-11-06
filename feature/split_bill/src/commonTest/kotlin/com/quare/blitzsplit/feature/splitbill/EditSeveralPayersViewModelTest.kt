@@ -375,6 +375,7 @@ class EditSeveralPayersViewModelTest {
         id = EXPENSE_ID,
         groupId = GROUP_ID,
         description = "Mercado",
+        currency = GroupCurrency.BRL,
         amountMinor = 31_200L,
         splitMode = SplitMode.EQUAL,
         payers = payers,

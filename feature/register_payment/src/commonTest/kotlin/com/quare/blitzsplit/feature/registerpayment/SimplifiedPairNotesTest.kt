@@ -298,6 +298,7 @@ class SimplifiedPairNotesTest {
         id = id,
         groupId = GROUP_ID,
         description = id,
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         splitMode = SplitMode.AMOUNT,
         payers = listOf(ExpensePayer(payer, amountMinor)),

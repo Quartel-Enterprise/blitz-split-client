@@ -1591,6 +1591,7 @@ class CategoryMapCategoriesTest {
         id = id,
         groupId = groupId,
         description = "Conta",
+        currency = GroupCurrency.BRL,
         amountMinor = 1_000,
         splitMode = SplitMode.EQUAL,
         payers = emptyList(),

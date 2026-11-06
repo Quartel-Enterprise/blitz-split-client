@@ -88,8 +88,8 @@ interface ExpenseDao {
      * Answers how many bills changed: none once a sync deleted it meanwhile.
      */
     @Query(
-        "UPDATE expense SET description = :description, amountMinor = :amountMinor, splitMode = :splitMode, " +
-            "payersJson = :payersJson, sharesJson = :sharesJson, itemsJson = :itemsJson, " +
+        "UPDATE expense SET description = :description, amountMinor = :amountMinor, currency = :currency, " +
+            "splitMode = :splitMode, payersJson = :payersJson, sharesJson = :sharesJson, itemsJson = :itemsJson, " +
             "categoryId = :categoryId, spentAt = :spentAt, updatedAt = MAX(:now, updatedAt + 1), updatedBy = NULL, " +
             "pendingSync = 1 " +
             "WHERE id = :id AND isDeleted = 0",
@@ -98,6 +98,7 @@ interface ExpenseDao {
         id: String,
         description: String,
         amountMinor: Long,
+        currency: String,
         splitMode: String,
         payersJson: String,
         sharesJson: String,
@@ -126,6 +127,7 @@ interface ExpenseDao {
             createdBy = entity.createdBy,
             description = entity.description,
             amountMinor = entity.amountMinor,
+            currency = entity.currency,
             splitMode = entity.splitMode,
             payersJson = entity.payersJson,
             sharesJson = entity.sharesJson,
@@ -157,7 +159,7 @@ interface ExpenseDao {
      */
     @Query(
         "UPDATE expense SET createdBy = :createdBy, description = :description, amountMinor = :amountMinor, " +
-            "splitMode = :splitMode, payersJson = :payersJson, sharesJson = :sharesJson, " +
+            "currency = :currency, splitMode = :splitMode, payersJson = :payersJson, sharesJson = :sharesJson, " +
             "itemsJson = :itemsJson, categoryId = :categoryId, spentAt = :spentAt, isDeleted = :isDeleted, " +
             "addedAt = :addedAt, " +
             "updatedAt = :remoteUpdatedAt, updatedBy = :updatedBy, " +
@@ -169,6 +171,7 @@ interface ExpenseDao {
         createdBy: String?,
         description: String,
         amountMinor: Long,
+        currency: String,
         splitMode: String,
         payersJson: String,
         sharesJson: String,
