@@ -121,15 +121,14 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
+        withCompletionHandler completionHandler: @escaping @Sendable () -> Void
     ) {
         let link = response.notification.request.content.userInfo["link"] as? String
-        nonisolated(unsafe) let completion = completionHandler
         DispatchQueue.main.async {
             if let link, let url = URL(string: link) {
                 BlitzSplitApple.shared.handleDeepLink(url: url)
             }
-            completion()
+            completionHandler()
         }
     }
 }
