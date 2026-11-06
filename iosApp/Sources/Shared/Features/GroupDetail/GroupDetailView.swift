@@ -76,15 +76,30 @@ final class GroupDetailModel {
         if current.paymentToDelete != nil { send(GroupDetailUiEventOnPaymentDeleteDismissed.shared) }
     }
 
+    /// A payment's details closed (Done, a swipe down, a tap outside on iPad).
+    func dismissPaymentDetails() {
+        if current.paymentToView != nil { send(GroupDetailUiEventOnPaymentDetailsDismissed.shared) }
+    }
+
+    /// "Delete" in a payment's details: the sheet closes first and the question comes once it is gone, since an alert
+    /// asked while a sheet is still leaving the screen may never show.
+    func deletePaymentFromDetails(_ payment: PaymentRow) {
+        dismissPaymentDetails()
+        Task {
+            try? await Task.sleep(for: .milliseconds(450))
+            send(GroupDetailUiEventOnPaymentDeleteClicked(paymentId: payment.id))
+        }
+    }
+
     /// "Delete this bill?" closed without "Delete", from a bill's options on the list.
     func dismissBillDeletion() {
         if current.billToDelete != nil { send(GroupDetailUiEventOnExpenseDeleteDismissed.shared) }
     }
 
-    /// A line's "Delete": a payment asks "Delete this payment?" as its tap does, a bill "Delete this bill?".
+    /// A line's "Delete": a payment asks "Delete this payment?", a bill "Delete this bill?".
     func delete(_ entry: any DayEntry) {
         if entry is PaymentRow {
-            send(GroupDetailUiEventOnPaymentClicked(paymentId: entry.id))
+            send(GroupDetailUiEventOnPaymentDeleteClicked(paymentId: entry.id))
         } else {
             send(GroupDetailUiEventOnExpenseDeleteClicked(expenseId: entry.id))
         }
@@ -226,6 +241,14 @@ struct GroupDetailView: View {
                     .formSheetSizing()
             }
         }
+        .sheet(isPresented: paymentDetailsShown) {
+            if let model, let payment = model.state.paymentToView {
+                NavigationStack {
+                    PaymentDetailsSheet(payment: payment, currency: model.state.header.currency, model: model)
+                }
+                .formSheetSizing()
+            }
+        }
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
             if members == nil { members = MembersModel(route: route) }
@@ -238,6 +261,16 @@ struct GroupDetailView: View {
             get: { model?.state.teach?.isPickingWord == true },
             set: { shown in
                 if !shown, model?.current.teach != nil { model?.send(GroupDetailUiEventOnTeachDismissed.shared) }
+            },
+        )
+    }
+
+    /// A payment's details, closed any way in the ViewModel too.
+    private var paymentDetailsShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.paymentToView != nil },
+            set: { shown in
+                if !shown { model?.dismissPaymentDetails() }
             },
         )
     }
@@ -484,7 +517,7 @@ private struct PhoneExpenseRow: View {
     }
 }
 
-/// "Ana paid you · 12:10 PM · Payment · Pix · $50.00 · payment"; a tap asks to delete it.
+/// "Ana paid you · 12:10 PM · Payment · Pix · $50.00 · payment"; a tap opens its details.
 private struct PhonePaymentRow: View {
     let row: PaymentRow
     let currency: GroupCurrency

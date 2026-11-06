@@ -93,6 +93,8 @@ class JsGroupDetailState(
     // Why: "expenses", "balances" or "members": the tab picked, which only swaps what is under the header.
     val tab: String,
     val days: Array<JsExpenseDay>,
+    // Why: a payment's details, open while not null.
+    val paymentToView: JsPaymentRow?,
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: JsPaymentRow?,
     // Why: "Apagar esta conta?" for a bill deleted from its ⋮ on the list, open while not null; disabled while deleting.
@@ -145,6 +147,7 @@ class GroupDetailPresenter(
                 header = toJsGroupHeader(state.header),
                 tab = toJsGroupTab(state.tab),
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
+                paymentToView = state.paymentToView?.let(::toJsPaymentRow),
                 paymentToDelete = state.paymentToDelete?.let(::toJsPaymentRow),
                 billToDelete = state.billToDelete?.let(::toJsBillDeletion),
                 isDeletingBill = state.isDeletingBill,
@@ -309,6 +312,14 @@ class GroupDetailPresenter(
 
     fun openPayment(paymentId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked(paymentId))
+    }
+
+    fun askToDeletePayment(paymentId: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked(paymentId))
+    }
+
+    fun dismissPaymentDetails() {
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDetailsDismissed)
     }
 
     fun confirmPaymentDelete() {

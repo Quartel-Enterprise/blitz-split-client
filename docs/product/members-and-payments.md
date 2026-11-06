@@ -79,8 +79,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     Home's "Who paid whom?" too) and macOS, a dialog on the web (a drawer on a phone). It works
     offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Former member"
     and closes only once the debt or the group is gone. A payment is never edited: "Ana's payment recorded."
-    offers "Undo", and the payment shows in Expenses as a "payment", where tapping it asks "Delete this payment?" (a
-    tombstone, offline too). Whoever paid or received it, if not who recorded it, gets a push notification (see [activity-and-push.md](activity-and-push.md)).
+    offers "Undo", and the payment shows in Expenses as a "payment", where tapping it opens its details, whose "Delete" asks
+    "Delete this payment?" (a tombstone, offline too). Whoever paid or received it, if not who recorded it, gets a push notification (see [activity-and-push.md](activity-and-push.md)).
   - "Pay Ana" (4.5) is what Record payment shows, in the same sheet or dialog, when this device's user pays
     someone with an account who has a Pix or Bitcoin key: every "Settle up" (the group's Balances, "Your balance in this
     group", the global Balances' `SettleUp`, Home's faces, Contacts' profile), never "Got paid", "Already paid" nor Home's

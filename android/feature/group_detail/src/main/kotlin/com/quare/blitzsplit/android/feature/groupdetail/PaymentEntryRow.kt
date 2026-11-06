@@ -20,7 +20,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUi
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-// Why: "Ana te pagou · 12:10 · Acerto · Pix · R$ 50,00 · acerto"; tapping it, or its ⋮'s "Apagar", asks "Apagar este acerto?".
+// Why: "Ana te pagou · 12:10 · Acerto · Pix · R$ 50,00 · acerto"; tapping it opens its details, its ⋮'s "Apagar" asks "Apagar este acerto?".
 @Composable
 internal fun PaymentEntryRow(
     payment: PaymentRow,
@@ -74,7 +74,7 @@ internal fun PaymentEntryRow(
 
 // Why: "Ana te pagou", "Você pagou Bruno" or "Diego pagou Bruno"; "Ex-membro" for someone no longer in the group.
 @Composable
-private fun paymentTitleOf(payment: PaymentRow): String {
+internal fun paymentTitleOf(payment: PaymentRow): String {
     val formerMember = stringResource(DesignR.string.designsystem_former_member)
     val from = payment.fromName ?: formerMember
     val to = payment.toName ?: formerMember

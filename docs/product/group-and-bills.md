@@ -13,8 +13,12 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     first; a long press (Android, iPhone, iPad) or a right click (the Mac, the web) on the line opens the same menu.
     A bill's are Bill's own top bar, named as short (Pierre's call): "Edit" (Edit bill over the group), "Share" (Share
     bill) and "Delete", which asks Bill's "Delete this bill?" in the same words (`GroupDetailUiState.billToDelete`)
-    and stays on the group, the bill leaving the list; a payment's is "Delete", the same "Delete this payment?" a tap
-    on it asks. The Mac's items end in "…", and the Mac's table shows the menu only for one line picked, whose Delete
+    and stays on the group, the bill leaving the list; a payment's is "Delete", which asks "Delete this payment?" at
+    once. A tap on a payment never asks to delete: it opens the payment's details (`GroupDetailUiState.paymentToView`:
+    who paid whom, the amount, when, how, "queued" while it waits), a bottom sheet on an Android phone, a dialog on
+    its tablets and foldables' halves, a sheet on iOS and the Mac, a dialog on the web, with "Delete" in it (the web's
+    also "Close"), which closes the details and asks the same "Delete this payment?" (`OnPaymentDeleteClicked`).
+    The Mac's items end in "…", and the Mac's table shows the menu only for one line picked, whose Delete
     key (⌫) asks the same "Delete this bill?" or "Delete this payment?". Home's "Latest expenses" and
     Activity have no ⋮: their lines open the bill, whose options are a tap away (Pierre's beta feedback asked for
     the group's list, where the bills are managed).

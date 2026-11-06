@@ -16,6 +16,8 @@ data class GroupDetailUiState(
     val tab: GroupTab,
     // Why: Despesas, the most recent day first.
     val days: List<ExpenseDay>,
+    // Why: the payment's details (who paid whom, when, how, how much) in a sheet or dialog, open while not null; its Apagar asks below.
+    val paymentToView: PaymentRow?,
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: PaymentRow?,
     // Why: "Apagar esta conta?" for a bill deleted from its ⋮ on the list, open while not null, worded as Conta's.

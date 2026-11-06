@@ -84,6 +84,14 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             is OnPaymentClicked -> EventAnalytics.Automatic("payment_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
 
+            is OnPaymentDeleteClicked -> EventAnalytics.Automatic(
+                "payment_delete_clicked",
+                mapOf("source" to GROUP_DETAIL_SOURCE),
+            )
+
+            // Why: closing a sheet that only showed information.
+            OnPaymentDetailsDismissed -> EventAnalytics.NotTracked
+
             // Why: only an answer to a question still open, as its cancellation.
             OnPaymentDeleteConfirmed -> EventAnalytics.Manual("payment_delete_confirmed")
 
@@ -211,10 +219,17 @@ sealed interface GroupDetailUiEvent : UiEvent {
         val toMemberId: String,
     ) : GroupDetailUiEvent
 
-    // Why: a payment on the list, or "Apagar" in its ⋮, which asks "Apagar este acerto?".
+    // Why: a payment on the list, which opens its details.
     data class OnPaymentClicked(
         val paymentId: String,
     ) : GroupDetailUiEvent
+
+    // Why: "Apagar" in a payment's ⋮ or in its details, which asks "Apagar este acerto?".
+    data class OnPaymentDeleteClicked(
+        val paymentId: String,
+    ) : GroupDetailUiEvent
+
+    data object OnPaymentDetailsDismissed : GroupDetailUiEvent
 
     data object OnPaymentDeleteConfirmed : GroupDetailUiEvent
 

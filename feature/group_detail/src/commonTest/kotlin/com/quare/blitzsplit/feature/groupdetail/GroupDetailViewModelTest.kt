@@ -2382,6 +2382,19 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN a payment on the list WHEN asking to delete it THEN tracks payment_delete_clicked without the payment id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
+
+            // Then
+            assertEquals(listOf("payment_delete_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN a payment on the list WHEN tapping it THEN tracks payment_clicked without the payment id`() =
         runTest(testDispatcher) {
             // Given
@@ -2525,7 +2538,7 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
             trackedEvents.clear()
 
             // When
@@ -2965,7 +2978,7 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
             trackedEvents.clear()
 
             // When
@@ -2992,7 +3005,7 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-unknown"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-unknown"))
             trackedEvents.clear()
 
             // When
@@ -3007,7 +3020,7 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
             viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
             trackedEvents.clear()
 

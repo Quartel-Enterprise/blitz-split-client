@@ -65,6 +65,7 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     header = createPreviewHeader(hasBills = days.isNotEmpty()),
     tab = GroupTab.EXPENSES,
     days = days,
+    paymentToView = null,
     paymentToDelete = null,
     billToDelete = null,
     isDeletingBill = false,
