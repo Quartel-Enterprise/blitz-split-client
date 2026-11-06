@@ -296,16 +296,9 @@ private struct GlobalBalancesList: View {
     }
 
     private var selection: Binding<String?> {
-        Binding(
-            get: { showsDetail ? state.selectedPerson?.id : narrowSelection },
-            set: { id in
-                if showsDetail {
-                    if let id { model.send(GlobalBalancesUiEventOnPersonSelected(personId: id)) }
-                } else {
-                    narrowSelection = id
-                }
-            },
-        )
+        .listDetailSelection(showsDetail: showsDetail, shown: state.selectedPerson?.id, narrow: $narrowSelection) {
+            model.send(GlobalBalancesUiEventOnPersonSelected(personId: $0))
+        }
     }
 
     private func row(_ id: String?) -> PersonRow? {

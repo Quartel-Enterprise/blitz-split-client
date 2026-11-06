@@ -33,6 +33,14 @@ struct ScreenLayout: Equatable {
 
     /// The two-column container never stretches edge to edge.
     static let twoColumnsMaxWidth: CGFloat = 920
+
+    #if os(macOS)
+    /// The widest a Mac pane reads in a wide window (full screen), centred in its column: a contact's profile beside
+    /// the list, Activity's item.
+    static let macReadingWidth: CGFloat = 640
+    /// The widest Ajustes' form grows in a wide window, centred: a settings pane's width.
+    static let macSettingsWidth: CGFloat = 720
+    #endif
 }
 
 extension View {

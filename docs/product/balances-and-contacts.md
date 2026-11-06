@@ -22,7 +22,8 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     sheet on iOS (the whole screen on an iPhone lying down, whom and the message beside the Pix key and the buttons;
     a 540 pt form sheet in the middle with an iPad's room) and macOS, a 480 px dialog on the web (a drawer on a phone);
     the Mac's sheet draws its title on top and Close, "Copy message" and "Send" in a row at the bottom, as Record
-    payment's, Send on Return and Close on Esc. It all works offline on the device's data. Android draws "Split a bill" on Balances as on its other three tabs (the FAB on a
+    payment's, Send on ⌘Return (Return adds a line to the message, as in a comment) and Close on Esc, which also
+    closes it while the request is still being read. It all works offline on the device's data. Android draws "Split a bill" on Balances as on its other three tabs (the FAB on a
     phone upright, the rail's button anywhere wider, `GlobalBalancesUiEvent.OnSplitBillClicked`; the beta's feedback),
     asking the group first with the most recently used one marked, once there is a group; the Apple apps and the web
     keep it on Home and Groups. An Android tablet lying down, an unfolded book, an

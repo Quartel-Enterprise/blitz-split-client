@@ -48,7 +48,7 @@ final class ChargeModel {
 /// that opened it (Balances, a contact's profile): about 540 pt in the middle with an iPad's room, the whole screen on
 /// an iPhone lying down (8.2), split in two there: whom and the message on the left, the Pix key and the buttons on the
 /// right. The Mac's sheet draws its title on top and Close, Copy message and Send in a row at the bottom, as Record
-/// payment's, Send on Return.
+/// payment's, Send on ⌘Return (Return adds a line to the message).
 struct ChargeView: View {
     let route: RouteCharge
 
@@ -56,6 +56,14 @@ struct ChargeView: View {
     @State private var model: ChargeModel?
 
     @Environment(\.windowLayout) private var window
+
+    private var showsToolbarClose: Bool {
+        #if os(macOS)
+        model?.state.charge == nil
+        #else
+        true
+        #endif
+    }
 
     var body: some View {
         Group {
@@ -70,15 +78,17 @@ struct ChargeView: View {
         .navigationTitle(model?.state.charge.map { ChargeTitle.text($0) } ?? Text(verbatim: ""))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
-        // The Mac's Close sits in the sheet's bottom row instead
+        #endif
+        // The Mac's Close sits in the sheet's bottom row once the request is read; until then, here, so Esc closes it
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Close", systemImage: "xmark", role: .cancel) {
-                    model?.send(ChargeUiEventOnDismissed.shared)
+            if showsToolbarClose {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close", systemImage: "xmark", role: .cancel) {
+                        model?.send(ChargeUiEventOnDismissed.shared)
+                    }
                 }
             }
         }
-        #endif
         .glassToast([
             GlassToastMessage(text: "Copied", trigger: model?.copiedCount ?? 0),
         ])
@@ -172,13 +182,14 @@ private struct ChargeContent: View {
                 Button("Copy message") {
                     model.send(ChargeUiEventOnCopyClicked(message: message))
                 }
-                // The ViewModel records the charge in Activity and hands the message back to share (SystemShare)
+                // The ViewModel records the charge in Activity and hands the message back to share (SystemShare).
+                // ⌘Return, as a comment's Send: Return adds a line to the message
                 Button("Send") {
                     model.send(ChargeUiEventOnShareClicked(message: message))
                 }
                 .buttonStyle(.borderedProminent)
                 .prominentLabel()
-                .keyboardShortcut(.defaultAction)
+                .keyboardShortcut(.return, modifiers: .command)
             }
             .padding(20)
         }

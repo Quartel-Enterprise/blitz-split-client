@@ -12,7 +12,7 @@ struct ActivityDetailPane: View {
     /// The widest the item reads in a wide Mac window (full screen), centred in the column: the before and after table
     /// and the related items no longer stretch across it. An iPad's column is never that wide.
     #if os(macOS)
-    static let maxContentWidth: CGFloat = 640
+    static let maxContentWidth = ScreenLayout.macReadingWidth
     #else
     static let maxContentWidth: CGFloat = .infinity
     #endif

@@ -218,16 +218,9 @@ struct ContactsView: View {
     }
 
     private var selection: Binding<String?> {
-        Binding(
-            get: { showsDetail ? model.state.selectedKey : narrowSelection },
-            set: { key in
-                if showsDetail {
-                    if let key { model.send(ContactsUiEventOnContactClicked(key: key)) }
-                } else {
-                    narrowSelection = key
-                }
-            },
-        )
+        .listDetailSelection(showsDetail: showsDetail, shown: model.state.selectedKey, narrow: $narrowSelection) {
+            model.send(ContactsUiEventOnContactClicked(key: $0))
+        }
     }
     #else
     private func list(@ViewBuilder content: () -> some View) -> some View {

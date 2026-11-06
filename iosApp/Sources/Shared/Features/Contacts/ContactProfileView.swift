@@ -280,7 +280,7 @@ private struct ContactProfileContent: View {
     private var maxWidth: CGFloat? {
         guard isInPane else { return ScreenLayout.singleColumnMaxWidth }
         #if os(macOS)
-        return 640
+        return ScreenLayout.macReadingWidth
         #else
         return nil
         #endif
@@ -660,11 +660,6 @@ private struct AddToGroupSheet: View {
     let draft: AddToGroupDraft
     let contact: Contact
 
-    #if os(macOS)
-    /// The list takes the keys as the sheet opens, so the arrows pick a group before any click.
-    @FocusState private var isListFocused: Bool
-    #endif
-
     var body: some View {
         NavigationStack {
             list {
@@ -731,8 +726,8 @@ private struct AddToGroupSheet: View {
     #if os(macOS)
     private func list(@ViewBuilder content: () -> some View) -> some View {
         List(selection: selection, content: content)
-            .focused($isListFocused)
-            .onAppear { isListFocused = true }
+            // The arrows pick a group before any click
+            .focusedOnAppear()
     }
 
     private var selection: Binding<String?> {

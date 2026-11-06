@@ -115,6 +115,8 @@ struct HomeView: View {
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    #else
+    @Environment(\.frontRoute) private var frontRoute
     #endif
 
     private var state: HomeUiState {
@@ -185,6 +187,11 @@ struct HomeView: View {
         #else
         .navigationSubtitle(Text(verbatim: syncText ?? ""))
         .toolbar { macToolbar }
+        // File › Split a Bill (⌘N), while Home is in front: nothing pushed over it
+        .newItemCommands(
+            isInFront: frontRoute == nil,
+            splitBill: state.showsSplitBillButton ? { model.send(HomeUiEventOnSplitBillClicked.shared) } : nil,
+        )
         #endif
     }
 

@@ -49,6 +49,17 @@ struct InviteView: View {
     @State private var model: InviteModel?
     @Environment(\.windowLayout) private var window
 
+    /// The bar's Close. The Mac's sheet has its Close in the bottom row (`MacInviteButtons`) once the invite is read;
+    /// until then, in the bar, so Esc closes it. The popover has none.
+    private var showsToolbarClose: Bool {
+        guard !isPopover else { return false }
+        #if os(macOS)
+        return model?.state.isLoaded != true
+        #else
+        return !isPushed || route.isNewGroup
+        #endif
+    }
+
     /// Pushed full screen with an iPad's room, where the system's back goes back to the group; the new group's
     /// invite keeps its close button, as the board draws it.
     private var isPushed: Bool {
@@ -86,16 +97,13 @@ struct InviteView: View {
         .navigationBarBackButtonHidden(isPushed && route.isNewGroup)
         #endif
         .toolbar {
-            // The Mac's sheet has its Close in the bottom row (`MacInviteButtons`)
-            #if os(iOS)
-            if !isPopover, !isPushed || route.isNewGroup {
+            if showsToolbarClose {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close", systemImage: "xmark", role: .cancel) {
                         model?.send(InviteUiEventOnCloseClicked.shared)
                     }
                 }
             }
-            #endif
             if let model, model.state.showsChangeLink, !isPopover {
                 ToolbarItem(placement: .primaryAction) { changeLinkButton(model: model) }
             }

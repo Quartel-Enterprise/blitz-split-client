@@ -104,12 +104,10 @@ private struct GroupScreenBars: ViewModifier {
             .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
             #else
             .navigationSubtitle(header.map { groupMeta($0, hasExpenses: hasExpenses) } ?? "")
-            // File › Split a Bill (⌘N), only while this screen is the one in front
-            .focusedSceneValue(
-                \.groupSplitBill,
-                isLoaded && showsSplitBill && frontRoute == host
-                    ? GroupSplitBillCommand(host: host, run: actions.splitBill)
-                    : nil,
+            // File › Split a Bill (⌘N): a bill in this group, while this screen is the one in front
+            .newItemCommands(
+                isInFront: frontRoute == host,
+                splitBill: isLoaded && showsSplitBill ? actions.splitBill : nil,
             )
             #endif
             .toolbar { toolbar }
@@ -162,7 +160,7 @@ private struct GroupScreenBars: ViewModifier {
         }
         #else
         ToolbarItem(placement: .primaryAction) {
-            // File › Split a Bill (⌘N) runs it, as on Home and Groups: a bill in this group (`groupSplitBill`)
+            // File › Split a Bill (⌘N) runs it, as on Home and Groups: a bill in this group (`newItemCommands`)
             splitBillButton
                 .help(Text("Split a bill (⌘N)"))
         }

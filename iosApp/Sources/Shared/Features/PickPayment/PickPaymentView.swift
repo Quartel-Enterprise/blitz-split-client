@@ -64,8 +64,6 @@ private struct PickPaymentList: View {
     #if os(macOS)
     /// The pair the arrow keys moved to; Return or a double click records it, as a click does.
     @State private var selection: PairChoice?
-    /// The list takes the keys as the sheet opens, so the arrows work before any click.
-    @FocusState private var isListFocused: Bool
     #endif
 
     var body: some View {
@@ -144,8 +142,8 @@ private extension PickPaymentList {
     #if os(macOS)
     func list(@ViewBuilder content: () -> some View) -> some View {
         List(selection: $selection, content: content)
-            .focused($isListFocused)
-            .onAppear { isListFocused = true }
+            // The arrows work before any click
+            .focusedOnAppear()
     }
     #else
     func list(@ViewBuilder content: () -> some View) -> some View {

@@ -78,7 +78,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     toolbar's primary button on the Mac. Android keeps its FABs.
   - A Mac sheet ends in a trailing row of regular-size buttons, as a Mac dialog's (Record payment, Split a bill and
     its editors, Request, the new group's Invite, a personal invite): Cancel or Close on Esc, then the main one,
-    prominent, on Return. The large buttons are the iPhone's and iPad's, for a thumb; a footer shared with them
+    prominent, on Return (⌘Return where Return types a new line, as in Request's message). The large buttons are the iPhone's and iPad's, for a thumb; a footer shared with them
     (Share bill, a contact's invite, "Update available") is large there and regular on the Mac (`sheetButtonSize()`).
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.
