@@ -299,6 +299,12 @@
             "value" : "%@ cambió la moneda"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a changé la devise"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -21229,6 +21235,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moeda"
+          }
+        }
+      }
+    },
+    "Currency:" : {
+      "comment" : "The bill's currency on the Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moneda:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devise :"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moeda:"
           }
         }
       }

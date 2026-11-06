@@ -7,6 +7,7 @@
     <string name="split_bill_done">Pronto</string>
     <string name="split_bill_back">Voltar</string>
     <string name="split_bill_amount">Valor</string>
+    <string name="split_bill_currency_change">Moeda, %1$s. Mudar</string>
     <string name="split_bill_description">Descrição</string>
     <string name="split_bill_description_placeholder">O que foi? Ex.: Mercado</string>
     <string name="split_bill_amount_error">Informe quanto foi a conta.</string>

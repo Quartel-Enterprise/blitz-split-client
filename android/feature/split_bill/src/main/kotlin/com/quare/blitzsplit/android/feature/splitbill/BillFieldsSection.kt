@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.splitbill
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +23,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -36,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountTextField
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.CurrencyMenuContent
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptions
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -64,11 +71,73 @@ internal fun BillFieldsSection(
         state = state,
         onEvent = onEvent,
     )
-    AmountField(
-        state = state,
-        money = money,
-        onEvent = onEvent,
-    )
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        AmountField(
+            state = state,
+            money = money,
+            onEvent = onEvent,
+            modifier = Modifier.weight(1f),
+        )
+        CurrencyChip(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
+}
+
+// Why: the bill's currency beside the total, the group's until another is picked; the list is Novo grupo's "Moeda".
+@Composable
+private fun CurrencyChip(
+    state: SplitBillUiState,
+    onEvent: (SplitBillUiEvent) -> Unit,
+) {
+    var isMenuOpen by rememberSaveable { mutableStateOf(false) }
+    val label = stringResource(R.string.split_bill_currency_change, state.currency.code)
+    Box(modifier = Modifier.padding(top = 8.dp)) {
+        Surface(
+            onClick = { isMenuOpen = true },
+            modifier = Modifier
+                .height(56.dp)
+                .semantics { contentDescription = label },
+            enabled = state.canChangeCurrency,
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = state.currency.code,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Icon(
+                    imageVector = Icons.Outlined.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = isMenuOpen && state.canChangeCurrency,
+            onDismissRequest = { isMenuOpen = false },
+        ) {
+            CurrencyMenuContent(
+                currencies = state.currencies,
+                selected = state.currency,
+                onSelected = { currency ->
+                    isMenuOpen = false
+                    onEvent(SplitBillUiEvent.OnCurrencyPicked(currency))
+                },
+            )
+        }
+    }
 }
 
 /*
@@ -231,6 +300,7 @@ private fun AmountField(
     state: SplitBillUiState,
     money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val help = listOfNotNull(
         amountHelpOrNull(
@@ -249,6 +319,7 @@ private fun AmountField(
         isError = state.showsAmountError,
         imeAction = ImeAction.Done,
         enabled = !state.isFormLocked,
+        modifier = modifier,
     )
 }
 

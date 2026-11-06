@@ -1,4 +1,4 @@
-import { Banknote, ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
+import { Banknote, ChevronDown, ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
 import {
   SplitBillPresenter,
   type JsBillConflict,
@@ -15,10 +15,12 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { CategoryDeleteDialog, categoryFormPane } from '@/components/CategoryForm'
 import { Avatar, PendingDot } from '@/components/common'
+import { CurrencyMenuItems } from '@/components/CurrencyMenuItems'
 import { AmountInput, controlClass, WhenField } from '@/components/fields'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SkeletonForm } from '@/components/ui/skeleton'
@@ -189,6 +191,34 @@ function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money:
   }
 }
 
+/** The bill's currency beside its total, the group's until another is picked; the list is Novo grupo's "Moeda". */
+function CurrencyField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-14 shrink-0 gap-1 px-3"
+          disabled={!state.canChangeCurrency}
+          aria-label={t('splitBill_currencyChange', { code: state.currency })}
+        >
+          {state.currency}
+          <ChevronDown className="text-muted-foreground" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
+        <CurrencyMenuItems
+          currencies={state.currencies}
+          cryptoCurrencies={state.cryptoCurrencies}
+          selected={state.currency}
+          onSelect={(currency) => presenter.changeCurrency(currency)}
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; money: Money }) {
   // Why: the ViewModel filters what is typed, so each field reads its text back in the same keystroke.
   const [amount, setAmount] = useDraft(state.amountText, (value) => {
@@ -210,6 +240,17 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
   const showsEditAmountHelp = state.showsProportionalAmountHint
   const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
   const receiptPicker = useReceiptPicker(presenter, state)
+  const amountInput = (
+    <AmountInput
+      id={amountId}
+      currency={state.currency}
+      fractionDigits={state.fractionDigits}
+      value={amount}
+      onChange={setAmount}
+      isInvalid={state.showsAmountError}
+      describedBy={amountDescribedBy}
+    />
+  )
 
   return (
     <form
@@ -277,15 +318,12 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             <Label htmlFor={amountId} className={cn(state.showsAmountError && 'text-destructive')}>
               {t('splitBill_amount')}
             </Label>
-            <AmountInput
-              id={amountId}
-              currency={state.currency}
-              fractionDigits={state.fractionDigits}
-              value={amount}
-              onChange={setAmount}
-              isInvalid={state.showsAmountError}
-              describedBy={amountDescribedBy}
-            />
+            <div className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">
+                {amountInput}
+              </div>
+              <CurrencyField presenter={presenter} state={state} />
+            </div>
             {amountHelp && (
               <p id={amountHelpId} className={cn('text-[13px]', state.showsAmountError ? 'text-destructive' : 'text-muted-foreground')}>
                 {amountHelp}

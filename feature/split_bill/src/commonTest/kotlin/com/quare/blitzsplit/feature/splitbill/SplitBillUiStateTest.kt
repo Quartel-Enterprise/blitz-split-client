@@ -914,6 +914,7 @@ class SplitBillUiStateTest {
         groups = groups,
         groupSelection = groupSelection,
         currency = currency,
+        pickedCurrency = null,
         showsSats = showsSats,
         people = people,
         amountText = amountText,
