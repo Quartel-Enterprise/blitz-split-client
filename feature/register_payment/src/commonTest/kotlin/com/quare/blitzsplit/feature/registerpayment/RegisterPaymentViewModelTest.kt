@@ -2404,13 +2404,15 @@ class RegisterPaymentViewModelTest {
         }
 
     // Why: Ana owes Pierre 20,00 in dollars, on top of the 162,30 in reais she owes him.
-    private val dollarDinner = bill(
-        "dollar-dinner",
-        payer = PIERRE,
-        debtor = ANA,
-        2_000L,
-        currency = GroupCurrency.USD,
-    )
+    // Why: a getter, since bill() reads properties declared below, which the JS target has not set yet here.
+    private val dollarDinner: Expense
+        get() = bill(
+            "dollar-dinner",
+            payer = PIERRE,
+            debtor = ANA,
+            2_000L,
+            currency = GroupCurrency.USD,
+        )
 
     private val confirmClicked = "payment_confirm_clicked" to emptyMap<String, Any>()
 
