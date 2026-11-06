@@ -85,6 +85,8 @@ struct EditGroupIconSection: View {
         }
         #if os(iOS)
         .onTapGesture { model.send(EditGroupUiEventOnIconClicked.shared) }
+        // Why: VoiceOver reaches "Group icon" through the pencil alone, not the initials too.
+        .accessibilityHidden(true)
         .overlay(alignment: .bottomTrailing) {
             // Why: the pencil on the corner opens "Group icon", as the profile's photo does.
             Button {

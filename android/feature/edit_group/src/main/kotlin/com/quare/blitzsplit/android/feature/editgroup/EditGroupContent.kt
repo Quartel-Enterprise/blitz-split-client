@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.editgroup
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -274,7 +276,7 @@ private fun EditGroupFieldsSection(
     )
 }
 
-// Why: the pencil on the avatar's corner opens "Ícone do grupo", as the profile's photo does.
+// Why: the avatar, or the pencil on its corner as on the profile's photo, opens "Ícone do grupo".
 @Composable
 private fun ColumnScope.IconSection(
     state: EditGroupUiState,
@@ -300,6 +302,10 @@ private fun ColumnScope.IconSection(
                 color = state.color,
                 size = avatarSize,
                 photoUrl = state.photoUrl,
+                // Why: the square opens it too, as on iOS; TalkBack reaches it through the pencil alone.
+                modifier = Modifier
+                    .clearAndSetSemantics {}
+                    .clickable(onClick = { onEvent(EditGroupUiEvent.OnIconClicked) }),
             )
         }
         if (state.showsPhotoError) {
