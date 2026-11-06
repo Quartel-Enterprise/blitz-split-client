@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -29,7 +29,7 @@ class DeleteAccountViewModel(
     private val navigator: Navigator,
     private val deleteAccount: DeleteAccount,
     private val exportUserData: ExportUserData,
-    observeAccountStatus: ObserveAccountStatus,
+    observeAccount: ObserveAccount,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteAccountUiEvent>(trackEvent) {
@@ -38,6 +38,7 @@ class DeleteAccountViewModel(
             DeleteAccountUiState(
                 accountProvider = Loadable.Loading,
                 hasAccount = false,
+                hasRecoveryCode = false,
                 isOnline = true,
                 hasConfirmed = false,
                 isDeleting = false,
@@ -52,12 +53,14 @@ class DeleteAccountViewModel(
     val actionWatcher: FlowWatcher<DeleteAccountUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeAccountStatus()
-            .onEach { status ->
+        observeAccount()
+            .onEach { account ->
+                val status = account.status
                 uiState.update {
                     it.copy(
                         accountProvider = (status as? AccountStatus.Connected)?.provider.toLoaded(),
                         hasAccount = status !is AccountStatus.LocalOnly,
+                        hasRecoveryCode = account.recoveryCode != null,
                     )
                 }
             }.launchIn(viewModelScope)

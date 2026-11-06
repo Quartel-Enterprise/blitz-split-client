@@ -516,6 +516,7 @@ private fun createPreviewState(
 ): DeleteAccountUiState = DeleteAccountUiState(
     accountProvider = AccountProvider.GOOGLE.toLoaded(),
     hasAccount = true,
+    hasRecoveryCode = false,
     isOnline = isOnline,
     hasConfirmed = hasConfirmed,
     isDeleting = false,

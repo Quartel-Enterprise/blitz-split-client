@@ -121,4 +121,17 @@ class VersionComparatorTest {
         // Then
         assertTrue(comparison < 0)
     }
+
+    @Test
+    fun `GIVEN a release WHEN comparing with a beta of the same version THEN the release is newer`() {
+        // Given
+        val store = "3.0.2"
+        val installed = "3.0.2-beta_3"
+
+        // When
+        val comparison = VersionComparator.compare(store, installed)
+
+        // Then
+        assertTrue(comparison > 0)
+    }
 }

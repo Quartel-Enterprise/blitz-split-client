@@ -13,6 +13,8 @@ data class DeleteAccountUiState(
     val accountProvider: Loadable<AccountProvider?>,
     // Why: an anonymous account is on the server too, so it can be deleted without Google or Apple (beta feedback 17).
     val hasAccount: Boolean,
+    // Why: an anonymous account only gets its code after its first sync, so "What gets deleted" names it once it exists.
+    val hasRecoveryCode: Boolean,
     val isOnline: Boolean,
     // Why: "Entendo que não dá para desfazer", which unlocks the button.
     val hasConfirmed: Boolean,
@@ -25,7 +27,7 @@ data class DeleteAccountUiState(
 
     // Why: "What gets deleted" names the recovery code of an anonymous account, which stops bringing it back.
     val deletesRecoveryCode: Boolean
-        get() = hasAccount && accountProvider.isLoaded() && accountProvider.valueOrNull() == null
+        get() = hasAccount && hasRecoveryCode && accountProvider.isLoaded() && accountProvider.valueOrNull() == null
 
     // Why: offline the checkbox dims with the button, since deleting needs the server.
     val isConfirmEnabled: Boolean

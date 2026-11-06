@@ -207,7 +207,7 @@ internal fun LegalFooter(
             }
         }
         Text(
-            text = stringResource(R.string.profile_check_for_updates_version, appVersion),
+            text = stringResource(R.string.profile_version_footer, appVersion),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

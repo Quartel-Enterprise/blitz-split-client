@@ -67,6 +67,7 @@
     <string name="profile_section_about">Privacidade e sobre</string>
     <string name="profile_privacy_policy">Política de Privacidade</string>
     <string name="profile_terms">Termos de Serviço</string>
+    <string name="profile_version_footer">Versão %1$s</string>
     <string name="profile_check_for_updates">Buscar atualizações</string>
     <string name="profile_check_for_updates_version">Versão %1$s</string>
     <string name="profile_check_for_updates_checking">Verificando…</string>

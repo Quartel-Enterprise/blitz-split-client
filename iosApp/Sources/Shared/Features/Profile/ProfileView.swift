@@ -835,7 +835,7 @@ private struct LegalFooter: View {
                     HStack(spacing: 10) { links }
                     VStack(spacing: 6) { links }
                 }
-                Text("Version \(Bundle.main.appVersion)")
+                Text("Version \(Bundle.appVersion)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -878,7 +878,7 @@ private struct CheckForUpdatesRow: View {
                 Button("Check for updates") { check() }
             }
         } label: {
-            Text("Version \(Bundle.main.appVersion)")
+            Text("Version \(Bundle.appVersion)")
         }
         #else
         Button {
@@ -891,7 +891,7 @@ private struct CheckForUpdatesRow: View {
                         if isChecking {
                             Text("Checking…")
                         } else {
-                            Text("Version \(Bundle.main.appVersion)")
+                            Text("Version \(Bundle.appVersion)")
                         }
                     }
                     .font(.footnote)
@@ -1003,11 +1003,13 @@ extension AccountProvider {
 private extension Bundle {
     /// The whole version, a beta's suffix too ("3.0.0-beta_1", beta feedback 19): Apple refuses a suffix in
     /// CFBundleShortVersionString, so the build writes it apart (iosApp/generate-project.sh).
-    var appVersion: String {
+    /// Read once: it can't change while the app runs.
+    static let appVersion: String = {
+        let info = Bundle.main.infoDictionary
         // Empty when xcodegen ran without generate-project.sh's environment
-        let whole = infoDictionary?["BlitzSplitVersionName"] as? String ?? ""
-        return whole.isEmpty ? infoDictionary?["CFBundleShortVersionString"] as? String ?? "" : whole
-    }
+        let whole = info?["BlitzSplitVersionName"] as? String ?? ""
+        return whole.isEmpty ? info?["CFBundleShortVersionString"] as? String ?? "" : whole
+    }()
 }
 
 /// Preferences › "Category map" (flow 9): pushed on iPhone and iPad; on the Mac, whose profile is Ajustes, it picks

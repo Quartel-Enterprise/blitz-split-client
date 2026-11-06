@@ -68,3 +68,6 @@ The home's four tabs and the web's and the Mac's shell.
   - The web's logo, atop the sidebar, the tablet's rail and the phone's top bar, opens Home from every tab and every
     page in the home's frame, as Home's tab does (on Home itself it changes nothing); a tap on it counts as
     `brand_clicked` where the screen's ViewModel tracks its events.
+  - On the Mac, a link the app is opened with (the browser sign in coming back through `borarachar://auth-callback`, an
+    invite link) goes to the main window already open, which updates in place, never to a second window opened on top
+    of it (beta feedback 12, `handlesExternalEvents` on the main window's root); with none open, the app opens one.
