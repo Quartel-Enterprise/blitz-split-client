@@ -25,6 +25,11 @@ struct BoraRacharApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        #if os(macOS)
+        // One window: a tab's "+" (View › Show Tab Bar) would open a second one drawing the same shared back stack,
+        // as File › New Window did (its `.newItem` group below is empty)
+        NSWindow.allowsAutomaticWindowTabbing = false
+        #endif
         FirebaseSetup.start()
         BlitzSplitApple.shared.start()
         FirebaseSetup.attachAnalytics()

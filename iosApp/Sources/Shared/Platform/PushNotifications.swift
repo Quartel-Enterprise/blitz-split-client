@@ -150,9 +150,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 #else
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillFinishLaunching(_ notification: Notification) {
-        // One window: a tab's "+" (View › Show Tab Bar) would open a second one drawing the same shared back stack,
-        // as File › New Window did (`BoraRacharApp`)
-        NSWindow.allowsAutomaticWindowTabbing = false
         PushNotifications.shared.start()
     }
 
