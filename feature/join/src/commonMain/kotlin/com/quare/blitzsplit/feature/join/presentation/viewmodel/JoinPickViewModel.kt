@@ -21,12 +21,14 @@ import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiAction
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiEvent
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiState
+import com.quare.blitzsplit.feature.join.presentation.model.JoinTarget
 import com.quare.blitzsplit.feature.join.presentation.model.NewMemberDraft
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -50,8 +52,7 @@ class JoinPickViewModel(
                 takenName = null,
                 creatorName = null,
                 newMember = null,
-                isJoining = false,
-                isJoiningAsNewMember = false,
+                joining = null,
             ),
         )
 
@@ -64,15 +65,15 @@ class JoinPickViewModel(
     private var invite: Invite? = null
 
     // Why: the profile's name while a Google or Apple account is signed in, which "Não estou na lista" joins as.
-    private var accountName: String? = null
+    private val accountNames = combine(observeAccountStatus(), observeProfile()) { status, profile ->
+        profile?.displayName?.takeIf { status is AccountStatus.Connected }
+    }
+
+    // Why: the account is read at the tap, so a second tap meanwhile opens or joins nothing twice.
+    private var isOpeningNewMember = false
 
     init {
         viewModelScope.launch { load() }
-        viewModelScope.launch {
-            combine(observeAccountStatus(), observeProfile()) { status, profile ->
-                profile?.displayName?.takeIf { status is AccountStatus.Connected }
-            }.collect { accountName = it }
-        }
     }
 
     override fun handleEvent(event: JoinPickUiEvent) {
@@ -145,12 +146,16 @@ class JoinPickViewModel(
      * name in "Entrar com outro nome".
      */
     private fun openNewMember() {
-        if (uiState.value.isJoining) return
-        val name = accountName?.let(::availableNameOf)?.let { GroupNameRules.toCapped(it).trimEnd() }
-        if (name != null) {
-            join(JoinChoice.AsNewMember(name))
-        } else {
-            uiState.update { it.copy(newMember = NewMemberDraft(name = "")) }
+        if (uiState.value.isJoining || isOpeningNewMember) return
+        isOpeningNewMember = true
+        viewModelScope.launch {
+            val name = accountNames.first()?.let(::availableNameOf)?.let { GroupNameRules.toCapped(it).trimEnd() }
+            isOpeningNewMember = false
+            if (name != null) {
+                join(JoinChoice.AsNewMember(name))
+            } else {
+                uiState.update { it.copy(newMember = NewMemberDraft(name = "")) }
+            }
         }
     }
 
@@ -180,20 +185,17 @@ class JoinPickViewModel(
         val invite = invite ?: return
         uiState.update {
             it.copy(
-                isJoining = true,
-                isJoiningAsNewMember = choice is JoinChoice.AsNewMember,
+                joining = when (choice) {
+                    is JoinChoice.AsMember -> JoinTarget.MEMBER
+                    is JoinChoice.AsNewMember -> JoinTarget.NEW_MEMBER
+                },
             )
         }
         viewModelScope.launch {
             joinGroup(invite, choice)
                 .onSuccess { outcome -> handle(outcome, choice) }
                 .onFailure { uiAction.emit(JoinPickUiAction.ShowJoinError) }
-            uiState.update {
-                it.copy(
-                    isJoining = false,
-                    isJoiningAsNewMember = false,
-                )
-            }
+            uiState.update { it.copy(joining = null) }
         }
     }
 

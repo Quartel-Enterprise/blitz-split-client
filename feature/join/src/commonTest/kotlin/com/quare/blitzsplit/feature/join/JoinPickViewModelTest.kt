@@ -25,6 +25,8 @@ import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewMode
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -900,6 +902,27 @@ class JoinPickViewModelTest {
         }
 
     @Test
+    fun `GIVEN a Google profile still being read WHEN tapping not in the list twice THEN joins once when it comes`() =
+        runTest(testDispatcher) {
+            // Given
+            val profileGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+                profileGate = profileGate,
+            )
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // When
+            profileGate.complete(Unit)
+
+            // Then
+            assertNull(viewModel.uiState.value.newMember)
+            assertEquals(listOf(JoinChoice.AsNewMember("Daniel")), invites.joins.map { it.choice })
+        }
+
+    @Test
     fun `GIVEN a Google account named Daniel WHEN tapping not in the list THEN the new name sheet never opens`() =
         runTest(testDispatcher) {
             // Given
@@ -1404,6 +1427,7 @@ class JoinPickViewModelTest {
         root: Route = Route.Home,
         accountStatus: AccountStatus = anonymous,
         profile: UserProfile? = null,
+        profileGate: CompletableDeferred<Unit>? = null,
     ) {
         accountStatuses = MutableStateFlow(accountStatus)
         profiles = MutableStateFlow(profile)
@@ -1440,7 +1464,14 @@ class JoinPickViewModelTest {
             },
             checkMemberName = CheckMemberNameUseCase(),
             observeAccountStatus = { accountStatuses },
-            observeProfile = { profiles },
+            observeProfile = {
+                profileGate?.let { gate ->
+                    flow {
+                        gate.await()
+                        emitAll(profiles)
+                    }
+                } ?: profiles
+            },
         )
         actions.clear()
         joinCalls = 0

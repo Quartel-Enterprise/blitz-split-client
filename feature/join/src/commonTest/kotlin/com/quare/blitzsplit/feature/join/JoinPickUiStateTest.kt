@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.join
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiState
+import com.quare.blitzsplit.feature.join.presentation.model.JoinTarget
 import com.quare.blitzsplit.feature.join.presentation.model.NewMemberDraft
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -201,7 +202,10 @@ class JoinPickUiStateTest {
         takenName = null,
         creatorName = "Pierre",
         newMember = newMember,
-        isJoining = isJoining,
-        isJoiningAsNewMember = isJoiningAsNewMember,
+        joining = when {
+            isJoiningAsNewMember -> JoinTarget.NEW_MEMBER
+            isJoining -> JoinTarget.MEMBER
+            else -> null
+        },
     )
 }

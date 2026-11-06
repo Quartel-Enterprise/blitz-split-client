@@ -529,8 +529,7 @@ private fun createPreviewState(): JoinPickUiState = JoinPickUiState(
     takenName = null,
     creatorName = "Pierre",
     newMember = null,
-    isJoining = false,
-    isJoiningAsNewMember = false,
+    joining = null,
 )
 
 @DevicePreviews

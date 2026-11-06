@@ -14,14 +14,16 @@ data class JoinPickUiState(
     val creatorName: String?,
     // Why: the "Entrar com outro nome" sheet, open while not null.
     val newMember: NewMemberDraft?,
-    // Why: a join on its way, which no button can start again.
-    val isJoining: Boolean,
-    /*
-     * Why: the join on its way is a new member's, from "Entrar com outro nome" or, for a Google or Apple account,
-     * straight from "Não estou na lista": its button shows the progress rather than "Entrar como Bruno".
-     */
-    val isJoiningAsNewMember: Boolean,
+    // Why: a join on its way, which no button can start again; null while none is.
+    val joining: JoinTarget?,
 ) {
+    val isJoining: Boolean
+        get() = joining != null
+
+    // Why: the join on its way is a new member's, so its button shows the progress rather than "Entrar como Bruno".
+    val isJoiningAsNewMember: Boolean
+        get() = joining == JoinTarget.NEW_MEMBER
+
     // Why: "Ainda não entraram", the ones that can be picked.
     val notJoined: List<JoinMember>
         get() = members.filterNot { it.hasJoined }
