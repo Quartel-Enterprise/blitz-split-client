@@ -111,7 +111,7 @@ internal fun ActorAvatarIcon(
 ) {
     val (container, content) = badgeColorsOf(item)
     val rowColor = MaterialTheme.colorScheme.surfaceContainerLowest
-    val name = actorNameOf(item)
+    val name = personNameOf(item.actor.name, item.actor.isMe)
     Box(modifier = modifier) {
         AvatarBadge(
             initial = item.actor.initials,

@@ -5,8 +5,8 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
-| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug`, `npm --prefix webApp run build`, each in a job of its own |
-| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test` and `compileKotlinIosArm64`; both schemes of the Apple app, which link the `Shared` framework |
+| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test` and `compileKotlinIosArm64`; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es or fr translation |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -14,7 +14,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
 | `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
-| `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every 15 minutes, and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
+| `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every push to `main`, every 15 minutes (when GitHub fires it), and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
 | `release-beta` | By hand, with `./scripts/release/release-beta.sh` | Ships a beta to the closed group: Android on Firebase App Distribution, the web on Cloudflare Pages, iOS and macOS on TestFlight. Merges the versionCode back into `main` and publishes the `X.Y.Z-beta_N` GitHub pre-release; see [release-process.md](release-process.md) |
 
 Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
@@ -142,15 +142,20 @@ only for the required checks, and none is required here (see [Setup](#setup)).
 
 The workflow runs when the label is added and each time a pull request workflow completes, so the last check to
 finish is the one that triggers the merge. GitHub loses some of those events: a run of this workflow that fails to start
-(`startup_failure`), or a `workflow_run` never sent. So it also runs every 15 minutes, and its `sweep` job lists the open
-pull requests with the label (drafts and forks left out) and checks each one the same way. To check them right away, run
+(`startup_failure`), or a `workflow_run` never sent. So it also runs a `sweep`: a job that lists the open pull requests
+with the label (drafts and forks left out) and checks each one the same way. GitHub's scheduler can't be what drives it:
+it fired about one run in 26 of the `schedule` here (GitHub drops scheduled runs under load, and the workflow has no
+workflow-level `concurrency` that could cancel them; only the `merge` job has one, per branch). The sweep therefore runs on every push to `main` (each
+merge), every 15 minutes when GitHub does fire the schedule, and by hand.
+The push trigger only fires when something lands on `main`: with `main` idle, a pull request that missed its event waits for the
+schedule or for someone to dispatch the workflow. To check them right away, run
 the workflow by hand (**Actions**, `merge-when-green`, **Run workflow**), with a pull request number to check only that
 one. The sweep only sees pull requests that still have the label: one it removed for an unresolved conversation needs
 the label added again, as below. A push to the pull request moves its head commit, and the new checks have
 to pass again. A failed check leaves the pull request open with the label on; re-running the check and getting it
 green merges it. The pull request's current head is the one judged, whichever commit's run started the workflow, so
 a pull request whose changes run no check workflow (docs only, `iosApp` only) merges once the review ends, even after
-the review pushed its fix commit. No workflow runs on every push here, so a label added, or a sweep run, right after a
+the review pushed its fix commit. No pull request workflow runs on every push here, so a label added, or a sweep run, right after a
 push waits 30 seconds first, for the push's workflows to register their runs. Drafts wait until they are marked
 ready, and pull requests from forks are never merged: their author could push after a maintainer added the label.
 

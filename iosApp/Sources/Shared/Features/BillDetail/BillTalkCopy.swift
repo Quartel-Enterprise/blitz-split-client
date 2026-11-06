@@ -130,7 +130,7 @@ extension BillCopy {
     /// "You", "Ana" or "Someone": who did a line of History.
     static func actor(_ entry: BillHistoryEntry) -> String {
         entry.actorIsMe
-            ? String(localized: "You", bundle: .appLanguage)
+            ? String(localized: "You, who did it", bundle: .appLanguage, comment: "The user as the one who did something, before its verb")
             : entry.actorName ?? String(
                 localized: "Someone",
                 bundle: .appLanguage,

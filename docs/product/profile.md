@@ -73,7 +73,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     on a phone, a 560 dp dialog anywhere wider, a book's right half. The Apple apps and the web keep their own picker.
   - Profile › Preferences › "Language", as Bible Planner's (Pierre's call): "System" first, the default, which follows
     the device's language (English for one the app doesn't have), then each language in its own name, "English",
-    "Português" and "Español", whatever the app's current language, so whoever can't read it still finds theirs;
+    "Português", "Español" and "Français", whatever the app's current language, so whoever can't read it still finds theirs;
     "Español" is Spain's Spanish (es-ES) on a device whose region is Spain, the neutral one anywhere else. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's

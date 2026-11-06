@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Enregistre ton code de récupération</string>
+    <string name="recovery_code_body">Tu utilises l’app sans compte. Ce code te rend tes groupes si tu changes d’appareil ou si tu le perds.</string>
+    <string name="recovery_code_copy">Copier le code</string>
+    <string name="recovery_code_save_to_password_manager">Enregistrer dans le gestionnaire de mots de passe</string>
+    <string name="recovery_code_connect_instead">Connecter Google ou Apple à la place</string>
+    <string name="recovery_code_connect_instead_body">Aucun code nécessaire</string>
+    <string name="recovery_code_sign_in_failed">Connexion impossible pour le moment. Réessaie.</string>
+    <string name="recovery_code_also_in_profile">Il est aussi dans Profil › Récupération.</string>
+    <string name="recovery_code_remind_later">Me le rappeler plus tard</string>
+    <string name="recovery_code_saved">Je l’ai enregistré</string>
+</resources>
