@@ -49,6 +49,12 @@ sealed interface ContactProfileUiEvent : UiEvent {
 
             OnMergeClicked -> EventAnalytics.Manual("contact_merge_clicked")
 
+            OnClaimAsMeClicked -> EventAnalytics.Manual("contact_claim_clicked")
+
+            OnClaimAsMeConfirmed -> EventAnalytics.Manual("contact_claim_confirmed")
+
+            OnClaimAsMeDismissed -> EventAnalytics.Manual("contact_claim_cancelled")
+
             OnMergeRetryClicked -> EventAnalytics.Manual("retry_clicked")
 
             OnMergeCopyClicked -> EventAnalytics.Manual("invite_link_copy_clicked")
@@ -113,6 +119,13 @@ sealed interface ContactProfileUiEvent : UiEvent {
     data object OnMergeShareClicked : ContactProfileUiEvent
 
     data object OnMergeDismissed : ContactProfileUiEvent
+
+    // Why: "Eu sou Diego" on Juntar's sheet: the person using the app is the guest, so it asks first.
+    data object OnClaimAsMeClicked : ContactProfileUiEvent
+
+    data object OnClaimAsMeConfirmed : ContactProfileUiEvent
+
+    data object OnClaimAsMeDismissed : ContactProfileUiEvent
 
     // Why: "Pedir para quem já usa o app", the other way to accept, not built yet.
     data object OnAskAppUserClicked : ContactProfileUiEvent

@@ -109,6 +109,11 @@
     <string name="contacts_merge_retry">Tentar de novo</string>
     <string name="contacts_merge_share_message">%1$s, entra no Bora Rachar por este link e tudo o que está no seu nome vem junto: %2$s</string>
     <string name="contacts_cancel_merge_error">Não deu para cancelar o pedido. Confira a conexão e tente de novo.</string>
+    <string name="contacts_claim_button">Eu sou %s</string>
+    <string name="contacts_claim_title">Juntar %s com a sua conta?</string>
+    <string name="contacts_claim_message">Tudo o que está no nome de %1$s (contas, pagamentos e o saldo de %2$s) passa para a sua conta, em todos os grupos, e o convidado some. Não dá para desfazer.</string>
+    <string name="contacts_claim_confirm">Juntar</string>
+    <string name="contacts_claim_error">Não deu para juntar. Confira a conexão e tente de novo.</string>
     <string name="contacts_copy_link">Copiar link</string>
     <string name="contacts_copied">Copiado</string>
     <string name="contacts_share">Compartilhar</string>

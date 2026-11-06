@@ -88,6 +88,8 @@ class JsGuestMergeSheet(
     val displayLink: String?,
     val isRequesting: Boolean,
     val hasFailed: Boolean,
+    val isConfirmingClaim: Boolean,
+    val isClaiming: Boolean,
 )
 
 class JsContactProfileState(
@@ -127,7 +129,7 @@ class JsContactProfileState(
 
 /*
  * Why: "coming-soon", "copy" and "share" (with the link, and the person's name for the message), "added" (the name
- * and the group's), "change-error" or "cancel-merge-error".
+ * and the group's), "change-error", "claim-error" or "cancel-merge-error".
  */
 class JsContactProfileAction(
     val type: String,
@@ -172,6 +174,8 @@ class ContactProfilePresenter(
                 )
 
                 ContactProfileUiAction.ShowChangeError -> JsContactProfileAction("change-error", null, null, null)
+
+                ContactProfileUiAction.ShowClaimError -> JsContactProfileAction("claim-error", null, null, null)
 
                 ContactProfileUiAction.ShowCancelMergeError -> JsContactProfileAction(
                     "cancel-merge-error",
@@ -267,6 +271,18 @@ class ContactProfilePresenter(
 
     fun dismissMerge() {
         viewModel.onEvent(ContactProfileUiEvent.OnMergeDismissed)
+    }
+
+    fun claimAsMe() {
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+    }
+
+    fun confirmClaimAsMe() {
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+    }
+
+    fun dismissClaimAsMe() {
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeDismissed)
     }
 
     fun askAppUser() {
@@ -399,4 +415,6 @@ private fun toJsGuestMergeSheet(sheet: GuestMergeSheet): JsGuestMergeSheet = JsG
     displayLink = sheet.displayLink,
     isRequesting = sheet.isRequesting,
     hasFailed = sheet.hasFailed,
+    isConfirmingClaim = sheet.isConfirmingClaim,
+    isClaiming = sheet.isClaiming,
 )

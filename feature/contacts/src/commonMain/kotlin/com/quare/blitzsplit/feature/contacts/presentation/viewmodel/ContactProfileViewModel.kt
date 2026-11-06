@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.sync.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
@@ -53,6 +54,7 @@ class ContactProfileViewModel(
     private val requestGuestMerge: RequestGuestMerge,
     private val findPendingGuestMerge: FindPendingGuestMerge,
     private val cancelGuestMerge: CancelGuestMerge,
+    private val claimGuestAsMe: ClaimGuestAsMe,
     observeContactBook: ObserveContactBook,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
@@ -200,7 +202,7 @@ class ContactProfileViewModel(
             ContactProfileUiEvent.OnMergeClicked -> openMerge()
 
             ContactProfileUiEvent.OnMergeRetryClicked -> {
-                uiState.update { state -> state.copy(merge = state.merge?.copy(hasFailed = false)) }
+                updateSheet { it.copy(hasFailed = false) }
                 if (requestMergeIfDue()) trackEvent("retry_clicked", mergeParams)
             }
 
@@ -223,6 +225,20 @@ class ContactProfileViewModel(
                     pendingMerge = state.merge?.merge?.toLoaded() ?: state.pendingMerge,
                 )
             }
+
+            ContactProfileUiEvent.OnClaimAsMeClicked -> if (updateSheet { it.copy(isConfirmingClaim = true) }) {
+                trackEvent("contact_claim_clicked", emptyMap())
+            }
+
+            ContactProfileUiEvent.OnClaimAsMeDismissed -> {
+                val sheet = uiState.value.merge
+                if (sheet != null && sheet.isConfirmingClaim && !sheet.isClaiming) {
+                    updateSheet { it.copy(isConfirmingClaim = false) }
+                    trackEvent("contact_claim_cancelled", emptyMap())
+                }
+            }
+
+            ContactProfileUiEvent.OnClaimAsMeConfirmed -> claimAsMe()
 
             ContactProfileUiEvent.OnAskAppUserClicked -> emit(ContactProfileUiAction.ShowComingSoon)
 
@@ -350,6 +366,8 @@ class ContactProfileViewModel(
                     merge = state.pendingMerge.valueOrNull(),
                     isRequesting = false,
                     hasFailed = false,
+                    isConfirmingClaim = false,
+                    isClaiming = false,
                 ),
             )
         }
@@ -382,6 +400,49 @@ class ContactProfileViewModel(
             }
         }
         return true
+    }
+
+    // Why: says whether the sheet was open, which Analytics counts.
+    private fun updateSheet(change: (GuestMergeSheet) -> GuestMergeSheet): Boolean {
+        if (uiState.value.merge == null) return false
+        uiState.update { state -> state.copy(merge = state.merge?.let(change)) }
+        return true
+    }
+
+    /*
+     * Why: the server moves everything in the guest's name to the user's own member at once, and a sync brings it to the
+     * device; the guest then leaves the book, which closes the profile. Online only, as only the server knows every
+     * group's members.
+     */
+    private fun claimAsMe() {
+        val state = uiState.value
+        val sheet = state.merge ?: return
+        val contact = state.contact?.takeIf { it.isGuest } ?: return
+        if (!state.isOnline || !sheet.isConfirmingClaim || sheet.isClaiming) return
+        // Why: the question closes as the claim starts, so a platform that closes it itself on a tap agrees with this state.
+        updateSheet {
+            it.copy(
+                isClaiming = true,
+                isConfirmingClaim = false,
+            )
+        }
+        trackEvent("contact_claim_confirmed", emptyMap())
+        viewModelScope.launch {
+            val result = claimGuestAsMe(contact)
+            // Why: a guest the server moved leaves with its waiting request, and the sync has taken it from the device.
+            if (result.getOrNull().let { it != null && it > 0 }) {
+                uiState.update {
+                    it.copy(
+                        merge = null,
+                        pendingMerge = null.toLoaded(),
+                    )
+                }
+            } else {
+                updateSheet { it.copy(isClaiming = false) }
+                // Why: no member moved is no success: the guest only exists here, or another device claimed it first.
+                uiAction.emit(ContactProfileUiAction.ShowClaimError)
+            }
+        }
     }
 
     private fun refreshPendingMerge() {

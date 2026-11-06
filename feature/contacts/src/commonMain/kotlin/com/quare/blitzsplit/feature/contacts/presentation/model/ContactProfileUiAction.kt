@@ -24,6 +24,9 @@ sealed interface ContactProfileUiAction {
     // Why: the device couldn't save a change, which is rare enough to just say so.
     data object ShowChangeError : ContactProfileUiAction
 
+    // Why: "Eu sou Diego" didn't reach the server.
+    data object ShowClaimError : ContactProfileUiAction
+
     // Why: Cancelar didn't reach the server.
     data object ShowCancelMergeError : ContactProfileUiAction
 }

@@ -21,7 +21,7 @@ import { formatDayTime, formatShortDate } from '@/lib/dates'
 import { formatMoney, formatNames, formatSignedMoney } from '@/lib/money'
 import { copyLink, shareOrCopy } from '@/lib/share'
 import { cn } from '@/lib/utils'
-import { AddToGroupDialog, MergeDialog } from './ContactProfileDialogs'
+import { AddToGroupDialog, ClaimDialog, MergeDialog } from './ContactProfileDialogs'
 import { netWord } from './contactWords'
 
 /** The profile's ViewModel for one person, with what it asks the page to do (copy, share, a toast). */
@@ -48,6 +48,9 @@ function onProfileAction(action: JsContactProfileAction) {
       break
     case 'cancel-merge-error':
       toast(t('contactProfile_cancelMergeError'))
+      break
+    case 'claim-error':
+      toast(t('contactProfile_claimError'))
       break
     case 'change-error':
       toast(t('contacts_changeError'))
@@ -183,6 +186,7 @@ export function ContactProfileView({
       )}
       {state.addToGroup && <AddToGroupDialog presenter={presenter} draft={state.addToGroup} contact={contact} />}
       {state.merge && <MergeDialog presenter={presenter} sheet={state.merge} contact={contact} isOnline={state.isOnline} />}
+      {state.merge?.isConfirmingClaim && <ClaimDialog presenter={presenter} sheet={state.merge} contact={contact} isOnline={state.isOnline} />}
     </section>
   )
 }

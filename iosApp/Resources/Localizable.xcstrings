@@ -1,6 +1,121 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "I am %@" : {
+      "comment" : "A guest's merge sheet: the person using the app is this guest",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soy %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je suis %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eu sou %@"
+          }
+        }
+      }
+    },
+    "Merge %@ into your account?" : {
+      "comment" : "Asks before the guest is merged into the user's own account",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Fusionar a %@ con tu cuenta?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fusionner %@ avec ton compte ?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juntar %@ com a sua conta?"
+          }
+        }
+      }
+    },
+    "Everything in %@'s name (bills, payments and the balance of %@) moves to your account, in every group, and the guest goes away. This can't be undone." : {
+      "comment" : "The warning before the user claims a guest",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo lo que está a nombre de %@ (gastos, pagos y el saldo de %@) pasa a tu cuenta, en todos los grupos, y el invitado desaparece. No se puede deshacer."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout ce qui est au nom de %@ (dépenses, paiements et le solde de %@) passe sur ton compte, dans tous les groupes, et l’invité disparaît. Cette action est irréversible."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tudo o que está no nome de %@ (contas, pagamentos e o saldo de %@) passa para a sua conta, em todos os grupos, e o convidado some. Não dá para desfazer."
+          }
+        }
+      }
+    },
+    "Merge" : {
+      "comment" : "The button that confirms merging a guest into the user's account",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fusionar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fusionner"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juntar"
+          }
+        }
+      }
+    },
+    "Couldn't merge. Try again." : {
+      "comment" : "A toast: the claim didn't reach the server",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo fusionar. Inténtalo de nuevo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de fusionner. Réessaie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para juntar. Tente de novo."
+          }
+        }
+      }
+    },
     "%@ %@" : {
       "comment" : "The bold title and the message of a notice, side by side",
       "shouldTranslate" : false

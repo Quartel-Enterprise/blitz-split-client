@@ -8,6 +8,7 @@ final class ContactProfileModel {
     private(set) var comingSoonCount = 0
     private(set) var changeErrorCount = 0
     private(set) var cancelMergeErrorCount = 0
+    private(set) var claimErrorCount = 0
     private(set) var copiedCount = 0
     private(set) var addedCount = 0
     /// "Carla joined Apê 302.", kept while the toast shows.
@@ -28,6 +29,7 @@ final class ContactProfileModel {
             case is ContactProfileUiActionShowComingSoon: self?.comingSoonCount += 1
             case is ContactProfileUiActionShowChangeError: self?.changeErrorCount += 1
             case is ContactProfileUiActionShowCancelMergeError: self?.cancelMergeErrorCount += 1
+            case is ContactProfileUiActionShowClaimError: self?.claimErrorCount += 1
             case let copy as ContactProfileUiActionCopyLink:
                 Pasteboard.copy(copy.link)
                 self?.copiedCount += 1
@@ -73,6 +75,16 @@ final class ContactProfileModel {
             get: { self.state.merge != nil },
             set: { isShown in
                 if !isShown, self.current.merge != nil { self.send(ContactProfileUiEventOnMergeDismissed.shared) }
+            },
+        )
+    }
+
+    /// "Merge Diego into your account?" is open; Esc or a tap outside closes it in the ViewModel too.
+    var isConfirmingClaim: Binding<Bool> {
+        Binding(
+            get: { self.state.merge?.isConfirmingClaim == true },
+            set: { isShown in
+                if !isShown, self.current.merge?.isConfirmingClaim == true { self.send(ContactProfileUiEventOnClaimAsMeDismissed.shared) }
             },
         )
     }
@@ -798,6 +810,18 @@ private struct MergeGuestSheet: View {
                     Text("Everything in \(contact.name)'s name (bills, payments and the balance of \(ContactsCopy.amount(contact.net))) moves to their account, in every group, and the guest goes away. It only happens once they accept.")
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                // The person using the app is this guest: nobody has to accept.
+                Section {
+                    Button {
+                        model.send(ContactProfileUiEventOnClaimAsMeClicked.shared)
+                    } label: {
+                        Label("I am \(contact.name)", systemImage: "person.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .prominentLabel()
+                    .disabled(!model.state.isOnline || sheet.isClaiming)
+                }
                 Section {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Send a personal invite")
@@ -838,9 +862,24 @@ private struct MergeGuestSheet: View {
                 }
             }
         }
+        .alert(
+            Text("Merge \(contact.name) into your account?"),
+            isPresented: model.isConfirmingClaim,
+        ) {
+            Button("Cancel", role: .cancel) {
+                model.send(ContactProfileUiEventOnClaimAsMeDismissed.shared)
+            }
+            Button("Merge") {
+                model.send(ContactProfileUiEventOnClaimAsMeConfirmed.shared)
+            }
+            .disabled(sheet.isClaiming || !model.state.isOnline)
+        } message: {
+            Text("Everything in \(contact.name)'s name (bills, payments and the balance of \(ContactsCopy.amount(contact.net))) moves to your account, in every group, and the guest goes away. This can't be undone.")
+        }
         .glassToast([
             GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
             GlassToastMessage(text: "Copied", trigger: model.copiedCount),
+            GlassToastMessage(text: "Couldn't merge. Try again.", trigger: model.claimErrorCount),
         ])
         #if os(iOS)
         .presentationDetents([.large])

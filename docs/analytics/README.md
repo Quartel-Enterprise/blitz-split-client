@@ -458,6 +458,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `contact_invite_guest_clicked` | none | "Invite Diego" on a guest | `:feature:contacts` |
 | `contact_merge_clicked` | none | "Merge with an account" on a guest | `:feature:contacts` |
 | `contact_merge_cancel_clicked` | none | "Cancel" on "Waiting for Diego to accept" | `:feature:contacts` |
+| `contact_claim_clicked` | none | "I am Diego" on the merge sheet | `:feature:contacts` |
+| `contact_claim_confirmed` | none | "Merge" on "Merge Diego into your account?" | `:feature:contacts` |
+| `contact_claim_cancelled` | none | "Cancel" on "Merge Diego into your account?" | `:feature:contacts` |
 | `profile_edit_clicked` | none | Profile's card, which opens "Edit profile" | `:feature:profile` |
 | `profile_photo_clicked` | `source` (`profile`, `edit_profile`) | The avatar, which opens the photo big | `:feature:profile`, `:feature:edit_profile` |
 | `profile_recovery_code_clicked` | none | "Recovery code" | `:feature:profile` |

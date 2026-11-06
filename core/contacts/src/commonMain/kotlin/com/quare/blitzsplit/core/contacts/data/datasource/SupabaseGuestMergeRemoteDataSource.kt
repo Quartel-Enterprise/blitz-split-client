@@ -26,4 +26,10 @@ class SupabaseGuestMergeRemoteDataSource(
             function = "cancel_guest_merge",
             parameters = CancelGuestMergeParamsDto(mergeId),
         ).decodeAs<Boolean>()
+
+    override suspend fun requestClaim(memberIds: List<String>): Int = postgrest
+        .rpc(
+            function = "claim_guest_members",
+            parameters = GuestMergeMembersParamsDto(memberIds),
+        ).decodeAs<Int>()
 }

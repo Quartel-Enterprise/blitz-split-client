@@ -71,7 +71,10 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     between the two and their payments); "See all" opens Activity on that person. A guest's profile
     offers "Invite Diego" (their personal link) and "Merge with an account" (online only): the server makes a
     request and a single use personal link, and once the guest joins through it everything in that name, in every
-    group, passes to their account ("Waiting for Diego to accept", Cancel); "Ask someone who already uses the app" answers
+    group, passes to their account ("Waiting for Diego to accept", Cancel). When the person using the app is that
+    guest, the sheet's button above the options, "I am Diego", asks "Merge Diego into your account?" (it can't be
+    undone) and moves everything in that name to their own member in every group at once, with nobody to accept
+    (`claim_guest_members`, online only; a sync then takes the guest away and closes the profile); "Ask someone who already uses the app" answers
     "Coming soon". "Invite from contacts" (`Route.ContactsAgenda`, Android and Apple; the web says the browser can't read
     the agenda) explains before the system asks, leads to the settings once refused, and lists the agenda (only
     the contacts picked under iOS's limited access); no phone number leaves the device, so nobody is shown as

@@ -113,6 +113,11 @@
     <string name="contacts_merge_retry">Intentar de nuevo</string>
     <string name="contacts_merge_share_message">%1$s, únete a mí en Blitz Split con este enlace y todo lo que está a tu nombre se viene contigo: %2$s</string>
     <string name="contacts_cancel_merge_error">No se pudo cancelar la solicitud. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="contacts_claim_button">Soy %s</string>
+    <string name="contacts_claim_title">¿Unir a %s con tu cuenta?</string>
+    <string name="contacts_claim_message">Todo lo que está a nombre de %1$s (gastos, pagos y el saldo de %2$s) pasa a tu cuenta, en todos los grupos, y el invitado desaparece. No se puede deshacer.</string>
+    <string name="contacts_claim_confirm">Unir</string>
+    <string name="contacts_claim_error">No se pudo unir. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="contacts_copy_link">Copiar enlace</string>
     <string name="contacts_copied">Copiado</string>
     <string name="contacts_share">Compartir</string>
