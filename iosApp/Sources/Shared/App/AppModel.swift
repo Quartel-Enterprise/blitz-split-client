@@ -1,3 +1,6 @@
+#if os(macOS)
+import AppKit
+#endif
 import Observation
 import Shared
 import SwiftUI
@@ -31,10 +34,8 @@ final class AppModel {
     /// The section of Ajustes the last of those asked for (the profile, Notifications from Activity, or Categories for the map), until Ajustes picks
     /// it (`SettingsView`).
     var requestedSettingsPane: ProfileSettingsPane?
-    /// What the mouse's back button closed, the last one on top, which its forward button opens again.
-    private var forwardRoutes: [any Route] = []
-    /// The back stack the last back or forward is about to leave, so it keeps the routes forward still has.
-    @ObservationIgnored private var expectedRoutes: [AppRoute]?
+    /// Whether the shared history has a screen back closed to open again (`ForwardHistory`).
+    private var hasForward = false
     #endif
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
@@ -56,6 +57,11 @@ final class AppModel {
         watches.add(viewModel.backStackWatcher.observe { [weak self] routes in
             self?.backStackChanged(routes)
         })
+        #if os(macOS)
+        watches.add(viewModel.canGoForwardWatcher.observe { [weak self] hasForward in
+            self?.hasForward = hasForward.boolValue
+        })
+        #endif
         watches.add(viewModel.themeWatcher.observe { [weak self] theme in
             self?.theme = theme
         })
@@ -79,7 +85,6 @@ final class AppModel {
     private func backStackChanged(_ value: Any?) {
         let routes = Self.routes(of: value)
         #if os(macOS)
-        keepForwardRoutes(onlyIf: routes)
         if routes.count > 1, let last = routes.last, let pane = last.settingsPane {
             holder.viewModel.navigator.popTo(size: Int32(routes.count - 1))
             requestedSettingsPane = pane
@@ -103,11 +108,11 @@ final class AppModel {
     }
 
     #if os(macOS)
-    /// No sheet covers the main window, nor Ajustes' key or account deletion: what the window's menu shortcuts (⌘K, ⌘[,
-    /// ⌘], the mouse's buttons) need, since each moves the back stack under whatever is on top and would close it with
-    /// its draft.
+    /// No sheet covers the main window (the back stack's own, an invite's popover, Ajustes' key or account deletion,
+    /// an alert or sheet a screen presents itself): what the window's menu shortcuts (⌘K, ⌘[, ⌘], the mouse's buttons)
+    /// need, since each moves the back stack under whatever is on top and would close it with its draft.
     var isWindowUncovered: Bool {
-        settingsEntryCount == 0 && sheet == nil && stackedSheet == nil
+        settingsEntryCount == 0 && sheet == nil && stackedSheet == nil && invitePopover == nil
     }
 
     /// Whether the mouse's back button (or ⌘[) has a screen to close: the main window's top, while no sheet covers it.
@@ -117,36 +122,20 @@ final class AppModel {
 
     /// Whether the mouse's forward button (or ⌘]) has a screen to open again.
     var canGoForward: Bool {
-        !forwardRoutes.isEmpty && isWindowUncovered
+        hasForward && isWindowUncovered
     }
 
-    /// The mouse's back button: closes the screen on top, as its back button and Esc do, remembering it for forward.
+    /// The mouse's back button: closes the screen on top, as its back button and Esc do; never under a sheet, nor an
+    /// alert a screen presents itself, which the back stack doesn't hold.
     func goBack() {
-        guard canGoBack, let top = sharedRoutes.last else { return }
-        let remaining = Array(sharedRoutes.dropLast())
-        forwardRoutes.append(top)
-        expectedRoutes = remaining.map { AppRoute($0) }
-        holder.viewModel.navigator.navigateBack()
+        guard canGoBack, !NSApplication.hasSheetOpen else { return }
+        holder.viewModel.goBack()
     }
 
     /// The mouse's forward button: opens again the last screen its back button closed.
     func goForward() {
-        guard canGoForward, let route = forwardRoutes.popLast() else { return }
-        expectedRoutes = (sharedRoutes + [route]).map { AppRoute($0) }
-        holder.viewModel.navigator.navigate(route: route)
-    }
-
-    /// The shared back stack as the shared code holds it, which forward pushes the routes of.
-    private var sharedRoutes: [any Route] {
-        (holder.viewModel.navigator.backStack.value as? [Any])?.compactMap { $0 as? any Route } ?? []
-    }
-
-    /// Forward only goes on from where back left: any other move of the back stack (a tap, a sheet, a tab) forgets it,
-    /// as a browser's history does.
-    private func keepForwardRoutes(onlyIf routes: [AppRoute]) {
-        let expected = expectedRoutes
-        expectedRoutes = nil
-        if routes != expected { forwardRoutes.removeAll() }
+        guard canGoForward, !NSApplication.hasSheetOpen else { return }
+        holder.viewModel.goForward()
     }
 
     /// Keeps what the main window opened over Ajustes' entries from `index` up, in its order, without them.

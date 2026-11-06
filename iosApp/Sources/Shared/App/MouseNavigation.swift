@@ -43,7 +43,9 @@ private struct MouseButtonsMonitor: NSViewRepresentable {
 
         func install(in view: NSView) {
             monitor = NSEvent.addLocalMonitorForEvents(matching: .otherMouseDown) { [weak self, weak view] event in
-                guard let self, let window = view?.window, event.window === window else { return event }
+                guard let self, let window = view?.window, event.window === window, window.attachedSheet == nil else {
+                    return event
+                }
                 switch event.buttonNumber {
                 case 3:
                     back()
@@ -61,6 +63,14 @@ private struct MouseButtonsMonitor: NSViewRepresentable {
             if let monitor { NSEvent.removeMonitor(monitor) }
             monitor = nil
         }
+    }
+}
+
+extension NSApplication {
+    /// A sheet or an alert shows on one of the app's windows, the ones a screen presents itself (Leave group's, the bill
+    /// link's notice) included, which the back stack doesn't hold: a menu shortcut moving it would close what is under.
+    @MainActor static var hasSheetOpen: Bool {
+        NSApp.windows.contains { $0.sheetParent != nil && $0.isVisible }
     }
 }
 

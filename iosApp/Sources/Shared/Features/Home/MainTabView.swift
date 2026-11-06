@@ -311,6 +311,8 @@ struct MainTabView: View {
     /// ⌘K: the search tab, as a click on it in the sidebar, and its field focused; already open, back to its results
     /// from what a result pushed over them, as a click on the tab does (`selectFromGroups`).
     private func openSearch() {
+        // An alert or a sheet a screen presents itself, which `isWindowUncovered` can't see
+        guard !NSApplication.hasSheetOpen else { return }
         searchFocusRequest += 1
         tabSelection.wrappedValue = .search
     }

@@ -58,7 +58,7 @@ The home's four tabs and the web's and the Mac's shell.
     mouse's back and forward buttons go back and forward, as in the Finder and Safari: back closes the screen on top
     as its back button does (never under a sheet), forward opens again what back closed, and any other move (a tap, a
     tab, a sheet) forgets what forward had, as a browser's history; Go › Back (⌘[) and Forward (⌘]) do the same from
-    the keyboard (`AppModel.goBack`, `goForward`). A group's row in Groups' table, a group in the sidebar's "Open"
+    the keyboard (`ForwardHistory`). A group's row in Groups' table, a group in the sidebar's "Open"
     and whatever else a tab opens draws over that tab (`SyncedNavigationStack`, which the Mac's `TabView` needs to
     push a tab's path).
   - A home tab (Home, Groups, Balances, Contacts, Activity) shows its title only on a wide screen, on every platform

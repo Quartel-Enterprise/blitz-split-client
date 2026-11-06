@@ -176,12 +176,7 @@ struct GroupsSearchView: View {
     }
 
     private var scopePicker: some View {
-        Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
-            ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
-                Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
-            }
-        }
-        .pickerStyle(.segmented)
+        GroupsSearchScopePicker(model: model)
     }
 }
 
@@ -231,14 +226,9 @@ struct GroupsSearchView: View {
                 TextField("Groups, people and expenses", text: GroupsSearchCopy.queryBinding(model))
                     .textFieldStyle(.roundedBorder)
                     .focused($isFieldFocused)
-                Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
-                    ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
-                        Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .fixedSize()
+                GroupsSearchScopePicker(model: model)
+                    .labelsHidden()
+                    .fixedSize()
             }
             .frame(maxWidth: 560)
             .padding(16)
@@ -258,6 +248,20 @@ extension EnvironmentValues {
     @Entry var searchFocusRequest = 0
 }
 #endif
+
+/// All / Groups / People / Expenses as segments, the same on iPhone, iPad and Mac.
+struct GroupsSearchScopePicker: View {
+    let model: any SearchSource
+
+    var body: some View {
+        Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
+            ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
+                Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+}
 
 /// The words and bindings of the search, the same on iPhone, iPad and Mac.
 enum GroupsSearchCopy {
