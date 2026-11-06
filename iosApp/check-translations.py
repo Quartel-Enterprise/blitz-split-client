@@ -10,7 +10,7 @@ sentences): a dropped or renamed one prints "%lld" on screen or crashes the form
 es-ES is not required: it holds only the words Spain says differently, and the build fills the rest from es
 (merge-regional-strings.py). A key with "shouldTranslate": false or a stale one is skipped.
 
-Xcode runs it before Compile Sources:
+Xcode runs it after Compile Sources, as a postCompileScript of project.yml:
   check-translations.py <Resources directory>
 """
 
@@ -26,7 +26,7 @@ CATALOGS = ("Localizable.xcstrings", "InfoPlist.xcstrings")
 
 # %lld, %@, %1$@, %.2f, %% (a literal percent) and the private-use characters the activity sentences use as stand-ins
 # for the actor and the object
-PLACEHOLDER = re.compile(r"%(?:\d+\$)?[-+ 0#]*\d*(?:\.\d+)?(?:hh|h|ll|l|q|L|z|t|j)?[diouxXeEfFgGaAcCsSp@]|[\ue000\ue001]")
+PLACEHOLDER = re.compile(r"%(?:\d+\$)?[-+0#]*\d*(?:\.\d+)?(?:hh|h|ll|l|q|L|z|t|j)?[diouxXeEfFgGaAcCsSp@]|[\ue000\ue001]")
 POSITION = re.compile(r"^%\d+\$")
 
 
@@ -56,6 +56,8 @@ def problems(key: str, entry: dict):
     # text is then the `en` localization
     english = localizations.get("en", {}).get("stringUnit", {}).get("value", key)
     wanted = placeholders(english)
+    # A device variation ("/device.mac") is compared with the English one of the same device, else with the whole text
+    english_variations = {path: placeholders(unit.get("value", "")) for path, unit in leaves(localizations.get("en", {}))}
     for language in REQUIRED:
         localization = localizations.get(language)
         if localization is None:
@@ -67,9 +69,10 @@ def problems(key: str, entry: dict):
             value = unit.get("value", "")
             if unit.get("state") != "translated" or not value.strip():
                 yield f"{language}{path} is not translated"
-            # A plural sentence ("%1$#@people@") moves its numbers into substitutions that Xcode checks itself
-            elif path == "" and "#@" not in value and placeholders(value) != wanted:
-                yield f'{language} "{value}" does not keep the placeholders of the key'
+            # A plural form may drop its number ("une seule dépense") and a plural sentence ("%1$#@people@") moves its
+            # numbers into substitutions that Xcode checks itself: only the plain text and the device variations count
+            elif "plural." not in path and "#@" not in value and placeholders(value) != english_variations.get(path, wanted):
+                yield f'{language}{path} "{value}" does not keep the placeholders of the key'
         if not found:
             yield f"{language} has no value"
 

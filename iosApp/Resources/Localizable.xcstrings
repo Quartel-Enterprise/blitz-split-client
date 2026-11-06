@@ -13301,6 +13301,35 @@
         }
       }
     },
+    "You, who did it" : {
+      "comment" : "The user as the one who did something, the subject of the verb that follows in Activity and History: \"You split Dinner\". French says \"Tu\", where the label of a list is \"Toi\"",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tú"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você"
+          }
+        }
+      }
+    },
     "Your account has no Google or Apple sign in. When you sign out, we erase the copy on this %@. To come back, you need the recovery code." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -29264,7 +29293,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu"
+            "value" : "Toi"
           }
         },
         "pt-BR" : {

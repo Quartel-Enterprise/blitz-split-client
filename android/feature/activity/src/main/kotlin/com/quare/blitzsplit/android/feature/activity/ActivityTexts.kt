@@ -225,7 +225,7 @@ internal fun personNameOf(
     name: String?,
     isMe: Boolean,
 ): String = if (isMe) {
-    stringResource(R.string.activity_you)
+    stringResource(R.string.activity_person_you)
 } else {
     name ?: stringResource(R.string.activity_former_member)
 }

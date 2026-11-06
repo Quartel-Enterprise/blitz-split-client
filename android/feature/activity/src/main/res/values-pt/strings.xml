@@ -3,6 +3,7 @@
     <string name="activity_title">Atividade</string>
     <string name="activity_back">Voltar</string>
     <string name="activity_you">Você</string>
+    <string name="activity_person_you">Você</string>
     <string name="activity_former_member">Ex-membro</string>
     <string name="activity_today">Hoje</string>
     <string name="activity_yesterday">Ontem</string>

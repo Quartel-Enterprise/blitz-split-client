@@ -5,8 +5,8 @@ description: "Add a language to Bora Rachar on every platform: the AppLanguage e
 
 # Add a language
 
-French (branch `feature/add-french`) was the pilot, Spanish (PR #222) the model before it: their diffs show every
-place a language touches. This skill is the order of the work and the decisions to take, not the rules: the product rules are
+French (PR #249) was the pilot, Spanish (PR #222) the model before it: their diffs show every place a language
+touches. This skill is the order of the work and the decisions to take, not the rules: the product rules are
 in [docs/product/general.md](../../../docs/product/general.md) and [profile.md](../../../docs/product/profile.md).
 
 Start it with `worktree-start-task` (type `feature`, `add-<language>`). One language per branch: two branches adding a

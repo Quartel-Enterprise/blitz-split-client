@@ -18,7 +18,7 @@ enum ActivityCopy {
 
     /// Who did it: "You", their name, or "Someone" when the server kept no name.
     static func actor(_ item: ActivityItem) -> String {
-        if item.actor.isMe { return String(localized: "You", bundle: .appLanguage) }
+        if item.actor.isMe { return String(localized: "You, who did it", bundle: .appLanguage, comment: "The user as the one who did something, before its verb") }
         return item.actor.name ?? String(
             localized: "Someone",
             bundle: .appLanguage,
@@ -487,7 +487,7 @@ enum ActivityCopy {
         let date = deletion.atMillis.map {
             ExpenseFormat.date(of: $0.int64Value).formatted(.dateTime.day().month(.wide))
         }
-        let who: String? = deletion.byMe ? String(localized: "You", bundle: .appLanguage) : deletion.byName
+        let who: String? = deletion.byMe ? String(localized: "You, who did it", bundle: .appLanguage, comment: "The user as the one who did something, before its verb") : deletion.byName
         let first: String = if let who, let date {
             SecondPerson.sentence(
                 String(localized: "\(SecondPerson.actor) deleted \(subject) on \(date).", bundle: .appLanguage),
