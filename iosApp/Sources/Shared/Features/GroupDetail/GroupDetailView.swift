@@ -13,6 +13,8 @@ final class GroupDetailModel {
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
+    /// The payment the details sheet showed last, drawn while the sheet slides away after the ViewModel closed it.
+    @ObservationIgnored private(set) var lastShownPayment: PaymentRow?
     /// The payment whose details' "Delete" was tapped, asked about once the details sheet is gone.
     @ObservationIgnored private var paymentToAskAfterDetails: String?
 
@@ -22,6 +24,7 @@ final class GroupDetailModel {
         state = viewModel.uiState.value as! GroupDetailUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
+            if let shown = state.paymentToView { self?.lastShownPayment = shown }
             // State, not an action, so it waits for this screen while the bill's screen still covers it
             if state.showsBillDeletedNotice { self?.showBillDeleted() }
         })
@@ -248,7 +251,7 @@ struct GroupDetailView: View {
             }
         }
         .sheet(isPresented: paymentDetailsShown, onDismiss: { model?.paymentDetailsDidDismiss() }) {
-            if let model, let payment = model.state.paymentToView {
+            if let model, let payment = model.state.paymentToView ?? model.lastShownPayment {
                 NavigationStack {
                     PaymentDetailsSheet(payment: payment, currency: model.state.header.currency, model: model)
                 }

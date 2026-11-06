@@ -173,6 +173,14 @@ class GroupDetailViewModel(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+            onGroupGone = {
+                uiState.update {
+                    it.copy(
+                        paymentToView = null,
+                        paymentToDelete = null,
+                    )
+                }
+            },
         )
         screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }

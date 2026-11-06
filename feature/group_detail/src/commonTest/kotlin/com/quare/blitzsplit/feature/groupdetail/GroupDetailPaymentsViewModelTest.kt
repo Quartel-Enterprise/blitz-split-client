@@ -675,6 +675,33 @@ class GroupDetailPaymentsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the details open WHEN the group is removed THEN the details close`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+
+        // When
+        groups.groups.value = emptyList()
+
+        // Then
+        assertNull(viewModel.uiState.value.paymentToView)
+    }
+
+    @Test
+    fun `GIVEN the delete question open WHEN the group is removed THEN the question closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
+
+            // When
+            groups.groups.value = emptyList()
+
+            // Then
+            assertNull(viewModel.uiState.value.paymentToDelete)
+        }
+
+    @Test
     fun `GIVEN a bill id WHEN tapped as a payment THEN shows no details`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))

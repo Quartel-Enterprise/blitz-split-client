@@ -100,6 +100,8 @@ internal class GroupScreen(
         show: (Group, List<Expense>, List<Settlement>, GroupBalances) -> Unit,
         isLoaded: Flow<Boolean>,
         showNotice: (PaymentNotice) -> Unit,
+        // Why: the group was removed: what a ViewModel kept open about it has nothing left to show.
+        onGroupGone: () -> Unit = {},
     ) {
         combine(
             useCases.observeGroup(groupId),
@@ -118,6 +120,7 @@ internal class GroupScreen(
             isGroupGone = group == null
             if (group == null) {
                 exit.update(null)
+                onGroupGone()
                 closeGone()
             } else {
                 balances = GroupBalances.of(group, expenses, settlements)

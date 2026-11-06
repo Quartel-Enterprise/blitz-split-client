@@ -15,14 +15,12 @@ struct PaymentDetailsSheet: View {
                     .foregroundStyle(.secondary)
             }
             Section {
-                LabeledContent("From") { Text(verbatim: PaymentCopy.name(payment.fromName)) }
-                LabeledContent("To") { Text(verbatim: PaymentCopy.name(payment.toName)) }
                 LabeledContent("Amount") {
                     Text(verbatim: currency.format(payment.amountMinor))
                         .monospacedDigit()
                 }
                 LabeledContent("When") {
-                    Text(verbatim: ExpenseFormat.date(of: payment.paidAt).formatted(date: .abbreviated, time: .shortened))
+                    Text(verbatim: "\(ExpenseFormat.shortDate(payment.paidAt)) · \(ExpenseFormat.time(payment.paidAt))")
                 }
                 if payment.isPending {
                     LabeledContent("Status") { Text("Queued") }

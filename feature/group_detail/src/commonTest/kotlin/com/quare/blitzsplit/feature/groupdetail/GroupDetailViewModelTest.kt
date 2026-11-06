@@ -2382,7 +2382,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN a payment on the list WHEN asking to delete it THEN tracks payment_delete_clicked without the payment id`() =
+    fun `GIVEN a payment on the list WHEN asking to delete it THEN tracks payment_delete_clicked`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
