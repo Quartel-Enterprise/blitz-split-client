@@ -455,6 +455,28 @@ class CurrencyPickerViewModelTest {
         }
 
     @Test
+    fun `GIVEN a Valores split and yen picked WHEN typing another total THEN each part rescales and it adds up`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("50,00")
+            confirmAmounts(ANA to "10,00", PIERRE to "40,00")
+            viewModel.onEvent(SplitBillUiEvent.OnCurrencyPicked(GroupCurrency.JPY))
+
+            // When
+            typeAmount("100")
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(100L, state.split.totalMinor)
+            assertEquals(
+                mapOf(ANA to 20L, PIERRE to 80L),
+                state.split.shares?.associate { it.memberId to it.amountMinor },
+            )
+            assertTrue(state.split.addsUp)
+        }
+
+    @Test
     fun `GIVEN a Valores split with cents WHEN picking yen THEN the cut parts no longer add up and Salvar waits`() =
         runTest(testDispatcher) {
             // Given

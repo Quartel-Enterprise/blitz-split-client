@@ -7,7 +7,7 @@
     <string name="split_bill_done">Listo</string>
     <string name="split_bill_back">Atrás</string>
     <string name="split_bill_amount">Monto</string>
-    <string name="split_bill_currency_change">Moneda, %1$s. Cambiar</string>
+    <string name="split_bill_currency_change">Moneda: %1$s. Cámbiala</string>
     <string name="split_bill_description">Descripción</string>
     <string name="split_bill_description_placeholder">¿Qué fue? Ej.: Supermercado</string>
     <string name="split_bill_amount_error">Ingresa cuánto costó el gasto.</string>

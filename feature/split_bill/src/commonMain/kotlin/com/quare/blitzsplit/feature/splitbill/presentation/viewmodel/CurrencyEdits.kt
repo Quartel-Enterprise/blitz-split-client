@@ -8,8 +8,8 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 
 /*
  * Why: the currency picked beside "Valor". The typed numbers keep their digits as the group's people are shown again
- * (GroupEdits.withGroupShown); Dividir closes, and a split by items starts over, equally among everyone, since its
- * prices were in the old currency's minor unit.
+ * (GroupEdits.withGroupShown); Dividir closes, and a split by items starts over, equally among everyone (a new bill
+ * then follows the group's "Divisão padrão" again), since its prices were in the old currency's minor unit.
  */
 internal fun SplitBillUiState.withCurrencyPicked(
     currency: GroupCurrency,

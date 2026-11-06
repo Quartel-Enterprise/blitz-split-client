@@ -240,17 +240,6 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
   const showsEditAmountHelp = state.showsProportionalAmountHint
   const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
   const receiptPicker = useReceiptPicker(presenter, state)
-  const amountInput = (
-    <AmountInput
-      id={amountId}
-      currency={state.currency}
-      fractionDigits={state.fractionDigits}
-      value={amount}
-      onChange={setAmount}
-      isInvalid={state.showsAmountError}
-      describedBy={amountDescribedBy}
-    />
-  )
 
   return (
     <form
@@ -320,7 +309,15 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
             </Label>
             <div className="flex items-start gap-2">
               <div className="min-w-0 flex-1">
-                {amountInput}
+                <AmountInput
+                  id={amountId}
+                  currency={state.currency}
+                  fractionDigits={state.fractionDigits}
+                  value={amount}
+                  onChange={setAmount}
+                  isInvalid={state.showsAmountError}
+                  describedBy={amountDescribedBy}
+                />
               </div>
               <CurrencyField presenter={presenter} state={state} />
             </div>

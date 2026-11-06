@@ -466,13 +466,20 @@ class SplitBillViewModel(
     // Why: the currency beside "Valor" (CurrencyEdits) re-bases the bill as another group's currency does.
     private fun changeCurrency(currency: GroupCurrency) {
         val state = uiState.value
+        // Why: the group shown re-bases the bill in the currency picked; with none, the pick would never apply.
+        val group = shownGroup ?: return
         if (!state.canChangeCurrency || currency == state.currency) return
         trackEvent("split_bill_currency_picked", mapOf("currency" to currency.code))
         amountAnchor = null
         items.forget()
         if (state.split.mode == SplitMode.ITEMS) hasPickedSplit = false
         uiState.update { it.withCurrencyPicked(currency, separator) }
-        shownGroup?.let(::show)
+        show(group)
+        // Why: "Valores" kept their numbers in the new currency, so a new total rescales from them as they are now.
+        val split = uiState.value.split
+        if (split.mode == SplitMode.AMOUNT && split.addsUp && split.totalMinor > 0) {
+            amountAnchor = split.totalMinor to split.entries
+        }
     }
 
     private fun SplitBillUiState.withBillTotal(): SplitBillUiState = withBillTotal(amountAnchor, separator)

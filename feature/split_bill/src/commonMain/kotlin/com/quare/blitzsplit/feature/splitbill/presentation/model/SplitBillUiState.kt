@@ -199,9 +199,12 @@ data class SplitBillUiState(
     val currencies: List<GroupCurrency>
         get() = GroupCurrency.entries
 
-    // Why: the currency beside "Valor" is changed until the bill is saved, but not while a receipt is being read.
+    /*
+     * Why: the currency beside "Valor" is changed until the bill is saved, but not while a receipt is being read, nor
+     * while the group picked is read, whose arrival would put the bill back in that group's currency.
+     */
     val canChangeCurrency: Boolean
-        get() = isLoaded && !isSaving && !isDeleting && !isFormLocked
+        get() = isLoaded && !isSaving && !isDeleting && !isFormLocked && !isPickedGroupLoading
 
     // Why: Salvar stays disabled until the bill can be saved.
     val canSave: Boolean
