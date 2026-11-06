@@ -257,6 +257,98 @@ class PayReceiverViewModelTest {
         }
 
     @Test
+    fun `GIVEN Bruno has no key cached WHEN the form opens with Pix THEN says he has no Pix key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(brunoKeys = emptyList())
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SettlementMethod.PIX, state.method)
+            assertTrue(state.showsNoPixKeyNotice)
+            assertTrue(state.formPixKeys.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Bruno is a guest WHEN the form opens with Pix THEN says he has no Pix key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(brunoUserId = null)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsNoPixKeyNotice)
+        assertTrue(state.formPixKeys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the form opened without keys WHEN a sync brings the first key of Bruno THEN the form lists it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(brunoKeys = emptyList())
+
+            // When
+            paymentKeys.memberKeys.value = mapOf(BRUNO_USER to listOf(phoneKey))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsReceiverKeys)
+            assertEquals(listOf(PHONE_KEY_ID), state.formPixKeys.map { it.id })
+            assertFalse(state.showsNoPixKeyNotice)
+        }
+
+    @Test
+    fun `GIVEN the keys shown WHEN tapping Paguei outro valor THEN the form lists the Pix keys of Bruno`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPayOtherwiseClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsReceiverKeys)
+            assertEquals(listOf(PHONE_KEY_ID, EMAIL_KEY_ID), state.formPixKeys.map { it.id })
+            assertFalse(state.showsNoPixKeyNotice)
+        }
+
+    @Test
+    fun `GIVEN the form listing the Pix keys WHEN picking cash THEN lists no key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(offersReceiverKeys = false)
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+        // Then
+        val state = viewModel.uiState.value
+        assertTrue(state.formPixKeys.isEmpty())
+        assertFalse(state.showsNoPixKeyNotice)
+    }
+
+    @Test
+    fun `GIVEN the form listing the Pix keys WHEN copying one THEN tracks the form key and changes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(offersReceiverKeys = false)
+            val state = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.FORM_PIX_KEY))
+
+            // Then
+            assertEquals(
+                listOf("payment_copy_clicked" to mapOf<String, Any>("target" to PayCopyTarget.FORM_PIX_KEY)),
+                trackedEvents,
+            )
+            assertEquals(state, viewModel.uiState.value)
+        }
+
+    @Test
     fun `GIVEN Bruno with no key and the copy not whole WHEN the screen opens THEN the keys shimmer not the form`() =
         runTest(testDispatcher) {
             // Given
@@ -332,6 +424,25 @@ class PayReceiverViewModelTest {
             assertFalse(state.isLoadingReceiverKeys)
             assertTrue(state.prefersForm)
             assertTrue(state.canConfirm)
+        }
+
+    @Test
+    fun `GIVEN the copy waiting offline WHEN opening without the key of Bruno THEN never says he has no Pix key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                brunoKeys = emptyList(),
+                online = false,
+                downloading = awaitingFullSync.copy(isWaitingForInternet = true),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SettlementMethod.PIX, state.method)
+            assertFalse(state.showsNoPixKeyNotice)
+            assertTrue(state.formPixKeys.isEmpty())
         }
 
     @Test

@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.registerpayment
 
-import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +33,6 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -48,7 +46,6 @@ import com.quare.blitzsplit.android.designsystem.component.QrCodeImage
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
-import com.quare.blitzsplit.android.platform.copyText
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
@@ -73,8 +70,8 @@ internal enum class PayWithKeyLayout {
 /*
  * Why: "Pagar Ana" (4.5), what Registrar pagamento shows while this device's user pays someone with a key: the key
  * to copy, the Pix code with the amount in it, and "Marcar como pago" once paid in the bank or the wallet. The app
- * moves no money. Android 13 and later confirm what was copied themselves; before that, onCopied says so. One column
- * leaves the buttons to the sheet or dialog around it (PayButtonRow), which keeps them in sight.
+ * moves no money. One column leaves the buttons to the sheet or dialog around it (PayButtonRow), which keeps them in
+ * sight.
  */
 @Composable
 internal fun PayWithKeyContent(
@@ -82,19 +79,10 @@ internal fun PayWithKeyContent(
     layout: PayWithKeyLayout,
     money: MoneyFormatter,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
-    onCopied: () -> Unit,
+    // Why: rememberKeyCopy's, which writes the clipboard and counts the copy.
+    onCopy: (String, PayCopyTarget) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    // Why: a CPF is a document, so the clipboard keeps every key out of its preview and the keyboard's suggestions.
-    val onCopy: (String, PayCopyTarget) -> Unit = { text, target ->
-        onEvent(RegisterPaymentUiEvent.OnCopyClicked(target))
-        context.copyText(
-            text = text,
-            isSensitive = true,
-        )
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) onCopied()
-    }
     val who: @Composable ColumnScope.() -> Unit = {
         PayHeader(
             state = state,
@@ -125,9 +113,11 @@ internal fun PayWithKeyContent(
             )
         }
         if (state.otherKeys.isNotEmpty()) {
-            OtherKeysList(
+            ReceiverKeysList(
+                title = stringResource(R.string.register_payment_pay_other_keys, nameOf(state.to)),
                 keys = state.otherKeys,
                 receiverName = nameOf(state.to),
+                target = PayCopyTarget.OTHER_KEY,
                 onCopy = onCopy,
             )
         }
@@ -399,16 +389,18 @@ private fun PixCodeCard(
     }
 }
 
-// Why: "Outras chaves de Ana", each with its own copy button.
+// Why: "Outras chaves de Ana", and the form's "Chaves Pix de Ana", each with its own copy button.
 @Composable
-private fun OtherKeysList(
+internal fun ReceiverKeysList(
+    title: String,
     keys: List<ReceiverKey>,
     receiverName: String,
+    target: PayCopyTarget,
     onCopy: (String, PayCopyTarget) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
-            text = stringResource(R.string.register_payment_pay_other_keys, receiverName),
+            text = title,
             modifier = Modifier.padding(
                 start = 4.dp,
                 bottom = 6.dp,
@@ -443,7 +435,7 @@ private fun OtherKeysList(
                             fontWeight = FontWeight.SemiBold,
                         )
                     }
-                    IconButton(onClick = { onCopy(key.value, PayCopyTarget.OTHER_KEY) }) {
+                    IconButton(onClick = { onCopy(key.value, target) }) {
                         Icon(
                             imageVector = Icons.Outlined.ContentCopy,
                             contentDescription = stringResource(

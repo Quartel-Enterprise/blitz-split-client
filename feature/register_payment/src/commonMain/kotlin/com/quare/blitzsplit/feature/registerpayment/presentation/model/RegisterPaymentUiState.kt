@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.profile.domain.model.PixBrCode
 import software.quare.loadable.Loadable
+import software.quare.loadable.isLoaded
 import software.quare.loadable.isLoading
 import software.quare.loadable.valueOrNull
 
@@ -47,6 +48,11 @@ data class RegisterPaymentUiState(
      * offline, when the form opens at once, since a payment is recorded offline too.
      */
     val receiverKeys: Loadable<List<ReceiverKey>>,
+    /*
+     * Why: none cached while offline before the account's copy is whole, so the form can't say the receiver has no
+     * Pix key: they may well have one this device hasn't downloaded yet.
+     */
+    val areReceiverKeysUnknown: Boolean,
     // Why: "Apê 302 · você deve" under "Pagar Ana"; null across several groups ("3 grupos · você deve").
     val groupName: String?,
     // Why: Pix or Bitcoin, the method picked in "Forma de pagamento"; one the receiver has no key of reads as the other.
@@ -104,6 +110,30 @@ data class RegisterPaymentUiState(
     // Why: "Outras chaves de Ana", in the order she added them.
     val otherKeys: List<ReceiverKey>
         get() = loadedKeys.filter { it.type.method == shownKeyMethod && it.id != defaultKey?.id }
+
+    /*
+     * Why: the form's Pix keys (beta feedback 3 item 26): whoever pays and picked Pix sees where to send it, the
+     * default first and then in the order the receiver added them, each one copied as is. Empty off Pix, when someone
+     * else pays (the receiver's own keys or a payment between others are of no use there), for someone no longer in
+     * the group (whose keys this device can't know), while the keys load, and while "Pagar Ana" shows them instead.
+     */
+    val formPixKeys: List<ReceiverKey>
+        get() = if (showsFormPixKeys) pixKeys else emptyList()
+
+    // Why: "Ana não tem chave Pix no app." under Pix, so the payer knows to ask, also for a guest with no account.
+    val showsNoPixKeyNotice: Boolean
+        get() = showsFormPixKeys && pixKeys.isEmpty() && !areReceiverKeysUnknown
+
+    private val showsFormPixKeys: Boolean
+        get() = isLoaded &&
+            to != null &&
+            kind == PaymentKind.PAID &&
+            method == SettlementMethod.PIX &&
+            receiverKeys.isLoaded() &&
+            !showsReceiverKeys
+
+    private val pixKeys: List<ReceiverKey>
+        get() = loadedKeys.filter { it.type.method == PaymentMethod.PIX }.sortedByDescending { it.isDefault }
 
     /*
      * Why: the code pixCode should hold now, which the ViewModel encodes as a QR code once it changes; none while the

@@ -6,6 +6,8 @@ import SwiftUI
 final class RegisterPaymentModel {
     private(set) var state: RegisterPaymentUiState
     private(set) var saveErrorCount = 0
+    /// Each copy of a key or a code, which the sheet's toast confirms.
+    private(set) var copyCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<RegisterPaymentViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -30,6 +32,14 @@ final class RegisterPaymentModel {
 
     func send(_ event: any RegisterPaymentUiEvent) {
         holder.viewModel.onEvent(event: event)
+    }
+
+    /// A copy of "Pay Ana" or of the form's Pix keys: the pasteboard is the app's, the shared code only counts which
+    /// copy it was, and the sheet's toast says "Copied".
+    func copy(_ text: String, _ target: PayCopyTarget) {
+        send(RegisterPaymentUiEventOnCopyClicked(target: target))
+        Pasteboard.copy(text)
+        copyCount += 1
     }
 
     /// Who paid or who received, whose face opens their profile over the form.
@@ -149,7 +159,11 @@ struct RegisterPaymentView: View {
         // The canvas' 540×620 form sheet with an iPad's room; an iPhone's sheet keeps the system's width
         .formSheetSizing()
         #endif
-        .glassToast("Couldn't record the payment. Try again.", trigger: model?.saveErrorCount ?? 0)
+        // One toast for the whole sheet, so a copy in the form, "Pay Ana" or 13.5c says "Copied" the same way
+        .glassToast([
+            GlassToastMessage(text: "Couldn't record the payment. Try again.", trigger: model?.saveErrorCount ?? 0),
+            GlassToastMessage(text: "Copied", trigger: model?.copyCount ?? 0),
+        ])
         .onAppear {
             if model == nil { model = RegisterPaymentModel(holder: makeHolder()) }
         }
@@ -453,6 +467,15 @@ private struct PhoneRegisterPayment: View {
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
         }
+        if FormPixKeyRows.isShown(state) {
+            Section {
+                FormPixKeyRows(state: state, onCopy: model.copy)
+            } header: {
+                if !state.formPixKeys.isEmpty {
+                    Text(verbatim: FormPixKeyRows.title(state))
+                }
+            }
+        }
         Section {
             WhenPickerRows(
                 millis: state.paidAt,
@@ -524,6 +547,13 @@ private struct MacRegisterPayment: View {
                     MethodPicker(selection: model.method)
                         .labelsHidden()
                         .fixedSize()
+                }
+                if FormPixKeyRows.isShown(state) {
+                    LabeledContent("Pix keys:") {
+                        VStack(alignment: .leading, spacing: 8) {
+                            FormPixKeyRows(state: state, onCopy: model.copy)
+                        }
+                    }
                 }
                 MacWhenField(
                     millis: state.paidAt,

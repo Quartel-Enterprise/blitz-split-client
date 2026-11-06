@@ -267,6 +267,7 @@ class RegisterPaymentViewModel(
             isSaving = false,
             isLoaded = false,
             receiverKeys = Loadable.Loading,
+            areReceiverKeysUnknown = false,
             groupName = null,
             keyMethod = PaymentMethod.PIX,
             offersReceiverKeys = (route as? Route.RegisterPayment)?.offersReceiverKeys ?: true,
@@ -336,6 +337,11 @@ class RegisterPaymentViewModel(
             !download.isWaitingForInternet &&
             target.toUserId != null &&
             receiverKeys.isEmpty()
+        // Why: offline before the account's copy is whole, no key cached says nothing of whether there are any.
+        val areKeysUnknown = download != null &&
+            download.isWaitingForInternet &&
+            target.toUserId != null &&
+            receiverKeys.isEmpty()
         uiState.update {
             // Why: once known, the keys never go back to loading.
             val wereKeysKnown = it.receiverKeys.isLoaded()
@@ -347,6 +353,7 @@ class RegisterPaymentViewModel(
                 debtMinor = target.debtMinor,
                 groupParts = target.groupParts,
                 receiverKeys = keys,
+                areReceiverKeysUnknown = areKeysUnknown,
                 /*
                  * Why: keys first known as none make the form stay, so a sync bringing the first never swaps it
                  * mid-typing; while they load, nothing is decided yet.

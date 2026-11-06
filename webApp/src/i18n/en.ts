@@ -1033,6 +1033,8 @@ export const en = {
   registerPayment_info: 'It becomes a payment in the group: it shows in Expenses and can be undone.',
   registerPayment_forOthers: "You're recording this for {from} and {to}.",
   registerPayment_offline: "No internet: it's saved on this device and syncs when you reconnect.",
+  registerPayment_pixKeys: "{name}'s Pix keys",
+  registerPayment_noPixKey: '{name} has no Pix key in the app.',
   registerPayment_confirmReceived: 'Confirm received',
   registerPayment_confirmPaid: 'Confirm payment',
   registerPayment_confirmOthers: 'Record payment',

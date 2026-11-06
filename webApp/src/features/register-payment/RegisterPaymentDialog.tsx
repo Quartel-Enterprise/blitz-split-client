@@ -19,7 +19,7 @@ import { formatMoney, formatNames } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { simplifyName } from '@/features/simplify-debts/simplify'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
-import { payWithKeyPane } from './PayWithKeyPane'
+import { payWithKeyPane, ReceiverKeysList } from './PayWithKeyPane'
 import { simplifyChangePane } from './SimplifyChangePane'
 import { PendingDot } from '@/components/common'
 
@@ -234,6 +234,22 @@ function PaymentForm({
           ))}
         </div>
       </div>
+
+      {/* Why: with Pix picked, where to send it, or that the receiver has no Pix key here (beta feedback 3 item 26). */}
+      {state.formPixKeys.length > 0 && (
+        <ReceiverKeysList
+          title={t('registerPayment_pixKeys', { name: names.to })}
+          keys={state.formPixKeys}
+          name={names.to}
+          onCopy={() => presenter.trackFormPixKeyCopy()}
+        />
+      )}
+      {state.showsNoPixKeyNotice && (
+        <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
+          <Info aria-hidden className="mt-px size-4 shrink-0" />
+          <span>{t('registerPayment_noPixKey', { name: names.to })}</span>
+        </p>
+      )}
 
       <WhenField
         id={whenId}

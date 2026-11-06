@@ -59,7 +59,14 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
   - "Record payment" (`Route.RegisterPayment`) records a payment made outside the app, which any member may
     record between any two members, with no confirmation by whoever received it: up to the pair's debt, never over
     ("Ana owes you R$ 162,30. Use up to that amount."), partial payments allowed, Pix / Cash / Transfer / Other
-    and "When" (date and time, never after now). "Settle up" opens it too, as "Pay Ana" while Ana has a key (4.5,
+    and "When" (date and time, never after now). With Pix picked, when this device's user is the one who pays (beta
+    feedback 3 item 26, `RegisterPaymentUiState.formPixKeys`), the form lists "Ana's Pix keys" under "How it was paid",
+    her default first, each with its type and a copy button (the "Copied" confirmation as in "Pay Ana", below), or
+    says "Ana has no Pix key in the app." (`showsNoPixKeyNotice`), a guest with no account included; nothing while
+    the keys still load, offline before the account's first download is whole (none cached says nothing then), for
+    a former member (whose keys the device can't know), and for "Got paid" or "Already
+    paid", where the keys would be of no use. The keys are the ones "Pay Ana" reads (`member_payment_key`, below),
+    so they need no sync of their own. "Settle up" opens it too, as "Pay Ana" while Ana has a key (4.5,
     below). It is a bottom sheet on an Android phone
     (640 dp lying down, in two columns: who paid whom and the amount, then how, when and the buttons), a 560 dp
     dialog on its tablets and foldables upright and in a book's right half, and full screen on a tabletop (✕ and

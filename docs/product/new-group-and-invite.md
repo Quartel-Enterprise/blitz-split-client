@@ -10,7 +10,9 @@ Creating a group and inviting people.
     its color through the palette ("Change the group's color"), and Currency starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. "Add by name"
     takes any name of 2 letters or more, one already in the group too (beta feedback 3, item 29: people are told apart by
     their member and user ids, not their name), here, in Members' "Add person" and "Rename" and in Contacts' "Add to a
-    group" alike. The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
+    group" alike. A tap or click anywhere on its row, the + included, focuses the name field and opens the keyboard,
+    as one on the field does (beta feedback 3, items 6 and 10); on the Mac the row is the field itself, "Add by name" its
+    placeholder, not a label on the left with the field at the far right. The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
     photo, the Mac's "Choose photo…" a file, and Remove photo once there is one), which opens "Adjust photo"; while a
     photo is on, the tap changes nothing, and the photo goes up with the group's first sync as Edit group's does.
   - "Invite" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the

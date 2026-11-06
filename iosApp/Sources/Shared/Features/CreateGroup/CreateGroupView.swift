@@ -280,9 +280,19 @@ private struct MembersSection: View {
                     .font(.title2)
                     .foregroundStyle(Palette.accent)
                     .accessibilityHidden(true)
-                TextField("Add by name", text: draftBinding)
+                    // A tap or click on the + focuses the name, as one on the field does (beta feedback 3 items 6
+                    // and 10). Only on the +: a gesture over the field would take its own clicks, which place the
+                    // cursor and select
+                    .contentShape(.rect)
+                    .onTapGesture(perform: focusDraft)
+                // The prompt, not a label: the Mac's grouped form would put the label on the left and the field,
+                // empty, on the right (beta feedback 3 item 10)
+                TextField("Add by name", text: draftBinding, prompt: Text("Add by name"))
+                    .labelsHidden()
                     #if os(iOS)
                     .textInputAutocapitalization(.words)
+                    #else
+                    .multilineTextAlignment(.leading)
                     #endif
                     .focused($isDraftFocused)
                     .submitLabel(.next)
@@ -307,6 +317,17 @@ private struct MembersSection: View {
         } footer: {
             Text("Nobody needs the app right now. You can already add expenses for everyone and send the link later.")
         }
+    }
+
+    /// Focuses the name field; one already focused with its keyboard put away loses the focus first, since setting
+    /// the same value again would bring nothing back.
+    private func focusDraft() {
+        guard isDraftFocused else {
+            isDraftFocused = true
+            return
+        }
+        isDraftFocused = false
+        Task { @MainActor in isDraftFocused = true }
     }
 
     private var draftBinding: Binding<String> {

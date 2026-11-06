@@ -81,8 +81,8 @@ sealed interface RegisterPaymentUiEvent : UiEvent {
     data object OnPayOtherwiseClicked : RegisterPaymentUiEvent
 
     /*
-     * Why: a copy of "Pagar Ana", which each platform writes to its clipboard itself (Android marks it sensitive, a CPF
-     * being a document), so the shared code only counts it.
+     * Why: a copy of "Pagar Ana" or of the form's Pix keys, which each platform writes to its clipboard itself
+     * (Android marks it sensitive, a CPF being a document), so the shared code only counts it.
      */
     data class OnCopyClicked(
         val target: PayCopyTarget,

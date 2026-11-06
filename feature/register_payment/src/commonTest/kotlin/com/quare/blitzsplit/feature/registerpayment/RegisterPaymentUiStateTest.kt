@@ -12,6 +12,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPe
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifyChangedNotice
+import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -557,6 +558,325 @@ class RegisterPaymentUiStateTest {
         assertFalse(canMarkAsPaid)
     }
 
+    @Test
+    fun `GIVEN this device user pays by Pix in Quem pagou a quem WHEN reading the form keys THEN lists only Pix`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixEmail, lightning, pixPhone, pixCpf, onchain, pixRandom),
+            offersReceiverKeys = false,
+        )
+
+        // When
+        val formKeys = state.formPixKeys
+
+        // Then
+        assertEquals(listOf(pixPhone, pixEmail, pixCpf, pixRandom), formKeys)
+        assertFalse(state.showsNoPixKeyNotice)
+    }
+
+    @Test
+    fun `GIVEN Paguei outro valor picked over Pagar Ana WHEN reading the form keys THEN lists the Pix keys`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone, pixEmail, lightning),
+            prefersForm = true,
+        )
+
+        // When
+        val formKeys = state.formPixKeys
+
+        // Then
+        assertFalse(state.showsReceiverKeys)
+        assertEquals(listOf(pixPhone, pixEmail), formKeys)
+        assertFalse(state.showsNoPixKeyNotice)
+    }
+
+    @Test
+    fun `GIVEN Pix keys none of them flagged WHEN reading the form keys THEN keeps the order they came in`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixRandom, pixEmail, pixCpf),
+            offersReceiverKeys = false,
+        )
+
+        // When
+        val formKeys = state.formPixKeys
+
+        // Then
+        assertEquals(listOf(pixRandom, pixEmail, pixCpf), formKeys)
+    }
+
+    @Test
+    fun `GIVEN Pagar Ana showing the keys WHEN reading the form keys THEN the form lists none`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone, pixEmail),
+        )
+
+        // When
+        val formKeys = state.formPixKeys
+
+        // Then
+        assertTrue(state.showsReceiverKeys)
+        assertTrue(formKeys.isEmpty())
+        assertFalse(state.showsNoPixKeyNotice)
+    }
+
+    @Test
+    fun `GIVEN a receiver with no key WHEN this device user pays by Pix THEN shows the no Pix key notice`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = emptyList(),
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertTrue(showsNotice)
+        assertTrue(state.formPixKeys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the keys of a receiver unknown offline WHEN this device user pays by Pix THEN shows no notice`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = emptyList(),
+            areReceiverKeysUnknown = true,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertFalse(showsNotice)
+    }
+
+    @Test
+    fun `GIVEN a receiver with only Bitcoin keys and the form picked WHEN paying by Pix THEN shows the notice`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(lightning, onchain),
+            prefersForm = true,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertTrue(showsNotice)
+        assertTrue(state.formPixKeys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN only Bitcoin keys in Quem pagou a quem WHEN paying by Pix THEN shows the notice`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(lightning),
+            offersReceiverKeys = false,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertTrue(showsNotice)
+        assertTrue(state.formPixKeys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receiver with Pix keys WHEN paying another way than Pix THEN the form lists no key`() {
+        // Given
+        val methods = listOf(SettlementMethod.CASH, SettlementMethod.TRANSFER, SettlementMethod.OTHER)
+
+        // When
+        val states = methods.map { method ->
+            state(
+                from = me,
+                to = ana,
+                receiverKeys = listOf(pixPhone),
+                prefersForm = true,
+                method = method,
+            )
+        }
+
+        // Then
+        states.forEach { state ->
+            assertTrue(state.formPixKeys.isEmpty(), "${state.method}")
+            assertFalse(state.showsNoPixKeyNotice, "${state.method}")
+        }
+    }
+
+    @Test
+    fun `GIVEN a receiver with no key WHEN paying another way than Pix THEN shows no notice`() {
+        // Given
+        val methods = listOf(SettlementMethod.CASH, SettlementMethod.TRANSFER, SettlementMethod.OTHER)
+
+        // When
+        val states = methods.map { method ->
+            state(
+                from = me,
+                to = ana,
+                method = method,
+            )
+        }
+
+        // Then
+        states.forEach { state ->
+            assertFalse(state.showsNoPixKeyNotice, "${state.method}")
+            assertTrue(state.formPixKeys.isEmpty(), "${state.method}")
+        }
+    }
+
+    @Test
+    fun `GIVEN the device user receives by Pix WHEN reading the form keys THEN lists none and shows no notice`() {
+        // Given
+        val state = state(
+            from = ana,
+            to = me,
+            receiverKeys = listOf(pixPhone),
+            offersReceiverKeys = false,
+        )
+
+        // When
+        val formKeys = state.formPixKeys
+
+        // Then
+        assertTrue(formKeys.isEmpty())
+        assertFalse(state.showsNoPixKeyNotice)
+    }
+
+    @Test
+    fun `GIVEN the device user receives from someone with no key WHEN reading the notice THEN it does not show`() {
+        // Given
+        val state = state(
+            from = ana,
+            to = me,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertFalse(showsNotice)
+    }
+
+    @Test
+    fun `GIVEN two others paying by Pix WHEN reading the form keys THEN lists none and shows no notice`() {
+        // Given
+        val withKeys = state(
+            from = diego,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+        )
+        val withoutKeys = state(
+            from = diego,
+            to = ana,
+        )
+
+        // When
+        val formKeys = withKeys.formPixKeys
+
+        // Then
+        assertTrue(formKeys.isEmpty())
+        assertFalse(withKeys.showsNoPixKeyNotice)
+        assertFalse(withoutKeys.showsNoPixKeyNotice)
+    }
+
+    @Test
+    fun `GIVEN a receiver no longer in the group WHEN paying by Pix THEN lists no key and shows no notice`() {
+        // Given
+        val state = state(
+            from = me,
+            to = null,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertEquals(PaymentKind.PAID, state.kind)
+        assertFalse(showsNotice)
+        assertTrue(state.formPixKeys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN nothing loaded yet WHEN reading the form keys THEN lists none and shows no notice`() {
+        // Given
+        val withKeys = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+            offersReceiverKeys = false,
+            isLoaded = false,
+        )
+        val withoutKeys = state(
+            from = me,
+            to = ana,
+            isLoaded = false,
+        )
+
+        // When
+        val formKeys = withKeys.formPixKeys
+
+        // Then
+        assertTrue(formKeys.isEmpty())
+        assertFalse(withKeys.showsNoPixKeyNotice)
+        assertFalse(withoutKeys.showsNoPixKeyNotice)
+    }
+
+    @Test
+    fun `GIVEN the receiver keys still loading under the form WHEN reading the notice THEN it does not show`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            prefersForm = true,
+            keys = Loadable.Loading,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertFalse(showsNotice)
+        assertTrue(state.formPixKeys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the receiver keys shimmering WHEN reading the notice THEN it does not show`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            keys = Loadable.Loading,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertTrue(state.isLoadingReceiverKeys)
+        assertFalse(showsNotice)
+        assertTrue(state.formPixKeys.isEmpty())
+    }
+
     private val me = PaymentPerson(
         "member-2",
         "Pierre",
@@ -606,6 +926,7 @@ class RegisterPaymentUiStateTest {
         previousDebtMinor = 8_000L,
     )
 
+    private val pixCpf = key("cpf", PaymentKeyType.CPF, "12345678909")
     private val pixPhone = key("phone", PaymentKeyType.PHONE, "+5521987654321", isDefault = true)
     private val pixEmail = key("email", PaymentKeyType.EMAIL, "ana@email.com")
     private val pixRandom = key("random", PaymentKeyType.RANDOM, "123e4567-e89b-12d3-a456-426614174000")
@@ -636,9 +957,13 @@ class RegisterPaymentUiStateTest {
         isLoaded: Boolean = true,
         groupParts: List<PersonGroupBalance> = emptyList(),
         receiverKeys: List<ReceiverKey> = emptyList(),
+        keys: Loadable<List<ReceiverKey>> = receiverKeys.toLoaded(),
+        method: SettlementMethod = SettlementMethod.PIX,
+        prefersForm: Boolean = false,
         keyMethod: PaymentMethod = PaymentMethod.PIX,
         offersReceiverKeys: Boolean = true,
         simplifyChange: SimplifyChangedNotice? = null,
+        areReceiverKeysUnknown: Boolean = false,
     ): RegisterPaymentUiState = RegisterPaymentUiState(
         currency = currency,
         showsSats = false,
@@ -648,18 +973,19 @@ class RegisterPaymentUiStateTest {
         groupParts = groupParts,
         amountText = amountText,
         hasEditedAmount = false,
-        method = SettlementMethod.PIX,
+        method = method,
         paidAt = 0L,
         paidDay = RelativeDay.TODAY,
         latestPaidAt = 0L,
         isOnline = isOnline,
         isSaving = isSaving,
         isLoaded = isLoaded,
-        receiverKeys = receiverKeys.toLoaded(),
+        receiverKeys = keys,
+        areReceiverKeysUnknown = areReceiverKeysUnknown,
         groupName = null,
         keyMethod = keyMethod,
         offersReceiverKeys = offersReceiverKeys,
-        prefersForm = false,
+        prefersForm = prefersForm,
         pixCode = null,
         pixQrCode = null,
         simplifiedNote = null,
