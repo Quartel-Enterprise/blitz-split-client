@@ -46,7 +46,7 @@ class SettledPairChangeTest {
     }
 
     @Test
-    fun `GIVEN a BRL payment and a USD bill WHEN the bill's part grows THEN says nothing, the payment settles BRL only`() {
+    fun `GIVEN a BRL payment and a USD bill WHEN the bill changes THEN says nothing`() {
         // Given
         val usdBill = jantar.copy(currency = GroupCurrency.USD)
         val changed = usdBill.withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
