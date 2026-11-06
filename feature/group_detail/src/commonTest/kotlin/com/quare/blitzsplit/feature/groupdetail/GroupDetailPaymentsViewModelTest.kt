@@ -135,6 +135,7 @@ class GroupDetailPaymentsViewModelTest {
                 PaymentRow(
                     id = "pix-1",
                     paidAt = thisAfternoon,
+                    paidDay = RelativeDay.TODAY,
                     fromName = "Pierre",
                     fromIsMe = true,
                     toName = "Ana",
@@ -613,24 +614,176 @@ class GroupDetailPaymentsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a payment on the list WHEN tapping it THEN asks to delete that payment`() = runTest(testDispatcher) {
+    fun `GIVEN payments of today and yesterday and before WHEN loading THEN each names its day`() =
+        runTest(testDispatcher) {
+            // Given
+            val earlier = Instant.parse("2026-10-27T12:00:00Z").toEpochMilliseconds()
+            prepareScenario(
+                storedSettlements = listOf(
+                    settlement(
+                        id = "today",
+                        paidAt = thisAfternoon,
+                    ),
+                    settlement(
+                        id = "yesterday",
+                        paidAt = yesterdayNoon,
+                    ),
+                    settlement(
+                        id = "before",
+                        paidAt = earlier,
+                    ),
+                ),
+            )
+
+            // When
+            val days = paymentRows().associate { it.id to it.paidDay }
+
+            // Then
+            assertEquals(
+                mapOf(
+                    "today" to RelativeDay.TODAY,
+                    "yesterday" to RelativeDay.YESTERDAY,
+                    "before" to RelativeDay.OTHER,
+                ),
+                days,
+            )
+        }
+
+    @Test
+    fun `GIVEN a payment on the list WHEN tapping it THEN shows its details without asking to delete`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            val event = GroupDetailUiEvent.OnPaymentClicked("pay-1")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(paymentRows().single(), viewModel.uiState.value.paymentToView)
+            assertNull(viewModel.uiState.value.paymentToDelete)
+            assertTrue(settlements.deletedIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the details open WHEN dismissing them THEN closes them and keeps the payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDetailsDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.paymentToView)
+            assertEquals(listOf("pay-1"), paymentRows().map { it.id })
+        }
+
+    @Test
+    fun `GIVEN the details open WHEN tapping Delete THEN closes them and asks to delete that payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
+
+            // Then
+            assertNull(viewModel.uiState.value.paymentToView)
+            assertEquals(paymentRows().single(), viewModel.uiState.value.paymentToDelete)
+            assertTrue(settlements.deletedIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the details open WHEN someone else undoes the payment THEN the details close`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            val noPayments = emptyList<Settlement>()
+
+            // When
+            settlements.settlements.value = noPayments
+
+            // Then
+            assertNull(viewModel.uiState.value.paymentToView)
+        }
+
+    @Test
+    fun `GIVEN the details open WHEN the group is removed THEN the details close`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-        val event = GroupDetailUiEvent.OnPaymentClicked("pay-1")
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+
+        // When
+        groups.groups.value = emptyList()
+
+        // Then
+        assertNull(viewModel.uiState.value.paymentToView)
+    }
+
+    @Test
+    fun `GIVEN the delete question open WHEN the group is removed THEN the question closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
+
+            // When
+            groups.groups.value = emptyList()
+
+            // Then
+            assertNull(viewModel.uiState.value.paymentToDelete)
+        }
+
+    @Test
+    fun `GIVEN a bill id WHEN tapped as a payment THEN shows no details`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+        val event = GroupDetailUiEvent.OnPaymentClicked("dinner")
 
         // When
         viewModel.onEvent(event)
 
         // Then
-        assertEquals(paymentRows().single(), viewModel.uiState.value.paymentToDelete)
-        assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        assertNull(viewModel.uiState.value.paymentToView)
     }
 
     @Test
-    fun `GIVEN no such payment on the list WHEN tapping it THEN asks nothing`() = runTest(testDispatcher) {
+    fun `GIVEN no such payment on the list WHEN tapping it THEN shows no details`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
         val event = GroupDetailUiEvent.OnPaymentClicked("pay-unknown")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertNull(viewModel.uiState.value.paymentToView)
+    }
+
+    @Test
+    fun `GIVEN a payment on the list WHEN asking to delete it THEN asks to delete that payment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+            val event = GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(paymentRows().single(), viewModel.uiState.value.paymentToDelete)
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no such payment on the list WHEN asking to delete it THEN asks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+        val event = GroupDetailUiEvent.OnPaymentDeleteClicked("pay-unknown")
 
         // When
         viewModel.onEvent(event)
@@ -640,10 +793,10 @@ class GroupDetailPaymentsViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill id WHEN tapped as a payment THEN asks nothing`() = runTest(testDispatcher) {
+    fun `GIVEN a bill id WHEN asked to delete as a payment THEN asks nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
-        val event = GroupDetailUiEvent.OnPaymentClicked("dinner")
+        val event = GroupDetailUiEvent.OnPaymentDeleteClicked("dinner")
 
         // When
         viewModel.onEvent(event)
@@ -657,7 +810,7 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
@@ -677,7 +830,7 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteDismissed)
@@ -706,7 +859,7 @@ class GroupDetailPaymentsViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
             val noPayments = emptyList<Settlement>()
 
             // When
@@ -721,7 +874,7 @@ class GroupDetailPaymentsViewModelTest {
     fun `GIVEN the delete question open WHEN a bill syncs in THEN the question stays open`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
-        viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
         val bill = expense("dinner", spentAt = thisMorning)
 
         // When
@@ -1090,7 +1243,7 @@ class GroupDetailPaymentsViewModelTest {
             val actions = mutableListOf<GroupDetailUiAction>()
             backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
             settlements.deleteError = IllegalStateException("disk full")
-            viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked("pay-1"))
+            viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked("pay-1"))
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)

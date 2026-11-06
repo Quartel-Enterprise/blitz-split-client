@@ -42,6 +42,8 @@ class JsExpenseRow(
 class JsPaymentRow(
     val id: String,
     val paidAt: Double,
+    // Why: "today", "yesterday" or "other", as a day's is.
+    val paidDay: String,
     val fromName: String?,
     val fromIsMe: Boolean,
     val toName: String?,
@@ -93,6 +95,8 @@ class JsGroupDetailState(
     // Why: "expenses", "balances" or "members": the tab picked, which only swaps what is under the header.
     val tab: String,
     val days: Array<JsExpenseDay>,
+    // Why: a payment's details, open while not null.
+    val paymentToView: JsPaymentRow?,
     // Why: "Apagar este acerto?", open while not null.
     val paymentToDelete: JsPaymentRow?,
     // Why: "Apagar esta conta?" for a bill deleted from its ⋮ on the list, open while not null; disabled while deleting.
@@ -145,6 +149,7 @@ class GroupDetailPresenter(
                 header = toJsGroupHeader(state.header),
                 tab = toJsGroupTab(state.tab),
                 days = state.days.map(::toJsExpenseDay).toTypedArray(),
+                paymentToView = state.paymentToView?.let(::toJsPaymentRow),
                 paymentToDelete = state.paymentToDelete?.let(::toJsPaymentRow),
                 billToDelete = state.billToDelete?.let(::toJsBillDeletion),
                 isDeletingBill = state.isDeletingBill,
@@ -311,6 +316,14 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked(paymentId))
     }
 
+    fun askToDeletePayment(paymentId: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteClicked(paymentId))
+    }
+
+    fun dismissPaymentDetails() {
+        viewModel.onEvent(GroupDetailUiEvent.OnPaymentDetailsDismissed)
+    }
+
     fun confirmPaymentDelete() {
         viewModel.onEvent(GroupDetailUiEvent.OnPaymentDeleteConfirmed)
     }
@@ -394,6 +407,7 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
 private fun toJsPaymentRow(row: PaymentRow): JsPaymentRow = JsPaymentRow(
     id = row.id,
     paidAt = row.paidAt.toDouble(),
+    paidDay = toJsRelativeDay(row.paidDay),
     fromName = row.fromName,
     fromIsMe = row.fromIsMe,
     toName = row.toName,

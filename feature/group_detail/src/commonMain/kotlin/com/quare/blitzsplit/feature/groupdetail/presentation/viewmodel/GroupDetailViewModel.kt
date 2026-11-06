@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
+import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
@@ -78,6 +79,7 @@ class GroupDetailViewModel(
                 header = emptyGroupHeader,
                 tab = route.tab,
                 days = emptyList(),
+                paymentToView = null,
                 paymentToDelete = null,
                 billToDelete = null,
                 isDeletingBill = false,
@@ -172,6 +174,14 @@ class GroupDetailViewModel(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+            onGroupGone = {
+                uiState.update {
+                    it.copy(
+                        paymentToView = null,
+                        paymentToDelete = null,
+                    )
+                }
+            },
         )
         screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
@@ -291,7 +301,11 @@ class GroupDetailViewModel(
                 toMemberId = event.toMemberId,
             )
 
-            is GroupDetailUiEvent.OnPaymentClicked -> askToDeletePayment(event.paymentId)
+            is GroupDetailUiEvent.OnPaymentClicked -> showPayment(event.paymentId)
+
+            is GroupDetailUiEvent.OnPaymentDeleteClicked -> askToDeletePayment(event.paymentId)
+
+            GroupDetailUiEvent.OnPaymentDetailsDismissed -> uiState.update { it.copy(paymentToView = null) }
 
             GroupDetailUiEvent.OnPaymentDeleteConfirmed -> deletePayment()
 
@@ -368,7 +382,14 @@ class GroupDetailViewModel(
         val (mine, others) = balances.debts.partition { it.fromMemberId == meId || it.toMemberId == meId }
         val payerOrder = PayerOrder(group.members)
         val entries = expenses.map { it.spentAt to toRow(it, namesById, meId, payerOrder) } +
-            settlements.map { it.paidAt to toRow(it, namesById, meId) }
+            settlements.map {
+                it.paidAt to toRow(
+                    it,
+                    namesById,
+                    meId,
+                    SpentDay.relativeDayOf(it.paidAt, now, timeZone),
+                )
+            }
         val days = entries
             .sortedByDescending { (time, _) -> time }
             .groupBy { (time, _) -> SpentDay.dateOf(time, timeZone) }
@@ -391,7 +412,8 @@ class GroupDetailViewModel(
                     isCopyWhole = !it.awaitsFullSync,
                 ),
                 days = days,
-                // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.
+                // Why: the payment as it is now; one someone else undid meanwhile has nothing left to show or delete.
+                paymentToView = it.paymentToView?.let { shown -> paymentRowOrNull(days, shown.id) },
                 paymentToDelete = it.paymentToDelete?.let { asked -> paymentRowOrNull(days, asked.id) },
                 // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
                 billToDelete = if (it.isDeletingBill) it.billToDelete else billDeletion,
@@ -435,9 +457,11 @@ class GroupDetailViewModel(
         settlement: Settlement,
         namesById: Map<String, String>,
         meId: String?,
+        paidDay: RelativeDay,
     ): DayEntry = PaymentRow(
         id = settlement.id,
         paidAt = settlement.paidAt,
+        paidDay = paidDay,
         fromName = namesById[settlement.fromMemberId],
         fromIsMe = settlement.fromMemberId == meId,
         toName = namesById[settlement.toMemberId],
@@ -451,9 +475,20 @@ class GroupDetailViewModel(
         uiState.update { it.copy(tab = tab) }
     }
 
+    private fun showPayment(paymentId: String) {
+        val payment = paymentRowOrNull(uiState.value.days, paymentId) ?: return
+        uiState.update { it.copy(paymentToView = payment) }
+    }
+
+    // Why: the details close under the question, so only one of the two is ever open.
     private fun askToDeletePayment(paymentId: String) {
         val payment = paymentRowOrNull(uiState.value.days, paymentId) ?: return
-        uiState.update { it.copy(paymentToDelete = payment) }
+        uiState.update {
+            it.copy(
+                paymentToView = null,
+                paymentToDelete = payment,
+            )
+        }
     }
 
     private fun paymentRowOrNull(

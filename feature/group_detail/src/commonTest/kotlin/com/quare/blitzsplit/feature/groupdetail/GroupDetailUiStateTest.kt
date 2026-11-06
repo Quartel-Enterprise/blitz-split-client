@@ -441,6 +441,7 @@ class GroupDetailUiStateTest {
         ),
         tab = GroupTab.EXPENSES,
         days = if (hasBills) listOf(day) else emptyList(),
+        paymentToView = null,
         paymentToDelete = null,
         billToDelete = null,
         isDeletingBill = false,

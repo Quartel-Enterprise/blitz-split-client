@@ -257,7 +257,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_deleted_back_clicked` | none | "Back to Groups" on "Group deleted", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |
 | `settle_clicked` | `source` (`group_detail`, `global_balances`, `contact_profile`) | "Settle up" on "Your balance in this group", on a person of Balances, or on a contact | `:feature:group_detail`, `:feature:global_balances`, `:feature:contacts` |
 | `debt_clicked` | `source` (`group_detail`) | "Settle up", "Got paid" or "Already paid" on a pair of Balances | `:feature:group_detail` |
-| `payment_clicked` | `source` (`group_detail`) | A payment of Expenses, or its ⋮ "Delete", which asks "Delete this payment?" | `:feature:group_detail` |
+| `payment_clicked` | `source` (`group_detail`) | A payment of Expenses, which opens its details | `:feature:group_detail` |
+| `payment_delete_clicked` | `source` (`group_detail`) | "Delete" in a payment's ⋮ or in its details, which asks "Delete this payment?" | `:feature:group_detail` |
 | `payment_delete_confirmed` | none | "Delete this payment?" confirmed, while it was open | `:feature:group_detail` |
 | `payment_delete_cancelled` | none | "Delete this payment?" closed without confirming, while it was open | `:feature:group_detail` |
 | `category_teach_clicked` | none | "Teach" on "Teach the map?" | `:feature:group_detail` |

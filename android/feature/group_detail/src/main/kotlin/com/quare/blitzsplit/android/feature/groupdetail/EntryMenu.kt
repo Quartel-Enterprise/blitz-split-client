@@ -49,7 +49,7 @@ internal fun paymentMenuItemsOf(paymentId: String): List<EntryMenuItem> = listOf
         label = stringResource(R.string.group_detail_entry_delete),
         icon = Icons.Outlined.Delete,
         isDestructive = true,
-        event = GroupDetailUiEvent.OnPaymentClicked(paymentId),
+        event = GroupDetailUiEvent.OnPaymentDeleteClicked(paymentId),
     ),
 )
 
