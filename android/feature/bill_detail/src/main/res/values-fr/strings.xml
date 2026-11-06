@@ -16,7 +16,6 @@
     <string name="bill_detail_nothing_to_settle">rien à régler</string>
     <string name="bill_detail_owes_payer">Compte dans ce que tu dois à %s dans Soldes.</string>
     <string name="bill_detail_you">Toi</string>
-    <string name="bill_detail_field_currency">Devise</string>
     <string name="bill_detail_history_you">Tu</string>
     <string name="bill_detail_former_member">Ancien membre</string>
     <string name="bill_detail_paid">A payé %s</string>
@@ -90,6 +89,7 @@
     <string name="bill_detail_field_description">Description</string>
     <string name="bill_detail_field_spent_at">Date</string>
     <string name="bill_detail_field_category">Catégorie</string>
+    <string name="bill_detail_field_currency">Devise</string>
     <string name="bill_detail_field_payers">Qui a payé</string>
     <string name="bill_detail_field_split">Répartition</string>
     <string name="bill_detail_split_equal">Parts égales</string>

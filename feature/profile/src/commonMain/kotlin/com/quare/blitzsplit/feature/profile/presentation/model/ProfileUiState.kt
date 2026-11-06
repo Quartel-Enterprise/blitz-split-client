@@ -81,7 +81,7 @@ data class ProfileUiState(
     val hasAccount: Boolean
         get() = accountProvider != null
 
-    // Why: "System" first, then each language in its own name, as every UI lists them.
+    // Why: "System" first, then each language, which every UI names in the app's current language.
     val languageOptions: List<AppLanguage>
         get() = AppLanguage.entries
 

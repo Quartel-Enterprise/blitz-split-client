@@ -121,6 +121,8 @@ class ActivityReadStateTest {
         occurredAt = 1_000L,
         subject = "Mercado",
         amountMinor = 12_000L,
+        currency = null,
+        previousCurrency = null,
         code = "equal",
         fromMemberId = null,
         toMemberId = null,

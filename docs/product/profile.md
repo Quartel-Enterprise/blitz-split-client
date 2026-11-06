@@ -72,14 +72,16 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     explaining it over the sheet (`ProfileDialog.DYNAMIC_COLORS_INFO`, "Got it" back to the sheet); a bottom sheet
     on a phone, a 560 dp dialog anywhere wider, a book's right half. The Apple apps and the web keep their own picker.
   - Profile › Preferences › "Language", as Bible Planner's (Pierre's call): "System" first, the default, which follows
-    the device's language (English for one the app doesn't have), then each language in its own name, "English",
-    "Português", "Español" and "Français", whatever the app's current language, so whoever can't read it still finds theirs;
-    "Español" is Spain's Spanish (es-ES) on a device whose region is Spain, the neutral one anywhere else. Kept per device and
+    the device's language (English for one the app doesn't have), then each language named in the app's language
+    (Pierre's call, changed from each language in its own name: only translated names, with the region when the
+    language is written for one), "English", "Portuguese (BR)", "Spanish" and "French" in English, "Inglês",
+    "Português (BR)", "Espanhol" and "Francês" in Portuguese; "Spanish" is Spain's Spanish (es-ES) on a device whose
+    region is Spain, the neutral one anywhere else, so it carries no region. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's
     LocaleManager, which the system's app language settings also change (the languages the build generates its locale config from), the app's
     own copy before 13; the Apple apps' AppleLanguages, which iOS's Settings › Bora Rachar › Language also changes; the
-    browser's storage on the web. Android's row ("System", "Português") opens a sheet as Bible Planner's
+    browser's storage on the web. Android's row ("System", "Português (BR)") opens a sheet as Bible Planner's
     (`ProfileDialog.LANGUAGE`): a row per option with its chip ("EN", "PT", "ES", a phone for System, "Device language"
     under it) and a radio, a bottom sheet on a phone, a 560 dp dialog anywhere wider, a book's right half; a pick
     closes it and the app draws again in it (Android 13 and later on their own, the activity opening again before,

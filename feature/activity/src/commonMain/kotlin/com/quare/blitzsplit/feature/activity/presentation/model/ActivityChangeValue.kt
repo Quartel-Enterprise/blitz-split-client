@@ -4,7 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.model.GroupCurrency
 
 /*
- * Why: one side of "antes → depois", as the field needs it: an amount in the group's currency, a text, a moment, a
+ * Why: one side of "antes → depois", as the field needs it: an amount in the bill's own currency, a text, a moment, a
  * code (a split mode, a group type, a color, a currency) or the members it names, whom each UI joins in its language.
  */
 data class ActivityChangeValue(

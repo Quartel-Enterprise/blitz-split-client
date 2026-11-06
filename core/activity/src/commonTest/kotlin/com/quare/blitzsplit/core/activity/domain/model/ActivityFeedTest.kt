@@ -367,6 +367,8 @@ class ActivityFeedTest {
         occurredAt = 1_000L,
         subject = null,
         amountMinor = 5_000L,
+        currency = null,
+        previousCurrency = null,
         code = "pix",
         fromMemberId = "ana",
         toMemberId = "pierre",
