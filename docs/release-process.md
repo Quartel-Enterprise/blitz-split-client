@@ -147,8 +147,8 @@ are used is in [push-notifications.md](push-notifications.md).
 - **Invite links** open the app only through a domain the app owns (see
   [Joining and foldables](product/joining-and-folds.md)), and on Android only when the APK's signing key's SHA-256 is
   in blitzsplit.com's `assetlinks.json`, which lists the Play keys. The `android-build` job prints that SHA-256 beside
-  the SHA-1 and warns when `assetlinks.json` doesn't list it; the beta then opens invite links in the browser, which
-  blitzsplit.com redirects to the beta web app. To have the beta open them, add the SHA-256 to
+  the SHA-1 and warns when `assetlinks.json` doesn't list it; the beta then opens invite links in the browser (Android 8
+  to 11 asks which app opens them), which blitzsplit.com redirects to the beta web app. To have the beta open them, add the SHA-256 to
   `public/.well-known/assetlinks.json` of `blitz-split-site`, the copy Android reads, and keep
   `webApp/public/.well-known` the same. Listing it lets any APK signed with the beta keystore open blitzsplit.com's
   links, so it is only as safe as the keystore and its GitHub secrets: never list a debug key (see

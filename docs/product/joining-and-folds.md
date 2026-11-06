@@ -10,7 +10,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     https://blitz-split-beta.pages.dev, until app.blitzsplit.com serves it. `/.well-known/*` is never redirected.
     Android opens the links in the app only for a build whose signing key's SHA-256 is in blitzsplit.com's
     `assetlinks.json`, which lists the Play keys: a debug build, or a beta signed with a key not listed there, opens the
-    browser, and so the web app (see [Release process](../release-process.md#outside-the-stores)).
+    browser (Android 8 to 11 asks which app opens it), and so the web app (see [Release process](../release-process.md#outside-the-stores)).
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on the group's Expenses (3.3, `Route.GroupDetail` with `joinedAs`) with "You joined as
     <name>" over the bills and, while the account has no Google or Apple, "Protect your access", which opens the
