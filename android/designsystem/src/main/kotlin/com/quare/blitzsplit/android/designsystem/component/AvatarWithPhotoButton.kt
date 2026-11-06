@@ -31,13 +31,36 @@ fun AvatarWithPhotoButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.size(size)) {
+    AvatarWithPhotoButton(
+        isPreparingPhoto = isPreparingPhoto,
+        icon = icon,
+        contentDescription = contentDescription,
+        size = size,
+        onClick = onClick,
+        modifier = modifier,
+    ) {
         AvatarBadge(
             initial = initial,
             color = color,
             size = size,
             photoUrl = photoUrl,
         )
+    }
+}
+
+// Why: a group's square (GroupBadge) takes the same corner button as a person's circle.
+@Composable
+fun AvatarWithPhotoButton(
+    isPreparingPhoto: Boolean,
+    icon: ImageVector,
+    contentDescription: String,
+    size: Dp,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    avatar: @Composable () -> Unit,
+) {
+    Box(modifier = modifier.size(size)) {
+        avatar()
         if (isPreparingPhoto) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }

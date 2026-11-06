@@ -269,7 +269,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `protect_access_clicked` | `source` (`group_detail`) | "Protect your access" | `:feature:group_detail` |
 | `simplify_debts_info_clicked` | `source` (`group_detail`, `edit_group`) | "How it works" of "Simplify debts" | `:feature:group_detail`, `:feature:edit_group` |
 | `simplify_conflict_activity_clicked` | `source` (`group_detail`, `edit_group`) | "See in Activity" on the simplify conflict's notice | `:feature:group_detail`, `:feature:edit_group` |
-| `group_icon_clicked` | none | The avatar or "Change icon or photo", which opens "Group icon" | `:feature:edit_group` |
+| `group_icon_clicked` | none | The avatar or its pencil ("Change icon or photo"), which opens "Group icon" | `:feature:edit_group` |
 | `group_icon_color_picked` | `color` | A color in "Group icon", while it is open | `:feature:edit_group` |
 | `group_icon_confirmed` | none | "Use this icon" | `:feature:edit_group` |
 | `group_color_selected` | `color`, `source` (`edit_group`) | "Icon color" on the web and the Mac | `:feature:edit_group` |

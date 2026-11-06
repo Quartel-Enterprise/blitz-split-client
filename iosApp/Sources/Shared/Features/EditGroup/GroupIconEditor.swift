@@ -2,7 +2,7 @@ import Shared
 import SwiftUI
 
 /// Editar grupo's icon: the avatar and what changes it. iOS opens "Group icon" (6.4d) from the avatar or "Change icon
-/// or photo": the color picked there reaches the form on ✓, and "Choose photo" or "Take photo" pick a photo once the
+/// or photo" (the pencil on its corner): the color picked there reaches the form on ✓, and "Choose photo" or "Take photo" pick a photo once the
 /// sheet is gone, so the picker never opens over a sheet closing. The Mac picks the color in the form itself, and
 /// "Choose Photo…" a file, as its board draws it.
 struct EditGroupIconSection: View {
@@ -28,12 +28,7 @@ struct EditGroupIconSection: View {
             : AnyLayout(VStackLayout(spacing: 8))
         layout {
             avatar
-            #if os(iOS)
-            Button("Change icon or photo") {
-                model.send(EditGroupUiEventOnIconClicked.shared)
-            }
-            .buttonStyle(.borderless)
-            #else
+            #if os(macOS)
             HStack {
                 ForEach(state.colors, id: \.self) { color in
                     ColorSwatch(color: color, isSelected: color == state.selectedColor) {
@@ -90,8 +85,22 @@ struct EditGroupIconSection: View {
         }
         #if os(iOS)
         .onTapGesture { model.send(EditGroupUiEventOnIconClicked.shared) }
-        .accessibilityAddTraits(.isButton)
-        .accessibilityLabel("Change icon or photo")
+        // Why: VoiceOver reaches "Group icon" through the pencil alone, not the initials too.
+        .accessibilityHidden(true)
+        .overlay(alignment: .bottomTrailing) {
+            // Why: the pencil on the corner opens "Group icon", as the profile's photo does.
+            Button {
+                model.send(EditGroupUiEventOnIconClicked.shared)
+            } label: {
+                Image(systemName: "pencil")
+                    .font(.system(size: 14, weight: .semibold))
+                    .frame(width: 32, height: 32)
+                    .glassEffect(.regular.interactive(), in: .circle)
+            }
+            .buttonStyle(.plain)
+            .offset(x: 4, y: 4)
+            .accessibilityLabel("Change icon or photo")
+        }
         #else
         .accessibilityHidden(true)
         #endif

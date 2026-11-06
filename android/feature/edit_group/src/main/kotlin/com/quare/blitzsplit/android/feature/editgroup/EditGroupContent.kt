@@ -17,13 +17,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -46,13 +44,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.CurrencyMenuContent
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
@@ -277,14 +276,13 @@ private fun EditGroupFieldsSection(
     )
 }
 
-// Why: tapping the avatar, or the button under it, opens "Ícone do grupo".
+// Why: the avatar, or the pencil on its corner as on the profile's photo, opens "Ícone do grupo".
 @Composable
 private fun ColumnScope.IconSection(
     state: EditGroupUiState,
     onEvent: (EditGroupUiEvent) -> Unit,
     avatarSize: Dp,
 ) {
-    val changeIconLabel = stringResource(R.string.edit_group_change_icon)
     Column(
         modifier = Modifier
             .align(Alignment.CenterHorizontally)
@@ -292,29 +290,22 @@ private fun ColumnScope.IconSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Box(contentAlignment = Alignment.Center) {
+        AvatarWithPhotoButton(
+            isPreparingPhoto = state.isPreparingPhoto,
+            icon = Icons.Outlined.Edit,
+            contentDescription = stringResource(R.string.edit_group_change_icon),
+            size = avatarSize,
+            onClick = { onEvent(EditGroupUiEvent.OnIconClicked) },
+        ) {
             GroupBadge(
                 initials = state.initials,
                 color = state.color,
                 size = avatarSize,
                 photoUrl = state.photoUrl,
+                // Why: the square opens it too, as on iOS; TalkBack reaches it through the pencil alone.
                 modifier = Modifier
-                    .clickable(
-                        role = Role.Button,
-                        onClick = { onEvent(EditGroupUiEvent.OnIconClicked) },
-                    ).semantics { contentDescription = changeIconLabel },
-            )
-            if (state.isPreparingPhoto) CircularProgressIndicator()
-        }
-        FilledTonalButton(onClick = { onEvent(EditGroupUiEvent.OnIconClicked) }) {
-            Icon(
-                imageVector = Icons.Outlined.Palette,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-            Text(
-                text = changeIconLabel,
-                modifier = Modifier.padding(start = 8.dp),
+                    .clearAndSetSemantics {}
+                    .clickable(onClick = { onEvent(EditGroupUiEvent.OnIconClicked) }),
             )
         }
         if (state.showsPhotoError) {
