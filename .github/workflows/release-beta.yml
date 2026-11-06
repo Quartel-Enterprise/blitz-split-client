@@ -162,22 +162,45 @@ jobs:
       # (docs/release-process.md#google-sign-in), so the run says which one this APK carries. The
       # APK has no v1 signature (minSdk 26), so keytool can't read it: apksigner reads the v2 and v3
       # ones. The step fails when it finds nothing, instead of publishing an empty fingerprint.
+      # Invite links open the app only when the key's SHA-256 is in blitzsplit.com's assetlinks.json
+      # (docs/product/joining-and-folds.md): a key missing there warns, and the beta still publishes.
       - name: Show the signing certificate
         shell: bash
         run: |
           apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)"
-          sha1="$("$apksigner" verify --print-certs androidApp/build/outputs/apk/release/*.apk | sed -n 's/^Signer #1 certificate SHA-1 digest: *//p' | head -1)"
-          if [ -z "$sha1" ]; then
+          certs="$("$apksigner" verify --print-certs androidApp/build/outputs/apk/release/*.apk)"
+          sha1="$(sed -n 's/^Signer #1 certificate SHA-1 digest: *//p' <<< "$certs" | head -1)"
+          sha256="$(sed -n 's/^Signer #1 certificate SHA-256 digest: *//p' <<< "$certs" | head -1)"
+          if [ -z "$sha1" ] || [ -z "$sha256" ]; then
             echo "::error::apksigner printed no signing certificate for the release APK."
             exit 1
           fi
+          # apksigner prints abcd…, assetlinks.json lists AB:CD:…
+          fingerprint="$(tr 'a-f' 'A-F' <<< "$sha256" | sed 's/../&:/g; s/:$//')"
+          # A site that doesn't answer leaves it unknown, rather than reporting a key missing. Android reads
+          # the file only without a redirect, so a redirect fails it as Android would (--max-redirs 0).
+          if ! statements="$(curl -fsSL --max-redirs 0 --max-time 20 https://blitzsplit.com/.well-known/assetlinks.json)"; then
+            app_links="blitzsplit.com's assetlinks.json didn't load without a redirect, so invite links may open the browser."
+            echo "::warning title=App Links::$app_links"
+          elif jq -e --arg fingerprint "$fingerprint" 'any(.[];
+              .target.package_name == "com.quare.blitzsplit"
+              and any(.target.sha256_cert_fingerprints[]?; ascii_upcase == $fingerprint))' \
+              <<< "$statements" > /dev/null; then
+            app_links="blitzsplit.com's assetlinks.json lists this key, so invite links open the app."
+          else
+            app_links="blitzsplit.com's assetlinks.json doesn't list this key, so invite links open the browser (docs/release-process.md#outside-the-stores)."
+            echo "::warning title=App Links::$app_links"
+          fi
           echo "::notice title=APK signing SHA-1::$sha1"
+          echo "::notice title=APK signing SHA-256::$fingerprint"
           {
             echo "### APK signing certificate"
             echo ""
             echo "SHA-1: \`$sha1\`"
             echo ""
-            echo "Google sign in needs this fingerprint on the Firebase Android app."
+            echo "SHA-256: \`$fingerprint\`"
+            echo ""
+            echo "Google sign in needs the SHA-1 on the Firebase Android app. $app_links"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload the APK as a build artifact
