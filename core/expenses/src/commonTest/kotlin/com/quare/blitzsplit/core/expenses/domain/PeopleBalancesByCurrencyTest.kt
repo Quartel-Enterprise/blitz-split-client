@@ -315,4 +315,24 @@ class PeopleBalancesByCurrencyTest {
         isPending = false,
         updatedAt = 0L,
     )
+
+    @Test
+    fun `GIVEN bills in reais and in an unknown currency WHEN netting THEN keeps the unknown one apart`() {
+        // Given
+        val unknown = GroupCurrency.fromCode("XYZ")
+        val groups = listOf(group("floripa", me, carla))
+        val money = mapOf(
+            "floripa" to moneyOf(
+                owes("floripa", carla.id, me.id, 1_000L, GroupCurrency.BRL, id = "b1"),
+                owes("floripa", carla.id, me.id, 500L, unknown, id = "b2"),
+            ),
+        )
+
+        // When
+        val people = PeopleBalances.of(groups, money).people
+
+        // Then
+        assertEquals(listOf(GroupCurrency.BRL, unknown), people.map { it.currency })
+        assertEquals(listOf(1_000L, 500L), people.map { it.netMinor })
+    }
 }

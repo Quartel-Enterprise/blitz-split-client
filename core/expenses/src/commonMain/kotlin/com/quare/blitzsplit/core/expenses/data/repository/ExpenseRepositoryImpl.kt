@@ -53,6 +53,7 @@ class ExpenseRepositoryImpl(
         expense: Expense,
         createdAt: Long,
     ): Result<Unit> = suspendRunCatching {
+        require(expense.currency.isKnown) { UNKNOWN_CURRENCY_MESSAGE }
         local.insertExpense(
             mapper.toEntity(
                 expense = expense,
@@ -65,6 +66,7 @@ class ExpenseRepositoryImpl(
         expense: Expense,
         updatedAt: Long,
     ): Result<Unit> = suspendRunCatching {
+        require(expense.currency.isKnown) { UNKNOWN_CURRENCY_MESSAGE }
         local.updateExpense(
             entity = mapper.toEntity(
                 expense = expense,

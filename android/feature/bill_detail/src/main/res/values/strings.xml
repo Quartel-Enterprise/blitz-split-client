@@ -10,6 +10,7 @@
     <string name="bill_detail_someone_paid">%s paid</string>
     <string name="bill_detail_former_member_paid">A former member paid</string>
     <string name="bill_detail_pending">Queued · syncs when you\'re back online</string>
+    <string name="bill_detail_unknown_currency">This bill uses a currency this app version doesn\'t know. Update the app to edit it.</string>
     <string name="bill_detail_my_part">Your share</string>
     <string name="bill_detail_you_owe">you owe</string>
     <string name="bill_detail_to_get_back">to get back</string>

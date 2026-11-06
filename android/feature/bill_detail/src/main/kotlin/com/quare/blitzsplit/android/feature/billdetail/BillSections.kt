@@ -108,6 +108,13 @@ internal fun BillSummaryColumn(
             )
         }
         if (state.isPending) PendingLine(stringResource(R.string.bill_detail_pending))
+        if (state.showsUnknownCurrencyNote) {
+            Text(
+                text = stringResource(R.string.bill_detail_unknown_currency),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 

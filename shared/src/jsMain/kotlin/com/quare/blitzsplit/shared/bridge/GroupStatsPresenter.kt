@@ -231,7 +231,7 @@ class GroupStatsPresenter(
 
     // Why: a currency chip over every figure.
     fun selectCurrency(code: String) {
-        val currency = GroupCurrency.fromCodeOrNull(code) ?: return
+        val currency = GroupCurrency.fromCode(code)
         viewModel.onEvent(GroupStatsUiEvent.OnCurrencySelected(currency))
     }
 

@@ -2,7 +2,10 @@ package com.quare.blitzsplit.core.model
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class GroupCurrencyTest {
@@ -436,5 +439,59 @@ class GroupCurrencyTest {
 
         // Then
         assertEquals(0, digits)
+    }
+
+    @Test
+    fun `GIVEN a code this version does not know WHEN reading it THEN keeps the raw code as its own currency`() {
+        // Given
+        val code = "XYZ"
+
+        // When
+        val currency = GroupCurrency.fromCode(code)
+
+        // Then
+        assertEquals("XYZ", currency.code)
+        assertFalse(currency.isKnown)
+        assertEquals(GroupCurrency.fromCode("XYZ"), currency)
+        assertNotEquals(GroupCurrency.fromCode("XYW"), currency)
+        assertNotEquals(GroupCurrency.USD, currency)
+    }
+
+    @Test
+    fun `GIVEN a code this version knows WHEN reading it THEN gives the listed currency`() {
+        // Given
+        val code = "BRL"
+
+        // When
+        val currency = GroupCurrency.fromCode(code)
+
+        // Then
+        assertSame(GroupCurrency.BRL, currency)
+        assertTrue(currency.isKnown)
+    }
+
+    @Test
+    fun `GIVEN a code this version does not know WHEN listing the currencies THEN it is never offered`() {
+        // Given
+        val unknown = GroupCurrency.fromCode("XYZ")
+
+        // When
+        val entries = GroupCurrency.entries
+
+        // Then
+        assertFalse(unknown in entries)
+        assertNull(GroupCurrency.fromCodeOrNull("XYZ"))
+    }
+
+    @Test
+    fun `GIVEN an unknown currency WHEN picking the digits to show THEN it has two decimals like most currencies`() {
+        // Given
+        val currency = GroupCurrency.fromCode("XYZ")
+
+        // When
+        val digits = currency.getDisplayFractionDigits(1_250L, showsSats = false)
+
+        // Then
+        assertEquals(2, digits)
     }
 }

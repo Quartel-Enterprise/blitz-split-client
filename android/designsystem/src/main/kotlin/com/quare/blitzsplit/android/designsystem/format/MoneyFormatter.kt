@@ -37,6 +37,9 @@ class MoneyFormatter(
     // Why: "%1$s sats" and "sats", in the UI's language, from the composition that builds it.
     private val satsText: SatsText,
 ) {
+    // Why: bitcoin, ether and a code this version doesn't know have no platform currency: the symbol is written by hand.
+    private val writesOwnSymbol: Boolean = currency.isCrypto || !currency.isKnown
+
     private val isSats: Boolean = currency == GroupCurrency.BTC && showsSats
 
     // Why: lists format every row on each recomposition, and building a NumberFormat each time is costly.
@@ -47,8 +50,14 @@ class MoneyFormatter(
     // Why: the symbol a field shows before what is typed in it.
     val symbol: String = when {
         isSats -> satsText.symbol
+
         currency == GroupCurrency.BTC -> BITCOIN_SYMBOL
+
         currency == GroupCurrency.ETH -> ETHER_SYMBOL
+
+        // Why: a code this version doesn't know has no symbol: the raw code stands in its place ("XYZ 12,50").
+        !currency.isKnown -> currency.code
+
         else -> Currency.getInstance(currency.code).getSymbol(locale)
     }
 
@@ -65,7 +74,7 @@ class MoneyFormatter(
 
     // Why: lazily, since only a chart's value lines write short amounts.
     private val compactFormat by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !currency.isCrypto) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !currency.isCrypto && currency.isKnown) {
             NumberFormatter
                 .withLocale(locale)
                 .notation(Notation.compactShort())
@@ -106,7 +115,7 @@ class MoneyFormatter(
 
     private fun createCurrencyFormat(fractionDigits: Int): NumberFormat =
         NumberFormat.getCurrencyInstance(locale).apply {
-            if (this@MoneyFormatter.currency.isCrypto && this is DecimalFormat) {
+            if (writesOwnSymbol && this is DecimalFormat) {
                 decimalFormatSymbols = decimalFormatSymbols.apply {
                     currencySymbol = symbol
                 }

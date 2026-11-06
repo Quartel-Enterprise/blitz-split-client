@@ -182,6 +182,22 @@ class ExpenseRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a bill in an unknown currency WHEN creating or editing it THEN fails`() = runTest {
+        // Given
+        prepareScenario()
+        val unknown = newExpense.copy(currency = GroupCurrency.fromCode("XYZ"))
+
+        // When
+        val created = repository.createExpense(unknown, createdAt = 7_000L)
+        val updated = repository.updateExpense(unknown, updatedAt = 8_000L)
+
+        // Then
+        assertIs<IllegalArgumentException>(created.exceptionOrNull())
+        assertIs<IllegalArgumentException>(updated.exceptionOrNull())
+        assertTrue(local.entities.value.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the group is no longer on the device WHEN creating a bill THEN fails`() = runTest {
         // Given
         prepareScenario(insertError = IllegalStateException("No group group-1"))

@@ -144,6 +144,20 @@ class SettlementRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a payment in an unknown currency WHEN creating it THEN fails`() = runTest {
+        // Given
+        prepareScenario()
+        val unknown = newSettlement.copy(currency = GroupCurrency.fromCode("XYZ"))
+
+        // When
+        val result = repository.createSettlements(listOf(unknown), recordedAt = 7_000L)
+
+        // Then
+        assertIs<IllegalArgumentException>(result.exceptionOrNull())
+        assertTrue(local.entities.value.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the group is no longer on the device WHEN creating a payment THEN fails`() = runTest {
         // Given
         prepareScenario(insertError = IllegalStateException("No group"))

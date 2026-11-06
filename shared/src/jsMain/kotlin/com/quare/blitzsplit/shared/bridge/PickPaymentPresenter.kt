@@ -68,7 +68,7 @@ class PickPaymentPresenter {
         toMemberId: String,
         currency: String,
     ) {
-        val groupCurrency = GroupCurrency.fromCodeOrNull(currency) ?: return
+        val groupCurrency = GroupCurrency.fromCode(currency)
         viewModel.onEvent(PickPaymentUiEvent.OnPairClicked(groupId, fromMemberId, toMemberId, groupCurrency))
     }
 

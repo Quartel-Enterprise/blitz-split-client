@@ -5653,6 +5653,29 @@
         }
       }
     },
+    "This bill uses a currency this app version doesn't know. Update the app to edit it." : {
+      "comment" : "Under a bill in a currency only a newer app knows: Edit is off",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta cuenta usa una moneda que esta versión de la app no conoce. Actualiza la app para editarla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette dépense utilise une devise que cette version de l’app ne connaît pas. Mets l’app à jour pour la modifier."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta usa uma moeda que esta versão do app não conhece. Atualize o app para editá-la."
+          }
+        }
+      }
+    },
     "This comment is in a group you're not in. Ask whoever sent you the link for the invite." : {
       "comment" : "The message of You're not in this group, for a comment's link",
       "localizations" : {

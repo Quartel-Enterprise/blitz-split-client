@@ -136,7 +136,7 @@ class MembersPresenter(
 
     // Why: a currency chip over the members' balances.
     fun selectCurrency(code: String) {
-        val currency = GroupCurrency.fromCodeOrNull(code) ?: return
+        val currency = GroupCurrency.fromCode(code)
         viewModel.onEvent(MembersUiEvent.OnCurrencySelected(currency))
     }
 

@@ -150,4 +150,12 @@ data class BillDetailUiState(
     // Why: Editar and Apagar do nothing while the bill is being deleted.
     val areActionsEnabled: Boolean
         get() = isLoaded && !isDeleting
+
+    // Why: a bill in a currency this version doesn't know is read-only: Editar is off, with the note below.
+    val canEdit: Boolean
+        get() = areActionsEnabled && currency.isKnown
+
+    // Why: "This bill uses a currency this app version doesn't know. Update the app to edit it."
+    val showsUnknownCurrencyNote: Boolean
+        get() = isLoaded && !currency.isKnown
 }

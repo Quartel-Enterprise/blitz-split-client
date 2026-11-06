@@ -63,7 +63,7 @@ class PickPaymentViewModel(
     override fun handleEvent(event: PickPaymentUiEvent) {
         when (event) {
             // Why: in this sheet's place, so the form's back goes to Início, which shows its notice.
-            is PickPaymentUiEvent.OnPairClicked -> if (isOnTop() && hasPair(event)) {
+            is PickPaymentUiEvent.OnPairClicked -> if (isOnTop() && event.currency.isKnown && hasPair(event)) {
                 navigator.replaceTop(
                     Route.RegisterPayment(
                         groupId = event.groupId,

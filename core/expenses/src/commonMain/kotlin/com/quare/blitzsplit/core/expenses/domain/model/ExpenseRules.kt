@@ -24,7 +24,7 @@ object ExpenseRules {
     fun isAmountValid(
         amountMinor: Long?,
         currency: GroupCurrency,
-    ): Boolean = amountMinor != null && amountMinor in 1..maxAmountMinorFor(currency)
+    ): Boolean = currency.isKnown && amountMinor != null && amountMinor in 1..maxAmountMinorFor(currency)
 
     fun isDescriptionValid(description: String): Boolean = description.isNotBlank()
 

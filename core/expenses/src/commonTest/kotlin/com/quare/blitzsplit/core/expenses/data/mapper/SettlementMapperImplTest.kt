@@ -9,7 +9,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class SettlementMapperImplTest {
     private val mapper = SettlementMapperImpl()
@@ -44,7 +43,7 @@ class SettlementMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a payment in a currency this version does not know WHEN mapping to the domain THEN skips it`() {
+    fun `GIVEN a payment in an unknown currency WHEN mapping to the domain THEN keeps its raw code`() {
         // Given
         val entity = entity(currency = "XYZ")
 
@@ -52,7 +51,9 @@ class SettlementMapperImplTest {
         val settlement = mapper.toDomain(entity)
 
         // Then
-        assertNull(settlement)
+        assertEquals("XYZ", settlement.currency.code)
+        assertEquals(false, settlement.currency.isKnown)
+        assertEquals("XYZ", mapper.toDto(mapper.toEntity(settlement, recordedAt = 1L), userId = "u").currency)
     }
 
     @Test

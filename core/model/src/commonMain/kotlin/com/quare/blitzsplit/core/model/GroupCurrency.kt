@@ -6,78 +6,24 @@ package com.quare.blitzsplit.core.model
  * by the code exchanges use); each UI names it in its own language. The regions pick the default of a new group, so
  * a group starts in the currency of the device's region, never in a cryptocurrency.
  */
-enum class GroupCurrency(
+class GroupCurrency private constructor(
     val code: String,
     private val regions: Set<String>,
     // Why: the digits of the minor unit, as ISO 4217 has them, so an amount is stored as a whole number of it.
     val fractionDigits: Int = 2,
     // Why: "Criptomoedas" in the picker, and shown with only the decimals an amount needs.
     val isCrypto: Boolean = false,
+    // Why: false for a code only a newer app or server knows (see `fromCode`), shown by its raw code, never edited.
+    val isKnown: Boolean = true,
 ) {
-    BRL("BRL", setOf("BR")),
-    USD("USD", setOf("US", "EC", "SV", "PA", "PR")),
-    EUR(
-        "EUR",
-        setOf(
-            "AT",
-            "BE",
-            "HR",
-            "CY",
-            "EE",
-            "FI",
-            "FR",
-            "DE",
-            "GR",
-            "IE",
-            "IT",
-            "LV",
-            "LT",
-            "LU",
-            "MT",
-            "NL",
-            "PT",
-            "SK",
-            "SI",
-            "ES",
-            "AD",
-            "MC",
-            "SM",
-            "VA",
-            "ME",
-            "XK",
-        ),
-    ),
-    GBP("GBP", setOf("GB")),
-    ARS("ARS", setOf("AR")),
-    CLP("CLP", setOf("CL"), fractionDigits = 0),
-    COP("COP", setOf("CO")),
-    MXN("MXN", setOf("MX")),
-    PEN("PEN", setOf("PE")),
-    UYU("UYU", setOf("UY")),
-    PYG("PYG", setOf("PY"), fractionDigits = 0),
-    CAD("CAD", setOf("CA")),
-    AUD("AUD", setOf("AU")),
-    JPY("JPY", setOf("JP"), fractionDigits = 0),
-    CHF("CHF", setOf("CH", "LI")),
-
-    // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
-    BTC(
-        "BTC",
-        emptySet(),
-        fractionDigits = 8,
-        isCrypto = true,
-    ),
-
-    // Why: 8 decimals, not ETH's 18 (wei), which a Long of the minor unit holds only up to about 9 ether.
-    ETH(
-        "ETH",
-        emptySet(),
-        fractionDigits = 8,
-        isCrypto = true,
-    ),
-    ;
-
     val minorPerMajor: Long = (1..fractionDigits).fold(1L) { units, _ -> units * 10 }
+
+    // Why: a currency is its code: the same unknown code read twice is the same currency, never another one's.
+    override fun equals(other: Any?): Boolean = other is GroupCurrency && other.code == code
+
+    override fun hashCode(): Int = code.hashCode()
+
+    override fun toString(): String = code
 
     /*
      * Why: an amount shown on screen drops its decimals when they are all zero ("R$ 500", never "R$ 500,00"), and
@@ -105,6 +51,89 @@ enum class GroupCurrency(
     fun getTypedFractionDigits(showsSats: Boolean): Int = if (this == BTC && showsSats) 0 else fractionDigits
 
     companion object {
+        val BRL = GroupCurrency("BRL", setOf("BR"))
+        val USD = GroupCurrency("USD", setOf("US", "EC", "SV", "PA", "PR"))
+        val EUR = GroupCurrency(
+            "EUR",
+            setOf(
+                "AT",
+                "BE",
+                "HR",
+                "CY",
+                "EE",
+                "FI",
+                "FR",
+                "DE",
+                "GR",
+                "IE",
+                "IT",
+                "LV",
+                "LT",
+                "LU",
+                "MT",
+                "NL",
+                "PT",
+                "SK",
+                "SI",
+                "ES",
+                "AD",
+                "MC",
+                "SM",
+                "VA",
+                "ME",
+                "XK",
+            ),
+        )
+        val GBP = GroupCurrency("GBP", setOf("GB"))
+        val ARS = GroupCurrency("ARS", setOf("AR"))
+        val CLP = GroupCurrency("CLP", setOf("CL"), fractionDigits = 0)
+        val COP = GroupCurrency("COP", setOf("CO"))
+        val MXN = GroupCurrency("MXN", setOf("MX"))
+        val PEN = GroupCurrency("PEN", setOf("PE"))
+        val UYU = GroupCurrency("UYU", setOf("UY"))
+        val PYG = GroupCurrency("PYG", setOf("PY"), fractionDigits = 0)
+        val CAD = GroupCurrency("CAD", setOf("CA"))
+        val AUD = GroupCurrency("AUD", setOf("AU"))
+        val JPY = GroupCurrency("JPY", setOf("JP"), fractionDigits = 0)
+        val CHF = GroupCurrency("CHF", setOf("CH", "LI"))
+
+        // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
+        val BTC = GroupCurrency(
+            "BTC",
+            emptySet(),
+            fractionDigits = 8,
+            isCrypto = true,
+        )
+
+        // Why: 8 decimals, not ETH's 18 (wei), which a Long of the minor unit holds only up to about 9 ether.
+        val ETH = GroupCurrency(
+            "ETH",
+            emptySet(),
+            fractionDigits = 8,
+            isCrypto = true,
+        )
+
+        // Why: the currencies the app can split in, in the order of the "Moeda" picker.
+        val entries: List<GroupCurrency> = listOf(
+            BRL,
+            USD,
+            EUR,
+            GBP,
+            ARS,
+            CLP,
+            COP,
+            MXN,
+            PEN,
+            UYU,
+            PYG,
+            CAD,
+            AUD,
+            JPY,
+            CHF,
+            BTC,
+            ETH,
+        )
+
         // Why: a region without a currency of the list, or no region at all, splits in dollars.
         val fallback: GroupCurrency = USD
 
@@ -114,6 +143,17 @@ enum class GroupCurrency(
         }
 
         fun fromCodeOrNull(code: String): GroupCurrency? = entries.firstOrNull { it.code == code }
+
+        /*
+         * Why: a bill or payment a newer app wrote in a code this version doesn't list is still shown, by its raw
+         * code and its two decimals, and is its own currency in every balance. It is read-only: never offered by
+         * `entries`, and nothing new is created in it.
+         */
+        fun fromCode(code: String): GroupCurrency = fromCodeOrNull(code) ?: GroupCurrency(
+            code = code,
+            regions = emptySet(),
+            isKnown = false,
+        )
 
         private const val DECIMAL_BASE = 10L
     }

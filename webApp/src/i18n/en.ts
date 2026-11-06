@@ -358,6 +358,7 @@ export const en = {
   billDetail_paidByFormer: 'A former member paid',
   billDetail_paidBySeveral: '{names} paid',
   billDetail_pending: "Queued · syncs when you're back online",
+  billDetail_unknownCurrency: "This bill uses a currency this app version doesn't know. Update the app to edit it.",
   billDetail_myPart: 'Your share',
   billDetail_myPartOwe: 'you owe',
   billDetail_myPartGetBack: 'to get back',

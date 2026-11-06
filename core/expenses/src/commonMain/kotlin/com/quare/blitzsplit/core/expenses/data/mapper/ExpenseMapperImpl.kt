@@ -25,7 +25,8 @@ class ExpenseMapperImpl : ExpenseMapper {
     private val json = Json { ignoreUnknownKeys = true }
 
     /*
-     * Why: null for a bill this version can't read (a split mode or payers it doesn't know), which the list skips.
+     * Why: null for a bill this version can't read (a split mode or payers it doesn't know), which the list skips. A
+     * currency code it doesn't know is not one of those: the bill stays, in its raw code (`GroupCurrency.fromCode`).
      * Items that don't give the stored shares (malformed, beyond what this version can save, or a mode it doesn't
      * know) leave the bill split by amounts, which its shares still are.
      */
@@ -58,7 +59,7 @@ class ExpenseMapperImpl : ExpenseMapper {
             groupId = entity.groupId,
             description = entity.description,
             amountMinor = entity.amountMinor,
-            currency = GroupCurrency.fromCodeOrNull(entity.currency) ?: return null,
+            currency = GroupCurrency.fromCode(entity.currency),
             splitMode = if (items != null) SplitMode.ITEMS else storedMode,
             payers = payers,
             shares = shares,

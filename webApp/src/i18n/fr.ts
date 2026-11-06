@@ -360,6 +360,7 @@ export const fr: Record<MessageKey, string> = {
   billDetail_paidByFormer: 'Un ancien membre a payé',
   billDetail_paidBySeveral: '{names} ont payé',
   billDetail_pending: 'En attente · se synchronise quand tu es de nouveau en ligne',
+  billDetail_unknownCurrency: 'Cette dépense utilise une devise que cette version de l’app ne connaît pas. Mets l’app à jour pour la modifier.',
   billDetail_myPart: 'Ta part',
   billDetail_myPartOwe: 'tu dois',
   billDetail_myPartGetBack: 'à récupérer',

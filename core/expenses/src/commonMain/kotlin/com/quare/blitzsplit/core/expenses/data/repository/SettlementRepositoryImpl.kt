@@ -17,12 +17,12 @@ class SettlementRepositoryImpl(
 ) : SettlementRepository {
     override fun observeSettlements(groupId: String): Flow<List<Settlement>> = local
         .observeSettlements(groupId)
-        .map { entities -> entities.mapNotNull(mapper::toDomain) }
+        .map { entities -> entities.map(mapper::toDomain) }
         .distinctUntilChanged()
 
     override fun observeAllSettlements(): Flow<List<Settlement>> = local
         .observeAllSettlements()
-        .map { entities -> entities.mapNotNull(mapper::toDomain) }
+        .map { entities -> entities.map(mapper::toDomain) }
         .distinctUntilChanged()
 
     override fun observePendingDeletionGroupIds(): Flow<List<String>> = local
@@ -37,6 +37,7 @@ class SettlementRepositoryImpl(
         settlements: List<Settlement>,
         recordedAt: Long,
     ): Result<Unit> = suspendRunCatching {
+        require(settlements.all { it.currency.isKnown }) { UNKNOWN_CURRENCY_MESSAGE }
         local.insertSettlements(
             settlements.map { settlement ->
                 mapper.toEntity(

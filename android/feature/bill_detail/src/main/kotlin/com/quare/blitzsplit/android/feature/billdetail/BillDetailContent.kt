@@ -259,7 +259,7 @@ private fun BillTopBarAction(
     }
     IconButton(
         onClick = { onEvent(BillDetailUiEvent.OnEditClicked) },
-        enabled = state.areActionsEnabled,
+        enabled = state.canEdit,
     ) {
         Icon(
             imageVector = Icons.Outlined.Edit,

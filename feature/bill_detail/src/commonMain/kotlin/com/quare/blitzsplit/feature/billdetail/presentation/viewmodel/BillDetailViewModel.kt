@@ -543,7 +543,7 @@ class BillDetailViewModel(
     }
 
     private fun edit() {
-        if (!uiState.value.areActionsEnabled || !isOnTop()) return
+        if (!uiState.value.canEdit || !isOnTop()) return
         trackEvent("bill_edit_clicked", emptyMap())
         navigator.navigate(
             Route.SplitBill(
