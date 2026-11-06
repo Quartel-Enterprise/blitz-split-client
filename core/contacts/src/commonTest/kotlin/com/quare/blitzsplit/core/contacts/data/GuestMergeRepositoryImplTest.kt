@@ -112,6 +112,43 @@ class GuestMergeRepositoryImplTest {
         assertIs<IllegalStateException>(result.exceptionOrNull())
     }
 
+    @Test
+    fun `GIVEN a guest in two groups WHEN claiming them THEN asks the server to move their members`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val result = repository.requestClaim(listOf("diego-ape", "diego-futebol"))
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(listOf("diego-ape", "diego-futebol")), remote.claimedMemberIds)
+    }
+
+    @Test
+    fun `GIVEN the server moved no member WHEN claiming a guest THEN still succeeds`() = runTest {
+        // Given
+        prepareScenario(claimedCount = 0)
+
+        // When
+        val result = repository.requestClaim(listOf("diego-ape"))
+
+        // Then
+        assertTrue(result.isSuccess)
+    }
+
+    @Test
+    fun `GIVEN the server fails WHEN claiming a guest THEN returns that failure`() = runTest {
+        // Given
+        prepareScenario(error = IllegalStateException("offline"))
+
+        // When
+        val result = repository.requestClaim(listOf("diego-ape"))
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
     private fun dto(
         id: String,
         memberIds: List<String> = listOf("diego-ape", "diego-futebol"),
@@ -128,8 +165,10 @@ class GuestMergeRepositoryImplTest {
     private fun prepareScenario(
         pending: List<GuestMergeDto> = emptyList(),
         error: Throwable? = null,
+        claimedCount: Int = 2,
     ) {
         remote = FakeGuestMergeRemoteDataSource(
+            claimedCount = claimedCount,
             requested = { memberIds -> dto("merge-1", memberIds) },
             pending = pending,
             error = error,
@@ -139,6 +178,7 @@ class GuestMergeRepositoryImplTest {
 }
 
 private class FakeGuestMergeRemoteDataSource(
+    private val claimedCount: Int,
     private val requested: (List<String>) -> GuestMergeDto,
     private val pending: List<GuestMergeDto>,
     private val error: Throwable?,
@@ -146,6 +186,7 @@ private class FakeGuestMergeRemoteDataSource(
     val requestedMemberIds = mutableListOf<List<String>>()
     val pendingLookups = mutableListOf<List<String>>()
     val cancelledIds = mutableListOf<String>()
+    val claimedMemberIds = mutableListOf<List<String>>()
 
     override suspend fun request(memberIds: List<String>): GuestMergeDto {
         requestedMemberIds += memberIds
@@ -163,5 +204,11 @@ private class FakeGuestMergeRemoteDataSource(
         cancelledIds += mergeId
         error?.let { throw it }
         return true
+    }
+
+    override suspend fun requestClaim(memberIds: List<String>): Int {
+        claimedMemberIds += memberIds
+        error?.let { throw it }
+        return claimedCount
     }
 }

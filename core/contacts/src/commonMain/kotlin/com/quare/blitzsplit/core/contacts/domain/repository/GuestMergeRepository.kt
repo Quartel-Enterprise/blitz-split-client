@@ -11,4 +11,7 @@ interface GuestMergeRepository {
     suspend fun findPending(memberIds: List<String>): Result<GuestMerge?>
 
     suspend fun cancel(mergeId: String): Result<Unit>
+
+    // Why: "Eu sou Diego": the caller is the guest, so everything in that name passes to their account at once.
+    suspend fun requestClaim(memberIds: List<String>): Result<Unit>
 }

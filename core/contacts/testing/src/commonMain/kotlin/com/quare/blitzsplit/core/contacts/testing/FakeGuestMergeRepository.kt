@@ -15,6 +15,8 @@ class FakeGuestMergeRepository(
     var requestError: Throwable? = null
     var findError: Throwable? = null
     var cancelError: Throwable? = null
+    val claimedMemberIds = mutableListOf<List<String>>()
+    var claimError: Throwable? = null
     var requestedAt = 0L
 
     override suspend fun request(memberIds: List<String>): Result<GuestMerge> {
@@ -40,6 +42,13 @@ class FakeGuestMergeRepository(
         cancelledIds += mergeId
         cancelError?.let { return Result.failure(it) }
         if (pending?.id == mergeId) pending = null
+        return Result.success(Unit)
+    }
+
+    override suspend fun requestClaim(memberIds: List<String>): Result<Unit> {
+        claimedMemberIds += memberIds
+        claimError?.let { return Result.failure(it) }
+        pending = pending?.takeIf { merge -> merge.memberIds.none { it in memberIds } }
         return Result.success(Unit)
     }
 }

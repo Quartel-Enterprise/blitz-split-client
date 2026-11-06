@@ -109,6 +109,11 @@
     <string name="contacts_merge_retry">Try again</string>
     <string name="contacts_merge_share_message">%1$s, join me on Blitz Split with this link and everything in your name comes along: %2$s</string>
     <string name="contacts_cancel_merge_error">Couldn\'t cancel the request. Check your connection and try again.</string>
+    <string name="contacts_claim_button">I am %s</string>
+    <string name="contacts_claim_title">Merge %s into your account?</string>
+    <string name="contacts_claim_message">Everything in %1$s\'s name (bills, payments and the balance of %2$s) moves to your account, in every group, and the guest goes away. This can\'t be undone.</string>
+    <string name="contacts_claim_confirm">Merge</string>
+    <string name="contacts_claim_error">Couldn\'t merge. Check your connection and try again.</string>
     <string name="contacts_copy_link">Copy link</string>
     <string name="contacts_copied">Copied</string>
     <string name="contacts_share">Share</string>

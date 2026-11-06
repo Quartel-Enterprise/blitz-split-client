@@ -5,8 +5,10 @@ import com.quare.blitzsplit.core.contacts.domain.model.GuestMerge
 import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
 import com.quare.blitzsplit.core.contacts.domain.usecase.CancelGuestMerge
+import com.quare.blitzsplit.core.contacts.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.CancelGuestMergeUseCase
+import com.quare.blitzsplit.core.contacts.domain.usecase.impl.ClaimGuestAsMeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.FindPendingGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.RequestGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.SetContactHiddenUseCase
@@ -24,6 +26,7 @@ import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
@@ -65,6 +68,9 @@ class ContactProfileViewModelTest {
 
     // Why: whom "Adicionar" added to which group.
     private val addedToGroups = mutableListOf<Pair<String, String>>()
+
+    // Why: how many times the claim asked for a sync.
+    private var syncCount = 0
 
     @BeforeTest
     fun setUp() {
@@ -1329,6 +1335,241 @@ class ContactProfileViewModelTest {
             assertTrue(merges.pendingLookups.isEmpty())
         }
 
+    // region Eu sou Diego
+
+    @Test
+    fun `GIVEN the merge sheet open WHEN Eu sou Diego is tapped THEN asks for confirmation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+
+            // Then
+            assertTrue(assertNotNull(viewModel.uiState.value.merge).isConfirmingClaim)
+            assertTrue(merges.claimedMemberIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no merge sheet WHEN Eu sou Diego is tapped THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+
+        // Then
+        assertNull(viewModel.uiState.value.merge)
+    }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN it is dismissed THEN closes it and keeps the sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeDismissed)
+
+            // Then
+            assertFalse(assertNotNull(viewModel.uiState.value.merge).isConfirmingClaim)
+            assertTrue(merges.claimedMemberIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN Merge is tapped THEN claims Diego and syncs and closes the confirmation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+            // Then
+            val sheet = assertNotNull(viewModel.uiState.value.merge)
+            assertEquals(listOf(listOf(memberId("diego", FLORIPA))), merges.claimedMemberIds)
+            assertEquals(1, syncCount)
+            assertFalse(sheet.isConfirmingClaim)
+            assertFalse(sheet.isClaiming)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the server fails WHEN Merge is tapped THEN keeps the confirmation open and shows the error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                claimError = IllegalStateException("500"),
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+            // Then
+            val sheet = assertNotNull(viewModel.uiState.value.merge)
+            assertTrue(sheet.isConfirmingClaim)
+            assertFalse(sheet.isClaiming)
+            assertEquals(0, syncCount)
+            assertEquals(listOf<ContactProfileUiAction>(ContactProfileUiAction.ShowClaimError), actions)
+        }
+
+    @Test
+    fun `GIVEN the server has not answered WHEN Merge is tapped THEN the confirmation cannot be dismissed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = DIEGO_KEY,
+                claimAnswered = false,
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeDismissed)
+
+            // Then
+            val sheet = assertNotNull(viewModel.uiState.value.merge)
+            assertTrue(sheet.isClaiming)
+            assertTrue(sheet.isConfirmingClaim)
+        }
+
+    @Test
+    fun `GIVEN a claim running WHEN Merge is tapped again THEN claims only once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = DIEGO_KEY,
+            claimAnswered = false,
+        )
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+        // Then
+        assertEquals(1, claimCalls)
+    }
+
+    @Test
+    fun `GIVEN the confirmation open and the internet gone WHEN Merge is tapped THEN claims nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+            isOnline.value = false
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+            // Then
+            assertTrue(merges.claimedMemberIds.isEmpty())
+            assertEquals(0, syncCount)
+            assertFalse(assertNotNull(viewModel.uiState.value.merge).isClaiming)
+        }
+
+    @Test
+    fun `GIVEN the sheet open without the confirmation WHEN Merge is confirmed THEN claims nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+            // Then
+            assertTrue(merges.claimedMemberIds.isEmpty())
+            assertEquals(0, syncCount)
+        }
+
+    @Test
+    fun `GIVEN no merge sheet WHEN Merge is confirmed THEN claims nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+        // Then
+        assertTrue(merges.claimedMemberIds.isEmpty())
+        assertEquals(0, syncCount)
+    }
+
+    @Test
+    fun `GIVEN the claim events WHEN reading their analytics THEN each is sent by the ViewModel`() {
+        // Given
+        val expected = mapOf(
+            ContactProfileUiEvent.OnClaimAsMeClicked to "contact_claim_clicked",
+            ContactProfileUiEvent.OnClaimAsMeConfirmed to "contact_claim_confirmed",
+            ContactProfileUiEvent.OnClaimAsMeDismissed to "contact_claim_cancelled",
+        )
+
+        // When
+        val analytics = expected.keys.associateWith { it.analytics }
+
+        // Then
+        assertEquals(expected.mapValues { (_, name) -> EventAnalytics.Manual(name) }, analytics)
+    }
+
+    @Test
+    fun `GIVEN the merge sheet open WHEN Eu sou Diego is tapped THEN sends the claim clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+
+            // Then
+            assertEquals(listOf("contact_claim_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN Merge is tapped THEN sends the claim confirmed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed)
+
+        // Then
+        assertEquals(listOf("contact_claim_confirmed" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the confirmation open WHEN Cancel is tapped THEN sends the claim cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(personKey = DIEGO_KEY)
+        viewModel.onEvent(ContactProfileUiEvent.OnMergeClicked)
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnClaimAsMeDismissed)
+
+        // Then
+        assertEquals(listOf("contact_claim_cancelled" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    // endregion
+
     // region Analytics
 
     @Test
@@ -2192,6 +2433,9 @@ class ContactProfileViewModelTest {
 
     // endregion
 
+    // Why: how many times the claim reached the use case, for the cases whose use case never answers.
+    private var claimCalls = 0
+
     private val profileSource: Map<String, Any> = mapOf("source" to "contact_profile")
 
     private val mergeSource: Map<String, Any> = mapOf("source" to "contact_merge")
@@ -2222,7 +2466,11 @@ class ContactProfileViewModelTest {
         pendingAnswered: Boolean = true,
         findFails: Boolean = false,
         cancelAnswered: Boolean = true,
+        claimError: Throwable? = null,
+        claimAnswered: Boolean = true,
     ) {
+        syncCount = 0
+        claimCalls = 0
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
         hidden = FakeHiddenContactRepository(
@@ -2231,6 +2479,7 @@ class ContactProfileViewModelTest {
         )
         merges = FakeGuestMergeRepository(pending = storedMerge).also {
             if (findFails) it.findError = IllegalStateException("500")
+            it.claimError = claimError
         }
         isOnline = MutableStateFlow(online)
         val route = Route.ContactProfile(personKey)
@@ -2257,6 +2506,18 @@ class ContactProfileViewModelTest {
                 CancelGuestMergeUseCase(merges)
             } else {
                 CancelGuestMerge { awaitCancellation() }
+            },
+            claimGuestAsMe = if (claimAnswered) {
+                ClaimGuestAsMeUseCase(merges)
+            } else {
+                ClaimGuestAsMe {
+                    claimCalls++
+                    awaitCancellation()
+                }
+            },
+            syncNow = SyncNow {
+                syncCount++
+                Result.success(Unit)
             },
             observeContactBook = observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden),
             connectivityObserver = NetworkConnectivityObserver { isOnline },

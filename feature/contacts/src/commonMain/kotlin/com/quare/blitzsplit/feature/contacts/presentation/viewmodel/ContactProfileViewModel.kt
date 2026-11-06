@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
 import com.quare.blitzsplit.core.contacts.domain.usecase.CancelGuestMerge
+import com.quare.blitzsplit.core.contacts.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.RequestGuestMerge
@@ -20,6 +21,7 @@ import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
@@ -53,6 +55,8 @@ class ContactProfileViewModel(
     private val requestGuestMerge: RequestGuestMerge,
     private val findPendingGuestMerge: FindPendingGuestMerge,
     private val cancelGuestMerge: CancelGuestMerge,
+    private val claimGuestAsMe: ClaimGuestAsMe,
+    private val syncNow: SyncNow,
     observeContactBook: ObserveContactBook,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
@@ -224,6 +228,20 @@ class ContactProfileViewModel(
                 )
             }
 
+            ContactProfileUiEvent.OnClaimAsMeClicked -> if (updateSheet { it.copy(isConfirmingClaim = true) }) {
+                trackEvent("contact_claim_clicked", emptyMap())
+            }
+
+            ContactProfileUiEvent.OnClaimAsMeDismissed -> {
+                val sheet = uiState.value.merge
+                if (sheet != null && sheet.isConfirmingClaim && !sheet.isClaiming) {
+                    updateSheet { it.copy(isConfirmingClaim = false) }
+                    trackEvent("contact_claim_cancelled", emptyMap())
+                }
+            }
+
+            ContactProfileUiEvent.OnClaimAsMeConfirmed -> claimAsMe()
+
             ContactProfileUiEvent.OnAskAppUserClicked -> emit(ContactProfileUiAction.ShowComingSoon)
 
             ContactProfileUiEvent.OnCancelMergeClicked -> cancelMerge()
@@ -350,6 +368,8 @@ class ContactProfileViewModel(
                     merge = state.pendingMerge.valueOrNull(),
                     isRequesting = false,
                     hasFailed = false,
+                    isConfirmingClaim = false,
+                    isClaiming = false,
                 ),
             )
         }
@@ -382,6 +402,38 @@ class ContactProfileViewModel(
             }
         }
         return true
+    }
+
+    // Why: says whether the sheet was open, which Analytics counts.
+    private fun updateSheet(change: (GuestMergeSheet) -> GuestMergeSheet): Boolean {
+        if (uiState.value.merge == null) return false
+        uiState.update { state -> state.copy(merge = state.merge?.let(change)) }
+        return true
+    }
+
+    /*
+     * Why: the server moves everything in the guest's name to the user's own member at once, and a sync brings it to the
+     * device; the guest then leaves the book, which closes the profile. Online only, as only the server knows every
+     * group's members.
+     */
+    private fun claimAsMe() {
+        val state = uiState.value
+        val sheet = state.merge ?: return
+        val contact = state.contact?.takeIf { it.isGuest } ?: return
+        if (!state.isOnline || !sheet.isConfirmingClaim || sheet.isClaiming) return
+        updateSheet { it.copy(isClaiming = true) }
+        trackEvent("contact_claim_confirmed", emptyMap())
+        viewModelScope.launch {
+            val result = claimGuestAsMe(contact)
+            if (result.isSuccess) syncNow()
+            updateSheet {
+                it.copy(
+                    isClaiming = false,
+                    isConfirmingClaim = result.isFailure && it.isConfirmingClaim,
+                )
+            }
+            result.onFailure { uiAction.emit(ContactProfileUiAction.ShowClaimError) }
+        }
     }
 
     private fun refreshPendingMerge() {

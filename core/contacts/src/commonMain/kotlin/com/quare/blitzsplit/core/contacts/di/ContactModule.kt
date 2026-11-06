@@ -12,12 +12,14 @@ import com.quare.blitzsplit.core.contacts.domain.repository.GuestMergeRepository
 import com.quare.blitzsplit.core.contacts.domain.repository.HiddenContactRepository
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
 import com.quare.blitzsplit.core.contacts.domain.usecase.CancelGuestMerge
+import com.quare.blitzsplit.core.contacts.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.RequestGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.AddContactToGroupUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.CancelGuestMergeUseCase
+import com.quare.blitzsplit.core.contacts.domain.usecase.impl.ClaimGuestAsMeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.FindPendingGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.ObserveContactBookUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.RequestGuestMergeUseCase
@@ -39,4 +41,5 @@ val contactModule = module {
     factoryOf(::RequestGuestMergeUseCase).bind<RequestGuestMerge>()
     factoryOf(::FindPendingGuestMergeUseCase).bind<FindPendingGuestMerge>()
     factoryOf(::CancelGuestMergeUseCase).bind<CancelGuestMerge>()
+    factoryOf(::ClaimGuestAsMeUseCase).bind<ClaimGuestAsMe>()
 }

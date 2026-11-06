@@ -11,10 +11,12 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -66,6 +68,23 @@ internal fun MergeGuestSheet(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        FilledTonalButton(
+            onClick = { onEvent(ContactProfileUiEvent.OnClaimAsMeClicked) },
+            enabled = isOnline,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Person,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            Text(
+                text = stringResource(R.string.contacts_claim_button, contact.name),
+                modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
+            )
+        }
         Text(
             text = stringResource(R.string.contacts_merge_ways, contact.name),
             style = MaterialTheme.typography.labelLarge,

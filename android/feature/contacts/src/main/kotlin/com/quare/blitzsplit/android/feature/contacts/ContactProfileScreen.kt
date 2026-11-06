@@ -68,6 +68,13 @@ fun ContactProfileScreen(
                 isOnline = state.isOnline,
                 onEvent = viewModel::onEvent,
             )
+            if (merge.isConfirmingClaim) {
+                ClaimGuestDialog(
+                    contact = contact,
+                    sheet = merge,
+                    onEvent = viewModel::onEvent,
+                )
+            }
         }
     }
 }
@@ -89,6 +96,8 @@ private fun Context.runProfileAction(action: ContactProfileUiAction): String? = 
     ContactProfileUiAction.ShowComingSoon -> getString(R.string.contacts_coming_soon)
 
     ContactProfileUiAction.ShowChangeError -> getString(R.string.contacts_change_error)
+
+    ContactProfileUiAction.ShowClaimError -> getString(R.string.contacts_claim_error)
 
     ContactProfileUiAction.ShowCancelMergeError -> getString(R.string.contacts_cancel_merge_error)
 }

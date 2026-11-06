@@ -11,6 +11,10 @@ data class GuestMergeSheet(
     val merge: GuestMerge?,
     val isRequesting: Boolean,
     val hasFailed: Boolean,
+    // Why: "Juntar Diego com a minha conta?" asks before the claim, which can't be undone.
+    val isConfirmingClaim: Boolean,
+    // Why: "Eu sou Diego" was confirmed and the server hasn't answered yet.
+    val isClaiming: Boolean,
 ) {
     val displayLink: String?
         get() = merge?.link?.let(InviteLink::displayOf)

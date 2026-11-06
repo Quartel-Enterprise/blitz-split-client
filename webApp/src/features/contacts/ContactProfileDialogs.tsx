@@ -1,4 +1,4 @@
-import { AlertCircle, Copy, Loader2, Share2, WifiOff } from 'lucide-react'
+import { AlertCircle, Copy, Loader2, Share2, User, WifiOff } from 'lucide-react'
 import type { ContactProfilePresenter, JsAddToGroup, JsContact, JsGuestMergeSheet } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
@@ -105,6 +105,10 @@ export function MergeDialog({
         description: t('contactProfile_mergeBody', { name, amount: formatSignedMoney(contact.netMinor, contact.currency, contact.fractionDigits) }),
         body: (
           <div className="flex flex-col gap-4">
+            <Button variant="secondary" disabled={!isOnline} onClick={() => presenter.claimAsMe()}>
+              <User />
+              {t('contactProfile_claimButton', { name })}
+            </Button>
             <div role="radiogroup" aria-label={t('contactProfile_mergeHow', { name })} className="flex flex-col gap-2">
               <MergeOption isChecked title={t('contactProfile_mergePersonal')} body={t('contactProfile_mergePersonalSub', { name })} />
               <MergeOption
@@ -209,5 +213,36 @@ function RadioMark({ isChecked }: { isChecked: boolean }) {
     <span aria-hidden className={cn('flex size-4 shrink-0 items-center justify-center rounded-full border', isChecked ? 'border-primary' : 'border-muted-foreground')}>
       {isChecked && <span className="size-2 rounded-full bg-primary" />}
     </span>
+  )
+}
+
+/** "Juntar Diego com a sua conta?": "Eu sou Diego" can't be undone, so it asks first. */
+export function ClaimDialog({ presenter, sheet, contact }: { presenter: ContactProfilePresenter; sheet: JsGuestMergeSheet; contact: JsContact }) {
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const name = contact.name
+  return (
+    <ResponsiveDialog
+      isDesktop={isDesktop}
+      className="sm:max-w-[420px]"
+      onOpenChange={(open) => {
+        if (!open) presenter.dismissClaimAsMe()
+      }}
+      pane={{
+        title: t('contactProfile_claimTitle', { name }),
+        description: t('contactProfile_claimBody', { name, amount: formatSignedMoney(contact.netMinor, contact.currency, contact.fractionDigits) }),
+        body: null,
+        footer: (
+          <>
+            <Button disabled={sheet.isClaiming} onClick={() => presenter.confirmClaimAsMe()}>
+              {sheet.isClaiming && <Loader2 className="animate-spin" />}
+              {t('contactProfile_claimConfirm')}
+            </Button>
+            <Button variant="outline" disabled={sheet.isClaiming} onClick={() => presenter.dismissClaimAsMe()}>
+              {t('common_cancel')}
+            </Button>
+          </>
+        ),
+      }}
+    />
   )
 }

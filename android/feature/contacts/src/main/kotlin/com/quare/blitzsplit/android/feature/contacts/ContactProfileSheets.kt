@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
@@ -50,6 +51,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiState
+import com.quare.blitzsplit.feature.contacts.presentation.model.GuestMergeSheet
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
@@ -181,6 +183,63 @@ internal fun HideContactDialog(
                     }
                     TextButton(onClick = { onEvent(ContactProfileUiEvent.OnHideConfirmed) }) {
                         Text(stringResource(R.string.contacts_hide_confirm))
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Why: "Juntar Diego com a sua conta?": "Eu sou Diego" can't be undone, so it asks first.
+@Composable
+internal fun ClaimGuestDialog(
+    contact: Contact,
+    sheet: GuestMergeSheet,
+    onEvent: (ContactProfileUiEvent) -> Unit,
+) {
+    val title = stringResource(R.string.contacts_claim_title, contact.name)
+    val money = rememberMoneyFormatter(contact.net.currency)
+    val onDismiss = { onEvent(ContactProfileUiEvent.OnClaimAsMeDismissed) }
+    FoldDialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.alertDialogPane(title),
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = stringResource(
+                        R.string.contacts_claim_message,
+                        contact.name,
+                        money.toSignedText(contact.net.amountMinor),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier.align(Alignment.End),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    TextButton(
+                        onClick = onDismiss,
+                        enabled = !sheet.isClaiming,
+                    ) {
+                        Text(stringResource(DesignR.string.designsystem_confirm_cancel))
+                    }
+                    TextButton(
+                        onClick = { onEvent(ContactProfileUiEvent.OnClaimAsMeConfirmed) },
+                        enabled = !sheet.isClaiming,
+                    ) {
+                        Text(stringResource(R.string.contacts_claim_confirm))
                     }
                 }
             }
