@@ -3,17 +3,18 @@ import type { ChangeEvent, CompositionEvent } from 'react'
 type TextElement = HTMLInputElement | HTMLTextAreaElement
 
 /**
- * The typed text with its letter uppercased, or null to leave it as typed: only a lone lowercase letter that wasn't in
- * the field already (typed into an empty field, after a dead key's accent, or over a selected text), so someone who
- * lowercases the capital, or deletes down to one letter, keeps what they did. The caret stays after the one letter.
+ * The typed text with its letter uppercased, or null to leave it as typed: a lone lowercase letter typed into an
+ * empty field, after a dead key's accent, or over a selected text. Not the capital lowercased, nor a lowercase letter
+ * the field had before (deleting down to it), so someone who wants it lowercase keeps it. The caret stays after it.
  */
 export function capitalizedFirstLetter(typed: string, previous: string): string | null {
   // Why: NFC, so an "é" typed as "e" and its accent is one letter, as it is on the Mac
   const letter = typed.normalize('NFC')
-  if (!/^\p{Ll}$/u.test(letter) || previous.normalize('NFC').toLowerCase().includes(letter)) return null
+  const before = previous.normalize('NFC')
+  if (!/^\p{Ll}$/u.test(letter) || before.includes(letter)) return null
   const uppercased = letter.toUpperCase()
   // "ß" uppercases to "SS": two letters where one was typed
-  return [...uppercased].length === 1 ? uppercased : null
+  return [...uppercased].length === 1 && before !== uppercased ? uppercased : null
 }
 
 // Why: a phone's or a tablet's keyboard capitalizes on its own (autocapitalize); a computer's physical keyboard doesn't

@@ -31,16 +31,14 @@ extension Binding<String> {
 }
 
 enum FirstLetter {
-    /// The typed text with its letter uppercased, or nil to leave it as typed: only a lone lowercase letter that
-    /// wasn't in the field already (typed into an empty field, after a dead key's accent, or over a selected text),
-    /// so someone who lowercases the capital, or deletes down to one letter, keeps what they did. The caret stays
-    /// after the one letter.
+    /// The typed text with its letter uppercased, or nil to leave it as typed: a lone lowercase letter typed into an
+    /// empty field, after a dead key's accent, or over a selected text. Not the capital lowercased, nor a lowercase
+    /// letter the field had before (deleting down to it), so someone who wants it lowercase keeps it. The caret stays
+    /// after it.
     static func capitalized(_ typed: String, after previous: String) -> String? {
-        guard typed.count == 1, typed.first?.isLowercase == true, !previous.lowercased().contains(typed) else {
-            return nil
-        }
+        guard typed.count == 1, typed.first?.isLowercase == true, !previous.contains(typed) else { return nil }
         let uppercased = typed.uppercased()
         // "ß" uppercases to "SS": two letters where one was typed
-        return uppercased.count == 1 ? uppercased : nil
+        return uppercased.count == 1 && previous != uppercased ? uppercased : nil
     }
 }

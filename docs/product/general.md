@@ -27,9 +27,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     capitalizes each word instead ("Maria Silva", `personNameKeyboardOptions`, `isPersonName`, `'words'`: chosen
     without Pierre in item 27, keeping what Android already did, for him to confirm). The Mac and a computer's
     browser, whose keyboard doesn't, uppercase the first letter as it is typed (Apple's `firstLetterCapitalized`
-    binding, the web's `freeTextProps`): only a lone lowercase letter that wasn't in the field already (an empty
-    field, a dead key's accent, a selected text typed over), the caret staying after it, so someone who lowercases
-    the capital, or deletes down to one letter, keeps it. Never an email, a payment key, an invite or recovery code,
+    binding, the web's `freeTextProps`): a lone lowercase letter typed into an empty field, after a dead key's
+    accent or over a selected text, the caret staying after it. Not the capital lowercased, nor a lowercase letter
+    the field had before (deleting down to it), so someone who wants it lowercase keeps it. Never an email, a payment key, an invite or recovery code,
     a link, an amount, a search or a category map's word.
   - An amount shown, not typed, drops its decimals when they are all zero (Pierre's call, beta feedback 9): "R$ 500",
     "+R$ 125 to get back", "you get 120 and owe 218", and keeps every one otherwise ("R$ 12,50", never "R$ 12,5"),
