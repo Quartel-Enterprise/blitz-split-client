@@ -197,7 +197,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_color_clicked` | `source` (`create_group`) | The group's avatar tapped, stepping its color | `:feature:create_group` |
 | `photo_removed` | `source` (`create_group`, `edit_profile`, `profile_photo`) | "Remove photo" | `:feature:create_group`, `:feature:edit_profile` |
 | `group_type_selected` | `type`, `source` (`create_group`, `edit_group`) | A group type picked | `:feature:create_group`, `:feature:edit_group` |
-| `group_currency_selected` | `currency`, `source` (`create_group`, `edit_group`) | A currency picked, one Edit group takes (not once the group has a bill) | `:feature:create_group`, `:feature:edit_group` |
+| `group_currency_selected` | `currency`, `source` (`create_group`, `edit_group`) | A default currency picked, in New group or Edit group (with bills or not) | `:feature:create_group`, `:feature:edit_group` |
 | `create_group_add_member_clicked` | none | New group's "Add" (or the keyboard's Done) | `:feature:create_group` |
 | `create_group_remove_member_clicked` | none | A person taken off the new group | `:feature:create_group` |
 | `create_group_create_clicked` | none | New group's Create, also when the form can't create yet | `:feature:create_group` |

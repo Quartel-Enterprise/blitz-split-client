@@ -121,7 +121,6 @@ sealed interface EditGroupUiEvent : UiEvent {
         val type: GroupType,
     ) : EditGroupUiEvent
 
-    // Why: ignored once the currency is locked.
     data class OnCurrencySelected(
         val currency: GroupCurrency,
     ) : EditGroupUiEvent

@@ -18,7 +18,6 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -406,7 +405,7 @@ private fun TypeChipRow(
     }
 }
 
-// Why: "Não muda depois da primeira despesa" is said up front; once the group has a bill the row only shows the lock.
+// Why: the currency is the default of new bills, always editable; each bill keeps its own.
 @Composable
 private fun CurrencyRow(
     state: EditGroupUiState,
@@ -414,7 +413,6 @@ private fun CurrencyRow(
 ) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
     val locale = LocalLocale.current.platformLocale
-    val lockedLabel = stringResource(R.string.edit_group_currency_locked)
     Box(
         modifier = Modifier.padding(
             start = 16.dp,
@@ -424,16 +422,15 @@ private fun CurrencyRow(
     ) {
         SettingRow(
             title = stringResource(R.string.edit_group_currency),
-            subtitle = stringResource(R.string.edit_group_currency_lock),
+            subtitle = stringResource(R.string.edit_group_currency_caption),
             value = groupCurrencyLabel(state.currency, locale),
-            icon = if (state.isCurrencyLocked) Icons.Outlined.Lock else Icons.Outlined.KeyboardArrowDown,
-            iconLabel = lockedLabel.takeIf { state.isCurrencyLocked },
+            icon = Icons.Outlined.KeyboardArrowDown,
             isTop = true,
-            isEnabled = !state.isCurrencyLocked,
+            isEnabled = !state.isSaving,
             onClick = { isMenuOpen = true },
         )
         DropdownMenu(
-            expanded = isMenuOpen && !state.isCurrencyLocked,
+            expanded = isMenuOpen,
             onDismissRequest = { isMenuOpen = false },
         ) {
             CurrencyMenuContent(
@@ -459,7 +456,6 @@ private fun DefaultSplitRow(
         subtitle = stringResource(R.string.edit_group_default_split_help),
         value = stringResource(state.defaultSplitMode.labelRes),
         icon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-        iconLabel = null,
         isTop = false,
         isEnabled = !state.isSaving,
         onClick = { onEvent(EditGroupUiEvent.OnDefaultSplitClicked) },
@@ -478,7 +474,6 @@ private fun SettingRow(
     subtitle: String,
     value: String,
     icon: ImageVector,
-    iconLabel: String?,
     isTop: Boolean,
     isEnabled: Boolean,
     onClick: () -> Unit,
@@ -530,7 +525,7 @@ private fun SettingRow(
             )
             Icon(
                 imageVector = icon,
-                contentDescription = iconLabel,
+                contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

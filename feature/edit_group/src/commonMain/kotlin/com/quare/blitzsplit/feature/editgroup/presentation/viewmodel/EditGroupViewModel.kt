@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
@@ -29,18 +30,15 @@ import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.editgroup.presentation.model.CurrencySimplification
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -72,7 +70,6 @@ class EditGroupViewModel(
                 photoCrop = null,
                 type = GroupType.default,
                 currency = GroupCurrency.fallback,
-                isCurrencyLocked = false,
                 defaultSplitMode = DefaultSplitMode.EQUAL,
                 isOnline = true,
                 isLoaded = false,
@@ -81,7 +78,7 @@ class EditGroupViewModel(
                 hasChanges = false,
                 simplifiesDebts = false,
                 isSimplifyDebtsPending = false,
-                simplification = null,
+                simplifications = emptyList(),
                 memberCount = 0,
                 simplifyConfirmation = null,
                 isChangingSimplifyDebts = false,
@@ -124,22 +121,15 @@ class EditGroupViewModel(
     )
 
     /*
-     * Why: the form is filled from the group once, so a sync landing while someone types changes nothing here. Its
-     * currency still follows the group's once a bill locks it, since the bill is in that currency.
+     * Why: the form is filled from the group once, so a sync landing while someone types changes nothing here. The
+     * currency is only the default of new bills, so it is always editable and no bill or payment changes with it.
      */
     init {
-        // Why: one read of the bills for the currency's lock and the switch's pairs alike.
-        val expenses = observeExpenses(route.groupId).shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
-        combine(
-            observeGroup(route.groupId),
-            expenses
-                .map { it.isNotEmpty() }
-                .distinctUntilChanged(),
-            ::Pair,
-        ).onEach { (group, hasExpenses) ->
-            isGroupGone = group == null
-            if (group == null) leave() else show(group, hasExpenses)
-        }.launchIn(viewModelScope)
+        observeGroup(route.groupId)
+            .onEach { group ->
+                isGroupGone = group == null
+                if (group == null) leave() else show(group)
+            }.launchIn(viewModelScope)
         navigator.backStack
             .onEach {
                 if (isGroupGone) leave() else latest?.let(::showConflict)
@@ -149,7 +139,7 @@ class EditGroupViewModel(
          * so what it says is always what confirming applies.
          */
         combine(
-            expenses,
+            observeExpenses(route.groupId),
             observeSettlements(route.groupId),
             ::Pair,
         ).onEach { (expenses, settlements) ->
@@ -214,14 +204,9 @@ class EditGroupViewModel(
         }
     }
 
-    private fun show(
-        group: Group,
-        hasExpenses: Boolean,
-    ) {
+    private fun show(group: Group) {
         latest = group
         if (original == null) original = group
-        // Why: a locked currency follows the group's, which is no change of this person's once the bills go.
-        if (hasExpenses) original = original?.copy(currency = group.currency)
         updateForm { state ->
             val filled = if (state.isLoaded) {
                 state
@@ -237,9 +222,7 @@ class EditGroupViewModel(
                 )
             }
             filled.copy(
-                isCurrencyLocked = hasExpenses,
                 defaultSplitMode = group.defaultSplit?.mode ?: DefaultSplitMode.EQUAL,
-                currency = if (hasExpenses) group.currency else filled.currency,
             )
         }
         showSimplification(group)
@@ -248,18 +231,25 @@ class EditGroupViewModel(
 
     // Why: the switch is the group's, as Room has it, a sync's change included; it is no change of the form's.
     private fun showSimplification(group: Group) {
-        val raw = rawOf(group)
-        val shown = raw?.takeIf { group.simplifiesDebts }?.toSimplified(group.members.map { it.id })
+        val raws = rawsOf(group)
+        val order = group.members.map { it.id }
         uiState.update { state ->
             state.copy(
                 simplifiesDebts = group.simplifiesDebts,
                 isSimplifyDebtsPending = group.isSimplifyDebtsPending,
-                simplification = shown?.let(DebtSimplificationSummary::ofOrNull),
+                simplifications = raws
+                    .orEmpty()
+                    .filter { group.simplifiesDebts }
+                    .mapNotNull { (currency, raw) ->
+                        DebtSimplificationSummary.ofOrNull(raw.toSimplified(order))?.let {
+                            CurrencySimplification(currency, it)
+                        }
+                    },
                 memberCount = group.members.size,
                 // Why: a sync turning it the other way meanwhile closes the question, which no longer asks the same.
                 simplifyConfirmation = state.simplifyConfirmation
-                    ?.takeIf { it.isTurningOn != group.simplifiesDebts && raw != null }
-                    ?.let { simplifyConfirmationOf(group, checkNotNull(raw), settlements) },
+                    ?.takeIf { it.isTurningOn != group.simplifiesDebts && raws != null }
+                    ?.let { simplifyConfirmationOf(group, checkNotNull(raws), settlements) },
             )
         }
     }
@@ -277,20 +267,27 @@ class EditGroupViewModel(
         }
     }
 
-    // Why: the pairs as each bill makes them in the group's currency, never with another's added.
-    private fun rawOf(group: Group): GroupBalances? =
-        expenses?.let { GroupBalances.createUnsimplified(it, settlements, group.currency) }
+    /*
+     * Why: the pairs as each bill makes them, one set per currency the group has bills or payments in (its default
+     * currency alone while it has none), never with another currency's added.
+     */
+    private fun rawsOf(group: Group): List<CurrencyBalances>? = expenses?.let { bills ->
+        val used = (bills.map { it.currency } + settlements.map { it.currency }).toSet()
+        GroupBalances
+            .currenciesOf(group, bills, settlements)
+            .filter { used.isEmpty() || it in used }
+            .map { CurrencyBalances(it, GroupBalances.createUnsimplified(bills, settlements, it)) }
+    }
 
     private fun openSimplifyConfirmation() {
         val state = uiState.value
         val group = latest ?: return
-        val raw = rawOf(group) ?: return
+        val raws = rawsOf(group) ?: return
         if (!state.canChangeSimplifyDebts) return
-        uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raw, settlements)) }
+        uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raws, settlements)) }
     }
 
     private fun selectCurrency(currency: GroupCurrency) {
-        if (uiState.value.isCurrencyLocked) return
         trackEvent("group_currency_selected", mapOf("currency" to currency, "source" to "edit_group"))
         updateForm { it.copy(currency = currency) }
     }
@@ -436,7 +433,7 @@ class EditGroupViewModel(
         val type = if (state.type != original.type) state.type else latest.type
         val color = if (state.color != original.color) state.color else latest.color
         val photo = if (state.photo != original.photo) state.photo else latest.photo
-        val currency = if (!state.isCurrencyLocked && state.currency != original.currency) {
+        val currency = if (state.currency != original.currency) {
             state.currency
         } else {
             latest.currency
@@ -487,7 +484,7 @@ class EditGroupViewModel(
                 type != group.type ||
                 color != group.color ||
                 photo != group.photo ||
-                (!isCurrencyLocked && currency != group.currency)
+                currency != group.currency
         )
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.

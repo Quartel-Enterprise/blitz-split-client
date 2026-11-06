@@ -15,9 +15,8 @@
     <string name="edit_group_name_error">Dê um nome ao grupo, com até 40 caracteres.</string>
     <string name="edit_group_name_count">%1$d/%2$d</string>
     <string name="edit_group_type_label">Tipo</string>
-    <string name="edit_group_currency">Moeda</string>
-    <string name="edit_group_currency_lock">Não muda depois da primeira despesa</string>
-    <string name="edit_group_currency_locked">Travada</string>
+    <string name="edit_group_currency">Moeda padrão</string>
+    <string name="edit_group_currency_caption">Novas despesas começam nesta moeda; cada despesa pode usar outra.</string>
     <string name="edit_group_note">Qualquer pessoa do grupo pode mudar o nome, o ícone, o tipo e Simplificar dívidas. A Atividade mostra quem mudou.</string>
     <string name="edit_group_offline_note">Sem internet: a mudança vale neste aparelho agora e chega aos outros quando ele reconectar. Uma foto nova sobe junto.</string>
     <string name="edit_group_save_error">Não deu para salvar o grupo. Tente de novo.</string>
@@ -111,6 +110,10 @@
     <plurals name="simplify_status_on">
         <item quantity="one">Ligado · %1$d pagamento em vez de %2$d</item>
         <item quantity="other">Ligado · %1$d pagamentos em vez de %2$d</item>
+    </plurals>
+    <plurals name="simplify_status_currency_row">
+        <item quantity="one">%1$s · %2$d → %3$d pagamento</item>
+        <item quantity="other">%1$s · %2$d → %3$d pagamentos</item>
     </plurals>
     <string name="simplify_status_on_minimal">Ligado · já no mínimo de pagamentos</string>
     <string name="simplify_status_pending_on">Ligado neste aparelho · aguardando envio</string>

@@ -1,10 +1,10 @@
-import { Camera, ChevronDown, CircleAlert, ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react'
+import { Camera, CircleAlert, ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react'
 import { CreateGroupPresenter, type JsCreateGroupState } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
-import { CurrencyMenuItems } from '@/components/CurrencyMenuItems'
+import { CurrencyDropdown } from '@/components/CurrencyDropdown'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -16,7 +16,6 @@ import { GroupTypePicker } from '@/features/create-group/GroupTypePicker'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
-import { currencyLabel } from '@/lib/currency'
 import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 import { useRef } from 'react'
@@ -176,17 +175,10 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
         <GroupTypePicker label={t('createGroup_typeLabel')} types={state.types} selected={state.type} onSelect={(type) => presenter.selectType(type)} />
         <div className="flex flex-col gap-2">
           <Label htmlFor={currencyId}>{t('createGroup_currency')}</Label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button id={currencyId} type="button" variant="outline" className="justify-between">
-                {currencyLabel(state.currency)}
-                <ChevronDown className="text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
-              <CurrencyMenuItems currencies={state.currencies} cryptoCurrencies={state.cryptoCurrencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <CurrencyDropdown id={currencyId} describedBy={`${currencyId}-note`} currencies={state.currencies} cryptoCurrencies={state.cryptoCurrencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
+          <span id={`${currencyId}-note`} className="text-[13px] text-muted-foreground">
+            {t('createGroup_currencyNote')}
+          </span>
         </div>
       </div>
 

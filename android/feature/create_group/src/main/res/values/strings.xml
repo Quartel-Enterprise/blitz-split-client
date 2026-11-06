@@ -16,7 +16,8 @@
     <string name="create_group_add_placeholder">Add by name</string>
     <string name="create_group_add">Add</string>
     <string name="create_group_no_app_notice">Nobody needs the app right now. You can already add expenses for everyone and send the link later.</string>
-    <string name="create_group_currency">Currency</string>
+    <string name="create_group_currency">Default currency</string>
+    <string name="create_group_currency_caption">New bills start in this currency; each bill can use another.</string>
     <string name="create_group_save_error">Couldn’t save the group. Try again.</string>
     <string name="create_group_photo">Group photo</string>
     <string name="create_group_take_photo">Take photo</string>

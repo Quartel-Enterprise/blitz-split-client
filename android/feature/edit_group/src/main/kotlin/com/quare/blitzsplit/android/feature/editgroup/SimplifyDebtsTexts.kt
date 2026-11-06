@@ -6,6 +6,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyAmount
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsConfirmation
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyName
@@ -27,10 +28,8 @@ internal fun changeNameOf(change: SimplifyPersonChange): String {
  * Elisa.", each sentence only while its list has someone, in this order, and the guest's reminder last.
  */
 @Composable
-internal fun changeTextOf(
-    change: SimplifyPersonChange,
-    money: MoneyFormatter,
-): String {
+internal fun changeTextOf(change: SimplifyPersonChange): String {
+    val money = rememberMoneyFormatter(change.currency)
     val isMe = change.person.isMe
     return listOfNotNull(
         amountsSentenceOrNull(
@@ -99,12 +98,10 @@ private fun lowercaseNameOf(name: SimplifyName): String = if (name.isMe) {
  * once there are several.
  */
 @Composable
-internal fun queuedTextOf(
-    queued: List<SimplifyQueuedPayment>,
-    money: MoneyFormatter,
-): String {
+internal fun queuedTextOf(queued: List<SimplifyQueuedPayment>): String {
     val payment = queued.singleOrNull()
         ?: return pluralStringResource(R.plurals.simplify_queued_several, queued.size, queued.size)
+    val money = rememberMoneyFormatter(payment.currency)
     val amount = money.toText(payment.amountMinor)
     val clause = when {
         payment.to.isMe -> stringResource(R.string.simplify_queued_paid_you, lowercaseNameOf(payment.from), amount)

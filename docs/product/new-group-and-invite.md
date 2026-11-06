@@ -8,7 +8,7 @@ Creating a group and inviting people.
     with an iPad's room) and macOS, whose sheet opens on the name, ready to type, a dialog on the web (a drawer on a
     phone). The group's avatar is its rounded
     square on every platform, Android included (the beta's feedback dropped Android's shapes), and tapping it steps
-    its color through the palette ("Change the group's color"), and Currency starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. "Add by name"
+    its color through the palette ("Change the group's color"), and "Default currency" (the currency new bills start in, with the caption "New bills start in this currency; each bill can use another.") starts in the currency of the device's region (`GroupCurrency.ofRegion`), USD when the list has none. "Add by name"
     takes any name of 2 letters or more, one already in the group too (beta feedback 3, item 29: people are told apart by
     their member and user ids, not their name), here, in Members' "Add person" and "Rename" and in Contacts' "Add to a
     group" alike. A tap or click on the +, as one on the field, focuses the name field and opens the keyboard

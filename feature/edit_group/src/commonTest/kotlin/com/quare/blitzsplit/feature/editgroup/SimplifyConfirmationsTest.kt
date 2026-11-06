@@ -1,7 +1,10 @@
 package com.quare.blitzsplit.feature.editgroup
 
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -27,6 +30,38 @@ class SimplifyConfirmationsTest {
 
         // Then
         assertEquals(listOf(PIERRE, ANA, BRUNO), confirmation.people.map { it.memberId })
+    }
+
+    @Test
+    fun `GIVEN debts in two currencies WHEN turning on THEN counts the payments of each currency apart`() {
+        // Given
+        val group = group(members = listOf(pierre, ana, bruno))
+        val raws = listOf(
+            CurrencyBalances(GroupCurrency.BRL, rawOf(anaOwesBruno, brunoOwesPierre)),
+            CurrencyBalances(GroupCurrency.USD, rawOf(anaOwesBruno)),
+        )
+
+        // When
+        val confirmation = simplifyConfirmationOf(group, raws, emptyList())
+
+        // Then
+        assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), confirmation.currencies.map { it.currency })
+        assertEquals(listOf(2, 1), confirmation.currencies.map { it.paymentsBefore })
+        assertEquals(listOf(1, 1), confirmation.currencies.map { it.paymentsAfter })
+        assertEquals(setOf(GroupCurrency.BRL), confirmation.people.map { it.currency }.toSet())
+    }
+
+    @Test
+    fun `GIVEN a payment queued in another currency WHEN turning on THEN lists it with its own currency`() {
+        // Given
+        val group = group(members = listOf(pierre, ana, bruno))
+        val queued = settlement(GroupCurrency.EUR)
+
+        // When
+        val confirmation = simplifyConfirmationOf(group, balancesOf(anaOwesBruno), listOf(queued))
+
+        // Then
+        assertEquals(listOf(GroupCurrency.EUR), confirmation.queuedPayments.map { it.currency })
     }
 
     @Test
@@ -94,8 +129,8 @@ class SimplifyConfirmationsTest {
         assertFalse(confirmation.isTurningOn)
         assertEquals(emptyList(), confirmation.people)
         assertEquals(3, confirmation.othersChangingCount)
-        assertEquals(1, confirmation.paymentsBefore)
-        assertEquals(2, confirmation.paymentsAfter)
+        assertEquals(1, confirmation.currencies.single().paymentsBefore)
+        assertEquals(2, confirmation.currencies.single().paymentsAfter)
     }
 
     private val anaOwesBruno = Debt(
@@ -138,10 +173,27 @@ class SimplifyConfirmationsTest {
         hasJoined = true,
     )
 
-    private fun balancesOf(vararg debts: Debt): GroupBalances = GroupBalances(
+    private fun balancesOf(vararg debts: Debt): List<CurrencyBalances> = listOf(
+        CurrencyBalances(GroupCurrency.BRL, rawOf(*debts)),
+    )
+
+    private fun rawOf(vararg debts: Debt): GroupBalances = GroupBalances(
         debts = debts.toList(),
         hasBills = true,
         unsimplifiedDebts = null,
+    )
+
+    private fun settlement(currency: GroupCurrency): Settlement = Settlement(
+        id = "settlement-1",
+        groupId = "group-1",
+        fromMemberId = ANA,
+        toMemberId = BRUNO,
+        currency = currency,
+        amountMinor = 1_000,
+        method = SettlementMethod.PIX,
+        paidAt = 2_000L,
+        isPending = true,
+        updatedAt = 2_000L,
     )
 
     private fun member(

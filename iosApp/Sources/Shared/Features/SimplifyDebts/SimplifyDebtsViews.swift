@@ -78,7 +78,6 @@ extension View {
 /// on the Mac it takes the place of Edit group's form in the same sheet.
 struct SimplifyDebtsConfirmationView: View {
     let confirmation: SimplifyDebtsConfirmation
-    let currency: GroupCurrency
     let isChanging: Bool
     let onConfirm: () -> Void
     let onDismiss: () -> Void
@@ -138,10 +137,12 @@ struct SimplifyDebtsConfirmationView: View {
             Text(SimplifyDebtsCopy.title(confirmation))
                 .font(.title2.bold())
                 .accessibilityAddTraits(.isHeader)
-            counts
+            ForEach(confirmation.currencies, id: \.currency) { change in
+                counts(change)
+            }
             Text(verbatim: SimplifyDebtsCopy.body(confirmation))
                 .fixedSize(horizontal: false, vertical: true)
-            if let queued = SimplifyDebtsCopy.queued(confirmation.queuedPayments, currency: currency) {
+            if let queued = SimplifyDebtsCopy.queued(confirmation.queuedPayments) {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
                     PendingDot()
                     Text(verbatim: queued)
@@ -162,7 +163,7 @@ struct SimplifyDebtsConfirmationView: View {
                         .accessibilityAddTraits(.isHeader)
                     VStack(spacing: 0) {
                         ForEach(Array(confirmation.people.enumerated()), id: \.element.memberId) { index, person in
-                            SimplifyPersonRow(change: person, currency: currency)
+                            SimplifyPersonRow(change: person, showsCurrency: confirmation.currencies.count > 1)
                             if index < confirmation.people.count - 1 {
                                 Divider()
                                     .padding(.leading, 52)
@@ -180,21 +181,31 @@ struct SimplifyDebtsConfirmationView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// "7 payments → 5 payments", read as one sentence.
-    private var counts: some View {
-        HStack(spacing: 14) {
-            count(confirmation.paymentsBefore, isAfter: false)
-            Image(systemName: "arrow.right")
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(Palette.accent)
-            count(confirmation.paymentsAfter, isAfter: true)
+    /// "7 payments → 5 payments" of one currency, read as one sentence; the currency's code above it when the group
+    /// has more than one.
+    private func counts(_ change: SimplifyCurrencyChange) -> some View {
+        let showsCurrency = confirmation.currencies.count > 1
+        return VStack(alignment: .leading, spacing: 4) {
+            if showsCurrency {
+                Text(verbatim: change.currency.code)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            HStack(spacing: 14) {
+                count(change.paymentsBefore, isAfter: false)
+                Image(systemName: "arrow.right")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(Palette.accent)
+                count(change.paymentsAfter, isAfter: confirmation.isTurningOn && !change.isAlreadyMinimal)
+            }
+            .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity)
         .background(Palette.card, in: .rect(cornerRadius: 22))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: SimplifyDebtsCopy.countsLabel(confirmation)))
+        .accessibilityLabel(Text(verbatim: (showsCurrency ? "\(change.currency.code): " : "") + SimplifyDebtsCopy.countsLabel(confirmation, change: change)))
     }
 
     private func count(_ value: Int32, isAfter: Bool) -> some View {
@@ -212,14 +223,14 @@ struct SimplifyDebtsConfirmationView: View {
 /// One person of "What changes": the face and "**Ana:** Pays $203.80 to Bruno."
 private struct SimplifyPersonRow: View {
     let change: SimplifyPersonChange
-    let currency: GroupCurrency
+    let showsCurrency: Bool
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             AvatarPhoto(initial: change.initials, color: change.avatarColor, photoUrl: change.photoUrl, size: 28)
                 .padding(.top, 1)
                 .accessibilityHidden(true)
-            Text("\(Text(verbatim: SimplifyDebtsCopy.personName(change)).fontWeight(.semibold)): \(SimplifyDebtsCopy.personText(change, currency: currency))")
+            Text("\(Text(verbatim: SimplifyDebtsCopy.personName(change)).fontWeight(.semibold))\(Text(verbatim: showsCurrency ? " · \(change.currency.code)" : "")): \(SimplifyDebtsCopy.personText(change))")
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.feature.editgroup
 
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyCurrencyChange
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsConfirmation
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyName
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyPersonChange
@@ -14,8 +16,13 @@ class SimplifyDebtsConfirmationTest {
         // Given
         val confirmation = confirmation(
             isTurningOn = true,
-            paymentsBefore = 7,
-            paymentsAfter = 5,
+            currencies = listOf(
+                SimplifyCurrencyChange(
+                    currency = GroupCurrency.BRL,
+                    paymentsBefore = 7,
+                    paymentsAfter = 5,
+                ),
+            ),
         )
 
         // When
@@ -30,8 +37,13 @@ class SimplifyDebtsConfirmationTest {
         // Given
         val confirmation = confirmation(
             isTurningOn = true,
-            paymentsBefore = 2,
-            paymentsAfter = 2,
+            currencies = listOf(
+                SimplifyCurrencyChange(
+                    currency = GroupCurrency.BRL,
+                    paymentsBefore = 2,
+                    paymentsAfter = 2,
+                ),
+            ),
         )
 
         // When
@@ -42,12 +54,42 @@ class SimplifyDebtsConfirmationTest {
     }
 
     @Test
+    fun `GIVEN turning on saves a payment in only one currency WHEN reading the confirmation THEN it is not minimal`() {
+        // Given
+        val confirmation = confirmation(
+            currencies = listOf(
+                SimplifyCurrencyChange(
+                    currency = GroupCurrency.BRL,
+                    paymentsBefore = 2,
+                    paymentsAfter = 2,
+                ),
+                SimplifyCurrencyChange(
+                    currency = GroupCurrency.USD,
+                    paymentsBefore = 3,
+                    paymentsAfter = 2,
+                ),
+            ),
+        )
+
+        // When
+        val isAlreadyMinimal = confirmation.isAlreadyMinimal
+
+        // Then
+        assertFalse(isAlreadyMinimal)
+    }
+
+    @Test
     fun `GIVEN turning off WHEN reading the confirmation THEN never says it is already at the minimum`() {
         // Given
         val confirmation = confirmation(
             isTurningOn = false,
-            paymentsBefore = 5,
-            paymentsAfter = 7,
+            currencies = listOf(
+                SimplifyCurrencyChange(
+                    currency = GroupCurrency.BRL,
+                    paymentsBefore = 5,
+                    paymentsAfter = 7,
+                ),
+            ),
         )
 
         // When
@@ -108,6 +150,7 @@ class SimplifyDebtsConfirmationTest {
         isGuest: Boolean,
     ): SimplifyPersonChange = SimplifyPersonChange(
         memberId = memberId,
+        currency = GroupCurrency.BRL,
         person = SimplifyName(
             name = memberId,
             isMe = false,
@@ -124,14 +167,18 @@ class SimplifyDebtsConfirmationTest {
 
     private fun confirmation(
         isTurningOn: Boolean = true,
-        paymentsBefore: Int = 2,
-        paymentsAfter: Int = 1,
+        currencies: List<SimplifyCurrencyChange> = listOf(
+            SimplifyCurrencyChange(
+                currency = GroupCurrency.BRL,
+                paymentsBefore = 2,
+                paymentsAfter = 1,
+            ),
+        ),
         people: List<SimplifyPersonChange> = emptyList(),
     ): SimplifyDebtsConfirmation = SimplifyDebtsConfirmation(
         isTurningOn = isTurningOn,
         groupName = "Futebol de quinta",
-        paymentsBefore = paymentsBefore,
-        paymentsAfter = paymentsAfter,
+        currencies = currencies,
         people = people,
         othersChangingCount = 0,
         queuedPayments = emptyList(),

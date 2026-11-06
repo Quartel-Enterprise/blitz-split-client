@@ -17,7 +17,8 @@
     <string name="create_group_add_placeholder">Agregar por nombre</string>
     <string name="create_group_add">Agregar</string>
     <string name="create_group_no_app_notice">Por ahora nadie necesita la app. Ya puedes agregar gastos para todos y enviar el enlace más tarde.</string>
-    <string name="create_group_currency">Moneda</string>
+    <string name="create_group_currency">Moneda predeterminada</string>
+    <string name="create_group_currency_caption">Los gastos nuevos empiezan en esta moneda; cada gasto puede usar otra.</string>
     <string name="create_group_save_error">No se pudo guardar el grupo. Inténtalo de nuevo.</string>
     <string name="create_group_photo">Foto del grupo</string>
     <string name="create_group_take_photo">Tomar foto</string>
