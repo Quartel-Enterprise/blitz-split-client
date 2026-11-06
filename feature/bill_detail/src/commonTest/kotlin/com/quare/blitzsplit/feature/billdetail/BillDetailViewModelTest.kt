@@ -177,6 +177,18 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN a USD bill in a BRL group WHEN it opens THEN its amounts are in USD`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.BRL))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(GroupCurrency.USD, state.currency)
+    }
+
+    @Test
     fun `GIVEN a bill spent earlier today WHEN it opens THEN its day is today`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpense = expense(spentAt = earlierToday))
@@ -2530,6 +2542,29 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN Ana changed BRL 300 to USD 480 WHEN tapping Desfazer THEN saves the bill back in BRL 300`() =
+        runTest(testDispatcher) {
+            // Given
+            val currencyEdit = totalEdit.copy(
+                changes = totalEdit.changes.filter { it.field != ActivityField.DESCRIPTION } +
+                    ActivityChange(
+                        field = ActivityField.CURRENCY,
+                        before = ActivityValue.none.copy(code = "BRL"),
+                        after = ActivityValue.none.copy(code = "USD"),
+                    ),
+            )
+            prepareScenario(storedEvents = listOf(currencyEdit, created))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            val saved = expenses.updatedExpenses.single()
+            assertEquals(GroupCurrency.BRL, saved.currency)
+            assertEquals(30_000, saved.amountMinor)
+        }
+
+    @Test
     fun `GIVEN Ana gave a bill without category Mercado WHEN tapping Desfazer THEN the bill has no category again`() =
         runTest(testDispatcher) {
             // Given
@@ -4784,6 +4819,8 @@ class BillDetailViewModelTest {
         occurredAt = occurredAt,
         subject = "Mercado",
         amountMinor = 48_000,
+        currency = null,
+        previousCurrency = null,
         code = SplitMode.EQUAL.code.takeIf { kind == ActivityKind.BILL_CREATED },
         fromMemberId = null,
         toMemberId = null,

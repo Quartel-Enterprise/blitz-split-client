@@ -55,11 +55,20 @@ data class SettledPairChange(
             expenses: List<Expense>,
             settlements: List<Settlement>,
         ): SettledPairChange? {
-            val others = expenses.filter { it.id != saved.id }
-            val before = GroupBalances.of(others + saved, settlements)
-            val after = GroupBalances.of(others + listOfNotNull(changed), settlements)
+            /*
+             * Why: a balance is per currency, so only what is in the bill's own is added up: a payment in another one
+             * settles nothing of it, and a change of the currency takes the bill out of this one.
+             */
+            val currency = saved.currency
+            val inCurrency = settlements.filter { it.currency == currency }
+            val others = expenses.filter { it.id != saved.id && it.currency == currency }
+            val before = GroupBalances.of(others + saved, inCurrency)
+            val after = GroupBalances.of(
+                others + listOfNotNull(changed?.takeIf { it.currency == currency }),
+                inCurrency,
+            )
             val spentAt = changed?.spentAt ?: saved.spentAt
-            val settlement = settlements
+            val settlement = inCurrency
                 .filter { it.paidAt >= spentAt }
                 .sortedByDescending { it.paidAt }
                 .firstOrNull { before.owedOf(it) != after.owedOf(it) }

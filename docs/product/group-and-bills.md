@@ -54,11 +54,14 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     tap in Activity scrolls Bill to it too. "History" lists what was done to the bill, by day,
     the most recent first, never the comments: created ("Equally among 5 · R$ 312", "created the bill offline"
     while it waits to go up), each edit's first change with the others under it ("changed the category", "changed the
-    split" with each part that moved), photos added in a row as one line, a photo removed and the share link
-    changed. It reads the device's 90 days of Activity and, online, the bill's whole history from the server
+    split" with each part that moved; an edit of the currency reads "changed the currency" with "BRL → USD", which the
+    server records since `bill_edited` carries a `currency` change, an older line without one reads as unchanged),
+    photos added in a row as one line, a photo removed and the share link changed. It reads the device's 90 days of Activity and, online, the bill's whole history from the server
     (`LoadBillHistory`). "Undo" shows only on the latest line when it is an edit, the bill is still as that edit
     left it, isn't waiting to go up nor split by items, and saves the edit's "before" as a new edit
-    (`BillHistoryEntry.canUndo`).
+    (`BillHistoryEntry.canUndo`), the previous currency together with the previous amount (BRL 100 edited to USD 20
+    undoes to BRL 100). Every amount of Bill and of the share sheet is in the bill's own currency, never the group's.
+    A history line writes its amounts in the bill's current currency, also those from before a currency edit.
   - Bill's "Attachments" (7.3g): any member adds up to 5 photos to a bill (the camera, the gallery, the Mac's files,
     the web's files or its camera), offline too ("Queued" until the photo is up, drawn from the device meanwhile), and removes any of
     them from the viewer ("Remove photo", no question, as the boards draw none). "Attachments · 2 of 5 photos" lists the
