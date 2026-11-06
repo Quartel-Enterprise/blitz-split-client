@@ -11,12 +11,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
+import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.feature.splitbill.presentation.mapper.toReceiptError
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
-import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
@@ -25,6 +26,8 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
@@ -46,6 +49,8 @@ internal class ReceiptScanning(
     // Why: the form locks while it reads and its open editors close (`withEditorsClosed`), Itens' draft with them.
     private val onReadStarted: () -> Unit,
     private val trackEvent: TrackEvent,
+    // Why: the photo Início's "Ler cupom fiscal" picked (beta feedback, part 3, item 16).
+    takePickedReceipt: TakePickedReceipt,
 ) {
     // Why: the photo of a receipt read, which the bill attaches as it was read; held here, never in the state.
     private var photo: BillImage? = null
@@ -64,6 +69,29 @@ internal class ReceiptScanning(
 
     // Why: the currency the receipt was read in, whose minor unit its items' prices are in.
     private var itemsCurrency: GroupCurrency? = null
+
+    /*
+     * Why: Início's photo waits for "Rachar em qual grupo?" and for the group picked to be read, so it is read in that
+     * group's currency, once. It is taken only then, so a ViewModel dropped before (React StrictMode's first mount)
+     * leaves it to the next one; none there (an app restored after the system closed it) asks for one again. A request
+     * replaced meanwhile (a group in a cryptocurrency, "Ler cupom fiscal" tapped) stops waiting and drops it unread.
+     */
+    init {
+        if (uiState.value.receiptRequest == ReceiptRequest.Picked) {
+            scope.launch {
+                val ready = uiState
+                    .takeWhile { it.receiptRequest == ReceiptRequest.Picked }
+                    .firstOrNull { it.readsPickedReceipt }
+                val photo = takePickedReceipt()
+                if (ready == null) return@launch
+                if (photo == null) {
+                    uiState.update { it.copy(receiptRequest = ReceiptRequest.Choice) }
+                } else {
+                    read(photo)
+                }
+            }
+        }
+    }
 
     // Why: none once the bill moved to a group of another currency, whose minor unit would misread the prices.
     fun findItemsIn(currency: GroupCurrency): BillItems? = items?.takeIf { itemsCurrency == currency }

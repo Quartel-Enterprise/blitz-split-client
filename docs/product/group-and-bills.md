@@ -58,7 +58,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     them from the viewer ("Remove photo", no question, as the boards draw none). "Attachments · 2 of 5 photos" lists the
     receipt the bill was read from first (badge "Receipt", never removed from Bill; reading it is 7.1e), then the photos
     as "Photo 2" with who added it and when, since the server keeps no caption, then "Add photo" while there is
-    room. The viewer pages through them full screen ("Photo 1 of 2", "Ana attached it yesterday at 22:40") with Download (the
+    room. A thumbnail shimmers while its photo is on its way, online: its URL being signed
+    (`BillAttachmentTile.isImageLoading`, asked again each minute after a failure, as the viewer's spinner) and then the
+    image downloading (beta feedback part 3, item 21); offline, or once the image itself failed, it shows the
+    receipt's or the photo's icon instead. The viewer pages through them full screen ("Photo 1 of 2", "Ana attached it yesterday at 22:40") with Download (the
     gallery on Android, the share sheet on iOS, a file on the Mac and the web). Each photo is an upright JPEG of at most
     1600 px under 1.5 MB (`BillImageEncoder`), in the private `bill-attachments` bucket, read through signed URLs, so a
     photo added on another device shows only online. History says who added or removed them; the feed doesn't.

@@ -166,6 +166,7 @@ private fun createPreviewAttachment(
     isReceipt = photoNumber == null,
     localImage = null,
     imageUrl = null,
+    isImageLoading = false,
     width = null,
     height = null,
     photoNumber = photoNumber,

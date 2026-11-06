@@ -1422,6 +1422,7 @@ class DefaultSplitBillViewModelTest {
                 updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { NOW },
             ),
             offerCategoryTeach = {},
+            takePickedReceipt = { null },
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },

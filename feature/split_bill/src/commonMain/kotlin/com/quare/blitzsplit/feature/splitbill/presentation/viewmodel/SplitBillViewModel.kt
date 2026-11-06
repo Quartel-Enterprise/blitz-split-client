@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.OfferCategoryTeach
 import com.quare.blitzsplit.core.expenses.domain.usecase.ReadReceipt
+import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -66,6 +67,7 @@ class SplitBillViewModel(
     private val saveSplitAsDefault: SaveSplitAsDefault,
     readReceipt: ReadReceipt,
     attachBillImage: AttachBillImage,
+    takePickedReceipt: TakePickedReceipt,
     navigator: Navigator,
     observeGroup: ObserveGroup,
     observeExpense: ObserveExpense,
@@ -173,6 +175,7 @@ class SplitBillViewModel(
         },
         onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },
         onReadStarted = items::forget,
+        takePickedReceipt = takePickedReceipt,
         trackEvent = trackEvent,
     )
 

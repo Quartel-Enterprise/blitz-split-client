@@ -29,11 +29,12 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
-import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptPhotoSource
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
@@ -1262,7 +1263,8 @@ class CryptoBillViewModelTest {
 
             // Then
             assertEquals(BTC_ID, assertNotNull(state.groupSelection).groupId)
-            assertTrue(state.isReceiptSourceRequested)
+            assertEquals(ReceiptRequest.Picked, state.receiptRequest)
+            assertFalse(state.readsPickedReceipt)
             assertFalse(state.showsReceiptSourceChoice)
         }
 
@@ -1363,7 +1365,8 @@ class CryptoBillViewModelTest {
 
             // Then
             assertTrue(state.isLoaded)
-            assertTrue(state.isReceiptSourceRequested)
+            assertEquals(ReceiptRequest.Picked, state.receiptRequest)
+            assertFalse(state.readsPickedReceipt)
             assertFalse(state.showsReceiptSourceChoice)
         }
 
@@ -1717,6 +1720,7 @@ class CryptoBillViewModelTest {
             ),
             saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
+            takePickedReceipt = { null },
             readReceipt = { _, _, _ ->
                 ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
             },

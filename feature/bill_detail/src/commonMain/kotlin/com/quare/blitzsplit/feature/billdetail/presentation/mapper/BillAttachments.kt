@@ -9,7 +9,8 @@ import kotlinx.datetime.TimeZone
 
 /*
  * Why: "Anexos" (7.3g) as Room orders them, the receipt first, the photos numbered in the order they were added. Each
- * draws its JPEG added here, else its signed URL, else a placeholder.
+ * draws its JPEG added here, else its signed URL, else a placeholder: shimmering while online its URL is on its way
+ * (asked again each minute after a failure, as the viewer's spinner says), still offline.
  */
 internal fun tilesOf(
     attachments: List<BillAttachment>,
@@ -18,6 +19,7 @@ internal fun tilesOf(
     group: Group,
     nowMillis: Long,
     timeZone: TimeZone,
+    isOnline: Boolean,
 ): List<BillAttachmentTile> {
     var photoNumber = 0
     return attachments.map { attachment ->
@@ -28,6 +30,10 @@ internal fun tilesOf(
             isReceipt = isReceipt,
             localImage = localImages[attachment.id],
             imageUrl = imageUrls[attachment.id],
+            isImageLoading = isOnline &&
+                !attachment.hasPendingImage &&
+                attachment.id !in localImages &&
+                attachment.id !in imageUrls,
             width = attachment.width,
             height = attachment.height,
             photoNumber = if (isReceipt) null else ++photoNumber,

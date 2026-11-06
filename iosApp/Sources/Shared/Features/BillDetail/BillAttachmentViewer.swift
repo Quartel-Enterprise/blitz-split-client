@@ -138,7 +138,7 @@ struct BillAttachmentViewer: View {
     }
 
     private func page(_ attachment: BillAttachmentTile) -> some View {
-        AttachmentImage(attachment: attachment, contentMode: .fit) {
+        AttachmentImage(attachment: attachment, contentMode: .fit) { _ in
             // Online, a nil URL is a signed URL on the way (or tried again each minute)
             if attachment.localImage == nil, attachment.imageUrl == nil, !state.isOnline {
                 VStack(spacing: 10) {

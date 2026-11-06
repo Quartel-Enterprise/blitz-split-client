@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Download, ImageOff, Loader2, Plus, Trash2, X } from 'lucide-react'
 import type { BillDetailPresenter, JsBillAttachment, JsBillDetailState } from 'blitzsplit-shared'
-import { useEffect, useReducer, useRef, type ComponentProps, type KeyboardEvent } from 'react'
+import { useEffect, useReducer, useRef, useState, type ComponentProps, type KeyboardEvent } from 'react'
 import { toast } from 'sonner'
 import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components/PhotoPicker'
 import { Button } from '@/components/ui/button'
@@ -119,7 +119,6 @@ export function BillAttachments({ presenter, state, localUrls }: { presenter: At
             <AttachmentTile
               attachment={attachment}
               src={sourceOf(attachment, localUrls)}
-              isOnline={state.isOnline}
               onClick={() => presenter.openAttachment(attachment.id)}
             />
           </li>
@@ -170,18 +169,29 @@ function AddPhotoTile({ isAdding, ...props }: { isAdding: boolean | undefined } 
 }
 
 /** A photo or the receipt, cropped to fill, with "Cupom" or "Na fila" in its corner; its name and who added it on hover. */
-function AttachmentTile({ attachment, src, isOnline, onClick }: { attachment: JsBillAttachment; src: string | undefined; isOnline: boolean; onClick: () => void }) {
+function AttachmentTile({ attachment, src, onClick }: { attachment: JsBillAttachment; src: string | undefined; onClick: () => void }) {
+  // Why: the image downloading shimmers as its URL being signed does (beta feedback, part 3, item 21), never a blank tile.
+  const [loadedSrc, setLoadedSrc] = useState<string>()
+  const [failedSrc, setFailedSrc] = useState<string>()
+  const isDownloading = src !== undefined && src !== loadedSrc && src !== failedSrc
   const title = `${labelOf(attachment)} · ${adderText(attachment)} · ${postedText(attachment.addedAt, attachment.addedDay)}`
   const badge = attachment.isPending ? t('billDetail_attachmentQueued') : attachment.isReceipt ? t('billDetail_receiptBadge') : null
   return (
     <button type="button" aria-label={badge ? `${title} · ${badge}` : title} title={title} onClick={onClick} className={cn(tileClass, 'bg-muted hover:opacity-90')}>
-      {/* Why: online its signed URL is on its way; offline it can't come, which the neutral icon says. */}
-      {src ? (
-        <img src={src} alt="" className="size-full object-cover" />
-      ) : isOnline ? (
+      {/* Why: online its signed URL is on its way; offline, or once it failed, it can't come, which the neutral icon says. */}
+      {isDownloading || (!src && attachment.isImageLoading) ? (
         <Skeleton className="absolute inset-0 rounded-none" />
       ) : (
-        <ImageOff aria-hidden className="size-5 text-muted-foreground" />
+        (!src || src === failedSrc) && <ImageOff aria-hidden className="size-5 text-muted-foreground" />
+      )}
+      {src && src !== failedSrc && (
+        <img
+          src={src}
+          alt=""
+          onLoad={() => setLoadedSrc(src)}
+          onError={() => setFailedSrc(src)}
+          className={cn('relative size-full object-cover', isDownloading && 'opacity-0')}
+        />
       )}
       {badge && (
         <span

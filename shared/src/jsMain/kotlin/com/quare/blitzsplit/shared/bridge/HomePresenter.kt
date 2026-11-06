@@ -5,6 +5,7 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.NotificationPermission
+import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeAppInvite
@@ -117,6 +118,12 @@ class JsHomeState(
     val groups: Array<JsHomeGroup>,
     val billDays: Array<JsHomeBillDay>,
     val canScanReceipt: Boolean,
+    // Why: "Ler cupom fiscal" asks "Tirar foto" or "Escolher foto" on Início, then opens Rachar conta reading it.
+    val showsReceiptSourceChoice: Boolean,
+    // Why: the picker picked on that choice, to open: "camera" or "files"; null for none.
+    val receiptSource: String?,
+    // Why: without a camera the file chooser opens inside the tap, only when a group can take the photo.
+    val canPickReceipt: Boolean,
     val showsSplitBillButton: Boolean,
     val showsRecoveryCodeCard: Boolean,
     val showsRecoveryCodePrompt: Boolean,
@@ -180,6 +187,9 @@ class HomePresenter {
                 groups = state.groups.map(::toJsHomeGroup).toTypedArray(),
                 billDays = state.billDays.map(::toJsHomeBillDay).toTypedArray(),
                 canScanReceipt = state.canScanReceipt,
+                showsReceiptSourceChoice = state.showsReceiptSourceChoice,
+                receiptSource = state.receiptSource?.name?.lowercase(),
+                canPickReceipt = state.canPickReceipt,
                 showsSplitBillButton = state.showsSplitBillButton,
                 showsRecoveryCodeCard = state.showsRecoveryCodeCard,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
@@ -270,6 +280,31 @@ class HomePresenter {
     // Why: the shortcuts "Ler cupom fiscal", "Registrar pagamento" and "Novo grupo".
     fun scanReceipt() {
         viewModel.onEvent(HomeUiEvent.OnScanReceiptClicked)
+    }
+
+    // Why: the receipt's file or the camera's photo, as an Int8Array of its bytes, which opens Rachar conta reading it.
+    fun receiptPicked(photo: ByteArray) {
+        viewModel.onEvent(HomeUiEvent.OnReceiptPhotoPicked(photo))
+    }
+
+    // Why: "Tirar foto" on the receipt's choice, the browser's camera.
+    fun takeReceiptPhoto() {
+        viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.CAMERA))
+    }
+
+    // Why: "Escolher foto" on that choice.
+    fun chooseReceiptFile() {
+        viewModel.onEvent(HomeUiEvent.OnReceiptSourcePicked(ReceiptPhotoSource.FILES))
+    }
+
+    // Why: "Ler cupom fiscal" where the browser lists no camera, which opens the file chooser without asking.
+    fun skipReceiptChoice() {
+        viewModel.onEvent(HomeUiEvent.OnReceiptChoiceSkipped(ReceiptPhotoSource.FILES))
+    }
+
+    // Why: the choice or the camera closed without a photo, or the file chooser opened, which reports no close.
+    fun dismissReceiptPicker() {
+        viewModel.onEvent(HomeUiEvent.OnReceiptPickerDismissed)
     }
 
     fun recordPayment() {

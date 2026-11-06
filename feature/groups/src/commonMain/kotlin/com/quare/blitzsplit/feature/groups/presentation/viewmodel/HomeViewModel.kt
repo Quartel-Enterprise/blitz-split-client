@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.HoldPickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
@@ -100,6 +101,7 @@ class HomeViewModel(
     private val dismissAppInvite: DismissAppInvite,
     private val dismissAppBanner: DismissAppBanner,
     private val encodeQrCode: EncodeQrCode,
+    holdPickedReceipt: HoldPickedReceipt,
     observeAppBannerDismissed: ObserveAppBannerDismissed,
     observeAppInvite: ObserveAppInvite,
     updateLastNotificationPromptAt: UpdateLastNotificationPromptAt,
@@ -157,6 +159,8 @@ class HomeViewModel(
                 appInvite = null,
                 hasBills = false,
                 isAppBannerDismissed = false,
+                showsReceiptSourceChoice = false,
+                receiptSource = null,
             ),
         )
 
@@ -179,6 +183,17 @@ class HomeViewModel(
     private var isDismissingAppInvite = false
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
+
+    // Why: "Ler cupom fiscal" asks where the photo comes from here, then opens Rachar conta reading it.
+    private val receiptSource = HomeReceiptSource(
+        uiState = uiState,
+        scope = viewModelScope,
+        navigator = navigator,
+        holdPickedReceipt = holdPickedReceipt,
+        trackEvent = trackEvent,
+        recentGroupId = { rows.firstOrNull()?.id },
+        isOnTop = ::isOnTop,
+    )
 
     private val notificationPrompts = HomeNotificationPrompts(
         uiState = uiState,
@@ -354,9 +369,9 @@ class HomeViewModel(
                 openToPay()
             }
 
-            HomeUiEvent.OnSplitBillClicked -> openSplitBill(scansReceipt = false)
+            HomeUiEvent.OnSplitBillClicked -> openSplitBill()
 
-            HomeUiEvent.OnScanReceiptClicked -> if (uiState.value.canScanReceipt) openSplitBill(scansReceipt = true)
+            is HomeUiEvent.Receipt -> receiptSource.onEvent(event)
 
             HomeUiEvent.OnRecordPaymentClicked -> open(Route.PickPayment)
 
@@ -504,16 +519,10 @@ class HomeViewModel(
     /*
      * Why: "Rachar conta" asks which group first (7.1i), the most recently used one marked: the first row, since
      * the rows go by their last activity. With no group yet there is no button; a late tap makes one first.
-     * "Ler cupom fiscal" opens it the same way, then the camera (7.1e).
      */
-    private fun openSplitBill(scansReceipt: Boolean) {
+    private fun openSplitBill() {
         if (!uiState.value.isLoaded) return
-        val recent = rows.firstOrNull()
-        if (recent == null) {
-            open(Route.CreateGroup)
-        } else {
-            open(Route.SplitBill.createPickingGroup(recent.id, scansReceipt))
-        }
+        open(rows.firstOrNull()?.let { Route.SplitBill.createPickingGroup(it.id) } ?: Route.CreateGroup)
     }
 
     private fun refresh() {

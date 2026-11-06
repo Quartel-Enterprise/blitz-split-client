@@ -141,6 +141,8 @@ class JsBillAttachment(
     val isReceipt: Boolean,
     val localImage: ByteArray?,
     val imageUrl: String?,
+    // Why: online, its URL is still being signed: the tile shimmers, as it does while the image downloads.
+    val isImageLoading: Boolean,
     val width: Int?,
     val height: Int?,
     // Why: "Foto 2"; null for the receipt.
@@ -541,6 +543,7 @@ internal fun toJsBillAttachment(tile: BillAttachmentTile): JsBillAttachment = Js
     isReceipt = tile.isReceipt,
     localImage = tile.localImage,
     imageUrl = tile.imageUrl,
+    isImageLoading = tile.isImageLoading,
     width = tile.width,
     height = tile.height,
     photoNumber = tile.photoNumber,

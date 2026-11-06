@@ -52,11 +52,13 @@ private enum DecodedAttachments {
 
 /// A bill's photo, cropped to fill a tile or fit in the viewer: the JPEG added on this device while it has one, else
 /// the signed URL; `placeholder` while it loads, when it fails, and for a photo never loaded on this device while
-/// offline (no bytes and a nil URL).
+/// offline (no bytes and a nil URL). It is told whether the photo is still on its way: its URL being signed online
+/// (`isImageLoading`) or downloading, so a tile shimmers rather than showing an empty box (beta feedback, part 3,
+/// item 21).
 struct AttachmentImage<Placeholder: View>: View {
     let attachment: BillAttachmentTile
     let contentMode: ContentMode
-    @ViewBuilder let placeholder: () -> Placeholder
+    @ViewBuilder let placeholder: (_ isLoading: Bool) -> Placeholder
 
     var body: some View {
         if let image = DecodedAttachments.image(id: attachment.id, bytes: attachment.localImage) {
@@ -65,12 +67,14 @@ struct AttachmentImage<Placeholder: View>: View {
             AsyncImage(url: remote) { phase in
                 if let image = phase.image {
                     drawn(image: image)
+                } else if case .failure = phase {
+                    placeholder(false)
                 } else {
-                    placeholder()
+                    placeholder(true)
                 }
             }
         } else {
-            placeholder()
+            placeholder(attachment.isImageLoading)
         }
     }
 

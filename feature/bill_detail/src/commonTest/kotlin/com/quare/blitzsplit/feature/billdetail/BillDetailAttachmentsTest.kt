@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
+import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
@@ -475,6 +476,230 @@ class BillDetailAttachmentsTest {
             assertEquals(1, attachments.urlRequests.size)
             assertNull(tile.imageUrl)
             assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN online a synced photo whose URL is being signed WHEN the bill opens THEN its tile is loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                urlsGate = CompletableDeferred(),
+            )
+
+            // When
+            val tile = viewModel.uiState.value.attachments
+                .loadedItems()
+                .single()
+
+            // Then
+            assertTrue(tile.isImageLoading)
+            assertNull(tile.imageUrl)
+        }
+
+    @Test
+    fun `GIVEN a photo whose URL is being signed WHEN the URL comes THEN its tile draws it and is not loading`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                urlsGate = gate,
+            )
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            val tile = viewModel.uiState.value.attachments
+                .loadedItems()
+                .single()
+            assertEquals(URL_A, tile.imageUrl)
+            assertFalse(tile.isImageLoading)
+        }
+
+    @Test
+    fun `GIVEN synced photos offline WHEN the bill opens THEN no tile is loading`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedAttachments = listOf(receipt, photoA, photoB),
+            imageUrls = mapOf(RECEIPT to URL_A, PHOTO_A to URL_A, PHOTO_B to URL_B),
+            online = false,
+        )
+
+        // When
+        val tiles = viewModel.uiState.value.attachments
+            .loadedItems()
+
+        // Then
+        assertEquals(listOf(false, false, false), tiles.map { it.isImageLoading })
+    }
+
+    @Test
+    fun `GIVEN online the signed URLs fail WHEN the bill opens THEN the tile keeps loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                urlsError = IllegalStateException("bucket unreachable"),
+            )
+
+            // When
+            val tile = viewModel.uiState.value.attachments
+                .loadedItems()
+                .single()
+
+            // Then
+            assertTrue(tile.isImageLoading)
+        }
+
+    @Test
+    fun `GIVEN the signed URLs failed WHEN a minute passes and they are signed THEN the tile is no longer loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                urlsError = IllegalStateException("bucket unreachable"),
+            )
+            attachments.urlsError = null
+
+            // When
+            minutes.emit(Unit)
+
+            // Then
+            assertFalse(
+                viewModel.uiState.value.attachments
+                    .loadedItems()
+                    .single()
+                    .isImageLoading,
+            )
+        }
+
+    @Test
+    fun `GIVEN online a photo added here not up yet WHEN the bill opens THEN its tile is not loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(
+                    attachment(
+                        id = PHOTO_A,
+                        isPending = true,
+                        hasPendingImage = true,
+                    ),
+                ),
+                pendingImages = mapOf(PHOTO_A to byteArrayOf(1, 2, 3)),
+                urlsGate = CompletableDeferred(),
+            )
+
+            // When
+            val tile = viewModel.uiState.value.attachments
+                .loadedItems()
+                .single()
+
+            // Then
+            assertFalse(tile.isImageLoading)
+        }
+
+    @Test
+    fun `GIVEN online a photo added here WHEN the sync takes it up THEN its tile is still not loading`() =
+        runTest(testDispatcher) {
+            // Given
+            val pending = attachment(
+                id = PHOTO_A,
+                isPending = true,
+                hasPendingImage = true,
+            )
+            prepareScenario(
+                storedAttachments = listOf(pending),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                pendingImages = mapOf(PHOTO_A to byteArrayOf(1, 2, 3)),
+                urlsGate = CompletableDeferred(),
+            )
+
+            // When
+            attachments.attachments.value = listOf(
+                pending.copy(
+                    isPending = false,
+                    hasPendingImage = false,
+                ),
+            )
+
+            // Then
+            assertFalse(
+                viewModel.uiState.value.attachments
+                    .loadedItems()
+                    .single()
+                    .isImageLoading,
+            )
+        }
+
+    @Test
+    fun `GIVEN a synced photo whose URL is being signed WHEN the internet goes THEN its tile is no longer loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                urlsGate = CompletableDeferred(),
+            )
+
+            // When
+            isOnline.value = false
+
+            // Then
+            assertFalse(
+                viewModel.uiState.value.attachments
+                    .loadedItems()
+                    .single()
+                    .isImageLoading,
+            )
+        }
+
+    @Test
+    fun `GIVEN the bill open offline with a synced photo WHEN the internet comes back THEN its tile loads its URL`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+                online = false,
+                urlsGate = CompletableDeferred(),
+            )
+
+            // When
+            isOnline.value = true
+
+            // Then
+            assertTrue(
+                viewModel.uiState.value.attachments
+                    .loadedItems()
+                    .single()
+                    .isImageLoading,
+            )
+        }
+
+    @Test
+    fun `GIVEN a synced photo drawn WHEN the internet goes THEN keeps its URL and is not loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedAttachments = listOf(photoA),
+                imageUrls = mapOf(PHOTO_A to URL_A),
+            )
+
+            // When
+            isOnline.value = false
+
+            // Then
+            val tile = viewModel.uiState.value.attachments
+                .loadedItems()
+                .single()
+            assertEquals(URL_A, tile.imageUrl)
+            assertFalse(tile.isImageLoading)
         }
 
     @Test
@@ -1544,6 +1769,7 @@ class BillDetailAttachmentsTest {
         addGate: CompletableDeferred<Unit>? = null,
         removeError: Throwable? = null,
         deleteGate: CompletableDeferred<Unit>? = null,
+        urlsGate: CompletableDeferred<Unit>? = null,
     ) {
         isOnline.value = online
         groups = FakeGroupRepository(initialGroups = listOf(trip))
@@ -1618,7 +1844,11 @@ class BillDetailAttachmentsTest {
                     ).map { added -> if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM }
             },
             removeBillAttachment = RemoveBillAttachmentUseCase(attachments, currentTimeMillis = { nowMillis }),
-            loadBillAttachmentUrls = LoadBillAttachmentUrlsUseCase(attachments),
+            // Why: a gate holds the signing, as a slow bucket would, so a case reads the tiles while it is on its way.
+            loadBillAttachmentUrls = LoadBillAttachmentUrls { list ->
+                urlsGate?.await()
+                LoadBillAttachmentUrlsUseCase(attachments)(list)
+            },
             loadBillAttachmentImage = LoadBillAttachmentImageUseCase(attachments),
             observeBillAttachments = ObserveBillAttachmentsUseCase(attachments),
             connectivityObserver = NetworkConnectivityObserver { isOnline },

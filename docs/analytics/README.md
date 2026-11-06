@@ -139,7 +139,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `welcome_use_without_account_clicked` | none | Welcome's "Use without an account" | `:feature:welcome` |
 | `welcome_restore_clicked` | none | Welcome's "I've used it on another device" | `:feature:welcome` |
 | `avatar_color_selected` | `color`, `source` (`profile_setup`, `edit_profile`) | An avatar color picked | `:feature:profile_setup`, `:feature:edit_profile` |
-| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`, `bill_detail`, `edit_profile`, `profile_photo`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:edit_profile` |
+| `photo_picked` | `source` (`profile_setup`, `create_group`, `edit_group`, `receipt`, `bill_detail`, `edit_profile`, `profile_photo`, `home`) | A photo handed back by the camera or the picker, which each UI opens straight from its tap, so it stands for the tap; `home` is the receipt's photo Home's "Scan receipt" picked, which opens Split a bill | `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:edit_profile`, `:feature:groups` |
 | `photo_crop_turned` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`) | "Adjust photo"'s Rotate | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
 | `photo_crop_mirrored` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`), `axis` (`horizontal`, `vertical`) | "Adjust photo"'s Horizontal or Vertical | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
 | `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`) | "Adjust photo"'s Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
@@ -188,7 +188,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_pick_join_clicked` | none | "Join as Bruno" | `:feature:join` |
 | `join_pick_not_in_list_clicked` | none | "I'm not on the list": opens "Join with another name", or joins at once with a Google or Apple account | `:feature:join` |
 | `join_pick_new_member_confirmed` | none | "Join group" with a new name | `:feature:join` |
-| `camera_settings_clicked` | `source` (`join_with_link`, `receipt`) | "Open settings" with the camera denied, on the reader or on the receipt camera (Android, iOS) | `:feature:join`, `:feature:split_bill` |
+| `camera_settings_clicked` | `source` (`join_with_link`, `receipt`) | "Open settings" with the camera denied, on the reader or on the receipt camera (Android, iOS), from Split a bill or Home | `:feature:join`, `:feature:split_bill`, `:feature:groups` |
 | `join_with_link_open_camera_clicked` | none | "Open camera", the only tap that asks for the camera and starts it; a tap once it was asked, or on a device with no camera, doesn't count | `:feature:join` |
 | `join_with_link_torch_toggled` | `is_on` | The reader's flashlight, with where it ended up | `:feature:join` |
 | `join_with_link_paste_clicked` | none | The reader's Paste, also with an empty clipboard or one the browser won't read | `:feature:join` |
@@ -230,7 +230,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_undo_clicked` | `source` (`home`, `groups`, `group_detail`, `global_balances`) | "Undo" on "Ana's payment recorded." | `:feature:groups`, `:feature:group_detail`, `:feature:global_balances` |
 | `home_see_balances_clicked` | none | "See balances" over Home's faces | `:feature:groups` |
 | `balance_face_clicked` | `source` (`home`) | A face of "Balances with people", which opens settling up with them for the net | `:feature:groups` |
-| `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Scan receipt" | `:feature:groups`, `:feature:split_bill` |
+| `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Scan receipt", only while it can ask where the photo comes from (online; on Home once it is read) | `:feature:groups`, `:feature:split_bill` |
 | `record_payment_clicked` | `source` (`home`) | Home's "Record a payment" | `:feature:groups` |
 | `home_see_all_groups_clicked` | none | "See all" over "Your groups" | `:feature:groups` |
 | `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`, `category_expenses`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
@@ -359,7 +359,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Done" on "Several people paid", once the amounts add up | `:feature:split_bill` |
 | `split_bill_date_clicked` | none | "When", opening its picker | `:feature:split_bill` |
 | `split_bill_split_clicked` | none | "Split", which opens Split | `:feature:split_bill` |
-| `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose File…" (Mac) or "Choose photo" (web); not sent where no camera leaves anything to choose | `:feature:split_bill` |
+| `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose file" (Android) or "Choose File…" (Apple), or "Choose photo" (web); not sent where no camera leaves anything to choose; Home's shortcut asks the same | `:feature:split_bill`, `:feature:groups` |
 | `receipt_items_clicked` | none | "14 items" beside "Read from the receipt", which opens Items, while the receipt's items are there in the bill's currency | `:feature:split_bill` |
 | `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`) | Equal, Amounts, %, Shares or Items, another than the one picked | `:feature:split_bill` |
 | `split_bill_person_toggled` | `is_included` | A person in or out of Equal, with where they ended up | `:feature:split_bill` |
@@ -390,8 +390,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_map_clicked` | `source` (`split_bill`, `profile`) | The "Category map" card | `:feature:split_bill`, `:feature:profile` |
 | `receipt_read` | `result` (`read`, `unreadable`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Scan receipt" began | `:feature:split_bill` |
 | `receipt_removed` | none | × on "Receipt photo" | `:feature:split_bill` |
-| `receipt_camera_torch_toggled` | `is_on` | The receipt camera's flashlight (Android, iOS), with where it ended up | `:feature:split_bill` |
-| `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill` |
+| `receipt_camera_torch_toggled` | `is_on` | The receipt camera's flashlight (Android, iOS), with where it ended up | `:feature:split_bill`, `:feature:groups` |
+| `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill`, `:feature:groups` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
 | `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete bill", when its question opens; `group_detail` is a bill's ⋮ "Delete" on Expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
