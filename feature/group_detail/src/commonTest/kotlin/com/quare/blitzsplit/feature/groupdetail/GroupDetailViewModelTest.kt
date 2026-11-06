@@ -3001,7 +3001,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN an unknown payment tapped WHEN dismissing the question THEN tracks no cancel`() =
+    fun `GIVEN an unknown payment asked to delete WHEN dismissing the question THEN tracks no cancel`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))

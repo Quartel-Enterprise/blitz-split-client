@@ -716,7 +716,7 @@ class GroupDetailPaymentsViewModelTest {
         }
 
     @Test
-    fun `GIVEN no such payment on the list WHEN tapping it THEN asks nothing`() = runTest(testDispatcher) {
+    fun `GIVEN no such payment on the list WHEN asking to delete it THEN asks nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
         val event = GroupDetailUiEvent.OnPaymentDeleteClicked("pay-unknown")
@@ -729,7 +729,7 @@ class GroupDetailPaymentsViewModelTest {
     }
 
     @Test
-    fun `GIVEN a bill id WHEN tapped as a payment THEN asks nothing`() = runTest(testDispatcher) {
+    fun `GIVEN a bill id WHEN asked to delete as a payment THEN asks nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
         val event = GroupDetailUiEvent.OnPaymentDeleteClicked("dinner")

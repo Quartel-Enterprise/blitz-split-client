@@ -2,7 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 
-// Why: "Ana te pagou · 12:10 · Acerto · Pix · R$ 50,00 · acerto"; tapping it asks "Apagar este acerto?".
+// Why: "Ana te pagou · 12:10 · Acerto · Pix · R$ 50,00 · acerto"; tapping it opens its details, whose "Apagar" asks "Apagar este acerto?".
 data class PaymentRow(
     override val id: String,
     // Why: each UI writes the time of day.

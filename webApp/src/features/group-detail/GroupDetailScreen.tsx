@@ -33,8 +33,8 @@ import { DayRow, DayRowGroup, DayRowsTable, ExpenseLine } from './ExpenseRows'
  * The group's page (header, balance card, tabs), drawn once over the tab picked, which only swaps what is under the
  * tabs: "Despesas do grupo" (the bills and the payments that settled its debts by day, newest first), Saldos or
  * Membros. A bill opens "Conta" over it, and its ⋮ (or a right click) offers Conta's options without opening it; a
- * payment asks "Apagar este acerto?", from its ⋮ too. A bill someone else deleted while it was
- * open, and a payment just recorded, say so here.
+ * payment opens its details, whose "Apagar" asks "Apagar este acerto?", as its ⋮ does. A bill someone else deleted
+ * while it was open, and a payment just recorded, say so here.
  */
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupDetailPresenter(route))

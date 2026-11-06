@@ -13,6 +13,8 @@ final class GroupDetailModel {
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
+    /// The payment whose details' "Delete" was tapped, asked about once the details sheet is gone.
+    @ObservationIgnored private var paymentToAskAfterDetails: String?
 
     init(route: RouteGroupDetail) {
         holder = BlitzSplitApple.shared.createGroupDetailViewModel(route: route)
@@ -81,14 +83,18 @@ final class GroupDetailModel {
         if current.paymentToView != nil { send(GroupDetailUiEventOnPaymentDetailsDismissed.shared) }
     }
 
-    /// "Delete" in a payment's details: the sheet closes first and the question comes once it is gone, since an alert
-    /// asked while a sheet is still leaving the screen may never show.
+    /// "Delete" in a payment's details: the sheet closes first and the question comes once it is gone
+    /// (`paymentDetailsDidDismiss`), since an alert asked while a sheet is still leaving the screen may never show.
     func deletePaymentFromDetails(_ payment: PaymentRow) {
+        paymentToAskAfterDetails = payment.id
         dismissPaymentDetails()
-        Task {
-            try? await Task.sleep(for: .milliseconds(450))
-            send(GroupDetailUiEventOnPaymentDeleteClicked(paymentId: payment.id))
-        }
+    }
+
+    /// The details sheet finished leaving the screen: asks "Delete this payment?" if its "Delete" closed it.
+    func paymentDetailsDidDismiss() {
+        guard let paymentId = paymentToAskAfterDetails else { return }
+        paymentToAskAfterDetails = nil
+        send(GroupDetailUiEventOnPaymentDeleteClicked(paymentId: paymentId))
     }
 
     /// "Delete this bill?" closed without "Delete", from a bill's options on the list.
@@ -241,7 +247,7 @@ struct GroupDetailView: View {
                     .formSheetSizing()
             }
         }
-        .sheet(isPresented: paymentDetailsShown) {
+        .sheet(isPresented: paymentDetailsShown, onDismiss: { model?.paymentDetailsDidDismiss() }) {
             if let model, let payment = model.state.paymentToView {
                 NavigationStack {
                     PaymentDetailsSheet(payment: payment, currency: model.state.header.currency, model: model)
