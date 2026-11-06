@@ -1640,6 +1640,21 @@ class ContactsViewModelTest {
         }
 
     @Test
+    fun `GIVEN Rachar conta already open WHEN a second tap arrives THEN opens and sends nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts, splitBillIn(FLORIPA)), navigator.backStack.value)
+            assertEquals(listOf("split_bill_clicked" to contactsSource), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN no group WHEN Rachar conta is tapped THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedGroups = emptyList())

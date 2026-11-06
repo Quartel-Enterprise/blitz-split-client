@@ -314,7 +314,7 @@ struct SyncStatusRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: badge == .offline ? "icloud.slash" : canRetry ? "exclamationmark.icloud" : "arrow.triangle.2.circlepath.icloud")
+            Image(systemName: syncStatusIcon(badge: badge, canRetry: canRetry))
                 .accessibilityHidden(true)
             Text(verbatim: status)
                 .font(.subheadline)
@@ -326,6 +326,11 @@ struct SyncStatusRow: View {
         }
         .foregroundStyle(.secondary)
     }
+}
+
+/// The cloud beside the sync status: crossed out offline, with a mark while the server doesn't answer, turning otherwise.
+private func syncStatusIcon(badge: SyncBadge?, canRetry: Bool) -> String {
+    badge == .offline ? "icloud.slash" : canRetry ? "exclamationmark.icloud" : "arrow.triangle.2.circlepath.icloud"
 }
 
 #if os(iOS)
@@ -350,7 +355,7 @@ struct SyncStatusCapsule: View {
 
     private var label: some View {
         HStack(spacing: 6) {
-            Image(systemName: badge == .offline ? "icloud.slash" : canRetry ? "exclamationmark.icloud" : "arrow.triangle.2.circlepath.icloud")
+            Image(systemName: syncStatusIcon(badge: badge, canRetry: canRetry))
                 .accessibilityHidden(true)
             // An iPhone's bar keeps the bell, the profile and "Split a bill" beside it, so a long status truncates there
             // (VoiceOver still reads it whole) instead of sending them into the bar's overflow menu

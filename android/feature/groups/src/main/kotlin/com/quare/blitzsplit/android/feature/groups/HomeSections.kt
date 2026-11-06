@@ -478,6 +478,6 @@ internal fun HomeSyncStatusIndicator(
             onRetry = { onEvent(HomeUiEvent.OnRetrySyncClicked) },
             downloadProgress = state.firstDownload,
         )
-        state.firstDownload?.let { DownloadStatusLine(progress = it) }
+        HomeDownloadStatusLine(state = state)
     }
 }

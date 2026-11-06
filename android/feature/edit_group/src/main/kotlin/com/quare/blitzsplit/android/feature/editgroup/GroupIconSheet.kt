@@ -37,8 +37,8 @@ private val previewSize = 64.dp
 private val iconDialogWidth = 480.dp
 
 /*
- * Why: "Ícone do grupo" (6.4d): the shape and the color picked show in the shape buttons, and only reach the form
- * on "Usar este ícone"; a photo picked or taken goes straight to the form, closing the sheet. A bottom sheet where
+ * Why: "Ícone do grupo" (6.4d): the color picked shows in the group's square, and only reaches the form on "Usar
+ * este ícone"; a photo picked or taken goes straight to the form, closing the sheet. A bottom sheet where
  * Editar grupo is full screen; where it is a dialog, a 480dp dialog over it, in a book's right half on a foldable,
  * never over the hinge.
  */

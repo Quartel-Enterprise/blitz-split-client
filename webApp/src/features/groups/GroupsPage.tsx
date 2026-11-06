@@ -134,16 +134,16 @@ export function GroupsActions({ presenter, state }: { presenter: GroupsPresenter
   )
 }
 
-/**
- * The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" ("Sincronizando…
- * 3 de 7 grupos" while Início's first download knows how many are coming) or "Sem resposta do servidor" with "Tentar
- * de novo".
- */
 /** Whether `SyncStatus` draws anything, so a page can leave out the place it would take. */
 export function showsSyncStatus(state: SyncState, downloadProgress?: JsDownloadProgress | null): boolean {
   return Boolean(state.syncBadge) || (downloadProgress?.isWaitingForInternet ?? false)
 }
 
+/**
+ * The sync status, only when it asks for attention: "Offline · 1 alteração na fila", "Sincronizando…" ("Sincronizando…
+ * 3 de 7 grupos" while Início's first download knows how many are coming) or "Sem resposta do servidor" with "Tentar
+ * de novo".
+ */
 export function SyncStatus({
   state,
   presenter,

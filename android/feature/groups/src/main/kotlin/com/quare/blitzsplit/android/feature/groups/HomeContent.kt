@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.component.SplitBillRailHeader
 import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
+import com.quare.blitzsplit.android.designsystem.component.splitBillFabClearance
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
@@ -56,7 +57,6 @@ private val singleColumnMaxWidth = 624.dp
 private val phoneFirstColumnWidth = 340.dp
 private val tabletFirstColumnWidth = 520.dp
 private val sectionSpacing = 12.dp
-private val fabClearance = 96.dp
 private val paneBottomMargin = 24.dp
 
 private fun eventOf(tab: HomeTab): HomeUiEvent? = when (tab) {
@@ -276,7 +276,7 @@ private fun HomeSingleColumn(
             HomeShortcutsSection(state, onEvent, metrics)
             HomeGroupsSection(state, onEvent, metrics)
             HomeBillsSection(state, onEvent, metrics)
-            BottomClearanceSpacer(fabClearance)
+            BottomClearanceSpacer(splitBillFabClearance)
         }
     }
 }

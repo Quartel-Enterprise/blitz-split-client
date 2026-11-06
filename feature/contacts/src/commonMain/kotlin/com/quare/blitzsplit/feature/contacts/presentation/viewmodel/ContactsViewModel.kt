@@ -298,11 +298,12 @@ class ContactsViewModel(
 
     /*
      * Why: "Rachar em qual grupo?" first (7.1i), the most recently used group marked, as Início's button asks. The
-     * button stays beside a profile the pane shows, so it counts while Contatos is the tab.
+     * button stays beside a profile the pane shows, so it counts while Contatos is the tab, but never a second tap over
+     * the bill it already opened, which would count twice.
      */
     private fun openSplitBill() {
         val groupId = splitBillGroupId ?: return
-        if (!isTabShown()) return
+        if (!isTabShown() || navigator.backStack.value.lastOrNull() is Route.SplitBill) return
         trackEvent("split_bill_clicked", sourceParams)
         navigator.navigate(Route.SplitBill.createPickingGroup(groupId))
     }
