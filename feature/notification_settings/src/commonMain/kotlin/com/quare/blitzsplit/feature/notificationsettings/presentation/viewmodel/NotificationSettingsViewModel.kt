@@ -156,6 +156,8 @@ class NotificationSettingsViewModel(
     private fun togglePush(isEnabled: Boolean) {
         val state = uiState.value
         if (!state.isPushSwitchEnabled || isEnabled == state.isPushOn) return
+        // Why: the switch stays off while the system's prompt is open (the web's doesn't block), so a tap meanwhile is the same ask.
+        if (isEnabled && awaitsPermissionAnswer) return
         trackEvent("notification_push_toggled", mapOf("is_enabled" to isEnabled))
         // Why: shown at once, so a second tap before Room answers is taken for the same change and dropped.
         uiState.update { it.copy(devicePush = isEnabled.toLoaded()) }

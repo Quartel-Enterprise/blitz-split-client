@@ -106,7 +106,7 @@ The feed, unread state, real time and push notifications.
     on the device yet) and marks it read; a reminder opens the group's Balances over Groups, or Balances. Each device
     registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
     it while none is or while Notifications' "Push notifications" switch is off, a sign out made offline once back
-    online. Android and Apple register their token at every launch
+    online; a failed call is tried again after 30 seconds, 2 and 10 minutes, then waits for the next change. Android and Apple register their token at every launch
     whatever the permission; the web subscribes as soon as the browser allows it, from its prompt, the site settings or
     on load (`watchNotificationPermission`).
   - Asking for the permission (Pierre's call, issue 208; per device, never synced): no platform asks on its own. Home

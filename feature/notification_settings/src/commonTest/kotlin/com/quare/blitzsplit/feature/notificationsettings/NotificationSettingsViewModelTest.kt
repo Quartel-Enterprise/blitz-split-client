@@ -2048,6 +2048,21 @@ class NotificationSettingsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the switch turned on while never asked WHEN tapped on again before the answer THEN asks once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(permission = NotificationPermission.NOT_DETERMINED)
+            viewModel.onEvent(switchOn)
+
+            // When
+            viewModel.onEvent(switchOn)
+
+            // Then
+            assertEquals(listOf<NotificationSettingsUiAction>(NotificationSettingsUiAction.RequestPermission), actions)
+            assertEquals(1, trackedEvents.count { (name, _) -> name == "notification_push_toggled" })
+        }
+
+    @Test
     fun `GIVEN the switch turned on before Room answers WHEN it is tapped on again THEN saves and tracks it once`() =
         runTest(testDispatcher) {
             // Given
