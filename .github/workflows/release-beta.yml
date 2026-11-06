@@ -164,22 +164,32 @@ jobs:
       # Invite links open the app only when the key's SHA-256 is in blitzsplit.com's assetlinks.json
       # (docs/product/joining-and-folds.md): a key missing there warns, and the beta still publishes.
       # build-tools 37 labels a signer with its SDK range (`Signer (minSdkVersion=…, maxSdkVersion=…) certificate
-      # SHA-1 digest:`) where 36 printed `Signer #1 certificate SHA-1 digest:`, so the match accepts any label.
-      # A failed verify or a missing digest prints what apksigner said and fails the step, instead of publishing
-      # an empty fingerprint.
+      # SHA-1 digest:`) where 36 printed `Signer #1 certificate SHA-1 digest:`. Both digests come from the first
+      # signer printed, so they belong to one certificate. A failed verify or a missing digest prints what
+      # apksigner said. --verbose is kept because the run that failed, without it, printed no certificate.
       - name: Show the signing certificate
         shell: bash
         run: |
           apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)"
-          apk="$(ls androidApp/build/outputs/apk/release/*.apk)"
+          shopt -s nullglob
+          apks=(androidApp/build/outputs/apk/release/*.apk)
+          if [ "${#apks[@]}" -ne 1 ]; then
+            echo "::error::Expected one release APK, found ${#apks[@]}."
+            exit 1
+          fi
+          apk="${apks[0]}"
           if ! certs="$("$apksigner" verify --verbose --print-certs "$apk" 2>&1)"; then
             echo "$certs"
             echo "::error::apksigner could not verify the release APK's signature."
             exit 1
           fi
-          sha1="$(sed -n 's/^Signer[^:]* certificate SHA-1 digest: *//p' <<< "$certs" | head -1)"
-          sha256="$(sed -n 's/^Signer[^:]* certificate SHA-256 digest: *//p' <<< "$certs" | head -1)"
-          if [ -z "$sha1" ] || [ -z "$sha256" ]; then
+          label="$(sed -n 's/^\(Signer[^:]*\) certificate SHA-256 digest: .*/\1/p' <<< "$certs" | head -1)"
+          digest() {
+            awk -v p="$label certificate $1 digest: " 'index($0, p) == 1 { print substr($0, length(p) + 1); exit }' <<< "$certs"
+          }
+          sha1="$(digest SHA-1)"
+          sha256="$(digest SHA-256)"
+          if [ -z "$label" ] || [ -z "$sha1" ] || [ -z "$sha256" ]; then
             echo "apksigner ${apksigner} printed:"
             echo "$certs"
             echo "::error::apksigner printed no signing certificate for the release APK."
