@@ -58,7 +58,7 @@ private struct ActivityItemDetail: View {
             header
             if let simplification = item.simplification {
                 // Simplify debts: the counts, then what changed for this device's user (13.7b)
-                Text(verbatim: ActivityCopy.simplification(simplification, currency: item.currency))
+                Text(verbatim: ActivityCopy.simplification(simplification))
                     .font(.body)
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)

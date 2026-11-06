@@ -7,7 +7,6 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChange
-import com.quare.blitzsplit.feature.activity.presentation.model.ActivityItem
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivitySimplification
 
 /*
@@ -15,19 +14,14 @@ import com.quare.blitzsplit.feature.activity.presentation.model.ActivitySimplifi
  * and the largest one gone for this device's user; just the counts when nothing changed for them.
  */
 @Composable
-internal fun simplificationDetailOf(
-    simplification: ActivitySimplification,
-    money: MoneyFormatter,
-): String {
+internal fun simplificationDetailOf(simplification: ActivitySimplification): String {
     val counts = pluralStringResource(
         R.plurals.activity_detail_simplify_counts,
         simplification.paymentsBefore,
         simplification.paymentsBefore,
         simplification.paymentsAfter,
     )
-    // Why: the pair is in its own currency; the item's (the group's) only for an event that says none.
-    val newPairCurrency = simplification.newPair?.currency
-    val pairMoney = if (newPairCurrency == null) money else rememberMoneyFormatter(newPairCurrency)
+    val pairMoney = rememberMoneyFormatter(simplification.newPair?.currency ?: GroupCurrency.fallback)
     val newPair = simplification.newPair?.let { change ->
         val name = changeNameOf(change)
         if (change.afterMinor > 0) {
@@ -55,15 +49,9 @@ internal fun simplificationDetailOf(
  * devia → te deve R$ 64,00", one line per person.
  */
 @Composable
-internal fun SimplificationChangeList(
-    item: ActivityItem,
-    simplification: ActivitySimplification,
-) {
-    val itemMoney = rememberMoneyFormatter(item.currency ?: GroupCurrency.fallback)
+internal fun SimplificationChangeList(simplification: ActivitySimplification) {
     simplification.myChanges.forEach { change ->
-        // Why: each pair is in its own currency, the item's only for an event that says none.
-        val pairCurrency = change.currency
-        val money = if (pairCurrency == null) itemMoney else rememberMoneyFormatter(pairCurrency)
+        val money = rememberMoneyFormatter(change.currency ?: GroupCurrency.fallback)
         ChangeLineRow(
             label = changeNameOf(change),
             before = beforeTextOf(change.beforeMinor, money),
