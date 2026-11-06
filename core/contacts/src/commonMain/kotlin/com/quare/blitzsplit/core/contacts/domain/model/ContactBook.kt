@@ -37,32 +37,41 @@ object ContactBook {
         money: GroupMoney,
     ): List<Part> {
         val me = group.members.firstOrNull { it.isMe } ?: return emptyList()
-        val balances = GroupBalances.of(group, money.expenses, money.settlements)
-        return group.members
-            .filterNot { it.isMe }
-            .map { member ->
-                Part(
-                    key = PeopleBalances.keyOf(member),
-                    member = member,
-                    group = ContactGroup(
-                        groupId = group.id,
-                        groupName = group.name,
-                        groupInitials = Initials.of(group.name),
-                        groupColor = group.color,
-                        currency = group.currency,
-                        memberId = member.id,
-                        meMemberId = me.id,
-                        groupInviteCode = group.inviteCode,
-                        memberInviteCode = member.inviteCode,
-                        meInviteCode = me.inviteCode,
-                        amountMinor = balances.debtOf(member.id, me.id) - balances.debtOf(me.id, member.id),
-                    ),
-                    lastSharedBillAt = money.expenses
-                        .filter { it.isInvolving(member.id) && it.isInvolving(me.id) }
-                        .maxOfOrNull { it.updatedAt },
-                )
-            }
+        return GroupBalances
+            .getByCurrency(group, money.expenses, money.settlements)
+            .flatMap { (currency, balances) -> partsOf(group, money, me, currency, balances) }
     }
+
+    private fun partsOf(
+        group: Group,
+        money: GroupMoney,
+        me: GroupMember,
+        currency: GroupCurrency,
+        balances: GroupBalances,
+    ): List<Part> = group.members
+        .filterNot { it.isMe }
+        .map { member ->
+            Part(
+                key = PeopleBalances.keyOf(member),
+                member = member,
+                group = ContactGroup(
+                    groupId = group.id,
+                    groupName = group.name,
+                    groupInitials = Initials.of(group.name),
+                    groupColor = group.color,
+                    currency = currency,
+                    memberId = member.id,
+                    meMemberId = me.id,
+                    groupInviteCode = group.inviteCode,
+                    memberInviteCode = member.inviteCode,
+                    meInviteCode = me.inviteCode,
+                    amountMinor = balances.debtOf(member.id, me.id) - balances.debtOf(me.id, member.id),
+                ),
+                lastSharedBillAt = money.expenses
+                    .filter { it.isInvolving(member.id) && it.isInvolving(me.id) }
+                    .maxOfOrNull { it.updatedAt },
+            )
+        }
 
     private fun contactOf(
         key: String,

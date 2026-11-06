@@ -6,6 +6,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.core.expenses)
+            api(projects.core.groups)
             api(libs.kotlinx.coroutines.core)
         }
     }

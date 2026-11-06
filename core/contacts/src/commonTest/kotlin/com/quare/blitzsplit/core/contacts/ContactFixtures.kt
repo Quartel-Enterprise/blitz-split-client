@@ -88,11 +88,12 @@ internal fun bill(
     spentAt: Long = 0L,
     updatedAt: Long = 0L,
     description: String = id,
+    currency: GroupCurrency = GroupCurrency.BRL,
 ): Expense = Expense(
     id = id,
     groupId = groupId,
     description = description,
-    currency = GroupCurrency.BRL,
+    currency = currency,
     amountMinor = payers.sumOf { it.amountMinor },
     splitMode = SplitMode.AMOUNT,
     payers = payers,
@@ -114,6 +115,7 @@ internal fun owes(
     id: String = "bill-$groupId",
     spentAt: Long = 0L,
     updatedAt: Long = 0L,
+    currency: GroupCurrency = GroupCurrency.BRL,
 ): Expense = bill(
     id = id,
     groupId = groupId,
@@ -121,6 +123,7 @@ internal fun owes(
     shares = listOf(share(fromMemberId, amountMinor)),
     spentAt = spentAt,
     updatedAt = updatedAt,
+    currency = currency,
 )
 
 internal fun payer(
@@ -149,12 +152,13 @@ internal fun payment(
     paidAt: Long = 0L,
     updatedAt: Long = 0L,
     method: SettlementMethod = SettlementMethod.PIX,
+    currency: GroupCurrency = GroupCurrency.BRL,
 ): Settlement = Settlement(
     id = id,
     groupId = groupId,
     fromMemberId = fromMemberId,
     toMemberId = toMemberId,
-    currency = GroupCurrency.BRL,
+    currency = currency,
     amountMinor = amountMinor,
     method = method,
     paidAt = paidAt,

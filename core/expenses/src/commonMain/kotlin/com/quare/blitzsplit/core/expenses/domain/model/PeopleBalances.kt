@@ -36,7 +36,7 @@ data class PeopleBalances(
                 partsOf(group, ofGroup)
             }
             val people = parts
-                .groupBy { it.key to it.group.currency }
+                .groupBy { it.key to it.currency }
                 .map { (keyAndCurrency, ofPerson) -> personOf(keyAndCurrency.first, ofPerson, money) }
                 // Why: someone whose groups offset each other to zero owes nothing and is owed nothing.
                 .filter { it.netMinor != 0L }
@@ -46,7 +46,7 @@ data class PeopleBalances(
                 ).map { it.value }
             return PeopleBalances(
                 people = people,
-                totals = totalsOf(groups, people),
+                totals = totalsOf(groups, money, people),
                 me = groups.firstNotNullOfOrNull { group -> group.members.firstOrNull { it.isMe } },
             )
         }
@@ -74,33 +74,42 @@ data class PeopleBalances(
             money: GroupMoney,
         ): List<Part> {
             val me = group.members.firstOrNull { it.isMe } ?: return emptyList()
-            val balances = GroupBalances.of(group, money.expenses, money.settlements)
-            return balances.debts
-                .filter { it.fromMemberId == me.id || it.toMemberId == me.id }
-                .map { debt ->
-                    val otherId = if (debt.fromMemberId == me.id) debt.toMemberId else debt.fromMemberId
-                    val other = group.members.firstOrNull { it.id == otherId }
-                    Part(
-                        key = other?.let(::keyOf) ?: goneKeyOf(group.id, otherId),
-                        group = group,
-                        member = other,
-                        balance = PersonGroupBalance(
-                            groupId = group.id,
-                            groupName = group.name,
-                            groupInitials = Initials.of(group.name),
-                            groupColor = group.color,
-                            memberId = otherId,
-                            meMemberId = me.id,
-                            amountMinor = if (debt.toMemberId == me.id) debt.amountMinor else -debt.amountMinor,
-                            isSimplified = balances.isSimplified,
-                            insteadOfNames = balances
-                                .insteadOfOrNull(debt.fromMemberId, debt.toMemberId)
-                                .orEmpty()
-                                .mapNotNull { id -> group.members.firstOrNull { it.id == id }?.name },
-                        ),
-                    )
-                }
+            return GroupBalances
+                .getByCurrency(group, money.expenses, money.settlements)
+                .flatMap { (currency, balances) -> partsOf(group, currency, balances, me) }
         }
+
+        private fun partsOf(
+            group: Group,
+            currency: GroupCurrency,
+            balances: GroupBalances,
+            me: GroupMember,
+        ): List<Part> = balances.debts
+            .filter { it.fromMemberId == me.id || it.toMemberId == me.id }
+            .map { debt ->
+                val otherId = if (debt.fromMemberId == me.id) debt.toMemberId else debt.fromMemberId
+                val other = group.members.firstOrNull { it.id == otherId }
+                Part(
+                    key = other?.let(::keyOf) ?: goneKeyOf(group.id, otherId),
+                    group = group,
+                    currency = currency,
+                    member = other,
+                    balance = PersonGroupBalance(
+                        groupId = group.id,
+                        groupName = group.name,
+                        groupInitials = Initials.of(group.name),
+                        groupColor = group.color,
+                        memberId = otherId,
+                        meMemberId = me.id,
+                        amountMinor = if (debt.toMemberId == me.id) debt.amountMinor else -debt.amountMinor,
+                        isSimplified = balances.isSimplified,
+                        insteadOfNames = balances
+                            .insteadOfOrNull(debt.fromMemberId, debt.toMemberId)
+                            .orEmpty()
+                            .mapNotNull { id -> group.members.firstOrNull { it.id == id }?.name },
+                    ),
+                )
+            }
 
         private fun personOf(
             key: String,
@@ -115,7 +124,7 @@ data class PeopleBalances(
                 key = key,
                 name = named?.name,
                 face = named?.let(::faceOf),
-                currency = parts.first().group.currency,
+                currency = parts.first().currency,
                 netMinor = netMinor,
                 groups = parts.map { it.balance },
                 isGuest = isGuest,
@@ -148,14 +157,20 @@ data class PeopleBalances(
             return paidMinor.takeIf { it > 0 && shareMinor - it == netMinor }
         }
 
+        // Why: a currency counts once for each group that has money in it, its default currency too.
         private fun totalsOf(
             groups: List<Group>,
+            money: Map<String, GroupMoney>,
             people: List<PersonBalance>,
         ): List<PeopleTotal> = groups
-            .groupBy { it.currency }
+            .flatMap { group ->
+                val ofGroup = money[group.id] ?: GroupMoney.NONE
+                GroupBalances.currenciesOf(group, ofGroup.expenses, ofGroup.settlements)
+            }.groupingBy { it }
+            .eachCount()
             .entries
             .sortedWith(
-                compareByDescending<Map.Entry<GroupCurrency, List<Group>>> { it.value.size }.thenBy { it.key.code },
+                compareByDescending<Map.Entry<GroupCurrency, Int>> { it.value }.thenBy { it.key.code },
             ).map { (currency, _) ->
                 val ofCurrency = people.filter { it.currency == currency }
                 val receiving = ofCurrency.filter { it.netMinor > 0 }
@@ -174,6 +189,7 @@ data class PeopleBalances(
     private class Part(
         val key: String,
         val group: Group,
+        val currency: GroupCurrency,
         val member: GroupMember?,
         val balance: PersonGroupBalance,
     )

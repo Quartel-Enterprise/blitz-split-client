@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalanc
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RecordSettlementUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.expenses.testing.inCurrencyOf
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -2410,7 +2411,7 @@ class RegisterPaymentViewModelTest {
             offersReceiverKeys = true,
         )
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))
-        expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        expenses = FakeExpenseRepository(initialExpenses = storedExpenses.inCurrencyOf(listOf(storedGroup)))
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements).also {
             it.recordError = recordError
             it.recordGate = recordGate

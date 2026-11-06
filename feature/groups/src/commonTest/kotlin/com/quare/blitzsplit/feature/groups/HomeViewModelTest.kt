@@ -30,6 +30,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUs
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.expenses.testing.inCurrencyOf
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
@@ -6075,7 +6076,7 @@ class HomeViewModelTest {
         groupsGate = MutableStateFlow(groupsRead)
         groups = FakeGroupRepository(initialGroups = storedGroups)
         pins = FakeGroupPinRepository(initialPinnedGroupIds = pinnedGroupIds)
-        expenses = FakeExpenseRepository(initialExpenses = storedExpenses)
+        expenses = FakeExpenseRepository(initialExpenses = storedExpenses.inCurrencyOf(storedGroups))
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         categories = FakeCategoryRepository(initialGroupCategories = storedCategories)
         recordedPayments = InMemoryRecordedPaymentRepository()
