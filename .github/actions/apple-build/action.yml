@@ -53,7 +53,17 @@ runs:
         APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
         APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
         APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
-      run: ./scripts/release/require-env.sh GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+      run: |
+        ./scripts/release/require-env.sh GOOGLE_SERVICE_INFO_PLIST APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+        # The Crashlytics dSYM phase of the archive reads GOOGLE_APP_ID from the plist and fails the build ten
+        # minutes in when it is missing (a google-services.json, or a value that is not the base64 of the plist):
+        # fail here, before the caches and the project generation.
+        plist="$RUNNER_TEMP/GoogleService-Info.plist"
+        if ! echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$plist" 2> /dev/null \
+          || ! plutil -extract GOOGLE_APP_ID raw "$plist" > /dev/null 2>&1; then
+          echo "::error::The GOOGLE_SERVICE_INFO_PLIST secret has no GOOGLE_APP_ID: set it to the base64 of the iOS GoogleService-Info.plist (base64 -i GoogleService-Info.plist)."
+          exit 1
+        fi
 
     # Apple refuses a suffixed version string, so the Apple apps carry the plain X.Y.Z and tell the betas apart by
     # the build number; generate-project.sh strips the suffix, which Profile still shows (BlitzSplitVersionName).
