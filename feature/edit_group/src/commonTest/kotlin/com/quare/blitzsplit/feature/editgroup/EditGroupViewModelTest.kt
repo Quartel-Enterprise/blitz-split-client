@@ -2204,11 +2204,13 @@ class EditGroupViewModelTest {
                                     fromMemberId = ANA,
                                     toMemberId = BRUNO,
                                     amountMinor = 3_000,
+                                    currency = null,
                                 ),
                                 SimplifyDebtsPair(
                                     fromMemberId = BRUNO,
                                     toMemberId = PIERRE,
                                     amountMinor = 3_000,
+                                    currency = null,
                                 ),
                             ),
                             after = listOf(
@@ -2216,6 +2218,7 @@ class EditGroupViewModelTest {
                                     fromMemberId = ANA,
                                     toMemberId = PIERRE,
                                     amountMinor = 3_000,
+                                    currency = null,
                                 ),
                             ),
                         ),

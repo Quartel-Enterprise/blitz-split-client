@@ -422,7 +422,7 @@ class SetSimplifiesDebtsUseCaseTest {
         fromMemberId: String,
         toMemberId: String,
         amountMinor: Long,
-    ): SimplifyDebtsPair = SimplifyDebtsPair(fromMemberId, toMemberId, amountMinor)
+    ): SimplifyDebtsPair = SimplifyDebtsPair(fromMemberId, toMemberId, amountMinor, null)
 
     private fun prepareScenario(
         simplifiesDebts: Boolean,

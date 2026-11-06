@@ -31,6 +31,13 @@ The feed, unread state, real time and push notifications.
     Activity is the screen in front, never from under a screen it opened nor under a sheet. Comments lists the comments on bills ("Carla commented on Dinner", the text under it as edited,
     "Carla deleted a comment on Dinner" once deleted), which open the bill's screen at the comment; a bill's attachments and its share link show only in its screen's History, never in the
     feed nor its badge (`ActivityKind.isInFeed`).
+  - Amounts in Activity are in the currency of the bill or payment they belong to, never the group's (Pierre's call:
+    balances are one per currency, the group's currency only pre-fills a new bill): "Ana split “Dinner”" with "$ 40.00"
+    in a Bora Rachar group whose default is reais. The server writes it in each bill's and payment's event
+    (`currency`), and in each pair of "Simplify debts" (a group's simplification is per currency, so "See changes"
+    lists each pair in its own, the group's first); a bill edited into another currency writes its "Amount" from the
+    old currency to the new one. An event the server wrote before that, and a pair with none, reads in the group's
+    currency (`ActivityEvent.currency`, `ActivityDebt.currency`; the push does the same on the server).
   - In Spanish the verb of an Activity row and of a bill's History line is conjugated to "tú" when the user is the
     actor ("Tú dividiste Cena", "Tú te uniste a Viaje", "Tú cambiaste la categoría"), on every platform: the first word
     of the verb phrase moves to the second person singular preterite ("dividió" to "dividiste", "se unió a" to "te

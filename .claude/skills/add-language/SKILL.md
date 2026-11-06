@@ -40,8 +40,13 @@ Every translator, human or agent, reads it first; without it each one picks its 
 
 - `core/model` `AppLanguage`: the new entry (its BCP-47 tag), the `fromTag` comment, and a test in `AppLanguageTest`
   for its tags and its `toTag`. `ProfileUiStateTest` lists every language the picker offers.
-- The picker draws each language in its own name: `LanguageSheet.kt` (Android), `ProfileView.swift` `LanguageName`
-  (Apple), `languageNames` in `ProfileScreen.tsx` (web).
+- The picker names each language in the app's language ("Inglês" in Portuguese, "English" in English), with the region
+  when the language is written for one ("Português (BR)"): a new language adds its name **to every existing language**,
+  and the existing languages' names to its own. Android: a `profile_language_<name>` string in
+  `android/feature/profile`'s `values`, `values-pt`, `values-es`, `values-fr` and the new `values-xx`, read by
+  `languageName` in `LanguageSheet.kt`. Apple: the English literal ("French") in `LanguageName` of `ProfileView.swift`
+  and its entry in `Localizable.xcstrings`. Web: a `profile_language<Name>` message in every dictionary and the
+  `languageNames` map of `ProfileScreen.tsx`. Decide with Pierre whether the language carries a region.
 - Web: `webApp/src/i18n/index.ts` (`Locale`, `messages`, `pickLocale`, `documentLanguages`) and the `isSupportedTag`
   pattern of `webApp/src/lib/currency.ts`, which keeps the currency names in the UI's language.
 - Android needs nothing else: `generateLocaleConfig` builds the per-app language list from the `values-xx` folders.

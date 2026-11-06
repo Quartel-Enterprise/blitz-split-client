@@ -3466,10 +3466,10 @@ class ActivityViewModelTest {
         occurredAt = NOW - 10 * MINUTE,
         code = ActivityEvent.SIMPLIFY_ON,
         debtsBefore = listOf(
-            ActivityDebt(CARLA_APE, BRUNO_APE, 6_400L),
-            ActivityDebt(BRUNO_APE, ME_APE, 6_400L),
+            ActivityDebt(CARLA_APE, BRUNO_APE, 6_400L, null),
+            ActivityDebt(BRUNO_APE, ME_APE, 6_400L, null),
         ),
-        debtsAfter = listOf(ActivityDebt(CARLA_APE, ME_APE, 6_400L)),
+        debtsAfter = listOf(ActivityDebt(CARLA_APE, ME_APE, 6_400L, null)),
     )
 
     private val pastelDeleted = event(
@@ -3586,6 +3586,8 @@ class ActivityViewModelTest {
         occurredAt = occurredAt,
         subject = subject,
         amountMinor = 10_000L,
+        currency = null,
+        previousCurrency = null,
         code = code,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
@@ -3610,6 +3612,7 @@ class ActivityViewModelTest {
         kind = kind,
         subject = "Mercado",
         amountMinor = 10_000L,
+        currency = null,
         code = null,
         fromMemberId = null,
         toMemberId = null,

@@ -54,5 +54,6 @@ class SetSimplifiesDebtsUseCase(
         fromMemberId = debt.fromMemberId,
         toMemberId = debt.toMemberId,
         amountMinor = debt.amountMinor,
+        currency = null,
     )
 }
