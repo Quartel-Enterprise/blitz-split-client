@@ -99,6 +99,9 @@ class JsRegisterPaymentState(
     val keyMethod: String,
     val defaultKey: JsReceiverKey?,
     val otherKeys: Array<JsReceiverKey>,
+    // Why: the form's Pix keys with Pix picked, or "Ana não tem chave Pix no app." (beta feedback 3 item 26).
+    val formPixKeys: Array<JsReceiverKey>,
+    val showsNoPixKeyNotice: Boolean,
     // Why: "Pix copia e cola" with the whole debt in it, and its QR code's modules row by row, pixQrSize by pixQrSize.
     val pixCode: String?,
     val pixQrSize: Int,
@@ -156,6 +159,8 @@ class RegisterPaymentPresenter(
                 keyMethod = state.shownKeyMethod.name,
                 defaultKey = state.defaultKey?.let(::toJsReceiverKey),
                 otherKeys = state.otherKeys.map(::toJsReceiverKey).toTypedArray(),
+                formPixKeys = state.formPixKeys.map(::toJsReceiverKey).toTypedArray(),
+                showsNoPixKeyNotice = state.showsNoPixKeyNotice,
                 pixCode = state.pixCode,
                 pixQrSize = state.pixQrCode?.size ?: 0,
                 pixQrModules = state.pixQrCode
@@ -233,6 +238,11 @@ class RegisterPaymentPresenter(
 
     fun trackOtherKeyCopy() {
         viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.OTHER_KEY))
+    }
+
+    // Why: one of the form's Pix keys, copied with Pix picked.
+    fun trackFormPixKeyCopy() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.FORM_PIX_KEY))
     }
 
     // Why: "Marcar como pago", once paid in the bank or the wallet.

@@ -267,6 +267,7 @@ class RegisterPaymentViewModel(
             isSaving = false,
             isLoaded = false,
             receiverKeys = Loadable.Loading,
+            areReceiverKeysUnknown = false,
             groupName = null,
             keyMethod = PaymentMethod.PIX,
             offersReceiverKeys = (route as? Route.RegisterPayment)?.offersReceiverKeys ?: true,
@@ -329,13 +330,17 @@ class RegisterPaymentViewModel(
         shownSimplifies = target.simplifiesDebts
         val download = firstDownload
         /*
-         * Why: someone with no account has no key to wait for; one with keys cached already shows them. Offline nothing
-         * is coming, so the form opens rather than a wait that blocks recording the payment.
+         * Why: before the account's copy is whole, no key cached says nothing of whether there are any, offline or back
+         * online with the copy still coming down; someone with no account has none to wait for.
          */
-        val awaitsKeys = download != null &&
-            !download.isWaitingForInternet &&
+        val areKeysUnknown = download != null &&
             target.toUserId != null &&
             receiverKeys.isEmpty()
+        /*
+         * Why: one with keys cached already shows them. Offline nothing is coming, so the form opens rather than a wait
+         * that blocks recording the payment.
+         */
+        val awaitsKeys = areKeysUnknown && download?.isWaitingForInternet == false
         uiState.update {
             // Why: once known, the keys never go back to loading.
             val wereKeysKnown = it.receiverKeys.isLoaded()
@@ -347,6 +352,7 @@ class RegisterPaymentViewModel(
                 debtMinor = target.debtMinor,
                 groupParts = target.groupParts,
                 receiverKeys = keys,
+                areReceiverKeysUnknown = areKeysUnknown,
                 /*
                  * Why: keys first known as none make the form stay, so a sync bringing the first never swaps it
                  * mid-typing; while they load, nothing is decided yet.

@@ -1034,6 +1034,8 @@ export const pt: Record<MessageKey, string> = {
   registerPayment_info: 'Vira um acerto no grupo: aparece em Despesas e dá para desfazer.',
   registerPayment_forOthers: 'Você está registrando por {from} e {to}.',
   registerPayment_offline: 'Sem internet: fica salvo no aparelho e sincroniza ao reconectar.',
+  registerPayment_pixKeys: 'Chaves Pix de {name}',
+  registerPayment_noPixKey: '{name} não tem chave Pix no app.',
   registerPayment_confirmReceived: 'Confirmar recebimento',
   registerPayment_confirmPaid: 'Confirmar pagamento',
   registerPayment_confirmOthers: 'Registrar pagamento',

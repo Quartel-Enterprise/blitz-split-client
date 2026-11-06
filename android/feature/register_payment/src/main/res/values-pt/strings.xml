@@ -57,6 +57,8 @@
     <string name="register_payment_pay_type_onchain">On-chain</string>
     <string name="register_payment_pay_otherwise">Paguei outro valor ou de outro jeito</string>
     <string name="register_payment_pay_copied">Copiado</string>
+    <string name="register_payment_pix_keys">Chaves Pix de %s</string>
+    <string name="register_payment_no_pix_key">%s não tem chave Pix no app.</string>
     <string name="register_payment_simplified_none">Dívida simplificada.</string>
     <string name="register_payment_simplified_new">Dívida simplificada: %1$s paga a %2$s o que devia a %3$s.</string>
     <string name="register_payment_simplified_new_you_pay">Dívida simplificada: você paga a %1$s o que devia a %2$s.</string>

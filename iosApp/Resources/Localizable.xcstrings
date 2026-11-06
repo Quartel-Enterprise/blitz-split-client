@@ -32311,6 +32311,57 @@
           }
         }
       }
+    },
+    "%@'s Pix keys" : {
+      "comment" : "Record payment, Pix picked: the receiver's Pix keys",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claves Pix de %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaves Pix de %@"
+          }
+        }
+      }
+    },
+    "%@ has no Pix key in the app." : {
+      "comment" : "Record payment, Pix picked: the receiver has no Pix key",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ no tiene clave Pix en la app."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ não tem chave Pix no app."
+          }
+        }
+      }
+    },
+    "Pix keys:" : {
+      "comment" : "Record payment on the Mac, Pix picked: the label of the receiver's Pix keys",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claves Pix:"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaves Pix:"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
