@@ -268,11 +268,22 @@ private struct ContactProfileContent: View {
                 }
             }
             .padding(20)
-            .frame(maxWidth: isInPane ? nil : ScreenLayout.singleColumnMaxWidth)
+            .frame(maxWidth: maxWidth)
             .frame(maxWidth: .infinity)
         }
         .scrollContentBackground(.hidden)
         .background(Palette.groupedBackground)
+    }
+
+    /// Pushed, the canvas' 520 pt column. Beside the list, the pane's whole width, which only a wide Mac window (full
+    /// screen) caps, centred, so the cards and the history never stretch across it.
+    private var maxWidth: CGFloat? {
+        guard isInPane else { return ScreenLayout.singleColumnMaxWidth }
+        #if os(macOS)
+        return 640
+        #else
+        return nil
+        #endif
     }
 }
 
@@ -649,46 +660,47 @@ private struct AddToGroupSheet: View {
     let draft: AddToGroupDraft
     let contact: Contact
 
+    #if os(macOS)
+    /// The list takes the keys as the sheet opens, so the arrows pick a group before any click.
+    @FocusState private var isListFocused: Bool
+    #endif
+
     var body: some View {
         NavigationStack {
-            List {
+            list {
                 Section {
                     ForEach(draft.options, id: \.groupId) { option in
+                        #if os(macOS)
+                        // The list's own selection picks it, by a click or the arrow keys; a group they're already
+                        // in can't be picked
+                        optionLabel(option)
+                            // Dimmed as the disabled button iOS draws
+                            .opacity(option.isAlreadyIn ? 0.5 : 1)
+                            .tag(option.groupId)
+                            .selectionDisabled(option.isAlreadyIn)
+                        #else
                         Button {
                             model.send(ContactProfileUiEventOnAddGroupPicked(groupId: option.groupId))
                         } label: {
-                            HStack(spacing: 12) {
-                                GroupAvatar(initials: option.initials, color: option.color, size: 32)
-                                    .accessibilityHidden(true)
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(verbatim: option.name)
-                                    Group {
-                                        if option.isAlreadyIn {
-                                            Text("Already in the group")
-                                        } else {
-                                            Text("\(Int(option.memberCount)) members")
-                                        }
-                                    }
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                                }
-                                Spacer(minLength: 8)
-                                if option.groupId == draft.selectedGroupId {
-                                    Image(systemName: "checkmark")
-                                        .fontWeight(.semibold)
-                                        .foregroundStyle(Palette.accent)
-                                }
-                            }
-                            .contentShape(.rect)
+                            optionLabel(option)
                         }
                         .buttonStyle(.plain)
                         .disabled(option.isAlreadyIn)
                         .accessibilityAddTraits(option.groupId == draft.selectedGroupId ? .isSelected : [])
+                        #endif
                     }
                 } footer: {
                     Text(verbatim: footer)
                 }
             }
+            #if os(macOS)
+            // Return or a double click adds them, as Add does
+            .contextMenu(forSelectionType: String.self) { _ in
+                EmptyView()
+            } primaryAction: { _ in
+                if draft.canAdd { model.send(ContactProfileUiEventOnAddToGroupConfirmed.shared) }
+            }
+            #endif
             .navigationTitle(Text("Add \(contact.name) to a group"))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -712,6 +724,53 @@ private struct AddToGroupSheet: View {
         #else
         .frame(width: 440, height: 440)
         #endif
+    }
+
+    #if os(macOS)
+    private func list(@ViewBuilder content: () -> some View) -> some View {
+        List(selection: selection, content: content)
+            .focused($isListFocused)
+            .onAppear { isListFocused = true }
+    }
+
+    private var selection: Binding<String?> {
+        Binding(
+            get: { draft.selectedGroupId },
+            set: { groupId in
+                if let groupId { model.send(ContactProfileUiEventOnAddGroupPicked(groupId: groupId)) }
+            },
+        )
+    }
+    #else
+    private func list(@ViewBuilder content: () -> some View) -> some View {
+        List(content: content)
+    }
+    #endif
+
+    private func optionLabel(_ option: AddGroupOption) -> some View {
+        HStack(spacing: 12) {
+            GroupAvatar(initials: option.initials, color: option.color, size: 32)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(verbatim: option.name)
+                Group {
+                    if option.isAlreadyIn {
+                        Text("Already in the group")
+                    } else {
+                        Text("\(Int(option.memberCount)) members")
+                    }
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+            if option.groupId == draft.selectedGroupId {
+                Image(systemName: "checkmark")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Palette.accent)
+            }
+        }
+        .contentShape(.rect)
     }
 
     private var footer: String {

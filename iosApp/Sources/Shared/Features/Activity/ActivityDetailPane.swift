@@ -9,22 +9,33 @@ struct ActivityDetailPane: View {
 
     /// The narrowest Mac window content that still fits the inspector beside the list.
     static let minimumScreenWidth: CGFloat = 700
+    /// The widest the item reads in a wide Mac window (full screen), centred in the column: the before and after table
+    /// and the related items no longer stretch across it. An iPad's column is never that wide.
+    #if os(macOS)
+    static let maxContentWidth: CGFloat = 640
+    #else
+    static let maxContentWidth: CGFloat = .infinity
+    #endif
 
     var body: some View {
         ScrollView {
-            if let emptyState = model.state.emptyState {
-                ActivityEmptyView(model: model, emptyState: emptyState)
-                    .padding(.top, 40)
-            } else if let item = model.state.selectedItem {
-                ActivityItemDetail(model: model, item: item)
-                    .id(item.id)
-            } else {
-                Text("Item details show up here.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 80)
+            Group {
+                if let emptyState = model.state.emptyState {
+                    ActivityEmptyView(model: model, emptyState: emptyState)
+                        .padding(.top, 40)
+                } else if let item = model.state.selectedItem {
+                    ActivityItemDetail(model: model, item: item)
+                        .id(item.id)
+                } else {
+                    Text("Item details show up here.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 80)
+                }
             }
+            .frame(maxWidth: Self.maxContentWidth)
+            .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .scrollContentBackground(.hidden)
@@ -652,13 +663,24 @@ extension FocusedValues {
     @Entry var activityModel: ActivityModel?
 }
 
-/// Edit › Mark All as Read, as the toolbar's button; disabled with nothing unread or Activity not in front.
+/// Edit › Mark All as Read, as the toolbar's button; disabled with nothing unread or Activity not in front. View ›
+/// Refresh (⌘R) syncs, as pulling the feed down does on iPhone and iPad; disabled while it syncs.
 struct ActivityCommands: Commands {
     /// Profile › Language, whose change draws the menu again: the menu bar has no `locale` of the windows to follow.
     let language: AppLanguage
     @FocusedValue(\.activityModel) private var model
 
     var body: some Commands {
+        CommandGroup(before: .toolbar) {
+            Button {
+                model?.send(ActivityUiEventOnRefresh.shared)
+            } label: {
+                Text("Refresh", bundle: .appLanguage)
+            }
+            .keyboardShortcut("r", modifiers: .command)
+            .disabled(model == nil || model?.state.isRefreshing == true)
+            Divider()
+        }
         CommandGroup(after: .pasteboard) {
             Divider()
             Button {

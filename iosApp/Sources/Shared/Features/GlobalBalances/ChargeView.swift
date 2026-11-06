@@ -47,7 +47,8 @@ final class ChargeModel {
 /// sheet (the Share menu on the Mac) and Copy puts the text on the pasteboard. Its own route, a sheet over the screen
 /// that opened it (Balances, a contact's profile): about 540 pt in the middle with an iPad's room, the whole screen on
 /// an iPhone lying down (8.2), split in two there: whom and the message on the left, the Pix key and the buttons on the
-/// right.
+/// right. The Mac's sheet draws its title on top and Close, Copy message and Send in a row at the bottom, as Record
+/// payment's, Send on Return.
 struct ChargeView: View {
     let route: RouteCharge
 
@@ -66,10 +67,10 @@ struct ChargeView: View {
             }
         }
         // No title until Room says whom: a nil name would read "Former member" for a moment
-        .navigationTitle(model?.state.charge.map { Text("Request from \(PaymentCopy.name($0.name))") } ?? Text(verbatim: ""))
+        .navigationTitle(model?.state.charge.map { ChargeTitle.text($0) } ?? Text(verbatim: ""))
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
-        #endif
+        // The Mac's Close sits in the sheet's bottom row instead
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Close", systemImage: "xmark", role: .cancel) {
@@ -77,6 +78,7 @@ struct ChargeView: View {
                 }
             }
         }
+        #endif
         .glassToast([
             GlassToastMessage(text: "Copied", trigger: model?.copiedCount ?? 0),
         ])
@@ -94,12 +96,20 @@ struct ChargeView: View {
     }
 }
 
+private enum ChargeTitle {
+    static func text(_ charge: ChargeDraft) -> Text {
+        Text("Request from \(PaymentCopy.name(charge.name))")
+    }
+}
+
 private struct ChargeContent: View {
     let model: ChargeModel
     let charge: ChargeDraft
 
+    #if os(iOS)
     @Environment(\.windowLayout) private var window
     @State private var layout = ScreenLayout()
+    #endif
 
     private var name: String {
         PaymentCopy.name(charge.name)
@@ -123,18 +133,58 @@ private struct ChargeContent: View {
         )
     }
 
+    #if os(iOS)
     /// The sheet's own size: the whole screen on an iPhone lying down splits in two; a form sheet keeps one column.
     /// Until the sheet has measured itself, the window it opens over decides, so it never opens in one column first.
     private var usesTwoColumns: Bool {
-        #if os(iOS)
         let sheet = layout.size == .zero ? window : layout
         return sheet.usesTwoColumns && !sheet.isLarge
+    }
+    #endif
+
+    var body: some View {
+        #if os(macOS)
+        macBody
         #else
-        false
+        phoneBody
         #endif
     }
 
-    var body: some View {
+    #if os(macOS)
+    /// The title, the form, and the buttons in a row at the bottom, as Record payment's sheet.
+    private var macBody: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ChargeTitle.text(charge)
+                .font(.title2.bold())
+                .padding([.horizontal, .top], 20)
+                .accessibilityAddTraits(.isHeader)
+            Form {
+                whomSection
+                messageSection(includesPixKey: true)
+            }
+            .formStyle(.grouped)
+            HStack(spacing: 8) {
+                Spacer()
+                Button("Close") {
+                    model.send(ChargeUiEventOnDismissed.shared)
+                }
+                .keyboardShortcut(.cancelAction)
+                Button("Copy message") {
+                    model.send(ChargeUiEventOnCopyClicked(message: message))
+                }
+                // The ViewModel records the charge in Activity and hands the message back to share (SystemShare)
+                Button("Send") {
+                    model.send(ChargeUiEventOnShareClicked(message: message))
+                }
+                .buttonStyle(.borderedProminent)
+                .prominentLabel()
+                .keyboardShortcut(.defaultAction)
+            }
+            .padding(20)
+        }
+    }
+    #else
+    private var phoneBody: some View {
         Group {
             if usesTwoColumns {
                 TwoColumnsLayout(spacing: 0) {
@@ -171,6 +221,7 @@ private struct ChargeContent: View {
         .measuringScreenLayout($layout)
         .formStyle(.grouped)
     }
+    #endif
 
     /// Whom: the face and what they owe from which groups, with why a guest's message says more.
     private var whomSection: some View {
@@ -219,6 +270,7 @@ private struct ChargeContent: View {
         .disabled(!charge.canTogglePixKey)
     }
 
+    #if os(iOS)
     private var buttons: some View {
         HStack(spacing: 10) {
             Button {
@@ -243,4 +295,5 @@ private struct ChargeContent: View {
         .controlSize(.large)
         .buttonBorderShape(.capsule)
     }
+    #endif
 }

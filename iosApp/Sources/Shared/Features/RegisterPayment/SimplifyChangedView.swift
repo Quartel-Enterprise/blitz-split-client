@@ -152,7 +152,6 @@ struct MacSimplifyChanged: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(!state.canPayAnyway)
             }
-            .controlSize(.large)
         }
         .padding(20)
         .frame(width: 440)

@@ -194,6 +194,10 @@ struct ProfileView: View {
                 LegalFooter(model: model)
             }
             .formStyle(.grouped)
+            // A wide Ajustes window (full screen) keeps the form at a settings pane's width, centred, rather than
+            // stretching its rows across it
+            .frame(maxWidth: 720)
+            .frame(maxWidth: .infinity)
             // Also as the form comes back from Ajustes' Categories, which drew the map in its place
             .onChange(of: scrollRequest, initial: true) {
                 guard let pane, scrollRequest > 0 else { return }
@@ -670,6 +674,14 @@ private struct PaymentKeysSection: View {
                         PaymentKeyRow(key: key)
                     }
                     .buttonStyle(.plain)
+                    #if os(macOS)
+                    // A right-click opens the key as its click does, where its default and Delete live
+                    .contextMenu {
+                        Button("Edit…", systemImage: "pencil") {
+                            model.send(ProfileUiEventOnPaymentKeyClicked(keyId: key.id))
+                        }
+                    }
+                    #endif
                 }
             } else {
                 // A restored account's keys come with its first full sync: never "no key" before them

@@ -168,7 +168,7 @@ struct GroupsView: View {
                 Button("New group", systemImage: "plus.square.on.square") {
                     model.send(GroupsUiEventOnCreateGroupClicked.shared)
                 }
-                .keyboardShortcut("n", modifiers: [.command, .shift])
+                // File › New Group (⇧⌘N) runs it (`NewItemCommands`)
                 .help(Text("New group (⇧⌘N)"))
                 profileButton
             }
@@ -177,7 +177,7 @@ struct GroupsView: View {
                     SplitBillButton {
                         model.send(GroupsUiEventOnSplitBillClicked.shared)
                     }
-                    .keyboardShortcut("n", modifiers: .command)
+                    // File › Split a Bill (⌘N) runs it (`NewItemCommands`)
                     .help(Text("Split a bill (⌘N)"))
                 }
             }

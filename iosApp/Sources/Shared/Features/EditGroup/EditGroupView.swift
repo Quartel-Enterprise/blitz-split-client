@@ -225,8 +225,14 @@ private struct EditGroupForm: View {
         }
         Section {
             HStack(spacing: 8) {
-                TextField("Group name", text: nameBinding.firstLetterCapitalized)
+                // The prompt, not a label: the section's header already says "Group name", which the Mac's grouped
+                // form would repeat on the field's left, the name pushed to its right
+                TextField("Group name", text: nameBinding.firstLetterCapitalized, prompt: Text("Group name"))
+                    .labelsHidden()
                     .capitalizesFirstLetter()
+                    #if os(macOS)
+                    .multilineTextAlignment(.leading)
+                    #endif
                     .accessibilityHint(state.showsNameError ? Text(nameErrorText) : Text(""))
                 Text(verbatim: "\(state.nameLength)/\(state.maxNameLength)")
                     .font(.subheadline)

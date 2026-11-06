@@ -601,7 +601,6 @@ private struct MacPersonalInvite: View {
                 .keyboardShortcut(.defaultAction)
                 .accessibilityAddTraits(.updatesFrequently)
             }
-            .controlSize(.large)
             .padding(.top, 4)
         }
         .padding(20)

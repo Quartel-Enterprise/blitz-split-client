@@ -459,8 +459,8 @@ struct HomeView: View {
         ToolbarItem(placement: .primaryAction) { profileButton }
         if state.showsSplitBillButton {
             ToolbarItem(placement: .primaryAction) {
+                // File › Split a Bill (⌘N) runs it (`NewItemCommands`)
                 splitBillButton
-                    .keyboardShortcut("n", modifiers: .command)
                     .help(Text("Split a bill (⌘N)"))
             }
         }

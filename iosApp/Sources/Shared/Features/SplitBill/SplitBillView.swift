@@ -1157,7 +1157,6 @@ private struct MacBillForm: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(!state.canSave)
             }
-            .controlSize(.large)
         }
         .padding(20)
         // A new bill opens on the description, which comes before the amount (beta feedback 10)
@@ -1335,7 +1334,6 @@ private struct MacGroupPicker: View {
                 .prominentLabel()
                 .keyboardShortcut(.defaultAction)
             }
-            .controlSize(.large)
         }
         .padding(20)
         .frame(width: 420)
@@ -1387,7 +1385,6 @@ private struct MacSeveralPayers: View {
                     .keyboardShortcut(.defaultAction)
                     .disabled(!amounts.addsUp)
                 }
-                .controlSize(.large)
             }
             .padding(20)
             .frame(width: 420)

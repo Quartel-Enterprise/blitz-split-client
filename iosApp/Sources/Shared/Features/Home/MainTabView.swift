@@ -110,6 +110,10 @@ struct MainTabView: View {
         // ⌘K (Edit › Search) opens the search tab, or brings the focus back to its field; never under a sheet, which
         // the tab's move would close
         .focusedSceneValue(\.openSearch, searchCommand)
+        // File › Split a Bill (⌘N) and New Group (⇧⌘N): the toolbar's buttons of the screen in front
+        .focusedSceneValue(\.newItemActions, newItemActions)
+        // Which pushed screen publishes its menu commands (a group's ⌘N, Activity's ⌘R)
+        .environment(\.frontRoute, path.last)
         // The open groups as Groups lists them, where the boards draw them: over Groups and a group's screens
         .tabViewSidebarFooter {
             if showsOpenGroups {
@@ -314,6 +318,26 @@ struct MainTabView: View {
         guard !NSApplication.hasSheetOpen else { return }
         searchFocusRequest += 1
         tabSelection.wrappedValue = .search
+    }
+
+    /// What ⌘N and ⇧⌘N run: Home's "Split a bill" while Home is in front, Groups' "Split a bill" and "New group" while
+    /// Groups is, and on a group's screen its own button (`GroupSplitBillCommand`, matched against `front`). Nil while a
+    /// sheet covers the window, the recovery code's prompt included.
+    private var newItemActions: NewItemActions? {
+        guard isWindowUncovered, !showsRecoveryCode else { return nil }
+        let isGroupsInFront = selectedTab == .groups && path.count == 1
+        var splitBill: (() -> Void)?
+        var newGroup: (() -> Void)?
+        if path.isEmpty, home.state.showsSplitBillButton {
+            splitBill = { home.send(HomeUiEventOnSplitBillClicked.shared) }
+        }
+        if isGroupsInFront {
+            if model.state.showsSplitBillButton {
+                splitBill = { model.send(GroupsUiEventOnSplitBillClicked.shared) }
+            }
+            newGroup = { model.send(GroupsUiEventOnCreateGroupClicked.shared) }
+        }
+        return NewItemActions(front: path.last, splitBill: splitBill, newGroup: newGroup)
     }
 
     /// "Open" shows while Groups or a group's screen is in front, whichever tab opened the group.

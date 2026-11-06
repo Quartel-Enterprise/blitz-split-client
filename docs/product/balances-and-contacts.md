@@ -20,8 +20,9 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     560 dp dialog on its tablets, a book's right half and a tabletop's top half (its right half above the hinge lying
     down) with that screen under the scrim, a
     sheet on iOS (the whole screen on an iPhone lying down, whom and the message beside the Pix key and the buttons;
-    a 540 pt form sheet in the middle with an iPad's room) and macOS, a 480 px dialog on the web (a drawer on a phone). It all
-    works offline on the device's data. Android draws "Split a bill" on Balances as on its other three tabs (the FAB on a
+    a 540 pt form sheet in the middle with an iPad's room) and macOS, a 480 px dialog on the web (a drawer on a phone);
+    the Mac's sheet draws its title on top and Close, "Copy message" and "Send" in a row at the bottom, as Record
+    payment's, Send on Return and Close on Esc. It all works offline on the device's data. Android draws "Split a bill" on Balances as on its other three tabs (the FAB on a
     phone upright, the rail's button anywhere wider, `GlobalBalancesUiEvent.OnSplitBillClicked`; the beta's feedback),
     asking the group first with the most recently used one marked, once there is a group; the Apple apps and the web
     keep it on Home and Groups. An Android tablet lying down, an unfolded book, an
@@ -30,7 +31,10 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     filter hides the pick): their groups by name, "Carla owes you R$ 32,90" with the actions, "By group" (a table on
     the web) and "The net already offsets the groups: Request and Received use R$ 32,90. The app records a payment in each group." ("Only one group open with Ana." for one group); the empty states take that pane. Everywhere else one
     column with "By group" in the row, the filter beside the list on a phone lying down (on an iPhone, Overall balance
-    and the filter stay still in a 300 pt column on the left while the people scroll on the right).
+    and the filter stay still in a 300 pt column on the left while the people scroll on the right). On the Mac the
+    arrow keys move through the people, as through Activity's items (beside the inspector they pick the one it shows;
+    a narrow window only marks the row), a double click or Return opens the person's profile, and a right-click offers
+    "Got paid" and "Request" for someone who owes you, else "Settle up", then "Open Ana's profile".
   - A person tapped wherever a bill, a list or the feed shows them opens their profile, as Contacts opens it (Pierre's
     call, beta feedback 18, `Route.ContactProfile` by Balances' person key, `openPersonProfile`): Bill's split rows,
     its lone payer ("Ana paid"; several payers each have their row), a comment's author and a History line's
@@ -53,11 +57,16 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     (`ContactsUiEvent.OnSplitBillClicked`), beside a profile the pane shows as well. Search, the navigation's item (the sidebar's first on the Mac), opens the home's "Search" (5.2) over Contacts (Pierre's call: the people are in its People, each once opening this profile, then once per group opening its Members), and the agenda is searched only in "Invite from contacts". "Hidden" holds whoever
     was hidden ("Hide from Contacts", only while the balance with them is zero, asked first), synced to the user's
     other devices (`hidden_contact`, the server's `hidden_contacts`), with "Show"; someone hidden comes back by
-    themselves once a bill shared with them is saved later or the balance opens again. The profile
+    themselves once a bill shared with them is saved later or the balance opens again. On the Mac the arrow keys move
+    through the people (the hidden ones too, once open), as through Balances': beside the list each opens there as a
+    click does, and a narrow window only marks the row, Return or a double click opening it over the list; a right-click
+    offers "Open Ana's profile" (and "Show in Contacts" for someone hidden): Contacts' list has no Settle up or
+    Request of its own, which stay on the profile. Beside the list a wide window (full screen) keeps the profile at
+    640 pt, centred. The profile
     (`Route.ContactProfile`) shows the net ("Already offset across 3 groups"), Request (Balances' message, opened over
     the profile), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; either
     keeps their name even when someone in the group has it too, beta feedback 3 item 29; a group they're
-    in shows disabled), "Groups in common" and the latest four of "History with Carla" (bills that move something
+    in shows disabled; on the Mac the arrow keys pick the group and Return adds them), "Groups in common" and the latest four of "History with Carla" (bills that move something
     between the two and their payments); "See all" opens Activity on that person. A guest's profile
     offers "Invite Diego" (their personal link) and "Merge with an account" (online only): the server makes a
     request and a single use personal link, and once the guest joins through it everything in that name, in every

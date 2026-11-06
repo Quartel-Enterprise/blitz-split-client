@@ -61,19 +61,26 @@ struct PickPaymentView: View {
 private struct PickPaymentList: View {
     let model: PickPaymentModel
 
+    #if os(macOS)
+    /// The pair the arrow keys moved to; Return or a double click records it, as a click does.
+    @State private var selection: PairChoice?
+    /// The list takes the keys as the sheet opens, so the arrows work before any click.
+    @FocusState private var isListFocused: Bool
+    #endif
+
     var body: some View {
         let state = model.state
-        List {
+        list {
             ForEach(state.groups, id: \.groupId) { group in
                 Section {
                     ForEach(group.pairs, id: \.self) { pair in
-                        PairRow(pair: pair, currency: group.currency) {
-                            model.send(PickPaymentUiEventOnPairClicked(
-                                groupId: group.groupId,
-                                fromMemberId: pair.fromMemberId,
-                                toMemberId: pair.toMemberId,
-                            ))
-                        }
+                        let choice = PairChoice(
+                            groupId: group.groupId,
+                            fromMemberId: pair.fromMemberId,
+                            toMemberId: pair.toMemberId,
+                        )
+                        PairRow(pair: pair, currency: group.currency) { pick(choice) }
+                            .tag(choice)
                     }
                 } header: {
                     HStack(spacing: 8) {
@@ -84,6 +91,13 @@ private struct PickPaymentList: View {
                 }
             }
         }
+        #if os(macOS)
+        .contextMenu(forSelectionType: PairChoice.self) { _ in
+            EmptyView()
+        } primaryAction: { choices in
+            if let choice = choices.first { pick(choice) }
+        }
+        #endif
         .overlay {
             if state.showsEmpty {
                 ContentUnavailableView {
@@ -119,12 +133,40 @@ private struct PickPaymentList: View {
                     model.send(PickPaymentUiEventOnDismissed.shared)
                 }
                 .keyboardShortcut(.cancelAction)
-                .controlSize(.large)
             }
             .padding(20)
         }
         #endif
     }
+}
+
+private extension PickPaymentList {
+    #if os(macOS)
+    func list(@ViewBuilder content: () -> some View) -> some View {
+        List(selection: $selection, content: content)
+            .focused($isListFocused)
+            .onAppear { isListFocused = true }
+    }
+    #else
+    func list(@ViewBuilder content: () -> some View) -> some View {
+        List(content: content)
+    }
+    #endif
+
+    func pick(_ choice: PairChoice) {
+        model.send(PickPaymentUiEventOnPairClicked(
+            groupId: choice.groupId,
+            fromMemberId: choice.fromMemberId,
+            toMemberId: choice.toMemberId,
+        ))
+    }
+}
+
+/// A pair of a group, which the Mac's list selects by.
+private struct PairChoice: Hashable {
+    let groupId: String
+    let fromMemberId: String
+    let toMemberId: String
 }
 
 /// "Ana → You": both faces, then "Ana owes you $162.30", "You owe Bruno $98.00" or "Carla owes Bruno $30.00".

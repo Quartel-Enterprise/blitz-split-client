@@ -15,7 +15,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Save (✓). The Mac's profile is
     Settings (⌘,), the app's Settings window, never pushed: whatever opens the profile (any tab's avatar, "Protect your access", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
     scrolls the form to the one picked, on every click (hidden under 700 pt; its button at the leading edge of the
-    detail's toolbar, right of the divider, as in the main window, Pierre's beta feedback), a key and Delete account open as sheets
+    detail's toolbar, right of the divider, as in the main window, Pierre's beta feedback; the form 720 pt at most,
+    centred, in a wider window), a key (also from its row's right-click, "Edit…") and Delete account open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
   - "Sign out" and "Delete account" are two buttons for every account the server keeps, an anonymous one too, as for

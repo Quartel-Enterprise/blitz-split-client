@@ -105,13 +105,13 @@ private struct InAppUpdateContent: View {
                 }
                 .buttonStyle(.glassProminent)
                 .prominentLabel()
-                .controlSize(.large)
+                .sheetButtonSize()
                 .keyboardShortcut(.defaultAction)
                 Button("Not now") {
                     model.send(InAppUpdateUiEventOnDismissed.shared)
                 }
                 .buttonStyle(.borderless)
-                .controlSize(.large)
+                .sheetButtonSize()
                 .keyboardShortcut(.cancelAction)
             }
             .padding(.top, 8)

@@ -26,7 +26,9 @@ The feed, unread state, real time and push notifications.
     not up yet on top of Today as "Waiting to send", and says older ones load when the internet is back; a device that
     never synced says only what was done on it shows. A tablet lying down, an unfolded book, an iPad lying down, the
     web's desktop and the Mac's inspector show the item picked beside the list ("What changed", "More in" the bill's
-    other events). Comments lists the comments on bills ("Carla commented on Dinner", the text under it as edited,
+    other events), at 640 pt at most, centred, in a wide Mac window (full screen). The Mac's View › Refresh (⌘R)
+    syncs the feed, as pulling it down does on iPhone and iPad; it and Edit › Mark All as Read work only while
+    Activity is the screen in front, never from under a screen it opened nor under a sheet. Comments lists the comments on bills ("Carla commented on Dinner", the text under it as edited,
     "Carla deleted a comment on Dinner" once deleted), which open the bill's screen at the comment; a bill's attachments and its share link show only in its screen's History, never in the
     feed nor its badge (`ActivityKind.isInFeed`).
   - In Spanish the verb of an Activity row and of a bill's History line is conjugated to "tú" when the user is the

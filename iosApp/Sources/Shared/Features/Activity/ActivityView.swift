@@ -75,6 +75,10 @@ struct ActivityView: View {
     @State private var model: ActivityModel?
     /// The whole screen, the column beside the list included, so showing it never changes what decides it.
     @State private var layout = ScreenLayout()
+    #if os(macOS)
+    @Environment(\.frontRoute) private var frontRoute
+    @Environment(\.isWindowUncovered) private var isWindowUncovered
+    #endif
 
     /// The item beside the list: lying down with an iPad's room (an iPad, an iPhone Duo open), a Mac window wide
     /// enough for the inspector.
@@ -147,7 +151,9 @@ struct ActivityView: View {
                 ActivityMacToolbar(model: model, showsTitles: showsDetail)
             }
         }
-        .focusedSceneValue(\.activityModel, model)
+        // Edit › Mark All as Read and View › Refresh, only while Activity is in front, never from under what it
+        // opened nor under a sheet
+        .focusedSceneValue(\.activityModel, isWindowUncovered && frontRoute == .activity(route) ? model : nil)
         #endif
         .alert(
             model?.state.deletedNotice.map { Text(ActivityCopy.deletedTitle($0)) } ?? Text(verbatim: ""),

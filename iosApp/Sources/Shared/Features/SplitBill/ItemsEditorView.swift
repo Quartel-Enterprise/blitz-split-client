@@ -797,7 +797,6 @@ struct MacItemsEditor: View {
                     .keyboardShortcut(.defaultAction)
                     .disabled(!items.addsUp)
                 }
-                .controlSize(.large)
             }
             .padding(20)
             .sheet(isPresented: itemShown) {
@@ -957,7 +956,6 @@ struct MacItemEditor: View {
                     .keyboardShortcut(.defaultAction)
                     .disabled(!editor.canSave)
                 }
-                .controlSize(.large)
             }
             .padding(20)
             .frame(width: 540)

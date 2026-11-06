@@ -85,6 +85,7 @@ private struct GroupScreenBars: ViewModifier {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     #else
     @Environment(\.isNarrowWindow) private var isNarrowWindow
+    @Environment(\.frontRoute) private var frontRoute
     #endif
     /// An iPhone Duo's vertical bar (iOS 27.1), which takes the main button as its plus alone.
     @State private var hasVerticalBar = false
@@ -103,6 +104,13 @@ private struct GroupScreenBars: ViewModifier {
             .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
             #else
             .navigationSubtitle(header.map { groupMeta($0, hasExpenses: hasExpenses) } ?? "")
+            // File › Split a Bill (⌘N), only while this screen is the one in front
+            .focusedSceneValue(
+                \.groupSplitBill,
+                isLoaded && showsSplitBill && frontRoute == host
+                    ? GroupSplitBillCommand(host: host, run: actions.splitBill)
+                    : nil,
+            )
             #endif
             .toolbar { toolbar }
     }
@@ -154,9 +162,8 @@ private struct GroupScreenBars: ViewModifier {
         }
         #else
         ToolbarItem(placement: .primaryAction) {
-            // ⌘N, as on Home and Groups: a bill in this group
+            // File › Split a Bill (⌘N) runs it, as on Home and Groups: a bill in this group (`groupSplitBill`)
             splitBillButton
-                .keyboardShortcut("n", modifiers: .command)
                 .help(Text("Split a bill (⌘N)"))
         }
         #endif

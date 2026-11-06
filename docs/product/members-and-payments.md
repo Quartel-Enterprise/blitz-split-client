@@ -76,7 +76,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     "Record payment" on top, who and how much above the hinge, how, when and the buttons under it, while Home's
     "Who paid whom?" stays a dialog there, being short); a sheet on
     iOS (in two columns on an iPhone lying down, its confirm the bar's ✓; the 540×620 form sheet with an iPad's room,
-    Home's "Who paid whom?" too) and macOS, a dialog on the web (a drawer on a phone). It works
+    Home's "Who paid whom?" too) and macOS, a dialog on the web (a drawer on a phone); the Mac's "Who paid whom?"
+    takes the arrow keys as it opens, Return or a double click recording the pair picked, as a click does. It works
     offline. A debt with someone no longer in the group stays until it is paid: the form shows them as "Former member"
     and closes only once the debt or the group is gone. A payment is never edited: "Ana's payment recorded."
     offers "Undo", and the payment shows in Expenses as a "payment", where tapping it asks "Delete this payment?" (a
@@ -103,7 +104,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pay Ana · R$ 98"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Edit group, Leave group and Delete group. "Edit
-    group" (`Route.EditGroup`) has New group's fields, the icon being a color or a photo (6.4d): on
+    group" (`Route.EditGroup`) has New group's fields (its name under the "Group name" header alone, the field's own
+    label hidden, which the Mac's form drew again on the field's left), the icon being a color or a photo (6.4d): on
     Android and iOS the avatar or "Change icon or photo" opens "Group icon" (Android's bottom sheet: the group's
     square in the color picked, Color, "Choose photo", "Take photo" and "Use this icon", a 480 dp dialog where Edit group is one, in a book's right
     half; iOS's medium sheet: the colors as tiles, the photo's two
