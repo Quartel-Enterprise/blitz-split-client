@@ -37,3 +37,7 @@ internal fun SplitBillUiState.withAmountTyped(
     amountText = TypedText.toAmountText(amountText, text, currency, showsSats, decimalSeparator),
     hasEditedAmount = true,
 ).withBillTotal(amountAnchor, decimalSeparator)
+
+// Why: the parts of "Valores" as they are, which a new total rescales from; none unless they add up.
+internal fun SplitBillUiState.valoresAnchorOrNull(): Pair<Long, List<SplitEntry>>? =
+    split.takeIf { it.mode == SplitMode.AMOUNT && it.addsUp && it.totalMinor > 0 }?.let { it.totalMinor to it.entries }

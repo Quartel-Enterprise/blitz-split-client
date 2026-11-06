@@ -129,7 +129,6 @@ class JsSplitBillState(
     val canChangeGroup: Boolean,
     // Why: the group "Rachar em qual grupo?" marks while it is open, null while it is closed.
     val groupSelection: String?,
-    // Why: the bill's ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
     val currencies: Array<String>,
