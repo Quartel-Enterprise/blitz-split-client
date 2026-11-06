@@ -664,7 +664,7 @@ extension FocusedValues {
 }
 
 /// Edit › Mark All as Read, as the toolbar's button; disabled with nothing unread or Activity not in front. View ›
-/// Refresh (⌘R) syncs, as pulling the feed down does on iPhone and iPad; disabled while it syncs.
+/// Refresh (⌘R) syncs, as pulling the feed down does on iPhone and iPad; disabled while it syncs or offline.
 struct ActivityCommands: Commands {
     /// Profile › Language, whose change draws the menu again: the menu bar has no `locale` of the windows to follow.
     let language: AppLanguage
@@ -678,7 +678,8 @@ struct ActivityCommands: Commands {
                 Text("Refresh", bundle: .appLanguage)
             }
             .keyboardShortcut("r", modifiers: .command)
-            .disabled(model == nil || model?.state.isRefreshing == true)
+            // Offline the ViewModel refuses it, as pulling down ends at once
+            .disabled(model?.state.isOnline != true || model?.state.isRefreshing == true)
             Divider()
         }
         CommandGroup(after: .pasteboard) {

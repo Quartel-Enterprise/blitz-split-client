@@ -697,8 +697,10 @@ private struct AddToGroupSheet: View {
             // Return or a double click adds them, as Add does
             .contextMenu(forSelectionType: String.self) { _ in
                 EmptyView()
-            } primaryAction: { _ in
-                if draft.canAdd { model.send(ContactProfileUiEventOnAddToGroupConfirmed.shared) }
+            } primaryAction: { groupIds in
+                // Only the group picked: a double click on one they're already in never adds them to another
+                guard let groupId = groupIds.first, groupId == draft.selectedGroupId, draft.canAdd else { return }
+                model.send(ContactProfileUiEventOnAddToGroupConfirmed.shared)
             }
             #endif
             .navigationTitle(Text("Add \(contact.name) to a group"))

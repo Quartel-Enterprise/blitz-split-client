@@ -314,6 +314,7 @@ private struct InviteButtons: View {
         #endif
     }
 
+    #if os(iOS)
     private var phoneButtons: some View {
         let state = model.state
         return VStack(spacing: spacing) {
@@ -349,6 +350,7 @@ private struct InviteButtons: View {
             AddWithoutAppButton(model: model)
         }
     }
+    #endif
 }
 
 #if os(macOS)
