@@ -1005,7 +1005,7 @@ export const pt: Record<MessageKey, string> = {
   payment_youPaid: 'Você pagou {name}',
   payment_paid: '{from} pagou {to}',
   payment_meta: '{time} · Acerto · {method}',
-  payment_detailsMeta: '{date}, {time} · Acerto · {method}',
+  payment_detailsMeta: '{when} · Acerto · {method}',
   payment_tag: 'acerto',
   payment_methodPix: 'Pix',
   payment_methodCash: 'Dinheiro',

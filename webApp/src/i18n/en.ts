@@ -1004,7 +1004,7 @@ export const en = {
   payment_youPaid: 'You paid {name}',
   payment_paid: '{from} paid {to}',
   payment_meta: '{time} · Payment · {method}',
-  payment_detailsMeta: '{date}, {time} · Payment · {method}',
+  payment_detailsMeta: '{when} · Payment · {method}',
   payment_tag: 'payment',
   payment_methodPix: 'Pix',
   payment_methodCash: 'Cash',

@@ -42,6 +42,8 @@ class JsExpenseRow(
 class JsPaymentRow(
     val id: String,
     val paidAt: Double,
+    // Why: "today", "yesterday" or "other", as a day's is.
+    val paidDay: String,
     val fromName: String?,
     val fromIsMe: Boolean,
     val toName: String?,
@@ -405,6 +407,7 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
 private fun toJsPaymentRow(row: PaymentRow): JsPaymentRow = JsPaymentRow(
     id = row.id,
     paidAt = row.paidAt.toDouble(),
+    paidDay = toJsRelativeDay(row.paidDay),
     fromName = row.fromName,
     fromIsMe = row.fromIsMe,
     toName = row.toName,

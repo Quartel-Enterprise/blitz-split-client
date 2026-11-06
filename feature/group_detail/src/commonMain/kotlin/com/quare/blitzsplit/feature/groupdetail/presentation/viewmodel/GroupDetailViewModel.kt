@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
+import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
@@ -381,7 +382,14 @@ class GroupDetailViewModel(
         val (mine, others) = balances.debts.partition { it.fromMemberId == meId || it.toMemberId == meId }
         val payerOrder = PayerOrder(group.members)
         val entries = expenses.map { it.spentAt to toRow(it, namesById, meId, payerOrder) } +
-            settlements.map { it.paidAt to toRow(it, namesById, meId) }
+            settlements.map {
+                it.paidAt to toRow(
+                    it,
+                    namesById,
+                    meId,
+                    SpentDay.relativeDayOf(it.paidAt, now, timeZone),
+                )
+            }
         val days = entries
             .sortedByDescending { (time, _) -> time }
             .groupBy { (time, _) -> SpentDay.dateOf(time, timeZone) }
@@ -449,9 +457,11 @@ class GroupDetailViewModel(
         settlement: Settlement,
         namesById: Map<String, String>,
         meId: String?,
+        paidDay: RelativeDay,
     ): DayEntry = PaymentRow(
         id = settlement.id,
         paidAt = settlement.paidAt,
+        paidDay = paidDay,
         fromName = namesById[settlement.fromMemberId],
         fromIsMe = settlement.fromMemberId == meId,
         toName = namesById[settlement.toMemberId],

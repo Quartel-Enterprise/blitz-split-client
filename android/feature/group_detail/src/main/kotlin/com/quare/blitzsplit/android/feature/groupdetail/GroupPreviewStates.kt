@@ -94,6 +94,7 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
             PaymentRow(
                 id = "p1",
                 paidAt = PREVIEW_TODAY_MILLIS + 12 * PREVIEW_HOUR_MILLIS,
+                paidDay = RelativeDay.TODAY,
                 fromName = "Ana",
                 fromIsMe = false,
                 toName = "Pierre",

@@ -21,7 +21,7 @@ import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
 import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
 import { t } from '@/i18n'
-import { formatShortDate, formatTime } from '@/lib/dates'
+import { formatTime, formatWhen } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
 import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
@@ -244,8 +244,7 @@ function PaymentDetailsDialog({ presenter, payment, state }: { presenter: GroupD
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {t('payment_detailsMeta', {
-              date: formatShortDate(payment.paidAt),
-              time: formatTime(payment.paidAt),
+              when: formatWhen(payment.paidAt, payment.paidDay),
               method: paymentMethodLabel(payment.method),
             })}
             {payment.isPending ? ` · ${t('groupDetail_pending')}` : ''}

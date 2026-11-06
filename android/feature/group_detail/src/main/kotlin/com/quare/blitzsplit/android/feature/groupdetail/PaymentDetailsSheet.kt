@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
+import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -60,7 +61,7 @@ internal fun PaymentDetailsSheet(
             )
             Text(
                 text = listOfNotNull(
-                    "${dates.toDateText(payment.paidAt)} · ${dates.toTimeText(payment.paidAt)}",
+                    relativeDateTimeTextOf(payment.paidAt, payment.paidDay, dates),
                     stringResource(R.string.group_detail_queued).takeIf { payment.isPending },
                     stringResource(R.string.group_detail_payment_meta),
                     stringResource(payment.method.labelRes),
