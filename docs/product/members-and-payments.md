@@ -30,7 +30,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     other tabs stay beside Groups' list lying down: a one-line bar, the tabs and "Your balance in this group" above the
     hinge, and the pairs under it, "With you" beside "Between the others" while both have one, with no "Split a bill".
   - "Simplify debts" (page 13, `GroupBalances.toSimplified`, `SetSimplifiesDebts`): a group's switch, off in every
-    group, in Edit group's "Payments" under Currency and Default split, free. Each currency simplifies on its own, so
+    group, in Edit group's "Payments" under "Default currency" and Default split, free. Each currency simplifies on its own, so
     the switch's line and confirmation show the group's own currency (the one the form is in) while the change itself
     covers every currency (`SetSimplifiesDebtsUseCase`); amounts of two currencies are never netted.
     While on, the group's pairs are the fewest payments that keep each one's net: the greatest debtor pays the greatest creditor until even, at most
@@ -125,13 +125,13 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     Groups' rows and cards, Home, the search, Expenses' header, Split a bill and "Split in which group?", and the
     web's and the Mac's "Open"; Invite (the invite, read before joining), Activity's dot, "Who paid
     whom?" and the groups listed under a person (Balances, Contacts) keep the color. The name has 1 to 40 letters and
-    the type stays editable. Currency locks once the group has a bill on the device ("Doesn't change after the first expense"), with no server check. Any member may edit, offline too: the change holds on the
+    the type stays editable. "Default currency" is only the currency new bills start in ("New bills start in this currency; each bill can use another."): it is always editable, even with bills, and changing it changes nothing about the bills and payments already there, which keep their own. A sync that changes it while the form is open follows the same rule as the other fields (a field this person left as it opened takes the synced value). Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
     rest stays. Save stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
     with an iPad's room, the avatar beside "Change icon or photo" on an iPhone lying down) and a dialog on the web; on Android
     full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
     anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
-    under Currency, is "Default split" with the group's way ("Equal", "Shares"…).
+    under "Default currency", is "Default split" with the group's way ("Equal", "Shares"…).
   - "Default split" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
     Edit group, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), which
     grows from the form sheet to a bill's with an iPad's room (820×640 lying down, 620×860 upright) and shrinks back

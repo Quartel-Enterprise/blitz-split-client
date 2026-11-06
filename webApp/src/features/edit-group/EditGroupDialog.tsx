@@ -1,15 +1,14 @@
-import { Camera, ChevronDown, ChevronRight, CircleAlert, ImageIcon, Loader2, Lock } from 'lucide-react'
+import { Camera, ChevronRight, CircleAlert, ImageIcon, Loader2 } from 'lucide-react'
 import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AvatarColorPicker, PendingDot } from '@/components/common'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
-import { CurrencyMenuItems } from '@/components/CurrencyMenuItems'
+import { CurrencyDropdown } from '@/components/CurrencyDropdown'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -22,7 +21,6 @@ import { defaultSplitModeLabel } from '@/features/split-bill/splitText'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
-import { currencyLabel } from '@/lib/currency'
 import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
@@ -189,25 +187,7 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
         <GroupTypePicker label={t('editGroup_typeLabel')} types={state.types} selected={state.type} onSelect={(type) => presenter.selectType(type)} />
         <div className="flex flex-col gap-2">
           <Label htmlFor={currencyId}>{t('editGroup_currency')}</Label>
-          {state.isCurrencyLocked ? (
-            // Why: a disabled button keeps the label's name and says it can't change, which a plain span wouldn't.
-            <Button id={currencyId} type="button" variant="outline" disabled aria-describedby={currencyNoteId} className="justify-between">
-              {currencyLabel(state.currency)}
-              <Lock aria-label={t('editGroup_currencyLocked')} />
-            </Button>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button id={currencyId} type="button" variant="outline" aria-describedby={currencyNoteId} className="justify-between">
-                  {currencyLabel(state.currency)}
-                  <ChevronDown className="text-muted-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
-                <CurrencyMenuItems currencies={state.currencies} cryptoCurrencies={state.cryptoCurrencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <CurrencyDropdown id={currencyId} describedBy={currencyNoteId} currencies={state.currencies} cryptoCurrencies={state.cryptoCurrencies} selected={state.currency} onSelect={(currency) => presenter.selectCurrency(currency)} />
           <span id={currencyNoteId} className="text-[13px] text-muted-foreground">
             {t('editGroup_currencyNote')}
           </span>

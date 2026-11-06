@@ -157,7 +157,7 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group with no bills WHEN a sync changes its currency THEN the form keeps its own`() =
+    fun `GIVEN a sync that changes the group currency WHEN the form is open THEN the form keeps its own`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -167,7 +167,6 @@ class EditGroupViewModelTest {
 
             // Then
             assertEquals(GroupCurrency.BRL, viewModel.uiState.value.currency)
-            assertFalse(viewModel.uiState.value.isCurrencyLocked)
         }
 
     @Test
@@ -279,105 +278,86 @@ class EditGroupViewModelTest {
         viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(euro))
 
         // Then
-        assertFalse(viewModel.uiState.value.isCurrencyLocked)
         assertEquals(GroupCurrency.EUR, viewModel.uiState.value.currency)
     }
 
     @Test
-    fun `GIVEN a group with a bill WHEN the screen opens THEN the currency is locked`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedExpenses = listOf(dinner))
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertTrue(state.isCurrencyLocked)
-        assertEquals(GroupCurrency.BRL, state.currency)
-    }
-
-    @Test
-    fun `GIVEN a group with a bill WHEN picking another currency THEN the currency stays the group one`() =
+    fun `GIVEN a group with a bill WHEN picking another currency THEN the form shows it and Salvar enables`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedExpenses = listOf(dinner))
-            val euro = GroupCurrency.EUR
 
             // When
-            viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(euro))
+            viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
 
             // Then
-            assertEquals(GroupCurrency.BRL, viewModel.uiState.value.currency)
+            assertEquals(GroupCurrency.EUR, viewModel.uiState.value.currency)
+            assertTrue(viewModel.uiState.value.canSave)
         }
 
     @Test
-    fun `GIVEN another currency picked WHEN the first bill arrives THEN locks it to the group one`() =
+    fun `GIVEN a group with only a payment WHEN picking another currency THEN the form shows it`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario()
+            prepareScenario(
+                storedSettlements = listOf(
+                    payment(
+                        from = ANA,
+                        to = BRUNO,
+                        amountMinor = 3_000,
+                    ),
+                ),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
+
+            // Then
+            assertEquals(GroupCurrency.EUR, viewModel.uiState.value.currency)
+            assertTrue(viewModel.uiState.value.canSave)
+        }
+
+    @Test
+    fun `GIVEN a bill and a payment WHEN saving another currency THEN the group changes and they keep their own`() =
+        runTest(testDispatcher) {
+            // Given
+            val transfer = payment(
+                from = ANA,
+                to = BRUNO,
+                amountMinor = 3_000,
+            )
+            prepareScenario(
+                storedExpenses = listOf(dinner),
+                storedSettlements = listOf(transfer),
+            )
             viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
 
             // When
-            expenses.expenses.value = listOf(dinner)
+            viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
 
             // Then
-            assertTrue(viewModel.uiState.value.isCurrencyLocked)
+            assertEquals(
+                GroupCurrency.EUR,
+                groups.groups.value
+                    .single()
+                    .currency,
+            )
+            assertEquals(listOf(dinner), expenses.expenses.value)
+            assertEquals(listOf(transfer), settlements.settlements.value)
+        }
+
+    @Test
+    fun `GIVEN a group with a bill WHEN a sync changes its currency THEN the form keeps its own`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner))
+
+            // When
+            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.USD))
+
+            // Then
             assertEquals(GroupCurrency.BRL, viewModel.uiState.value.currency)
-        }
-
-    @Test
-    fun `GIVEN a locked currency WHEN a sync changes the group currency THEN the form shows the new one`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedExpenses = listOf(dinner))
-
-            // When
-            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.USD))
-
-            // Then
-            assertTrue(viewModel.uiState.value.isCurrencyLocked)
-            assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
-        }
-
-    @Test
-    fun `GIVEN a locked currency WHEN the group bills are gone THEN the currency can change again`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedExpenses = listOf(dinner))
-
-            // When
-            expenses.expenses.value = emptyList()
-
-            // Then
-            assertFalse(viewModel.uiState.value.isCurrencyLocked)
-        }
-
-    @Test
-    fun `GIVEN a locked currency a sync changed WHEN the group bills are gone THEN Salvar stays disabled`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedExpenses = listOf(dinner))
-            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.USD))
-
-            // When
-            expenses.expenses.value = emptyList()
-
-            // Then
-            assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
             assertFalse(viewModel.uiState.value.canSave)
-        }
-
-    @Test
-    fun `GIVEN a bill of another group WHEN the screen opens THEN the currency is not locked`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedExpenses = listOf(dinner.copy(groupId = "group-2")))
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertFalse(state.isCurrencyLocked)
         }
 
     @Test
@@ -449,24 +429,6 @@ class EditGroupViewModelTest {
             )
             assertEquals(listOf(Route.Groups, groupDetail), navigator.backStack.value)
         }
-
-    @Test
-    fun `GIVEN a group with a bill WHEN tapping Salvar THEN saves the group own currency`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedExpenses = listOf(dinner))
-        viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
-
-        // When
-        viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
-
-        // Then
-        assertEquals(
-            GroupCurrency.BRL,
-            groups.groups.value
-                .single()
-                .currency,
-        )
-    }
 
     @Test
     fun `GIVEN the device fails to save WHEN tapping Salvar THEN stays and shows the save error`() =
@@ -785,7 +747,7 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a sync changed an unlocked currency WHEN saving only a new color THEN saves the synced currency`() =
+    fun `GIVEN a sync changed the currency WHEN saving only a new color THEN saves the synced currency`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -805,7 +767,7 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a sync changed an unlocked currency WHEN saving one picked here THEN the one picked here wins`() =
+    fun `GIVEN a sync changed the currency WHEN saving one picked here THEN the one picked here wins`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -842,26 +804,6 @@ class EditGroupViewModelTest {
                 groups.groups.value
                     .single()
                     .name,
-            )
-        }
-
-    @Test
-    fun `GIVEN a locked currency changed by a sync WHEN saving a new color THEN saves the synced currency`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedExpenses = listOf(dinner))
-            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.USD))
-            viewModel.onEvent(EditGroupUiEvent.OnColorSelected(AvatarColor.LILAC))
-
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
-
-            // Then
-            assertEquals(
-                GroupCurrency.USD,
-                groups.groups.value
-                    .single()
-                    .currency,
             )
         }
 
@@ -1026,34 +968,6 @@ class EditGroupViewModelTest {
 
             // Then
             assertFalse(viewModel.uiState.value.hasChanges)
-            assertFalse(viewModel.uiState.value.canSave)
-        }
-
-    @Test
-    fun `GIVEN a locked currency WHEN a sync changes the group currency THEN Salvar stays disabled`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedExpenses = listOf(dinner))
-
-            // When
-            groups.groups.value = listOf(trip.copy(currency = GroupCurrency.USD))
-
-            // Then
-            assertEquals(GroupCurrency.USD, viewModel.uiState.value.currency)
-            assertFalse(viewModel.uiState.value.canSave)
-        }
-
-    @Test
-    fun `GIVEN only another currency picked WHEN the first bill arrives THEN Salvar is disabled again`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
-
-            // When
-            expenses.expenses.value = listOf(dinner)
-
-            // Then
             assertFalse(viewModel.uiState.value.canSave)
         }
 
@@ -3073,18 +2987,6 @@ class EditGroupViewModelTest {
                 trackedEvents,
             )
         }
-
-    @Test
-    fun `GIVEN a group with a bill WHEN picking another currency THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedExpenses = listOf(dinner))
-
-        // When
-        viewModel.onEvent(EditGroupUiEvent.OnCurrencySelected(GroupCurrency.USD))
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
 
     @Test
     fun `GIVEN the form on top WHEN tapping Divisao padrao THEN sends the default split clicked event`() =

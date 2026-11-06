@@ -18,7 +18,6 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -406,7 +405,7 @@ private fun TypeChipRow(
     }
 }
 
-// Why: "Não muda depois da primeira despesa" is said up front; once the group has a bill the row only shows the lock.
+// Why: the currency is the default of new bills, always editable; each bill keeps its own.
 @Composable
 private fun CurrencyRow(
     state: EditGroupUiState,
@@ -414,7 +413,6 @@ private fun CurrencyRow(
 ) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
     val locale = LocalLocale.current.platformLocale
-    val lockedLabel = stringResource(R.string.edit_group_currency_locked)
     Box(
         modifier = Modifier.padding(
             start = 16.dp,
@@ -424,16 +422,16 @@ private fun CurrencyRow(
     ) {
         SettingRow(
             title = stringResource(R.string.edit_group_currency),
-            subtitle = stringResource(R.string.edit_group_currency_lock),
+            subtitle = stringResource(R.string.edit_group_currency_caption),
             value = groupCurrencyLabel(state.currency, locale),
-            icon = if (state.isCurrencyLocked) Icons.Outlined.Lock else Icons.Outlined.KeyboardArrowDown,
-            iconLabel = lockedLabel.takeIf { state.isCurrencyLocked },
+            icon = Icons.Outlined.KeyboardArrowDown,
+            iconLabel = null,
+            isEnabled = true,
             isTop = true,
-            isEnabled = !state.isCurrencyLocked,
             onClick = { isMenuOpen = true },
         )
         DropdownMenu(
-            expanded = isMenuOpen && !state.isCurrencyLocked,
+            expanded = isMenuOpen,
             onDismissRequest = { isMenuOpen = false },
         ) {
             CurrencyMenuContent(

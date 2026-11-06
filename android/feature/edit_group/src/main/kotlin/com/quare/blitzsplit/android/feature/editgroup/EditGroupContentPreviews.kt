@@ -266,7 +266,6 @@ private fun buildPreviewState(
     photoCrop = null,
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
-    isCurrencyLocked = true,
     defaultSplitMode = DefaultSplitMode.SHARES,
     isOnline = isOnline,
     isLoaded = true,

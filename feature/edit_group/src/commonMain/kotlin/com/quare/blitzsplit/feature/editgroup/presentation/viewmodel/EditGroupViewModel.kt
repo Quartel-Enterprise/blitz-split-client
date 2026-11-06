@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -72,7 +71,6 @@ class EditGroupViewModel(
                 photoCrop = null,
                 type = GroupType.default,
                 currency = GroupCurrency.fallback,
-                isCurrencyLocked = false,
                 defaultSplitMode = DefaultSplitMode.EQUAL,
                 isOnline = true,
                 isLoaded = false,
@@ -124,22 +122,17 @@ class EditGroupViewModel(
     )
 
     /*
-     * Why: the form is filled from the group once, so a sync landing while someone types changes nothing here. Its
-     * currency still follows the group's once a bill locks it, since the bill is in that currency.
+     * Why: the form is filled from the group once, so a sync landing while someone types changes nothing here. The
+     * currency is only the default of new bills, so it is always editable and no bill or payment changes with it.
      */
     init {
-        // Why: one read of the bills for the currency's lock and the switch's pairs alike.
+        // Why: one read of the bills for the switch's pairs.
         val expenses = observeExpenses(route.groupId).shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
-        combine(
-            observeGroup(route.groupId),
-            expenses
-                .map { it.isNotEmpty() }
-                .distinctUntilChanged(),
-            ::Pair,
-        ).onEach { (group, hasExpenses) ->
-            isGroupGone = group == null
-            if (group == null) leave() else show(group, hasExpenses)
-        }.launchIn(viewModelScope)
+        observeGroup(route.groupId)
+            .onEach { group ->
+                isGroupGone = group == null
+                if (group == null) leave() else show(group)
+            }.launchIn(viewModelScope)
         navigator.backStack
             .onEach {
                 if (isGroupGone) leave() else latest?.let(::showConflict)
@@ -214,14 +207,9 @@ class EditGroupViewModel(
         }
     }
 
-    private fun show(
-        group: Group,
-        hasExpenses: Boolean,
-    ) {
+    private fun show(group: Group) {
         latest = group
         if (original == null) original = group
-        // Why: a locked currency follows the group's, which is no change of this person's once the bills go.
-        if (hasExpenses) original = original?.copy(currency = group.currency)
         updateForm { state ->
             val filled = if (state.isLoaded) {
                 state
@@ -237,9 +225,7 @@ class EditGroupViewModel(
                 )
             }
             filled.copy(
-                isCurrencyLocked = hasExpenses,
                 defaultSplitMode = group.defaultSplit?.mode ?: DefaultSplitMode.EQUAL,
-                currency = if (hasExpenses) group.currency else filled.currency,
             )
         }
         showSimplification(group)
@@ -290,7 +276,6 @@ class EditGroupViewModel(
     }
 
     private fun selectCurrency(currency: GroupCurrency) {
-        if (uiState.value.isCurrencyLocked) return
         trackEvent("group_currency_selected", mapOf("currency" to currency, "source" to "edit_group"))
         updateForm { it.copy(currency = currency) }
     }
@@ -436,7 +421,7 @@ class EditGroupViewModel(
         val type = if (state.type != original.type) state.type else latest.type
         val color = if (state.color != original.color) state.color else latest.color
         val photo = if (state.photo != original.photo) state.photo else latest.photo
-        val currency = if (!state.isCurrencyLocked && state.currency != original.currency) {
+        val currency = if (state.currency != original.currency) {
             state.currency
         } else {
             latest.currency
@@ -487,7 +472,7 @@ class EditGroupViewModel(
                 type != group.type ||
                 color != group.color ||
                 photo != group.photo ||
-                (!isCurrencyLocked && currency != group.currency)
+                currency != group.currency
         )
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.

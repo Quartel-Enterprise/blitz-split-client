@@ -17,7 +17,8 @@
     <string name="create_group_add_placeholder">Ajouter par nom</string>
     <string name="create_group_add">Ajouter</string>
     <string name="create_group_no_app_notice">Personne n’a besoin de l’app pour l’instant. Tu peux déjà ajouter des dépenses pour tout le monde et envoyer le lien plus tard.</string>
-    <string name="create_group_currency">Devise</string>
+    <string name="create_group_currency">Devise par défaut</string>
+    <string name="create_group_currency_caption">Les nouvelles dépenses démarrent dans cette devise ; chaque dépense peut en utiliser une autre.</string>
     <string name="create_group_save_error">Impossible d’enregistrer le groupe. Réessaie.</string>
     <string name="create_group_photo">Photo du groupe</string>
     <string name="create_group_take_photo">Prendre une photo</string>

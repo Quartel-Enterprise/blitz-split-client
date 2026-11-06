@@ -15,9 +15,8 @@
     <string name="edit_group_name_error">Ponle un nombre al grupo, de hasta 40 caracteres.</string>
     <string name="edit_group_name_count">%1$d/%2$d</string>
     <string name="edit_group_type_label">Tipo</string>
-    <string name="edit_group_currency">Moneda</string>
-    <string name="edit_group_currency_lock">No cambia después del primer gasto</string>
-    <string name="edit_group_currency_locked">Bloqueada</string>
+    <string name="edit_group_currency">Moneda predeterminada</string>
+    <string name="edit_group_currency_caption">Los gastos nuevos empiezan en esta moneda; cada gasto puede usar otra.</string>
     <string name="edit_group_note">Cualquier persona del grupo puede cambiar el nombre, el ícono, el tipo y Simplificar deudas. Actividad muestra quién lo cambió.</string>
     <string name="edit_group_offline_note">Sin internet: el cambio queda en este dispositivo y llega a los demás cuando se reconecte. Una foto nueva se sube junto con él.</string>
     <string name="edit_group_save_error">No se pudo guardar el grupo. Inténtalo de nuevo.</string>

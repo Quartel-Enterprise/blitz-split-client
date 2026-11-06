@@ -164,9 +164,11 @@ private struct CreateGroupForm: View {
                     Text(type.title).tag(type)
                 }
             }
-            Picker("Currency", selection: currencyBinding) {
+            Picker("Default currency", selection: currencyBinding) {
                 CurrencyOptions(currencies: state.currencies)
             }
+        } footer: {
+            Text("New bills start in this currency; each bill can use another.")
         }
     }
 

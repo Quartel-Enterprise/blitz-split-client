@@ -299,6 +299,12 @@
             "value" : "%@ cambió la moneda"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a changé la devise"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -15189,29 +15195,6 @@
         }
       }
     },
-    "Locked" : {
-      "comment" : "VoiceOver label of the lock next to a group's currency, which no longer changes",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloqueada"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verrouillé"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Travada"
-          }
-        }
-      }
-    },
     "More actions: %@" : {
       "comment" : "The ⋯ at the end of a home row, with the group's name",
       "localizations" : {
@@ -17895,25 +17878,25 @@
         }
       }
     },
-    "The currency doesn’t change after the first expense." : {
-      "comment" : "Under the edit group's currency",
+    "New bills start in this currency; each bill can use another." : {
+      "comment" : "Under the group's default currency, in New group and Edit group",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La moneda no cambia después del primer gasto."
+            "value" : "Los gastos nuevos empiezan en esta moneda; cada gasto puede usar otra."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La devise ne change plus après la première dépense."
+            "value" : "Les nouvelles dépenses démarrent dans cette devise ; chaque dépense peut en utiliser une autre."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A moeda não muda depois da primeira despesa."
+            "value" : "Novas despesas começam nesta moeda; cada despesa pode usar outra."
           }
         }
       }
@@ -21206,6 +21189,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gerando o convite pessoal…"
+          }
+        }
+      }
+    },
+    "Default currency" : {
+      "comment" : "The group's currency picker, in New group and Edit group: the currency new bills start in",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moneda predeterminada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devise par défaut"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moeda padrão"
           }
         }
       }

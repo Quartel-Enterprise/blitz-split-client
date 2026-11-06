@@ -474,7 +474,6 @@ class EditGroupUiStateTest {
         photoCrop = null,
         type = GroupType.TRIP,
         currency = GroupCurrency.BRL,
-        isCurrencyLocked = false,
         defaultSplitMode = DefaultSplitMode.EQUAL,
         isOnline = isOnline,
         isLoaded = isLoaded,

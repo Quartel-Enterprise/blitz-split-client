@@ -26,9 +26,8 @@ data class EditGroupUiState(
     // Why: "Ajustar foto" while a picked photo is being framed, drawn over the form in the group's rounded square.
     val photoCrop: PhotoCropEditor?,
     val type: GroupType,
+    // Why: only the default of the group's new bills; each bill and payment keeps its own.
     val currency: GroupCurrency,
-    // Why: "Não muda depois da primeira despesa", once the group has a bill.
-    val isCurrencyLocked: Boolean,
     // Why: the "Divisão padrão" row's value ("Igual", "Partes"…), as the group has it now; saved from its own screen.
     val defaultSplitMode: DefaultSplitMode,
     val isOnline: Boolean,

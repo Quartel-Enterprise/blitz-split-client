@@ -261,18 +261,8 @@ private struct EditGroupForm: View {
                     Text(type.title).tag(type)
                 }
             }
-            if state.isCurrencyLocked {
-                LabeledContent("Currency") {
-                    HStack(spacing: 6) {
-                        Text(verbatim: state.currency.label)
-                        Image(systemName: "lock")
-                            .accessibilityLabel("Locked")
-                    }
-                }
-            } else {
-                Picker("Currency", selection: currencyBinding) {
-                    CurrencyOptions(currencies: state.currencies)
-                }
+            Picker("Default currency", selection: currencyBinding) {
+                CurrencyOptions(currencies: state.currencies)
             }
             // Pushes "Default split" inside this sheet, which keeps what is typed here
             Button {
@@ -294,7 +284,7 @@ private struct EditGroupForm: View {
             .accessibilityHint("How new expenses split")
         } footer: {
             VStack(alignment: .leading, spacing: 12) {
-                Text("The currency doesn’t change after the first expense.")
+                Text("New bills start in this currency; each bill can use another.")
                 if state.showsOfflineNotice {
                     Text(
                         "No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects. A new photo goes up with it.",

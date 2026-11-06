@@ -84,7 +84,6 @@ class JsEditGroupState(
     val currencies: Array<String>,
     // Why: the ones among currencies "Moeda" lists under "Criptomoedas".
     val cryptoCurrencies: Array<String>,
-    val isCurrencyLocked: Boolean,
     // Why: the DefaultSplitMode's code ("shares"), the value of the "Divisão padrão" row.
     val defaultSplitMode: String,
     val nameLength: Int,
@@ -140,7 +139,6 @@ class EditGroupPresenter(
                 fractionDigits = state.currency.fractionDigits,
                 currencies = state.currencies.toCurrencyCodes(),
                 cryptoCurrencies = state.currencies.toCryptoCurrencyCodes(),
-                isCurrencyLocked = state.isCurrencyLocked,
                 defaultSplitMode = state.defaultSplitMode.code,
                 nameLength = state.nameLength,
                 maxNameLength = state.maxNameLength,

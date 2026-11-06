@@ -15,9 +15,8 @@
     <string name="edit_group_name_error">Donne un nom au groupe, 40 caractères maximum.</string>
     <string name="edit_group_name_count">%1$d/%2$d</string>
     <string name="edit_group_type_label">Type</string>
-    <string name="edit_group_currency">Devise</string>
-    <string name="edit_group_currency_lock">Ne change plus après la première dépense</string>
-    <string name="edit_group_currency_locked">Verrouillée</string>
+    <string name="edit_group_currency">Devise par défaut</string>
+    <string name="edit_group_currency_caption">Les nouvelles dépenses démarrent dans cette devise ; chaque dépense peut en utiliser une autre.</string>
     <string name="edit_group_note">Tout le monde dans le groupe peut changer le nom, l’icône, le type et Simplifier les dettes. Activité montre qui a fait la modification.</string>
     <string name="edit_group_offline_note">Pas d’internet : la modification est gardée sur cet appareil et arrive chez les autres à ta reconnexion. Une nouvelle photo part avec.</string>
     <string name="edit_group_save_error">Impossible d’enregistrer le groupe. Réessaie.</string>
