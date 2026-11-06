@@ -3,11 +3,11 @@ import SwiftUI
 
 /// The words of "Leave group" and "Delete group", the same on Expenses, Balances and the home.
 enum GroupExitCopy {
-    /// The errors a group's tab toasts: leaving or deleting that didn't reach the server, a change not saved.
-    static func errorToasts(leave: Int, delete: Int, change: Int) -> [GlassToastMessage] {
+    /// The errors a group's tab toasts: leaving that didn't reach the server, a change not saved. Deleting never waits
+    /// for the server: Groups and Home say if the group comes back (`DeletedGroupToast`).
+    static func errorToasts(leave: Int, change: Int) -> [GlassToastMessage] {
         [
             GlassToastMessage(text: "Couldn't leave the group. Check your connection and try again.", trigger: leave),
-            GlassToastMessage(text: "Couldn't delete the group. Check your connection and try again.", trigger: delete),
             GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: change),
         ]
     }

@@ -23,6 +23,8 @@
     </plurals>
     <string name="groups_deleted_by">%1$s apagou o grupo “%2$s”.</string>
     <string name="groups_deleted">O grupo “%s” foi apagado.</string>
+    <string name="groups_delete_has_balance">“%s” não foi apagado: ainda há saldo em aberto nele.</string>
+    <string name="groups_delete_failed">Não deu para apagar “%s”. Confira a conexão e tente de novo.</string>
     <plurals name="groups_sync_offline_queued">
         <item quantity="one">Offline · %d alteração na fila</item>
         <item quantity="other">Offline · %d alterações na fila</item>

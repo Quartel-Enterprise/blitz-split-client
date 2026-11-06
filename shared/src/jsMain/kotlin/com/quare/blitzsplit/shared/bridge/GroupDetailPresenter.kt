@@ -190,12 +190,11 @@ class GroupDetailPresenter(
         return JsWatch(watch::cancel)
     }
 
-    // Why: "leave-error", "delete-error", "change-error", "bill-delete-error" and "teach-error", a toast in the page's words.
+    // Why: "leave-error", "change-error", "bill-delete-error" and "teach-error", a toast in the page's words.
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
-                GroupDetailUiAction.ShowDeleteError -> "delete-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
                 GroupDetailUiAction.ShowTeachError -> "teach-error"
                 GroupDetailUiAction.ShowBillDeleteError -> "bill-delete-error"

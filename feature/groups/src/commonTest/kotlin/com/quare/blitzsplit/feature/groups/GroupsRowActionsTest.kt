@@ -301,23 +301,6 @@ class GroupsRowActionsTest {
         }
 
     @Test
-    fun `GIVEN the server cannot be reached WHEN confirming Apagar grupo THEN closes the dialog and says so`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(deleteResult = Result.failure(IllegalStateException("offline")))
-            viewModel.onEvent(GroupsUiEvent.OnDeleteGroupClicked("trio"))
-            var action: GroupsUiAction? = null
-            backgroundScope.launch { action = viewModel.uiAction.first() }
-
-            // When
-            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
-
-            // Then
-            assertEquals(GroupsUiAction.ShowDeleteError, action)
-            assertNull(viewModel.uiState.value.exit.dialog)
-        }
-
-    @Test
     fun `GIVEN Acerte antes de sair open WHEN a sync brings the payment THEN lists nothing left`() =
         runTest(testDispatcher) {
             // Given
@@ -765,7 +748,6 @@ class GroupsRowActionsTest {
         online: Boolean = true,
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
-        deleteResult: Result<GroupExitOutcome> = Result.success(GroupExitOutcome.DONE),
         leaveGate: CompletableDeferred<Unit>? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(trio))
@@ -800,10 +782,7 @@ class GroupsRowActionsTest {
                 leaveGate?.await()
                 Result.success(GroupExitOutcome.DONE)
             },
-            deleteGroup = DeleteGroup { groupId ->
-                deletedGroupIds += groupId
-                deleteResult
-            },
+            deleteGroup = DeleteGroup { groupId, _ -> deletedGroupIds += groupId },
             observeGroupsLayout = ObserveGroupsLayout { flowOf(GroupsLayout.initial) },
             updateGroupsLayout = UpdateGroupsLayout {},
             observeRecordedPayment = ObserveRecordedPaymentUseCase(recordedPayments),

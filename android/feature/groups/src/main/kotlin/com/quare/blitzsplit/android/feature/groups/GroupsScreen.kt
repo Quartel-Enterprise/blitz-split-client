@@ -36,7 +36,6 @@ fun GroupsScreen(
         when (action) {
             GroupsUiAction.ShowComingSoon -> R.string.groups_coming_soon
             GroupsUiAction.ShowLeaveError -> DesignR.string.designsystem_group_exit_leave_error
-            GroupsUiAction.ShowDeleteError -> DesignR.string.designsystem_group_exit_delete_error
             GroupsUiAction.ShowChangeError -> R.string.groups_change_error
         }
     }

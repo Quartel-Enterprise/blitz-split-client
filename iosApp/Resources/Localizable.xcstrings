@@ -10236,23 +10236,6 @@
         }
       }
     },
-    "Couldn't delete the group. Check your connection and try again." : {
-      "comment" : "Deleting the group failed: no sync or no answer from the server",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo eliminar el grupo. Revisa tu conexión e inténtalo de nuevo."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não deu para apagar o grupo. Confira a conexão e tente de novo."
-          }
-        }
-      }
-    },
     "Couldn't leave the group. Check your connection and try again." : {
       "comment" : "Leaving the group failed: no sync or no answer from the server",
       "localizations" : {
@@ -12333,6 +12316,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "O grupo “%@” foi apagado."
+          }
+        }
+      }
+    },
+    "“%@” wasn't deleted: there are still open balances in it." : {
+      "comment" : "A toast on the groups: the server turned this device's Delete group down, someone still owes in it, and the group is back; %@ is the group",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” no se eliminó: aún hay saldos abiertos en él."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” não foi apagado: ainda há saldo em aberto nele."
+          }
+        }
+      }
+    },
+    "Couldn't delete “%@”. Check your connection and try again." : {
+      "comment" : "A toast on the groups: this device's Delete group couldn't reach the server and the group is back; %@ is the group",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo eliminar “%@”. Revisa tu conexión e inténtalo de nuevo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não deu para apagar “%@”. Confira a conexão e tente de novo."
           }
         }
       }

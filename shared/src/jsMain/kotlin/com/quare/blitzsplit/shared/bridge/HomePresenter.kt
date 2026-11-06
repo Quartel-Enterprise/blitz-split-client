@@ -135,6 +135,8 @@ class JsHomeState(
     val deletedGroupId: String?,
     val deletedGroupName: String?,
     val deletedGroupByName: String?,
+    // Why: "has-balance" or "failed" when it was this device's own deletion that didn't go through; null otherwise.
+    val deletedGroupFailure: String?,
     // Why: the count on the bell, every unread event of Atividade.
     val activityUnreadCount: Int,
     // Why: NotificationPrompt's name, "SOFT_ASK" or "BLOCKED" (the web never refuses once), or null with no card.
@@ -198,6 +200,7 @@ class HomePresenter {
                 deletedGroupId = state.deletedGroupNotice?.groupId,
                 deletedGroupName = state.deletedGroupNotice?.groupName,
                 deletedGroupByName = state.deletedGroupNotice?.deletedByName,
+                deletedGroupFailure = state.deletedGroupNotice?.failure?.let(::toJsDeleteFailure),
                 activityUnreadCount = state.activityUnreadCount,
                 notificationPrompt = state.notificationPrompt?.name,
                 appInvite = state.appInvite?.let(::toJsAppInvite),

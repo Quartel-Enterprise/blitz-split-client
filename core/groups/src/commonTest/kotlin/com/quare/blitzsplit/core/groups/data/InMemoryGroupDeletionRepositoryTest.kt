@@ -80,5 +80,6 @@ class InMemoryGroupDeletionRepositoryTest {
         groupId = groupId,
         groupName = "Viagem Floripa",
         deletedByName = deletedByName,
+        failure = null,
     )
 }

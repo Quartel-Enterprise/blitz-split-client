@@ -7,7 +7,6 @@ final class GroupsModel {
     private(set) var state: GroupsUiState
     private(set) var comingSoonCount = 0
     private(set) var leaveErrorCount = 0
-    private(set) var deleteErrorCount = 0
     private(set) var changeErrorCount = 0
     let deletedGroup = DeletedGroupToast()
 
@@ -28,7 +27,6 @@ final class GroupsModel {
             switch action {
             case is GroupsUiActionShowComingSoon: self?.comingSoonCount += 1
             case is GroupsUiActionShowLeaveError: self?.leaveErrorCount += 1
-            case is GroupsUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is GroupsUiActionShowChangeError: self?.changeErrorCount += 1
             default: break
             }

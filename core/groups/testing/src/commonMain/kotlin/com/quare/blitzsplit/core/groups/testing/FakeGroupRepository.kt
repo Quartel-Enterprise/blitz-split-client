@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 // In-memory GroupRepository: the state is public so a test can set and read it, every call is
@@ -83,6 +84,9 @@ class FakeGroupRepository(
     var rotateInviteCodeGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
+
+    // Why: groups the server already deleted, which the next download takes off the device.
+    val serverDeletedGroupIds = mutableSetOf<String>()
     var clearError: Throwable? = null
     var clearCount = 0
     val leftGroupIds = mutableListOf<String>()
@@ -95,9 +99,14 @@ class FakeGroupRepository(
     // Why: while set, leaving or deleting waits for it, so a test can act while the server is asked.
     var exitGate: CompletableDeferred<Unit>? = null
 
-    override fun observeGroups(): Flow<List<Group>> = groups
+    // Why: the groups being deleted, which stay in groups but leave what the screens observe.
+    val hiddenGroupIds = MutableStateFlow(emptySet<String>())
 
-    override fun observeHasGroups(): Flow<Boolean> = groups.map { it.isNotEmpty() }
+    override fun observeGroups(): Flow<List<Group>> = combine(groups, hiddenGroupIds) { groups, hiddenIds ->
+        groups.filterNot { it.id in hiddenIds }
+    }
+
+    override fun observeHasGroups(): Flow<Boolean> = observeGroups().map { it.isNotEmpty() }
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
@@ -286,6 +295,14 @@ class FakeGroupRepository(
 
     override suspend fun deleteGroup(groupId: String): Result<GroupExitOutcome> = runExit(groupId, deletedGroupIds)
 
+    override fun hideGroup(groupId: String) {
+        hiddenGroupIds.value += groupId
+    }
+
+    override fun showGroup(groupId: String) {
+        hiddenGroupIds.value -= groupId
+    }
+
     private suspend fun runExit(
         groupId: String,
         calls: MutableList<String>,
@@ -306,6 +323,7 @@ class FakeGroupRepository(
 
     override suspend fun downloadGroups(userId: String): Result<Unit> {
         downloadedUserIds += userId
+        groups.value = groups.value.filterNot { it.id in serverDeletedGroupIds }
         return pullError?.let { Result.failure(it) } ?: Result.success(Unit)
     }
 

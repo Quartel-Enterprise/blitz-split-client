@@ -45,7 +45,6 @@ fun GroupDetailScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val leaveError = stringResource(DesignR.string.designsystem_group_exit_leave_error)
-    val deleteError = stringResource(DesignR.string.designsystem_group_exit_delete_error)
     val changeError = stringResource(R.string.group_detail_change_error)
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val teachError = stringResource(R.string.group_detail_teach_error)
@@ -56,7 +55,6 @@ fun GroupDetailScreen(
         viewModel.uiAction.collect { action ->
             when (action) {
                 GroupDetailUiAction.ShowLeaveError -> showSnackbar(leaveError)
-                GroupDetailUiAction.ShowDeleteError -> showSnackbar(deleteError)
                 GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
                 GroupDetailUiAction.ShowTeachError -> showSnackbar(teachError)
                 GroupDetailUiAction.ShowBillDeleteError -> showSnackbar(billDeleteError)

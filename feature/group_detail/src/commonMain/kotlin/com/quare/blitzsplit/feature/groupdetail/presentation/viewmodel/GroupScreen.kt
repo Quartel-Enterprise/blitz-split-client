@@ -53,15 +53,15 @@ internal val emptyGroupHeader = GroupHeader(
 /*
  * Why: what the group's screen does around its tabs: the group's bills and payments as they change, where the buttons
  * of its header go, the notice of a payment just recorded, "Sair do grupo" and "Apagar grupo", and leaving only while
- * still on top, since a native back (a swipe, the browser's) may have closed it. showExitError says the server
- * couldn't be asked, for leaving or deleting; showBalances picks the Saldos tab ("Ver saldos").
+ * still on top, since a native back (a swipe, the browser's) may have closed it. showLeaveError says the server
+ * couldn't be asked to leave; showBalances picks the Saldos tab ("Ver saldos").
  */
 internal class GroupScreen(
     private val route: Route,
     private val groupId: String,
     private val useCases: GroupScreenUseCases,
     private val scope: CoroutineScope,
-    showExitError: suspend (isDelete: Boolean) -> Unit,
+    showLeaveError: suspend () -> Unit,
     showBalances: () -> Unit,
 ) {
     private val notices = RecordedPaymentNotices(useCases.consumeRecordedPayment, useCases.deleteSettlement)
@@ -74,7 +74,7 @@ internal class GroupScreen(
         openRegisterPayment = { _, fromMemberId, toMemberId -> openRegisterPayment(fromMemberId, toMemberId) },
         openBalances = { showBalances() },
         onExited = ::backToGroups,
-        showError = showExitError,
+        showLeaveError = showLeaveError,
     )
 
     private var group: Group? = null
@@ -260,7 +260,10 @@ internal class GroupScreen(
             state.deletedNotice != null || !isOnTop() -> Unit
 
             else -> {
-                val deletion = useCases.observeGroupDeletions().first().firstOrNull { it.groupId == groupId }
+                val deletion = useCases
+                    .observeGroupDeletions()
+                    .first()
+                    .firstOrNull { it.groupId == groupId && it.failure == null }
                 if (deletion == null) {
                     leave()
                 } else {

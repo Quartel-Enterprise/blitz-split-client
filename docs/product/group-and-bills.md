@@ -40,7 +40,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     push nothing: Comments' row shows the text as edited, and "Ana deleted a comment on Dinner" once deleted. A
     comment's link, `https://blitzsplit.com/b/<bill>?comentario=<comment>` (`BillCommentLink`), which the apps claim
     (App Links, Universal Links) and the web opens, opens the bill's Bill screen over its group's Expenses, over Groups,
-    scrolled to the comment and highlighted, after a sync of a few seconds as a push notification's tap
+    scrolled to the comment and highlighted, after a sync of a few seconds, since the comment may be newer than the device's copy
     (`Route.BillDetail.focusCommentId`); a deleted comment opens Bill with "That comment was deleted.", a deleted
     bill its group's Expenses with "This bill was deleted", and someone outside the group (or without a profile)
     gets "You're not in this group" with "Go to home" (offline: "No internet", `BillLinkNotice`). Once the person has moved

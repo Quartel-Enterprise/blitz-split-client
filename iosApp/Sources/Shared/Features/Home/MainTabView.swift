@@ -129,7 +129,6 @@ struct MainTabView: View {
             ]
                 + GroupExitCopy.errorToasts(
                     leave: model.leaveErrorCount,
-                    delete: model.deleteErrorCount,
                     change: model.changeErrorCount,
                 ),
         )

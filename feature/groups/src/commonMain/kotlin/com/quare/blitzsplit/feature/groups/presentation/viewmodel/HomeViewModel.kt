@@ -554,6 +554,7 @@ class HomeViewModel(
                     groupId = deletion.groupId,
                     groupName = deletion.groupName,
                     deletedByName = deletion.deletedByName,
+                    failure = deletion.failure,
                 ),
             )
         }
