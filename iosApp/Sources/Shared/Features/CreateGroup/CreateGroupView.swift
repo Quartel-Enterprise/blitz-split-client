@@ -256,7 +256,7 @@ private struct CreateGroupIcon: View {
                 }
             }
         } label: {
-            CornerGlassIcon(systemName: "camera", iconSize: 13)
+            CornerGlassIcon(systemName: "camera")
         }
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)

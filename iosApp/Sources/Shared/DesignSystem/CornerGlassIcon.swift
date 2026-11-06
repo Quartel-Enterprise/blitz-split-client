@@ -8,11 +8,10 @@ struct CornerGlassIcon: View {
     static let targetPadding: CGFloat = 6
 
     let systemName: String
-    var iconSize: CGFloat = 14
 
     var body: some View {
         Image(systemName: systemName)
-            .font(.system(size: iconSize, weight: .semibold))
+            .font(.system(size: 14, weight: .semibold))
             .frame(width: 32, height: 32)
             .glassEffect(.regular.interactive(), in: .circle)
             // Why: a Menu (UIKit and AppKit backed) taps only inside its frame, so the target is padding, not a
