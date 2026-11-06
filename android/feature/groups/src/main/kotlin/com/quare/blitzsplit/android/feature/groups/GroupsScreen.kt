@@ -9,7 +9,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
-import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberListDetailLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiAction
@@ -70,10 +69,9 @@ fun GroupsScreen(
         snackbarHostState = snackbarHostState,
     )
     // Why: what "Sair do grupo" and "Apagar grupo" open from a row, the same dialogs as inside the group.
-    state.exitGroup?.let { group ->
+    if (state.exitGroup != null) {
         GroupExitAlertDialog(
             exit = state.exit,
-            money = rememberMoneyFormatter(group.currency),
             onConfirm = { viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed) },
             onDismiss = { viewModel.onEvent(GroupsUiEvent.OnGroupExitDismissed) },
             // Why: "Grupo apagado" is for a group open when someone else deleted it, never shown over the home.

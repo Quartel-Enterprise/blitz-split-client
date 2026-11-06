@@ -28,7 +28,12 @@ class GroupBalancesSimplifyTest {
         val expenses = listOf(owes(ANA, BRUNO, 100L), owes(BRUNO, CARLA, 100L))
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements = emptyList())
+        val balances = GroupBalances.of(
+            group,
+            expenses,
+            settlements = emptyList(),
+            currency = group.currency,
+        )
 
         // Then
         assertEquals(listOf(Debt(ANA, BRUNO, 100L), Debt(BRUNO, CARLA, 100L)), balances.debts)
@@ -44,7 +49,12 @@ class GroupBalancesSimplifyTest {
         val expenses = listOf(owes(ANA, BRUNO, 100L), owes(BRUNO, CARLA, 100L))
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements = emptyList())
+        val balances = GroupBalances.of(
+            group,
+            expenses,
+            settlements = emptyList(),
+            currency = group.currency,
+        )
 
         // Then
         assertEquals(listOf(Debt(ANA, CARLA, 100L)), balances.debts)
@@ -59,7 +69,11 @@ class GroupBalancesSimplifyTest {
         val expenses = listOf(owes(ANA, BRUNO, 100L), owes(BRUNO, CARLA, 100L))
 
         // When
-        val balances = GroupBalances.of(expenses, settlements = emptyList())
+        val balances = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // Then
         assertEquals(listOf(Debt(ANA, BRUNO, 100L), Debt(BRUNO, CARLA, 100L)), balances.debts)
@@ -82,10 +96,19 @@ class GroupBalancesSimplifyTest {
             owes(DIEGO, ANA, 30L, id = "6"),
             owes(ELISA, PIERRE, 20L, id = "7"),
         )
-        val raw = GroupBalances.of(expenses, settlements = emptyList())
+        val raw = GroupBalances.createUnsimplified(
+            expenses,
+            settlements = emptyList(),
+            currency = GroupCurrency.BRL,
+        )
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements = emptyList())
+        val balances = GroupBalances.of(
+            group,
+            expenses,
+            settlements = emptyList(),
+            currency = group.currency,
+        )
 
         // Then
         assertEquals(
@@ -210,7 +233,12 @@ class GroupBalancesSimplifyTest {
         )
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements = emptyList())
+        val balances = GroupBalances.of(
+            group,
+            expenses,
+            settlements = emptyList(),
+            currency = group.currency,
+        )
 
         // Then
         assertTrue(balances.debts.isEmpty())
@@ -228,7 +256,12 @@ class GroupBalancesSimplifyTest {
         val expenses = listOf(owes(ANA, BRUNO, 100L))
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements = emptyList())
+        val balances = GroupBalances.of(
+            group,
+            expenses,
+            settlements = emptyList(),
+            currency = group.currency,
+        )
 
         // Then
         assertEquals(listOf(Debt(ANA, BRUNO, 100L)), balances.debts)
@@ -262,7 +295,7 @@ class GroupBalancesSimplifyTest {
         val settlements = listOf(payment(ANA, BRUNO, 40L))
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements)
+        val balances = GroupBalances.of(group, expenses, settlements, currency = group.currency)
 
         // Then
         assertEquals(listOf(Debt(ANA, DIEGO, 60L), Debt(BRUNO, DIEGO, 40L)), balances.debts)
@@ -281,7 +314,7 @@ class GroupBalancesSimplifyTest {
         val settlements = listOf(payment(ANA, DIEGO, 60L))
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements)
+        val balances = GroupBalances.of(group, expenses, settlements, currency = group.currency)
 
         // Then
         assertEquals(listOf(Debt(ANA, DIEGO, 40L)), balances.debts)

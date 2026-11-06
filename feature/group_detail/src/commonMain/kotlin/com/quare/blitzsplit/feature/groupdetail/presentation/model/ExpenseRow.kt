@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.model.GroupCurrency
 
 // Why: "Jantar no Ostradamus · 21:30 · Bruno pagou · R$ 642,00 · −R$ 118,00".
 data class ExpenseRow(
@@ -14,6 +15,8 @@ data class ExpenseRow(
      */
     val payers: List<ExpenseRowPayer>,
     val totalMinor: Long,
+    // Why: the bill's own currency, whichever the group's or the chip picked.
+    val currency: GroupCurrency,
     // Why: what the bill does to this device's user's balance, "+R$ 600,00" or "−R$ 118,00"; null when not in it.
     val myBalanceMinor: Long?,
     // Why: the row's icon (6.1), its category as it reads now, "Outros" for none.

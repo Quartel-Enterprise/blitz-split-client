@@ -15,10 +15,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
+import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
@@ -31,11 +31,11 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 @Composable
 internal fun PaymentDetailsSheet(
     payment: PaymentRow,
-    money: MoneyFormatter,
     onEvent: (GroupDetailUiEvent) -> Unit,
     dates: DateTimeTextFormatter = rememberDateTimeTextFormatter(),
 ) {
     val title = paymentTitleOf(payment)
+    val money = rememberMoneyFormatter(payment.currency)
     AdaptiveSheet(
         title = title,
         onDismissRequest = { onEvent(GroupDetailUiEvent.OnPaymentDetailsDismissed) },

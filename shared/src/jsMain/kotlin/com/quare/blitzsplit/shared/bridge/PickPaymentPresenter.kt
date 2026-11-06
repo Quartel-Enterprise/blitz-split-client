@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PickPaymentGroup
@@ -60,13 +61,15 @@ class PickPaymentPresenter {
         return JsWatch(watch::cancel)
     }
 
-    // Why: a pair, which opens Registrar pagamento for it in this dialog's place.
+    // Why: a pair, which opens Registrar pagamento for it in this dialog's place; it owes in one currency at a time.
     fun pickPair(
         groupId: String,
         fromMemberId: String,
         toMemberId: String,
+        currency: String,
     ) {
-        viewModel.onEvent(PickPaymentUiEvent.OnPairClicked(groupId, fromMemberId, toMemberId))
+        val groupCurrency = GroupCurrency.fromCodeOrNull(currency) ?: return
+        viewModel.onEvent(PickPaymentUiEvent.OnPairClicked(groupId, fromMemberId, toMemberId, groupCurrency))
     }
 
     // Why: ✕, Esc, a click outside or a swipe down.

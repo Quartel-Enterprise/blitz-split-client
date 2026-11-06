@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.debtColorOf
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.debtAmountTextOf
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
@@ -44,7 +44,6 @@ private val debtFaceSize = 32.dp
 internal fun DebtEntryRow(
     debt: DebtRow,
     shape: Shape,
-    money: MoneyFormatter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -100,11 +99,7 @@ internal fun DebtEntryRow(
                     }
                 }
                 Text(
-                    text = when (debt.kind) {
-                        DebtKind.YOU_OWE -> money.toSignedText(-debt.amountMinor)
-                        DebtKind.OWES_YOU -> money.toSignedText(debt.amountMinor)
-                        DebtKind.BETWEEN_OTHERS -> money.toText(debt.amountMinor)
-                    },
+                    text = debtAmountTextOf(debt),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = debtColorOf(debt.kind),

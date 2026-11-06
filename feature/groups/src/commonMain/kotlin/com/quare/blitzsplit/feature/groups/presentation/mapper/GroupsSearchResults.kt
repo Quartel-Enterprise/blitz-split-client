@@ -277,7 +277,7 @@ private fun billHitOf(
     description = expense.description,
     descriptionMatch = match,
     totalMinor = expense.amountMinor,
-    currency = group.currency,
+    currency = expense.currency,
     payers = payersOf.of(expense),
     spentAt = expense.spentAt,
 )

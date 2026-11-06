@@ -89,7 +89,6 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     <BillDeleteDialog
       deletion={state.deletion}
       isDeleting={state.isDeleting}
-      money={money}
       onConfirm={() => presenter.confirmDelete()}
       onDismiss={() => presenter.dismissDelete()}
     />

@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -32,6 +33,9 @@ class JsExpenseRow(
     // Why: this device's user first, then the group's order, then whoever left it.
     val payers: Array<JsExpenseRowPayer>,
     val totalMinor: Double,
+    // Why: the bill's own currency, whichever the group's or the chip picked: the ISO 4217 code and its digits.
+    val currency: String,
+    val fractionDigits: Int,
     val myBalanceMinor: Double?,
     // Why: the row's icon, the category the bill reads as.
     val category: JsCategory,
@@ -49,6 +53,9 @@ class JsPaymentRow(
     val toName: String?,
     val toIsMe: Boolean,
     val amountMinor: Double,
+    // Why: the payment's own currency, whichever the group's or the chip picked: the ISO 4217 code and its digits.
+    val currency: String,
+    val fractionDigits: Int,
     // Why: the SettlementMethod's code: "pix", "cash", "transfer" or "other".
     val method: String,
     val isPending: Boolean,
@@ -312,6 +319,12 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnDebtClicked(fromMemberId, toMemberId))
     }
 
+    // Why: a currency chip of the header and Saldos, shown while the group has money in more than one.
+    fun selectCurrency(code: String) {
+        val currency = GroupCurrency.fromCodeOrNull(code) ?: return
+        viewModel.onEvent(GroupDetailUiEvent.OnCurrencySelected(currency))
+    }
+
     fun openPayment(paymentId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnPaymentClicked(paymentId))
     }
@@ -399,6 +412,8 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
             )
         }.toTypedArray(),
     totalMinor = row.totalMinor.toDouble(),
+    currency = row.currency.code,
+    fractionDigits = row.currency.fractionDigits,
     myBalanceMinor = row.myBalanceMinor?.toDouble(),
     category = toJsCategory(row.category),
     isPending = row.isPending,
@@ -413,6 +428,8 @@ private fun toJsPaymentRow(row: PaymentRow): JsPaymentRow = JsPaymentRow(
     toName = row.toName,
     toIsMe = row.toIsMe,
     amountMinor = row.amountMinor.toDouble(),
+    currency = row.currency.code,
+    fractionDigits = row.currency.fractionDigits,
     method = row.method.code,
     isPending = row.isPending,
 )

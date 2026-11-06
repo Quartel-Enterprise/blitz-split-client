@@ -554,6 +554,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = -10_400L,
+                    currency = GroupCurrency.BRL,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
@@ -577,6 +578,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = -10_400L,
+                    currency = GroupCurrency.BRL,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
@@ -604,6 +606,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Mercado",
                     myBalanceMinor = null,
+                    currency = GroupCurrency.BRL,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
@@ -628,6 +631,7 @@ class EditBillViewModelTest {
                 BillDeletion(
                     description = "Feira",
                     myBalanceMinor = -20_000L,
+                    currency = GroupCurrency.BRL,
                     settledPair = null,
                 ),
                 viewModel.uiState.value.deletion,
@@ -806,7 +810,7 @@ class EditBillViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
 
         // Then
-        assertEquals(BillDeletion("Mercado", -10_400L, null), viewModel.uiState.value.deletion)
+        assertEquals(BillDeletion("Mercado", -10_400L, GroupCurrency.BRL, null), viewModel.uiState.value.deletion)
     }
 
     @Test

@@ -163,12 +163,13 @@ class GroupsViewModel(
         leaveGroup = leaveGroup,
         deleteGroup = deleteGroup,
         scope = viewModelScope,
-        openRegisterPayment = { groupId, fromMemberId, toMemberId ->
+        openRegisterPayment = { groupId, fromMemberId, toMemberId, currency ->
             open(
                 Route.RegisterPayment(
                     groupId = groupId,
                     fromMemberId = fromMemberId,
                     toMemberId = toMemberId,
+                    currency = currency,
                     offersReceiverKeys = true,
                 ),
             )
@@ -233,6 +234,7 @@ class GroupsViewModel(
         combine(observeGroups(), observeGroupsMoney(), ::groupsWithMoneyOf)
             .onEach { groups ->
                 groupsWithMoney = groups
+                showSummary()
                 // Why: only a dialog showing, or the server answering for it, reads the group; asking again rebuilds it.
                 if (exit.state.value.dialog != null) exit.update(exitTargetOrNull(uiState.value.exitGroupId))
             }.map { groups ->
@@ -254,7 +256,6 @@ class GroupsViewModel(
                     it.copy(
                         groups = home.rows,
                         hasLoadedGroups = true,
-                        summary = summaryOf(home.rows),
                         pendingChangeCount = home.pendingChangeCount,
                         latestBill = home.latestBill,
                         /*
@@ -270,8 +271,10 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
         layoutPicker.watch(observeGroupsLayout())
         observePeopleBalances()
-            .onEach { people -> peopleBalances = people }
-            .launchIn(viewModelScope)
+            .onEach { people ->
+                peopleBalances = people
+                showSummary()
+            }.launchIn(viewModelScope)
         // Why: only the group a row's "Acertar" was about can owe the home a notice; a group's own screens show theirs.
         notices.watch(
             scope = viewModelScope,
@@ -551,6 +554,11 @@ class GroupsViewModel(
         notices.delete(viewModelScope, notice.settlementIds) { uiAction.emit(GroupsUiAction.ShowChangeError) }
     }
 
+    // Why: the card is the global Saldos' totals, so it follows them, not the rows.
+    private fun showSummary() {
+        uiState.update { it.copy(summary = summaryOf(peopleBalances, groupsWithMoney)) }
+    }
+
     private fun exitGroupOrNull(): Group? = groupsWithMoney
         .firstOrNull { it.group.id == uiState.value.exitGroupId }
         ?.group
@@ -559,7 +567,7 @@ class GroupsViewModel(
         val item = groupsWithMoney.firstOrNull { it.group.id == groupId } ?: return null
         return GroupExitTarget(
             group = item.group,
-            balances = GroupBalances.of(item.group, item.expenses, item.settlements),
+            balances = GroupBalances.getByCurrency(item.group, item.expenses, item.settlements),
             billCount = item.expenses.size,
         )
     }

@@ -15,6 +15,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.CurrencyChipRow
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
@@ -67,6 +68,11 @@ internal fun BalancesTabletopContent(
                     GroupTabsRow(
                         selectedTab = state.tab,
                         onAction = onAction,
+                    )
+                    CurrencyChipRow(
+                        currencies = state.header.currencies,
+                        selected = state.header.currency,
+                        onSelected = { onEvent(GroupDetailUiEvent.OnCurrencySelected(it)) },
                     )
                     val myBalance = state.header.myBalance
                     if (state.isMyBalanceLoading) MyBalanceSkeleton()
@@ -142,7 +148,6 @@ private fun BalancesTabletopPairsLayout(
         ) {
             betweenOthersItems(
                 state = state,
-                money = money,
                 onEvent = onEvent,
             )
         }

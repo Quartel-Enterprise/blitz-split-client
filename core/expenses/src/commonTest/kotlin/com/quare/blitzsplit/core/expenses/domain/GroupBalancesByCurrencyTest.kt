@@ -283,6 +283,139 @@ class GroupBalancesByCurrencyTest {
         assertEquals(listOf(Debt(ANA, EX_MEMBER, 20L)), byCurrency[1].balances.debts)
     }
 
+    @Test
+    fun `GIVEN a group gone from the device with no bills or payments WHEN listing by currency THEN lists nothing`() {
+        // Given
+        val expenses = emptyList<Expense>()
+
+        // When
+        val byCurrency = GroupBalances.getUnsimplifiedByCurrency(expenses, settlements = emptyList())
+
+        // Then
+        assertTrue(byCurrency.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group gone with two currencies WHEN listing by currency THEN lists one balance per currency`() {
+        // Given
+        val expenses = listOf(
+            owes(ANA, BRUNO, 100L, GroupCurrency.BRL),
+            owes(BRUNO, CARLA, 700L, GroupCurrency.USD),
+        )
+
+        // When
+        val byCurrency = GroupBalances.getUnsimplifiedByCurrency(expenses, settlements = emptyList())
+
+        // Then
+        assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), byCurrency.map { it.currency })
+        assertEquals(listOf(Debt(ANA, BRUNO, 100L)), byCurrency[0].balances.debts)
+        assertEquals(listOf(Debt(BRUNO, CARLA, 700L)), byCurrency[1].balances.debts)
+    }
+
+    @Test
+    fun `GIVEN a group gone with more bills in dollars WHEN listing by currency THEN lists the most used first`() {
+        // Given
+        val expenses = listOf(
+            owes(ANA, BRUNO, 100L, GroupCurrency.BRL, id = "b1"),
+            owes(ANA, BRUNO, 100L, GroupCurrency.USD, id = "b2"),
+            owes(ANA, BRUNO, 100L, GroupCurrency.USD, id = "b3"),
+        )
+
+        // When
+        val byCurrency = GroupBalances.getUnsimplifiedByCurrency(expenses, settlements = emptyList())
+
+        // Then
+        assertEquals(listOf(GroupCurrency.USD, GroupCurrency.BRL), byCurrency.map { it.currency })
+    }
+
+    @Test
+    fun `GIVEN a group gone with as many bills in each currency WHEN listing by currency THEN orders them by code`() {
+        // Given
+        val expenses = listOf(
+            owes(ANA, BRUNO, 100L, GroupCurrency.USD),
+            owes(ANA, BRUNO, 100L, GroupCurrency.EUR),
+            owes(ANA, BRUNO, 100L, GroupCurrency.BRL),
+        )
+
+        // When
+        val byCurrency = GroupBalances.getUnsimplifiedByCurrency(expenses, settlements = emptyList())
+
+        // Then
+        assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.EUR, GroupCurrency.USD), byCurrency.map { it.currency })
+    }
+
+    @Test
+    fun `GIVEN a group gone with a payment in a currency without bills WHEN listing by currency THEN lists it last`() {
+        // Given
+        val expenses = listOf(owes(ANA, BRUNO, 100L, GroupCurrency.USD))
+        val settlements = listOf(payment(BRUNO, ANA, 50L, GroupCurrency.BRL))
+
+        // When
+        val byCurrency = GroupBalances.getUnsimplifiedByCurrency(expenses, settlements)
+
+        // Then
+        assertEquals(listOf(GroupCurrency.USD, GroupCurrency.BRL), byCurrency.map { it.currency })
+        assertEquals(listOf(Debt(ANA, BRUNO, 50L)), byCurrency.last().balances.debts)
+        assertFalse(byCurrency.last().balances.hasBills)
+    }
+
+    @Test
+    fun `GIVEN a group gone with a chain WHEN listing by currency THEN keeps the pairs as the bills make them`() {
+        // Given
+        val expenses = listOf(
+            owes(ANA, BRUNO, 100L, GroupCurrency.BRL, id = "b1"),
+            owes(BRUNO, CARLA, 100L, GroupCurrency.BRL, id = "b2"),
+        )
+
+        // When
+        val byCurrency = GroupBalances.getUnsimplifiedByCurrency(expenses, settlements = emptyList())
+
+        // Then
+        val balances = byCurrency.single().balances
+        assertEquals(listOf(Debt(ANA, BRUNO, 100L), Debt(BRUNO, CARLA, 100L)), balances.debts)
+        assertFalse(balances.isSimplified)
+    }
+
+    @Test
+    fun `GIVEN a payment in euros WHEN creating the unsimplified balance in reais THEN ignores the payment`() {
+        // Given
+        val expenses = listOf(owes(ANA, BRUNO, 100L, GroupCurrency.BRL))
+        val settlements = listOf(payment(ANA, BRUNO, 100L, GroupCurrency.EUR))
+
+        // When
+        val balances = GroupBalances.createUnsimplified(expenses, settlements, GroupCurrency.BRL)
+
+        // Then
+        assertEquals(listOf(Debt(ANA, BRUNO, 100L)), balances.debts)
+        assertTrue(balances.hasBills)
+    }
+
+    @Test
+    fun `GIVEN a bill in dollars WHEN creating the unsimplified balance in reais THEN has no bills and nothing owed`() {
+        // Given
+        val expenses = listOf(owes(ANA, BRUNO, 100L, GroupCurrency.USD))
+
+        // When
+        val balances = GroupBalances.createUnsimplified(expenses, settlements = emptyList(), GroupCurrency.BRL)
+
+        // Then
+        assertFalse(balances.hasBills)
+        assertTrue(balances.debts.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a payment in dollars covering the debt WHEN creating the balance in dollars THEN settles it`() {
+        // Given
+        val expenses = listOf(owes(ANA, BRUNO, 100L, GroupCurrency.USD), owes(ANA, BRUNO, 80L, GroupCurrency.BRL))
+        val settlements = listOf(payment(ANA, BRUNO, 100L, GroupCurrency.USD))
+
+        // When
+        val balances = GroupBalances.createUnsimplified(expenses, settlements, GroupCurrency.USD)
+
+        // Then
+        assertTrue(balances.isEveryoneSettled)
+    }
+
     private fun group(
         currency: GroupCurrency,
         simplifiesDebts: Boolean = false,

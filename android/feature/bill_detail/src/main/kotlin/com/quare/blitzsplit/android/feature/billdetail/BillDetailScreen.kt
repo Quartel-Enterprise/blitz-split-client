@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
-import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.platform.rememberGalleryPhotoSaver
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.android.platform.shareText
@@ -105,7 +104,7 @@ fun BillDetailScreen(
             myBalanceMinor = deletion.myBalanceMinor,
             settledPair = deletion.settledPair,
             isDeleting = state.isDeleting,
-            money = rememberMoneyFormatter(state.currency),
+            currency = deletion.currency,
             onConfirm = { viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed) },
             onDismiss = { viewModel.onEvent(BillDetailUiEvent.OnDeleteDismissed) },
         )

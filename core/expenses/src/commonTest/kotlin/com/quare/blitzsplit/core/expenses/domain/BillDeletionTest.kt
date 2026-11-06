@@ -23,6 +23,7 @@ class BillDeletionTest {
             BillDeletion(
                 description = "Mercado",
                 myBalanceMinor = -400L,
+                currency = GroupCurrency.BRL,
                 settledPair = null,
             ),
             deletion,
@@ -39,6 +40,19 @@ class BillDeletionTest {
 
         // Then
         assertEquals(400L, deletion.myBalanceMinor)
+    }
+
+    @Test
+    fun `GIVEN a bill in dollars WHEN asking to delete it THEN carries the bills own currency`() {
+        // Given
+        val inDollars = mercado.copy(currency = GroupCurrency.USD)
+
+        // When
+        val deletion = BillDeletion.of(inDollars, ANA, null)
+
+        // Then
+        assertEquals(GroupCurrency.USD, deletion.currency)
+        assertEquals(-400L, deletion.myBalanceMinor)
     }
 
     @Test
@@ -74,6 +88,7 @@ class BillDeletionTest {
             BillDeletion(
                 description = "Mercado",
                 myBalanceMinor = null,
+                currency = GroupCurrency.BRL,
                 settledPair = null,
             ),
             deletion,
@@ -93,6 +108,7 @@ class BillDeletionTest {
             BillDeletion(
                 description = "Mercado",
                 myBalanceMinor = null,
+                currency = GroupCurrency.BRL,
                 settledPair = null,
             ),
             deletion,

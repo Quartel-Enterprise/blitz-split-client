@@ -1112,6 +1112,7 @@ class PayReceiverViewModelTest {
             GROUP_ID,
             fromMemberId = from,
             toMemberId = to,
+            currency = currency,
             offersReceiverKeys = offersReceiverKeys,
         )
         val trip = Group(

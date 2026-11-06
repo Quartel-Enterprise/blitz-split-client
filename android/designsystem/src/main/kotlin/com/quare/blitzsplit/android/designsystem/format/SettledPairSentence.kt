@@ -12,10 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
  * shrinks "fica devendo"; one that grows or flips "passa a dever".
  */
 @Composable
-fun settledPairSentenceOf(
-    change: SettledPairChange,
-    money: MoneyFormatter,
-): String {
+fun settledPairSentenceOf(change: SettledPairChange): String {
     val formerMember = stringResource(R.string.designsystem_former_member)
     val payer = change.payerName ?: formerMember
     val receiver = change.receiverName ?: formerMember
@@ -27,16 +24,17 @@ fun settledPairSentenceOf(
     return listOf(
         head,
         stringResource(R.string.designsystem_settled_pair_redone),
-        outcomeOf(change, money, formerMember),
+        outcomeOf(change, formerMember),
     ).joinToString(" ")
 }
 
 @Composable
 private fun outcomeOf(
     change: SettledPairChange,
-    money: MoneyFormatter,
     formerMember: String,
 ): String {
+    // Why: the payment's own currency, which a group with money in two of them doesn't share with its bills.
+    val money = rememberMoneyFormatter(change.currency)
     val debtor = change.debtorName ?: formerMember
     val creditor = change.creditorName ?: formerMember
     val amount = money.toText(change.amountMinor)

@@ -70,6 +70,7 @@ final class GroupDetailModel {
             deleteGroup: { [weak self] in self?.send(GroupDetailUiEventOnDeleteGroupClicked.shared) },
             splitBill: { [weak self] in self?.send(GroupDetailUiEventOnSplitBillClicked.shared) },
             settle: { [weak self] in self?.send(GroupDetailUiEventOnSettleClicked.shared) },
+            selectCurrency: { [weak self] in self?.send(GroupDetailUiEventOnCurrencySelected(currency: $0)) },
             confirmExit: { [weak self] in self?.send(GroupDetailUiEventOnGroupExitConfirmed.shared) },
             dismissExit: { [weak self] in self?.send(GroupDetailUiEventOnGroupExitDismissed.shared) },
             backToGroups: { [weak self] in self?.send(GroupDetailUiEventOnBackToGroupsClicked.shared) },
@@ -214,7 +215,6 @@ struct GroupDetailView: View {
         // A bill's "Delete bill" on the list asks what Bill asks, in the same words
         .billDeletionAlert(
             model?.state.billToDelete,
-            currency: model?.state.header.currency,
             isDeleting: model?.state.isDeletingBill == true,
             onConfirm: { model?.send(GroupDetailUiEventOnExpenseDeleteConfirmed.shared) },
             onDismiss: { model?.dismissBillDeletion() },
@@ -253,7 +253,7 @@ struct GroupDetailView: View {
         .sheet(isPresented: paymentDetailsShown, onDismiss: { model?.paymentDetailsDidDismiss() }) {
             if let model, let payment = model.state.paymentToView ?? model.lastShownPayment {
                 NavigationStack {
-                    PaymentDetailsSheet(payment: payment, currency: model.state.header.currency, model: model)
+                    PaymentDetailsSheet(payment: payment, model: model)
                 }
                 .formSheetSizing()
             }
@@ -495,9 +495,9 @@ private struct PhoneExpenseSections: View {
                             model.open(entry)
                         } label: {
                             if let payment = entry as? PaymentRow {
-                                PhonePaymentRow(row: payment, currency: state.header.currency)
+                                PhonePaymentRow(row: payment)
                             } else if let expense = entry as? ExpenseRow {
-                                PhoneExpenseRow(row: expense, currency: state.header.currency)
+                                PhoneExpenseRow(row: expense)
                             }
                         }
                         .buttonStyle(.plain)
@@ -514,13 +514,12 @@ private struct PhoneExpenseSections: View {
 
 private struct PhoneExpenseRow: View {
     let row: ExpenseRow
-    let currency: GroupCurrency
 
     var body: some View {
         DayEntryLine(systemImage: "receipt", category: row.category, title: row.description_, meta: expenseMeta(row), isPending: row.isPending) {
-            Text(verbatim: currency.format(row.totalMinor))
+            Text(verbatim: row.currency.format(row.totalMinor))
                 .monospacedDigit()
-            MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: currency)
+            MyBalanceText(minor: row.myBalanceMinor?.int64Value, currency: row.currency)
                 .font(.footnote.weight(.semibold))
         }
     }
@@ -529,7 +528,6 @@ private struct PhoneExpenseRow: View {
 /// "Ana paid you · 12:10 PM · Payment · Pix · $50.00 · payment"; a tap opens its details.
 private struct PhonePaymentRow: View {
     let row: PaymentRow
-    let currency: GroupCurrency
 
     var body: some View {
         DayEntryLine(
@@ -538,7 +536,7 @@ private struct PhonePaymentRow: View {
             meta: PaymentCopy.meta(row),
             isPending: row.isPending,
         ) {
-            Text(verbatim: currency.format(row.amountMinor))
+            Text(verbatim: row.currency.format(row.amountMinor))
                 .monospacedDigit()
             PaymentTag()
         }
@@ -688,13 +686,14 @@ private struct MacGroupExpenses: View {
                 }
             }
             TableColumn("Total") { item in
-                Text(verbatim: currency.format(item.expense?.totalMinor ?? item.payment?.amountMinor ?? 0))
+                Text(verbatim: (item.expense?.currency ?? item.payment?.currency ?? currency)
+                    .format(item.expense?.totalMinor ?? item.payment?.amountMinor ?? 0))
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 90, ideal: 110)
             TableColumn("Your share") { item in
-                MyBalanceText(minor: item.expense?.myBalanceMinor?.int64Value, currency: currency)
+                MyBalanceText(minor: item.expense?.myBalanceMinor?.int64Value, currency: item.expense?.currency ?? currency)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }

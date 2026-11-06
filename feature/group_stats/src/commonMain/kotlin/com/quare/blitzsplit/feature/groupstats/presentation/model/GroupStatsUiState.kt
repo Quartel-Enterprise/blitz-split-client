@@ -7,7 +7,10 @@ import com.quare.blitzsplit.core.model.StatsGrain
 
 data class GroupStatsUiState(
     val groupName: String,
+    // Why: the currency of every amount, the chip picked (the group's default until one is).
     val currency: GroupCurrency,
+    // Why: the chips, drawn only with more than one: the currencies the group has money in, its default first.
+    val currencies: List<GroupCurrency>,
     // Why: "Toda a viagem" and "Ver toda a viagem" in a trip, "Todo o período" in any other group.
     val isTrip: Boolean,
     val period: StatsPeriod,

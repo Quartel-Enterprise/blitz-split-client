@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
@@ -19,7 +20,7 @@ class ObserveGroupBalancesUseCase(
     private val settlementRepository: SettlementRepository,
     private val groupRepository: GroupRepository,
 ) : ObserveGroupBalances {
-    override fun invoke(groupId: String): Flow<GroupBalances> = combine(
+    override fun invoke(groupId: String): Flow<List<CurrencyBalances>> = combine(
         groupRepository
             .observeGroups()
             .map { groups -> groups.firstOrNull { it.id == groupId } }
@@ -28,9 +29,9 @@ class ObserveGroupBalancesUseCase(
         settlementRepository.observeSettlements(groupId),
     ) { group, expenses, settlements ->
         if (group == null) {
-            GroupBalances.of(expenses, settlements)
+            GroupBalances.getUnsimplifiedByCurrency(expenses, settlements)
         } else {
-            GroupBalances.of(group, expenses, settlements)
+            GroupBalances.getByCurrency(group, expenses, settlements)
         }
     }.distinctUntilChanged()
 }

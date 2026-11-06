@@ -12,12 +12,6 @@ import { balanceTone, debtSentence } from './BalanceCard'
 
 type Money = (minor: number) => string
 
-// Why: the group's currency, plain ("R$ 64,00") and signed ("−R$ 118,00").
-interface Formats {
-  money: Money
-  signed: Money
-}
-
 // Why: each pair's button says what recording its payment means for whoever looks: "Acertar", "Recebi" or "Já pagou".
 const debtButtons: Record<string, MessageKey> = {
   'you-owe': 'balances_settle',
@@ -32,10 +26,8 @@ const debtButtons: Record<string, MessageKey> = {
  */
 export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresenter; state: JsGroupDetailState }) {
   const { header } = state
-  const formats: Formats = {
-    money: (minor) => formatMoney(minor, header.currency, header.fractionDigits),
-    signed: (minor) => formatSignedMoney(minor, header.currency, header.fractionDigits),
-  }
+  // Why: the header's amounts are in the currency picked; each pair draws its own.
+  const money: Money = (minor) => formatMoney(minor, header.currency, header.fractionDigits)
   return (
     <>
       {state.isLoadingBalances ? (
@@ -72,7 +64,7 @@ export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresen
           )}
           {state.showsSimplificationCard && state.simplification && <SimplificationAlert presenter={presenter} simplification={state.simplification} />}
           {state.myDebts.length > 0 && (
-            <DebtSection id="balances-with-you" title={t('balances_withYou')} hint={myHint(state, formats.money)} debts={state.myDebts} presenter={presenter} formats={formats} />
+            <DebtSection id="balances-with-you" title={t('balances_withYou')} hint={myHint(state, money)} debts={state.myDebts} presenter={presenter} />
           )}
           {state.otherDebts.length > 0 && (
             <DebtSection
@@ -81,7 +73,6 @@ export function BalancesTab({ presenter, state }: { presenter: GroupDetailPresen
               hint={t(state.otherDebts.length === 1 ? 'balances_toSettleOne' : 'balances_toSettleOther', { count: state.otherDebts.length })}
               debts={state.otherDebts}
               presenter={presenter}
-              formats={formats}
             />
           )}
           {state.showsDebtNote && (
@@ -132,14 +123,12 @@ function DebtSection({
   hint,
   debts,
   presenter,
-  formats,
 }: {
   id: string
   title: string
   hint: string | null
   debts: JsDebtRow[]
   presenter: GroupDetailPresenter
-  formats: Formats
 }) {
   return (
     <section aria-labelledby={id} className="flex flex-col gap-2">
@@ -151,7 +140,7 @@ function DebtSection({
       </div>
       <ul className="flex flex-col divide-y overflow-hidden rounded-xl border bg-card">
         {debts.map((debt) => (
-          <DebtRowItem key={`${debt.fromMemberId}/${debt.toMemberId}`} debt={debt} presenter={presenter} formats={formats} />
+          <DebtRowItem key={`${debt.fromMemberId}/${debt.toMemberId}/${debt.currency}`} debt={debt} presenter={presenter} />
         ))}
       </ul>
     </section>
@@ -159,17 +148,17 @@ function DebtSection({
 }
 
 /** "−R$ 118,00" what you owe, "+R$ 162,30" what you get back, "R$ 64,00" between the others. */
-function debtAmount(debt: JsDebtRow, formats: Formats): { text: string; tone: string } {
-  if (debt.kind === 'you-owe') return { text: formats.signed(-debt.amountMinor), tone: balanceTone(-1) }
-  if (debt.kind === 'owes-you') return { text: formats.signed(debt.amountMinor), tone: balanceTone(1) }
-  return { text: formats.money(debt.amountMinor), tone: 'text-foreground' }
+function debtAmount(debt: JsDebtRow): { text: string; tone: string } {
+  if (debt.kind === 'you-owe') return { text: formatSignedMoney(-debt.amountMinor, debt.currency, debt.fractionDigits), tone: balanceTone(-1) }
+  if (debt.kind === 'owes-you') return { text: formatSignedMoney(debt.amountMinor, debt.currency, debt.fractionDigits), tone: balanceTone(1) }
+  return { text: formatMoney(debt.amountMinor, debt.currency, debt.fractionDigits), tone: 'text-foreground' }
 }
 
 /** A pair: whoever owes → whoever gets it, the sentence, the amount and the button; the whole row opens the payment. */
-function DebtRowItem({ debt, presenter, formats }: { debt: JsDebtRow; presenter: GroupDetailPresenter; formats: Formats }) {
+function DebtRowItem({ debt, presenter }: { debt: JsDebtRow; presenter: GroupDetailPresenter }) {
   const open = () => presenter.openDebt(debt.fromMemberId, debt.toMemberId)
   const sentence = debtSentence(debt)
-  const amount = debtAmount(debt, formats)
+  const amount = debtAmount(debt)
   const label = t(debtButtons[debt.kind] ?? 'balances_alreadyPaid')
   return (
     <li onClick={open} className="flex min-h-14 cursor-pointer items-center gap-3 px-4 py-2.5 hover:bg-accent/60">

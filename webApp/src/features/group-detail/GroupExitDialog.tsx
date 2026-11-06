@@ -45,13 +45,9 @@ export interface GroupExitEvents extends GroupExitDialogEvents {
  */
 export function GroupExitDialog({
   exit,
-  currency,
-  fractionDigits,
   events,
 }: {
   exit: JsGroupExit
-  currency: string
-  fractionDigits: number
   events: GroupExitDialogEvents
 }) {
   if (exit.deletedNotice) {
@@ -99,9 +95,9 @@ export function GroupExitDialog({
         {dialog.debts.length > 0 && (
           <ul className="flex flex-col divide-y rounded-lg border bg-muted/40 text-sm">
             {dialog.debts.map((debt) => (
-              <li key={`${debt.fromMemberId}-${debt.toMemberId}`} className="flex items-center justify-between gap-3 px-3 py-2">
+              <li key={`${debt.fromMemberId}-${debt.toMemberId}-${debt.currency}`} className="flex items-center justify-between gap-3 px-3 py-2">
                 <span>{debtSentence(debt)}</span>
-                <DebtAmount debt={debt} currency={currency} fractionDigits={fractionDigits} />
+                <DebtAmount debt={debt} />
               </li>
             ))}
           </ul>
@@ -173,8 +169,9 @@ function copyOf(dialog: JsGroupExitDialog) {
   }
 }
 
-/** "−R$ 98,00" what you owe, "+R$ 42,00" what you get back, "R$ 42,00" between the others. */
-function DebtAmount({ debt, currency, fractionDigits }: { debt: JsDebtRow; currency: string; fractionDigits: number }) {
+/** "−R$ 98,00" what you owe, "+R$ 42,00" what you get back, "R$ 42,00" between the others, each in the pair's own currency. */
+function DebtAmount({ debt }: { debt: JsDebtRow }) {
+  const { currency, fractionDigits } = debt
   if (debt.kind === 'you-owe') {
     return <strong className={cn('tabular-nums', balanceTone(-1))}>{formatSignedMoney(-debt.amountMinor, currency, fractionDigits)}</strong>
   }

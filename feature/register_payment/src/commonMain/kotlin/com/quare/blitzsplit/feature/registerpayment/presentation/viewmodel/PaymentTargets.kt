@@ -21,7 +21,7 @@ internal fun pairTargetOf(
     val debtMinor = balances.debtOf(route.fromMemberId, route.toMemberId)
     val receiver = group.members.firstOrNull { it.id == route.toMemberId }
     return PaymentTarget(
-        currency = group.currency,
+        currency = route.currency,
         from = group.members.firstOrNull { it.id == route.fromMemberId }?.let(::toPerson),
         to = receiver?.let(::toPerson),
         toUserId = receiver?.userId,
@@ -33,7 +33,7 @@ internal fun pairTargetOf(
                 fromMemberId = route.fromMemberId,
                 toMemberId = route.toMemberId,
                 amountMinor = debtMinor,
-                currency = group.currency,
+                currency = route.currency,
             ),
         ),
         groupParts = emptyList(),

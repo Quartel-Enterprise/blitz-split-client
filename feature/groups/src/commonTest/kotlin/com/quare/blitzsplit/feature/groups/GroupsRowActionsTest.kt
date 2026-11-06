@@ -277,10 +277,101 @@ class GroupsRowActionsTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.RegisterPayment("trio", "member-Pierre", "member-Ana", offersReceiverKeys = true),
+                    Route.RegisterPayment(
+                        "trio",
+                        "member-Pierre",
+                        "member-Ana",
+                        currency = GroupCurrency.BRL,
+                        offersReceiverKeys = true,
+                    ),
                 ),
                 navigator.backStack.value,
             )
+        }
+
+    @Test
+    fun `GIVEN you owe only in another currency WHEN tapping Acertar THEN pays in that currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(brlOnlyBrunoOwes, brunoPaidInDollars))
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.RegisterPayment(
+                        "trio",
+                        "member-Pierre",
+                        "member-Bruno",
+                        currency = GroupCurrency.USD,
+                        offersReceiverKeys = true,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN you owe in two currencies WHEN tapping Acertar THEN settles the default currency first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone, brunoPaidInDollars))
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnGroupExitConfirmed)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.RegisterPayment(
+                        "trio",
+                        "member-Pierre",
+                        "member-Ana",
+                        currency = GroupCurrency.BRL,
+                        offersReceiverKeys = true,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN debts in two currencies WHEN tapping Apagar grupo THEN lists the pairs of both currencies`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(anaPaidForEveryone, brunoPaidInDollars))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnDeleteGroupClicked("trio"))
+
+            // Then
+            val dialog = assertIs<GroupExitDialog.DeleteBlocked>(viewModel.uiState.value.exit.dialog)
+            assertEquals(
+                setOf(GroupCurrency.BRL, GroupCurrency.USD),
+                dialog.debts.map { it.currency }.toSet(),
+            )
+            assertEquals(4, dialog.debts.size)
+        }
+
+    @Test
+    fun `GIVEN settled in the default currency and owing in another WHEN tapping Sair THEN asks to settle first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(brlOnlyBrunoOwes, brunoPaidInDollars))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnLeaveGroupClicked("trio"))
+
+            // Then
+            val dialog = assertIs<GroupExitDialog.LeaveBlocked>(viewModel.uiState.value.exit.dialog)
+            assertTrue(dialog.canSettle)
+            assertEquals(GroupCurrency.USD, dialog.debts.first { it.fromMemberId == "member-Pierre" }.currency)
         }
 
     @Test
@@ -718,6 +809,21 @@ class GroupsRowActionsTest {
         isPending = false,
         updatedAt = 0L,
         updatedByMemberId = null,
+    )
+
+    // Why: in reais, only Bruno owes Ana R$ 100,00, so Pierre is settled in the group's own currency.
+    private val brlOnlyBrunoOwes = anaPaidForEveryone.copy(
+        id = "gas",
+        amountMinor = 20000L,
+        payers = listOf(ExpensePayer("member-Ana", 20000L)),
+        shares = listOf("Ana", "Bruno").map { ExpenseShare("member-$it", 10000L, 1L) },
+    )
+
+    // Why: in dollars, Pierre and Ana each owe Bruno US$ 100,00.
+    private val brunoPaidInDollars = anaPaidForEveryone.copy(
+        id = "trip",
+        currency = GroupCurrency.USD,
+        payers = listOf(ExpensePayer("member-Bruno", 30000L)),
     )
 
     private val pierrePaidAna = Settlement(

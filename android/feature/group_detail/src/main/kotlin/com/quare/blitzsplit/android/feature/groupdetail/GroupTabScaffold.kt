@@ -29,10 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.CurrencyChipRow
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -55,6 +57,8 @@ internal class GroupTabFrame(
     // Why: "Sair do grupo" and "Apagar grupo" need the internet, which the ⋮ menu says.
     val isOnline: Boolean,
     val money: MoneyFormatter,
+    // Why: a chip per currency the group has money in, drawn over the amounts while there are two or more.
+    val onCurrencySelected: (GroupCurrency) -> Unit,
 )
 
 /*
@@ -217,6 +221,15 @@ private fun GroupSideHeader(
         val balance = frame.header.myBalance
         if (frame.isMyBalanceLoading) {
             MyBalanceSkeleton(modifier = balancePadding)
+        }
+        // Why: Membros has its own chips over its balances, so the header's stay out of that tab.
+        if (frame.selectedTab != GroupTab.MEMBERS) {
+            CurrencyChipRow(
+                currencies = frame.header.currencies,
+                selected = frame.header.currency,
+                onSelected = frame.onCurrencySelected,
+                modifier = balancePadding,
+            )
         }
         balance?.let {
             MyBalanceCard(

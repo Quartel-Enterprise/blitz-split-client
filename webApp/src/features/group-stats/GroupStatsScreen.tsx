@@ -3,6 +3,7 @@ import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStats
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, PersonButton, segmentClass } from '@/components/common'
+import { CurrencyChips } from '@/components/CurrencyChips'
 import { controlClass } from '@/components/fields'
 import { CrumbButton, type HomeTab } from '@/components/HomeShell'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
@@ -139,6 +140,8 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
             </button>
           ))}
       </div>
+
+      <CurrencyChips currencies={state.currencies} selected={state.currency} onSelect={(code) => presenter.selectCurrency(code)} />
 
       {/* Why: a new device's first download may still bring the period's bills: never an empty state before. */}
       {state.isLoadingBills && (

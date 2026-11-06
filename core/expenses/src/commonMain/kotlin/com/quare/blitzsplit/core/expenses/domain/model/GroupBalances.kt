@@ -134,18 +134,17 @@ data class GroupBalances(
 
     companion object {
         /*
-         * Why: the pairs as the group shows them, simplified while its "Simplificar dívidas" is on. Given a currency,
-         * only the bills and payments in it count: currencies are never added up (getByCurrency). Without one, every
-         * bill and payment counts, as the group screens still show them until they move to one balance per currency.
+         * Why: the pairs as the group shows them in one currency, simplified while its "Simplificar dívidas" is on:
+         * only the bills and payments in it count, since currencies are never added up (getByCurrency).
          */
         fun of(
             group: Group,
             expenses: List<Expense>,
             settlements: List<Settlement>,
-            currency: GroupCurrency? = null,
-        ): GroupBalances = of(
-            expenses = expenses.filter { currency == null || it.currency == currency },
-            settlements = settlements.filter { currency == null || it.currency == currency },
+            currency: GroupCurrency,
+        ): GroupBalances = ofBills(
+            expenses = expenses.filter { it.currency == currency },
+            settlements = settlements.filter { it.currency == currency },
         ).toShownFor(group)
 
         /*
@@ -158,6 +157,21 @@ data class GroupBalances(
             settlements: List<Settlement>,
         ): List<CurrencyBalances> = currenciesOf(group, expenses, settlements).map { currency ->
             CurrencyBalances(currency, of(group, expenses, settlements, currency))
+        }
+
+        /*
+         * Why: a group already gone from the device has no default currency or switch: its pairs as the bills make
+         * them, one balance per currency used, the one with the most bills first (then by code).
+         */
+        fun getUnsimplifiedByCurrency(
+            expenses: List<Expense>,
+            settlements: List<Settlement>,
+        ): List<CurrencyBalances> {
+            val billCount = expenses.groupingBy { it.currency }.eachCount()
+            return (expenses.map { it.currency } + settlements.map { it.currency })
+                .distinct()
+                .sortedWith(compareByDescending<GroupCurrency> { billCount[it] ?: 0 }.thenBy { it.code })
+                .map { CurrencyBalances(it, createUnsimplified(expenses, settlements, it)) }
         }
 
         // Why: the currencies a group's money is in, in the order getByCurrency lists them.
@@ -174,8 +188,21 @@ data class GroupBalances(
             return listOf(group.currency) + others
         }
 
-        // Why: the pairs as each bill and payment make them, whatever the group's "Simplificar dívidas".
-        fun of(
+        /*
+         * Why: the pairs as each bill and payment in one currency make them, whatever the group's "Simplificar
+         * dívidas"; what its switch and the confirmation read. Never across currencies: amounts of two are not added.
+         */
+        fun createUnsimplified(
+            expenses: List<Expense>,
+            settlements: List<Settlement>,
+            currency: GroupCurrency,
+        ): GroupBalances = ofBills(
+            expenses = expenses.filter { it.currency == currency },
+            settlements = settlements.filter { it.currency == currency },
+        )
+
+        // Why: the bills and payments given must already be in one currency.
+        private fun ofBills(
             expenses: List<Expense>,
             settlements: List<Settlement>,
         ): GroupBalances {

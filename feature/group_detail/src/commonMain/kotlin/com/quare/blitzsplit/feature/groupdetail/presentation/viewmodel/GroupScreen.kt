@@ -1,12 +1,16 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
+import com.quare.blitzsplit.core.expenses.domain.model.currencies
 import com.quare.blitzsplit.core.expenses.domain.model.faceOf
+import com.quare.blitzsplit.core.expenses.domain.model.findSelected
+import com.quare.blitzsplit.core.expenses.domain.model.isEveryoneSettled
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -41,6 +45,7 @@ internal val emptyGroupHeader = GroupHeader(
     groupColor = AvatarColor.entries.first(),
     groupPhotoUrl = null,
     currency = GroupCurrency.BRL,
+    currencies = emptyList(),
     faces = emptyList(),
     memberCount = 0,
     notJoinedCount = 0,
@@ -71,18 +76,16 @@ internal class GroupScreen(
         leaveGroup = useCases.leaveGroup,
         deleteGroup = useCases.deleteGroup,
         scope = scope,
-        openRegisterPayment = { _, fromMemberId, toMemberId -> openRegisterPayment(fromMemberId, toMemberId) },
+        openRegisterPayment = { _, fromMemberId, toMemberId, currency ->
+            openRegisterPayment(fromMemberId, toMemberId, currency)
+        },
         openBalances = { showBalances() },
         onExited = ::backToGroups,
         showLeaveError = showLeaveError,
     )
 
     private var group: Group? = null
-    private var balances = GroupBalances(
-        debts = emptyList(),
-        hasBills = false,
-        unsimplifiedDebts = null,
-    )
+    private var balances: List<CurrencyBalances> = emptyList()
 
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     var isGroupGone = false
@@ -97,7 +100,7 @@ internal class GroupScreen(
      * show gets the balances too, already worked out, and showNotice the payment Registrar pagamento just recorded.
      */
     fun watch(
-        show: (Group, List<Expense>, List<Settlement>, GroupBalances) -> Unit,
+        show: (Group, List<Expense>, List<Settlement>, List<CurrencyBalances>) -> Unit,
         isLoaded: Flow<Boolean>,
         showNotice: (PaymentNotice) -> Unit,
         // Why: the group was removed: what a ViewModel kept open about it has nothing left to show.
@@ -123,7 +126,7 @@ internal class GroupScreen(
                 onGroupGone()
                 closeGone()
             } else {
-                balances = GroupBalances.of(group, expenses, settlements)
+                balances = GroupBalances.getByCurrency(group, expenses, settlements)
                 exit.update(
                     GroupExitTarget(
                         group = group,
@@ -211,24 +214,33 @@ internal class GroupScreen(
     fun openRegisterPayment(
         fromMemberId: String,
         toMemberId: String,
+        currency: GroupCurrency,
     ) {
         open(
             Route.RegisterPayment(
                 groupId = groupId,
                 fromMemberId = fromMemberId,
                 toMemberId = toMemberId,
+                currency = currency,
                 offersReceiverKeys = true,
             ),
         )
     }
 
-    // Why: "Acertar" on the balance card: this person pays whoever they owe the most.
-    fun openSettle() {
+    /*
+     * Why: "Acertar" on the balance card: this person pays whoever they owe the most, in the currency picked, or in the
+     * first one they owe in when they owe nothing in it.
+     */
+    fun openSettle(currency: GroupCurrency?) {
         val meId = meIdOrNull() ?: return
-        val creditorId = balances.findLargestCreditorOrNull(meId) ?: return
+        val inCurrency = balances.findSelected(currency)?.takeIf { it.balances.findLargestCreditorOrNull(meId) != null }
+            ?: balances.firstOrNull { it.balances.findLargestCreditorOrNull(meId) != null }
+            ?: return
+        val creditorId = inCurrency.balances.findLargestCreditorOrNull(meId) ?: return
         openRegisterPayment(
             fromMemberId = meId,
             toMemberId = creditorId,
+            currency = inCurrency.currency,
         )
     }
 
@@ -292,24 +304,28 @@ internal class GroupScreen(
 
 internal fun groupHeaderOf(
     group: Group,
-    totalSpentMinor: Long,
-    balances: GroupBalances,
+    expenses: List<Expense>,
+    balances: List<CurrencyBalances>,
+    pickedCurrency: GroupCurrency?,
     isPinned: Boolean,
     isCopyWhole: Boolean,
 ): GroupHeader {
+    val shown = balances.findSelected(pickedCurrency)
+    val currency = shown?.currency ?: group.currency
     val meId = group.members.firstOrNull { it.isMe }?.id
     return GroupHeader(
         groupName = group.name,
         groupInitials = Initials.of(group.name),
         groupColor = group.color,
         groupPhotoUrl = group.photo?.toImageUrl(),
-        currency = group.currency,
+        currency = currency,
+        currencies = balances.currencies,
         faces = group.members.take(MAX_FACES).map(::faceOf),
         memberCount = group.members.size,
         notJoinedCount = group.members.count { !it.hasJoined },
-        totalSpentMinor = totalSpentMinor,
+        totalSpentMinor = expenses.filter { it.currency == currency }.sumOf { it.amountMinor },
         // Why: a balance counted before the group's bills came would read as settled; the UIs shimmer it meanwhile.
-        myBalance = balances.balanceOrNull(meId)?.takeIf { isCopyWhole },
+        myBalance = shown?.balances?.balanceOrNull(meId)?.takeIf { isCopyWhole },
         // Why: bills still coming down may leave someone owing; "Apagar grupo" waits for the whole copy.
         isEveryoneSettled = isCopyWhole && balances.isEveryoneSettled,
         isPinned = isPinned,

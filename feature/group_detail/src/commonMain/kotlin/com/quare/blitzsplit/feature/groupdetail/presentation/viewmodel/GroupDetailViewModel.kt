@@ -4,17 +4,18 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
-import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
+import com.quare.blitzsplit.core.expenses.domain.model.findSelected
+import com.quare.blitzsplit.core.expenses.domain.model.hasBills
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
@@ -24,6 +25,7 @@ import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -32,10 +34,7 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
-import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GROUP_DETAIL_SOURCE
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -151,6 +150,9 @@ class GroupDetailViewModel(
 
     // Why: Membros was picked for the ask waiting now, which picks it only once.
     private var isAddPersonAskShown = false
+
+    // Why: the chip picked over Saldos' pairs and the header's amounts, the group's default currency until one is.
+    private var pickedCurrency: GroupCurrency? = null
 
     init {
         observeCategoryTree(route.groupId)
@@ -294,11 +296,17 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnBillDeletedNoticeShown -> uiState.update { it.copy(showsBillDeletedNotice = false) }
 
-            GroupDetailUiEvent.OnSettleClicked -> screen.openSettle()
+            GroupDetailUiEvent.OnSettleClicked -> screen.openSettle(pickedCurrency)
+
+            is GroupDetailUiEvent.OnCurrencySelected -> {
+                pickedCurrency = event.currency
+                showAgain?.invoke()
+            }
 
             is GroupDetailUiEvent.OnDebtClicked -> screen.openRegisterPayment(
                 fromMemberId = event.fromMemberId,
                 toMemberId = event.toMemberId,
+                currency = uiState.value.header.currency,
             )
 
             is GroupDetailUiEvent.OnPaymentClicked -> showPayment(event.paymentId)
@@ -368,9 +376,9 @@ class GroupDetailViewModel(
         group: Group,
         expenses: List<Expense>,
         settlements: List<Settlement>,
-        balances: GroupBalances,
+        byCurrency: List<CurrencyBalances>,
     ) {
-        showAgain = { show(group, expenses, settlements, balances) }
+        showAgain = { show(group, expenses, settlements, byCurrency) }
         shownGroup = group
         shownExpenses = expenses
         shownSettlements = settlements
@@ -379,11 +387,14 @@ class GroupDetailViewModel(
         val now = currentTimeMillis()
         val namesById = group.members.associate { it.id to it.name }
         val meId = group.members.firstOrNull { it.isMe }?.id
-        val (mine, others) = balances.debts.partition { it.fromMemberId == meId || it.toMemberId == meId }
+        // Why: the pairs of the currency picked; each other currency is another chip, never added to it.
+        val shown = byCurrency.findSelected(pickedCurrency)
+        val balances = shown?.balances
+        val (mine, others) = balances?.debts.orEmpty().partition { it.fromMemberId == meId || it.toMemberId == meId }
         val payerOrder = PayerOrder(group.members)
-        val entries = expenses.map { it.spentAt to toRow(it, namesById, meId, payerOrder) } +
+        val entries = expenses.map { it.spentAt to expenseRowOf(it, namesById, meId, payerOrder, categoryTree) } +
             settlements.map {
-                it.paidAt to toRow(
+                it.paidAt to paymentRowOf(
                     it,
                     namesById,
                     meId,
@@ -406,8 +417,9 @@ class GroupDetailViewModel(
             it.copy(
                 header = groupHeaderOf(
                     group = group,
-                    totalSpentMinor = expenses.sumOf { expense -> expense.amountMinor },
-                    balances = balances,
+                    expenses = expenses,
+                    balances = byCurrency,
+                    pickedCurrency = pickedCurrency,
                     isPinned = screen.isPinned,
                     isCopyWhole = !it.awaitsFullSync,
                 ),
@@ -420,56 +432,16 @@ class GroupDetailViewModel(
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine
                     .sortedBy { debt -> debt.fromMemberId != meId }
-                    .map { debt -> debtRowOf(debt, group, meId, balances) },
-                otherDebts = others.map { debt -> debtRowOf(debt, group, meId, balances) },
-                hasBills = balances.hasBills,
-                simplification = DebtSimplificationSummary.ofOrNull(balances),
+                    .mapNotNull { debt -> shown?.let { debtRowOf(debt, it.currency, group, meId, it.balances) } },
+                otherDebts = others.mapNotNull { debt ->
+                    shown?.let { debtRowOf(debt, it.currency, group, meId, it.balances) }
+                },
+                hasBills = byCurrency.hasBills,
+                simplification = balances?.let(DebtSimplificationSummary::ofOrNull),
                 isLoaded = true,
             )
         }
     }
-
-    private fun toRow(
-        expense: Expense,
-        namesById: Map<String, String>,
-        meId: String?,
-        payerOrder: PayerOrder,
-    ): DayEntry {
-        val payers = payerOrder.sort(expense.payers.map { it.memberId }).map { id ->
-            ExpenseRowPayer(
-                name = namesById[id],
-                isMe = id == meId,
-            )
-        }
-        return ExpenseRow(
-            id = expense.id,
-            description = expense.description,
-            spentAt = expense.spentAt,
-            payers = payers,
-            totalMinor = expense.amountMinor,
-            myBalanceMinor = meId?.let(expense::balanceOf),
-            category = categoryTree.resolve(expense.categoryId),
-            isPending = expense.isPending,
-        )
-    }
-
-    private fun toRow(
-        settlement: Settlement,
-        namesById: Map<String, String>,
-        meId: String?,
-        paidDay: RelativeDay,
-    ): DayEntry = PaymentRow(
-        id = settlement.id,
-        paidAt = settlement.paidAt,
-        paidDay = paidDay,
-        fromName = namesById[settlement.fromMemberId],
-        fromIsMe = settlement.fromMemberId == meId,
-        toName = namesById[settlement.toMemberId],
-        toIsMe = settlement.toMemberId == meId,
-        amountMinor = settlement.amountMinor,
-        method = settlement.method,
-        isPending = settlement.isPending,
-    )
 
     private fun selectTab(tab: GroupTab) {
         uiState.update { it.copy(tab = tab) }

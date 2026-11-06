@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PersonButton } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { CurrencyChips } from '@/components/CurrencyChips'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -79,6 +80,7 @@ export function MembersTab({ presenter, state }: { presenter: MembersPresenter; 
           </Button>
         </div>
       </section>
+      <CurrencyChips currencies={state.currencies} selected={state.currency} onSelect={(code) => presenter.selectCurrency(code)} />
       <ul className="flex flex-col divide-y rounded-xl border bg-card" aria-label={t('members_peopleLabel')}>
         {state.members.map((member) => (
           <MemberRow key={member.id} presenter={presenter} member={member} money={(minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)} />

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -21,6 +22,8 @@ data class SettledPairChange(
     val debtorIsPayer: Boolean,
     // Why: what the debtor owes the other once the change counts, 0 while EVEN.
     val amountMinor: Long,
+    // Why: the payment's own currency, which writes amountMinor.
+    val currency: GroupCurrency,
 ) {
     val debtorName: String?
         get() = if (debtorIsPayer) payerName else receiverName
@@ -56,18 +59,25 @@ data class SettledPairChange(
             settlements: List<Settlement>,
         ): SettledPairChange? {
             val others = expenses.filter { it.id != saved.id }
-            val before = GroupBalances.of(others + saved, settlements)
-            val after = GroupBalances.of(others + listOfNotNull(changed), settlements)
+            // Why: a payment settles the bills in its own currency; the bill's currency, from a change too, is theirs.
+            val currencies = listOfNotNull(saved.currency, changed?.currency).distinct()
             val spentAt = changed?.spentAt ?: saved.spentAt
+
+            fun findOwedBefore(settlement: Settlement): Long =
+                GroupBalances.createUnsimplified(others + saved, settlements, settlement.currency).owedOf(settlement)
+
+            fun findOwedAfter(settlement: Settlement): Long = GroupBalances
+                .createUnsimplified(others + listOfNotNull(changed), settlements, settlement.currency)
+                .owedOf(settlement)
             val settlement = settlements
-                .filter { it.paidAt >= spentAt }
+                .filter { it.paidAt >= spentAt && it.currency in currencies }
                 .sortedByDescending { it.paidAt }
-                .firstOrNull { before.owedOf(it) != after.owedOf(it) }
+                .firstOrNull { findOwedBefore(it) != findOwedAfter(it) }
                 ?: return null
             return of(
                 settlement = settlement,
-                owedBeforeMinor = before.owedOf(settlement),
-                owedAfterMinor = after.owedOf(settlement),
+                owedBeforeMinor = findOwedBefore(settlement),
+                owedAfterMinor = findOwedAfter(settlement),
                 group = group,
             )
         }
@@ -99,6 +109,7 @@ data class SettledPairChange(
                 outcome = outcomeOf(owedBeforeMinor, owedAfterMinor),
                 debtorIsPayer = owedAfterMinor >= 0,
                 amountMinor = abs(owedAfterMinor),
+                currency = settlement.currency,
             )
         }
 

@@ -28,11 +28,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.debtAmountTextOf
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
-import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupDeletedNotice
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitDialog
@@ -45,7 +44,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 @Composable
 fun GroupExitAlertDialog(
     exit: GroupExitState,
-    money: MoneyFormatter,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     onBackToGroups: () -> Unit,
@@ -68,7 +66,6 @@ fun GroupExitAlertDialog(
             title = stringResource(R.string.designsystem_group_exit_leave_blocked_title),
             message = stringResource(R.string.designsystem_group_exit_leave_blocked_message, dialog.groupName),
             debts = dialog.debts,
-            money = money,
             confirm = if (dialog.canSettle) {
                 stringResource(R.string.designsystem_balance_settle)
             } else {
@@ -95,7 +92,6 @@ fun GroupExitAlertDialog(
                 )
             },
             debts = emptyList(),
-            money = money,
             confirm = stringResource(R.string.designsystem_group_exit_leave_confirm),
             dismiss = stringResource(R.string.designsystem_confirm_cancel),
             isDestructive = true,
@@ -119,7 +115,6 @@ fun GroupExitAlertDialog(
                 )
             },
             debts = dialog.debts,
-            money = money,
             confirm = stringResource(R.string.designsystem_group_exit_see_balances),
             dismiss = stringResource(R.string.designsystem_group_exit_not_now),
             isDestructive = false,
@@ -134,7 +129,6 @@ fun GroupExitAlertDialog(
             title = stringResource(R.string.designsystem_group_exit_delete_title, dialog.groupName),
             message = deleteMessageOf(dialog),
             debts = emptyList(),
-            money = money,
             confirm = stringResource(R.string.designsystem_group_exit_delete_confirm),
             dismiss = stringResource(R.string.designsystem_confirm_cancel),
             isDestructive = true,
@@ -168,7 +162,6 @@ private fun ExitDialog(
     title: String,
     message: String,
     debts: List<DebtRow>,
-    money: MoneyFormatter,
     confirm: String,
     dismiss: String,
     isDestructive: Boolean,
@@ -197,7 +190,6 @@ private fun ExitDialog(
                 if (debts.isNotEmpty()) {
                     DebtSummaryList(
                         debts = debts,
-                        money = money,
                     )
                 }
             }
@@ -237,10 +229,7 @@ private fun ExitDialog(
 
 // Why: "Você deve à Carla −R$ 98,00", one line per pair still open.
 @Composable
-private fun DebtSummaryList(
-    debts: List<DebtRow>,
-    money: MoneyFormatter,
-) {
+private fun DebtSummaryList(debts: List<DebtRow>) {
     Surface(
         color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.large,
@@ -264,11 +253,7 @@ private fun DebtSummaryList(
                         modifier = Modifier.weight(1f),
                     )
                     Text(
-                        text = when (debt.kind) {
-                            DebtKind.YOU_OWE -> money.toSignedText(-debt.amountMinor)
-                            DebtKind.OWES_YOU -> money.toSignedText(debt.amountMinor)
-                            DebtKind.BETWEEN_OTHERS -> money.toText(debt.amountMinor)
-                        },
+                        text = debtAmountTextOf(debt),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = debtColorOf(debt.kind),

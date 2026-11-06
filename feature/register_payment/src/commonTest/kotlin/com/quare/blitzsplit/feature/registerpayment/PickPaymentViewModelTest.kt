@@ -428,6 +428,7 @@ class PickPaymentViewModelTest {
                 TRIP,
                 fromMemberId = BRUNO,
                 toMemberId = PIERRE,
+                currency = GroupCurrency.BRL,
             )
 
             // When
@@ -441,6 +442,7 @@ class PickPaymentViewModelTest {
                         TRIP,
                         fromMemberId = BRUNO,
                         toMemberId = PIERRE,
+                        currency = GroupCurrency.BRL,
                         offersReceiverKeys = false,
                     ),
                 ),
@@ -464,6 +466,7 @@ class PickPaymentViewModelTest {
             TRIP,
             fromMemberId = PIERRE,
             toMemberId = ANA,
+            currency = GroupCurrency.BRL,
         )
 
         // When
@@ -481,6 +484,7 @@ class PickPaymentViewModelTest {
             TRIP,
             fromMemberId = ANA,
             toMemberId = PIERRE,
+            currency = GroupCurrency.BRL,
         )
 
         // When
@@ -499,6 +503,7 @@ class PickPaymentViewModelTest {
             TRIP,
             fromMemberId = PIERRE,
             toMemberId = ANA,
+            currency = GroupCurrency.BRL,
         )
 
         // When
@@ -517,6 +522,7 @@ class PickPaymentViewModelTest {
             TRIP,
             fromMemberId = PIERRE,
             toMemberId = ANA,
+            currency = GroupCurrency.BRL,
         )
 
         // When
@@ -593,6 +599,7 @@ class PickPaymentViewModelTest {
                 TRIP,
                 fromMemberId = DIEGO,
                 toMemberId = ANA,
+                currency = GroupCurrency.BRL,
             )
 
             // When
@@ -606,6 +613,7 @@ class PickPaymentViewModelTest {
                         TRIP,
                         fromMemberId = DIEGO,
                         toMemberId = ANA,
+                        currency = GroupCurrency.BRL,
                         offersReceiverKeys = false,
                     ),
                 ),
@@ -622,6 +630,7 @@ class PickPaymentViewModelTest {
                 TRIP,
                 fromMemberId = BRUNO,
                 toMemberId = PIERRE,
+                currency = GroupCurrency.BRL,
             )
 
             // When
@@ -643,6 +652,205 @@ class PickPaymentViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN open pairs in reais and in dollars WHEN the picker opens THEN lists the group once for each currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = tripBills + dollarLunch)
+
+            // When
+            val groups = viewModel.uiState.value.groups
+
+            // Then
+            assertEquals(listOf(TRIP, TRIP), groups.map { it.groupId })
+            assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD), groups.map { it.currency })
+            assertEquals(
+                listOf(
+                    Triple(PIERRE, ANA, 5_000L),
+                    Triple(BRUNO, PIERRE, 3_000L),
+                    Triple(DIEGO, BRUNO, 9_000L),
+                    Triple(ANA, DIEGO, 1_000L),
+                ),
+                groups[0].pairs.map { Triple(it.fromMemberId, it.toMemberId, it.amountMinor) },
+            )
+            assertEquals(
+                listOf(Triple(ANA, BRUNO, 7_000L)),
+                groups[1].pairs.map { Triple(it.fromMemberId, it.toMemberId, it.amountMinor) },
+            )
+        }
+
+    @Test
+    fun `GIVEN the same pair owing in two currencies WHEN the picker opens THEN lists it under each without netting`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = tripBills + bill(
+                    TRIP,
+                    "dollar-dinner",
+                    payer = ANA,
+                    debtor = PIERRE,
+                    800L,
+                    currency = GroupCurrency.USD,
+                ),
+            )
+
+            // When
+            val groups = viewModel.uiState.value.groups
+
+            // Then
+            val reais = groups.single { it.currency == GroupCurrency.BRL }
+            val dollars = groups.single { it.currency == GroupCurrency.USD }
+            assertEquals(5_000L, reais.pairs.single { it.fromMemberId == PIERRE && it.toMemberId == ANA }.amountMinor)
+            assertEquals(
+                listOf(Triple(PIERRE, ANA, 800L)),
+                dollars.pairs.map { Triple(it.fromMemberId, it.toMemberId, it.amountMinor) },
+            )
+        }
+
+    @Test
+    fun `GIVEN dollars settled while reais are open WHEN the picker opens THEN lists the group in reais only`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedExpenses = tripBills + dollarLunch,
+                storedSettlements = listOf(
+                    settlement(
+                        TRIP,
+                        from = ANA,
+                        to = BRUNO,
+                        7_000L,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            val groups = viewModel.uiState.value.groups
+
+            // Then
+            assertEquals(listOf(GroupCurrency.BRL), groups.map { it.currency })
+        }
+
+    @Test
+    fun `GIVEN a group with open pairs in dollars only WHEN the picker opens THEN lists it in dollars alone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dollarLunch))
+
+            // When
+            val group = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupCurrency.USD, group.currency)
+            assertEquals(1, group.pairs.size)
+        }
+
+    @Test
+    fun `GIVEN a pair in dollars WHEN tapping it THEN opens Registrar pagamento in dollars`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = tripBills + dollarLunch)
+            val tap = PickPaymentUiEvent.OnPairClicked(
+                TRIP,
+                fromMemberId = ANA,
+                toMemberId = BRUNO,
+                currency = GroupCurrency.USD,
+            )
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.RegisterPayment(
+                        TRIP,
+                        fromMemberId = ANA,
+                        toMemberId = BRUNO,
+                        currency = GroupCurrency.USD,
+                        offersReceiverKeys = false,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a pair owed in reais WHEN a tap names it in dollars THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = tripBills + dollarLunch)
+        val wrongCurrency = PickPaymentUiEvent.OnPairClicked(
+            TRIP,
+            fromMemberId = PIERRE,
+            toMemberId = ANA,
+            currency = GroupCurrency.USD,
+        )
+
+        // When
+        viewModel.onEvent(wrongCurrency)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.PickPayment), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a pair owed in dollars WHEN a tap names it in reais THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = tripBills + dollarLunch)
+        val wrongCurrency = PickPaymentUiEvent.OnPairClicked(
+            TRIP,
+            fromMemberId = ANA,
+            toMemberId = BRUNO,
+            currency = GroupCurrency.BRL,
+        )
+
+        // When
+        viewModel.onEvent(wrongCurrency)
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.PickPayment), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a sync settled the dollar pair WHEN a late tap on it arrives THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = tripBills + dollarLunch)
+            settlements.settlements.update {
+                it + settlement(
+                    TRIP,
+                    from = ANA,
+                    to = BRUNO,
+                    7_000L,
+                    currency = GroupCurrency.USD,
+                )
+            }
+            val staleTap = PickPaymentUiEvent.OnPairClicked(
+                TRIP,
+                fromMemberId = ANA,
+                toMemberId = BRUNO,
+                currency = GroupCurrency.USD,
+            )
+
+            // When
+            viewModel.onEvent(staleTap)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.PickPayment), navigator.backStack.value)
+        }
+
+    // Why: Ana owes Bruno 70,00 in dollars, a pair the bills in reais do not have.
+    private val dollarLunch = bill(
+        TRIP,
+        "dollar-lunch",
+        payer = BRUNO,
+        debtor = ANA,
+        7_000L,
+        currency = GroupCurrency.USD,
+    )
 
     private val pierre = member(PIERRE, "Pierre Vieira", AvatarColor.BLUE, isMe = true)
     private val ana = member(ANA, "Ana Paula", AvatarColor.PEACH)
@@ -743,11 +951,12 @@ class PickPaymentViewModelTest {
         debtor: String,
         amountMinor: Long,
         updatedAt: Long = 0L,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = "$groupId-$id",
         groupId = groupId,
         description = id,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = SplitMode.AMOUNT,
         payers = listOf(ExpensePayer(payer, amountMinor)),
@@ -765,12 +974,13 @@ class PickPaymentViewModelTest {
         from: String,
         to: String,
         amountMinor: Long,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Settlement = Settlement(
-        id = "settlement-$groupId-$from-$to",
+        id = "settlement-$groupId-$from-$to-${currency.code}",
         groupId = groupId,
         fromMemberId = from,
         toMemberId = to,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         method = SettlementMethod.PIX,
         paidAt = 0L,

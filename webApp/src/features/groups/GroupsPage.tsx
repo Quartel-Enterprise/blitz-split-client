@@ -91,8 +91,6 @@ export function GroupsPage({ presenter, state }: { presenter: GroupsPresenter; s
       {exitGroup && (
         <GroupExitDialog
           exit={state.exit}
-          currency={exitGroup.currency}
-          fractionDigits={exitGroup.fractionDigits}
           events={{
             confirmGroupExit: () => presenter.confirmGroupExit(),
             dismissGroupExit: () => presenter.dismissGroupExit(),

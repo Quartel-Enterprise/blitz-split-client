@@ -18,3 +18,14 @@ fun debtSentenceOf(debt: DebtRow): String {
         DebtKind.BETWEEN_OTHERS -> stringResource(R.string.designsystem_debt_owes, from, to)
     }
 }
+
+// Why: "−R$ 98,00", "+US$ 20,00" or "R$ 12,00", in the pair's own currency: a group's pairs may come in more than one.
+@Composable
+fun debtAmountTextOf(debt: DebtRow): String {
+    val money = rememberMoneyFormatter(debt.currency)
+    return when (debt.kind) {
+        DebtKind.YOU_OWE -> money.toSignedText(-debt.amountMinor)
+        DebtKind.OWES_YOU -> money.toSignedText(debt.amountMinor)
+        DebtKind.BETWEEN_OTHERS -> money.toText(debt.amountMinor)
+    }
+}

@@ -28,14 +28,14 @@ enum GroupExitCopy {
     }
 
     /// An alert has no room for rows: each pair still open is a line under the message.
-    static func message(_ dialog: any GroupExitDialog, currency: GroupCurrency?) -> String {
+    static func message(_ dialog: any GroupExitDialog) -> String {
         switch dialog {
         case let blocked as GroupExitDialogLeaveBlocked:
             let message = String(
                 localized: "You still have an open balance in “\(blocked.groupName)”. Leaving now would leave it unsettled for the others.",
                 bundle: .appLanguage,
             )
-            return withDebts(message, blocked.debts, currency: currency)
+            return withDebts(message, blocked.debts)
         case let blocked as GroupExitDialogDeleteBlocked:
             let message = String(
                 localized: "“\(blocked.groupName)” can only be deleted once everyone has settled up.",
@@ -46,7 +46,7 @@ enum GroupExitCopy {
                 localized: "\(blocked.debts.count) payments left:",
                 bundle: .appLanguage,
             )
-            return withDebts(message + count, blocked.debts, currency: currency)
+            return withDebts(message + count, blocked.debts)
         case let leave as GroupExitDialogConfirmLeave:
             if leave.deletesGroup {
                 return String(
@@ -89,9 +89,9 @@ enum GroupExitCopy {
         )
     }
 
-    private static func withDebts(_ message: String, _ debts: [DebtRow], currency: GroupCurrency?) -> String {
-        guard let currency, !debts.isEmpty else { return message }
-        let lines = debts.map { "\(DebtCopy.sentence($0)): \(DebtCopy.amount($0, currency: currency))" }
+    private static func withDebts(_ message: String, _ debts: [DebtRow]) -> String {
+        guard !debts.isEmpty else { return message }
+        let lines = debts.map { "\(DebtCopy.sentence($0)): \(DebtCopy.amount($0))" }
         return ([message, ""] + lines).joined(separator: "\n")
     }
 }
@@ -99,11 +99,10 @@ enum GroupExitCopy {
 extension View {
     /// What "Leave group" and "Delete group" open (5.3c to 5.3f), and "Group deleted" (6.1k), over the group's tab.
     /// While the server answers, the alert gives way to a spinner over the screen.
-    func groupExitDialogs(exit: GroupExitState?, currency: GroupCurrency?, actions: GroupScreenActions) -> some View {
+    func groupExitDialogs(exit: GroupExitState?, actions: GroupScreenActions) -> some View {
         modifier(
             GroupExitDialogs(
                 exit: exit,
-                currency: currency,
                 onConfirm: actions.confirmExit,
                 onDismiss: actions.dismissExit,
                 onBackToGroups: actions.backToGroups,
@@ -116,14 +115,12 @@ extension View {
     /// The same dialogs over the home, from a row's ⋯ menu or long press, which never shows "Group deleted".
     func groupExitDialogs(
         exit: GroupExitState,
-        currency: GroupCurrency?,
         onConfirm: @escaping () -> Void,
         onDismiss: @escaping () -> Void,
     ) -> some View {
         modifier(
             GroupExitDialogs(
                 exit: exit,
-                currency: currency,
                 onConfirm: onConfirm,
                 onDismiss: onDismiss,
                 onBackToGroups: onDismiss,
@@ -134,7 +131,6 @@ extension View {
 
 private struct GroupExitDialogs: ViewModifier {
     let exit: GroupExitState?
-    let currency: GroupCurrency?
     let onConfirm: () -> Void
     let onDismiss: () -> Void
     let onBackToGroups: () -> Void
@@ -161,7 +157,7 @@ private struct GroupExitDialogs: ViewModifier {
             ) { dialog in
                 buttons(dialog)
             } message: { dialog in
-                Text(verbatim: GroupExitCopy.message(dialog, currency: currency))
+                Text(verbatim: GroupExitCopy.message(dialog))
             }
             .alert("Group deleted", isPresented: deletedShown, presenting: exit?.deletedNotice) { _ in
                 Button("Back to Groups", action: onBackToGroups)

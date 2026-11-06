@@ -865,6 +865,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             GROUP_ID,
             fromMemberId = from,
             toMemberId = to,
+            currency = GroupCurrency.BRL,
             offersReceiverKeys = true,
         )
         val trip = Group(

@@ -40,6 +40,7 @@ class SettledPairChangeTest {
                 outcome = SettledPairOutcome.OWES_AGAIN,
                 debtorIsPayer = true,
                 amountMinor = 2_000L,
+                currency = GroupCurrency.BRL,
             ),
             change,
         )
@@ -342,6 +343,112 @@ class SettledPairChangeTest {
         assertNull(change)
     }
 
+    @Test
+    fun `GIVEN a payment in dollars WHEN a bill in reais changes THEN says nothing as it is another currency`() {
+        // Given
+        val paidInDollars = elisaPaidBruno.copy(currency = GroupCurrency.USD)
+        val changed = jantar.withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(paidInDollars))
+
+        // Then
+        assertNull(change)
+    }
+
+    @Test
+    fun `GIVEN a bill and a payment in dollars WHEN her part grows THEN the change is in dollars`() {
+        // Given
+        val jantarInDollars = jantar.copy(currency = GroupCurrency.USD)
+        val paidInDollars = elisaPaidBruno.copy(currency = GroupCurrency.USD)
+        val changed = jantarInDollars.withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(
+            jantarInDollars,
+            changed,
+            group,
+            listOf(jantarInDollars),
+            listOf(paidInDollars),
+        )
+
+        // Then
+        assertEquals(GroupCurrency.USD, change?.currency)
+        assertEquals(SettledPairOutcome.OWES_AGAIN, change?.outcome)
+        assertEquals(2_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN a bill in dollars and a payment in reais WHEN deleting the bill THEN finds nothing`() {
+        // Given
+        val jantarInDollars = jantar.copy(currency = GroupCurrency.USD)
+
+        // When
+        val change = SettledPairChange.findDeletionOrNull(
+            JANTAR,
+            group,
+            listOf(jantarInDollars),
+            listOf(elisaPaidBruno),
+        )
+
+        // Then
+        assertNull(change)
+    }
+
+    @Test
+    fun `GIVEN a bill and a payment in dollars WHEN deleting the bill THEN the change is in dollars`() {
+        // Given
+        val jantarInDollars = jantar.copy(currency = GroupCurrency.USD)
+        val paidInDollars = elisaPaidBruno.copy(currency = GroupCurrency.USD)
+
+        // When
+        val change = SettledPairChange.findDeletionOrNull(JANTAR, group, listOf(jantarInDollars), listOf(paidInDollars))
+
+        // Then
+        assertEquals(GroupCurrency.USD, change?.currency)
+        assertEquals(SettledPairOutcome.OWES, change?.outcome)
+        assertEquals(10_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN a bill in dollars between the pair WHEN the bill in reais changes THEN it does not count`() {
+        // Given
+        val cafeInDollars = bill(
+            id = "cafe",
+            payerId = ELISA,
+            shares = listOf(share(ELISA, 1_000L), share(BRUNO, 1_000L)),
+        ).copy(currency = GroupCurrency.USD)
+        val changed = jantar.withShares(BRUNO to 8_000L, ELISA to 12_000L, PIERRE to 10_000L)
+
+        // When
+        val change = SettledPairChange.findOrNull(
+            jantar,
+            changed,
+            group,
+            listOf(cafeInDollars, jantar),
+            listOf(elisaPaidBruno),
+        )
+
+        // Then
+        assertEquals(GroupCurrency.BRL, change?.currency)
+        assertEquals(SettledPairOutcome.OWES_AGAIN, change?.outcome)
+        assertEquals(2_000L, change?.amountMinor)
+    }
+
+    @Test
+    fun `GIVEN a bill that moves to dollars WHEN a payment in dollars exists THEN warns in dollars`() {
+        // Given
+        val paidInDollars = elisaPaidBruno.copy(currency = GroupCurrency.USD)
+        val changed = jantar.copy(currency = GroupCurrency.USD)
+
+        // When
+        val change = SettledPairChange.findOrNull(jantar, changed, group, listOf(jantar), listOf(paidInDollars))
+
+        // Then
+        assertEquals(GroupCurrency.USD, change?.currency)
+        assertEquals(SettledPairOutcome.EVEN, change?.outcome)
+    }
+
     private val group = Group(
         id = GROUP_ID,
         name = "Viagem Floripa",
@@ -396,6 +503,7 @@ class SettledPairChangeTest {
         outcome = outcome,
         debtorIsPayer = true,
         amountMinor = amountMinor,
+        currency = GroupCurrency.BRL,
     )
 
     private fun Expense.withShares(vararg parts: Pair<String, Long>): Expense =

@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.feature.members.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBillParts
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
+import com.quare.blitzsplit.core.expenses.domain.model.currencies
+import com.quare.blitzsplit.core.expenses.domain.model.findSelected
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -74,6 +77,7 @@ class MembersViewModel(
             MembersUiState(
                 groupName = "",
                 currency = GroupCurrency.BRL,
+                currencies = emptyList(),
                 displayLink = null,
                 members = emptyList(),
                 editor = null,
@@ -93,11 +97,13 @@ class MembersViewModel(
 
     private var copiedReset: Job? = null
 
-    private var balances = GroupBalances(
-        debts = emptyList(),
-        hasBills = false,
-        unsimplifiedDebts = null,
-    )
+    // Why: one balance per currency the group has money in; the screen shows the one picked, and removal reads all.
+    private var balances: List<CurrencyBalances> = emptyList()
+
+    // Why: the chip picked, the group's default currency until one is.
+    private var pickedCurrency: GroupCurrency? = null
+
+    private var shownGroup: Group? = null
 
     private var expenses: List<Expense> = emptyList()
 
@@ -117,9 +123,7 @@ class MembersViewModel(
             observeExpenses(route.groupId),
             observeSettlements(route.groupId),
         ) { group, expenses, settlements ->
-            this.balances = group
-                ?.let { GroupBalances.of(it, expenses, settlements) }
-                ?: GroupBalances.of(expenses, settlements)
+            this.balances = group?.let { GroupBalances.getByCurrency(it, expenses, settlements) }.orEmpty()
             this.expenses = expenses
             if (group != null) show(group)
         }.launchIn(viewModelScope)
@@ -152,6 +156,8 @@ class MembersViewModel(
         when (event) {
             // Why: over the group, or in the place of its bill the Mac draws beside it.
             MembersUiEvent.OnShareClicked -> openInvite()
+
+            is MembersUiEvent.OnCurrencySelected -> pickCurrency(event.currency)
 
             // Why: Invite opens first, so an ask still waiting doesn't open "Add person" under it as this one closes.
             MembersUiEvent.OnInviteInsteadClicked -> {
@@ -207,14 +213,23 @@ class MembersViewModel(
         )
     }
 
+    // Why: the balances under the chip picked; a pick the group has no money in anymore falls back to the default.
+    private fun pickCurrency(currency: GroupCurrency) {
+        if (balances.none { it.currency == currency }) return
+        pickedCurrency = currency
+        shownGroup?.let(::show)
+    }
+
     private fun show(group: Group) {
+        shownGroup = group
         groupMembers = group.members
         val inviterCode = group.members.firstOrNull { it.isMe }?.inviteCode
         val members = group.members.map { toMembersMember(it, group, inviterCode) }
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
-                currency = group.currency,
+                currency = balances.findSelected(pickedCurrency)?.currency ?: group.currency,
+                currencies = balances.currencies,
                 displayLink = group.inviteCode?.let(InviteLink::of)?.let(InviteLink::displayOf),
                 members = members,
                 // Why: the member about to be removed may be gone, or have joined, by now.
@@ -260,7 +275,9 @@ class MembersViewModel(
                 )
             }
         },
-        balance = balances.balanceOrNull(member.id),
+        balance = balances.findSelected(pickedCurrency)?.balances?.balanceOrNull(member.id),
+        // Why: someone who owes or is owed in any currency stays, whichever chip is picked.
+        hasOpenBalance = balances.any { it.balances.balanceOrNull(member.id)?.isSettled == false },
         canBeReleased = group.isCreatedByMe && member.hasJoined && !member.isMe,
     )
 
@@ -269,7 +286,8 @@ class MembersViewModel(
         isLinkCopied: Boolean,
     ): PersonalInvite? {
         val link = member.personalLink ?: return null
-        val parts = MemberBillParts.of(expenses, member.id)
+        val currency = balances.findSelected(pickedCurrency)?.currency
+        val parts = MemberBillParts.of(expenses.filter { it.currency == currency }, member.id)
         return PersonalInvite(
             member = member,
             link = link,

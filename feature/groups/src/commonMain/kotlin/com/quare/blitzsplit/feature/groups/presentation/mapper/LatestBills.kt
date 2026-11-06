@@ -18,7 +18,7 @@ internal fun latestBillOf(groups: List<GroupWithMoney>): LatestBill? {
     return LatestBill(
         description = expense.description,
         amountMinor = expense.amountMinor,
-        currency = item.group.currency,
+        currency = expense.currency,
         groupName = item.group.name,
         savedBy = when {
             expense.isPending || author?.isMe == true -> LatestBillAuthor.Me

@@ -61,6 +61,7 @@ fun GroupDetailContent(
             isMyBalanceLoading = state.isMyBalanceLoading,
             isOnline = state.exit.isOnline,
             money = money,
+            onCurrencySelected = { onEvent(GroupDetailUiEvent.OnCurrencySelected(it)) },
         ),
         snackbarHostState = snackbarHostState,
         onAction = onAction,
@@ -68,7 +69,7 @@ fun GroupDetailContent(
         onHomeTabClick = { tab -> onEvent(GroupDetailUiEvent.OnRailTabClicked(tab)) },
         onSearchClick = { onEvent(GroupDetailUiEvent.OnRailSearchClicked) },
         body = when (state.tab) {
-            GroupTab.EXPENSES -> expensesTabOf(state, money, onAction, onEvent)
+            GroupTab.EXPENSES -> expensesTabOf(state, onAction, onEvent)
 
             GroupTab.BALANCES -> balancesTabOf(state, money, onAction, onEvent)
 
@@ -85,7 +86,6 @@ fun GroupDetailContent(
 @Composable
 private fun expensesTabOf(
     state: GroupDetailUiState,
-    money: MoneyFormatter,
     onAction: (GroupAction) -> Unit,
     onEvent: (GroupDetailUiEvent) -> Unit,
 ): GroupTabBody {
@@ -117,7 +117,6 @@ private fun expensesTabOf(
             } else {
                 expenseDayItems(
                     days = state.days,
-                    money = money,
                     dates = dates,
                     onEvent = onEvent,
                 )

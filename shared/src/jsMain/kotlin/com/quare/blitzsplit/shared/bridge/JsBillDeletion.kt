@@ -10,6 +10,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 class JsBillDeletion(
     val description: String,
     val myBalanceMinor: Double?,
+    // Why: the bill's own currency, which writes myBalanceMinor: the ISO 4217 code and its digits.
+    val currency: String,
+    val fractionDigits: Int,
     val settledPair: JsSettledPair?,
 )
 
@@ -28,6 +31,9 @@ class JsSettledPair(
     val creditorName: String?,
     val creditorIsMe: Boolean,
     val amountMinor: Double,
+    // Why: the payment's own currency, which writes amountMinor: the ISO 4217 code and its digits.
+    val currency: String,
+    val fractionDigits: Int,
     // Why: changes with the pair or how it ends up, never with the amount alone: when a screen reader says it again.
     val announcementKey: String,
 )
@@ -35,6 +41,8 @@ class JsSettledPair(
 internal fun toJsBillDeletion(deletion: BillDeletion): JsBillDeletion = JsBillDeletion(
     description = deletion.description,
     myBalanceMinor = deletion.myBalanceMinor?.toDouble(),
+    currency = deletion.currency.code,
+    fractionDigits = deletion.currency.fractionDigits,
     settledPair = deletion.settledPair?.let(::toJsSettledPair),
 )
 
@@ -54,5 +62,7 @@ internal fun toJsSettledPair(change: SettledPairChange): JsSettledPair = JsSettl
     creditorName = change.creditorName,
     creditorIsMe = change.creditorIsMe,
     amountMinor = change.amountMinor.toDouble(),
+    currency = change.currency.code,
+    fractionDigits = change.currency.fractionDigits,
     announcementKey = change.announcementKey.toString(),
 )

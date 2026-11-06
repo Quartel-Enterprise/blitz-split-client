@@ -189,7 +189,6 @@ struct BillDetailView: View {
         #endif
         .billDeletionAlert(
             model?.state.deletion,
-            currency: model?.state.currency,
             isDeleting: model?.state.isDeleting == true,
             onConfirm: { model?.send(BillDetailUiEventOnDeleteConfirmed.shared) },
             onDismiss: { model?.dismissDeletion() },

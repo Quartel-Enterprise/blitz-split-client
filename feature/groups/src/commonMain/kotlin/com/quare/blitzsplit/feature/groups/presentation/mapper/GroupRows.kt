@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.feature.groups.presentation.mapper
 
+import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupActivity
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.hasBills
+import com.quare.blitzsplit.core.expenses.domain.model.isEveryoneSettled
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
@@ -33,9 +36,11 @@ internal fun rowOf(
     clock: ActivityClock,
 ): GroupRow {
     val group = item.group
-    val balances = GroupBalances.of(group, item.expenses, item.settlements)
+    val byCurrency = GroupBalances.getByCurrency(group, item.expenses, item.settlements)
     val me = group.members.firstOrNull { it.isMe }
-    val myBalance = me?.let { balances.balanceOf(it.id) }
+    // Why: a row has one amount: the group's default currency, or the first one with something open for this person.
+    val shown = byCurrency.firstOrNull { me != null && !it.balances.balanceOf(me.id).isSettled } ?: byCurrency.first()
+    val myBalance = me?.let { shown.balances.balanceOf(it.id) }
     val receives = myBalance?.receivesMinor ?: 0L
     val owes = myBalance?.owesMinor ?: 0L
     val pendingBill = item.expenses.filter { it.isPending }.maxByOrNull { it.updatedAt }
@@ -65,8 +70,8 @@ internal fun rowOf(
             item.settlements.any { it.isPending } ||
             item.pendingDeletionCount > 0,
         pendingBillDescription = pendingBill?.description,
-        currency = group.currency,
-        balanceKind = balanceKindOf(balances, receives - owes),
+        currency = shown.currency,
+        balanceKind = balanceKindOf(byCurrency, receives - owes),
         netMinor = receives - owes,
         receivesMinor = receives,
         owesMinor = owes,
@@ -79,11 +84,11 @@ internal fun rowOf(
  * with only payments left (their bill deleted) still counts as open.
  */
 private fun balanceKindOf(
-    balances: GroupBalances,
+    balances: List<CurrencyBalances>,
     netMinor: Long,
 ): GroupBalanceKind = when {
     balances.isEveryoneSettled -> GroupBalanceKind.EVERYONE_SETTLED
-    !balances.hasBills && balances.debts.isEmpty() -> GroupBalanceKind.NO_EXPENSES
+    !balances.hasBills && balances.all { it.balances.debts.isEmpty() } -> GroupBalanceKind.NO_EXPENSES
     netMinor > 0 -> GroupBalanceKind.TO_RECEIVE
     netMinor < 0 -> GroupBalanceKind.YOU_OWE
     else -> GroupBalanceKind.YOU_ARE_SETTLED
@@ -118,26 +123,35 @@ internal fun activityOf(
     )
 }
 
-// Why: one total per currency, the currency with the most groups first and then by its code, so the order never flips.
-internal fun summaryOf(rows: List<GroupRow>): GroupsSummary = GroupsSummary(
-    totals = rows
-        .groupBy { it.currency }
-        .entries
-        .sortedWith(
-            compareByDescending<Map.Entry<GroupCurrency, List<GroupRow>>> { it.value.size }.thenBy { it.key.code },
-        ).map { (currency, ofCurrency) ->
-            val receiving = ofCurrency.filter { it.netMinor > 0 }
-            val paying = ofCurrency.filter { it.netMinor < 0 }
+/*
+ * Why: "Saldo geral" is the global Saldos' totals (PeopleBalances), one per currency, so the two never differ: the
+ * same pairs, netted per person. The group counts are the groups where this device's user has a net in that currency,
+ * each group's own (a group's pair with someone whose groups offset each other still counts for its group).
+ */
+internal fun summaryOf(
+    people: PeopleBalances,
+    groups: List<GroupWithMoney>,
+): GroupsSummary {
+    val groupNets = groups.flatMap { item ->
+        val me = item.group.members.firstOrNull { it.isMe }
+        GroupBalances.getByCurrency(item.group, item.expenses, item.settlements).mapNotNull { (currency, balances) ->
+            me?.let { currency to balances.balanceOf(it.id).netMinor }
+        }
+    }
+    return GroupsSummary(
+        totals = people.totals.map { total ->
+            val nets = groupNets.filter { (currency, _) -> currency == total.currency }.map { (_, net) -> net }
             BalanceTotal(
-                currency = currency,
-                netMinor = ofCurrency.sumOf { it.netMinor },
-                toReceiveMinor = receiving.sumOf { it.netMinor },
-                toPayMinor = -paying.sumOf { it.netMinor },
-                toReceiveGroupCount = receiving.size,
-                toPayGroupCount = paying.size,
+                currency = total.currency,
+                netMinor = total.netMinor,
+                toReceiveMinor = total.toReceiveMinor,
+                toPayMinor = total.toPayMinor,
+                toReceiveGroupCount = nets.count { it > 0 },
+                toPayGroupCount = nets.count { it < 0 },
             )
         },
-)
+    )
+}
 
 // Why: "na fila" counts each group, bill and payment waiting to go up as one change, a deleted one included.
 internal fun pendingChangeCountOf(groups: List<GroupWithMoney>): Int = groups.sumOf { item ->

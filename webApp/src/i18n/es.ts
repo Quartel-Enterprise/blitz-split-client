@@ -797,6 +797,7 @@ export const es: Record<MessageKey, string> = {
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Criptomonedas',
+  currency_chipsLabel: 'Moneda',
   profile_themeSystem: 'Sistema',
   profile_themeLight: 'Claro',
   profile_themeDark: 'Oscuro',

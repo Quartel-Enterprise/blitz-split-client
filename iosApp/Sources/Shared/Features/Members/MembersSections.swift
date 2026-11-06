@@ -97,6 +97,15 @@ struct MembersSections: View {
                 addPersonButton
                 #endif
             }
+            if state.currencies.count > 1 {
+                // The balances below are in the chip picked
+                Section {
+                    CurrencyChips(currencies: state.currencies, selected: state.currency) {
+                        model.send(MembersUiEventOnCurrencySelected(currency: $0))
+                    }
+                }
+                .listRowBackground(Color.clear)
+            }
             Section("People") {
                 ForEach(state.members, id: \.id) { member in
                     MemberRow(

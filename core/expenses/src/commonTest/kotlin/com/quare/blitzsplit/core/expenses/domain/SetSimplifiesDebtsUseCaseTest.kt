@@ -140,6 +140,175 @@ class SetSimplifiesDebtsUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a chain in reais and one in dollars WHEN turning simplifying on THEN lists the pairs side by side`() =
+        runTest {
+            // Given
+            prepareScenario(
+                simplifiesDebts = false,
+                storedExpenses = listOf(
+                    owes(ANA, BRUNO, 100L, id = "1"),
+                    owes(BRUNO, CARLA, 100L, id = "2"),
+                    owes(
+                        ANA,
+                        BRUNO,
+                        50L,
+                        id = "3",
+                        currency = GroupCurrency.USD,
+                    ),
+                    owes(
+                        BRUNO,
+                        CARLA,
+                        50L,
+                        id = "4",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            useCase(GROUP_ID, simplifiesDebts = true)
+
+            // Then
+            assertEquals(
+                SimplifyDebtsChange(
+                    before = listOf(
+                        pair(ANA, BRUNO, 100L),
+                        pair(BRUNO, CARLA, 100L),
+                        pair(ANA, BRUNO, 50L),
+                        pair(BRUNO, CARLA, 50L),
+                    ),
+                    after = listOf(pair(ANA, CARLA, 100L), pair(ANA, CARLA, 50L)),
+                ),
+                groups.simplifyDebtsChanges.single().third,
+            )
+        }
+
+    @Test
+    fun `GIVEN a debt in reais and its chain link in dollars WHEN turning simplifying on THEN never chains them`() =
+        runTest {
+            // Given
+            prepareScenario(
+                simplifiesDebts = false,
+                storedExpenses = listOf(
+                    owes(ANA, BRUNO, 100L, id = "1"),
+                    owes(
+                        BRUNO,
+                        CARLA,
+                        100L,
+                        id = "2",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            useCase(GROUP_ID, simplifiesDebts = true)
+
+            // Then
+            assertEquals(
+                SimplifyDebtsChange(
+                    before = listOf(pair(ANA, BRUNO, 100L), pair(BRUNO, CARLA, 100L)),
+                    after = listOf(pair(ANA, BRUNO, 100L), pair(BRUNO, CARLA, 100L)),
+                ),
+                groups.simplifyDebtsChanges.single().third,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group in dollars WHEN turning simplifying on THEN lists the pairs in dollars before those in reais`() =
+        runTest {
+            // Given
+            prepareScenario(
+                simplifiesDebts = false,
+                groupCurrency = GroupCurrency.USD,
+                storedExpenses = listOf(
+                    owes(ANA, BRUNO, 100L, id = "1"),
+                    owes(
+                        CARLA,
+                        DIEGO,
+                        50L,
+                        id = "2",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            useCase(GROUP_ID, simplifiesDebts = true)
+
+            // Then
+            assertEquals(
+                listOf(pair(CARLA, DIEGO, 50L), pair(ANA, BRUNO, 100L)),
+                groups.simplifyDebtsChanges
+                    .single()
+                    .third.before,
+            )
+        }
+
+    @Test
+    fun `GIVEN a payment in dollars WHEN turning simplifying on THEN it does not reduce the pairs in reais`() =
+        runTest {
+            // Given
+            prepareScenario(
+                simplifiesDebts = false,
+                storedExpenses = listOf(owes(ANA, BRUNO, 100L, id = "1"), owes(BRUNO, CARLA, 100L, id = "2")),
+                storedSettlements = listOf(pendingPayment(ANA, BRUNO, 40L).copy(currency = GroupCurrency.USD)),
+            )
+
+            // When
+            useCase(GROUP_ID, simplifiesDebts = true)
+
+            // Then
+            val change = groups.simplifyDebtsChanges.single().third
+            assertEquals(listOf(pair(ANA, BRUNO, 100L), pair(BRUNO, CARLA, 100L), pair(BRUNO, ANA, 40L)), change.before)
+            assertEquals(listOf(pair(ANA, CARLA, 100L), pair(BRUNO, ANA, 40L)), change.after)
+        }
+
+    @Test
+    fun `GIVEN a simplified group in two currencies WHEN turning simplifying off THEN sends each ones pairs`() =
+        runTest {
+            // Given
+            prepareScenario(
+                simplifiesDebts = true,
+                storedExpenses = listOf(
+                    owes(ANA, BRUNO, 100L, id = "1"),
+                    owes(BRUNO, CARLA, 100L, id = "2"),
+                    owes(
+                        ANA,
+                        BRUNO,
+                        50L,
+                        id = "3",
+                        currency = GroupCurrency.USD,
+                    ),
+                    owes(
+                        BRUNO,
+                        CARLA,
+                        50L,
+                        id = "4",
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            useCase(GROUP_ID, simplifiesDebts = false)
+
+            // Then
+            assertEquals(
+                SimplifyDebtsChange(
+                    before = listOf(pair(ANA, CARLA, 100L), pair(ANA, CARLA, 50L)),
+                    after = listOf(
+                        pair(ANA, BRUNO, 100L),
+                        pair(BRUNO, CARLA, 100L),
+                        pair(ANA, BRUNO, 50L),
+                        pair(BRUNO, CARLA, 50L),
+                    ),
+                ),
+                groups.simplifyDebtsChanges.single().third,
+            )
+        }
+
+    @Test
     fun `GIVEN the group is not on the device WHEN turning simplifying on THEN fails and sends nothing`() = runTest {
         // Given
         prepareScenario(simplifiesDebts = false)
@@ -176,6 +345,7 @@ class SetSimplifiesDebtsUseCaseTest {
     private fun group(
         simplifiesDebts: Boolean,
         memberIds: List<String>,
+        currency: GroupCurrency,
     ): Group = Group(
         id = GROUP_ID,
         name = "Viagem Floripa",
@@ -183,7 +353,7 @@ class SetSimplifiesDebtsUseCaseTest {
         color = AvatarColor.GREEN,
         shape = GroupShape.SQUARE,
         photo = null,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         members = memberIds.map { id ->
             GroupMember(
                 id = id,
@@ -213,11 +383,12 @@ class SetSimplifiesDebtsUseCaseTest {
         toMemberId: String,
         amountMinor: Long,
         id: String,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = GROUP_ID,
         description = "Conta",
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = SplitMode.AMOUNT,
         payers = listOf(ExpensePayer(toMemberId, amountMinor)),
@@ -256,12 +427,13 @@ class SetSimplifiesDebtsUseCaseTest {
     private fun prepareScenario(
         simplifiesDebts: Boolean,
         memberIds: List<String> = listOf(ANA, BRUNO, CARLA, DIEGO),
+        groupCurrency: GroupCurrency = GroupCurrency.BRL,
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
         simplifyDebtsError: Throwable? = null,
         now: Long = 1_000L,
     ) {
-        groups = FakeGroupRepository(initialGroups = listOf(group(simplifiesDebts, memberIds))).also {
+        groups = FakeGroupRepository(initialGroups = listOf(group(simplifiesDebts, memberIds, groupCurrency))).also {
             it.simplifyDebtsError = simplifyDebtsError
         }
         useCase = SetSimplifiesDebtsUseCase(

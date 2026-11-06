@@ -6,11 +6,14 @@ import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
+import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
@@ -73,6 +76,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -2071,7 +2075,7 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN groups in two currencies WHEN the groups open THEN sums the balances per currency`() =
+    fun `GIVEN groups in two currencies WHEN the groups open THEN totals match the global balances per currency`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -2119,6 +2123,7 @@ class GroupsViewModelTest {
                         paidBy = "Pierre",
                         amountMinor = 600L,
                         splitOver = everyone,
+                        currency = GroupCurrency.USD,
                     ),
                 ),
             )
@@ -2132,8 +2137,9 @@ class GroupsViewModelTest {
                     BalanceTotal(
                         currency = GroupCurrency.BRL,
                         netMinor = 1500L,
-                        toReceiveMinor = 6000L,
-                        toPayMinor = 4500L,
+                        // Why: Ana owes 3000 and 1500 in two groups and is owed 3000 in a third: one person, 1500.
+                        toReceiveMinor = 1500L,
+                        toPayMinor = 0L,
                         toReceiveGroupCount = 1,
                         toPayGroupCount = 2,
                     ),
@@ -3299,6 +3305,398 @@ class GroupsViewModelTest {
             assertTrue(trackedEvents.isEmpty())
         }
 
+    @Test
+    fun `GIVEN settled in the default currency and owing in another WHEN the groups open THEN the row shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "gas",
+                        paidBy = "Ana",
+                        amountMinor = 6000L,
+                        splitOver = listOf("Ana", "Bruno"),
+                    ),
+                    bill(
+                        "trip",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupCurrency.USD, row.currency)
+            assertEquals(GroupBalanceKind.YOU_OWE, row.balanceKind)
+            assertEquals(-1000L, row.netMinor)
+            assertEquals(1000L, row.owesMinor)
+            assertEquals(0L, row.receivesMinor)
+        }
+
+    @Test
+    fun `GIVEN open balances in two currencies WHEN the groups open THEN the row shows the default currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "market",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                    ),
+                    bill(
+                        "trip",
+                        paidBy = "Ana",
+                        amountMinor = 6000L,
+                        splitOver = everyone,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupCurrency.BRL, row.currency)
+            assertEquals(-1000L, row.netMinor)
+        }
+
+    @Test
+    fun `GIVEN bills only in another currency WHEN the groups open THEN the row shows that currency`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "trip",
+                        paidBy = "Pierre",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupCurrency.USD, row.currency)
+            assertEquals(GroupBalanceKind.TO_RECEIVE, row.balanceKind)
+            assertEquals(2000L, row.netMinor)
+        }
+
+    @Test
+    fun `GIVEN every currency settled with a bill WHEN the groups open THEN the row is everyone settled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "own",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = listOf("Ana"),
+                    ),
+                    bill(
+                        "trip",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                storedSettlements = listOf(
+                    payment(
+                        "pierre",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 1000L,
+                        currency = GroupCurrency.USD,
+                    ),
+                    payment(
+                        "bruno",
+                        from = "Bruno",
+                        to = "Ana",
+                        amountMinor = 1000L,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            val row = state.settledGroups.single()
+            assertEquals(GroupBalanceKind.EVERYONE_SETTLED, row.balanceKind)
+            assertEquals(GroupCurrency.BRL, row.currency)
+            assertTrue(state.openGroups.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN others owe in another currency WHEN the groups open THEN the group stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "own",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = listOf("Ana"),
+                    ),
+                    bill(
+                        "trip",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = listOf("Ana", "Bruno"),
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            val row = state.openGroups.single()
+            assertEquals(GroupBalanceKind.YOU_ARE_SETTLED, row.balanceKind)
+            assertEquals(GroupCurrency.BRL, row.currency)
+            assertTrue(state.settledGroups.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN only a payment in another currency WHEN the groups open THEN the group has expenses`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedSettlements = listOf(
+                    payment(
+                        "pierre",
+                        from = "Pierre",
+                        to = "Ana",
+                        amountMinor = 1000L,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupBalanceKind.TO_RECEIVE, row.balanceKind)
+            assertEquals(GroupCurrency.USD, row.currency)
+            assertEquals(1000L, row.netMinor)
+        }
+
+    @Test
+    fun `GIVEN a group you are not in WHEN the groups open THEN the row is in the default currency with no net`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "others",
+                        members = listOf(member("Ana"), member("Bruno")),
+                    ),
+                ),
+                storedExpenses = listOf(
+                    bill(
+                        "trip",
+                        groupId = "others",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = listOf("Ana", "Bruno"),
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(GroupCurrency.BRL, row.currency)
+            assertEquals(GroupBalanceKind.YOU_ARE_SETTLED, row.balanceKind)
+            assertEquals(0L, row.netMinor)
+        }
+
+    @Test
+    fun `GIVEN a bill in each of two currencies WHEN the groups open THEN each total counts the group by its net`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "market",
+                        paidBy = "Pierre",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                    ),
+                    bill(
+                        "trip",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val totals = viewModel.uiState.value.summary.totals
+                .associateBy { it.currency }
+
+            // Then
+            assertEquals(
+                BalanceTotal(
+                    currency = GroupCurrency.BRL,
+                    netMinor = 2000L,
+                    toReceiveMinor = 2000L,
+                    toPayMinor = 0L,
+                    toReceiveGroupCount = 1,
+                    toPayGroupCount = 0,
+                ),
+                totals[GroupCurrency.BRL],
+            )
+            assertEquals(
+                BalanceTotal(
+                    currency = GroupCurrency.USD,
+                    netMinor = -1000L,
+                    toReceiveMinor = 0L,
+                    toPayMinor = 1000L,
+                    toReceiveGroupCount = 0,
+                    toPayGroupCount = 1,
+                ),
+                totals[GroupCurrency.USD],
+            )
+            assertEquals(2, totals.size)
+        }
+
+    @Test
+    fun `GIVEN the card open WHEN the people balances change THEN the card takes their totals`() =
+        runTest(testDispatcher) {
+            // Given
+            val people = MutableStateFlow(peopleBalancesOf(netMinor = 700L))
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "trip",
+                        paidBy = "Pierre",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+                peopleBalancesFlow = people,
+            )
+
+            // When
+            people.value = peopleBalancesOf(netMinor = 900L)
+
+            // Then
+            assertEquals(
+                listOf(
+                    BalanceTotal(
+                        currency = GroupCurrency.USD,
+                        netMinor = 900L,
+                        toReceiveMinor = 900L,
+                        toPayMinor = 0L,
+                        toReceiveGroupCount = 1,
+                        toPayGroupCount = 0,
+                    ),
+                ),
+                viewModel.uiState.value.summary.totals,
+            )
+        }
+
+    @Test
+    fun `GIVEN the card settled WHEN a bill is saved THEN the card shows the new total and its group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            expenses.expenses.value = listOf(
+                bill(
+                    "market",
+                    paidBy = "Pierre",
+                    amountMinor = 3000L,
+                    splitOver = everyone,
+                ),
+            )
+
+            // Then
+            assertEquals(
+                listOf(
+                    BalanceTotal(
+                        currency = GroupCurrency.BRL,
+                        netMinor = 2000L,
+                        toReceiveMinor = 2000L,
+                        toPayMinor = 0L,
+                        toReceiveGroupCount = 1,
+                        toPayGroupCount = 0,
+                    ),
+                ),
+                viewModel.uiState.value.summary.totals,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill in another currency than its group WHEN the groups open THEN the latest bill keeps it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "trip",
+                        paidBy = "Ana",
+                        amountMinor = 3000L,
+                        splitOver = everyone,
+                        currency = GroupCurrency.USD,
+                    ),
+                ),
+                billsKeepTheirCurrency = true,
+            )
+
+            // When
+            val latest = viewModel.uiState.value.latestBill
+
+            // Then
+            assertEquals(GroupCurrency.USD, latest?.currency)
+        }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 
     // Why: Saturday, 31 October 2026, 15:00 in UTC, the time zone the tests count days in.
@@ -3400,11 +3798,12 @@ class GroupsViewModelTest {
         isPending: Boolean = false,
         description: String = "Mercado",
         savedBy: String? = null,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Expense = Expense(
         id = id,
         groupId = groupId,
         description = description,
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer("member-$paidBy", amountMinor)),
@@ -3427,17 +3826,34 @@ class GroupsViewModelTest {
         isPending: Boolean = false,
         // Why: recorded when it was paid, unless a test says otherwise.
         updatedAt: Long = paidAt,
+        currency: GroupCurrency = GroupCurrency.BRL,
     ): Settlement = Settlement(
         id = id,
         groupId = groupId,
         fromMemberId = "member-$from",
         toMemberId = "member-$to",
-        currency = GroupCurrency.BRL,
+        currency = currency,
         amountMinor = amountMinor,
         method = SettlementMethod.PIX,
         paidAt = paidAt,
         isPending = isPending,
         updatedAt = updatedAt,
+    )
+
+    // Why: what the global Saldos hands the card: one total in dollars, whatever the groups say.
+    private fun peopleBalancesOf(netMinor: Long): PeopleBalances = PeopleBalances(
+        people = emptyList(),
+        totals = listOf(
+            PeopleTotal(
+                currency = GroupCurrency.USD,
+                netMinor = netMinor,
+                toReceiveMinor = netMinor,
+                toPayMinor = 0L,
+                toReceiveCount = 1,
+                toPayCount = 0,
+            ),
+        ),
+        me = null,
     )
 
     private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds
@@ -3468,9 +3884,14 @@ class GroupsViewModelTest {
         storedExpenses: List<Expense> = emptyList(),
         storedSettlements: List<Settlement> = emptyList(),
         downloading: FirstDownloadProgress? = null,
+        // Why: a bill is in its group's currency unless a case says each bill keeps the one it was written with.
+        billsKeepTheirCurrency: Boolean = false,
+        peopleBalancesFlow: Flow<PeopleBalances>? = null,
     ) {
         firstDownload = MutableStateFlow(downloading)
-        expenses = FakeExpenseRepository(initialExpenses = storedExpenses.inCurrencyOf(storedGroups))
+        expenses = FakeExpenseRepository(
+            initialExpenses = if (billsKeepTheirCurrency) storedExpenses else storedExpenses.inCurrencyOf(storedGroups),
+        )
         settlements = FakeSettlementRepository(initialSettlements = storedSettlements)
         syncGate = null
         syncNowCount = 0
@@ -3513,10 +3934,11 @@ class GroupsViewModelTest {
             observeRecordedPayment = ObserveRecordedPayment { flowOf(null) },
             consumeRecordedPayment = ConsumeRecordedPayment {},
             deleteSettlement = DeleteSettlement { Result.success(Unit) },
-            observePeopleBalances = ObservePeopleBalancesUseCase(
-                observeGroups = ObserveGroupsUseCase(groups),
-                observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
-            ),
+            observePeopleBalances = peopleBalancesFlow?.let { flow -> ObservePeopleBalances { flow } }
+                ?: ObservePeopleBalancesUseCase(
+                    observeGroups = ObserveGroupsUseCase(groups),
+                    observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
+                ),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
         )
     }

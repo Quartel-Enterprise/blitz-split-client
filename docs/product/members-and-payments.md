@@ -30,8 +30,10 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     other tabs stay beside Groups' list lying down: a one-line bar, the tabs and "Your balance in this group" above the
     hinge, and the pairs under it, "With you" beside "Between the others" while both have one, with no "Split a bill".
   - "Simplify debts" (page 13, `GroupBalances.toSimplified`, `SetSimplifiesDebts`): a group's switch, off in every
-    group, in Edit group's "Payments" under Currency and Default split, free. While on, the group's pairs are the
-    fewest payments that keep each one's net: the greatest debtor pays the greatest creditor until even, at most
+    group, in Edit group's "Payments" under Currency and Default split, free. Each currency simplifies on its own, so
+    the switch's line and confirmation show the group's own currency (the one the form is in) while the change itself
+    covers every currency (`SetSimplifiesDebtsUseCase`); amounts of two currencies are never netted.
+    While on, the group's pairs are the fewest payments that keep each one's net: the greatest debtor pays the greatest creditor until even, at most
     members − 1, ties by the order they joined, so every device gets the same pairs offline; payments recorded only
     move the nets, and a group already at its fewest payments keeps its pairs (13.3c). Any member turns it on or off,
     offline too, at once and apart from Save ("Waiting to upload" with the amber dot meanwhile); with 2 people it is
@@ -182,3 +184,12 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     if a bill covered it; any other screen of the group (Invite) just closes, and Groups or Home, whichever is
     on top first, says "Carla deleted the group X." (`GroupsUiState.deletedGroupNotice`, `HomeUiState.deletedGroupNotice`,
     one shared queue); never on the device that deleted it.
+
+- Currencies on these screens (Pierre's call, see [General rules](general.md)): Members shows the chip row too while the
+  group has money in more than one currency, and each member's balance is the chip's currency; a member who owes or is
+  owed in any currency cannot be removed, whichever chip is picked (`MembersMember.hasOpenBalance`). A pair owes in one
+  currency at a time, so a payment is recorded for one currency (`Route.RegisterPayment.currency`): Settle on the
+  balance card pays whoever the person owes the most in the chip's currency (or the first currency they owe in), a pair
+  row pays that row's currency, and "Who paid whom?" (`PickPayment`) lists a group once for each currency it has an
+  open pair in. "Leave group" and "Delete group" wait for every currency to be settled, and their lists of what is
+  still open write each pair in its own currency.

@@ -5,7 +5,6 @@ import SwiftUI
 /// when and how, with "Delete" at the bottom, which asks "Delete this payment?" before anything leaves the group.
 struct PaymentDetailsSheet: View {
     let payment: PaymentRow
-    let currency: GroupCurrency
     let model: GroupDetailModel
 
     var body: some View {
@@ -16,7 +15,7 @@ struct PaymentDetailsSheet: View {
             }
             Section {
                 LabeledContent("Amount") {
-                    Text(verbatim: currency.format(payment.amountMinor))
+                    Text(verbatim: payment.currency.format(payment.amountMinor))
                         .monospacedDigit()
                 }
                 LabeledContent("When") {

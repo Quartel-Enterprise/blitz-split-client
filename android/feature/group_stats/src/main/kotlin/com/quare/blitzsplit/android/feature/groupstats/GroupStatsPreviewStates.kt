@@ -43,6 +43,7 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
     return GroupStatsUiState(
         groupName = "Viagem Floripa",
         currency = GroupCurrency.BRL,
+        currencies = listOf(GroupCurrency.BRL, GroupCurrency.USD),
         isTrip = true,
         period = StatsPeriod.ALL,
         periodStartMillis = PREVIEW_START,

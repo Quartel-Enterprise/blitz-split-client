@@ -91,7 +91,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
             <SkeletonRows count={4} className="rounded-xl border bg-card" />
           </LoadingRegion>
         ))}
-      {state.paymentToView && <PaymentDetailsDialog presenter={presenter} payment={state.paymentToView} state={state} />}
+      {state.paymentToView && <PaymentDetailsDialog presenter={presenter} payment={state.paymentToView} />}
       {state.paymentToDelete && (
         <ConfirmDialog
           title={t('payment_deleteTitle')}
@@ -105,7 +105,6 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
         <BillDeleteDialog
           deletion={state.billToDelete}
           isDeleting={state.isDeletingBill}
-          money={(minor) => formatMoney(minor, state.header.currency, state.header.fractionDigits)}
           onConfirm={() => presenter.confirmExpenseDelete()}
           onDismiss={() => presenter.dismissExpenseDelete()}
         />
@@ -179,9 +178,9 @@ function ExpensesTable({ presenter, state }: { presenter: GroupDetailPresenter; 
         <DayRowGroup key={day.dayStartMillis} dayStartMillis={day.dayStartMillis} relativeDay={day.relativeDay}>
           {day.entries.map((entry) =>
             entry.expense ? (
-              <ExpenseRowItem key={entry.id} presenter={presenter} expense={entry.expense} state={state} />
+              <ExpenseRowItem key={entry.id} presenter={presenter} expense={entry.expense} />
             ) : entry.payment ? (
-              <PaymentRowItem key={entry.id} presenter={presenter} payment={entry.payment} state={state} />
+              <PaymentRowItem key={entry.id} presenter={presenter} payment={entry.payment} />
             ) : null,
           )}
         </DayRowGroup>
@@ -191,12 +190,12 @@ function ExpensesTable({ presenter, state }: { presenter: GroupDetailPresenter; 
 }
 
 /** A bill's line, its ⋮ offering Conta's Editar, Compartilhar and Apagar without opening it. */
-function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailPresenter; expense: JsExpenseRow; state: JsGroupDetailState }) {
+function ExpenseRowItem({ presenter, expense }: { presenter: GroupDetailPresenter; expense: JsExpenseRow }) {
   return (
     <ExpenseLine
       expense={expense}
-      currency={state.header.currency}
-      fractionDigits={state.header.fractionDigits}
+      currency={expense.currency}
+      fractionDigits={expense.fractionDigits}
       onOpen={() => presenter.openExpense(expense.id)}
       options={[
         { icon: <Pencil />, label: t('groupDetail_entryEdit'), onSelect: () => presenter.editExpense(expense.id) },
@@ -208,7 +207,7 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
 }
 
 /** "Ana te pagou · 12:10 · Acerto · Pix", the amount and the "acerto" tag; tapping it opens its details, its ⋮'s "Apagar" asks to delete it. */
-function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailPresenter; payment: JsPaymentRow; state: JsGroupDetailState }) {
+function PaymentRowItem({ presenter, payment }: { presenter: GroupDetailPresenter; payment: JsPaymentRow }) {
   const title = paymentTitle(payment)
   return (
     <DayRow
@@ -216,7 +215,7 @@ function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailP
       icon={<HandCoins className="size-4" />}
       title={title}
       meta={t('payment_meta', { time: formatTime(payment.paidAt), method: paymentMethodLabel(payment.method) })}
-      amount={formatMoney(payment.amountMinor, state.header.currency, state.header.fractionDigits)}
+      amount={formatMoney(payment.amountMinor, payment.currency, payment.fractionDigits)}
       isPending={payment.isPending}
       onOpen={() => presenter.openPayment(payment.id)}
       options={[{ icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.askToDeletePayment(payment.id) }]}
@@ -235,7 +234,7 @@ function paymentTitle(payment: JsPaymentRow): string {
 }
 
 /** What a tap on a payment opens instead of asking to delete it: the amount, when and how; Apagar still asks first. */
-function PaymentDetailsDialog({ presenter, payment, state }: { presenter: GroupDetailPresenter; payment: JsPaymentRow; state: JsGroupDetailState }) {
+function PaymentDetailsDialog({ presenter, payment }: { presenter: GroupDetailPresenter; payment: JsPaymentRow }) {
   const title = paymentTitle(payment)
   return (
     <Dialog open onOpenChange={(open) => !open && presenter.dismissPaymentDetails()}>
@@ -251,7 +250,7 @@ function PaymentDetailsDialog({ presenter, payment, state }: { presenter: GroupD
           </DialogDescription>
         </DialogHeader>
         <p className="text-3xl font-semibold tabular-nums">
-          {formatMoney(payment.amountMinor, state.header.currency, state.header.fractionDigits)}
+          {formatMoney(payment.amountMinor, payment.currency, payment.fractionDigits)}
         </p>
         <DialogFooter>
           <Button variant="outline" onClick={() => presenter.dismissPaymentDetails()}>

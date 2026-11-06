@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
@@ -74,6 +75,7 @@ class GroupStatsViewModel(
             GroupStatsUiState(
                 groupName = "",
                 currency = GroupCurrency.BRL,
+                currencies = emptyList(),
                 isTrip = true,
                 period = StatsPeriod.ALL,
                 periodStartMillis = 0L,
@@ -125,6 +127,9 @@ class GroupStatsViewModel(
     private var period = StatsPeriod.ALL
     private var customSpan: DateSpan? = null
     private var peopleView = StatsPeopleView.CONSUMPTION
+
+    // Why: the chip picked: every figure reads the bills and payments in that currency only, never added to another's.
+    private var pickedCurrency: GroupCurrency? = null
 
     // Why: the group went while a bill covered this screen, which then leaves as soon as it is on top again.
     private var isGone = false
@@ -180,6 +185,11 @@ class GroupStatsViewModel(
             }
 
             is GroupStatsUiEvent.OnPeriodPicked -> pickPeriod(event.period)
+
+            is GroupStatsUiEvent.OnCurrencySelected -> if (group != null && event.currency in findCurrencies()) {
+                pickedCurrency = event.currency
+                render()
+            }
 
             // Why: the picker is each platform's own, so the tap is only tracked.
             GroupStatsUiEvent.OnPickDatesClicked -> Unit
@@ -271,15 +281,27 @@ class GroupStatsViewModel(
         val group = group ?: return null
         return StatsCalculator(
             group = group,
-            expenses = expenses,
+            expenses = findExpensesIn(currencyOf(group)),
             today = today,
             timeZone = timeZone,
             categories = categoryTree,
         )
     }
 
+    // Why: the currencies the group has money in, its default first; the chips.
+    private fun findCurrencies(): List<GroupCurrency> =
+        group?.let { GroupBalances.currenciesOf(it, expenses, settlements) }.orEmpty()
+
+    // Why: the chip picked, or the group's default while none is or the pick has no money anymore.
+    private fun currencyOf(group: Group): GroupCurrency =
+        pickedCurrency?.takeIf { it in findCurrencies() } ?: group.currency
+
+    private fun findExpensesIn(currency: GroupCurrency): List<Expense> = expenses.filter { it.currency == currency }
+
     private fun render() {
         val group = group ?: return
+        val currency = currencyOf(group)
+        val expensesInCurrency = findExpensesIn(currency)
         val timeZone = currentTimeZone()
         val today = SpentDay.dateOf(currentTimeMillis(), timeZone)
         val calculator = createCalculatorOrNull(timeZone, today) ?: return
@@ -292,7 +314,8 @@ class GroupStatsViewModel(
         val memberCount = group.members.size
         uiState.value = GroupStatsUiState(
             groupName = group.name,
-            currency = group.currency,
+            currency = currency,
+            currencies = findCurrencies(),
             isTrip = group.type == GroupType.TRIP,
             period = period,
             periodStartMillis = SpentDay.startOf(span.start, timeZone),
@@ -308,8 +331,16 @@ class GroupStatsViewModel(
                     expenseCount = optionSpan?.let { calculator.createSpending(it).expenses.size } ?: 0,
                 )
             },
-            allStartMillis = SpentDay.startOf(calculator.allSpan.start, timeZone).takeIf { expenses.isNotEmpty() },
-            allEndMillis = SpentDay.startOf(calculator.allSpan.end, timeZone).takeIf { expenses.isNotEmpty() },
+            allStartMillis = SpentDay
+                .startOf(
+                    calculator.allSpan.start,
+                    timeZone,
+                ).takeIf { expensesInCurrency.isNotEmpty() },
+            allEndMillis = SpentDay
+                .startOf(
+                    calculator.allSpan.end,
+                    timeZone,
+                ).takeIf { expensesInCurrency.isNotEmpty() },
             allRangeStyle = calculator.toRangeStyle(StatsPeriod.ALL, calculator.allSpan),
             totalMinor = spending.totalMinor,
             isFirstDownload = uiState.value.isFirstDownload,
@@ -336,7 +367,16 @@ class GroupStatsViewModel(
             chartAverageMinor = StatsChartAxis.createAverageOrNull(bars),
             grainNotes = calculator.createGrainNotes(span),
             biggestExpense = calculator.createBiggestOrNull(spending),
-            settling = findSettling(SettlingInputs(group, expenses, settlements, span, today, timeZone)),
+            settling = findSettling(
+                SettlingInputs(
+                    group = group,
+                    expenses = expensesInCurrency,
+                    settlements = settlements.filter { it.currency == currency },
+                    span = span,
+                    today = today,
+                    timeZone = timeZone,
+                ),
+            ),
             categories = calculator.createCategories(spending),
             isLoaded = isDownloadRead,
             homeTab = uiState.value.homeTab,
@@ -401,6 +441,7 @@ class GroupStatsViewModel(
             next = Route.CategoryExpenses(
                 groupId = route.groupId,
                 categoryId = categoryId,
+                currency = state.currency,
                 periodStartMillis = state.periodStartMillis.takeUnless { isWhole },
                 periodEndMillis = state.periodEndMillis.takeUnless { isWhole },
                 isMonthPeriod = state.periodRangeStyle == StatsRangeStyle.MONTH,

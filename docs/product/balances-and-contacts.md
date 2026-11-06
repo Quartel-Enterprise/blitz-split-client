@@ -8,7 +8,7 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
   - "Balances" (flow 8, `Route.GlobalBalances` over the groups) is the home's second tab: each person once, netted
     across every group of one currency (`PeopleBalances`): someone who joined is their account in every group, a name
     nobody joined as is the same person wherever it is written the same, and someone no longer in a group only
-    themselves ("Former member"); someone with groups in two currencies shows once per currency. All / You owe / Owed to you filter it, each with its total (the net always matches the home's Overall balance; "To get back" and "To pay"
+    themselves ("Former member"); someone with groups in two currencies shows once per currency (the group's own Balances, Members and settling up use the same per-currency computation, `GroupBalances.getByCurrency`, so a group's figures and these never differ). All / You owe / Owed to you filter it, each with its total (the net always matches the home's Overall balance; "To get back" and "To pay"
     there count each group's net, so they can differ), "By group" opens in the row (already open for someone alone
     in You owe or Owed to you), and the empty "You owe nothing" leads to Owed to you, "Nobody owes you" to You owe and "All settled" to Groups. "Settle up" (you owe, as "Pay Ana" while Ana has a key) and "Received" (owed to you)
     open Record payment for the net (`Route.SettleUp`): one payment in each group, the way that group's pair owes, all or none (`SettleUp`), the

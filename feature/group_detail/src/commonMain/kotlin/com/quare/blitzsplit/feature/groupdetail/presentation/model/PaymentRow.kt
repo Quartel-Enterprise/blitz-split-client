@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.GroupCurrency
 
 // Why: "Ana te pagou · 12:10 · Acerto · Pix · R$ 50,00 · acerto"; tapping it opens its details, whose "Apagar" asks "Apagar este acerto?".
 data class PaymentRow(
@@ -18,6 +19,8 @@ data class PaymentRow(
     // Why: "Ana te pagou".
     val toIsMe: Boolean,
     val amountMinor: Long,
+    // Why: the payment's own currency, whichever the group's or the chip picked.
+    val currency: GroupCurrency,
     val method: SettlementMethod,
     // Why: "na fila" and the amber dot: saved here and not on the server yet.
     val isPending: Boolean,

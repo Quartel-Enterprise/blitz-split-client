@@ -288,6 +288,7 @@ class MembersMemberTest {
         hasJoined = hasJoined,
         personalLink = personalLink,
         balance = balance,
+        hasOpenBalance = balance?.isSettled == false,
         canBeReleased = false,
     )
 

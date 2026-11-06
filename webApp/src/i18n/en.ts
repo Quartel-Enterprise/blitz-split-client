@@ -795,6 +795,7 @@ export const en = {
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Cryptocurrencies',
+  currency_chipsLabel: 'Currency',
   profile_themeSystem: 'System',
   profile_themeLight: 'Light',
   profile_themeDark: 'Dark',

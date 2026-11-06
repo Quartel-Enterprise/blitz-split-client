@@ -88,7 +88,7 @@ struct BalancesSections: View {
 
     private func debtRows(_ rows: [DebtRow]) -> some View {
         ForEach(rows, id: \.self) { row in
-            DebtRowView(row: row, currency: currency) {
+            DebtRowView(row: row) {
                 model.send(GroupDetailUiEventOnDebtClicked(fromMemberId: row.fromMemberId, toMemberId: row.toMemberId))
             }
         }
@@ -152,8 +152,10 @@ enum DebtCopy {
         }
     }
 
-    static func amount(_ row: DebtRow, currency: GroupCurrency) -> String {
-        switch row.kind {
+    /// In the row's own currency: a group's pairs, and its exit dialogs', may be in several.
+    static func amount(_ row: DebtRow) -> String {
+        let currency = row.currency
+        return switch row.kind {
         case .youOwe: currency.formatSigned(-row.amountMinor)
         case .owesYou: currency.formatSigned(row.amountMinor)
         default: currency.format(row.amountMinor)
@@ -165,7 +167,6 @@ enum DebtCopy {
 /// records the payment ("Settle up", "Got paid" or "Already paid"). The whole row opens Record payment.
 private struct DebtRowView: View {
     let row: DebtRow
-    let currency: GroupCurrency
     let action: () -> Void
 
     var body: some View {
@@ -210,7 +211,7 @@ private struct DebtRowView: View {
     }
 
     private var amount: String {
-        DebtCopy.amount(row, currency: currency)
+        DebtCopy.amount(row)
     }
 
     private var amountColor: Color {

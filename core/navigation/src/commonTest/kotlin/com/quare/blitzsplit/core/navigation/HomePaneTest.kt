@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.navigation
 
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -121,6 +122,7 @@ class HomePaneTest {
             Route.CategoryExpenses(
                 "trip",
                 categoryId = "food",
+                currency = GroupCurrency.BRL,
                 periodStartMillis = null,
                 periodEndMillis = null,
                 isMonthPeriod = false,

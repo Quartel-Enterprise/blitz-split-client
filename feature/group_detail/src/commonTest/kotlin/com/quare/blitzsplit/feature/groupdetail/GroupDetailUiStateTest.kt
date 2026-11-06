@@ -397,6 +397,7 @@ class GroupDetailUiStateTest {
         toName = "Pierre",
         toFace = null,
         amountMinor = 5_000,
+        currency = GroupCurrency.USD,
         kind = kind,
         isSimplified = false,
     )
@@ -431,6 +432,7 @@ class GroupDetailUiStateTest {
             groupColor = AvatarColor.LILAC,
             groupPhotoUrl = null,
             currency = GroupCurrency.BRL,
+            currencies = listOf(GroupCurrency.USD),
             faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH, photoUrl = null) },
             memberCount = memberCount,
             notJoinedCount = 0,
@@ -477,6 +479,7 @@ class GroupDetailUiStateTest {
                     ),
                 ),
                 totalMinor = 12_000,
+                currency = GroupCurrency.USD,
                 myBalanceMinor = -6_000,
                 category = CategoryTree.appOnly.other,
                 isPending = false,

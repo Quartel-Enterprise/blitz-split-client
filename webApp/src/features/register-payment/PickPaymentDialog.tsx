@@ -50,7 +50,13 @@ export function PickPaymentDialog() {
         ) : (
           <div className="flex flex-col gap-4">
             {state.groups.map((group) => (
-              <PairsOfGroup key={group.groupId} group={group} onPick={(pair) => presenter.pickPair(group.groupId, pair.fromMemberId, pair.toMemberId)} />
+              <PairsOfGroup
+                key={`${group.groupId}/${group.currency}`}
+                group={group}
+                // Why: a group with open pairs in two currencies is listed once per currency, so the code says which.
+                showsCurrency={state.groups.filter((other) => other.groupId === group.groupId).length > 1}
+                onPick={(pair) => presenter.pickPair(group.groupId, pair.fromMemberId, pair.toMemberId, group.currency)}
+              />
             ))}
           </div>
         ),
@@ -68,13 +74,14 @@ export function PickPaymentDialog() {
   )
 }
 
-function PairsOfGroup({ group, onPick }: { group: JsPickPaymentGroup; onPick: (pair: JsPickPaymentPair) => void }) {
-  const headingId = `pick-payment-${group.groupId}`
+function PairsOfGroup({ group, showsCurrency, onPick }: { group: JsPickPaymentGroup; showsCurrency: boolean; onPick: (pair: JsPickPaymentPair) => void }) {
+  const headingId = `pick-payment-${group.groupId}-${group.currency}`
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-1.5">
       <h3 id={headingId} className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
         <GroupAvatar initials={group.initials} color={group.color} className="size-6 rounded-md text-[10px]" />
         <span className="truncate">{group.name}</span>
+        {showsCurrency && <span className="shrink-0 rounded-full border px-2 text-[11px] font-medium">{group.currency}</span>}
       </h3>
       <ul className="flex flex-col divide-y rounded-lg border">
         {group.pairs.map((pair) => (

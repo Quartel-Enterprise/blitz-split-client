@@ -28,7 +28,6 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.settledPairSentenceOf
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
@@ -99,10 +98,9 @@ internal fun BillConflictBanner(
 @Composable
 internal fun SettledPairCard(
     change: SettledPairChange,
-    money: MoneyFormatter,
     modifier: Modifier = Modifier,
 ) {
-    val sentence = settledPairSentenceOf(change, money)
+    val sentence = settledPairSentenceOf(change)
     val announcement = remember(change.announcementKey) { sentence }
     Surface(
         modifier = modifier
@@ -133,11 +131,10 @@ internal fun SettledPairCard(
 @Composable
 internal fun BillEditingFooter(
     state: SplitBillUiState,
-    money: MoneyFormatter,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        state.settledPair?.let { SettledPairCard(it, money, Modifier.padding(bottom = 8.dp)) }
+        state.settledPair?.let { SettledPairCard(it, Modifier.padding(bottom = 8.dp)) }
         if (state.showsAnyoneCanEditHint) {
             Text(
                 text = stringResource(R.string.split_bill_anyone_can_edit),

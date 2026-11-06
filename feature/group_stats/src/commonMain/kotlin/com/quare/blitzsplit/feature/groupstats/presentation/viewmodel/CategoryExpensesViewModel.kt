@@ -10,7 +10,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -54,7 +53,7 @@ class CategoryExpensesViewModel(
         field = MutableStateFlow(
             CategoryExpensesUiState(
                 groupName = "",
-                currency = GroupCurrency.BRL,
+                currency = route.currency,
                 isTrip = true,
                 periodStartMillis = route.periodStartMillis,
                 periodEndMillis = route.periodEndMillis,
@@ -150,7 +149,7 @@ class CategoryExpensesViewModel(
         val now = currentTimeMillis()
         val calculator = StatsCalculator(
             group = group,
-            expenses = expenses,
+            expenses = expenses.filter { it.currency == route.currency },
             today = SpentDay.dateOf(now, timeZone),
             timeZone = timeZone,
             categories = categoryTree,
@@ -181,7 +180,7 @@ class CategoryExpensesViewModel(
         val isWhole = start == null || end == null
         uiState.value = CategoryExpensesUiState(
             groupName = group.name,
-            currency = group.currency,
+            currency = route.currency,
             isTrip = group.type == GroupType.TRIP,
             periodStartMillis = if (isWhole) null else SpentDay.startOf(span.start, timeZone),
             periodEndMillis = if (isWhole) null else SpentDay.startOf(span.end, timeZone),

@@ -380,7 +380,7 @@ class BillDetailViewModel(
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
-                currency = group.currency,
+                currency = expense.currency,
                 description = expense.description,
                 totalMinor = expense.amountMinor,
                 spentAt = expense.spentAt,

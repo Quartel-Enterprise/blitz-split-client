@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.members
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.CurrencyChipRow
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -65,6 +67,18 @@ internal fun LazyListScope.memberItems(
                 top = 16.dp,
             ),
         )
+    }
+    // Why: the balances below follow the currency picked, a chip per currency the group has money in.
+    if (state.currencies.size > 1) {
+        item(key = "members-currencies") {
+            CurrencyChipRow(
+                currencies = state.currencies,
+                selected = state.currency,
+                onSelected = { onEvent(MembersUiEvent.OnCurrencySelected(it)) },
+                modifier = Modifier.padding(top = 16.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+            )
+        }
     }
     item(key = "members-list") {
         MemberList(
@@ -152,6 +166,7 @@ private fun LinkCard(
 private fun createPreviewState(): MembersUiState = MembersUiState(
     groupName = "Viagem Floripa",
     currency = GroupCurrency.BRL,
+    currencies = listOf(GroupCurrency.BRL, GroupCurrency.USD),
     displayLink = "blitzsplit.com/g/7Hk2pQxa",
     members = listOf(
         MembersMember(
@@ -167,6 +182,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 22_350L,
                 owesMinor = 0L,
             ),
+            hasOpenBalance = true,
             canBeReleased = false,
         ),
         MembersMember(
@@ -182,6 +198,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 0L,
                 owesMinor = 11_800L,
             ),
+            hasOpenBalance = true,
             canBeReleased = true,
         ),
         MembersMember(
@@ -197,6 +214,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 0L,
                 owesMinor = 0L,
             ),
+            hasOpenBalance = false,
             canBeReleased = false,
         ),
         MembersMember(
@@ -212,6 +230,7 @@ private fun createPreviewState(): MembersUiState = MembersUiState(
                 receivesMinor = 0L,
                 owesMinor = 10_550L,
             ),
+            hasOpenBalance = true,
             canBeReleased = false,
         ),
     ),
