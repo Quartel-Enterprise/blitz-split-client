@@ -375,7 +375,7 @@ private struct MemberBalanceText: View {
     }
 }
 
-/// "Add person" and "Rename" ask the same thing: a name free in the group, with nicknames when it isn't.
+/// "Add person" and "Rename" ask the same thing: a name, which may repeat another member's.
 private struct MemberNameSheet: View {
     let model: MembersModel
 
@@ -389,17 +389,6 @@ private struct MemberNameSheet: View {
                         .focused($isFocused)
                         .submitLabel(.done)
                         .onSubmit { model.send(MembersUiEventOnSaveClicked.shared) }
-                    if let takenName = editor.takenName {
-                        Section {
-                            Text("\(takenName) is already in the group. Use a nickname to tell them apart.")
-                                .foregroundStyle(Palette.negative)
-                            ForEach(editor.nicknameSuggestions, id: \.self) { suggestion in
-                                Button("Use “\(suggestion)”") {
-                                    model.send(MembersUiEventOnSuggestionClicked(name: suggestion))
-                                }
-                            }
-                        }
-                    }
                     // Someone who has the app joins through the link instead, and picks their own name.
                     if editor.isAdding {
                         Section {

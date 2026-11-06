@@ -51,7 +51,8 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     other devices (`hidden_contact`, the server's `hidden_contacts`), with "Show"; someone hidden comes back by
     themselves once a bill shared with them is saved later or the balance opens again. The profile
     (`Route.ContactProfile`) shows the net ("Already offset across 3 groups"), Request (Balances' message, opened over
-    the profile), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; a group they're
+    the profile), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; either
+    keeps their name even when someone in the group has it too, beta feedback 3 item 29; a group they're
     in shows disabled), "Groups in common" and the latest four of "History with Carla" (bills that move something
     between the two and their payments); "See all" opens Activity on that person. A guest's profile
     offers "Invite Diego" (their personal link) and "Merge with an account" (online only): the server makes a

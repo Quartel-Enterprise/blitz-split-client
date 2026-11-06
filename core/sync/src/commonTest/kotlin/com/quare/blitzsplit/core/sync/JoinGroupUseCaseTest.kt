@@ -154,7 +154,13 @@ class JoinGroupUseCaseTest {
             prepareScenario(storedProfile = null)
             val withJ = invite.copy(
                 members =
-                    invite.members + InviteMember("j", "J", AvatarColor.SAND, hasJoined = false),
+                    invite.members + InviteMember(
+                        "j",
+                        "J",
+                        AvatarColor.SAND,
+                        hasJoined = false,
+                        photoUrl = null,
+                    ),
             )
 
             // When
@@ -336,23 +342,6 @@ class JoinGroupUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a member already has the name WHEN joining under it THEN answers name taken without a profile`() =
-        runTest {
-            // Given
-            prepareScenario(
-                storedProfile = null,
-                joinOutcome = JoinOutcome.NameTaken,
-            )
-
-            // When
-            val result = useCase(invite, asNewMember)
-
-            // Then
-            assertEquals(Result.success(JoinOutcome.NameTaken), result)
-            assertTrue(profile.savedProfiles.isEmpty())
-        }
-
-    @Test
     fun `GIVEN the link was changed WHEN joining THEN answers invalid link without a profile`() = runTest {
         // Given
         prepareScenario(
@@ -451,6 +440,7 @@ class JoinGroupUseCaseTest {
         name = "Ana",
         avatarColor = AvatarColor.PEACH,
         hasJoined = false,
+        photoUrl = null,
     )
 
     // Why: every color but SAND is taken, BLUE twice, so the least used one isn't the first of the palette.
@@ -469,6 +459,7 @@ class JoinGroupUseCaseTest {
                 name = "Carla",
                 avatarColor = AvatarColor.BLUE,
                 hasJoined = true,
+                photoUrl = null,
             ),
             ana,
             InviteMember(
@@ -476,22 +467,26 @@ class JoinGroupUseCaseTest {
                 name = "Duda",
                 avatarColor = AvatarColor.GREEN,
                 hasJoined = false,
+                photoUrl = null,
             ),
             InviteMember(
                 id = "eva",
                 name = "Eva",
                 avatarColor = AvatarColor.LILAC,
                 hasJoined = false,
+                photoUrl = null,
             ),
             InviteMember(
                 id = "fabi",
                 name = "Fabi",
                 avatarColor = AvatarColor.BLUE,
                 hasJoined = false,
+                photoUrl = null,
             ),
         ),
         personalMemberId = null,
         inviterName = null,
+        groupPhotoUrl = null,
     )
     private val asAna = JoinChoice.AsMember(ana.id)
     private val asNewMember = JoinChoice.AsNewMember("  Bruno ")

@@ -329,11 +329,21 @@ private fun NotInListButton(
     onEvent: (JoinPickUiEvent) -> Unit,
 ) {
     val content = @Composable {
-        Icon(
-            imageVector = Icons.Outlined.PersonAdd,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 8.dp),
-        )
+        // Why: a Google or Apple account joins from here at once, with its name and photo, so the tap shows it.
+        if (state.showsNotInListProgress) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(20.dp),
+                strokeWidth = 2.dp,
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Outlined.PersonAdd,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp),
+            )
+        }
         Text(stringResource(R.string.join_pick_not_in_list))
     }
     if (isOutlined) {
@@ -418,6 +428,7 @@ private fun MemberRow(
         AvatarBadge(
             initial = member.initials,
             color = member.avatarColor,
+            photoUrl = member.photoUrl,
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -494,7 +505,7 @@ private fun JoinButton(
             .fillMaxWidth()
             .heightIn(min = 56.dp),
     ) {
-        if (state.isJoining) {
+        if (state.showsJoinProgress) {
             CircularProgressIndicator(
                 modifier = Modifier.size(20.dp),
                 strokeWidth = 2.dp,
@@ -517,6 +528,7 @@ private fun createPreviewState(): JoinPickUiState = JoinPickUiState(
     creatorName = "Pierre",
     newMember = null,
     isJoining = false,
+    isJoiningAsNewMember = false,
 )
 
 @DevicePreviews

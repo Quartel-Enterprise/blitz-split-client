@@ -13101,23 +13101,6 @@
         }
       }
     },
-    "%@ is already in the group. Use a nickname to tell them apart." : {
-      "comment" : "%@ is the member's name the typed one repeats",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ ya está en el grupo. Usa un apodo para diferenciarlos."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ já está no grupo. Use um apelido para diferenciar."
-          }
-        }
-      }
-    },
     "%@ · %@ paid" : {
       "comment" : "The bill being split and who paid it; the first %@ is its description or total",
       "localizations" : {
@@ -17356,18 +17339,18 @@
         }
       }
     },
-    "At least 2 letters, and not a name already in the group." : {
+    "At least 2 letters." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Al menos 2 letras, y no un nombre que ya esté en el grupo."
+            "value" : "Al menos 2 letras."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pelo menos 2 letras, sem repetir um nome que já está no grupo."
+            "value" : "Pelo menos 2 letras."
           }
         }
       }
@@ -20955,23 +20938,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Usar sem conta"
-          }
-        }
-      }
-    },
-    "Use “%@”" : {
-      "comment" : "A nickname suggested for a repeated member name, like “Ana P.”",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usar “%@”"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usar “%@”"
           }
         }
       }

@@ -16,6 +16,11 @@ data class JoinPickUiState(
     val newMember: NewMemberDraft?,
     // Why: a join on its way, which no button can start again.
     val isJoining: Boolean,
+    /*
+     * Why: the join on its way is a new member's, from "Entrar com outro nome" or, for a Google or Apple account,
+     * straight from "Não estou na lista": its button shows the progress rather than "Entrar como Bruno".
+     */
+    val isJoiningAsNewMember: Boolean,
 ) {
     // Why: "Ainda não entraram", the ones that can be picked.
     val notJoined: List<JoinMember>
@@ -34,4 +39,12 @@ data class JoinPickUiState(
 
     val canJoinAsNewMember: Boolean
         get() = newMember?.canJoin == true && !isJoining
+
+    // Why: "Entrar como Bruno" spins only for the member picked, not for a new member's join.
+    val showsJoinProgress: Boolean
+        get() = isJoining && !isJoiningAsNewMember
+
+    // Why: "Não estou na lista" spins while a Google or Apple account joins from it at once, with no sheet open.
+    val showsNotInListProgress: Boolean
+        get() = isJoiningAsNewMember && newMember == null
 }

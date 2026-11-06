@@ -14,7 +14,14 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     names with the invite ("Invite from Pierre", "Join Florianopolis Trip"), beside the names from 1024 px, and pins
     "Join as Bruno" at the bottom of a phone. The Mac opens the invite as one sheet over the window, "Who are you"
     pushed inside it. Joining with no profile on the device makes one from the name and
-    color joined as. A member someone else already joined as says "If it was you, ask <creator> to release the name in
+    color joined as. The invite and "Who are you" show the group's photo and the profile photo of each member someone
+    joined as, over the color and initials (beta feedback 3, item 23; `get_invite` answers both `photo_url`s). "I'm not
+    on the list" with a Google or Apple account signed in joins at once as a new member with the account's name and
+    photo, no sheet, its button spinning while it goes (item 22); an anonymous or local only account, or a profile name
+    shorter than 2 letters, opens "Join with another name" instead. That sheet takes any name of 2 letters or more,
+    one already in the group too ("At least 2 letters.", item 29), and while the join is on its way its button spins,
+    the field, Cancel and dismissing it are off, and it stays until the server answers (item 30,
+    `JoinPickUiState.isJoiningAsNewMember`). A member someone else already joined as says "If it was you, ask <creator> to release the name in
     Members" ("If it was you, talk to whoever invited you" once the creator's account is gone).
   - The home's "Join with a link or QR code" opens the reader (`Route.JoinWithLink`) on every platform: the camera reads
     an invite's QR and keeps reading after a wrong one ("This QR code isn't a Blitz Split invite" for a few

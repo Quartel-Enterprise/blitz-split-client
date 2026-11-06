@@ -56,11 +56,6 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
             OnAddMemberClicked -> EventAnalytics.Automatic("create_group_add_member_clicked")
 
-            is OnSuggestionClicked -> EventAnalytics.Automatic(
-                "member_name_suggestion_clicked",
-                mapOf("source" to SOURCE),
-            )
-
             is OnRemoveMemberClicked -> EventAnalytics.Automatic("create_group_remove_member_clicked")
 
             // Why: the tap, and the group it created once saved, with what kind of group it is.
@@ -112,10 +107,6 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
     // Why: "Adicionar", and the keyboard's done key in the draft.
     data object OnAddMemberClicked : CreateGroupUiEvent
-
-    data class OnSuggestionClicked(
-        val name: String,
-    ) : CreateGroupUiEvent
 
     data class OnRemoveMemberClicked(
         val memberId: String,

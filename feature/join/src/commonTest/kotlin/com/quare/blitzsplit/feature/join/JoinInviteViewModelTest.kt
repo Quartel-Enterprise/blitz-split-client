@@ -97,10 +97,38 @@ class JoinInviteViewModelTest {
             assertEquals("Pierre", state.creatorName)
             assertEquals(
                 listOf(
-                    JoinMember("member-1", "Pierre", "P", AvatarColor.BLUE, hasJoined = true),
-                    JoinMember("member-2", "Ana", "A", AvatarColor.PEACH, hasJoined = true),
-                    JoinMember("member-3", "Bruno", "B", AvatarColor.GREEN, hasJoined = false),
-                    JoinMember("member-4", "Carla", "C", AvatarColor.LILAC, hasJoined = false),
+                    JoinMember(
+                        "member-1",
+                        "Pierre",
+                        "P",
+                        AvatarColor.BLUE,
+                        hasJoined = true,
+                        photoUrl = null,
+                    ),
+                    JoinMember(
+                        "member-2",
+                        "Ana",
+                        "A",
+                        AvatarColor.PEACH,
+                        hasJoined = true,
+                        photoUrl = null,
+                    ),
+                    JoinMember(
+                        "member-3",
+                        "Bruno",
+                        "B",
+                        AvatarColor.GREEN,
+                        hasJoined = false,
+                        photoUrl = null,
+                    ),
+                    JoinMember(
+                        "member-4",
+                        "Carla",
+                        "C",
+                        AvatarColor.LILAC,
+                        hasJoined = false,
+                        photoUrl = null,
+                    ),
                 ),
                 state.members,
             )
@@ -775,7 +803,14 @@ class JoinInviteViewModelTest {
             assertEquals(JoinInviteStatus.READY, state.status)
             assertTrue(state.isPersonal)
             assertEquals(
-                JoinMember(CARLA_ID, "Carla", "C", AvatarColor.LILAC, hasJoined = false),
+                JoinMember(
+                    CARLA_ID,
+                    "Carla",
+                    "C",
+                    AvatarColor.LILAC,
+                    hasJoined = false,
+                    photoUrl = null,
+                ),
                 state.personalMember,
             )
             assertEquals("Ana", state.inviterName)
@@ -1180,25 +1215,6 @@ class JoinInviteViewModelTest {
                 members = listOf(pierre, ana, bruno),
                 personalMemberId = null,
             )
-
-            // When
-            viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
-
-            // Then
-            assertEquals(2, invites.fetchedTargets.size)
-            assertEquals(JoinInviteStatus.INVALID, viewModel.uiState.value.status)
-        }
-
-    @Test
-    fun `GIVEN the server finds the name taken WHEN joining as Carla THEN reads the invite again`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                route = carlaLink,
-                invite = carlaInvite,
-                joinOutcome = JoinOutcome.NameTaken,
-            )
-            invites.invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(hasJoined = true)))
 
             // When
             viewModel.onEvent(JoinInviteUiEvent.OnJoinClicked)
@@ -1653,10 +1669,106 @@ class JoinInviteViewModelTest {
             assertEquals(listOf(Route.Home, groupLink), navigator.backStack.value)
         }
 
-    private val pierre = InviteMember("member-1", "Pierre", AvatarColor.BLUE, hasJoined = true)
-    private val ana = InviteMember("member-2", "Ana", AvatarColor.PEACH, hasJoined = true)
-    private val bruno = InviteMember("member-3", "Bruno", AvatarColor.GREEN, hasJoined = false)
-    private val carla = InviteMember("member-4", "Carla", AvatarColor.LILAC, hasJoined = false)
+    @Test
+    fun `GIVEN a group with a photo on its way WHEN the screen opens THEN shows no group photo yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                invite = trip.copy(groupPhotoUrl = GROUP_PHOTO),
+                fetchGate = CompletableDeferred(),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.groupPhotoUrl)
+        }
+
+    @Test
+    fun `GIVEN a group with a photo WHEN the screen opens THEN shows the group photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(invite = trip.copy(groupPhotoUrl = GROUP_PHOTO))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(GROUP_PHOTO, state.groupPhotoUrl)
+    }
+
+    @Test
+    fun `GIVEN a group with no photo WHEN the screen opens THEN shows no group photo`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(invite = trip)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.groupPhotoUrl)
+    }
+
+    @Test
+    fun `GIVEN members with photos WHEN the screen opens THEN each member keeps the photo of whoever joined as them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                invite = trip.copy(members = listOf(pierre.copy(photoUrl = PIERRE_PHOTO), ana, bruno, carla)),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(PIERRE_PHOTO, null, null, null), state.members.map { it.photoUrl })
+            assertEquals(listOf(PIERRE_PHOTO, null), state.joined.map { it.photoUrl })
+        }
+
+    @Test
+    fun `GIVEN Carla personal link and a photo for Carla WHEN the screen opens THEN Carla shows the photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                route = carlaLink,
+                invite = carlaInvite.copy(members = listOf(pierre, ana, bruno, carla.copy(photoUrl = CARLA_PHOTO))),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(CARLA_PHOTO, state.personalMember?.photoUrl)
+        }
+
+    private val pierre = InviteMember(
+        "member-1",
+        "Pierre",
+        AvatarColor.BLUE,
+        hasJoined = true,
+        photoUrl = null,
+    )
+    private val ana = InviteMember(
+        "member-2",
+        "Ana",
+        AvatarColor.PEACH,
+        hasJoined = true,
+        photoUrl = null,
+    )
+    private val bruno = InviteMember(
+        "member-3",
+        "Bruno",
+        AvatarColor.GREEN,
+        hasJoined = false,
+        photoUrl = null,
+    )
+    private val carla = InviteMember(
+        "member-4",
+        "Carla",
+        AvatarColor.LILAC,
+        hasJoined = false,
+        photoUrl = null,
+    )
 
     private val trip = Invite(
         code = CODE,
@@ -1670,6 +1782,7 @@ class JoinInviteViewModelTest {
         members = listOf(pierre, ana, bruno, carla),
         personalMemberId = null,
         inviterName = null,
+        groupPhotoUrl = null,
     )
 
     private val tripGroup = Group(
@@ -1785,5 +1898,8 @@ class JoinInviteViewModelTest {
         const val GROUP_ID = "group-1"
         const val BRUNO_ID = "member-3"
         const val CARLA_ID = "member-4"
+        const val GROUP_PHOTO = "https://cdn.blitzsplit.com/groups/group-1.jpg"
+        const val PIERRE_PHOTO = "https://cdn.blitzsplit.com/avatars/pierre.jpg"
+        const val CARLA_PHOTO = "https://cdn.blitzsplit.com/avatars/carla.jpg"
     }
 }

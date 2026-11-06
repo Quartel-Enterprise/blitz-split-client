@@ -110,7 +110,7 @@ struct JoinPickView: View {
     private func joinButton(_ state: JoinPickUiState) -> some View {
         Group {
             if let selectedName = state.selectedName {
-                PrimaryButton(title: "Join as \(selectedName)", isEnabled: state.canJoin, isLoading: state.isJoining) {
+                PrimaryButton(title: "Join as \(selectedName)", isEnabled: state.canJoin, isLoading: state.showsJoinProgress) {
                     model?.send(JoinPickUiEventOnJoinClicked.shared)
                 }
             } else {
@@ -151,9 +151,13 @@ private struct JoinPickIntro: View {
             Button {
                 model.send(JoinPickUiEventOnNotInListClicked.shared)
             } label: {
-                Label("I'm not on the list", systemImage: "person.badge.plus")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, minHeight: 36)
+                Label {
+                    Text("I'm not on the list")
+                } icon: {
+                    NotInListIcon(state: state)
+                }
+                .font(.headline)
+                .frame(maxWidth: .infinity, minHeight: 36)
             }
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
@@ -224,8 +228,14 @@ private struct JoinPickList: View {
             }
             if !isListOnly {
                 Section {
-                    Button("I'm not on the list", systemImage: "person.badge.plus") {
+                    Button {
                         model.send(JoinPickUiEventOnNotInListClicked.shared)
+                    } label: {
+                        Label {
+                            Text("I'm not on the list")
+                        } icon: {
+                            NotInListIcon(state: state)
+                        }
                     }
                     .disabled(state.isJoining)
                 }
@@ -247,13 +257,26 @@ private struct JoinPickList: View {
     }
 }
 
+/// A Google or Apple account joins from "I'm not on the list" at once, with its name and photo, so the tap shows it.
+private struct NotInListIcon: View {
+    let state: JoinPickUiState
+
+    var body: some View {
+        if state.showsNotInListProgress {
+            ProgressView()
+        } else {
+            Image(systemName: "person.badge.plus")
+        }
+    }
+}
+
 private struct MemberLine: View {
     let member: JoinMember
     let isSelected: Bool
 
     var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: member.name)
                     .foregroundStyle(member.hasJoined ? .secondary : .primary)
@@ -275,27 +298,29 @@ private struct MemberLine: View {
     }
 }
 
-/// "Join with another name": someone new to the group, under a name nobody in it has.
+/// "Join with another name": someone new to the group, under any name, another member's too. While the join is on its
+/// way the check spins and the sheet stays, with nothing else to tap (beta feedback 3, item 30).
 private struct NewMemberSheet: View {
     let model: JoinPickModel
 
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        if let draft = model.state.newMember {
+        if model.state.newMember != nil {
             NavigationStack {
                 Form {
                     Section {
                         TextField("Your name", text: nameBinding)
                             .focused($isFocused)
+                            .disabled(model.state.isJoiningAsNewMember)
                             .submitLabel(.join)
                             .onSubmit { model.send(JoinPickUiEventOnNewMemberConfirmed.shared) }
                     } header: {
                         Text("You join as a new member. Expenses added before don't include you.")
                             .textCase(nil)
                     } footer: {
-                        Text("At least 2 letters, and not a name already in the group.")
-                            .foregroundStyle(draft.isNameTaken ? Palette.negative : .secondary)
+                        Text("At least 2 letters.")
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .navigationTitle("Join with another name")
@@ -307,16 +332,22 @@ private struct NewMemberSheet: View {
                         Button("Cancel", systemImage: "xmark", role: .cancel) {
                             model.send(JoinPickUiEventOnNewMemberDismissed.shared)
                         }
+                        .disabled(model.state.isJoiningAsNewMember)
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Join group", systemImage: "checkmark") {
-                            model.send(JoinPickUiEventOnNewMemberConfirmed.shared)
+                        if model.state.isJoiningAsNewMember {
+                            ProgressView()
+                        } else {
+                            Button("Join group", systemImage: "checkmark") {
+                                model.send(JoinPickUiEventOnNewMemberConfirmed.shared)
+                            }
+                            .disabled(!model.state.canJoinAsNewMember)
                         }
-                        .disabled(!model.state.canJoinAsNewMember)
                     }
                 }
             }
             .presentationDetents([.medium])
+            .interactiveDismissDisabled(model.state.isJoiningAsNewMember)
             #if os(macOS)
             .frame(minWidth: 380, minHeight: 240)
             #endif

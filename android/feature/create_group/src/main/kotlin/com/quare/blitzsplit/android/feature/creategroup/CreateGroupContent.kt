@@ -165,10 +165,7 @@ private fun MembersColumn(
         state = state,
         onEvent = onEvent,
     )
-    MembersNoticesSection(
-        state = state,
-        onEvent = onEvent,
-    )
+    NoAppNoticeText()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -250,30 +247,19 @@ private fun CreateErrorText(state: CreateGroupUiState) {
     }
 }
 
+// Why: "Ninguém precisa ter o app agora"; a name may repeat another member's (beta feedback 3, item 29).
 @Composable
-private fun MembersNoticesSection(
-    state: CreateGroupUiState,
-    onEvent: (CreateGroupUiEvent) -> Unit,
-) {
-    if (state.takenName != null) {
-        TakenNameMessage(
-            takenName = state.takenName.orEmpty(),
-            suggestions = state.nicknameSuggestions,
-            onEvent = onEvent,
-        )
-    }
-    if (state.showsNoAppNotice) {
-        Text(
-            text = stringResource(R.string.create_group_no_app_notice),
-            modifier = Modifier.padding(
-                start = 20.dp,
-                end = 20.dp,
-                top = 8.dp,
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+private fun NoAppNoticeText() {
+    Text(
+        text = stringResource(R.string.create_group_no_app_notice),
+        modifier = Modifier.padding(
+            start = 20.dp,
+            end = 20.dp,
+            top = 8.dp,
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable
@@ -509,10 +495,7 @@ private fun CurrencyRow(
 private fun CreateGroupPreview() {
     BlitzSplitTheme {
         CreateGroupContent(
-            state = buildPreviewState(
-                draft = "",
-                takenName = null,
-            ),
+            state = buildPreviewState(draft = ""),
             photoPickers = previewPhotoPickers,
             isDialog = false,
             onEvent = {},
@@ -520,26 +503,7 @@ private fun CreateGroupPreview() {
     }
 }
 
-@DevicePreviews
-@Composable
-private fun CreateGroupTakenNamePreview() {
-    BlitzSplitTheme {
-        CreateGroupContent(
-            state = buildPreviewState(
-                draft = "Ana",
-                takenName = "Ana",
-            ),
-            photoPickers = previewPhotoPickers,
-            isDialog = false,
-            onEvent = {},
-        )
-    }
-}
-
-private fun buildPreviewState(
-    draft: String,
-    takenName: String?,
-): CreateGroupUiState = CreateGroupUiState(
+private fun buildPreviewState(draft: String): CreateGroupUiState = CreateGroupUiState(
     name = "Viagem Floripa",
     initials = previewInitialsOf("Viagem Floripa"),
     color = AvatarColor.PEACH,
@@ -557,8 +521,6 @@ private fun buildPreviewState(
         CreateGroupMember("4", "Carla", previewInitialsOf("Carla"), AvatarColor.LILAC, isMe = false),
     ),
     draft = draft,
-    takenName = takenName,
-    nicknameSuggestions = if (takenName == null) emptyList() else listOf("Ana P.", "Ana 2"),
     isCreating = false,
     showsCreateError = false,
 )

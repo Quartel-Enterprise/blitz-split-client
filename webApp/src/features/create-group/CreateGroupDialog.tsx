@@ -223,7 +223,6 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
               value={draft}
               placeholder={t('createGroup_addPlaceholder')}
               aria-label={t('createGroup_addPlaceholder')}
-              aria-invalid={state.takenName != null}
               autoComplete="off"
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
@@ -240,22 +239,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
             </Button>
           </li>
         </ul>
-        {state.takenName != null && (
-          <div role="alert" className="flex flex-col gap-2">
-            <p className="flex items-center gap-1.5 text-sm text-destructive">
-              <CircleAlert className="size-4 shrink-0" />
-              {t('createGroup_nameTaken', { name: state.takenName })}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {state.nicknameSuggestions.map((suggestion) => (
-                <Button key={suggestion} type="button" variant="outline" size="sm" onClick={() => presenter.useSuggestion(suggestion)}>
-                  {t('createGroup_useNickname', { name: suggestion })}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-        {state.showsNoAppNotice && <p className="text-sm text-muted-foreground">{t('createGroup_noAppNotice')}</p>}
+        <p className="text-sm text-muted-foreground">{t('createGroup_noAppNotice')}</p>
       </section>
     </form>
   )

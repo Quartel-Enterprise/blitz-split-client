@@ -78,29 +78,11 @@ class MemberNameEditorTest {
         assertFalse(canSave)
     }
 
-    @Test
-    fun `GIVEN a name another member has WHEN reading the editor THEN it cannot save`() {
-        // Given
-        val editor = editor(
-            draft = "ana",
-            takenName = "Ana",
-        )
-
-        // When
-        val canSave = editor.canSave
-
-        // Then
-        assertFalse(canSave)
-    }
-
     private fun editor(
         memberId: String? = null,
         draft: String = "Diego",
-        takenName: String? = null,
     ): MemberNameEditor = MemberNameEditor(
         memberId = memberId,
         draft = draft,
-        takenName = takenName,
-        nicknameSuggestions = if (takenName == null) emptyList() else listOf("$takenName P.", "$takenName 2"),
     )
 }

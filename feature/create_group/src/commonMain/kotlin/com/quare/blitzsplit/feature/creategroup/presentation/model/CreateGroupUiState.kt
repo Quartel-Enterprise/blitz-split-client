@@ -28,10 +28,6 @@ data class CreateGroupUiState(
     val members: List<CreateGroupMember>,
     // Why: what is typed in "Adicionar pelo nome", not a member yet.
     val draft: String,
-    // Why: "Já tem uma Ana no grupo", the member the draft repeats as the group spells it, null while it repeats none.
-    val takenName: String?,
-    // Why: "Usar “Ana P.”" and "Usar “Ana 2”", the free nicknames while the draft repeats a name.
-    val nicknameSuggestions: List<String>,
     val isCreating: Boolean,
     // Why: the device couldn't save the group; cleared by the next try.
     val showsCreateError: Boolean,
@@ -54,19 +50,14 @@ data class CreateGroupUiState(
         get() = photo == null && !isPreparingPhoto
 
     val canAddMember: Boolean
-        get() = MemberNameRules.isLongEnough(draft) && takenName == null
+        get() = MemberNameRules.isLongEnough(draft)
 
-    // Why: a draft typed and not added yet goes in with the group, so a repeated or single letter one holds it back.
+    // Why: a draft typed and not added yet goes in with the group, so a single letter one holds it back.
     val canCreate: Boolean
         get() = name.isNotBlank() &&
             members.isNotEmpty() &&
             (draft.isBlank() || MemberNameRules.isLongEnough(draft)) &&
-            takenName == null &&
             !isPreparingPhoto &&
             photoCrop == null &&
             !isCreating
-
-    // Why: "Ninguém precisa ter o app agora", which the repeated name's warning takes the place of.
-    val showsNoAppNotice: Boolean
-        get() = takenName == null
 }

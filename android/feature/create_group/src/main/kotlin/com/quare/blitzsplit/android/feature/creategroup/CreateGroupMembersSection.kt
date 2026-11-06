@@ -4,7 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -17,12 +16,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -158,9 +155,7 @@ private fun AddMemberRow(
     onEvent: (CreateGroupUiEvent) -> Unit,
     shape: RoundedCornerShape,
 ) {
-    val isTaken = state.takenName != null
     Surface(
-        modifier = if (isTaken) Modifier.border(2.dp, MaterialTheme.colorScheme.error, shape) else Modifier,
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
@@ -225,47 +220,6 @@ private fun AddMemberRow(
                 onClick = { onEvent(CreateGroupUiEvent.OnAddMemberClicked) },
                 enabled = state.canAddMember,
             ) { Text(stringResource(R.string.create_group_add)) }
-        }
-    }
-}
-
-@Composable
-internal fun TakenNameMessage(
-    takenName: String,
-    suggestions: List<String>,
-    onEvent: (CreateGroupUiEvent) -> Unit,
-) {
-    Column(
-        modifier = Modifier.padding(
-            start = 20.dp,
-            end = 20.dp,
-            top = 8.dp,
-        ),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.ErrorOutline,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.error,
-            )
-            Text(
-                text = stringResource(R.string.create_group_name_taken, takenName),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
-            )
-        }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            suggestions.forEach { suggestion ->
-                OutlinedButton(
-                    onClick = { onEvent(CreateGroupUiEvent.OnSuggestionClicked(suggestion)) },
-                    shape = MaterialTheme.shapes.small,
-                ) { Text(stringResource(R.string.create_group_use_nickname, suggestion)) }
-            }
         }
     }
 }

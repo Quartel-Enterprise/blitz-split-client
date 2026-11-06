@@ -55,6 +55,7 @@ class JoinInviteViewModel(
                 groupName = "",
                 groupInitials = "",
                 groupColor = AvatarColor.default,
+                groupPhotoUrl = null,
                 creatorName = null,
                 members = emptyList(),
                 displayLink = InviteLink.displayOf(
@@ -165,6 +166,7 @@ class JoinInviteViewModel(
                 groupName = invite.groupName,
                 groupInitials = Initials.of(invite.groupName),
                 groupColor = invite.groupColor,
+                groupPhotoUrl = invite.groupPhotoUrl,
                 creatorName = invite.creatorName,
                 members = invite.members.map { member -> member.toJoinMember() },
                 personalMember = personalMemberOf(invite)?.toJoinMember(),
@@ -249,7 +251,6 @@ class JoinInviteViewModel(
 
             JoinOutcome.MemberTaken,
             JoinOutcome.MemberGone,
-            JoinOutcome.NameTaken,
             JoinOutcome.InvalidLink,
             -> load()
         }

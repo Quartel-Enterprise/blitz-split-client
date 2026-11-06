@@ -166,6 +166,7 @@ class InviteViewModel(
         avatarColor = member.avatarColor,
         isMe = member.isMe,
         hasJoined = member.hasJoined,
+        photoUrl = member.photoUrl,
     )
 
     private fun copy() {

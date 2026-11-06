@@ -8,10 +8,13 @@ import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeInviteRepository
+import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
@@ -21,6 +24,7 @@ import com.quare.blitzsplit.feature.join.presentation.model.NewMemberDraft
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -40,6 +44,8 @@ class JoinPickViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var invites: FakeInviteRepository
     private lateinit var navigator: BackStackNavigator
+    private lateinit var accountStatuses: MutableStateFlow<AccountStatus>
+    private lateinit var profiles: MutableStateFlow<UserProfile?>
     private lateinit var viewModel: JoinPickViewModel
     private val actions = mutableListOf<JoinPickUiAction>()
     private val selectedWhenTracked = mutableListOf<String?>()
@@ -543,7 +549,6 @@ class JoinPickViewModelTest {
         assertEquals(
             NewMemberDraft(
                 name = "",
-                isNameTaken = false,
             ),
             viewModel.uiState.value.newMember,
         )
@@ -563,30 +568,11 @@ class JoinPickViewModelTest {
         assertEquals(
             NewMemberDraft(
                 name = "Daniel",
-                isNameTaken = false,
             ),
             viewModel.uiState.value.newMember,
         )
         assertTrue(viewModel.uiState.value.canJoinAsNewMember)
     }
-
-    @Test
-    fun `GIVEN the new member draft WHEN typing Ana in other case and spacing THEN the name is taken`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
-
-            // When
-            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("  aNA "))
-
-            // Then
-            assertTrue(
-                viewModel.uiState.value.newMember
-                    ?.isNameTaken == true,
-            )
-            assertFalse(viewModel.uiState.value.canJoinAsNewMember)
-        }
 
     @Test
     fun `GIVEN the new member draft WHEN typing only spaces THEN cannot join`() = runTest(testDispatcher) {
@@ -598,10 +584,6 @@ class JoinPickViewModelTest {
         viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("   "))
 
         // Then
-        assertFalse(
-            viewModel.uiState.value.newMember
-                ?.isNameTaken == true,
-        )
         assertFalse(viewModel.uiState.value.canJoinAsNewMember)
     }
 
@@ -651,68 +633,18 @@ class JoinPickViewModelTest {
         }
 
     @Test
-    fun `GIVEN a name already in the group WHEN confirming THEN nothing is sent`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(joinOutcome = JoinOutcome.Joined(GROUP_ID))
-        viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
-        viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Ana"))
-
-        // When
-        viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
-
-        // Then
-        assertTrue(invites.joins.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN the server found Daniel taken WHEN the reload lists no Daniel THEN keeps the name taken`() =
+    fun `GIVEN a name already in the group WHEN confirming THEN joins as a new member with that name`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(joinOutcome = JoinOutcome.NameTaken)
+            prepareScenario(joinOutcome = JoinOutcome.Joined(GROUP_ID))
             viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
-            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged(" aNA "))
 
             // When
             viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
 
             // Then
-            assertEquals(
-                NewMemberDraft(
-                    name = "Daniel",
-                    isNameTaken = true,
-                ),
-                viewModel.uiState.value.newMember,
-            )
-        }
-
-    @Test
-    fun `GIVEN someone joined as Daniel meanwhile WHEN confirming Daniel THEN flags the name as taken and reloads`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(joinOutcome = JoinOutcome.NameTaken)
-            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
-            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
-            val daniel = InviteMember("member-5", "Daniel", AvatarColor.SAND, hasJoined = true)
-            invites.invite = trip.copy(members = trip.members + daniel)
-
-            // When
-            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
-
-            // Then
-            assertEquals(
-                NewMemberDraft(
-                    name = "Daniel",
-                    isNameTaken = true,
-                ),
-                viewModel.uiState.value.newMember,
-            )
-            assertFalse(viewModel.uiState.value.canJoinAsNewMember)
-            assertEquals(2, invites.fetchedCodes.size)
-            assertEquals(
-                listOf("Pierre", "Ana", "Daniel"),
-                viewModel.uiState.value.joined
-                    .map { it.name },
-            )
+            assertEquals(listOf(JoinChoice.AsNewMember("aNA")), invites.joins.map { it.choice })
         }
 
     @Test
@@ -882,7 +814,7 @@ class JoinPickViewModelTest {
         }
 
     @Test
-    fun `GIVEN a name already in the group WHEN confirming the new member THEN still sends the confirmed event`() =
+    fun `GIVEN a name already in the group WHEN confirming the new member THEN sends the confirmed event and joins`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -900,7 +832,7 @@ class JoinPickViewModelTest {
                 ),
                 trackedEvents,
             )
-            assertEquals(0, joinCalls)
+            assertEquals(1, joinCalls)
         }
 
     @Test
@@ -916,10 +848,536 @@ class JoinPickViewModelTest {
         assertEquals(listOf("join_pick_not_in_list_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
-    private val pierre = InviteMember("member-1", "Pierre", AvatarColor.BLUE, hasJoined = true)
-    private val ana = InviteMember(ANA_ID, "Ana", AvatarColor.PEACH, hasJoined = true)
-    private val bruno = InviteMember(BRUNO_ID, "Bruno", AvatarColor.GREEN, hasJoined = false)
-    private val carla = InviteMember(CARLA_ID, "Carla", AvatarColor.LILAC, hasJoined = false)
+    @Test
+    fun `GIVEN members with photos WHEN the screen opens THEN each member keeps the photo of whoever joined as them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                invite = trip.copy(
+                    members = listOf(
+                        pierre.copy(photoUrl = PIERRE_PHOTO),
+                        ana,
+                        bruno,
+                        carla,
+                    ),
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(PIERRE_PHOTO, null, null, null), state.members.map { it.photoUrl })
+        }
+
+    @Test
+    fun `GIVEN a Google account named Daniel WHEN tapping not in the list THEN joins as Daniel and opens the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(listOf(JoinChoice.AsNewMember("Daniel")), invites.joins.map { it.choice })
+            assertEquals(listOf(CODE), invites.joins.map { it.code })
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = "Daniel",
+                        tab = GroupTab.EXPENSES,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a Google account named Daniel WHEN tapping not in the list THEN the new name sheet never opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+                joinGate = CompletableDeferred(),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.newMember)
+        }
+
+    @Test
+    fun `GIVEN an Apple account named Daniel WHEN tapping not in the list THEN joins as Daniel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = apple,
+                profile = profile("Daniel"),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(listOf(JoinChoice.AsNewMember("Daniel")), invites.joins.map { it.choice })
+            assertNull(viewModel.uiState.value.newMember)
+        }
+
+    @Test
+    fun `GIVEN a Google name with extra spaces WHEN tapping not in the list THEN joins trimmed with single spaces`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("  Daniel   Souza "),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(listOf(JoinChoice.AsNewMember("Daniel Souza")), invites.joins.map { it.choice })
+        }
+
+    @Test
+    fun `GIVEN a Google name past the limit WHEN tapping not in the list THEN joins with the first 40 letters`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("D".repeat(45)),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(listOf(JoinChoice.AsNewMember("D".repeat(40))), invites.joins.map { it.choice })
+        }
+
+    @Test
+    fun `GIVEN an anonymous account with a profile WHEN tapping not in the list THEN opens an empty draft`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = anonymous,
+                profile = profile("Daniel"),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(NewMemberDraft(name = ""), viewModel.uiState.value.newMember)
+            assertEquals(0, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN a local only account with a profile WHEN tapping not in the list THEN opens an empty draft`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = AccountStatus.LocalOnly,
+                profile = profile("Daniel"),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(NewMemberDraft(name = ""), viewModel.uiState.value.newMember)
+            assertEquals(0, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN a Google account with no profile WHEN tapping not in the list THEN opens an empty draft`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = null,
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(NewMemberDraft(name = ""), viewModel.uiState.value.newMember)
+            assertEquals(0, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN a Google account named with a single letter WHEN tapping not in the list THEN opens an empty draft`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile(" D "),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(NewMemberDraft(name = ""), viewModel.uiState.value.newMember)
+            assertEquals(0, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN Google connected while the list is open WHEN tapping not in the list THEN joins as the profile name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = AccountStatus.LocalOnly,
+                profile = null,
+            )
+            accountStatuses.value = google
+            profiles.value = profile("Daniel")
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(listOf(JoinChoice.AsNewMember("Daniel")), invites.joins.map { it.choice })
+            assertNull(viewModel.uiState.value.newMember)
+        }
+
+    @Test
+    fun `GIVEN the profile renamed while the list is open WHEN tapping not in the list THEN joins as the new name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+            )
+            profiles.value = profile("Dani")
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(listOf(JoinChoice.AsNewMember("Dani")), invites.joins.map { it.choice })
+        }
+
+    @Test
+    fun `GIVEN Google signed out while the list is open WHEN tapping not in the list THEN opens an empty draft`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+            )
+            accountStatuses.value = anonymous
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(NewMemberDraft(name = ""), viewModel.uiState.value.newMember)
+            assertEquals(0, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN a Google account join on its way WHEN reading the screen THEN it shows a new member join`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+                joinGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isJoining)
+            assertTrue(state.isJoiningAsNewMember)
+            assertFalse(state.canJoin)
+        }
+
+    @Test
+    fun `GIVEN a Google account join on its way WHEN tapping not in the list again THEN joins only once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+                joinGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(1, joinCalls)
+            assertNull(viewModel.uiState.value.newMember)
+        }
+
+    @Test
+    fun `GIVEN Google and no internet WHEN tapping not in the list THEN shows the join error and stays usable`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+                joinError = IllegalStateException("offline"),
+            )
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf<JoinPickUiAction>(JoinPickUiAction.ShowJoinError), actions)
+            assertFalse(state.isJoining)
+            assertFalse(state.isJoiningAsNewMember)
+            assertNull(state.newMember)
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.JoinInvite(
+                        CODE,
+                        memberCode = null,
+                        inviterCode = null,
+                    ),
+                    Route.JoinPick(CODE),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a Google account join failed WHEN tapping not in the list again THEN joins again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = google,
+                profile = profile("Daniel"),
+                joinError = IllegalStateException("offline"),
+            )
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+
+            // Then
+            assertEquals(2, joinCalls)
+        }
+
+    @Test
+    fun `GIVEN a join as Bruno on its way WHEN reading the screen THEN it is not a new member join`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinGate = CompletableDeferred())
+            viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(BRUNO_ID))
+            viewModel.onEvent(JoinPickUiEvent.OnJoinClicked)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isJoining)
+            assertFalse(state.isJoiningAsNewMember)
+        }
+
+    @Test
+    fun `GIVEN Daniel typed WHEN the new member join is on its way THEN it shows a new member join`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinGate = CompletableDeferred())
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isJoining)
+            assertTrue(state.isJoiningAsNewMember)
+            assertFalse(state.canJoinAsNewMember)
+        }
+
+    @Test
+    fun `GIVEN a new member join on its way WHEN it ends without opening the group THEN nothing shows a join`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                joinOutcome = JoinOutcome.MemberGone,
+                joinGate = gate,
+            )
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isJoining)
+            assertFalse(viewModel.uiState.value.isJoiningAsNewMember)
+        }
+
+    @Test
+    fun `GIVEN a join as Bruno on its way WHEN Bruno turns out taken THEN nothing shows a join`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                joinOutcome = JoinOutcome.MemberTaken,
+                joinGate = gate,
+            )
+            viewModel.onEvent(JoinPickUiEvent.OnMemberSelected(BRUNO_ID))
+            viewModel.onEvent(JoinPickUiEvent.OnJoinClicked)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isJoining)
+            assertFalse(viewModel.uiState.value.isJoiningAsNewMember)
+        }
+
+    @Test
+    fun `GIVEN a new member join on its way WHEN dismissing the sheet THEN the sheet stays with Daniel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinGate = CompletableDeferred())
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberDismissed)
+
+            // Then
+            assertEquals(NewMemberDraft(name = "Daniel"), viewModel.uiState.value.newMember)
+        }
+
+    @Test
+    fun `GIVEN a new member join on its way WHEN typing another name THEN the name sent stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinGate = CompletableDeferred())
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Danilo"))
+
+            // Then
+            assertEquals(NewMemberDraft(name = "Daniel"), viewModel.uiState.value.newMember)
+        }
+
+    @Test
+    fun `GIVEN a new member join on its way WHEN confirming again THEN joins only once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(joinGate = CompletableDeferred())
+        viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+        viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+        viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+        // Then
+        assertEquals(1, joinCalls)
+    }
+
+    @Test
+    fun `GIVEN no internet WHEN confirming Daniel THEN shows the join error and keeps the sheet with Daniel`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(joinError = IllegalStateException("offline"))
+            viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+            viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+
+            // When
+            viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf<JoinPickUiAction>(JoinPickUiAction.ShowJoinError), actions)
+            assertEquals(NewMemberDraft(name = "Daniel"), state.newMember)
+            assertFalse(state.isJoining)
+            assertFalse(state.isJoiningAsNewMember)
+            assertTrue(state.canJoinAsNewMember)
+        }
+
+    @Test
+    fun `GIVEN a new member join failed WHEN dismissing the sheet THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(joinError = IllegalStateException("offline"))
+        viewModel.onEvent(JoinPickUiEvent.OnNotInListClicked)
+        viewModel.onEvent(JoinPickUiEvent.OnNewNameChanged("Daniel"))
+        viewModel.onEvent(JoinPickUiEvent.OnNewMemberConfirmed)
+
+        // When
+        viewModel.onEvent(JoinPickUiEvent.OnNewMemberDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.newMember)
+    }
+
+    private val pierre = InviteMember(
+        "member-1",
+        "Pierre",
+        AvatarColor.BLUE,
+        hasJoined = true,
+        photoUrl = null,
+    )
+    private val ana = InviteMember(
+        ANA_ID,
+        "Ana",
+        AvatarColor.PEACH,
+        hasJoined = true,
+        photoUrl = null,
+    )
+    private val bruno = InviteMember(
+        BRUNO_ID,
+        "Bruno",
+        AvatarColor.GREEN,
+        hasJoined = false,
+        photoUrl = null,
+    )
+    private val carla = InviteMember(
+        CARLA_ID,
+        "Carla",
+        AvatarColor.LILAC,
+        hasJoined = false,
+        photoUrl = null,
+    )
+
+    private val anonymous = AccountStatus.Anonymous(userId = "user-1")
+    private val google = AccountStatus.Connected(
+        userId = "user-1",
+        provider = AccountProvider.GOOGLE,
+    )
+    private val apple = AccountStatus.Connected(
+        userId = "user-1",
+        provider = AccountProvider.APPLE,
+    )
+
+    private fun profile(displayName: String): UserProfile = UserProfile(
+        displayName = displayName,
+        avatarColor = AvatarColor.BLUE,
+        photo = null,
+    )
 
     private val trip = Invite(
         code = CODE,
@@ -927,6 +1385,7 @@ class JoinPickViewModelTest {
         groupName = "Viagem Floripa",
         groupType = GroupType.TRIP,
         groupColor = AvatarColor.GREEN,
+        groupPhotoUrl = null,
         currency = GroupCurrency.BRL,
         creatorName = "Pierre",
         isMember = false,
@@ -943,7 +1402,11 @@ class JoinPickViewModelTest {
         joinError: Throwable? = null,
         joinGate: CompletableDeferred<Unit>? = null,
         root: Route = Route.Home,
+        accountStatus: AccountStatus = anonymous,
+        profile: UserProfile? = null,
     ) {
+        accountStatuses = MutableStateFlow(accountStatus)
+        profiles = MutableStateFlow(profile)
         invites = FakeInviteRepository(
             invite = invite,
             joinOutcome = joinOutcome,
@@ -976,6 +1439,8 @@ class JoinPickViewModelTest {
                 invites.joinGroup(joined.code, choice, AvatarColor.default)
             },
             checkMemberName = CheckMemberNameUseCase(),
+            observeAccountStatus = { accountStatuses },
+            observeProfile = { profiles },
         )
         actions.clear()
         joinCalls = 0
@@ -988,5 +1453,6 @@ class JoinPickViewModelTest {
         const val ANA_ID = "member-2"
         const val BRUNO_ID = "member-3"
         const val CARLA_ID = "member-4"
+        const val PIERRE_PHOTO = "https://cdn.blitzsplit.com/avatars/pierre.jpg"
     }
 }

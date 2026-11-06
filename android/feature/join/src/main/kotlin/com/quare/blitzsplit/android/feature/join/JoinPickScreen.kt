@@ -33,6 +33,7 @@ fun JoinPickScreen(
         NewMemberSheet(
             draft = draft,
             canJoin = state.canJoinAsNewMember,
+            isJoining = state.isJoiningAsNewMember,
             onEvent = viewModel::onEvent,
         )
     }

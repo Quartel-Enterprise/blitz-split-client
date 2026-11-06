@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.join.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccountStatus
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
@@ -9,10 +10,12 @@ import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameCheck
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.JoinGroup
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiAction
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -32,6 +36,8 @@ class JoinPickViewModel(
     private val getInvite: GetInvite,
     private val joinGroup: JoinGroup,
     private val checkMemberName: CheckMemberName,
+    observeAccountStatus: ObserveAccountStatus,
+    observeProfile: ObserveProfile,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<JoinPickUiEvent>(trackEvent) {
     val uiState: StateFlow<JoinPickUiState>
@@ -45,6 +51,7 @@ class JoinPickViewModel(
                 creatorName = null,
                 newMember = null,
                 isJoining = false,
+                isJoiningAsNewMember = false,
             ),
         )
 
@@ -56,11 +63,16 @@ class JoinPickViewModel(
 
     private var invite: Invite? = null
 
-    // Why: a name the server found taken stays taken, even where its comparison differs from this device's.
-    private var rejectedName: String? = null
+    // Why: the profile's name while a Google or Apple account is signed in, which "Não estou na lista" joins as.
+    private var accountName: String? = null
 
     init {
         viewModelScope.launch { load() }
+        viewModelScope.launch {
+            combine(observeAccountStatus(), observeProfile()) { status, profile ->
+                profile?.displayName?.takeIf { status is AccountStatus.Connected }
+            }.collect { accountName = it }
+        }
     }
 
     override fun handleEvent(event: JoinPickUiEvent) {
@@ -71,7 +83,7 @@ class JoinPickViewModel(
             JoinPickUiEvent.OnNotInListClicked -> openNewMember()
             is JoinPickUiEvent.OnNewNameChanged -> changeNewName(event.name)
             JoinPickUiEvent.OnNewMemberConfirmed -> joinAsNewMember()
-            JoinPickUiEvent.OnNewMemberDismissed -> uiState.update { it.copy(newMember = null) }
+            JoinPickUiEvent.OnNewMemberDismissed -> dismissNewMember()
         }
     }
 
@@ -105,7 +117,6 @@ class JoinPickViewModel(
                 creatorName = invite.creatorName,
             )
         }
-        checkNewName()
     }
 
     // Why: not while a join is on its way, or a taken member's notice would name the newly picked one.
@@ -128,53 +139,61 @@ class JoinPickViewModel(
         if (state.canJoin) join(JoinChoice.AsMember(memberId))
     }
 
+    /*
+     * Why: a Google or Apple account already has a name and a photo, so it joins as a new member with them at once
+     * (beta feedback 3, item 22). An anonymous or local only one, or a profile name too short for a member, picks a
+     * name in "Entrar com outro nome".
+     */
     private fun openNewMember() {
-        uiState.update {
-            it.copy(
-                newMember = NewMemberDraft(
-                    name = "",
-                    isNameTaken = false,
-                ),
-            )
+        if (uiState.value.isJoining) return
+        val name = accountName?.let(::availableNameOf)?.let { GroupNameRules.toCapped(it).trimEnd() }
+        if (name != null) {
+            join(JoinChoice.AsNewMember(name))
+        } else {
+            uiState.update { it.copy(newMember = NewMemberDraft(name = "")) }
         }
     }
 
+    // Why: the name the sheet is joining as stays put until the server answers.
     private fun changeNewName(name: String) {
+        if (uiState.value.isJoining) return
         uiState.update { state ->
             state.copy(newMember = state.newMember?.copy(name = GroupNameRules.toCapped(name)))
         }
-        checkNewName()
     }
 
-    private fun checkNewName() {
-        val draft = uiState.value.newMember ?: return
-        val check = checkOf(draft.name)
-        val isTaken =
-            check is MemberNameCheck.Taken ||
-                (rejectedName != null && (check as? MemberNameCheck.Available)?.name == rejectedName)
-        uiState.update { state -> state.copy(newMember = state.newMember?.copy(isNameTaken = isTaken)) }
+    // Why: a join on its way keeps its sheet, whose button shows it, until the server answers.
+    private fun dismissNewMember() {
+        if (!uiState.value.isJoining) uiState.update { it.copy(newMember = null) }
     }
 
+    // Why: the name may repeat a member's (beta feedback 3, item 29): people are told apart by their ids.
     private fun joinAsNewMember() {
         val draft = uiState.value.newMember ?: return
-        val check = checkOf(draft.name) as? MemberNameCheck.Available ?: return
-        if (uiState.value.canJoinAsNewMember) join(JoinChoice.AsNewMember(check.name))
+        val name = availableNameOf(draft.name) ?: return
+        if (uiState.value.canJoinAsNewMember) join(JoinChoice.AsNewMember(name))
     }
 
-    private fun checkOf(name: String): MemberNameCheck = checkMemberName(
-        name = name,
-        takenNames = uiState.value.members.map { it.name },
-        adderName = "",
-    )
+    private fun availableNameOf(name: String): String? = (checkMemberName(name) as? MemberNameCheck.Available)?.name
 
     private fun join(choice: JoinChoice) {
         val invite = invite ?: return
-        uiState.update { it.copy(isJoining = true) }
+        uiState.update {
+            it.copy(
+                isJoining = true,
+                isJoiningAsNewMember = choice is JoinChoice.AsNewMember,
+            )
+        }
         viewModelScope.launch {
             joinGroup(invite, choice)
                 .onSuccess { outcome -> handle(outcome, choice) }
                 .onFailure { uiAction.emit(JoinPickUiAction.ShowJoinError) }
-            uiState.update { it.copy(isJoining = false) }
+            uiState.update {
+                it.copy(
+                    isJoining = false,
+                    isJoiningAsNewMember = false,
+                )
+            }
         }
     }
 
@@ -202,12 +221,6 @@ class JoinPickViewModel(
 
             JoinOutcome.MemberGone -> {
                 uiState.update { it.copy(selectedMemberId = null) }
-                load()
-            }
-
-            JoinOutcome.NameTaken -> {
-                rejectedName = (choice as? JoinChoice.AsNewMember)?.name
-                uiState.update { state -> state.copy(newMember = state.newMember?.copy(isNameTaken = true)) }
                 load()
             }
 

@@ -12,4 +12,6 @@ data class InviteMember(
     val isMe: Boolean,
     // Why: "Entrou" once someone opened the link and picked this member, "Não entrou" until then.
     val hasJoined: Boolean,
+    // Why: the member's profile photo, this device's own for its user, drawn over the initials; null for none.
+    val photoUrl: String?,
 )

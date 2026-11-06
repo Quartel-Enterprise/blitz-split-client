@@ -9,4 +9,6 @@ data class InviteMemberDto(
     @SerialName("name") val name: String,
     @SerialName("avatar_color") val avatarColor: String,
     @SerialName("has_joined") val hasJoined: Boolean,
+    // Why: null for no photo.
+    @SerialName("photo_url") val photoUrl: String?,
 )

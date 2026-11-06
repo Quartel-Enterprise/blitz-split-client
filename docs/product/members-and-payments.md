@@ -7,7 +7,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     beside "Share", so both ways in sit together: under the link on Android and on a web phone, a row of its own under
     it on iOS, beside Share on the Mac and the web. The group's main button stays "Split a bill" on Members, as on
     Expenses and Balances, so it never changes under the person. "Has the app? Invite with the link" in Add person
-    closes it and opens Invite, for someone who would rather join and pick their own name), but only a member who hasn't joined can be removed ("Remove from group" is disabled for someone
+    closes it and opens Invite, for someone who would rather join and pick their own name; a name may repeat another
+    member's, as everywhere, beta feedback 3 item 29), but only a member who hasn't joined can be removed ("Remove from group" is disabled for someone
     who joined),
     after confirming "Remove Carla from the group?" (`MembersUiState.memberToRemove`). "Personal invite for Carla" (the
     menu of someone nobody joined as, disabled until the sync brings their code, then offline too) shows their

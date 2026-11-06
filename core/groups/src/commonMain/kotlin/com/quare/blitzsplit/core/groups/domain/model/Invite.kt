@@ -11,6 +11,8 @@ data class Invite(
     val groupName: String,
     val groupType: GroupType,
     val groupColor: AvatarColor,
+    // Why: the group's photo, drawn in place of its color and initials; null for none.
+    val groupPhotoUrl: String?,
     val currency: GroupCurrency,
     // Why: the name of the creator's member, null once that account was deleted.
     val creatorName: String?,
