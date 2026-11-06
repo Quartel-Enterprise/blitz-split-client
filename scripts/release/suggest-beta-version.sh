@@ -13,7 +13,7 @@
 # when the merge-back of the previous one did not reach main. It needs the GitHub CLI and a token (GH_TOKEN),
 # which the workflow has; run locally without one, only the file counts.
 #
-# Inside GitHub Actions, writes `version`, `display_version`, `version_code` and `branch` to
+# Inside GitHub Actions, writes `display_version`, `version_code` and `branch` to
 # $GITHUB_OUTPUT and a human-readable plan to $GITHUB_STEP_SUMMARY.
 set -euo pipefail
 
@@ -62,8 +62,8 @@ if (( recorded >= version_code )); then
   version_code=$(( recorded + 1 ))
 fi
 
-# Apple refuses a suffixed version string, so only the tag, the GitHub release and the Android
-# versionName carry the suffix.
+# The beta number is one past the highest X.Y.Z-beta_N tag. The suffixed version goes into the tag, the GitHub
+# release and every platform's versionName; iosApp/generate-project.sh drops the suffix from Apple's version string.
 last_beta="$(git tag --list "${version}-beta_*" | sed "s/^${version}-beta_//" | grep -E '^[0-9]+$' | sort -n | tail -1 || true)"
 display_version="${version}-beta_$(( ${last_beta:-0} + 1 ))"
 # One branch for every merge-back: a pull request a failed run left open is rebuilt by the next one, not
@@ -74,7 +74,6 @@ echo "Resolved version: ${display_version} (versionCode ${version_code})"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
-    echo "version=${version}"
     echo "display_version=${display_version}"
     echo "version_code=${version_code}"
     echo "branch=${branch}"
@@ -88,7 +87,7 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "| Field | Value |"
     echo "|---|---|"
     echo "| Tag and release | \`${display_version}\` |"
-    echo "| Version name | \`${version}\` (Android: \`${display_version}\`) |"
+    echo "| Version name | \`${display_version}\` (Apple version string: \`${version}\`) |"
     echo "| Version code | \`${version_code}\` |"
     echo "| Merge-back branch | \`${branch}\` |"
   } >> "$GITHUB_STEP_SUMMARY"

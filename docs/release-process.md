@@ -56,7 +56,7 @@ dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch whi
 | --- | --- |
 | Tag and GitHub release | `3.0.0-beta_7` (no `v`, an underscore before the number) |
 | Android `versionName` | `3.0.0-beta_7` |
-| Apple version string (iOS and macOS) | `3.0.0`: Apple refuses a suffix, so a beta is told apart by its build number |
+| Apple version string (iOS and macOS) | `3.0.0`: Apple refuses a suffix, so a beta is told apart by its build number. Profile still shows `3.0.0-beta_7`, from the Info.plist's `BlitzSplitVersionName` ([generate-project.sh](../iosApp/generate-project.sh)) |
 | `versionCode`, and the Apple build number | the file's value plus one, on every beta |
 
 [`version.properties`](../version.properties) stays the single source. A beta never changes its `versionName`: that
