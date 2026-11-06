@@ -110,6 +110,13 @@ fun GroupDetailScreen(
             onEvent = viewModel::onEvent,
         )
     }
+    state.paymentToView?.let { payment ->
+        PaymentDetailsSheet(
+            payment = payment,
+            money = rememberMoneyFormatter(state.header.currency),
+            onEvent = viewModel::onEvent,
+        )
+    }
     if (state.paymentToDelete != null) {
         DeletePaymentDialog(onEvent = viewModel::onEvent)
     }

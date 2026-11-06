@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { PageKeyContext, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
@@ -20,7 +21,7 @@ import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
 import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
 import { t } from '@/i18n'
-import { formatTime } from '@/lib/dates'
+import { formatShortDate, formatTime } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
 import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
@@ -32,8 +33,8 @@ import { DayRow, DayRowGroup, DayRowsTable, ExpenseLine } from './ExpenseRows'
  * The group's page (header, balance card, tabs), drawn once over the tab picked, which only swaps what is under the
  * tabs: "Despesas do grupo" (the bills and the payments that settled its debts by day, newest first), Saldos or
  * Membros. A bill opens "Conta" over it, and its ⋮ (or a right click) offers Conta's options without opening it; a
- * payment asks "Apagar este acerto?", from its ⋮ too. A bill someone else deleted while it was
- * open, and a payment just recorded, say so here.
+ * payment opens its details, whose "Apagar" asks "Apagar este acerto?", as its ⋮ does. A bill someone else deleted
+ * while it was open, and a payment just recorded, say so here.
  */
 export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new GroupDetailPresenter(route))
@@ -90,6 +91,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
             <SkeletonRows count={4} className="rounded-xl border bg-card" />
           </LoadingRegion>
         ))}
+      {state.paymentToView && <PaymentDetailsDialog presenter={presenter} payment={state.paymentToView} state={state} />}
       {state.paymentToDelete && (
         <ConfirmDialog
           title={t('payment_deleteTitle')}
@@ -205,13 +207,9 @@ function ExpenseRowItem({ presenter, expense, state }: { presenter: GroupDetailP
   )
 }
 
-/** "Ana te pagou · 12:10 · Acerto · Pix", the amount and the "acerto" tag; tapping it, or its ⋮'s "Apagar", asks to delete it. */
+/** "Ana te pagou · 12:10 · Acerto · Pix", the amount and the "acerto" tag; tapping it opens its details, its ⋮'s "Apagar" asks to delete it. */
 function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailPresenter; payment: JsPaymentRow; state: JsGroupDetailState }) {
-  const title = payment.toIsMe
-    ? t('payment_paidYou', { name: nameOrFormer(payment.fromName) })
-    : payment.fromIsMe
-      ? t('payment_youPaid', { name: nameOrFormer(payment.toName) })
-      : t('payment_paid', { from: nameOrFormer(payment.fromName), to: nameOrFormer(payment.toName) })
+  const title = paymentTitle(payment)
   return (
     <DayRow
       id={payment.id}
@@ -221,10 +219,50 @@ function PaymentRowItem({ presenter, payment, state }: { presenter: GroupDetailP
       amount={formatMoney(payment.amountMinor, state.header.currency, state.header.fractionDigits)}
       isPending={payment.isPending}
       onOpen={() => presenter.openPayment(payment.id)}
-      options={[{ icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.openPayment(payment.id) }]}
+      options={[{ icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.askToDeletePayment(payment.id) }]}
       trailing={
         <span className="inline-flex h-5 items-center rounded-full border px-2 text-[11px] font-medium text-muted-foreground">{t('payment_tag')}</span>
       }
     />
+  )
+}
+
+/** "Ana te pagou", "Você pagou Bruno" or "Diego pagou Bruno"; "Ex-membro" for someone no longer in the group. */
+function paymentTitle(payment: JsPaymentRow): string {
+  if (payment.toIsMe) return t('payment_paidYou', { name: nameOrFormer(payment.fromName) })
+  if (payment.fromIsMe) return t('payment_youPaid', { name: nameOrFormer(payment.toName) })
+  return t('payment_paid', { from: nameOrFormer(payment.fromName), to: nameOrFormer(payment.toName) })
+}
+
+/** What a tap on a payment opens instead of asking to delete it: the amount, when and how; Apagar still asks first. */
+function PaymentDetailsDialog({ presenter, payment, state }: { presenter: GroupDetailPresenter; payment: JsPaymentRow; state: JsGroupDetailState }) {
+  const title = paymentTitle(payment)
+  return (
+    <Dialog open onOpenChange={(open) => !open && presenter.dismissPaymentDetails()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>
+            {t('payment_detailsMeta', {
+              date: formatShortDate(payment.paidAt),
+              time: formatTime(payment.paidAt),
+              method: paymentMethodLabel(payment.method),
+            })}
+            {payment.isPending ? ` · ${t('groupDetail_pending')}` : ''}
+          </DialogDescription>
+        </DialogHeader>
+        <p className="text-3xl font-semibold tabular-nums">
+          {formatMoney(payment.amountMinor, state.header.currency, state.header.fractionDigits)}
+        </p>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => presenter.dismissPaymentDetails()}>
+            {t('common_close')}
+          </Button>
+          <Button variant="destructive" onClick={() => presenter.askToDeletePayment(payment.id)}>
+            {t('groupDetail_entryDelete')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

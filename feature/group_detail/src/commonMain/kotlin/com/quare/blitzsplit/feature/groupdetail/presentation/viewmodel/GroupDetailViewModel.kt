@@ -78,6 +78,7 @@ class GroupDetailViewModel(
                 header = emptyGroupHeader,
                 tab = route.tab,
                 days = emptyList(),
+                paymentToView = null,
                 paymentToDelete = null,
                 billToDelete = null,
                 isDeletingBill = false,
@@ -172,6 +173,14 @@ class GroupDetailViewModel(
             show = ::show,
             isLoaded = uiState.map { it.isLoaded },
             showNotice = { notice -> uiState.update { it.copy(recordedPayment = notice) } },
+            onGroupGone = {
+                uiState.update {
+                    it.copy(
+                        paymentToView = null,
+                        paymentToDelete = null,
+                    )
+                }
+            },
         )
         screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
@@ -291,7 +300,11 @@ class GroupDetailViewModel(
                 toMemberId = event.toMemberId,
             )
 
-            is GroupDetailUiEvent.OnPaymentClicked -> askToDeletePayment(event.paymentId)
+            is GroupDetailUiEvent.OnPaymentClicked -> showPayment(event.paymentId)
+
+            is GroupDetailUiEvent.OnPaymentDeleteClicked -> askToDeletePayment(event.paymentId)
+
+            GroupDetailUiEvent.OnPaymentDetailsDismissed -> uiState.update { it.copy(paymentToView = null) }
 
             GroupDetailUiEvent.OnPaymentDeleteConfirmed -> deletePayment()
 
@@ -391,7 +404,8 @@ class GroupDetailViewModel(
                     isCopyWhole = !it.awaitsFullSync,
                 ),
                 days = days,
-                // Why: the payment as it is now; one someone else undid meanwhile has nothing left to delete.
+                // Why: the payment as it is now; one someone else undid meanwhile has nothing left to show or delete.
+                paymentToView = it.paymentToView?.let { shown -> paymentRowOrNull(days, shown.id) },
                 paymentToDelete = it.paymentToDelete?.let { asked -> paymentRowOrNull(days, asked.id) },
                 // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
                 billToDelete = if (it.isDeletingBill) it.billToDelete else billDeletion,
@@ -451,9 +465,20 @@ class GroupDetailViewModel(
         uiState.update { it.copy(tab = tab) }
     }
 
+    private fun showPayment(paymentId: String) {
+        val payment = paymentRowOrNull(uiState.value.days, paymentId) ?: return
+        uiState.update { it.copy(paymentToView = payment) }
+    }
+
+    // Why: the details close under the question, so only one of the two is ever open.
     private fun askToDeletePayment(paymentId: String) {
         val payment = paymentRowOrNull(uiState.value.days, paymentId) ?: return
-        uiState.update { it.copy(paymentToDelete = payment) }
+        uiState.update {
+            it.copy(
+                paymentToView = null,
+                paymentToDelete = payment,
+            )
+        }
     }
 
     private fun paymentRowOrNull(

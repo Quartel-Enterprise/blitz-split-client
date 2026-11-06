@@ -13,6 +13,10 @@ final class GroupDetailModel {
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
+    /// The payment the details sheet showed last, drawn while the sheet slides away after the ViewModel closed it.
+    @ObservationIgnored private(set) var lastShownPayment: PaymentRow?
+    /// The payment whose details' "Delete" was tapped, asked about once the details sheet is gone.
+    @ObservationIgnored private var paymentToAskAfterDetails: String?
 
     init(route: RouteGroupDetail) {
         holder = BlitzSplitApple.shared.createGroupDetailViewModel(route: route)
@@ -20,6 +24,7 @@ final class GroupDetailModel {
         state = viewModel.uiState.value as! GroupDetailUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
+            if let shown = state.paymentToView { self?.lastShownPayment = shown }
             // State, not an action, so it waits for this screen while the bill's screen still covers it
             if state.showsBillDeletedNotice { self?.showBillDeleted() }
         })
@@ -76,15 +81,34 @@ final class GroupDetailModel {
         if current.paymentToDelete != nil { send(GroupDetailUiEventOnPaymentDeleteDismissed.shared) }
     }
 
+    /// A payment's details closed (Done, a swipe down, a tap outside on iPad).
+    func dismissPaymentDetails() {
+        if current.paymentToView != nil { send(GroupDetailUiEventOnPaymentDetailsDismissed.shared) }
+    }
+
+    /// "Delete" in a payment's details: the sheet closes first and the question comes once it is gone
+    /// (`paymentDetailsDidDismiss`), since an alert asked while a sheet is still leaving the screen may never show.
+    func deletePaymentFromDetails(_ payment: PaymentRow) {
+        paymentToAskAfterDetails = payment.id
+        dismissPaymentDetails()
+    }
+
+    /// The details sheet finished leaving the screen: asks "Delete this payment?" if its "Delete" closed it.
+    func paymentDetailsDidDismiss() {
+        guard let paymentId = paymentToAskAfterDetails else { return }
+        paymentToAskAfterDetails = nil
+        send(GroupDetailUiEventOnPaymentDeleteClicked(paymentId: paymentId))
+    }
+
     /// "Delete this bill?" closed without "Delete", from a bill's options on the list.
     func dismissBillDeletion() {
         if current.billToDelete != nil { send(GroupDetailUiEventOnExpenseDeleteDismissed.shared) }
     }
 
-    /// A line's "Delete": a payment asks "Delete this payment?" as its tap does, a bill "Delete this bill?".
+    /// A line's "Delete": a payment asks "Delete this payment?", a bill "Delete this bill?".
     func delete(_ entry: any DayEntry) {
         if entry is PaymentRow {
-            send(GroupDetailUiEventOnPaymentClicked(paymentId: entry.id))
+            send(GroupDetailUiEventOnPaymentDeleteClicked(paymentId: entry.id))
         } else {
             send(GroupDetailUiEventOnExpenseDeleteClicked(expenseId: entry.id))
         }
@@ -226,6 +250,14 @@ struct GroupDetailView: View {
                     .formSheetSizing()
             }
         }
+        .sheet(isPresented: paymentDetailsShown, onDismiss: { model?.paymentDetailsDidDismiss() }) {
+            if let model, let payment = model.state.paymentToView ?? model.lastShownPayment {
+                NavigationStack {
+                    PaymentDetailsSheet(payment: payment, currency: model.state.header.currency, model: model)
+                }
+                .formSheetSizing()
+            }
+        }
         .onAppear {
             if model == nil { model = GroupDetailModel(route: route) }
             if members == nil { members = MembersModel(route: route) }
@@ -238,6 +270,16 @@ struct GroupDetailView: View {
             get: { model?.state.teach?.isPickingWord == true },
             set: { shown in
                 if !shown, model?.current.teach != nil { model?.send(GroupDetailUiEventOnTeachDismissed.shared) }
+            },
+        )
+    }
+
+    /// A payment's details, closed any way in the ViewModel too.
+    private var paymentDetailsShown: Binding<Bool> {
+        Binding(
+            get: { model?.state.paymentToView != nil },
+            set: { shown in
+                if !shown { model?.dismissPaymentDetails() }
             },
         )
     }
@@ -484,7 +526,7 @@ private struct PhoneExpenseRow: View {
     }
 }
 
-/// "Ana paid you · 12:10 PM · Payment · Pix · $50.00 · payment"; a tap asks to delete it.
+/// "Ana paid you · 12:10 PM · Payment · Pix · $50.00 · payment"; a tap opens its details.
 private struct PhonePaymentRow: View {
     let row: PaymentRow
     let currency: GroupCurrency
