@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryChange
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryEntry
@@ -35,6 +36,7 @@ private val undoableFields = setOf(
     ActivityField.DESCRIPTION,
     ActivityField.SPENT_AT,
     ActivityField.CATEGORY,
+    ActivityField.CURRENCY,
     ActivityField.PAYERS,
     ActivityField.SPLIT,
 )
@@ -92,6 +94,16 @@ internal fun undoOf(
         ?.memberValues
         ?.map { ExpensePayer(it.memberId, it.value) }
         ?: expense.payers
+    /*
+     * Why: the amount goes back in the currency it was in, so BRL 100 edited to USD 20 undoes to BRL 100, not USD 100.
+     * An edit written before bills had a currency has no such change, so the bill's own stays.
+     */
+    val currencyChange = changes[ActivityField.CURRENCY]
+    val currency = if (currencyChange == null) {
+        expense.currency
+    } else {
+        currencyChange.before.code?.let(GroupCurrency::fromCodeOrNull) ?: return null
+    }
     if (payers.sumOf { it.amountMinor } != amountMinor) return null
     val split = changes[ActivityField.SPLIT]?.before
     val splitMode = split?.code?.let(SplitMode::fromCodeOrNull) ?: expense.splitMode
@@ -108,6 +120,7 @@ internal fun undoOf(
     return BillUndo(
         description = changes[ActivityField.DESCRIPTION]?.before?.text ?: expense.description,
         amountMinor = amountMinor,
+        currency = currency,
         payers = payers,
         splitMode = splitMode,
         shares = shares,
@@ -123,6 +136,8 @@ private fun Expense.matches(change: ActivityChange): Boolean {
     val after = change.after
     return when (change.field) {
         ActivityField.AMOUNT -> amountMinor == after.minor
+
+        ActivityField.CURRENCY -> currency.code == after.code
 
         ActivityField.DESCRIPTION -> description == after.text
 
@@ -266,11 +281,22 @@ private fun changesOf(
     return event.changes.mapNotNull { change ->
         when (change.field) {
             ActivityField.AMOUNT -> BillHistoryChange.Amount(change.before.minor, change.after.minor)
+
             ActivityField.DESCRIPTION -> BillHistoryChange.Description(change.before.text, change.after.text)
+
             ActivityField.SPENT_AT -> BillHistoryChange.SpentAt(change.before.millis, change.after.millis)
+
             ActivityField.CATEGORY -> BillHistoryChange.Category(change.before.code, change.after.code)
+
+            ActivityField.CURRENCY -> BillHistoryChange.Currency(
+                before = change.before.code?.let(GroupCurrency::fromCodeOrNull),
+                after = change.after.code?.let(GroupCurrency::fromCodeOrNull),
+            )
+
             ActivityField.PAYERS -> payersChangeOf(change, group)
+
             ActivityField.SPLIT -> splitChangeOf(change, byField, event, group, expense, payerIds)
+
             else -> null
         }
     }

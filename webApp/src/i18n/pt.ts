@@ -421,6 +421,7 @@ export const pt: Record<MessageKey, string> = {
   billDetail_historyAmount: 'mudou o valor',
   billDetail_historyDescription: 'mudou a descrição',
   billDetail_historySpentAt: 'mudou a data',
+  billDetail_historyCurrency: 'trocou a moeda',
   billDetail_historyCategory: 'trocou a categoria',
   billDetail_historyPayers: 'mudou quem pagou',
   billDetail_historySplit: 'mudou a divisão',

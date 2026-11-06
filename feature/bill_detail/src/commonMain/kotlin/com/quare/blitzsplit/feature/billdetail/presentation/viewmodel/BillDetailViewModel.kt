@@ -522,7 +522,7 @@ class BillDetailViewModel(
                 groupId = route.groupId,
                 description = undo.description,
                 amountMinor = undo.amountMinor,
-                currency = expense.currency,
+                currency = undo.currency,
                 payers = undo.payers,
                 splitMode = undo.splitMode,
                 shares = undo.shares,

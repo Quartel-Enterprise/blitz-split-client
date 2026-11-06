@@ -75,6 +75,8 @@ internal fun historyVerbOf(entry: BillHistoryEntry): String = when (entry.kind) 
 
             is BillHistoryChange.Amount -> R.string.bill_detail_history_amount
 
+            is BillHistoryChange.Currency -> R.string.bill_detail_history_currency
+
             is BillHistoryChange.Description -> R.string.bill_detail_history_description
 
             is BillHistoryChange.SpentAt -> R.string.bill_detail_history_spent_at
@@ -188,6 +190,15 @@ private fun diffsOf(
                 field = fieldOrNull(R.string.bill_detail_field_spent_at, showsField),
                 before = change.beforeMillis?.let { momentTextOf(it, dates) } ?: none,
                 after = change.afterMillis?.let { momentTextOf(it, dates) } ?: none,
+            ),
+        )
+
+        // Why: the codes the bill's currency is known by, "BRL → USD".
+        is BillHistoryChange.Currency -> listOf(
+            HistoryDiff(
+                field = fieldOrNull(R.string.bill_detail_field_currency, showsField),
+                before = change.before?.code ?: none,
+                after = change.after?.code ?: none,
             ),
         )
 

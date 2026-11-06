@@ -58,26 +58,29 @@ data class SettledPairChange(
             expenses: List<Expense>,
             settlements: List<Settlement>,
         ): SettledPairChange? {
-            val others = expenses.filter { it.id != saved.id }
-            // Why: a payment settles the bills in its own currency; the bill's currency, from a change too, is theirs.
-            val currencies = listOfNotNull(saved.currency, changed?.currency).distinct()
+            /*
+             * Why: a balance is per currency, so only what is in the bill's own is added up: a payment in another one
+             * settles nothing of it, and a change of the currency takes the bill out of this one.
+             */
+            val currency = saved.currency
+            val inCurrency = settlements.filter { it.currency == currency }
+            val others = expenses.filter { it.id != saved.id && it.currency == currency }
+            val before = GroupBalances.createUnsimplified(others + saved, inCurrency, currency)
+            val after = GroupBalances.createUnsimplified(
+                others + listOfNotNull(changed?.takeIf { it.currency == currency }),
+                inCurrency,
+                currency,
+            )
             val spentAt = changed?.spentAt ?: saved.spentAt
-
-            fun findOwedBefore(settlement: Settlement): Long =
-                GroupBalances.createUnsimplified(others + saved, settlements, settlement.currency).owedOf(settlement)
-
-            fun findOwedAfter(settlement: Settlement): Long = GroupBalances
-                .createUnsimplified(others + listOfNotNull(changed), settlements, settlement.currency)
-                .owedOf(settlement)
-            val settlement = settlements
-                .filter { it.paidAt >= spentAt && it.currency in currencies }
+            val settlement = inCurrency
+                .filter { it.paidAt >= spentAt }
                 .sortedByDescending { it.paidAt }
-                .firstOrNull { findOwedBefore(it) != findOwedAfter(it) }
+                .firstOrNull { before.owedOf(it) != after.owedOf(it) }
                 ?: return null
             return of(
                 settlement = settlement,
-                owedBeforeMinor = findOwedBefore(settlement),
-                owedAfterMinor = findOwedAfter(settlement),
+                owedBeforeMinor = before.owedOf(settlement),
+                owedAfterMinor = after.owedOf(settlement),
                 group = group,
             )
         }

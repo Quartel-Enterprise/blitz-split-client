@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 
 // Why: one field an edit changed, before and after; each UI writes it in its language.
 sealed interface BillHistoryChange {
@@ -24,6 +25,12 @@ sealed interface BillHistoryChange {
     data class Category(
         val beforeId: String?,
         val afterId: String?,
+    ) : BillHistoryChange
+
+    // Why: "BRL → USD"; null is a code this build doesn't know. An event written before bills had a currency has none.
+    data class Currency(
+        val before: GroupCurrency?,
+        val after: GroupCurrency?,
     ) : BillHistoryChange
 
     /*
