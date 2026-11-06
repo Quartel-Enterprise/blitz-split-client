@@ -72,6 +72,7 @@ class GetInviteUseCaseTest {
         members = emptyList(),
         personalMemberId = null,
         inviterName = null,
+        groupPhotoUrl = null,
     )
 
     private fun prepareScenario(

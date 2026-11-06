@@ -71,6 +71,7 @@ class JoinInviteUiStateTest {
         initials = name.take(2).uppercase(),
         avatarColor = AvatarColor.BLUE,
         hasJoined = hasJoined,
+        photoUrl = null,
     )
 
     private fun state(members: List<JoinMember>): JoinInviteUiState = JoinInviteUiState(
@@ -85,5 +86,6 @@ class JoinInviteUiStateTest {
         personalMember = null,
         inviterName = null,
         isJoining = false,
+        groupPhotoUrl = null,
     )
 }

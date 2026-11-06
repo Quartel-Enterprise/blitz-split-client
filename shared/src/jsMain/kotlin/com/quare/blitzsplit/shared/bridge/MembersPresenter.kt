@@ -57,8 +57,6 @@ class JsMembersAction(
 class JsMemberNameEditor(
     val isAdding: Boolean,
     val draft: String,
-    val takenName: String?,
-    val nicknameSuggestions: Array<String>,
     val canSave: Boolean,
 )
 
@@ -203,10 +201,6 @@ class MembersPresenter(
         ?.draft
         .orEmpty()
 
-    fun useSuggestion(name: String) {
-        viewModel.onEvent(MembersUiEvent.OnSuggestionClicked(name))
-    }
-
     fun save() {
         viewModel.onEvent(MembersUiEvent.OnSaveClicked)
     }
@@ -249,7 +243,5 @@ private fun toJsPersonalInvite(invite: PersonalInvite): JsPersonalInvite = JsPer
 private fun toJsMemberNameEditor(editor: MemberNameEditor): JsMemberNameEditor = JsMemberNameEditor(
     isAdding = editor.isAdding,
     draft = editor.draft,
-    takenName = editor.takenName,
-    nicknameSuggestions = editor.nicknameSuggestions.toTypedArray(),
     canSave = editor.canSave,
 )

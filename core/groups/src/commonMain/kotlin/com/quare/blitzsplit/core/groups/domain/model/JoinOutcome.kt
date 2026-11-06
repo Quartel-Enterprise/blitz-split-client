@@ -17,9 +17,6 @@ sealed interface JoinOutcome {
     // Why: that member was removed from the group in the meantime.
     data object MemberGone : JoinOutcome
 
-    // Why: a member of the group already has the new name.
-    data object NameTaken : JoinOutcome
-
     // Why: the link was changed or the group deleted.
     data object InvalidLink : JoinOutcome
 }

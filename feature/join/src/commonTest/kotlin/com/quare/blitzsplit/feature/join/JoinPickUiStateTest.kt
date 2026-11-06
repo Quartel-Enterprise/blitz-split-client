@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.join
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 import com.quare.blitzsplit.feature.join.presentation.model.JoinPickUiState
+import com.quare.blitzsplit.feature.join.presentation.model.JoinTarget
 import com.quare.blitzsplit.feature.join.presentation.model.NewMemberDraft
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -21,6 +22,43 @@ class JoinPickUiStateTest {
 
         // Then
         assertEquals(listOf("Bruno", "Carla") to listOf("Pierre", "Ana"), split)
+    }
+
+    @Test
+    fun `GIVEN each kind of join on its way WHEN reading the progress THEN only its own button spins`() {
+        // Given
+        val asBruno = state(
+            selectedMemberId = "member-3",
+            isJoining = true,
+        )
+        val fromSheet =
+            state(
+                newMember = NewMemberDraft(name = "Daniel"),
+                isJoining = true,
+                isJoiningAsNewMember = true,
+            )
+        val withAccount = state(
+            isJoining = true,
+            isJoiningAsNewMember = true,
+        )
+
+        // When
+        val progress = listOf(asBruno, fromSheet, withAccount).map { it.showsJoinProgress to it.showsNotInListProgress }
+
+        // Then
+        assertEquals(listOf(true to false, false to false, false to true), progress)
+    }
+
+    @Test
+    fun `GIVEN no join on its way WHEN reading the progress THEN nothing spins`() {
+        // Given
+        val state = state(selectedMemberId = "member-3")
+
+        // When
+        val progress = state.showsJoinProgress to state.showsNotInListProgress
+
+        // Then
+        assertEquals(false to false, progress)
     }
 
     @Test
@@ -104,7 +142,6 @@ class JoinPickUiStateTest {
         val state = state(
             newMember = NewMemberDraft(
                 name = "Daniel",
-                isNameTaken = false,
             ),
         )
 
@@ -121,26 +158,8 @@ class JoinPickUiStateTest {
         val state = state(
             newMember = NewMemberDraft(
                 name = "Daniel",
-                isNameTaken = false,
             ),
             isJoining = true,
-        )
-
-        // When
-        val canJoin = state.canJoinAsNewMember
-
-        // Then
-        assertFalse(canJoin)
-    }
-
-    @Test
-    fun `GIVEN a taken new name WHEN checking the new member button THEN it is off`() {
-        // Given
-        val state = state(
-            newMember = NewMemberDraft(
-                name = "Ana",
-                isNameTaken = true,
-            ),
         )
 
         // When
@@ -167,12 +186,14 @@ class JoinPickUiStateTest {
         initials = name.take(2).uppercase(),
         avatarColor = AvatarColor.BLUE,
         hasJoined = hasJoined,
+        photoUrl = null,
     )
 
     private fun state(
         selectedMemberId: String? = null,
         newMember: NewMemberDraft? = null,
         isJoining: Boolean = false,
+        isJoiningAsNewMember: Boolean = false,
     ): JoinPickUiState = JoinPickUiState(
         isLoaded = true,
         groupName = "Viagem Floripa",
@@ -181,6 +202,10 @@ class JoinPickUiStateTest {
         takenName = null,
         creatorName = "Pierre",
         newMember = newMember,
-        isJoining = isJoining,
+        joining = when {
+            isJoiningAsNewMember -> JoinTarget.NEW_MEMBER
+            isJoining -> JoinTarget.MEMBER
+            else -> null
+        },
     )
 }

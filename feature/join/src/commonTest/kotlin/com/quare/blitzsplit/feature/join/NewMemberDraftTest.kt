@@ -11,7 +11,6 @@ class NewMemberDraftTest {
         // Given
         val draft = NewMemberDraft(
             name = "Daniel",
-            isNameTaken = false,
         )
 
         // When
@@ -26,7 +25,6 @@ class NewMemberDraftTest {
         // Given
         val draft = NewMemberDraft(
             name = " J ",
-            isNameTaken = false,
         )
 
         // When
@@ -41,7 +39,6 @@ class NewMemberDraftTest {
         // Given
         val draft = NewMemberDraft(
             name = "",
-            isNameTaken = false,
         )
 
         // When
@@ -56,22 +53,6 @@ class NewMemberDraftTest {
         // Given
         val draft = NewMemberDraft(
             name = "   ",
-            isNameTaken = false,
-        )
-
-        // When
-        val canJoin = draft.canJoin
-
-        // Then
-        assertFalse(canJoin)
-    }
-
-    @Test
-    fun `GIVEN a name already in the group WHEN checking the draft THEN cannot join`() {
-        // Given
-        val draft = NewMemberDraft(
-            name = "Ana",
-            isNameTaken = true,
         )
 
         // When

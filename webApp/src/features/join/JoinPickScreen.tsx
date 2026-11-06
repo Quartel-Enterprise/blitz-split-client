@@ -32,7 +32,7 @@ export function JoinPickScreen({ route }: { route: JsRoute }) {
   if (!presenter || !state) return null
   const joinButton = (
     <Button size="lg" className="w-full" disabled={!state.canJoin} onClick={() => presenter.join()}>
-      {state.isJoining && <Loader2 className="animate-spin" />}
+      {state.showsJoinProgress && <Loader2 className="animate-spin" />}
       {state.selectedName != null ? t('join_pickJoinAs', { name: state.selectedName }) : t('join_pickChoose')}
     </Button>
   )
@@ -99,7 +99,7 @@ export function JoinPickScreen({ route }: { route: JsRoute }) {
                   <ul className="flex flex-col divide-y rounded-xl border bg-card">
                     {state.joined.map((member) => (
                       <li key={member.id} className="flex items-center gap-3 px-4 py-2.5 text-muted-foreground">
-                        <Avatar initial={member.initials} color={member.color} className="size-10 text-sm" />
+                        <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium">{member.name}</p>
                           <p className="text-xs">{t('join_pickStatusJoined')}</p>
@@ -109,8 +109,9 @@ export function JoinPickScreen({ route }: { route: JsRoute }) {
                   </ul>
                 </section>
               )}
+              {/* Why: a Google or Apple account joins from here at once, with its name and photo, so the tap shows it. */}
               <Button variant="link" className="h-8 self-start px-1 underline underline-offset-[3px]" disabled={state.isJoining} onClick={() => presenter.notInList()}>
-                <UserPlus />
+                {state.showsNotInListProgress ? <Loader2 className="animate-spin" /> : <UserPlus />}
                 {t('join_pickNotInList')}
               </Button>
               {isDesktop && joinButton}
@@ -120,7 +121,9 @@ export function JoinPickScreen({ route }: { route: JsRoute }) {
           {!isDesktop && <footer className="sticky bottom-0 border-t bg-card p-4">{joinButton}</footer>}
         </>
       )}
-      {state.newMember && <NewMemberDialog presenter={presenter} draft={state.newMember} canJoin={state.canJoinAsNewMember} isDesktop={isDesktop} />}
+      {state.newMember && (
+        <NewMemberDialog presenter={presenter} draft={state.newMember} canJoin={state.canJoinAsNewMember} isJoining={state.isJoiningAsNewMember} isDesktop={isDesktop} />
+      )}
     </div>
   )
 }
@@ -135,7 +138,7 @@ function MemberOption({ member, isSelected, isEnabled, onSelect }: { member: JsJ
       onClick={onSelect}
       className="flex items-center gap-3 px-4 py-2.5 text-left first:rounded-t-xl last:rounded-b-xl hover:bg-muted/60 disabled:opacity-60"
     >
-      <Avatar initial={member.initials} color={member.color} className="size-10 text-sm" />
+      <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
       <span className="min-w-0 flex-1 truncate font-medium">{member.name}</span>
       <span aria-hidden className={cn('flex size-5 items-center justify-center rounded-full border-2', isSelected ? 'border-primary' : 'border-muted-foreground')}>
         {isSelected && <span className="size-2.5 rounded-full bg-primary" />}
@@ -144,8 +147,23 @@ function MemberOption({ member, isSelected, isEnabled, onSelect }: { member: JsJ
   )
 }
 
-/** "Entrar com outro nome": someone new to the group, under a name nobody in it has. A dialog, a drawer on the phone. */
-function NewMemberDialog({ presenter, draft, canJoin, isDesktop }: { presenter: JoinPickPresenter; draft: JsNewMemberDraft; canJoin: boolean; isDesktop: boolean }) {
+/**
+ * "Entrar com outro nome": someone new to the group, under any name, another member's too. A dialog, a drawer on the
+ * phone. While the join is on its way the button spins and nothing else can be tapped (beta feedback 3, item 30).
+ */
+function NewMemberDialog({
+  presenter,
+  draft,
+  canJoin,
+  isJoining,
+  isDesktop,
+}: {
+  presenter: JoinPickPresenter
+  draft: JsNewMemberDraft
+  canJoin: boolean
+  isJoining: boolean
+  isDesktop: boolean
+}) {
   // Why: the ViewModel caps the name as it handles it, so the field reads the capped text back.
   const [name, setName] = useDraft(draft.name, (value) => {
     presenter.changeNewName(value)
@@ -163,21 +181,22 @@ function NewMemberDialog({ presenter, draft, canJoin, isDesktop }: { presenter: 
         autoComplete="name"
         value={name}
         onChange={(event) => setName(event.target.value)}
-        aria-invalid={draft.isNameTaken}
+        disabled={isJoining}
         aria-describedby={`${nameId}-helper`}
       />
-      <p id={`${nameId}-helper`} className={cn('text-sm', draft.isNameTaken ? 'text-destructive' : 'text-muted-foreground')}>
+      <p id={`${nameId}-helper`} className="text-sm text-muted-foreground">
         {t('join_pickNewHelper')}
       </p>
     </div>
   )
   const cancel = (
-    <Button type="button" variant={isDesktop ? 'ghost' : 'outline'} className={cn(!isDesktop && 'h-11')} onClick={() => presenter.dismissNewMember()}>
+    <Button type="button" variant={isDesktop ? 'ghost' : 'outline'} className={cn(!isDesktop && 'h-11')} disabled={isJoining} onClick={() => presenter.dismissNewMember()}>
       {t('common_cancel')}
     </Button>
   )
   const join = (
-    <Button type="submit" className={cn(!isDesktop && 'h-11')} disabled={!canJoin}>
+    <Button type="submit" className={cn(!isDesktop && 'h-11')} disabled={!canJoin} aria-busy={isJoining}>
+      {isJoining && <Loader2 className="animate-spin" />}
       {t('join_join')}
     </Button>
   )
@@ -202,7 +221,7 @@ function NewMemberDialog({ presenter, draft, canJoin, isDesktop }: { presenter: 
       </DialogContent>
     </Dialog>
   ) : (
-    <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
+    <Drawer open onOpenChange={onOpenChange} dismissible={!isJoining} repositionInputs={false}>
       <DrawerContent>
         <form className="flex flex-col" onSubmit={onSubmit}>
           <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
