@@ -70,6 +70,7 @@
     <string name="bill_detail_history_edited">editou a conta</string>
     <string name="bill_detail_history_edited_offline">editou a conta sem internet</string>
     <string name="bill_detail_history_category">trocou a categoria</string>
+    <string name="bill_detail_history_currency">trocou a moeda</string>
     <string name="bill_detail_history_amount">mudou o valor</string>
     <string name="bill_detail_history_description">mudou a descrição</string>
     <string name="bill_detail_history_spent_at">mudou a data</string>
@@ -87,6 +88,7 @@
     <string name="bill_detail_field_description">Descrição</string>
     <string name="bill_detail_field_spent_at">Data</string>
     <string name="bill_detail_field_category">Categoria</string>
+    <string name="bill_detail_field_currency">Moeda</string>
     <string name="bill_detail_field_payers">Quem pagou</string>
     <string name="bill_detail_field_split">Divisão</string>
     <string name="bill_detail_split_equal">Igual</string>

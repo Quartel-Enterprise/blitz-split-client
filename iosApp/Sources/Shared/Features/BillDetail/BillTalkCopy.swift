@@ -223,6 +223,11 @@ extension BillCopy {
             bundle: .appLanguage,
             comment: "Bill history",
         )
+        case is BillHistoryChangeCurrency: String(
+            localized: "\(who) changed the currency",
+            bundle: .appLanguage,
+            comment: "Bill history",
+        )
         case is BillHistoryChangePayers: String(
             localized: "\(who) changed who paid",
             bundle: .appLanguage,
@@ -304,6 +309,13 @@ extension BillCopy {
                 String(localized: "When", bundle: .appLanguage),
                 spentAt.beforeMillis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other) },
                 spentAt.afterMillis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other) },
+            )
+        case let change as BillHistoryChangeCurrency:
+            // The currencies by their codes, "BRL → USD"
+            return line(
+                String(localized: "Currency", bundle: .appLanguage),
+                change.before?.code,
+                change.after?.code,
             )
         case let category as BillHistoryChangeCategory:
             // A null category is "Other", as the bill reads it

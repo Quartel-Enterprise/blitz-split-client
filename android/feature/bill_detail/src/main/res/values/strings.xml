@@ -69,6 +69,7 @@
     <string name="bill_detail_history_edited">edited the bill</string>
     <string name="bill_detail_history_edited_offline">edited the bill offline</string>
     <string name="bill_detail_history_category">changed the category</string>
+    <string name="bill_detail_history_currency">changed the currency</string>
     <string name="bill_detail_history_amount">changed the amount</string>
     <string name="bill_detail_history_description">changed the description</string>
     <string name="bill_detail_history_spent_at">changed the date</string>
@@ -86,6 +87,7 @@
     <string name="bill_detail_field_description">Description</string>
     <string name="bill_detail_field_spent_at">Date</string>
     <string name="bill_detail_field_category">Category</string>
+    <string name="bill_detail_field_currency">Currency</string>
     <string name="bill_detail_field_payers">Who paid</string>
     <string name="bill_detail_field_split">Split</string>
     <string name="bill_detail_split_equal">Equal</string>

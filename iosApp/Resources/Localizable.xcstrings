@@ -218,6 +218,23 @@
         }
       }
     },
+    "%@ changed the currency" : {
+      "comment" : "Bill history",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ cambió la moneda"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ trocou a moeda"
+          }
+        }
+      }
+    },
     "%@ changed the date" : {
       "comment" : "Bill history",
       "localizations" : {

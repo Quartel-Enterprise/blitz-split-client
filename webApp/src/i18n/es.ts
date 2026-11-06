@@ -422,6 +422,7 @@ export const es: Record<MessageKey, string> = {
   billDetail_historyAmount: 'cambió el monto',
   billDetail_historyDescription: 'cambió la descripción',
   billDetail_historySpentAt: 'cambió la fecha',
+  billDetail_historyCurrency: 'cambió la moneda',
   billDetail_historyCategory: 'cambió la categoría',
   billDetail_historyPayers: 'cambió quién pagó',
   billDetail_historySplit: 'cambió la división',

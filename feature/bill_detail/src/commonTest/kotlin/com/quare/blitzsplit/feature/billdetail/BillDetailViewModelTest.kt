@@ -2530,6 +2530,29 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN Ana changed BRL 300 to USD 480 WHEN tapping Desfazer THEN saves the bill back in BRL 300`() =
+        runTest(testDispatcher) {
+            // Given
+            val currencyEdit = totalEdit.copy(
+                changes = totalEdit.changes.filter { it.field != ActivityField.DESCRIPTION } +
+                    ActivityChange(
+                        field = ActivityField.CURRENCY,
+                        before = ActivityValue.none.copy(code = "BRL"),
+                        after = ActivityValue.none.copy(code = "USD"),
+                    ),
+            )
+            prepareScenario(storedEvents = listOf(currencyEdit, created))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnUndoClicked)
+
+            // Then
+            val saved = expenses.updatedExpenses.single()
+            assertEquals(GroupCurrency.BRL, saved.currency)
+            assertEquals(30_000, saved.amountMinor)
+        }
+
+    @Test
     fun `GIVEN Ana gave a bill without category Mercado WHEN tapping Desfazer THEN the bill has no category again`() =
         runTest(testDispatcher) {
             // Given

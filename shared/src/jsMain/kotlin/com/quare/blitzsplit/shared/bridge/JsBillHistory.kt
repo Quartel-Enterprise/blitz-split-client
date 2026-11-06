@@ -21,8 +21,8 @@ class JsBillHistoryPart(
 
 /*
  * Why: BillHistoryChange, flat. field is "amount" (beforeMinor, afterMinor), "description" (beforeText, afterText),
- * "spent-at" (beforeMillis, afterMillis), "category" (beforeCategory, afterCategory, already resolved, Outros for
- * none), "payers" (beforeNames, afterNames, a null name "Ex-membro", and parts when the same payers paid other
+ * "spent-at" (beforeMillis, afterMillis), "currency" (beforeText, afterText, the ISO codes), "category"
+ * (beforeCategory, afterCategory, already resolved, Outros for none), "payers" (beforeNames, afterNames, a null name "Ex-membro", and parts when the same payers paid other
  * amounts) or "split" (beforeMode, afterMode as SplitMode codes, and parts); what a field doesn't use is null or empty.
  */
 class JsBillHistoryChange(
@@ -137,6 +137,12 @@ private fun toJsBillHistoryChange(
         field = "spent-at",
         beforeMillis = change.beforeMillis?.toDouble(),
         afterMillis = change.afterMillis?.toDouble(),
+    )
+
+    is BillHistoryChange.Currency -> buildHistoryChange(
+        field = "currency",
+        beforeText = change.before?.code,
+        afterText = change.after?.code,
     )
 
     is BillHistoryChange.Category -> buildHistoryChange(
