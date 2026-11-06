@@ -42,8 +42,11 @@ export function freeTextProps(value: string, onValueChange: (value: string) => v
     onCompositionStart: (event: CompositionEvent<TextElement>) => {
       textBeforeComposition.set(event.currentTarget, event.currentTarget.value)
     },
+    // Why: the composition's own input events already sent its text; a phone's keyboard composes every word
     onCompositionEnd: (event: CompositionEvent<TextElement>) => {
-      settle(event.currentTarget.value, textBeforeComposition.get(event.currentTarget) ?? value)
+      const previous = textBeforeComposition.get(event.currentTarget) ?? value
+      const capitalized = physicalKeyboard.matches && capitalizedFirstLetter(event.currentTarget.value, previous)
+      if (capitalized) onValueChange(capitalized)
     },
   }
 }
