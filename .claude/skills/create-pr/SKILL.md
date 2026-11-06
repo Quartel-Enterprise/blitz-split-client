@@ -422,8 +422,23 @@ gh pr edit --add-label merge-when-green
 
 The workflow squash merges the pull request once every check on its head commit has passed and
 every review conversation is resolved, including the checks of the fix commit the opening
-`claude-review` pushes. That happens minutes later, so wait for it without blocking the turn:
+`claude-review` pushes. The label is this project's merge, not GitHub's auto-merge: don't call
+`set_auto_merge` or `gh pr merge --auto`. That merge happens minutes later, so wait for it without blocking the turn:
 
+- **With the `ccd_pr` tools** (a session in the Claude desktop app), turn on the app's Auto-fix
+  instead of the loop below. Call `get_status`; if it doesn't report this pull request, bind it with
+  `bind_pr` and its URL. Then call `set_monitor` with `auto_fix: true` and the URL: opening the pull
+  request through this skill is the user's request for that switch, so don't ask. End the turn:
+  the app wakes the session with a `<ci-monitor-event>` on a failed check, a conflict with `main`
+  or a review comment, and the comment `merge-when-green` leaves when it removes its label is one
+  of them. Handle each event as the outcomes below say, with the loop's filter: a failed
+  `review-gate` check is the hold for the review's open threads, not a failure, and a cancelled
+  `merge-when-green` run was only replaced by a newer one. Read the state with `get_status`, never
+  by polling `gh pr checks`. Once an outcome says to stop, later events don't start the fixes of
+  that blocker again: stay quiet until the user answers or something new shows up. Whenever an
+  event or the user's next message finds the pull request merged, run `finish-task` (outcome 0);
+  if closed, outcome 1. Turn Auto-fix off (`set_monitor` with `auto_fix: false`) when the user
+  says to stop.
 - **With the `subscribe_pr_activity` tool** (a Claude Code cloud session), call it for the pull
   request and end the turn: check results, reviews and comments wake the session as PR events, and
   the rules that arrive with the subscription govern them. Handle each event as the outcomes below
@@ -432,8 +447,8 @@ every review conversation is resolved, including the checks of the fix commit th
   Once an outcome says to stop, later events don't start the fixes of that blocker again: stay
   quiet until the user answers or something new shows up (another check failing, a new thread).
   Call `unsubscribe_pr_activity` once the pull request merges or closes, or the user says to stop.
-- **Without it**, run this with the Bash tool's `run_in_background`, which calls you back when it
-  exits.
+- **Without either**, run this with the Bash tool's `run_in_background`, which calls you back when
+  it exits.
 
 ```bash
 pr=$(gh pr view --json number -q .number)
@@ -462,9 +477,10 @@ Tell the user the label and auto fix are on, and that the task gets cleaned up o
 happens. Every fix below goes the same way, without asking: pull first, before any local commit
 (`git pull --ff-only`: the opening `claude-review` may have pushed its fix commit), fix, run step 2
 again if a Kotlin file changed and the step 8 checks of the areas the fix touches, commit it with
-step 9's message rules, push (step 10), and wait again as above. Never amend, rebase or force push
-what is already on `origin`, and never skip, disable or loosen a test or a check to get it green.
-When the command exits, or a PR event says the same:
+step 9's message rules, push (step 10), and wait again as above (with Auto-fix on, end the turn).
+Never amend, rebase or force push what is already on `origin`, and never skip, disable or loosen a
+test or a check to get it green. When the command exits, or a PR event or `<ci-monitor-event>` says
+the same:
 
 - **0, merged:** run the `finish-task` skill right away, as after a direct merge below.
 - **2, a check failed or was cancelled:** see which one (`gh pr checks <pr>`).
