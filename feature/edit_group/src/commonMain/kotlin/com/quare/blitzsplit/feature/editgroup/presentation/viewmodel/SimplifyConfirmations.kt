@@ -61,7 +61,7 @@ internal fun simplifyConfirmationOf(
                 .size
         },
         queuedPayments = settlements
-            .filter { it.isPending }
+            .filter { it.isPending && it.currency == group.currency }
             .map {
                 SimplifyQueuedPayment(
                     from = nameOf(it.fromMemberId, group),
