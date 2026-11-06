@@ -464,7 +464,7 @@ class SettledPairChangeTest {
     }
 
     @Test
-    fun `GIVEN a bill that moves to dollars WHEN only a payment in dollars exists THEN says nothing, the saved bill is in reais`() {
+    fun `GIVEN a bill that moves to dollars WHEN a payment in dollars exists THEN says nothing`() {
         // Given
         val paidInDollars = elisaPaidBruno.copy(currency = GroupCurrency.USD)
         val changed = jantar.copy(currency = GroupCurrency.USD)
