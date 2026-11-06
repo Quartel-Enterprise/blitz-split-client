@@ -62,7 +62,9 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     and "When" (date and time, never after now). With Pix picked, when this device's user is the one who pays (beta
     feedback 3 item 26, `RegisterPaymentUiState.formPixKeys`), the form lists "Ana's Pix keys" under "How it was paid",
     her default first, each with its type and a copy button (the "Copied" confirmation as in "Pay Ana", below), or
-    says "Ana has no Pix key in the app." (`showsNoPixKeyNotice`), a guest with no account included; nothing while
+    says "Ana has no Pix key in the app." (`showsNoPixKeyNotice`), a guest with no account included, in a group in
+    reais only (the keys show in any currency, but the form opens on Pix in every one, and a euro or dollar group
+    would read the notice on every payment); nothing while
     the keys still load, before the account's first download is whole, offline or back online with it still coming
     down (none cached says nothing then), for
     a former member (whose keys the device can't know), and for "Got paid" or "Already

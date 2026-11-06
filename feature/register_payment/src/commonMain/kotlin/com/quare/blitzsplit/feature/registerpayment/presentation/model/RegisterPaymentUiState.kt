@@ -120,9 +120,12 @@ data class RegisterPaymentUiState(
     val formPixKeys: List<ReceiverKey>
         get() = if (showsFormPixKeys) pixKeys else emptyList()
 
-    // Why: "Ana não tem chave Pix no app." under Pix, so the payer knows to ask, also for a guest with no account.
+    /*
+     * Why: "Ana não tem chave Pix no app." under Pix, so the payer knows to ask, also for a guest with no account. Only
+     * in reais: the form opens on Pix in every currency, and a euro or dollar group would read it on every payment.
+     */
     val showsNoPixKeyNotice: Boolean
-        get() = showsFormPixKeys && pixKeys.isEmpty() && !areReceiverKeysUnknown
+        get() = showsFormPixKeys && pixKeys.isEmpty() && !areReceiverKeysUnknown && currency == GroupCurrency.BRL
 
     private val showsFormPixKeys: Boolean
         get() = isLoaded &&

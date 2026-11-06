@@ -648,6 +648,41 @@ class RegisterPaymentUiStateTest {
     }
 
     @Test
+    fun `GIVEN a dollar group and a receiver with no key WHEN this device user pays by Pix THEN shows no notice`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = emptyList(),
+            currency = GroupCurrency.USD,
+        )
+
+        // When
+        val showsNotice = state.showsNoPixKeyNotice
+
+        // Then
+        assertFalse(showsNotice)
+    }
+
+    @Test
+    fun `GIVEN a dollar group and a receiver with a Pix key WHEN this device user pays by Pix THEN lists it`() {
+        // Given
+        val state = state(
+            from = me,
+            to = ana,
+            receiverKeys = listOf(pixPhone),
+            currency = GroupCurrency.USD,
+            offersReceiverKeys = false,
+        )
+
+        // When
+        val keys = state.formPixKeys
+
+        // Then
+        assertEquals(listOf(pixPhone), keys)
+    }
+
+    @Test
     fun `GIVEN the keys of a receiver unknown offline WHEN this device user pays by Pix THEN shows no notice`() {
         // Given
         val state = state(
