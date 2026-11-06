@@ -36,7 +36,10 @@ object LegacyAppLocale {
     ) {
         val editor = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE).edit()
         if (tag == null) editor.remove(KEY_TAG) else editor.putString(KEY_TAG, tag)
-        // Why: commit, since the activity opens again right after and reads it in attachBaseContext.
-        editor.commit()
+        /*
+         * Why: apply, off the main thread: the activity opening again right after reads it in attachBaseContext from
+         * the same process's preferences, which already hold it.
+         */
+        editor.apply()
     }
 }

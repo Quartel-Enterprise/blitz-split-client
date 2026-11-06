@@ -12,6 +12,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.quare.blitzsplit.android.designsystem.format.LocalShowsBitcoinInSats
@@ -55,8 +56,14 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null && !isFromRecents) handleLink(intent)
         setContent {
             val appViewModel: AppViewModel = koinViewModel()
-            // Why: the system's settings may have changed the app's language, which opens the activity again in it.
-            LaunchedEffect(appViewModel) { appViewModel.refreshLanguage() }
+            /*
+             * Why: the system's settings may have changed the app's language while it was away: a new language opens
+             * the activity again in it, while the same one it already drew in (System to that language) only resumes.
+             */
+            LifecycleResumeEffect(appViewModel) {
+                appViewModel.refreshLanguage()
+                onPauseOrDispose {}
+            }
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
             val usesDynamicColors by appViewModel.usesDynamicColors.collectAsStateWithLifecycle()
             val showsBitcoinInSats by appViewModel.showsBitcoinInSats.collectAsStateWithLifecycle()

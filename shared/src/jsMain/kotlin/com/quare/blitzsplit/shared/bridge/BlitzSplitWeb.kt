@@ -162,8 +162,9 @@ private fun reopenProfileAfterLanguage() {
     if (!wasInProfile) return
     val navigator = KoinPlatform.getKoin().get<Navigator>()
     MainScope().launch {
-        navigator.backStack.first { it.lastOrNull() == Route.Home }
-        navigator.navigate(Route.Profile)
+        // Why: only the start route's own Início, never one a later back reaches after a link opened over it.
+        val start = navigator.backStack.first { it.firstOrNull() == Route.Home }
+        if (start.lastOrNull() == Route.Home) navigator.navigate(Route.Profile)
     }
 }
 
