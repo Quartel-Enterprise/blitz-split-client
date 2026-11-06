@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, ChevronRight, CloudOff, Download, Info, KeyRound, Loader2, LogOut, Plus, RotateCw, Tag } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CloudOff, Download, Info, KeyRound, Loader2, LogOut, Plus, RotateCw, Tag } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -105,7 +105,7 @@ export function ProfileScreen() {
                 />
               )}
               <AccountCard presenter={presenter} state={state} className="order-3" />
-              {/* Why: "Sair" or "Apagar perfil e sair" depends on the account, never guessed before it was read. */}
+              {/* Why: "Sign out", or "Erase profile and sign out" when nothing brings the profile back, never guessed before it was read. */}
               {state.isLoaded ? (
                 <Button
                   variant="outline"
@@ -113,7 +113,7 @@ export function ProfileScreen() {
                   disabled={!state.canSignOut}
                   onClick={() => presenter.signOut()}
                 >
-                  <LogOut /> {t(state.hasAccount ? 'profile_signOut' : 'profile_eraseAndSignOut')}
+                  <LogOut /> {t(state.erasesProfileOnSignOut ? 'profile_eraseAndSignOut' : 'profile_signOut')}
                 </Button>
               ) : (
                 <LoadingRegion className="order-4">
@@ -140,6 +140,7 @@ export function ProfileScreen() {
               {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-8" />}
             </div>
           </div>
+          <LegalFooter presenter={presenter} />
         </main>
         <ProfileDialogs presenter={presenter} state={state} />
         {state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
@@ -390,12 +391,8 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
   )
 }
 
+/** "Privacy and about": the export and who sees the profile; the legal pages and the version are the footer's. */
 function AboutCard({ presenter, className }: { presenter: ProfilePresenter; className?: string }) {
-  const links: { label: MessageKey; open: () => void }[] = [
-    { label: 'profile_visibility', open: () => presenter.visibilityInfo() },
-    { label: 'profile_privacyPolicy', open: () => presenter.privacyPolicy() },
-    { label: 'profile_terms', open: () => presenter.terms() },
-  ]
   return (
     <Card className={className}>
       <CardHeader>
@@ -408,21 +405,34 @@ function AboutCard({ presenter, className }: { presenter: ProfilePresenter; clas
             <Download /> {t('profile_exportButton')}
           </Button>
         </Row>
-        {links.map((link, index) => (
-          <button
-            key={link.label}
-            onClick={link.open}
-            className="flex min-h-12 items-center justify-between gap-3 text-left text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
-          >
-            {t(link.label)}
-            {index > 0 && <ArrowUpRight className="size-4 text-muted-foreground" />}
-          </button>
-        ))}
-        <Row title={t('profile_version')}>
-          <span className="text-sm text-muted-foreground">{__APP_VERSION__}</span>
-        </Row>
+        <button
+          onClick={() => presenter.visibilityInfo()}
+          className="flex min-h-12 items-center justify-between gap-3 text-left text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+        >
+          {t('profile_visibility')}
+        </button>
       </CardContent>
     </Card>
+  )
+}
+
+/** "Privacy Policy • Terms of Service" and the version under them, discreet and centered at the end of the page, as Bible Planner's (beta feedback 18). */
+function LegalFooter({ presenter }: { presenter: ProfilePresenter }) {
+  return (
+    <footer className="flex flex-col items-center gap-1 pt-2 pb-4 text-center">
+      <div className="flex flex-wrap items-center justify-center gap-x-1">
+        <Button variant="link" size="sm" onClick={() => presenter.privacyPolicy()}>
+          {t('profile_privacyPolicy')}
+        </Button>
+        <span aria-hidden className="text-muted-foreground">
+          •
+        </span>
+        <Button variant="link" size="sm" onClick={() => presenter.terms()}>
+          {t('profile_terms')}
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">{t('profile_versionFooter', { version: __APP_VERSION__ })}</p>
+    </footer>
   )
 }
 

@@ -191,6 +191,7 @@ struct ProfileView: View {
                 if model.state.showsDeleteAccount {
                     DeleteAccountSection(model: model)
                 }
+                LegalFooter(model: model)
             }
             .formStyle(.grouped)
             // Also as the form comes back from Ajustes' Categories, which drew the map in its place
@@ -229,6 +230,7 @@ struct ProfileView: View {
                     if model.state.showsDeleteAccount {
                         DeleteAccountSection(model: model)
                     }
+                    LegalFooter(model: model)
                 }
                 .formStyle(.grouped)
                 .frame(maxWidth: layout.isLarge ? ScreenLayout.singleColumnMaxWidth : .infinity)
@@ -253,6 +255,7 @@ struct ProfileView: View {
             if model.state.showsDeleteAccount {
                 DeleteAccountSection(model: model)
             }
+            LegalFooter(model: model)
         }
         .formStyle(.grouped)
         if layout.showsListDetail, division == nil {
@@ -430,7 +433,8 @@ private struct SignOutSection: View {
             Button(role: .destructive) {
                 model.send(ProfileUiEventOnSignOutClicked.shared)
             } label: {
-                Text(state.hasAccount ? "Sign out" : "Erase profile and sign out")
+                // Only a profile nothing brings back is erased for good; any account signs out (beta feedback 17)
+                Text(state.erasesProfileOnSignOut ? "Erase profile and sign out" : "Sign out")
                     .frame(maxWidth: .infinity)
             }
             .disabled(!state.canSignOut)
@@ -811,22 +815,48 @@ private struct AboutSection: View {
             Button("Who sees your profile") {
                 model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
             }
-            Button {
-                model.send(ProfileUiEventOnPrivacyPolicyClicked.shared)
-            } label: {
-                Label("Privacy policy", systemImage: "arrow.up.right").labelStyle(TrailingIconLabelStyle())
-            }
-            Button {
-                model.send(ProfileUiEventOnTermsClicked.shared)
-            } label: {
-                Label("Terms of use", systemImage: "arrow.up.right").labelStyle(TrailingIconLabelStyle())
-            }
+            // The version itself sits in the legal footer, at the end of the profile (beta feedback 18)
             if model.state.showsCheckForUpdates {
                 CheckForUpdatesRow(model: model)
-            } else {
-                LabeledContent("Version", value: Bundle.main.appVersion)
             }
         }
+    }
+}
+
+/// "Privacy Policy • Terms of Service" and "Version X" under them, discreet and centered at the very end of the
+/// profile, as Bible Planner's (beta feedback 18).
+private struct LegalFooter: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Section {
+            VStack(spacing: 6) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) { links }
+                    VStack(spacing: 6) { links }
+                }
+                Text("Version \(Bundle.main.appVersion)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+    }
+
+    @ViewBuilder
+    private var links: some View {
+        Button("Privacy Policy") {
+            model.send(ProfileUiEventOnPrivacyPolicyClicked.shared)
+        }
+        .buttonStyle(.borderless)
+        Text(verbatim: "•")
+            .foregroundStyle(.secondary)
+        Button("Terms of Service") {
+            model.send(ProfileUiEventOnTermsClicked.shared)
+        }
+        .buttonStyle(.borderless)
     }
 }
 
@@ -971,8 +1001,12 @@ extension AccountProvider {
 }
 
 private extension Bundle {
+    /// The whole version, a beta's suffix too ("3.0.0-beta_1", beta feedback 19): Apple refuses a suffix in
+    /// CFBundleShortVersionString, so the build writes it apart (iosApp/generate-project.sh).
     var appVersion: String {
-        infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        // Empty when xcodegen ran without generate-project.sh's environment
+        let whole = infoDictionary?["BlitzSplitVersionName"] as? String ?? ""
+        return whole.isEmpty ? infoDictionary?["CFBundleShortVersionString"] as? String ?? "" : whole
     }
 }
 

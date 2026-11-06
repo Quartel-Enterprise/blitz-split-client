@@ -49,8 +49,8 @@ data class ProfileUiState(
      */
     val activeNotificationCount: Loadable<Int>,
     /*
-     * Why: "Buscar atualizações" with the version under it takes the place of "Versão" where a store sends new
-     * versions (Android, iOS, macOS); the web always serves the latest, so it keeps "Versão".
+     * Why: "Check for updates" with the version under it, where a store sends new versions (Android, iOS, macOS); the
+     * web always serves the latest, so its version is only the legal footer's.
      */
     val showsCheckForUpdates: Boolean,
     // Why: "Verificando…" under it while the store is asked, which also ignores another tap.
@@ -129,12 +129,25 @@ data class ProfileUiState(
     val canUnlink: Boolean
         get() = isOnline && !isUnlinking && !isSigningOut && !isSignOutScheduled
 
+    // Why: a profile the server never saw has no account there to delete (beta feedback 17).
+    val isLocalOnly: Boolean
+        get() = !hasAccount && !hasAnonymousId
+
     /*
-     * Why: the server deletes it, so only a Google or Apple account has one to delete; without one the
-     * profile only lives here and "Apagar perfil e sair" already erases it.
+     * Why: leaving only erases the profile for good when nothing brings it back, neither Google or Apple nor a recovery
+     * code, so only then do the button and its dialog say "Erase profile and sign out"; any other account, an
+     * anonymous one with its code too, signs out and comes back later (beta feedback 17). An anonymous account whose
+     * code isn't made yet is one of them, though the server keeps it and it can be deleted.
+     */
+    val erasesProfileOnSignOut: Boolean
+        get() = !hasAccount && !hasRecoveryCode
+
+    /*
+     * Why: "Sign out" and "Delete account" are apart for every account the server keeps, an anonymous one too: the
+     * server deletes it. A local only profile has nothing there, and "Erase profile and sign out" already erases it.
      */
     val showsDeleteAccount: Boolean
-        get() = isLoaded && hasAccount
+        get() = isLoaded && !isLocalOnly
 
     // Why: a key added before the account's own came down could take the default the server already gave another.
     val canAddPaymentKey: Boolean

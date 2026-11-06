@@ -16,5 +16,10 @@ internal object VersionComparator : Comparator<String> {
         return 0
     }
 
-    private fun parse(version: String): List<Int> = version.trim().split(".").map { it.toIntOrNull() ?: 0 }
+    // Why: a beta's suffix ("3.0.2-beta_1") is dropped, so its patch isn't read as 0 and the beta as older than it is.
+    private fun parse(version: String): List<Int> = version
+        .trim()
+        .substringBefore('-')
+        .split(".")
+        .map { it.toIntOrNull() ?: 0 }
 }

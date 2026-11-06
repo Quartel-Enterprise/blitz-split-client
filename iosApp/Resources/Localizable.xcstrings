@@ -3768,6 +3768,23 @@
         }
       }
     },
+    "Privacy Policy" : {
+      "comment" : "Profile: the legal footer's link",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de Privacidad"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de Privacidade"
+          }
+        }
+      }
+    },
     "Profile photo" : {
       "comment" : "The profile photo viewer: the photo",
       "localizations" : {
@@ -3992,6 +4009,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Leve seus grupos para o iPhone"
+          }
+        }
+      }
+    },
+    "Terms of Service" : {
+      "comment" : "Profile: the legal footer's link",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Términos de Servicio"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termos de Serviço"
           }
         }
       }
@@ -9677,6 +9711,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Você já usa o app no celular desde %@. Este código fica sempre em Ajustes, para quando trocar de iPhone."
+          }
+        }
+      }
+    },
+    "Your account has no Google or Apple sign in. When you sign out, we erase the copy on this %@. To come back, you need the recovery code." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu cuenta no tiene Google ni Apple. Al cerrar sesión, borramos la copia de este %@. Para volver, necesitas el código de recuperación."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua conta não tem Google nem Apple. Ao sair, apagamos a cópia deste %@. Para voltar, só com o código de recuperação."
           }
         }
       }
@@ -19175,22 +19226,6 @@
         }
       }
     },
-    "Privacy policy" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Política de privacidad"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Política de privacidade"
-          }
-        }
-      }
-    },
     "Profile" : {
       "localizations" : {
         "es" : {
@@ -20304,22 +20339,6 @@
         }
       }
     },
-    "Terms of use" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Términos de uso"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Termos de uso"
-          }
-        }
-      }
-    },
     "The copy of your data on this %@" : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
@@ -21020,22 +21039,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lightning Address válido"
-          }
-        }
-      }
-    },
-    "Version" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versión"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Versão"
           }
         }
       }
@@ -21793,23 +21796,6 @@
         }
       }
     },
-    "You use it without an account. When you leave, your profile and your data are gone from this %@. To come back, you need the recovery code." : {
-      "comment" : "%@ is the device: iPhone, iPad or Mac",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La usas sin cuenta. Al salir, tu perfil y tus datos desaparecen de este %@. Para volver, necesitas el código de recuperación."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Você usa sem conta. Ao sair, seu perfil e seus dados somem deste %@. Para voltar, só com o código de recuperação."
-          }
-        }
-      }
-    },
     "You're invited to %@" : {
       "comment" : "The title of an invite link whose creator deleted their account",
       "localizations" : {
@@ -22005,6 +21991,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seu perfil (nome, foto e cor)"
+          }
+        }
+      }
+    },
+    "Your recovery code" : {
+      "comment" : "Delete account: what gets deleted, for an account without Google or Apple",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu código de recuperación"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu código de recuperação"
           }
         }
       }

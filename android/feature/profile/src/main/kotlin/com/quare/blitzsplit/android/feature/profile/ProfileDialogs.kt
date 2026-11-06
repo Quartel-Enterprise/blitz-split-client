@@ -242,7 +242,7 @@ private fun UnlinkAccountDialog(
 }
 
 /*
- * Why: without Google or Apple the profile only comes back with the recovery code, so "Apagar e sair"
+ * Why: without Google or Apple the profile only comes back with the recovery code, so "Sign out" ("Erase and sign out")
  * waits until the person says it is kept, or that they accept losing it when there is none yet.
  */
 @Composable
@@ -253,10 +253,13 @@ private fun EraseProfileDialog(
     placement: DialogPlacement,
 ) {
     val code = state.formattedRecoveryCode
-    val bodyRes = if (state.hasRecoveryCode) R.string.profile_erase_body else R.string.profile_erase_body_no_code
+    val bodyRes = if (state.erasesProfileOnSignOut) R.string.profile_erase_body_no_code else R.string.profile_erase_body
     FoldAlertDialog(
         onDismissRequest = onDismiss,
-        title = stringResource(R.string.profile_erase_title),
+        // Why: an anonymous account signs out like any other and comes back with its code; only without one is it erased.
+        title = stringResource(
+            if (state.erasesProfileOnSignOut) R.string.profile_erase_title else R.string.profile_sign_out_title,
+        ),
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -317,7 +320,13 @@ private fun EraseProfileDialog(
                 onClick = { onEvent(ProfileUiEvent.OnEraseConfirmed) },
                 enabled = state.canErase,
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) { Text(stringResource(R.string.profile_erase_confirm)) }
+            ) {
+                Text(
+                    stringResource(
+                        if (state.erasesProfileOnSignOut) R.string.profile_erase_confirm else R.string.profile_sign_out,
+                    ),
+                )
+            }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_cancel)) }

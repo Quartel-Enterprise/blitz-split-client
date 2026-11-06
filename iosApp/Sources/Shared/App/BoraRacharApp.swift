@@ -42,6 +42,11 @@ struct BoraRacharApp: App {
                 .onOpenURL { url in
                     BlitzSplitApple.shared.handleDeepLink(url: url)
                 }
+                #if os(macOS)
+                // A URL the app is opened with (the browser sign in coming back, an invite link) goes to the window
+                // already open, never a new one on top of it (beta feedback 12); with none open, the group opens one
+                .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
+                #endif
                 // The browser sign in opens over the app
                 .onReceive(NotificationCenter.default.publisher(for: Self.willResignActive)) { _ in
                     BlitzSplitApple.shared.handleAppPaused()

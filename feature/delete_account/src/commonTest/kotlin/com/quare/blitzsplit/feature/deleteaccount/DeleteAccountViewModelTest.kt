@@ -98,6 +98,32 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
+    fun `GIVEN an anonymous user WHEN the screen opens THEN lists the recovery code among what gets deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.deletesRecoveryCode)
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN the screen opens THEN leaves the recovery code out of what gets deleted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = googleAccount)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.deletesRecoveryCode)
+        }
+
+    @Test
     fun `GIVEN only a local profile WHEN the screen opens THEN names no account`() = runTest(testDispatcher) {
         // Given
         prepareScenario(status = AccountStatus.LocalOnly)
@@ -224,10 +250,24 @@ class DeleteAccountViewModelTest {
         }
 
     @Test
-    fun `GIVEN an anonymous user who checked the box WHEN delete is tapped THEN deletes nothing`() =
+    fun `GIVEN an anonymous user who checked the box WHEN delete is tapped THEN deletes the account`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID))
+            viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
+
+            // When
+            viewModel.onEvent(DeleteAccountUiEvent.OnDeleteClicked)
+
+            // Then
+            assertEquals(1, deletions)
+        }
+
+    @Test
+    fun `GIVEN only a local profile with the box checked WHEN delete is tapped THEN deletes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
             viewModel.onEvent(DeleteAccountUiEvent.OnConfirmChanged(isChecked = true))
 
             // When

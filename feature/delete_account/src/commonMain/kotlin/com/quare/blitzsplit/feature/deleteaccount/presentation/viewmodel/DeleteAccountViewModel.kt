@@ -37,6 +37,7 @@ class DeleteAccountViewModel(
         field = MutableStateFlow(
             DeleteAccountUiState(
                 accountProvider = Loadable.Loading,
+                hasAccount = false,
                 isOnline = true,
                 hasConfirmed = false,
                 isDeleting = false,
@@ -53,7 +54,12 @@ class DeleteAccountViewModel(
     init {
         observeAccountStatus()
             .onEach { status ->
-                uiState.update { it.copy(accountProvider = (status as? AccountStatus.Connected)?.provider.toLoaded()) }
+                uiState.update {
+                    it.copy(
+                        accountProvider = (status as? AccountStatus.Connected)?.provider.toLoaded(),
+                        hasAccount = status !is AccountStatus.LocalOnly,
+                    )
+                }
             }.launchIn(viewModelScope)
         connectivityObserver
             .observe()

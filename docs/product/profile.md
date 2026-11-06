@@ -7,7 +7,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     your account and "Privacy and about" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
     glass panel of a Settings split) and the keys and preferences on the right, each column scrolling on its own.
     "Sign out" (or "Erase profile and sign out") comes right after "Account and sync" on every platform and layout, one
-    column included (Pierre's call, beta feedback 16), and "Delete account" stays the last thing of its column; on a book (a tabletop lying down alike) a half each, the 72 dp
+    column included (Pierre's call, beta feedback 16), and "Delete account" stays the last thing of its column, only
+    the legal footer under it; on a book (a tabletop lying down alike) a half each, the 72 dp
     gap centered on the hinge, as Edit profile and the keys do, and its dialogs ("Who sees your profile", Sign out,
     Disconnect, "Erase profile and sign out") and Delete account open in the right half. Edit profile is full screen on
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
@@ -16,6 +17,22 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Delete account open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
+  - "Sign out" and "Delete account" are two buttons for every account the server keeps, an anonymous one too, as for
+    Google or Apple (Pierre's call, beta feedback 17): signing out an anonymous account asks "Sign out?" and for the
+    recovery code to be kept, since it is the way back, and Delete account deletes it on the server (the
+    `delete-account` function takes any signed in user). Only a profile nothing brings back (no Google or Apple and no
+    recovery code yet, `ProfileUiState.erasesProfileOnSignOut`) reads "Erase profile and sign out", whose dialog says
+    it is gone for good; one the server never saw (`isLocalOnly`) has no Delete account either, while an anonymous
+    account whose code isn't made yet keeps it.
+  - The profile ends in a discreet, centered legal footer, as Bible Planner's (Pierre's call, beta feedback 18):
+    "Privacy Policy • Terms of Service", two links opening https://blitzsplit.com/privacy and
+    https://blitzsplit.com/terms (`LegalLinks`, the site's English routes) in the browser, and "Version X" under them
+    in small, secondary text. It closes the column that ends with Delete account: Android's single column and the
+    right column lying down or on a book, iOS's single column and its left column lying down, the Mac's Settings form,
+    and the web's page under both columns. The version is the whole versionName, a beta's suffix too
+    ("Version 3.0.0-beta_7", beta feedback 19): Android and the web read it as built, and the Apple apps from the
+    Info.plist's `BlitzSplitVersionName`, since Apple refuses a suffix in the version string
+    ([release-process.md](../release-process.md#versions)).
   - On the web and the Mac, "App on your phone" (Settings › iPhone on the Mac) sits right under the profile once a
     store lists the app, highlighted while the invite to the phone app stands ([get-the-app.md](get-the-app.md)).
   - The profile's avatar (Profile's on Android and iOS, the inline form's on the web and the Mac, never Edit profile's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,
@@ -36,11 +53,12 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     and Mac apps are one purchase with one listing, whose version both read) and open "Update available"
     ("Version 3.1.0", "Open in the App Store", "Not now", only its buttons and Esc closing it) over the app, a sheet as
     tall as its content on an iPhone, a form sheet with an iPad's room, a sheet on the Mac (on Settings when its check
-    opened it). Profile's "Privacy and about" ends in "Check for updates" with "Version <versionName>" under it in the
-    place of "Version" (Pierre's call; the Mac's row keeps "Version <versionName>" with the button), "Checking…" while it
+    opened it). Profile's "Privacy and about" ("Export my data", "Who sees your profile") ends in "Check for updates" with
+    "Version <versionName>" under it (Pierre's call; the Mac's row keeps "Version <versionName>" with the button), as
+    Bible Planner's keeps it next to its footer's version, "Checking…" while it
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update
-    is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks and
-    keeps "Version".
+    is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks: its
+    version is only the footer's.
   - Profile › Preferences › "Notifications" ("5 active", the rows whose Push is on) opens Notifications: a row per
     kind of Activity and the weekly reminder, each with a Push and an In app toggle. Activity's bar opens the same
     screen; see [activity-and-push.md](activity-and-push.md) for the rows, the defaults and how each platform draws

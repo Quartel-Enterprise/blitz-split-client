@@ -18,8 +18,11 @@ if ! command -v xcodegen > /dev/null; then
     exit 1
 fi
 
-BLITZSPLIT_VERSION_NAME="$(read_property versionName)"
+# The whole versionName, a beta's suffix too ("3.0.0-beta_7"), is what Profile shows (BlitzSplitVersionName); Apple
+# refuses a suffix in the version string, so MARKETING_VERSION takes the plain X.Y.Z.
+BLITZSPLIT_DISPLAY_VERSION="$(read_property versionName)"
+BLITZSPLIT_VERSION_NAME="${BLITZSPLIT_DISPLAY_VERSION%%-*}"
 BLITZSPLIT_VERSION_CODE="$(read_property versionCode)"
-export BLITZSPLIT_VERSION_NAME BLITZSPLIT_VERSION_CODE
+export BLITZSPLIT_DISPLAY_VERSION BLITZSPLIT_VERSION_NAME BLITZSPLIT_VERSION_CODE
 
 xcodegen generate --spec "$DIR/project.yml" --project "$DIR"

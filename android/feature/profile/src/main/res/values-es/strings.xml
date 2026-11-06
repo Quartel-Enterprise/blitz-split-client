@@ -66,9 +66,8 @@
     <string name="profile_dynamic_colors_info_note">Los grupos, los avatares y las categorías conservan sus propios colores para que puedas distinguirlos. Esto solo se aplica a este dispositivo.</string>
     <string name="profile_dynamic_colors_info_ok">Entendido</string>
     <string name="profile_section_about">Privacidad y acerca de</string>
-    <string name="profile_privacy_policy">Política de privacidad</string>
-    <string name="profile_terms">Términos de uso</string>
-    <string name="profile_version">Versión</string>
+    <string name="profile_privacy_policy">Política de Privacidad</string>
+    <string name="profile_terms">Términos de Servicio</string>
     <string name="profile_check_for_updates">Buscar actualizaciones</string>
     <string name="profile_check_for_updates_version">Versión %1$s</string>
     <string name="profile_check_for_updates_checking">Comprobando…</string>
@@ -90,7 +89,7 @@
     <string name="profile_sign_out_now">Cerrar sesión ahora y perder los cambios</string>
     <string name="profile_sign_out_failed">No se pudo cerrar la sesión. Inténtalo de nuevo.</string>
     <string name="profile_erase_title">¿Borrar el perfil de este dispositivo?</string>
-    <string name="profile_erase_body">Usas la app sin cuenta. Al salir, tu perfil y tus datos desaparecen de aquí. Para volver, necesitas el código de recuperación.</string>
+    <string name="profile_erase_body">Tu cuenta no tiene Google ni Apple. Al cerrar sesión, borramos la copia de este dispositivo. Para volver, necesitas el código de recuperación.</string>
     <string name="profile_erase_body_no_code">Usas la app sin cuenta y aún no has sincronizado, así que no hay código de recuperación. Al salir, tu perfil se pierde para siempre.</string>
     <string name="profile_erase_code_saved">Guardé el código en un lugar seguro</string>
     <string name="profile_erase_no_code_ack">Entiendo que no se puede recuperar</string>

@@ -69,7 +69,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      version: ${{ steps.resolve.outputs.version }}
       display_version: ${{ steps.resolve.outputs.display_version }}
       version_code: ${{ steps.resolve.outputs.version_code }}
       branch: ${{ steps.resolve.outputs.branch }}
@@ -332,7 +331,7 @@ jobs:
           scheme: BoraRachar-iOS
           destination: generic/platform=iOS
           export-path: build/ios
-          version: ${{ needs.plan.outputs.version }}
+          version: ${{ needs.plan.outputs.display_version }}
           version-code: ${{ needs.plan.outputs.version_code }}
           google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
@@ -398,7 +397,7 @@ jobs:
           # :shared only declares macosArm64(), and a Release archive of a generic destination also builds x86_64.
           build-settings: ARCHS=arm64
           export-path: build/macos
-          version: ${{ needs.plan.outputs.version }}
+          version: ${{ needs.plan.outputs.display_version }}
           version-code: ${{ needs.plan.outputs.version_code }}
           google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}

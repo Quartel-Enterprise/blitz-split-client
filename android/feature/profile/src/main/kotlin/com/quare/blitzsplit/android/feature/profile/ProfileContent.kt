@@ -165,13 +165,17 @@ private fun ProfileSingleColumn(
                 state = state,
                 onEvent = onEvent,
             )
+            LegalFooter(
+                appVersion = appVersion,
+                onEvent = onEvent,
+            )
         }
     }
 }
 
 /*
  * Why: lying down there is little height, so who you are, your account with signing out under it and the privacy rows
- * go left, the keys, preferences and deleting the account right, each column scrolling on its own: a 330dp column on a phone, 380dp in a tablet's
+ * go left, the keys, preferences, deleting the account and the legal footer right, each column scrolling on its own: a 330dp column on a phone, 380dp in a tablet's
  * centered container.
  */
 @Composable
@@ -200,6 +204,7 @@ private fun ProfileTwoColumnLayout(
             )
             ProfileEndColumn(
                 state = state,
+                appVersion = appVersion,
                 onEvent = onEvent,
                 modifier = Modifier.weight(1f),
             )
@@ -228,6 +233,7 @@ private fun ProfileBookLayout(
         end = {
             ProfileEndColumn(
                 state = state,
+                appVersion = appVersion,
                 onEvent = onEvent,
                 modifier = Modifier
                     .fillMaxSize()
@@ -267,6 +273,7 @@ private fun ProfileStartColumn(
 @Composable
 private fun ProfileEndColumn(
     state: ProfileUiState,
+    appVersion: String,
     onEvent: (ProfileUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -282,6 +289,11 @@ private fun ProfileEndColumn(
         )
         ProfileDeleteAccountContent(
             state = state,
+            onEvent = onEvent,
+        )
+        // Why: the profile ends here, under deleting the account, as in one column (beta feedback 18).
+        LegalFooter(
+            appVersion = appVersion,
             onEvent = onEvent,
         )
     }

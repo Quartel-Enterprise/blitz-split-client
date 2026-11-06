@@ -462,10 +462,10 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_recovery_code_clicked` | none | "Recovery code" | `:feature:profile` |
 | `bitcoin_in_sats_toggled` | `is_on` | "Bitcoin in satoshis" | `:feature:profile` |
 | `profile_notifications_clicked` | none | "Notifications" (Android and iOS) | `:feature:profile` |
-| `privacy_policy_clicked` | none | "Privacy policy" | `:feature:profile` |
-| `terms_clicked` | none | "Terms of use" | `:feature:profile` |
+| `privacy_policy_clicked` | none | "Privacy Policy", in Profile's footer | `:feature:profile` |
+| `terms_clicked` | none | "Terms of Service", in Profile's footer | `:feature:profile` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
-| `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Erase the profile from this device?" | `:feature:profile` |
+| `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_visibility_info_clicked` | none | "Who sees your profile", when it opens | `:feature:profile` |
 | `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`, `unlink_account`) | A confirmation of Profile (sign out, erase, disconnect) closed without its main button, while nothing signs out or unlinks | `:feature:profile` |
 | `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
@@ -485,7 +485,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `sign_out_confirmed` | none | "Sign out" on "Sign out?", when the sign out starts | `:feature:profile` |
 | `sign_out_when_synced_clicked` | none | "Sign out once synced" | `:feature:profile` |
 | `sign_out_now_clicked` | none | "Sign out now and lose the changes", when the sign out starts | `:feature:profile` |
-| `erase_code_copy_clicked` | none | Copy of the recovery code on "Erase the profile from this device?" | `:feature:profile` |
+| `erase_code_copy_clicked` | none | Copy of the recovery code on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `erase_connect_instead_clicked` | none | "Connect Google or Apple instead" there, while it can connect | `:feature:profile` |
 | `profile_erase_confirmed` | none | "Erase and sign out", when the erase starts | `:feature:profile` |
 | `account_photo_selected` | `source` (`edit_profile`, `profile_photo`) | "Use Google account photo" or Apple's, while the account has one | `:feature:edit_profile` |

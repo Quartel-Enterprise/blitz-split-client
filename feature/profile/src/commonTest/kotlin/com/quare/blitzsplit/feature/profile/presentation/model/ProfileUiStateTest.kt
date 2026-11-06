@@ -480,7 +480,7 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN no account WHEN drawing the danger zone THEN hides delete account`() {
+    fun `GIVEN only a local profile WHEN drawing the danger zone THEN hides delete account`() {
         // Given
         val profile = state(accountProvider = null)
 
@@ -489,6 +489,136 @@ class ProfileUiStateTest {
 
         // Then
         assertFalse(showsDelete)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN drawing the danger zone THEN shows delete account`() {
+        // Given
+        val profile = state(
+            accountProvider = null,
+            hasAnonymousId = true,
+        )
+
+        // When
+        val showsDelete = profile.showsDeleteAccount
+
+        // Then
+        assertTrue(showsDelete)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account not read yet WHEN drawing the danger zone THEN hides delete account`() {
+        // Given
+        val profile = state(
+            isLoaded = false,
+            accountProvider = null,
+            hasAnonymousId = true,
+        )
+
+        // When
+        val showsDelete = profile.showsDeleteAccount
+
+        // Then
+        assertFalse(showsDelete)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account with its recovery code WHEN drawing the sign out THEN signs out without erasing`() {
+        // Given
+        val profile = state(
+            hasAnonymousId = true,
+            formattedRecoveryCode = "ABCD-EFGH-JKLM",
+        )
+
+        // When
+        val erases = profile.erasesProfileOnSignOut
+
+        // Then
+        assertFalse(erases)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account whose code is not made yet WHEN drawing the sign out THEN erases the profile`() {
+        // Given
+        val profile = state(
+            hasAnonymousId = true,
+            formattedRecoveryCode = null,
+        )
+
+        // When
+        val erases = profile.erasesProfileOnSignOut
+
+        // Then
+        assertTrue(erases)
+    }
+
+    @Test
+    fun `GIVEN Google without a recovery code WHEN drawing the sign out THEN signs out without erasing`() {
+        // Given
+        val profile = state(
+            accountProvider = AccountProvider.GOOGLE,
+            formattedRecoveryCode = null,
+        )
+
+        // When
+        val erases = profile.erasesProfileOnSignOut
+
+        // Then
+        assertFalse(erases)
+    }
+
+    @Test
+    fun `GIVEN no account nor anonymous id WHEN drawing the sign out button THEN treats it as local only`() {
+        // Given
+        val profile = state(
+            accountProvider = null,
+            hasAnonymousId = false,
+        )
+
+        // When
+        val isLocalOnly = profile.isLocalOnly
+
+        // Then
+        assertTrue(isLocalOnly)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN drawing the sign out button THEN does not treat the profile as local only`() {
+        // Given
+        val profile = state(
+            accountProvider = null,
+            hasAnonymousId = true,
+        )
+
+        // When
+        val isLocalOnly = profile.isLocalOnly
+
+        // Then
+        assertFalse(isLocalOnly)
+    }
+
+    @Test
+    fun `GIVEN Google WHEN drawing the sign out button THEN does not treat the profile as local only`() {
+        // Given
+        val profile = state(accountProvider = AccountProvider.GOOGLE)
+
+        // When
+        val isLocalOnly = profile.isLocalOnly
+
+        // Then
+        assertFalse(isLocalOnly)
+    }
+
+    @Test
+    fun `GIVEN Apple WHEN drawing the sign out button THEN does not treat the profile as local only`() {
+        // Given
+        val profile = state(accountProvider = AccountProvider.APPLE)
+
+        // When
+        val isLocalOnly = profile.isLocalOnly
+
+        // Then
+        assertFalse(isLocalOnly)
     }
 
     @Test
@@ -550,6 +680,7 @@ class ProfileUiStateTest {
         isSigningOut: Boolean = false,
         isSignOutScheduled: Boolean = false,
         accountProvider: AccountProvider? = null,
+        hasAnonymousId: Boolean = false,
         isConnectExpanded: Boolean = false,
         formattedRecoveryCode: String? = null,
         isUnlinking: Boolean = false,
@@ -560,7 +691,7 @@ class ProfileUiStateTest {
         avatarColor = AvatarColor.GREEN,
         photoUrl = null,
         accountProvider = accountProvider,
-        hasAnonymousId = false,
+        hasAnonymousId = hasAnonymousId,
         maskedEmail = null,
         formattedRecoveryCode = formattedRecoveryCode,
         showsRecoveryCodePrompt = false,
