@@ -7,6 +7,7 @@
     <string name="split_bill_done">Terminé</string>
     <string name="split_bill_back">Retour</string>
     <string name="split_bill_amount">Montant</string>
+    <string name="split_bill_currency_change">Devise : %1$s. Change-la</string>
     <string name="split_bill_description">Description</string>
     <string name="split_bill_description_placeholder">C’était quoi ? Ex. Courses</string>
     <string name="split_bill_amount_error">Indique le montant de la dépense.</string>

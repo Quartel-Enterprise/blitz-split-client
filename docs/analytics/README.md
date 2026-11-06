@@ -354,6 +354,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_group_clicked` | none | The new bill's group, which opens "Split in which group?" | `:feature:split_bill` |
 | `split_bill_group_picked` | none | A group marked in "Split in which group?", while it is open, another than the one marked | `:feature:split_bill` |
 | `split_bill_group_confirmed` | `is_another` | "Continue" on it, while it is open, the group still there and the bill not saving | `:feature:split_bill` |
+| `split_bill_currency_picked` | `currency` (the code) | The bill's currency picked beside the total, another than the one it has, the form not locked or saving | `:feature:split_bill` |
 | `split_bill_payer_clicked` | none | "Who paid" | `:feature:split_bill` |
 | `split_bill_payer_picked` | none | A person picked in "Who paid", while it is open | `:feature:split_bill` |
 | `split_bill_payer_confirmed` | none | "Done" on "Who paid", while it is open | `:feature:split_bill` |

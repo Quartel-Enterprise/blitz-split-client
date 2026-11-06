@@ -40,6 +40,7 @@ internal fun createInitialBillState(
         groups = emptyList(),
         groupSelection = null,
         currency = currency,
+        pickedCurrency = null,
         showsSats = showsSats,
         people = emptyList(),
         amountText = "",
@@ -243,6 +244,8 @@ internal fun SplitBillUiState.withGroupPicked(groupId: String): SplitBillUiState
 
 // Why: another group's people pay and split it from scratch; what it was, how much and when stay.
 internal fun SplitBillUiState.toStartInAnotherGroup(): SplitBillUiState = copy(
+    // Why: the bill starts in the new group's currency, not the one picked for the last group.
+    pickedCurrency = null,
     payerId = "",
     severalPayers = null,
     payerSelection = null,
@@ -274,8 +277,10 @@ internal fun SplitBillUiState.withGroupShown(
     people: List<BillPerson>,
     decimalSeparator: Char,
 ): SplitBillUiState {
+    // Why: the bill's own currency rules, the group's only until one is picked.
+    val billCurrency = pickedCurrency ?: group.currency
     val severalPayers = severalPayers
-        ?.withPeople(people, group.currency, showsSats, keepsFormer = isEditing, decimalSeparator)
+        ?.withPeople(people, billCurrency, showsSats, keepsFormer = isEditing, decimalSeparator)
         ?.takeIf { it.payers.isNotEmpty() }
     val payerId = if (severalPayers != null) {
         ""
@@ -290,9 +295,9 @@ internal fun SplitBillUiState.withGroupShown(
         groupInitials = Initials.of(group.name),
         groupColor = group.color,
         groupPhotoUrl = group.photo?.toImageUrl(),
-        currency = group.currency,
-        // Why: moved to a group of another currency, the bill keeps the number typed, not its digits.
-        amountText = TypedText.toCurrency(amountText, currency, group.currency, showsSats, decimalSeparator),
+        currency = billCurrency,
+        // Why: moved to another currency, the bill keeps the number typed, not its digits.
+        amountText = TypedText.toCurrency(amountText, currency, billCurrency, showsSats, decimalSeparator),
         people = people,
         payerId = payerId,
         severalPayers = severalPayers,
@@ -302,7 +307,7 @@ internal fun SplitBillUiState.withGroupShown(
         },
         payerAmounts = payerAmounts?.withPeople(
             people,
-            group.currency,
+            billCurrency,
             showsSats,
             keepsFormer = isEditing,
             decimalSeparator,

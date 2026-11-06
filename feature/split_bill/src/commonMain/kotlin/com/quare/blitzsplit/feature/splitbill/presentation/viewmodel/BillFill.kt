@@ -14,6 +14,8 @@ internal fun SplitBillUiState.toFilledWith(
     decimalSeparator: Char,
     spentDay: RelativeDay,
 ): SplitBillUiState {
+    // Why: the bill's own currency, never the group's, which is only the default of a new bill.
+    val currency = expense.currency
     val people = group.members.map { it.toBillPerson() }
     val payerId = expense.payers
         .singleOrNull()
@@ -23,16 +25,17 @@ internal fun SplitBillUiState.toFilledWith(
         payerAmountsOf(
             expense = expense,
             people = people,
-            currency = group.currency,
+            currency = currency,
             showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         )
     }
     return copy(
-        currency = group.currency,
+        currency = currency,
+        pickedCurrency = currency,
         amountText = AmountInput.format(
             amountMinor = expense.amountMinor,
-            currency = group.currency,
+            currency = currency,
             showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         ),
@@ -46,7 +49,7 @@ internal fun SplitBillUiState.toFilledWith(
         split = splitEditorOf(
             expense = expense,
             people = people,
-            currency = group.currency,
+            currency = currency,
             showsSats = showsSats,
             decimalSeparator = decimalSeparator,
         ),

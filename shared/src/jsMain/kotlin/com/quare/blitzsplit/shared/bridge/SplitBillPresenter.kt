@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -128,9 +129,11 @@ class JsSplitBillState(
     val canChangeGroup: Boolean,
     // Why: the group "Rachar em qual grupo?" marks while it is open, null while it is closed.
     val groupSelection: String?,
-    // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
+    val currencies: Array<String>,
+    val cryptoCurrencies: Array<String>,
+    val canChangeCurrency: Boolean,
     val people: Array<JsBillPerson>,
     val amountText: String,
     val description: String,
@@ -238,6 +241,9 @@ class SplitBillPresenter(
                 groupSelection = state.groupSelection?.groupId,
                 currency = state.currency.code,
                 fractionDigits = state.currency.fractionDigits,
+                currencies = state.currencies.toCurrencyCodes(),
+                cryptoCurrencies = state.currencies.toCryptoCurrencyCodes(),
+                canChangeCurrency = state.canChangeCurrency,
                 people = state.people.map(::toJsBillPerson).toTypedArray(),
                 amountText = state.amountText,
                 description = state.description,
@@ -385,6 +391,10 @@ class SplitBillPresenter(
 
     fun dismissDelete() {
         viewModel.onEvent(SplitBillUiEvent.OnDeleteDismissed)
+    }
+
+    fun changeCurrency(code: String) {
+        GroupCurrency.fromCodeOrNull(code)?.let { viewModel.onEvent(SplitBillUiEvent.OnCurrencyPicked(it)) }
     }
 
     fun changeAmount(text: String) {

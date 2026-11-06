@@ -147,6 +147,7 @@ internal fun createPreviewBillState(
     groups = previewGroups,
     groupSelection = groupSelection,
     currency = GroupCurrency.BRL,
+    pickedCurrency = null,
     showsSats = false,
     people = previewPeople,
     amountText = amountText,
