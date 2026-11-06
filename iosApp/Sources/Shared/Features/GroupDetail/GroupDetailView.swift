@@ -587,10 +587,16 @@ private struct MacGroupScreen: View {
             switch model.tab {
             case .expenses: MacGroupExpenses(model: model)
             case .balances:
-                List {
-                    BalancesSections(model: model)
+                // Drawn in the window's middle, as Expenses' empty state, not as a row of the list
+                if model.state.isBalancesEmpty {
+                    NoBalancesYet()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List {
+                        BalancesSections(model: model)
+                    }
+                    .scrollContentBackground(.hidden)
                 }
-                .scrollContentBackground(.hidden)
             case .members:
                 List {
                     if let members { MembersSections(model: members, host: host) }

@@ -96,7 +96,9 @@ struct GroupsTable: View {
         .onChange(of: selection) { _, groupId in
             guard let groupId else { return }
             model.send(GroupsUiEventOnGroupClicked(groupId: groupId))
-            selection = nil
+            // Why: cleared on the next turn, so the table's native row selection is cleared too and the same row can be
+            // clicked again once back on the list.
+            DispatchQueue.main.async { selection = nil }
         }
     }
 }
