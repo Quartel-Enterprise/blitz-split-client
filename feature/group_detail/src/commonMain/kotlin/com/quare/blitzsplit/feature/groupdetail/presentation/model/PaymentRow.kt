@@ -8,7 +8,7 @@ data class PaymentRow(
     override val id: String,
     // Why: each UI writes the time of day.
     val paidAt: Long,
-    // Why: "Hoje" or "Ontem" in the details' "Quando", as a bill's own screen words its day.
+    // Why: "Hoje" or "Ontem" in the details' "Quando", as a bill's form words its "Quando".
     val paidDay: RelativeDay,
     // Why: null for someone no longer in the group ("Ex-membro").
     val fromName: String?,
