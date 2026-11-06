@@ -324,6 +324,7 @@ export const en = {
   groupDetail_breadcrumb: 'You are here',
   groupDetail_joinedTitle: 'You joined as {name}',
   groupDetail_joinedMessage: 'Everything added for you shows up here.',
+  groupDetail_joinedDismiss: 'Dismiss',
   groupDetail_protectTitle: 'Protect your access',
   groupDetail_protectMessage: 'You joined without an account. Save the code or connect Google or Apple.',
   groupDetail_metaTotal: '{members} · {total} in total',

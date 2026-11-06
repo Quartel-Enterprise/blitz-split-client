@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +35,7 @@ internal fun JoinedBanner(
     name: String,
     showsProtectAccess: Boolean,
     onProtectAccessClick: () -> Unit,
+    onDismissClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -46,14 +50,19 @@ internal fun JoinedBanner(
             color = MaterialTheme.colorScheme.primaryContainer,
         ) {
             Row(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(
+                    start = 16.dp,
+                    top = 16.dp,
+                    bottom = 16.dp,
+                    end = 4.dp,
+                ),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Icon(
                     imageVector = Icons.Outlined.CheckCircle,
                     contentDescription = null,
                 )
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(R.string.group_detail_joined_title, name),
                         style = MaterialTheme.typography.titleSmall,
@@ -61,6 +70,15 @@ internal fun JoinedBanner(
                     Text(
                         text = stringResource(R.string.group_detail_joined_message),
                         style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                IconButton(
+                    onClick = onDismissClick,
+                    modifier = Modifier.size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = stringResource(R.string.group_detail_joined_dismiss),
                     )
                 }
             }

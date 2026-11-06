@@ -301,21 +301,34 @@ private struct JoinedNotice: View {
     let name: String
     let showsProtectAccess: Bool
     let onProtectAccess: () -> Void
+    let onDismiss: () -> Void
 
     var body: some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("You joined as \(name)")
-                    .font(.headline)
-                Text("Everything added for you shows up here.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+        HStack(alignment: .top) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("You joined as \(name)")
+                        .font(.headline)
+                    Text("Everything added for you shows up here.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } icon: {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(Palette.accent)
             }
-        } icon: {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(Palette.accent)
+            .accessibilityElement(children: .combine)
+            Spacer(minLength: 0)
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 32, height: 32)
+                    .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss")
         }
-        .accessibilityElement(children: .combine)
         if showsProtectAccess {
             Button(action: onProtectAccess) {
                 Label {
@@ -472,9 +485,12 @@ private struct PhoneExpenseSections: View {
     var body: some View {
         if let joinedAs = state.joinedAs {
             Section {
-                JoinedNotice(name: joinedAs, showsProtectAccess: state.showsProtectAccess) {
-                    model.send(GroupDetailUiEventOnProtectAccessClicked.shared)
-                }
+                JoinedNotice(
+                    name: joinedAs,
+                    showsProtectAccess: state.showsProtectAccess,
+                    onProtectAccess: { model.send(GroupDetailUiEventOnProtectAccessClicked.shared) },
+                    onDismiss: { model.send(GroupDetailUiEventOnJoinedNoticeDismissed.shared) }
+                )
             }
         }
         if state.isEmpty {
@@ -625,9 +641,12 @@ private struct MacGroupExpenses: View {
         VStack(alignment: .leading, spacing: 0) {
             if let joinedAs = state.joinedAs {
                 VStack(alignment: .leading, spacing: 10) {
-                    JoinedNotice(name: joinedAs, showsProtectAccess: state.showsProtectAccess) {
-                        model.send(GroupDetailUiEventOnProtectAccessClicked.shared)
-                    }
+                    JoinedNotice(
+                        name: joinedAs,
+                        showsProtectAccess: state.showsProtectAccess,
+                        onProtectAccess: { model.send(GroupDetailUiEventOnProtectAccessClicked.shared) },
+                        onDismiss: { model.send(GroupDetailUiEventOnJoinedNoticeDismissed.shared) }
+                    )
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)

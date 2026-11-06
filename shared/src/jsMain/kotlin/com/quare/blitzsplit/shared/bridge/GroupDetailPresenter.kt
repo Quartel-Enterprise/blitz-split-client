@@ -228,6 +228,10 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnProtectAccessClicked)
     }
 
+    fun dismissJoinedNotice() {
+        viewModel.onEvent(GroupDetailUiEvent.OnJoinedNoticeDismissed)
+    }
+
     fun invite() {
         viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
     }

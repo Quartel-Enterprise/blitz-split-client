@@ -73,6 +73,7 @@
     <string name="group_detail_teach_error">Impossible d’apprendre à la carte. Réessaie.</string>
     <string name="group_detail_joined_title">Tu as rejoint en tant que %s</string>
     <string name="group_detail_joined_message">Tout ce qui est ajouté pour toi s’affiche ici.</string>
+    <string name="group_detail_joined_dismiss">Fermer</string>
     <string name="group_detail_protect_title">Protège ton accès</string>
     <string name="group_detail_protect_message">Tu as rejoint sans compte. Enregistre le code ou connecte Google ou Apple.</string>
     <plurals name="group_detail_simplified_text">

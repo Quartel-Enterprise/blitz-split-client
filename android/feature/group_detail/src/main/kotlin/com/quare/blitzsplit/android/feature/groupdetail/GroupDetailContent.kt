@@ -98,6 +98,7 @@ private fun expensesTabOf(
                         name = name,
                         showsProtectAccess = state.showsProtectAccess,
                         onProtectAccessClick = { onEvent(GroupDetailUiEvent.OnProtectAccessClicked) },
+                        onDismissClick = { onEvent(GroupDetailUiEvent.OnJoinedNoticeDismissed) },
                         modifier = Modifier.padding(
                             start = 16.dp,
                             end = 16.dp,

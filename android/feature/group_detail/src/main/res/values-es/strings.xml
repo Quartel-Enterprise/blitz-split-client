@@ -73,6 +73,7 @@
     <string name="group_detail_teach_error">No se pudo enseñar al mapa. Inténtalo de nuevo.</string>
     <string name="group_detail_joined_title">Te uniste como %s</string>
     <string name="group_detail_joined_message">Todo lo que se agregue a tu nombre aparece aquí.</string>
+    <string name="group_detail_joined_dismiss">Descartar</string>
     <string name="group_detail_protect_title">Protege tu acceso</string>
     <string name="group_detail_protect_message">Te uniste sin una cuenta. Guarda el código o conecta Google o Apple.</string>
     <plurals name="group_detail_simplified_text">

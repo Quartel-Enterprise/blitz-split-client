@@ -267,6 +267,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_teach_word_picked` | none | A word of the title picked to teach | `:feature:group_detail` |
 | `category_teach_confirmed` | none | The word taught, once per word saved (not a second tap while it saves) | `:feature:group_detail` |
 | `protect_access_clicked` | `source` (`group_detail`) | "Protect your access" | `:feature:group_detail` |
+| `joined_notice_dismissed` | none | The X of "You joined as Bruno" | `:feature:group_detail` |
 | `simplify_debts_info_clicked` | `source` (`group_detail`, `edit_group`) | "How it works" of "Simplify debts" | `:feature:group_detail`, `:feature:edit_group` |
 | `simplify_conflict_activity_clicked` | `source` (`group_detail`, `edit_group`) | "See in Activity" on the simplify conflict's notice | `:feature:group_detail`, `:feature:edit_group` |
 | `group_icon_clicked` | none | The avatar or its pencil ("Change icon or photo"), which opens "Group icon" | `:feature:edit_group` |

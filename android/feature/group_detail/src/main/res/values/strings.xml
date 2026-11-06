@@ -70,6 +70,7 @@
     <string name="group_detail_teach_error">Couldn\'t teach the map. Try again.</string>
     <string name="group_detail_joined_title">You joined as %s</string>
     <string name="group_detail_joined_message">Everything added for you shows up here.</string>
+    <string name="group_detail_joined_dismiss">Dismiss</string>
     <string name="group_detail_protect_title">Protect your access</string>
     <string name="group_detail_protect_message">You joined without an account. Save the code or connect Google or Apple.</string>
     <plurals name="group_detail_simplified_text">

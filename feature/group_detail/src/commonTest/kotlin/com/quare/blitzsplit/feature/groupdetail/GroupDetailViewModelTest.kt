@@ -1457,6 +1457,20 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN the joined notice WHEN dismissing it THEN it and the protect access leave`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(joinedAs = "Bruno")
+        assertEquals("Bruno", viewModel.uiState.value.joinedAs)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnJoinedNoticeDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.joinedAs)
+        assertFalse(viewModel.uiState.value.showsProtectAccess)
+    }
+
+    @Test
     fun `GIVEN another screen over the group WHEN tapping a bill THEN stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
