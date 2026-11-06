@@ -72,7 +72,6 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     payment's own currency, never the group's. The home's overall balance is the global Balances' computation
     (`PeopleBalances.totals`). The bill form picks the bill's currency beside the total (see
     [Split a bill](split-bill.md)), and Activity shows each amount in its bill's or payment's own currency.
->>>>>>> 63368e3a4e2fc12766564ef6093de9960b8180f8
   - A bill or payment in a currency code this version does not know (only a newer app or server writes one) is never
     skipped and never turned into another currency (Pierre's call): it shows with its raw code and two decimals, "XYZ
     12,50", in the bill list, the detail, the balances, settle up and the activity (Android's `MoneyFormatter`, Apple's
