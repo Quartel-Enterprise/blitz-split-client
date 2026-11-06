@@ -30,7 +30,7 @@ class AddContactToGroupUseCase(
             ?: return Result.failure(NoSuchElementException("No group $groupId"))
         // Why: a stale tap never adds someone the group already has, a guest being their name there.
         if (group.members.any { PeopleBalances.keyOf(it) == contact.key }) return Result.success(Unit)
-        // Why: a name may repeat in a group (beta feedback 3, item 29), so only one too short to be a name holds it back.
+        // Why: a name may repeat in a group (beta feedback 3, item 29), so only one too short holds it back.
         val name = (checkMemberName(contact.name) as? MemberNameCheck.Available)?.name
             ?: return Result.failure(IllegalArgumentException("${contact.name} is too short for a member's name"))
         val userId = contact.userId ?: return addMember(groupId, name)

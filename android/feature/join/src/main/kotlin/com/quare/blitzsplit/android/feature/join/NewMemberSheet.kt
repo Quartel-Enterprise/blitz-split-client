@@ -35,9 +35,9 @@ import com.quare.blitzsplit.feature.join.presentation.model.NewMemberDraft
 
 /*
  * Why: "Entrar com outro nome" (3.2c), under any name, another member's too. While the join is on its way the button
- * spins and nothing else can be tapped (beta feedback 3, item 30); the ViewModel keeps the sheet open until it answers. A bottom sheet on a phone, at most 640dp wide lying down; a 560dp dialog on a
- * tablet and a foldable upright; on a book (and a tabletop, drawn like it) a dialog in the right half, never over
- * the hinge.
+ * spins and nothing else can be tapped (beta feedback 3, item 30); the ViewModel keeps the sheet open until it
+ * answers. A bottom sheet on a phone, at most 640dp wide lying down; a 560dp dialog on a tablet and a foldable
+ * upright; on a book (and a tabletop, drawn like it) a dialog in the right half, never over the hinge.
  */
 @Composable
 internal fun NewMemberSheet(

@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -336,6 +337,7 @@ private fun NotInListButton(
                     .padding(end = 8.dp)
                     .size(20.dp),
                 strokeWidth = 2.dp,
+                color = LocalContentColor.current,
             )
         } else {
             Icon(
