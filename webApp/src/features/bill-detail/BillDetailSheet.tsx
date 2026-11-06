@@ -250,7 +250,7 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
 
 /** What the bill's body reads: Conta's state, or a bill's link page's, which has no "Sua parte" nor queue. */
 export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent' | 'totalMinor' | 'payers' | 'splitMode' | 'participantCount' | 'people'> &
-  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId'>>
+  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId' | 'showsUnknownCurrencyNote'>>
 
 /**
  * The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. A
