@@ -179,8 +179,8 @@ class ProfileViewModel(
             observeNotificationPreferences(),
             observePushEnabled(),
             firstDownload,
-        ) { preferences, isPushOn, download ->
-            if (download != null) Loadable.Loading else (if (isPushOn) preferences.push.size else 0).toLoaded()
+        ) { preferences, isPushEnabled, download ->
+            if (download != null) Loadable.Loading else (if (isPushEnabled) preferences.push.size else 0).toLoaded()
         }.onEach { count -> uiState.update { it.copy(activeNotificationCount = count) } }
             .launchIn(viewModelScope)
         observeAppInvite()
