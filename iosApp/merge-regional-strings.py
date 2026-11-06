@@ -28,8 +28,11 @@ TABLE_SUFFIXES = (".strings", ".stringsdict")
 
 
 def read_table(path: Path) -> dict:
-    # plutil reads every format a .strings may come in: binary, XML or the old text one
-    xml = subprocess.run(["/usr/bin/plutil", "-convert", "xml1", "-o", "-", str(path)], check=True, capture_output=True)
+    # plutil reads every format a .strings may come in: binary, XML or the old text one. Its stderr stays in the build
+    # log, so a table it can't read says why
+    xml = subprocess.run(
+        ["/usr/bin/plutil", "-convert", "xml1", "-o", "-", str(path)], check=True, stdout=subprocess.PIPE
+    )
     return plistlib.loads(xml.stdout)
 
 
