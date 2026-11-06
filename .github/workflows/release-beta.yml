@@ -163,8 +163,8 @@ jobs:
       # ones. The step fails when it finds nothing, instead of publishing an empty fingerprint.
       # Invite links open the app only when the key's SHA-256 is in blitzsplit.com's assetlinks.json
       # (docs/product/joining-and-folds.md): a key missing there warns, and the beta still publishes.
-      # build-tools 37 labels a signer with its SDK range (`Signer (minSdkVersion=…, maxSdkVersion=…) certificate
-      # SHA-1 digest:`) where 36 printed `Signer #1 certificate SHA-1 digest:`. Both digests come from the first
+      # build-tools 37 prints `V2 Signer: certificate SHA-1 digest:` where 36 printed `Signer #1 certificate SHA-1
+      # digest:`, and labels a rotated signer with its SDK range. Both digests come from the first
       # signer printed, so they belong to one certificate. A failed verify or a missing digest prints what
       # apksigner said. --verbose is kept because the run that failed, without it, printed no certificate.
       - name: Show the signing certificate
@@ -183,9 +183,9 @@ jobs:
             echo "::error::apksigner could not verify the release APK's signature."
             exit 1
           fi
-          label="$(sed -n 's/^\(Signer[^:]*\) certificate SHA-256 digest: .*/\1/p' <<< "$certs" | head -1)"
+          label="$(sed -n 's/^\(.*Signer.*\)certificate SHA-256 digest: .*/\1/p' <<< "$certs" | head -1)"
           digest() {
-            awk -v p="$label certificate $1 digest: " 'index($0, p) == 1 { print substr($0, length(p) + 1); exit }' <<< "$certs"
+            awk -v p="${label}certificate $1 digest: " 'index($0, p) == 1 { print substr($0, length(p) + 1); exit }' <<< "$certs"
           }
           sha1="$(digest SHA-1)"
           sha256="$(digest SHA-256)"
