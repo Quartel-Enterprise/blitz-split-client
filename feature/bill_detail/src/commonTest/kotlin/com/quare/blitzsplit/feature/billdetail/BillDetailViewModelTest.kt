@@ -177,6 +177,18 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN a USD bill in a BRL group WHEN it opens THEN its amounts are in USD`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = trip.copy(currency = GroupCurrency.BRL))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(GroupCurrency.USD, state.currency)
+    }
+
+    @Test
     fun `GIVEN a bill spent earlier today WHEN it opens THEN its day is today`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpense = expense(spentAt = earlierToday))
