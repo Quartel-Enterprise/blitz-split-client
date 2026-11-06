@@ -16,8 +16,10 @@ The home tab, its shortcuts and pinned groups.
     "Needs internet"),
     "Record payment", which asks "Who paid whom?" first (`Route.PickPayment`: every open pair of every
     group, the most recent group first, pairs with you first; the pair opens Record payment in its place), and
-    "New group". "Your groups": up to three open groups, the pinned first, then the latest activity, as Groups draws
-    them; "See all" opens Groups. "Latest expenses": the five latest bills you paid or take part in, by day, with
+    "New group". Every platform draws them in the page, each with its name, never as bare icons in a bar (on the Mac
+    under Overall balance, beside the faces in a wide window). "Your groups": up to three open groups, the pinned
+    first, then the latest activity, as Groups draws them; "See all" opens Groups. "Latest expenses": the five latest
+    bills you paid or take part in, by day, with
     your share and its category's badge exactly as the group's Expenses rows draw it (Pierre's call, the category as
     it reads now, `HomeBill.category`); a bill opens its Bill over its group, and "See all" opens Activity over Home, as the bell in Home's bar does.
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
