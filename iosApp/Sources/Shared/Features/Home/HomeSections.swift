@@ -263,6 +263,9 @@ private struct ShortcutTile: View {
     let isEnabled: Bool
     let action: () -> Void
 
+    /// A pointer over the tile (the Mac, an iPad's trackpad) tints it, so the card reads as a button.
+    @State private var isHovered = false
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 6) {
@@ -284,11 +287,27 @@ private struct ShortcutTile: View {
             .padding(.horizontal, 6)
             .padding(.vertical, 12)
             .background(Palette.card, in: .rect(cornerRadius: 22))
+            .overlay {
+                if isHovered && isEnabled {
+                    RoundedRectangle(cornerRadius: 22)
+                        .fill(Palette.accent.opacity(0.08))
+                }
+            }
             .opacity(isEnabled ? 1 : 0.7)
             .contentShape(.rect)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ShortcutTileStyle())
         .disabled(!isEnabled)
+        .onHover { isHovered = $0 }
+        .animation(.easeOut(duration: 0.15), value: isHovered)
+    }
+}
+
+/// Plain, dimmed while pressed.
+private struct ShortcutTileStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.6 : 1)
     }
 }
 
