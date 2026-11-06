@@ -82,7 +82,7 @@ class ContactsViewModel(
                 isDetailPaneShown = false,
                 pickedKey = null,
                 isAgendaPicked = false,
-                canSearch = false,
+                hasGroups = false,
             ),
         )
 
@@ -136,9 +136,9 @@ class ContactsViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        // Why: "Buscar" and "Rachar conta" both need a group, settled ones included.
+        // Why: "Rachar conta" needs a group, settled ones included.
         observeHasGroups()
-            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
+            .onEach { hasGroups -> uiState.update { it.copy(hasGroups = hasGroups) } }
             .launchIn(viewModelScope)
     }
 
@@ -150,9 +150,7 @@ class ContactsViewModel(
 
             ContactsUiEvent.OnSplitBillClicked -> openSplitBill()
 
-            ContactsUiEvent.OnSearchClicked -> if (uiState.value.canSearch &&
-                navigator.openSearchOver(HomeTab.CONTACTS)
-            ) {
+            ContactsUiEvent.OnSearchClicked -> if (navigator.openSearchOver(HomeTab.CONTACTS)) {
                 trackEvent("search_opened", sourceParams)
             }
 

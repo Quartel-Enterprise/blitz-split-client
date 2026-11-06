@@ -430,7 +430,6 @@ struct HomeView: View {
                 }
             }
         }
-        SearchToolbarItem(canSearch: state.canSearch) { model.send(HomeUiEventOnSearchClicked.shared) }
         ToolbarItem(placement: .primaryAction) { bellButton }
         ToolbarItem(placement: .primaryAction) { profileButton }
         if state.showsSplitBillButton {

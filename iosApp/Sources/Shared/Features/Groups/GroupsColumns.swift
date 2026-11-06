@@ -61,14 +61,14 @@ struct GroupsColumns<ListContent: View>: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            NavigationStack(path: listPath) {
+            SyncedNavigationStack(path: listPath) {
                 list()
                     .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }
             }
             .frame(width: showsDetail ? listWidth : nil)
             if showsDetail {
                 ListDetailSeparator(fold: division?.verticalFrame)
-                NavigationStack(path: panePath) {
+                SyncedNavigationStack(path: panePath) {
                     paneRoot
                         .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }
                 }

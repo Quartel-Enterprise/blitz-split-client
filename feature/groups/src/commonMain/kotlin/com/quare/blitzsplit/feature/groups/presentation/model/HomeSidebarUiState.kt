@@ -18,6 +18,4 @@ data class HomeSidebarUiState(
     val openGroups: List<GroupRow>,
     // Why: nothing is drawn until Room is read, so the sidebar never fills in under the page.
     val isLoaded: Boolean,
-    // Why: "Buscar" only once there is a group to look in, settled ones included, as on the tabs.
-    val canSearch: Boolean,
 )

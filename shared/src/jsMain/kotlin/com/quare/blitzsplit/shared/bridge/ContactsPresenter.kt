@@ -38,8 +38,6 @@ class JsContactsState(
     val isHiddenExpanded: Boolean,
     // Why: "Você deve" and "Te devem", Saldos' totals in its main currency; null while they load (the shimmer).
     val total: JsBalanceTotal?,
-    // Why: "Buscar…" and ⌘K only once there is a group to look in.
-    val canSearch: Boolean,
     val isEmpty: Boolean,
     // Why: the skeleton rows, until the people are read and the account's copy is whole.
     val isLoading: Boolean,
@@ -75,7 +73,6 @@ class ContactsPresenter {
                         toPayMinor = total.toPayMinor.toDouble(),
                     )
                 },
-                canSearch = state.canSearch,
                 isEmpty = state.isEmpty,
                 isLoading = state.isLoading,
                 isWaitingForInternet = state.isWaitingForInternet,

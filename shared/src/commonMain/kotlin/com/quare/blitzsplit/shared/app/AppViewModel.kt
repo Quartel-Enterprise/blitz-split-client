@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.navigation.ForwardHistory
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
@@ -111,6 +112,11 @@ class AppViewModel(
 
     val billLinkNoticeWatcher: FlowWatcher<BillLinkNoticeState> = FlowWatcher(billLinkNotice)
 
+    // Why: the Mac's mouse back and forward buttons, and Go › Back and Forward.
+    private val forwardHistory = ForwardHistory(navigator, viewModelScope)
+
+    val canGoForwardWatcher: FlowWatcher<Boolean> = FlowWatcher(forwardHistory.canGoForward)
+
     init {
         startSync()
         followTheme()
@@ -120,6 +126,14 @@ class AppViewModel(
         returnToWelcomeOnceErased()
         openInviteLinks()
         offerUpdatesInFront()
+    }
+
+    fun goBack() {
+        forwardHistory.goBack()
+    }
+
+    fun goForward() {
+        forwardHistory.goForward()
     }
 
     private fun resolveStartRoute() {

@@ -64,7 +64,9 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     closest first, under "Did you mean “Larissa”?" (the closest name or description as written), which a tap
     searches instead (`SearchUiEvent.OnSuggestionClicked`); close matches never mix with exact ones, so "churros"
     doesn't bring "Churrasco". It is the same search on all four tabs (Home, Groups, Balances, Contacts, Pierre's call; Activity, no tab
-    since its bell, has none), and only shows once there is a group. It is an item of the navigation (Pierre's call),
+    since its bell, has none), there from the first launch, before the first group too, as an item of the navigation
+    never comes and goes (Pierre's beta feedback; with nothing on the device it says where it looks and finds nothing).
+    It is an item of the navigation (Pierre's call),
     placed where each platform looks for it: iOS's search tab at the end of the tab bar on an iPhone, lying down
     too, and in an iPad's narrow window, a round button apart from the tabs' capsule on every tab (Pierre's call;
     iOS 27 only sets it apart when opening it activates the search, `tabViewSearchActivation(.searchTabSelection)`,
@@ -83,12 +85,13 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     (`HomeSidebarUiEvent.OnSearchClicked`, no ⌘K there, which could close a dialog over the page), and Android's rail
     beside a group's screens drawn alone ends with it too (`Navigator.openSearchFromPage`); over Groups that is
     Groups' own search, which takes the route's place (the first result beside the list), and it closes once Groups
-    leaves the back stack, so iOS's search tab never stays in front of Activity opened from a notice; and the Mac's toolbar field on
-    Groups, whose results take the groups' place once something is typed, and a magnifier (⌘K's dialog's twin, a
-    sheet) on the other tabs, as macOS puts search in the toolbar. Over Home, Balances and Contacts it is a route
+    leaves the back stack, so iOS's search tab never stays in front of Activity opened from a notice; and the Mac's
+    sidebar, its first item atop the tabs, where the web's sidebar puts "Search… ⌘K" (Pierre's beta feedback), opened
+    by ⌘K too (Edit › Search, which focuses its field again while it is open): the field and the scopes above the
+    results, opening over Groups as the iPad's search tab does; the Mac's toolbar has no search field nor magnifier. Over Home, Balances and Contacts it is a route
     of its own over the tab (`Route.Search`, `SearchViewModel`, `Navigator.openSearchOver`): Android's screen with
     Groups' search bar and the bar or rail around it, Search selected, whose tabs close it (its own tab back to it,
-    `SearchUiEvent.OnHomeTabClicked`), a sheet on the Mac and the web's dialog; closing goes back to the tab, and a
+    `SearchUiEvent.OnHomeTabClicked`), the web's dialog, and a page over the tab on Apple, where only a stack holding it shows it; closing goes back to the tab, and a
     result opens in its place, over the tab. "All", "Groups", "People" and "Expenses" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Settled up · expense “Churros”", as the design draws it), and "Expenses"
