@@ -798,6 +798,7 @@ export const fr: Record<MessageKey, string> = {
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Cryptomonnaies',
+  billDetail_historyCurrency: 'a changé la devise',
   currency_chipsLabel: 'Devise',
   profile_themeSystem: 'Système',
   profile_themeLight: 'Clair',
