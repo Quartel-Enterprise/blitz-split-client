@@ -29,13 +29,8 @@ const themes: { code: string; label: MessageKey }[] = [
   { code: 'dark', label: 'profile_themeDark' },
 ]
 
-/** System, then each language in its own name, so whoever can't read the current one still finds theirs. */
-const languages: { code: string; label: string }[] = [
-  { code: 'system', label: t('profile_languageSystem') },
-  { code: 'en', label: 'English' },
-  { code: 'pt-BR', label: 'Português' },
-  { code: 'es', label: 'Español' },
-]
+/** Each language in its own name, so whoever can't read the current one still finds theirs. */
+const languageNames: Record<string, string> = { en: 'English', 'pt-BR': 'Português', es: 'Español' }
 
 /**
  * The profile page, in the home's frame with its footer selected. Name, photo and color are edited right here, in
@@ -359,21 +354,22 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
               {t('profile_language')}
             </span>
             <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-4">
-              {languages.map((language) => {
-                const isSelected = language.code === state.language
+              {state.languageOptions.map((code) => {
+                const isSelected = code === state.language
+                const name = languageNames[code]
                 return (
                   <button
-                    key={language.code}
+                    key={code}
                     role="radio"
                     aria-checked={isSelected}
-                    lang={language.code === 'system' ? undefined : language.code}
-                    onClick={() => presenter.selectLanguage(language.code)}
+                    lang={name ? code : undefined}
+                    onClick={() => presenter.selectLanguage(code)}
                     className={cn(
                       'h-8 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                       segmentClass(isSelected),
                     )}
                   >
-                    {language.label}
+                    {name ?? t('profile_languageSystem')}
                   </button>
                 )
               })}

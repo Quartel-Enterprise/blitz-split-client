@@ -6,15 +6,15 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
 import com.quare.blitzsplit.core.model.AppLanguage
-import com.quare.blitzsplit.core.settings.domain.model.AppLanguageStore
+import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSource
 
 /*
  * Why: Android 13 and later keep the per-app language themselves (also picked in the system's settings) and redraw the
  * app in it; before 13 the app keeps it and applies it to its activity.
  */
-internal class AndroidAppLanguageStore(
+internal class AndroidAppLanguageLocalDataSource(
     private val context: Context,
-) : AppLanguageStore {
+) : AppLanguageLocalDataSource {
     override fun read(): AppLanguage = AppLanguage.fromTag(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context

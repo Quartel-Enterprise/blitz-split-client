@@ -12,7 +12,11 @@ final class AppModel {
     /// Profile › Language, which every window draws its strings in (`AppLocale`).
     private(set) var language: AppLanguage {
         willSet { AppLocale.apply(newValue) }
+        didSet { redrawMainWindowIfFree() }
     }
+    /// The language the main window was last drawn again in. A pick made while a sheet is open in it (the Mac's
+    /// Ajustes beside a bill being split) waits for the sheet to close, so its form isn't drawn again empty.
+    private(set) var mainWindowLanguage: AppLanguage
     /// Why a comment's link opened nothing ("You're not in this group"), shown over wherever the app is; nil for none.
     private(set) var billLinkNotice: BillLinkNotice?
     /// Whether the window has an iPad's room (`ScreenLayout.isLarge`), which decides whether a key or a bill opens as
@@ -36,7 +40,9 @@ final class AppModel {
         isReady = (viewModel.uiState.value as? AppUiState) == .ready
         backStack = Self.routes(of: viewModel.navigator.backStack.value)
         theme = viewModel.theme.value as? ThemePreference ?? .system
-        language = viewModel.language.value as? AppLanguage ?? .system
+        let language = viewModel.language.value as? AppLanguage ?? .system
+        self.language = language
+        mainWindowLanguage = language
         AppLocale.apply(language)
         BitcoinUnit.shared.showsSats = (viewModel.showsBitcoinInSats.value as? KotlinBoolean)?.boolValue ?? false
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
@@ -82,6 +88,11 @@ final class AppModel {
         }
         #endif
         backStack = routes
+        redrawMainWindowIfFree()
+    }
+
+    private func redrawMainWindowIfFree() {
+        if mainWindowLanguage != language, sheet == nil { mainWindowLanguage = language }
     }
 
     #if os(macOS)

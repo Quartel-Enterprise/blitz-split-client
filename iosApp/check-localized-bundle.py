@@ -49,11 +49,24 @@ def parentheses_end(text: str, index: int) -> int:
         index += 1
 
 
+def in_comment(text: str, index: int) -> bool:
+    """Whether a `//` comment opens before `index` on its line, a `//` inside a string ("https://…") left out."""
+    position = text.rfind("\n", 0, index) + 1
+    while position < index:
+        if text[position] == '"':
+            position = string_end(text, position)
+        elif text.startswith("//", position):
+            return True
+        else:
+            position += 1
+    return False
+
+
 def missing_bundles(path: Path):
     text = path.read_text(encoding="utf-8")
     for match in CALL.finditer(text):
         # A call a comment names, as this check's own rule does in AppLocale.swift
-        if "//" in text[text.rfind("\n", 0, match.start()) + 1:match.start()]:
+        if in_comment(text, match.start()):
             continue
         call = text[match.start():parentheses_end(text, text.index("(", match.start()))]
         # A call holding another one in an interpolation names the bundle once for each

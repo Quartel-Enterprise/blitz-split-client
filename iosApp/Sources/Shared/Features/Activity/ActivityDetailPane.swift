@@ -654,13 +654,17 @@ extension FocusedValues {
 
 /// Edit › Mark All as Read, as the toolbar's button; disabled with nothing unread or Activity not in front.
 struct ActivityCommands: Commands {
+    /// Profile › Language, whose change draws the menu again: the menu bar has no `locale` of the windows to follow.
+    let language: AppLanguage
     @FocusedValue(\.activityModel) private var model
 
     var body: some Commands {
         CommandGroup(after: .pasteboard) {
             Divider()
-            Button("Mark All as Read") {
+            Button {
                 model?.send(ActivityUiEventOnMarkAllReadClicked.shared)
+            } label: {
+                Text("Mark All as Read", bundle: .appLanguage)
             }
             .disabled(model?.state.canMarkAllRead != true)
         }

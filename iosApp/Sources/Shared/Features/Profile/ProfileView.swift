@@ -360,7 +360,6 @@ private struct PreferencesSection: View {
                 Text("Light").tag(ThemePreference.light)
                 Text("Dark").tag(ThemePreference.dark)
             }
-            // Each language in its own name, so whoever can't read the current one still finds theirs
             Picker(
                 "Language",
                 selection: Binding(
@@ -368,10 +367,9 @@ private struct PreferencesSection: View {
                     set: { model.send(ProfileUiEventOnLanguageSelected(language: $0)) },
                 ),
             ) {
-                Text("System").tag(AppLanguage.system)
-                Text(verbatim: "English").tag(AppLanguage.english)
-                Text(verbatim: "Português").tag(AppLanguage.portuguese)
-                Text(verbatim: "Español").tag(AppLanguage.spanish)
+                ForEach(model.state.languageOptions, id: \.self) { language in
+                    LanguageName(language: language).tag(language)
+                }
             }
             Toggle(
                 isOn: Binding(
@@ -405,6 +403,20 @@ private struct PreferencesSection: View {
             .foregroundStyle(.primary)
             #endif
             CategoryMapRow(model: model)
+        }
+    }
+}
+
+/// Each language in its own name, so whoever can't read the current one still finds theirs.
+private struct LanguageName: View {
+    let language: AppLanguage
+
+    var body: some View {
+        switch language {
+        case .english: Text(verbatim: "English")
+        case .portuguese: Text(verbatim: "Português")
+        case .spanish: Text(verbatim: "Español")
+        default: Text("System")
         }
     }
 }

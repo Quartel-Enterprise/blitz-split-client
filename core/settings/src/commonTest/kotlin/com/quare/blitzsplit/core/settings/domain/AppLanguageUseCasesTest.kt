@@ -12,7 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AppLanguageUseCasesTest {
-    private lateinit var store: FakeAppLanguageStore
+    private lateinit var store: FakeAppLanguageLocalDataSource
     private lateinit var observeAppLanguage: ObserveAppLanguageUseCase
     private lateinit var updateAppLanguage: UpdateAppLanguageUseCase
     private lateinit var refreshAppLanguage: RefreshAppLanguageUseCase
@@ -67,7 +67,7 @@ class AppLanguageUseCasesTest {
     }
 
     private fun prepareScenario(stored: AppLanguage) {
-        store = FakeAppLanguageStore(stored)
+        store = FakeAppLanguageLocalDataSource(stored)
         val repository = AppLanguageRepositoryImpl(store)
         observeAppLanguage = ObserveAppLanguageUseCase(repository)
         updateAppLanguage = UpdateAppLanguageUseCase(repository)

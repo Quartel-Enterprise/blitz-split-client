@@ -43,6 +43,8 @@ class JsProfileState(
     val showsBitcoinInSats: Boolean,
     // Why: Preferences' "Language": "system", or the tag of the language picked ("en", "pt-BR").
     val language: String,
+    // Why: the codes of the options, in the order every UI lists them.
+    val languageOptions: Array<String>,
     // Why: null while it loads, also while a restored account's choices haven't come down.
     val activeNotificationCount: Int?,
     // Why: the ProfileDialog's name, null while none is open.
@@ -118,6 +120,7 @@ class ProfilePresenter {
                 theme = state.theme.code,
                 showsBitcoinInSats = state.showsBitcoinInSats,
                 language = state.language.code,
+                languageOptions = state.languageOptions.map { it.code }.toTypedArray(),
                 activeNotificationCount = state.activeNotificationCount.valueOrNull(),
                 dialog = state.dialog?.name,
                 hasConfirmedCodeSaved = state.hasConfirmedCodeSaved,
@@ -166,8 +169,11 @@ class ProfilePresenter {
 
                 is ProfileUiAction.LaunchNativeSignIn -> null
 
-                // Why: the page reads its language once, before it draws.
-                ProfileUiAction.ApplyLanguage -> JsProfileAction("reload", "")
+                // Why: the page reads its language once, before it draws; the reload comes back to the profile.
+                ProfileUiAction.ApplyLanguage -> {
+                    keepProfileForLanguage()
+                    JsProfileAction("reload", "")
+                }
 
                 // Why: the web never checks for updates, since it always serves the latest version.
                 is ProfileUiAction.ShowUpdateCheckResult -> null

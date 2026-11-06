@@ -2,7 +2,7 @@ package com.quare.blitzsplit.core.settings.data
 
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.settings.data.repository.AppLanguageRepositoryImpl
-import com.quare.blitzsplit.core.settings.domain.FakeAppLanguageStore
+import com.quare.blitzsplit.core.settings.domain.FakeAppLanguageLocalDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -12,7 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AppLanguageRepositoryImplTest {
-    private lateinit var store: FakeAppLanguageStore
+    private lateinit var store: FakeAppLanguageLocalDataSource
     private lateinit var repository: AppLanguageRepositoryImpl
     private val observed = mutableListOf<AppLanguage>()
 
@@ -187,7 +187,7 @@ class AppLanguageRepositoryImplTest {
         stored: AppLanguage,
         observing: Boolean = true,
     ) {
-        store = FakeAppLanguageStore(stored)
+        store = FakeAppLanguageLocalDataSource(stored)
         repository = AppLanguageRepositoryImpl(store)
         if (observing) {
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {

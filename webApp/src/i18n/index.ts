@@ -24,7 +24,7 @@ export function pickLocale(languages: readonly string[]): Locale {
   return 'en'
 }
 
-// Why: Profile › Language's pick, which the shared code keeps under this key (WebAppLanguageStore).
+// Why: Profile › Language's pick, which the shared code keeps under this key (WebAppLanguageLocalDataSource).
 const storageKey = 'language'
 
 function storedLanguage(): string | null {

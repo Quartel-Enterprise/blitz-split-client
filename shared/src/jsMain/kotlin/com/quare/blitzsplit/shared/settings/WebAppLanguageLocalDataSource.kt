@@ -1,14 +1,14 @@
 package com.quare.blitzsplit.shared.settings
 
 import com.quare.blitzsplit.core.model.AppLanguage
-import com.quare.blitzsplit.core.settings.domain.model.AppLanguageStore
+import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSource
 import kotlinx.browser.localStorage
 
 /*
  * Why: the browser's storage, which webApp/src/i18n reads under the same key before the page draws; the page reloads
  * in the language picked. Without storage the page follows the browser's languages.
  */
-internal class WebAppLanguageStore : AppLanguageStore {
+internal class WebAppLanguageLocalDataSource : AppLanguageLocalDataSource {
     override fun read(): AppLanguage = try {
         AppLanguage.fromTag(localStorage.getItem(STORAGE_KEY))
     } catch (unavailable: Throwable) {

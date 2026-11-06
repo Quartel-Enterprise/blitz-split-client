@@ -1,12 +1,12 @@
 package com.quare.blitzsplit.core.settings.domain
 
 import com.quare.blitzsplit.core.model.AppLanguage
-import com.quare.blitzsplit.core.settings.domain.model.AppLanguageStore
+import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSource
 
-internal class FakeAppLanguageStore(
+internal class FakeAppLanguageLocalDataSource(
     // Why: what the platform keeps; a test sets it directly to change the language outside the app.
     var stored: AppLanguage = AppLanguage.SYSTEM,
-) : AppLanguageStore {
+) : AppLanguageLocalDataSource {
     var readCount = 0
         private set
     val writes = mutableListOf<AppLanguage>()

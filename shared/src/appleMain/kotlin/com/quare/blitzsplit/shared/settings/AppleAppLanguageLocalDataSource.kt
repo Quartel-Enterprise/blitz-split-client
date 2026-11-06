@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.shared.settings
 
 import com.quare.blitzsplit.core.model.AppLanguage
-import com.quare.blitzsplit.core.settings.domain.model.AppLanguageStore
+import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSource
 import platform.Foundation.NSBundle
 import platform.Foundation.NSLocale
 import platform.Foundation.NSUserDefaults
@@ -12,7 +12,7 @@ import platform.Foundation.currentLocale
  * Why: the app's own AppleLanguages, which the Settings app's per-app language writes too and the system reads at
  * launch; the SwiftUI root redraws in the one picked at once.
  */
-internal class AppleAppLanguageStore : AppLanguageStore {
+internal class AppleAppLanguageLocalDataSource : AppLanguageLocalDataSource {
     private val defaults = NSUserDefaults.standardUserDefaults
 
     // Why: only the app's own domain, since the search list falls back to the device's languages.

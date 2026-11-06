@@ -10,7 +10,6 @@ import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
-import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
@@ -118,39 +117,9 @@ class ProfileViewModel(
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
     val uiState: StateFlow<ProfileUiState>
         field = MutableStateFlow(
-            ProfileUiState(
-                isLoaded = false,
-                displayName = "",
-                avatarColor = AvatarColor.default,
-                photoUrl = null,
-                accountProvider = null,
-                hasAnonymousId = false,
-                maskedEmail = null,
-                formattedRecoveryCode = null,
-                showsRecoveryCodePrompt = false,
-                isOnline = true,
-                syncStatus = null,
-                pendingChanges = emptyList(),
-                paymentKeys = Loadable.Loading,
-                isSignOutScheduled = false,
-                theme = ThemePreference.SYSTEM,
+            createInitialProfileUiState(
                 showsDynamicColors = dynamicColorSupport(),
-                usesDynamicColors = false,
-                showsBitcoinInSats = false,
-                language = AppLanguage.SYSTEM,
-                activeNotificationCount = Loadable.Loading,
                 showsCheckForUpdates = updateMechanism != UpdateMechanism.NONE,
-                isCheckingForUpdates = false,
-                dialog = null,
-                hasConfirmedCodeSaved = false,
-                isConnectExpanded = false,
-                connectingProvider = null,
-                hasSignInFailed = false,
-                isSigningOut = false,
-                hasSignOutFailed = false,
-                isUnlinking = false,
-                hasUnlinkFailed = false,
-                appInvite = null,
             ),
         )
 
