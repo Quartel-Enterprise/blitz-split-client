@@ -45,7 +45,7 @@ final class EditGroupModel {
 /// form sheet with an iPad's room. The same fields as "New group": the icon is a color or a photo (EditGroupIconSection),
 /// and the default currency stays editable, bills or not. "Simplify debts" (13.1) applies apart from Save: its confirmation
 /// is a sheet over the form on iPhone and iPad, and takes the form's place on the Mac. An iPhone lying down draws two
-/// columns and puts the avatar and "Change icon or photo" in one compact row.
+/// columns and puts the avatar (its pencil is "Change icon or photo") in one compact row.
 struct EditGroupView: View {
     let route: RouteEditGroup
 

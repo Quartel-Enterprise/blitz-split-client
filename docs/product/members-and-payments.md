@@ -112,7 +112,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
   - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Edit group, Leave group and Delete group. "Edit
     group" (`Route.EditGroup`) has New group's fields (its name under the "Group name" header alone, the field's own
     label hidden, which the Mac's form drew again on the field's left), the icon being a color or a photo (6.4d): on
-    Android and iOS the avatar or "Change icon or photo" opens "Group icon" (Android's bottom sheet: the group's
+    Android and iOS the avatar or its pencil on the corner (the profile photo's, "Change icon or photo" to TalkBack and VoiceOver) opens "Group icon" (Android's bottom sheet: the group's
     square in the color picked, Color, "Choose photo", "Take photo" and "Use this icon", a 480 dp dialog where Edit group is one, in a book's right
     half; iOS's medium sheet: the colors as tiles, the photo's two
     sources and ✓), the color picked there reaching the form only on "Use this icon"; the web ("Icon color", "Use a photo" and, with a camera, "Take photo") and the Mac (the colors and "Choose photo…", a file) pick the color in the form.
@@ -132,7 +132,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     the type stays editable. "Default currency" is only the currency new bills start in ("New bills start in this currency; each bill can use another."): it is always editable, even with bills, and changing it changes nothing about the bills and payments already there, which keep their own. A sync that changes it while the form is open follows the same rule as the other fields (a field this person left as it opened takes the synced value). Any member may edit, offline too: the change holds on the
     device and syncs later, and only the fields this person changed are saved, so another member's newer edit to the
     rest stays. Save stays disabled until something changed. It is a sheet on iOS and macOS (a 540 pt form sheet
-    with an iPad's room, the avatar beside "Change icon or photo" on an iPhone lying down) and a dialog on the web; on Android
+    with an iPad's room, the avatar, its pencil on the corner, on an iPhone lying down) and a dialog on the web; on Android
     full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
     anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
     under "Default currency", is "Default split" with the group's way ("Equal", "Shares"…).
