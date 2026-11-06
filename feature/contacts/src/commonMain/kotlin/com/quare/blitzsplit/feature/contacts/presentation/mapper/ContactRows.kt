@@ -11,7 +11,8 @@ internal fun rowOf(contact: Contact): ContactRow = ContactRow(
     color = contact.color,
     photoUrl = contact.photoUrl,
     net = contact.net,
-    groupCount = contact.groups.size,
+    // Why: a group with bills in two currencies is one part per currency, still one group in common.
+    groupCount = contact.groups.distinctBy { it.groupId }.size,
     firstGroupName = contact.groups.first().groupName,
     isGuest = contact.isGuest,
 )

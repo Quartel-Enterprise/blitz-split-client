@@ -37,19 +37,26 @@ object ContactBook {
         money: GroupMoney,
     ): List<Part> {
         val me = group.members.firstOrNull { it.isMe } ?: return emptyList()
+        val others = group.members.filterNot { it.isMe }
+        // Why: the last bill shared with each member, whatever its currency, read once for all of the group's parts.
+        val lastSharedBillAt = others.associate { member ->
+            member.id to money.expenses
+                .filter { it.isInvolving(member.id) && it.isInvolving(me.id) }
+                .maxOfOrNull { it.updatedAt }
+        }
         return GroupBalances
             .getByCurrency(group, money.expenses, money.settlements)
-            .flatMap { (currency, balances) -> partsOf(group, money, me, currency, balances) }
+            .flatMap { (currency, balances) -> partsOf(group, others, me, currency, balances, lastSharedBillAt) }
     }
 
     private fun partsOf(
         group: Group,
-        money: GroupMoney,
+        others: List<GroupMember>,
         me: GroupMember,
         currency: GroupCurrency,
         balances: GroupBalances,
-    ): List<Part> = group.members
-        .filterNot { it.isMe }
+        lastSharedBillAt: Map<String, Long?>,
+    ): List<Part> = others
         .map { member ->
             Part(
                 key = PeopleBalances.keyOf(member),
@@ -67,9 +74,7 @@ object ContactBook {
                     meInviteCode = me.inviteCode,
                     amountMinor = balances.debtOf(member.id, me.id) - balances.debtOf(me.id, member.id),
                 ),
-                lastSharedBillAt = money.expenses
-                    .filter { it.isInvolving(member.id) && it.isInvolving(me.id) }
-                    .maxOfOrNull { it.updatedAt },
+                lastSharedBillAt = lastSharedBillAt[member.id],
             )
         }
 

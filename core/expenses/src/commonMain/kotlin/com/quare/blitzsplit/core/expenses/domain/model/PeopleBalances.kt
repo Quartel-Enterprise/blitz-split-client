@@ -136,7 +136,7 @@ data class PeopleBalances(
             )
         }
 
-        // Why: the bills a guest has a part in, with their member in that bill's group.
+        // Why: the bills a guest has a part in, with their member in that bill's group, in the currency of this net.
         private fun guestExpensesOf(
             parts: List<Part>,
             money: Map<String, GroupMoney>,
@@ -144,7 +144,9 @@ data class PeopleBalances(
             money[part.group.id]
                 ?.expenses
                 .orEmpty()
-                .filter { expense -> expense.shares.any { it.memberId == part.balance.memberId } }
+                .filter { expense ->
+                    expense.currency == part.currency && expense.shares.any { it.memberId == part.balance.memberId }
+                }
                 .map { part.balance.memberId to it }
         }
 

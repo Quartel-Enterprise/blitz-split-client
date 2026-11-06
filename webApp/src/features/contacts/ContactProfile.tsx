@@ -324,7 +324,7 @@ function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presente
         </div>
         <ul>
           {contact.groups.map((group) => (
-            <li key={group.groupId} className="border-b">
+            <li key={`${group.groupId}-${group.currency}`} className="border-b">
               <button
                 type="button"
                 onClick={() => presenter.openGroup(group.groupId)}
