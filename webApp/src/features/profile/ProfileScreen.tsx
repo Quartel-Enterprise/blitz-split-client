@@ -29,12 +29,12 @@ const themes: { code: string; label: MessageKey }[] = [
   { code: 'dark', label: 'profile_themeDark' },
 ]
 
-/** Each language in its own name, so whoever can't read the current one still finds theirs. */
-const languageNames: Record<string, string> = {
-  en: 'English',
-  'pt-BR': 'Português',
-  es: 'Español',
-  fr: 'Français',
+/** Each language in the app's language, "Português (BR)" saying the region it is written for. */
+const languageNames: Record<string, MessageKey> = {
+  en: 'profile_languageEnglish',
+  'pt-BR': 'profile_languagePortuguese',
+  es: 'profile_languageSpanish',
+  fr: 'profile_languageFrench',
 }
 
 /**
@@ -359,7 +359,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
             <span id="language" className="text-sm font-medium">
               {t('profile_language')}
             </span>
-            <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-5">
+            <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-3">
               {state.languageOptions.map((code) => {
                 const isSelected = code === state.language
                 const name = languageNames[code]
@@ -368,14 +368,13 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
                     key={code}
                     role="radio"
                     aria-checked={isSelected}
-                    lang={name ? code : undefined}
                     onClick={() => presenter.selectLanguage(code)}
                     className={cn(
                       'h-8 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                       segmentClass(isSelected),
                     )}
                   >
-                    {name ?? t('profile_languageSystem')}
+                    {name ? t(name) : t('profile_languageSystem')}
                   </button>
                 )
               })}

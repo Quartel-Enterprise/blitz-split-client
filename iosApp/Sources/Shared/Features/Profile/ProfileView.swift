@@ -423,16 +423,16 @@ private struct PreferencesSection: View {
     }
 }
 
-/// Each language in its own name, so whoever can't read the current one still finds theirs.
+/// Each language in the app's language, "Português (BR)" saying the region it is written for.
 private struct LanguageName: View {
     let language: AppLanguage
 
     var body: some View {
         switch language {
-        case .english: Text(verbatim: "English")
-        case .portuguese: Text(verbatim: "Português")
-        case .spanish: Text(verbatim: "Español")
-        case .french: Text(verbatim: "Français")
+        case .english: Text("English", comment: "A language of Profile › Language, in the app's language")
+        case .portuguese: Text("Portuguese (BR)", comment: "A language of Profile › Language, in the app's language")
+        case .spanish: Text("Spanish", comment: "A language of Profile › Language, in the app's language")
+        case .french: Text("French", comment: "A language of Profile › Language, in the app's language")
         default: Text("System")
         }
     }
