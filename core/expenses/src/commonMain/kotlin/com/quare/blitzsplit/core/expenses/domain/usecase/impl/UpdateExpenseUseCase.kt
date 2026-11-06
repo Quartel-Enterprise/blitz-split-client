@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 
 /*
@@ -22,6 +23,7 @@ class UpdateExpenseUseCase(
         groupId: String,
         description: String,
         amountMinor: Long,
+        currency: GroupCurrency,
         payers: List<ExpensePayer>,
         splitMode: SplitMode,
         shares: List<ExpenseShare>,
@@ -39,6 +41,7 @@ class UpdateExpenseUseCase(
                 groupId = groupId,
                 description = description,
                 amountMinor = amountMinor,
+                currency = currency,
                 payers = payers,
                 splitMode = splitMode,
                 shares = shares,

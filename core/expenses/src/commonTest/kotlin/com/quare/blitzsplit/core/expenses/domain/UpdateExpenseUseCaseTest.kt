@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,6 +28,7 @@ class UpdateExpenseUseCaseTest {
             expenseId = BILL_ID,
             groupId = GROUP_ID,
             description = "Feira",
+            currency = GroupCurrency.BRL,
             amountMinor = 1_500L,
             payers = listOf(
                 ExpensePayer(
@@ -309,6 +311,7 @@ class UpdateExpenseUseCaseTest {
         expenseId = BILL_ID,
         groupId = GROUP_ID,
         description = description,
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         payers = payers,
         splitMode = SplitMode.EQUAL,
@@ -335,6 +338,7 @@ class UpdateExpenseUseCaseTest {
         id = BILL_ID,
         groupId = GROUP_ID,
         description = "Mercado",
+        currency = GroupCurrency.BRL,
         amountMinor = 1_000L,
         splitMode = SplitMode.EQUAL,
         payers = listOf(

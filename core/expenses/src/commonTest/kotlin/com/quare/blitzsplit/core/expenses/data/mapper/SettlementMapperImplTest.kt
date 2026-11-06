@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 import com.quare.blitzsplit.core.expenses.data.dto.SettlementDto
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -30,6 +31,7 @@ class SettlementMapperImplTest {
                 groupId = GROUP_ID,
                 fromMemberId = "ana",
                 toMemberId = "bruno",
+                currency = GroupCurrency.BRL,
                 amountMinor = 5_000L,
                 method = SettlementMethod.TRANSFER,
                 paidAt = 3_000L,
@@ -60,6 +62,7 @@ class SettlementMapperImplTest {
             groupId = GROUP_ID,
             fromMemberId = "ana",
             toMemberId = "bruno",
+            currency = GroupCurrency.BRL,
             amountMinor = 5_000L,
             method = SettlementMethod.CASH,
             paidAt = 3_000L,
@@ -159,6 +162,7 @@ class SettlementMapperImplTest {
                 "from_member_id",
                 "to_member_id",
                 "amount_minor",
+                "currency",
                 "method",
                 "paid_at",
                 "is_deleted",
@@ -182,6 +186,7 @@ class SettlementMapperImplTest {
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = "BRL",
         amountMinor = 5_000L,
         method = method,
         paidAt = 3_000L,
@@ -200,6 +205,7 @@ class SettlementMapperImplTest {
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = "BRL",
         amountMinor = 5_000L,
         method = "pix",
         paidAt = 3_000L,

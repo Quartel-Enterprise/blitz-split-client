@@ -997,6 +997,7 @@ class CategoryExpensesViewModelTest {
         id = id,
         groupId = GROUP_ID,
         description = id,
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         splitMode = SplitMode.EQUAL,
         payers = payers,

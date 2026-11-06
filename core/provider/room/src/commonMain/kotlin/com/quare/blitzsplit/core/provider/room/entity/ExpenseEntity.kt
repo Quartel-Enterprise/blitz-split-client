@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.room.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
@@ -29,8 +30,14 @@ data class ExpenseEntity(
     // Why: the account that created the bill, null until the first sync of a bill created before any account.
     val createdBy: String?,
     val description: String,
-    // Why: in the minor unit of the group's currency, so no amount is ever a fraction.
+    // Why: in the minor unit of its currency, so no amount is ever a fraction.
     val amountMinor: Long,
+    /*
+     * Why: the ISO code of the currency the amount is in, set per bill and per payment; the migration to 40 gave
+     * every row its group's.
+     */
+    @ColumnInfo(defaultValue = "")
+    val currency: String,
     val splitMode: String,
     /*
      * Why: who paid and each member's part, as the server's jsonb, so the whole bill is the unit of Last-Write-Wins

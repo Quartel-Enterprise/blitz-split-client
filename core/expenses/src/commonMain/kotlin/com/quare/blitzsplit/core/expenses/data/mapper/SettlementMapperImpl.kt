@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 import com.quare.blitzsplit.core.expenses.data.dto.SettlementDto
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 
 class SettlementMapperImpl : SettlementMapper {
@@ -12,6 +13,7 @@ class SettlementMapperImpl : SettlementMapper {
         fromMemberId = entity.fromMemberId,
         toMemberId = entity.toMemberId,
         amountMinor = entity.amountMinor,
+        currency = GroupCurrency.fromCodeOrNull(entity.currency) ?: GroupCurrency.fallback,
         method = SettlementMethod.fromCode(entity.method),
         paidAt = entity.paidAt,
         isPending = entity.pendingSync,
@@ -28,6 +30,7 @@ class SettlementMapperImpl : SettlementMapper {
         fromMemberId = settlement.fromMemberId,
         toMemberId = settlement.toMemberId,
         amountMinor = settlement.amountMinor,
+        currency = settlement.currency.code,
         method = settlement.method.code,
         paidAt = settlement.paidAt,
         isDeleted = false,
@@ -43,6 +46,7 @@ class SettlementMapperImpl : SettlementMapper {
         fromMemberId = dto.fromMemberId,
         toMemberId = dto.toMemberId,
         amountMinor = dto.amountMinor,
+        currency = dto.currency,
         method = dto.method,
         paidAt = dto.paidAt,
         isDeleted = dto.isDeleted,
@@ -65,6 +69,7 @@ class SettlementMapperImpl : SettlementMapper {
         fromMemberId = entity.fromMemberId,
         toMemberId = entity.toMemberId,
         amountMinor = entity.amountMinor,
+        currency = entity.currency,
         method = entity.method,
         paidAt = entity.paidAt,
         isDeleted = entity.isDeleted,

@@ -3356,6 +3356,7 @@ class ReceiptViewModelTest {
         id = EXPENSE_ID,
         groupId = GROUP_ID,
         description = "Jantar",
+        currency = GroupCurrency.BRL,
         amountMinor = 10_000L,
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer(PIERRE, 10_000L)),

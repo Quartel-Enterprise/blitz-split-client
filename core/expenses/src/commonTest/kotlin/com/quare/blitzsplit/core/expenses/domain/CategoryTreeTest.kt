@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -294,6 +295,7 @@ class CategoryTreeTest {
         id = id,
         groupId = "group-1",
         description = id,
+        currency = GroupCurrency.BRL,
         amountMinor = 1_000L,
         splitMode = SplitMode.EQUAL,
         payers = emptyList(),

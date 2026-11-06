@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.data.mapper.SettlementMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.SettlementRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -415,6 +416,7 @@ class SettlementRepositoryImplTest {
         groupId = GROUP_ID,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = GroupCurrency.BRL,
         amountMinor = 5_000L,
         method = SettlementMethod.PIX,
         paidAt = 3_000L,
@@ -436,6 +438,7 @@ class SettlementRepositoryImplTest {
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = "BRL",
         amountMinor = 5_000L,
         method = method,
         paidAt = 3_000L,
@@ -454,6 +457,7 @@ class SettlementRepositoryImplTest {
         createdBy = "user-2",
         fromMemberId = "bruno",
         toMemberId = "ana",
+        currency = "BRL",
         amountMinor = 2_000L,
         method = "transfer",
         paidAt = 4_000L,

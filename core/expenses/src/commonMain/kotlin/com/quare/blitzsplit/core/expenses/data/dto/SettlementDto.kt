@@ -12,6 +12,8 @@ data class SettlementDto(
     @SerialName("from_member_id") val fromMemberId: String,
     @SerialName("to_member_id") val toMemberId: String,
     @SerialName("amount_minor") val amountMinor: Long,
+    // Why: the ISO code of the currency the amount is in; the server keeps one per bill and per payment.
+    @SerialName("currency") val currency: String,
     @SerialName("method") val method: String,
     @SerialName("paid_at") val paidAt: Long,
     @SerialName("is_deleted") val isDeleted: Boolean,

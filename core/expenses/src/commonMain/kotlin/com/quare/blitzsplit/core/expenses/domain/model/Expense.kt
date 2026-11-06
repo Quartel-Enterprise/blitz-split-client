@@ -1,11 +1,15 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
-// Why: amounts are whole numbers of the minor unit of the group's currency (centavos for BRL).
+import com.quare.blitzsplit.core.model.GroupCurrency
+
+// Why: amounts are whole numbers of the minor unit of the bill's own currency (centavos for BRL).
 data class Expense(
     val id: String,
     val groupId: String,
     val description: String,
     val amountMinor: Long,
+    // Why: each bill has its own, as in Splitwise; a group's currency only pre-fills a new bill's.
+    val currency: GroupCurrency,
     val splitMode: SplitMode,
     // Why: who paid and how much, adding up to the total.
     val payers: List<ExpensePayer>,

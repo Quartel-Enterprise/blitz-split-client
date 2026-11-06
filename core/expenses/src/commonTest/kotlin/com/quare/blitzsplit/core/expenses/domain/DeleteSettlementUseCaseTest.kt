@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -127,6 +128,7 @@ class DeleteSettlementUseCaseTest {
         groupId = GROUP_ID,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = GroupCurrency.BRL,
         amountMinor = 5_000L,
         method = SettlementMethod.PIX,
         paidAt = 1_000L,

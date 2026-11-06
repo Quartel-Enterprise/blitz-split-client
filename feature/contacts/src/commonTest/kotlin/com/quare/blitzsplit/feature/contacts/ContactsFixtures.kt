@@ -150,6 +150,7 @@ internal fun owes(
     id = id,
     groupId = groupId,
     description = id,
+    currency = GroupCurrency.BRL,
     amountMinor = amountMinor,
     splitMode = SplitMode.AMOUNT,
     payers = listOf(

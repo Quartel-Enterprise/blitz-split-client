@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -105,6 +106,7 @@ class ObserveRecordedPaymentUseCaseTest {
         groupId = groupId,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = GroupCurrency.BRL,
         amountMinor = 5_000L,
         method = SettlementMethod.CASH,
         paidAt = 1_000L,

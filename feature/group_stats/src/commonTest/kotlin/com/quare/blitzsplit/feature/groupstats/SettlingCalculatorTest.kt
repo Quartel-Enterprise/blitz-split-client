@@ -658,6 +658,7 @@ class SettlingCalculatorTest {
             id = id,
             groupId = GROUP_ID,
             description = id,
+            currency = GroupCurrency.BRL,
             amountMinor = total,
             splitMode = SplitMode.AMOUNT,
             payers = listOf(
@@ -687,6 +688,7 @@ class SettlingCalculatorTest {
         groupId = GROUP_ID,
         fromMemberId = fromMemberId,
         toMemberId = toMemberId,
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         method = SettlementMethod.PIX,
         paidAt = millisOf(at),

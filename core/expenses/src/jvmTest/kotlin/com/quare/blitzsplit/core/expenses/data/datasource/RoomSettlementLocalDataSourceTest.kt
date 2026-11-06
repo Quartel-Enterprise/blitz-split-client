@@ -621,6 +621,7 @@ class RoomSettlementLocalDataSourceTest {
         createdBy = createdBy,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = "BRL",
         amountMinor = amountMinor,
         method = "pix",
         paidAt = paidAt,

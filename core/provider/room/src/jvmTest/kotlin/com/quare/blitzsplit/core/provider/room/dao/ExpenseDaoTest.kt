@@ -353,6 +353,7 @@ class ExpenseDaoTest {
         groupId = groupId,
         createdBy = "user-1",
         description = description,
+        currency = "BRL",
         amountMinor = 1_000L,
         splitMode = "equal",
         payersJson = "[]",

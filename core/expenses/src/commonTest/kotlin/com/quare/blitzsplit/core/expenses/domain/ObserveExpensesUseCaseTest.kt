@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -71,6 +72,7 @@ class ObserveExpensesUseCaseTest {
         id = id,
         groupId = groupId,
         description = "Mercado",
+        currency = GroupCurrency.BRL,
         amountMinor = 1_000L,
         splitMode = SplitMode.EQUAL,
         payers = emptyList(),

@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlin.test.Test
@@ -32,6 +33,56 @@ class ExpenseMapperImplTest {
 
         // Then
         assertEquals(listOf(SplitMode.EQUAL, SplitMode.AMOUNT, SplitMode.PERCENT, SplitMode.SHARES), modes)
+    }
+
+    @Test
+    fun `GIVEN bills in different currencies WHEN mapping to the domain THEN each keeps its own currency`() {
+        // Given
+        val entities = listOf("BRL", "USD", "BTC").map { entity(currency = it) }
+
+        // When
+        val currencies = entities.map { mapper.toDomain(ExpenseWithEditor(it, updatedByMemberId = null))?.currency }
+
+        // Then
+        assertEquals(listOf(GroupCurrency.BRL, GroupCurrency.USD, GroupCurrency.BTC), currencies)
+    }
+
+    @Test
+    fun `GIVEN a currency this version does not know WHEN mapping to the domain THEN skips the bill`() {
+        // Given
+        val entity = entity(currency = "XYZ")
+
+        // When
+        val expense = mapper.toDomain(ExpenseWithEditor(entity, updatedByMemberId = null))
+
+        // Then
+        assertNull(expense)
+    }
+
+    @Test
+    fun `GIVEN a bill in dollars WHEN mapping it to store and to the server THEN the currency goes along`() {
+        // Given
+        val expense = newExpense.copy(currency = GroupCurrency.USD)
+
+        // When
+        val entity = mapper.toEntity(expense, createdAt = 1L)
+        val dto = mapper.toDto(entity, userId = "user-1")
+
+        // Then
+        assertEquals("USD", entity.currency)
+        assertEquals("USD", dto.currency)
+    }
+
+    @Test
+    fun `GIVEN a bill from the server in euros WHEN mapping it to store THEN keeps the currency`() {
+        // Given
+        val dto = dto(createdBy = "user-1").copy(currency = "EUR")
+
+        // When
+        val entity = mapper.toEntity(dto)
+
+        // Then
+        assertEquals("EUR", entity.currency)
     }
 
     @Test
@@ -446,6 +497,7 @@ class ExpenseMapperImplTest {
         id = "bill-1",
         groupId = "group-1",
         description = "Mercado",
+        currency = GroupCurrency.BRL,
         amountMinor = 1_000L,
         splitMode = SplitMode.PERCENT,
         payers = listOf(
@@ -476,6 +528,7 @@ class ExpenseMapperImplTest {
     )
 
     private fun entity(
+        currency: String = "BRL",
         splitMode: String = "equal",
         createdBy: String? = "user-1",
         payersJson: String = "[]",
@@ -488,6 +541,7 @@ class ExpenseMapperImplTest {
         groupId = "group-1",
         createdBy = createdBy,
         description = "Mercado",
+        currency = currency,
         amountMinor = 1_000L,
         splitMode = splitMode,
         payersJson = payersJson,
@@ -511,6 +565,7 @@ class ExpenseMapperImplTest {
         groupId = "group-1",
         createdBy = createdBy,
         description = "Pizza",
+        currency = "BRL",
         amountMinor = 9_000L,
         splitMode = "shares",
         payers = listOf(

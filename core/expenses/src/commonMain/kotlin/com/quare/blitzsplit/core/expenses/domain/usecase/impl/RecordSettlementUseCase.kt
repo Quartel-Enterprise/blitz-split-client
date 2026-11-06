@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.RecordSettlement
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import kotlin.uuid.Uuid
 
@@ -23,6 +24,7 @@ class RecordSettlementUseCase(
         fromMemberId: String,
         toMemberId: String,
         amountMinor: Long,
+        currency: GroupCurrency,
         method: SettlementMethod,
         paidAt: Long,
     ): Result<String> {
@@ -33,6 +35,7 @@ class RecordSettlementUseCase(
             fromMemberId = fromMemberId,
             toMemberId = toMemberId,
             amountMinor = amountMinor,
+            currency = currency,
             method = method,
             paidAt = paidAt,
             isPending = true,

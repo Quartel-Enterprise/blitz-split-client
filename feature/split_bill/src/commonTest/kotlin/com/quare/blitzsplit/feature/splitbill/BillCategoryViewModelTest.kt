@@ -457,6 +457,7 @@ class BillCategoryViewModelTest {
         id = BILL_ID,
         groupId = GROUP_ID,
         description = "Luz",
+        currency = GroupCurrency.BRL,
         amountMinor = 10_000,
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer(PIERRE, 10_000)),

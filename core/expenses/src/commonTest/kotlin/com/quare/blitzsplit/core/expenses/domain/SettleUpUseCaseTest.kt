@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettlementLeg
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -38,7 +39,7 @@ class SettleUpUseCaseTest {
         assertEquals(recorded.map { it.id }, result.getOrThrow())
         assertEquals(
             legs,
-            recorded.map { SettlementLeg(it.groupId, it.fromMemberId, it.toMemberId, it.amountMinor) },
+            recorded.map { SettlementLeg(it.groupId, it.fromMemberId, it.toMemberId, it.amountMinor, it.currency) },
         )
         assertTrue(recorded.all { it.method == SettlementMethod.CASH && it.paidAt == PAID_AT && it.isPending })
         assertTrue(recorded.all { it.updatedAt == NOW })
@@ -96,12 +97,14 @@ class SettleUpUseCaseTest {
             "floripa",
             fromMemberId = "carla-1",
             toMemberId = "me-1",
+            currency = GroupCurrency.BRL,
             amountMinor = 9_840L,
         ),
         SettlementLeg(
             "ape",
             fromMemberId = "me-2",
             toMemberId = "carla-2",
+            currency = GroupCurrency.BRL,
             amountMinor = 9_800L,
         ),
     )

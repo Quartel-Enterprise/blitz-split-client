@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseWithEditor
 import kotlinx.serialization.SerializationException
@@ -57,6 +58,7 @@ class ExpenseMapperImpl : ExpenseMapper {
             groupId = entity.groupId,
             description = entity.description,
             amountMinor = entity.amountMinor,
+            currency = GroupCurrency.fromCodeOrNull(entity.currency) ?: return null,
             splitMode = if (items != null) SplitMode.ITEMS else storedMode,
             payers = payers,
             shares = shares,
@@ -78,6 +80,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         createdBy = null,
         description = expense.description,
         amountMinor = expense.amountMinor,
+        currency = expense.currency.code,
         splitMode = SplitMode.storedCodeOf(expense.splitMode),
         payersJson = json.encodeToString(
             expense.payers.map {
@@ -112,6 +115,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         createdBy = dto.createdBy,
         description = dto.description,
         amountMinor = dto.amountMinor,
+        currency = dto.currency,
         splitMode = dto.splitMode,
         payersJson = json.encodeToString(dto.payers),
         sharesJson = json.encodeToString(dto.shares),
@@ -139,6 +143,7 @@ class ExpenseMapperImpl : ExpenseMapper {
         createdBy = userId,
         description = entity.description,
         amountMinor = entity.amountMinor,
+        currency = entity.currency,
         splitMode = entity.splitMode,
         payers = decodePayers(entity.payersJson),
         shares = decodeShares(entity.sharesJson),

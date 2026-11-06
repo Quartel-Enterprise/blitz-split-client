@@ -34,6 +34,7 @@ class SettleUpUseCase(
                 fromMemberId = leg.fromMemberId,
                 toMemberId = leg.toMemberId,
                 amountMinor = leg.amountMinor,
+                currency = leg.currency,
                 method = method,
                 paidAt = paidAt,
                 isPending = true,

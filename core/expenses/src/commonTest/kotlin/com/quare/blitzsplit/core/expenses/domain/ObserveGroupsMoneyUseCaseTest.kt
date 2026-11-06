@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -159,6 +160,7 @@ class ObserveGroupsMoneyUseCaseTest {
         id = id,
         groupId = groupId,
         description = "Mercado",
+        currency = GroupCurrency.BRL,
         amountMinor = 1_000L,
         splitMode = SplitMode.EQUAL,
         payers = emptyList(),
@@ -179,6 +181,7 @@ class ObserveGroupsMoneyUseCaseTest {
         groupId = groupId,
         fromMemberId = "ana",
         toMemberId = "bruno",
+        currency = GroupCurrency.BRL,
         amountMinor = 5_000L,
         method = SettlementMethod.PIX,
         paidAt = 1_000L,

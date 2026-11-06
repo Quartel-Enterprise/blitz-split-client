@@ -1607,6 +1607,7 @@ class CryptoBillViewModelTest {
         id = EXPENSE_ID,
         groupId = BTC_ID,
         description = "Pizza",
+        currency = GroupCurrency.BRL,
         amountMinor = 12_345L,
         splitMode = splitMode,
         payers = payers,

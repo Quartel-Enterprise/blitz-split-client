@@ -1387,6 +1387,7 @@ class SearchViewModelTest {
         id = id,
         groupId = groupId,
         description = description,
+        currency = GroupCurrency.BRL,
         amountMinor = 600L,
         splitMode = SplitMode.EQUAL,
         payers = listOf(ExpensePayer("$groupId-$paidBy", 600L)),

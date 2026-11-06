@@ -1996,6 +1996,7 @@ class GlobalBalancesViewModelTest {
         groupId = groupId,
         fromMemberId = if (groupId == FLORIPA) ME_FLORIPA else ME_APE,
         toMemberId = if (groupId == FLORIPA) BRUNO_FLORIPA else CARLA_APE,
+        currency = GroupCurrency.BRL,
         amountMinor = 100L,
         method = SettlementMethod.PIX,
         paidAt = 0L,

@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupSpending
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.UtcOffset
@@ -97,6 +98,7 @@ class GroupSpendingTest {
         id = id,
         groupId = "group-1",
         description = id,
+        currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         splitMode = SplitMode.EQUAL,
         payers = payers,

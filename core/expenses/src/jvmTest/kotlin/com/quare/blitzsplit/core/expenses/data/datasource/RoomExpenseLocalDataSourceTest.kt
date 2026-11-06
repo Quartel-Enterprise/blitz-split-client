@@ -566,6 +566,7 @@ class RoomExpenseLocalDataSourceTest {
         groupId = groupId,
         createdBy = createdBy,
         description = description,
+        currency = "BRL",
         amountMinor = amountMinor,
         splitMode = "equal",
         payersJson = "[]",

@@ -471,6 +471,7 @@ class RegisterPaymentViewModel(
                     fromMemberId = leg.fromMemberId,
                     toMemberId = leg.toMemberId,
                     amountMinor = amountMinor,
+                    currency = leg.currency,
                     method = method,
                     paidAt = paidAt,
                 ).map { listOf(it) }
