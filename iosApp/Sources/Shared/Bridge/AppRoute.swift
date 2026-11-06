@@ -135,8 +135,8 @@ enum AppRoute: Hashable, Identifiable {
     /// Mac's inspector). The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
     /// on the Mac it is a sheet, or the popover of the group behind it (`AppModel.invitePopover`). The invite reader is
     /// a sheet on the Mac, and covers the whole screen on iPhone and iPad. An invite opened from its link is one sheet
-    /// on the Mac, "Who are you" pushed inside it. Search over a tab other than Groups is a sheet on the Mac and pushed
-    /// on an iPhone.
+    /// on the Mac, "Who are you" pushed inside it. Search over a tab other than Groups is pushed: every platform here
+    /// searches in its search tab, so it only shows from a stack that holds it.
     func presentsAsSheet(isLargeWindow: Bool) -> Bool {
         if isSheetEverywhere { return true }
         switch self {
@@ -147,7 +147,7 @@ enum AppRoute: Hashable, Identifiable {
             return !isLargeWindow
             #endif
         // "How it works" from the group is a sheet on the Mac, pushed inside Edit group's sheet everywhere
-        case .joinWithLink, .joinInvite, .search, .simplifyDebtsInfo:
+        case .joinWithLink, .joinInvite, .simplifyDebtsInfo:
             #if os(macOS)
             return true
             #else

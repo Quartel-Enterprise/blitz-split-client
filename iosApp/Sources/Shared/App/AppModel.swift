@@ -103,14 +103,21 @@ final class AppModel {
     }
 
     #if os(macOS)
+    /// No sheet covers the main window, nor Ajustes' key or account deletion: what the window's menu shortcuts (⌘K, ⌘[,
+    /// ⌘], the mouse's buttons) need, since each moves the back stack under whatever is on top and would close it with
+    /// its draft.
+    var isWindowUncovered: Bool {
+        settingsEntryCount == 0 && sheet == nil && stackedSheet == nil
+    }
+
     /// Whether the mouse's back button (or ⌘[) has a screen to close: the main window's top, while no sheet covers it.
     var canGoBack: Bool {
-        windowStack.count > 1 && settingsEntryCount == 0 && sheet == nil && stackedSheet == nil
+        windowStack.count > 1 && isWindowUncovered
     }
 
     /// Whether the mouse's forward button (or ⌘]) has a screen to open again.
     var canGoForward: Bool {
-        !forwardRoutes.isEmpty && settingsEntryCount == 0 && sheet == nil && stackedSheet == nil
+        !forwardRoutes.isEmpty && isWindowUncovered
     }
 
     /// The mouse's back button: closes the screen on top, as its back button and Esc do, remembering it for forward.

@@ -22,7 +22,7 @@ extension GroupsModel: SearchSource {
 
 /// "Search" (5.2): the groups, people and expenses on this device, the settled groups included, offline too. An
 /// iPad shows it in the search tab and an iPhone in Groups' place, under a large title with the field and All / Groups /
-/// People / Expenses; the Mac in the groups' place while its toolbar field has text. A group found opens the group, a person
+/// People / Expenses; the Mac in its sidebar's search tab, the field and the scopes above the results. A group found opens the group, a person
 /// once their profile and in each group that group's members, an expense its bill over the group. Always a list, even
 /// with the grid. Nothing holding what was typed but something close above it says "Did you mean “Larissa”?".
 struct GroupsSearchResultsList: View {

@@ -106,6 +106,7 @@ struct RootView: View {
         // The window's sidebar button sits at the detail's leading edge (`MainTabView`), never in the sidebar's header
         .hidingSystemSidebarToggle()
         .focusedSceneValue(\.windowNavigation, app)
+        .environment(\.isWindowUncovered, app.isWindowUncovered)
         .frame(minWidth: 520, minHeight: 560)
         #endif
         // Outermost, so the sheets inherit the window the root measured

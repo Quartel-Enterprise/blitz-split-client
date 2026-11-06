@@ -91,7 +91,7 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     results, opening over Groups as the iPad's search tab does; the Mac's toolbar has no search field nor magnifier. Over Home, Balances and Contacts it is a route
     of its own over the tab (`Route.Search`, `SearchViewModel`, `Navigator.openSearchOver`): Android's screen with
     Groups' search bar and the bar or rail around it, Search selected, whose tabs close it (its own tab back to it,
-    `SearchUiEvent.OnHomeTabClicked`), a sheet on the Mac and the web's dialog; closing goes back to the tab, and a
+    `SearchUiEvent.OnHomeTabClicked`), the web's dialog, and a page over the tab on Apple, where only a stack holding it shows it; closing goes back to the tab, and a
     result opens in its place, over the tab. "All", "Groups", "People" and "Expenses" pick the sections, on the web
     and the Mac too. Groups come in the home's order, people by group, bills the most recent first; in "Tudo" a
     settled group's bill comes as its group ("Settled up · expense “Churros”", as the design draws it), and "Expenses"

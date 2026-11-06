@@ -1,5 +1,6 @@
 #if os(macOS)
 import AppKit
+import Shared
 import SwiftUI
 
 extension View {
@@ -61,6 +62,11 @@ private struct MouseButtonsMonitor: NSViewRepresentable {
             monitor = nil
         }
     }
+}
+
+extension EnvironmentValues {
+    /// No sheet covers the main window (`AppModel.isWindowUncovered`), so its menu shortcuts may move the back stack.
+    @Entry var isWindowUncovered = true
 }
 
 extension FocusedValues {

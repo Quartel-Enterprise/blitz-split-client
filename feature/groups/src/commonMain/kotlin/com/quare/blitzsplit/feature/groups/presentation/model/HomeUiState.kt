@@ -94,7 +94,7 @@ data class HomeUiState(
     val onlyPersonToPay: HomePerson?
         get() = people.valueOrNull()?.singleOrNull { it.netMinor < 0 }
 
-    // Why: "Rachar conta" needs a group, settled ones included, to split in.
+    // Why: "Rachar conta" needs a group, settled ones included, to split in; the notification ask, one to be notified about.
     private val hasGroups: Boolean
         get() = isLoaded && groupCount > 0
 

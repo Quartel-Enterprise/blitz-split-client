@@ -31,6 +31,7 @@ struct MainTabView: View {
     @State private var sidebar = HomeSidebarModel()
     /// Bumped by ⌘K, which focuses the search tab's field again.
     @State private var searchFocusRequest = 0
+    @Environment(\.isWindowUncovered) private var isWindowUncovered
     #endif
     init(path: Binding<[AppRoute]>) {
         _path = path
@@ -106,8 +107,9 @@ struct MainTabView: View {
                 SidebarToggleButton()
             }
         }
-        // ⌘K (Edit › Search) opens the search tab, or brings the focus back to its field
-        .focusedSceneValue(\.openSearch, openSearch)
+        // ⌘K (Edit › Search) opens the search tab, or brings the focus back to its field; never under a sheet, which
+        // the tab's move would close
+        .focusedSceneValue(\.openSearch, searchCommand)
         // The open groups as Groups lists them, where the boards draw them: over Groups and a group's screens
         .tabViewSidebarFooter {
             if showsOpenGroups {
@@ -299,10 +301,21 @@ struct MainTabView: View {
     }
 
     #if os(macOS)
-    /// ⌘K: the search tab, as a click on it in the sidebar, and its field focused.
+    /// What ⌘K runs, nil while a sheet covers the window.
+    private var searchCommand: (() -> Void)? {
+        guard isWindowUncovered else { return nil }
+        return openSearch
+    }
+
+    /// ⌘K: the search tab, as a click on it in the sidebar, and its field focused; already open, back to its results
+    /// from what a result pushed over them, as a click on the tab does.
     private func openSearch() {
         searchFocusRequest += 1
-        if selectedTab != .search { tabSelection.wrappedValue = .search }
+        if selectedTab == .search {
+            model.send(GroupsUiEventOnSearchTabClicked.shared)
+        } else {
+            tabSelection.wrappedValue = .search
+        }
     }
 
     /// "Open" shows while Groups or a group's screen is in front, whichever tab opened the group.

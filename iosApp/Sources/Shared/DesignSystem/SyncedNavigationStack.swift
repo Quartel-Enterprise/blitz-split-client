@@ -8,7 +8,14 @@ struct SyncedNavigationStack<Root: View>: View {
     @Binding var path: [AppRoute]
     @ViewBuilder let root: () -> Root
 
-    @State private var shown: [AppRoute] = []
+    /// Starts on the bound path, so a tab first shown with screens above it draws them at once rather than pushing.
+    @State private var shown: [AppRoute]
+
+    init(path: Binding<[AppRoute]>, @ViewBuilder root: @escaping () -> Root) {
+        _path = path
+        self.root = root
+        _shown = State(initialValue: path.wrappedValue)
+    }
 
     var body: some View {
         NavigationStack(path: $shown) {

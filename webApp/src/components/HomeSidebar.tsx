@@ -74,7 +74,7 @@ export function HomeFrame({ children }: { children: ReactNode }) {
       <HomeShellView
         {...chrome}
         profile={chrome.profile ?? (sidebarState && loadedProfile(sidebarState))}
-        search={chrome.search ?? (sidebarState ? { ...searchKeys, onOpen: nothing } : undefined)}
+        search={chrome.search ?? { ...searchKeys, onOpen: nothing }}
         className={page ? undefined : 'invisible'}
       >
         {children}
