@@ -11897,23 +11897,6 @@
         }
       }
     },
-    "Scan a receipt · needs internet" : {
-      "comment" : "Home on the Mac: the disabled shortcut's tooltip",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escanear recibo · requiere internet"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ler cupom fiscal · precisa de internet"
-          }
-        }
-      }
-    },
     "Search" : {
       "comment" : "The search tab, its title and the Mac toolbar field",
       "localizations" : {
