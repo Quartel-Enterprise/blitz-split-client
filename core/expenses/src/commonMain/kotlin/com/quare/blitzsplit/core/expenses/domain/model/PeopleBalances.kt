@@ -10,7 +10,7 @@ import kotlin.math.abs
 data class PeopleBalances(
     // Why: the largest net first, whichever its direction.
     val people: List<PersonBalance>,
-    // Why: one per currency of the groups, the currency with the most groups first, as the home's "Saldo geral".
+    // Why: one per currency of the groups' bills and payments, the one with the most groups first.
     val totals: List<PeopleTotal>,
     // Why: this device's user as the most recently active group has them, the payer or receiver of "Acertar".
     val me: GroupMember?,
@@ -146,8 +146,7 @@ data class PeopleBalances(
                 .orEmpty()
                 .filter { expense ->
                     expense.currency == part.currency && expense.shares.any { it.memberId == part.balance.memberId }
-                }
-                .map { part.balance.memberId to it }
+                }.map { part.balance.memberId to it }
         }
 
         private fun guestPaidOf(

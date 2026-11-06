@@ -18,7 +18,7 @@ data class Contact(
     val userId: String?,
     // Why: "Grupos em comum", the most recently active first, those with nothing open included.
     val groups: List<ContactGroup>,
-    // Why: the net with them in each currency of those groups, the currency with the most groups first.
+    // Why: the net with them in each currency of their bills and payments, the one with the most groups first.
     val nets: List<ContactNet>,
     // Why: Ocultos, at the end of the list with "Mostrar"; never while something is open with them.
     val isHidden: Boolean,

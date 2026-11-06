@@ -292,7 +292,7 @@ class ContactHistoryTest {
     }
 
     @Test
-    fun `GIVEN a group with bills in reais and dollars WHEN reading her history THEN lists each once in its currency`() {
+    fun `GIVEN a group with bills in reais and dollars WHEN reading her history THEN lists each in its currency`() {
         // Given
         val carla = contact(
             key = "user:carla",
@@ -311,7 +311,14 @@ class ContactHistoryTest {
         val money = mapOf(
             "floripa" to moneyOf(
                 expenses = listOf(
-                    owes("floripa", "carla-floripa", meId("floripa"), 1_000L, id = "reais", spentAt = 100L),
+                    owes(
+                        "floripa",
+                        "carla-floripa",
+                        meId("floripa"),
+                        1_000L,
+                        id = "reais",
+                        spentAt = 100L,
+                    ),
                     owes(
                         "floripa",
                         "carla-floripa",

@@ -134,17 +134,18 @@ data class GroupBalances(
 
     companion object {
         /*
-         * Why: the pairs as the group shows them in one currency, simplified while its "Simplificar dívidas" is on.
-         * Currencies are never added: a bill or a payment in another one is another balance (getByCurrency).
+         * Why: the pairs as the group shows them, simplified while its "Simplificar dívidas" is on. Given a currency,
+         * only the bills and payments in it count: currencies are never added up (getByCurrency). Without one, every
+         * bill and payment counts, as the group screens still show them until they move to one balance per currency.
          */
         fun of(
             group: Group,
             expenses: List<Expense>,
             settlements: List<Settlement>,
-            currency: GroupCurrency = group.currency,
+            currency: GroupCurrency? = null,
         ): GroupBalances = of(
-            expenses = expenses.filter { it.currency == currency },
-            settlements = settlements.filter { it.currency == currency },
+            expenses = expenses.filter { currency == null || it.currency == currency },
+            settlements = settlements.filter { currency == null || it.currency == currency },
         ).toShownFor(group)
 
         /*

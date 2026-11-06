@@ -21,7 +21,7 @@ import kotlin.test.assertTrue
 
 class GroupBalancesByCurrencyTest {
     @Test
-    fun `GIVEN bills in two currencies WHEN computing the balances THEN counts only the group currency`() {
+    fun `GIVEN bills in two currencies WHEN computing the balances in the group currency THEN counts only its bills`() {
         // Given
         val group = group(currency = GroupCurrency.BRL)
         val expenses = listOf(
@@ -30,7 +30,12 @@ class GroupBalancesByCurrencyTest {
         )
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements = emptyList())
+        val balances = GroupBalances.of(
+            group,
+            expenses,
+            settlements = emptyList(),
+            currency = group.currency,
+        )
 
         // Then
         assertEquals(listOf(Debt(ANA, BRUNO, 100L)), balances.debts)
@@ -61,7 +66,7 @@ class GroupBalancesByCurrencyTest {
         val settlements = listOf(payment(ANA, BRUNO, 100L, GroupCurrency.EUR))
 
         // When
-        val balances = GroupBalances.of(group, expenses, settlements)
+        val balances = GroupBalances.of(group, expenses, settlements, currency = group.currency)
 
         // Then
         assertEquals(listOf(Debt(ANA, BRUNO, 100L)), balances.debts)
