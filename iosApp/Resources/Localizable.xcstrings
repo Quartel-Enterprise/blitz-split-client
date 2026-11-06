@@ -299,6 +299,12 @@
             "value" : "%@ cambió la moneda"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a modifié la devise"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",

@@ -71,6 +71,7 @@
     <string name="bill_detail_history_edited">a modifié la dépense</string>
     <string name="bill_detail_history_edited_offline">a modifié la dépense hors ligne</string>
     <string name="bill_detail_history_category">a changé la catégorie</string>
+    <string name="bill_detail_history_currency">a changé la devise</string>
     <string name="bill_detail_history_amount">a changé le montant</string>
     <string name="bill_detail_history_description">a changé la description</string>
     <string name="bill_detail_history_spent_at">a changé la date</string>
@@ -88,6 +89,7 @@
     <string name="bill_detail_field_description">Description</string>
     <string name="bill_detail_field_spent_at">Date</string>
     <string name="bill_detail_field_category">Catégorie</string>
+    <string name="bill_detail_field_currency">Devise</string>
     <string name="bill_detail_field_payers">Qui a payé</string>
     <string name="bill_detail_field_split">Répartition</string>
     <string name="bill_detail_split_equal">Parts égales</string>
