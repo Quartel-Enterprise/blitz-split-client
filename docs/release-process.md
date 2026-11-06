@@ -145,7 +145,13 @@ are used is in [push-notifications.md](push-notifications.md).
   client's authorized JavaScript origins and redirect URIs, and (for Sign in with Apple on the web) to the Services ID's
   domains.
 - **Invite links** open the app only through a domain the app owns (see
-  [Joining and foldables](product/joining-and-folds.md)): a beta distributed outside the stores does not change that,
-  and a link opens the browser on the production domain.
+  [Joining and foldables](product/joining-and-folds.md)), and on Android only when the APK's signing key's SHA-256 is
+  in blitzsplit.com's `assetlinks.json`, which lists the Play keys. The `android-build` job prints that SHA-256 beside
+  the SHA-1 and warns when `assetlinks.json` doesn't list it; the beta then opens invite links in the browser (Android 8
+  to 11 asks which app opens them), which blitzsplit.com redirects to the beta web app. To have the beta open them, add the SHA-256 to
+  `public/.well-known/assetlinks.json` of `blitz-split-site`, the copy Android reads, and keep
+  `webApp/public/.well-known` the same. Listing it lets any APK signed with the beta keystore open blitzsplit.com's
+  links, so it is only as safe as the keystore and its GitHub secrets: never list a debug key (see
+  [getting-started](getting-started.md#build-and-run-the-android-app)).
 - **TestFlight** needs the app record `com.quare.blitzsplit` in App Store Connect (it exists: this app replaces the
   legacy one) and, for external testers, a beta review of the first build.
