@@ -50,7 +50,6 @@ class CreateGroupViewModel(
                 name = "",
                 initials = "",
                 color = AvatarColor.default,
-                shape = GroupShape.default,
                 photo = null,
                 isPreparingPhoto = false,
                 showsPhotoError = false,
@@ -116,13 +115,6 @@ class CreateGroupViewModel(
             is CreateGroupUiEvent.OnNameChanged -> changeName(event.name)
 
             CreateGroupUiEvent.OnColorClicked -> changeColor { it.copy(color = it.color.toNextColor()) }
-
-            CreateGroupUiEvent.OnShapeAndColorClicked -> changeColor {
-                it.copy(
-                    color = it.color.toNextColor(),
-                    shape = it.shape.toNext(),
-                )
-            }
 
             is CreateGroupUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
 
@@ -285,7 +277,8 @@ class CreateGroupViewModel(
                 name = state.name,
                 type = state.type,
                 color = state.color,
-                shape = state.shape,
+                // Why: every group is the same rounded square; the shape stays in the data for the groups made before.
+                shape = GroupShape.fallback,
                 photo = state.photo,
                 currency = state.currency,
                 members = members,

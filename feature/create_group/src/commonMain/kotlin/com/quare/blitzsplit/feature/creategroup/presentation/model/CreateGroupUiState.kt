@@ -3,7 +3,6 @@ package com.quare.blitzsplit.feature.creategroup.presentation.model
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
@@ -13,8 +12,6 @@ data class CreateGroupUiState(
     // Why: "VF" for "Viagem Floripa", what the group's avatar shows; empty while there is no name.
     val initials: String,
     val color: AvatarColor,
-    // Why: only Android draws it, so only its avatar changes it.
-    val shape: GroupShape,
     // Why: drawn in place of the color and the initials, framed in "Ajustar foto"; null for none.
     val photo: ProfilePhoto.Pending?,
     val isPreparingPhoto: Boolean,
@@ -49,7 +46,7 @@ data class CreateGroupUiState(
     val hasPhoto: Boolean
         get() = photo != null
 
-    // Why: the avatar steps its color (and Android's shape too) only while no photo covers them.
+    // Why: the avatar steps its color only while no photo covers it.
     val canChangeColor: Boolean
         get() = photo == null && !isPreparingPhoto
 

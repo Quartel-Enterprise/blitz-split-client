@@ -103,7 +103,7 @@ struct HomeView: View {
             if state.showsFirstUse {
                 ScrollView {
                     VStack(spacing: 16) {
-                        syncStatus
+                        downloadStatus
                         HomeFirstUseCard(send: model.send)
                     }
                     .padding(16)
@@ -140,6 +140,14 @@ struct HomeView: View {
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: HomeCopy.tabTitle)
+            // The sync status takes the bar's empty leading side, so it comes and goes without moving the content
+            if let status = syncText {
+                ToolbarItem(placement: .topBarLeading) {
+                    SyncStatusCapsule(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
+                        model.send(HomeUiEventOnRetrySyncClicked.shared)
+                    }
+                }
+            }
             TabTrailingItems(
                 showsSplitBill: state.showsSplitBillButton,
                 showsSplitBillTitle: !hasVerticalBar && !isUprightIPhone,
@@ -164,7 +172,7 @@ struct HomeView: View {
             if let fold = acrossFold {
                 FoldQuarters(fold: fold, spacing: 24) {
                     VStack(spacing: 14) {
-                        syncStatus
+                        downloadStatus
                         people
                         summary(stacksButtons: true)
                     }
@@ -242,7 +250,7 @@ struct HomeView: View {
 
     @ViewBuilder
     private func firstColumn(stacksButtons: Bool) -> some View {
-        syncStatus
+        downloadStatus
         people
         summary(stacksButtons: stacksButtons)
         shortcuts
@@ -296,21 +304,14 @@ struct HomeView: View {
 
     // MARK: - Sections
 
-    /// "Offline · 1 change queued", "No response from the server" with "Try again", or "Syncing… 3 of 7 groups" with
-    /// a bar while the first download fills the device: only when it asks for attention. The Mac says it as the window's subtitle.
+    /// The first download's bar while it fills the device ("Syncing… 3 of 7 groups" is in the bar's leading capsule,
+    /// as "Offline · 1 change queued" and "No response from the server" are). The Mac says it as the window's subtitle.
     @ViewBuilder
-    private var syncStatus: some View {
+    private var downloadStatus: some View {
         #if os(iOS)
-        if let status = syncText {
-            VStack(alignment: .leading, spacing: 8) {
-                SyncStatusRow(status: status, badge: state.syncBadge, canRetry: state.canRetrySync) {
-                    model.send(HomeUiEventOnRetrySyncClicked.shared)
-                }
-                if let progress = state.firstDownload {
-                    DownloadProgressBar(progress: progress)
-                }
-            }
-            .padding(.horizontal, 4)
+        if let progress = state.firstDownload {
+            DownloadProgressBar(progress: progress)
+                .padding(.horizontal, 4)
         }
         #endif
     }

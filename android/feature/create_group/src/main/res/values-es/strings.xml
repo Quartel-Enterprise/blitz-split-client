@@ -3,7 +3,7 @@
     <string name="create_group_title">Nuevo grupo</string>
     <string name="create_group_close">Cerrar</string>
     <string name="create_group_create">Crear</string>
-    <string name="create_group_change_shape_and_color">Cambiar la forma y el color del grupo</string>
+    <string name="create_group_change_color">Cambiar el color del grupo</string>
     <string name="create_group_name_label">Nombre del grupo</string>
     <string name="create_group_type_label">Tipo de grupo</string>
     <string name="create_group_members_title">Quiénes participan</string>

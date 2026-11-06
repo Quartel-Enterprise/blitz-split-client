@@ -149,7 +149,20 @@ sealed interface Route {
         val picksGroupFirst: Boolean,
         // Why: from Início's "Ler cupom fiscal" (7.1e), which opens the camera (a file on the Mac and the web) at once.
         val scansReceipt: Boolean,
-    ) : Route
+    ) : Route {
+        companion object {
+            // Why: a home tab's "Rachar conta" (7.1i): a new bill that asks "Rachar em qual grupo?" first, groupId marked.
+            fun createPickingGroup(
+                groupId: String,
+                scansReceipt: Boolean = false,
+            ): SplitBill = SplitBill(
+                groupId = groupId,
+                expenseId = null,
+                picksGroupFirst = true,
+                scansReceipt = scansReceipt,
+            )
+        }
+    }
 
     // Why: "Conta", one bill of the group: what it was, who paid and how it splits.
     data class BillDetail(

@@ -303,62 +303,6 @@ class CreateGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a new group WHEN the form opens THEN its icon is the cookie`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertEquals(GroupShape.COOKIE, state.shape)
-    }
-
-    @Test
-    fun `GIVEN a peach cookie WHEN tapping the Android avatar THEN takes the next color and the next shape`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(profile = pierre.copy(avatarColor = AvatarColor.BLUE))
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
-
-            // Then
-            val state = viewModel.uiState.value
-            assertEquals(AvatarColor.GREEN, state.color)
-            assertEquals(GroupShape.PETAL, state.shape)
-        }
-
-    @Test
-    fun `GIVEN the Android avatar WHEN tapping it twenty times THEN shows every color with every shape once`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val seen = mutableSetOf<Pair<AvatarColor, GroupShape>>()
-
-            // When
-            repeat(AvatarColor.entries.size * GroupShape.entries.size) {
-                viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
-                seen += viewModel.uiState.value.let { it.color to it.shape }
-            }
-
-            // Then
-            assertEquals(AvatarColor.entries.size * GroupShape.entries.size, seen.size)
-        }
-
-    @Test
-    fun `GIVEN the Apple and web avatar WHEN tapping it THEN the shape stays`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
-
-        // Then
-        assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
-    }
-
-    @Test
     fun `GIVEN a trip WHEN picking home THEN the group is a home`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -747,7 +691,7 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a filled group WHEN creating THEN creates it once with the trimmed name and its members in order`() =
+    fun `GIVEN a filled group WHEN creating THEN creates one square with the trimmed name and members in order`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -755,7 +699,7 @@ class CreateGroupViewModelTest {
                 region = "BR",
             )
             viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("  Viagem Floripa  "))
-            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
+            viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
             viewModel.onEvent(CreateGroupUiEvent.OnTypeSelected(GroupType.HOME))
             viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
             addMember("Ana")
@@ -769,7 +713,7 @@ class CreateGroupViewModelTest {
             assertEquals("Viagem Floripa", group.name)
             assertEquals(GroupType.HOME, group.type)
             assertEquals(AvatarColor.GREEN, group.color)
-            assertEquals(GroupShape.PETAL, group.shape)
+            assertEquals(GroupShape.SQUARE, group.shape)
             assertNull(group.photo)
             assertEquals(GroupCurrency.EUR, group.currency)
             assertEquals(
@@ -1424,22 +1368,6 @@ class CreateGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a group photo WHEN tapping the Android avatar THEN the color and the shape stay`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            pickAndConfirm(firstPhoto)
-            val color = viewModel.uiState.value.color
-
-            // When
-            viewModel.onEvent(CreateGroupUiEvent.OnShapeAndColorClicked)
-
-            // Then
-            assertEquals(color, viewModel.uiState.value.color)
-            assertEquals(GroupShape.COOKIE, viewModel.uiState.value.shape)
-        }
-
-    @Test
     fun `GIVEN a confirmed photo still being prepared WHEN tapping the avatar THEN the color stays`() =
         runTest(testDispatcher) {
             // Given
@@ -1689,23 +1617,6 @@ class CreateGroupViewModelTest {
         // Then
         assertEquals(listOf("group_color_clicked" to mapOf<String, Any>("source" to "create_group")), trackedEvents)
     }
-
-    @Test
-    fun `GIVEN the screen open WHEN tapping the Android avatar THEN sends the shape and color event`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            val tap = CreateGroupUiEvent.OnShapeAndColorClicked
-
-            // When
-            viewModel.onEvent(tap)
-
-            // Then
-            assertEquals(
-                listOf("group_shape_and_color_clicked" to mapOf<String, Any>("source" to "create_group")),
-                trackedEvents,
-            )
-        }
 
     @Test
     fun `GIVEN the screen open WHEN a photo is picked THEN sends the photo picked event`() = runTest(testDispatcher) {

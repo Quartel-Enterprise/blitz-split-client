@@ -3,7 +3,6 @@ package com.quare.blitzsplit.feature.editgroup
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
@@ -271,18 +270,15 @@ class EditGroupUiStateTest {
     }
 
     @Test
-    fun `GIVEN Icone do grupo WHEN reading its choices THEN offers every color and shape`() {
+    fun `GIVEN Icone do grupo WHEN reading its choices THEN offers every color`() {
         // Given
-        val editor = GroupIconEditor(
-            color = AvatarColor.PEACH,
-            shape = GroupShape.COOKIE,
-        )
+        val editor = GroupIconEditor(color = AvatarColor.PEACH)
 
         // When
-        val choices = editor.colors to editor.shapes
+        val choices = editor.colors
 
         // Then
-        assertEquals(AvatarColor.entries to GroupShape.entries, choices)
+        assertEquals(AvatarColor.entries, choices)
     }
 
     @Test
@@ -471,7 +467,6 @@ class EditGroupUiStateTest {
         name = name,
         initials = "VF",
         color = AvatarColor.GREEN,
-        shape = GroupShape.COOKIE,
         photo = photo,
         isPreparingPhoto = isPreparingPhoto,
         showsPhotoError = false,

@@ -8,7 +8,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyAmount
@@ -260,7 +259,6 @@ private fun buildPreviewState(
     name = name,
     initials = if (name.isEmpty()) "" else "VF",
     color = AvatarColor.PEACH,
-    shape = GroupShape.COOKIE,
     photo = null,
     isPreparingPhoto = false,
     showsPhotoError = false,

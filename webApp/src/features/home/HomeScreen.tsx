@@ -12,7 +12,7 @@ import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { useDeletedGroupNotice } from '@/features/groups/GroupsScreen'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { DownloadProgressBar } from '@/features/groups/FirstDownload'
-import { SyncStatus } from '@/features/groups/GroupsPage'
+import { showsSyncStatus, SyncStatus } from '@/features/groups/GroupsPage'
 import { useHomeSearch } from '@/features/groups/SearchDialog'
 import { AppBanner, AppInviteCard, toastUsedOnPhone } from '@/features/app-download/AppDownload'
 import { HomeSummaryCards, PeopleCard, RecentBills, YourGroups } from '@/features/home/HomeSections'
@@ -57,6 +57,7 @@ export function HomeScreen() {
   useDeletedGroupNotice(presenter, state)
   if (!presenter || !state) return null
 
+  const hasSyncStatus = showsSyncStatus(state, state.firstDownload)
   return (
     <HomeShell
       selected="home"
@@ -66,14 +67,23 @@ export function HomeScreen() {
       onBrand={() => presenter.openBrand()}
       search={search}
       bell={{ unreadCount: state.activityUnreadCount, onOpen: () => presenter.openActivity() }}
+      syncStatus={hasSyncStatus && <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />}
       overlays={state.showsRecoveryCodePrompt && <RecoveryCodeDialog />}
     >
       <main className={cn(pageContentClass, 'gap-3.5 md:gap-4 lg:gap-5')}>
         {/* Why: a phone's browser gets the banner (14.3), never the card nor a QR code. */}
         {state.showsAppBanner && state.appInvite && <AppBanner invite={state.appInvite} onOpen={() => presenter.trackAppBannerOpen()} onDismiss={() => presenter.dismissAppBanner()} />}
         <div className="flex min-h-9 flex-col items-stretch gap-3 md:flex-row md:items-center">
-          {/* Why: the phone's bottom bar already names the page; the heading stays for screen readers. */}
-          <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only md:mr-auto">{t('home_title')}</h1>
+          {/* Why: the sync status beside the title from the tablet up, in the phone's top bar below, never above the page. */}
+          <div className="flex min-w-0 items-center gap-3 md:mr-auto">
+            {/* Why: the phone's bottom bar already names the page; the heading stays for screen readers. */}
+            <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only">{t('home_title')}</h1>
+            {hasSyncStatus && (
+              <div className="hidden min-w-0 items-center gap-2 md:flex">
+                <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />
+              </div>
+            )}
+          </div>
           {state.showsHome && (
             <div className="flex flex-col items-stretch gap-2 md:flex-row md:items-center">
               <Shortcuts presenter={presenter} state={state} variant="buttons" />
@@ -89,14 +99,8 @@ export function HomeScreen() {
         </div>
         {state.showsHome && <Shortcuts presenter={presenter} state={state} variant="tiles" />}
 
-        {(state.syncBadge || state.firstDownload) && (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <SyncStatus state={state} presenter={presenter} downloadProgress={state.firstDownload} />
-            </div>
-            {state.firstDownload && <DownloadProgressBar progress={state.firstDownload} className="max-w-80" />}
-          </div>
-        )}
+        {/* Why: only the first download's bar; the status itself is in the title row or the phone's top bar. */}
+        {state.firstDownload && <DownloadProgressBar progress={state.firstDownload} className="max-w-80" />}
 
         {!state.isLoaded && !state.firstDownload && <HomeSkeleton />}
 

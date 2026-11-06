@@ -1206,7 +1206,7 @@ class EditGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN the form WHEN tapping the icon THEN Icone do grupo opens on the group color and shape`() =
+    fun `GIVEN the form WHEN tapping the icon THEN Icone do grupo opens on the group color`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -1216,10 +1216,7 @@ class EditGroupViewModelTest {
 
             // Then
             assertEquals(
-                GroupIconEditor(
-                    color = AvatarColor.GREEN,
-                    shape = GroupShape.SQUARE,
-                ),
+                GroupIconEditor(color = AvatarColor.GREEN),
                 viewModel.uiState.value.iconEditor,
             )
         }
@@ -1267,29 +1264,12 @@ class EditGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN Icone do grupo open WHEN picking a shape THEN only the editor changes`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-
-        // When
-        viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
-
-        // Then
-        val state = viewModel.uiState.value
-        assertEquals(GroupShape.PETAL, state.iconEditor?.shape)
-        assertEquals(GroupShape.SQUARE, state.shape)
-        assertFalse(state.canSave)
-    }
-
-    @Test
-    fun `GIVEN a color and shape picked in Icone do grupo WHEN tapping Usar este icone THEN the form takes them`() =
+    fun `GIVEN a color picked in Icone do grupo WHEN tapping Usar este icone THEN the form takes it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
             viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
             viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
@@ -1297,7 +1277,6 @@ class EditGroupViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(AvatarColor.LILAC, state.color)
-            assertEquals(GroupShape.PETAL, state.shape)
             assertNull(state.iconEditor)
             assertTrue(state.canSave)
         }
@@ -1308,7 +1287,6 @@ class EditGroupViewModelTest {
             // Given
             prepareScenario(storedGroup = trip.copy(photo = remotePhoto))
             viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.CIRCLE))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
@@ -1317,7 +1295,6 @@ class EditGroupViewModelTest {
             val state = viewModel.uiState.value
             assertNull(state.photo)
             assertNull(state.photoUrl)
-            assertEquals(GroupShape.CIRCLE, state.shape)
             assertEquals(AvatarColor.GREEN, state.selectedColor)
         }
 
@@ -1335,13 +1312,12 @@ class EditGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN a color and shape picked in Icone do grupo WHEN dismissing it THEN the form keeps its icon`() =
+    fun `GIVEN a color picked in Icone do grupo WHEN dismissing it THEN the form keeps its icon`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = trip.copy(photo = remotePhoto))
             viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
             viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
 
             // When
             viewModel.onEvent(EditGroupUiEvent.OnIconDismissed)
@@ -1350,7 +1326,6 @@ class EditGroupViewModelTest {
             val state = viewModel.uiState.value
             assertNull(state.iconEditor)
             assertEquals(AvatarColor.GREEN, state.color)
-            assertEquals(GroupShape.SQUARE, state.shape)
             assertEquals(remotePhoto, state.photo)
             assertFalse(state.canSave)
         }
@@ -1376,38 +1351,6 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN the form WHEN only the shape changes THEN Salvar is enabled`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-        viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.COOKIE))
-
-        // When
-        viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
-
-        // Then
-        assertTrue(viewModel.uiState.value.canSave)
-    }
-
-    @Test
-    fun `GIVEN another shape used WHEN using its first shape back THEN Salvar is disabled again`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.COOKIE))
-            viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
-            viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.SQUARE))
-
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
-
-            // Then
-            assertFalse(viewModel.uiState.value.canSave)
-        }
-
-    @Test
     fun `GIVEN a group with a photo WHEN the form opens THEN no color is marked and the photo url is its url`() =
         runTest(testDispatcher) {
             // Given
@@ -1424,7 +1367,7 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group with a photo WHEN picking a color in the form THEN takes the photo off and keeps the shape`() =
+    fun `GIVEN a group with a photo WHEN picking a color in the form THEN takes the photo off`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = trip.copy(photo = remotePhoto))
@@ -1436,7 +1379,6 @@ class EditGroupViewModelTest {
             val state = viewModel.uiState.value
             assertNull(state.photo)
             assertEquals(AvatarColor.SAND, state.selectedColor)
-            assertEquals(GroupShape.SQUARE, state.shape)
             assertTrue(state.canSave)
         }
 
@@ -1631,13 +1573,13 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a photo being prepared WHEN using a shape from Icone do grupo THEN the late photo never shows`() =
+    fun `GIVEN a photo being prepared WHEN using an icon from Icone do grupo THEN the late photo never shows`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(isPhotoHeld = true)
             pickAndConfirmPhoto(pickedFile)
             viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
+            viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
             viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
 
             // When
@@ -1646,7 +1588,7 @@ class EditGroupViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertNull(state.photo)
-            assertEquals(GroupShape.PETAL, state.shape)
+            assertEquals(AvatarColor.LILAC, state.color)
             assertFalse(state.isPreparingPhoto)
         }
 
@@ -1690,24 +1632,22 @@ class EditGroupViewModelTest {
         }
 
     @Test
-    fun `GIVEN a shape used here WHEN tapping Salvar THEN saves the shape`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-        viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.CIRCLE))
-        viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
+    fun `GIVEN a group an older build made a petal WHEN saving a new icon THEN keeps the stored shape`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(shape = GroupShape.PETAL))
+            viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
+            viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
+            viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
 
-        // When
-        viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
 
-        // Then
-        assertEquals(
-            GroupShape.CIRCLE,
-            groups.groups.value
-                .single()
-                .shape,
-        )
-    }
+            // Then
+            val saved = groups.groups.value.single()
+            assertEquals(AvatarColor.LILAC, saved.color)
+            assertEquals(GroupShape.PETAL, saved.shape)
+        }
 
     @Test
     fun `GIVEN a sync changed the shape WHEN saving only a new name THEN saves the synced shape`() =
@@ -1724,28 +1664,6 @@ class EditGroupViewModelTest {
             val saved = groups.groups.value.single()
             assertEquals("Churrasco", saved.name)
             assertEquals(GroupShape.PETAL, saved.shape)
-        }
-
-    @Test
-    fun `GIVEN a sync changed the shape WHEN saving a shape used here THEN the shape used here wins`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            groups.groups.value = listOf(trip.copy(shape = GroupShape.PETAL))
-            viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.CIRCLE))
-            viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
-
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
-
-            // Then
-            assertEquals(
-                GroupShape.CIRCLE,
-                groups.groups.value
-                    .single()
-                    .shape,
-            )
         }
 
     @Test
@@ -1800,25 +1718,6 @@ class EditGroupViewModelTest {
             val saved = groups.groups.value.single()
             assertNull(saved.photo)
             assertEquals(AvatarColor.LILAC, saved.color)
-        }
-
-    @Test
-    fun `GIVEN a sync changed the photo WHEN saving only a new shape THEN saves the new shape`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(storedGroup = trip.copy(photo = remotePhoto))
-            groups.groups.value = listOf(trip.copy(photo = otherRemotePhoto))
-            viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.COOKIE))
-            viewModel.onEvent(EditGroupUiEvent.OnIconConfirmed)
-
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnSaveClicked)
-
-            // Then
-            val saved = groups.groups.value.single()
-            assertEquals(GroupShape.COOKIE, saved.shape)
-            assertNull(saved.photo)
         }
 
     @Test
@@ -3008,35 +2907,16 @@ class EditGroupViewModelTest {
     }
 
     @Test
-    fun `GIVEN Icone do grupo open WHEN picking a shape THEN sends the shape picked`() = runTest(testDispatcher) {
+    fun `GIVEN Icone do grupo closed WHEN a late color pick arrives THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        viewModel.onEvent(EditGroupUiEvent.OnIconClicked)
-        trackedEvents.clear()
 
         // When
-        viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
+        viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
 
         // Then
-        assertEquals(
-            listOf("group_icon_shape_picked" to mapOf<String, Any>("shape" to GroupShape.PETAL)),
-            trackedEvents,
-        )
+        assertTrue(trackedEvents.isEmpty())
     }
-
-    @Test
-    fun `GIVEN Icone do grupo closed WHEN a late color or shape pick arrives THEN sends nothing`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            viewModel.onEvent(EditGroupUiEvent.OnIconColorPicked(AvatarColor.LILAC))
-            viewModel.onEvent(EditGroupUiEvent.OnIconShapePicked(GroupShape.PETAL))
-
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
 
     @Test
     fun `GIVEN Icone do grupo open WHEN tapping Usar este icone THEN sends the group icon confirmed event`() =

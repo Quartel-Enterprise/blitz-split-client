@@ -24,7 +24,6 @@
     </plurals>
     <string name="groups_deleted_by">%1$s eliminó el grupo “%2$s”.</string>
     <string name="groups_deleted">Se eliminó el grupo “%s”.</string>
-    <string name="groups_split_bill">Dividir un gasto</string>
     <plurals name="groups_sync_offline_queued">
         <item quantity="one">Sin conexión · %d cambio en cola</item>
         <item quantity="many">Sin conexión · %d cambios en cola</item>

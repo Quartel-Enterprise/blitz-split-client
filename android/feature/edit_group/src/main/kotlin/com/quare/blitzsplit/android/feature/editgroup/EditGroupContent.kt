@@ -299,7 +299,6 @@ private fun ColumnScope.IconSection(
                 initials = state.initials,
                 color = state.color,
                 size = avatarSize,
-                shape = state.shape,
                 photoUrl = state.photoUrl,
                 modifier = Modifier
                     .clickable(

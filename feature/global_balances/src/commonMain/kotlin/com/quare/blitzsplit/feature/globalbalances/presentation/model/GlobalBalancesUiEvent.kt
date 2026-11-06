@@ -31,6 +31,9 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
 
             OnEmptyActionClicked -> EventAnalytics.Automatic("balances_empty_action_clicked")
 
+            // Why: only a tap that opens Split a bill, never a late one over another screen or with no group.
+            OnSplitBillClicked -> EventAnalytics.Manual("split_bill_clicked")
+
             /*
              * Why: a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front:
              * where it went is its screen view.
@@ -101,6 +104,9 @@ sealed interface GlobalBalancesUiEvent : UiEvent {
 
     // Why: the empty state's button: "Ver quem te deve", "Ver quem você deve" or "Ver grupos".
     data object OnEmptyActionClicked : GlobalBalancesUiEvent
+
+    // Why: Android's "Rachar conta", the FAB (or the rail's button) every home tab has.
+    data object OnSplitBillClicked : GlobalBalancesUiEvent
 
     data object OnHomeTabClicked : GlobalBalancesUiEvent
 

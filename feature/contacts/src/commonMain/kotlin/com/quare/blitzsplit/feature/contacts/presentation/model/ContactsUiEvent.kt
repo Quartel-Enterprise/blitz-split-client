@@ -36,6 +36,8 @@ sealed interface ContactsUiEvent : UiEvent {
 
             OnAgendaClicked -> EventAnalytics.Manual("contacts_agenda_clicked")
 
+            OnSplitBillClicked -> EventAnalytics.Manual("split_bill_clicked")
+
             OnInviteWithLinkClicked -> EventAnalytics.Manual("contacts_invite_with_link_clicked")
 
             OnProfileClicked -> EventAnalytics.Manual("profile_avatar_clicked")
@@ -56,6 +58,9 @@ sealed interface ContactsUiEvent : UiEvent {
 
     // Why: "Buscar" (5.2), the same search as Grupos', over Contatos: the magnifier, the web's ⌘K.
     data object OnSearchClicked : ContactsUiEvent
+
+    // Why: Android's "Rachar conta", the FAB (or the rail's button) every home tab has.
+    data object OnSplitBillClicked : ContactsUiEvent
 
     // Why: "Ocultos · 1" opened or closed.
     data object OnHiddenToggled : ContactsUiEvent

@@ -86,7 +86,6 @@ class PickGroupViewModelTest {
                     "Viagem Floripa",
                     "VF",
                     AvatarColor.GREEN,
-                    GroupShape.SQUARE,
                     photoUrl = null,
                     memberCount = 3,
                 ),
