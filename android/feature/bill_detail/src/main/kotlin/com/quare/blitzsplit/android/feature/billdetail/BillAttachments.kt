@@ -204,6 +204,7 @@ private fun AttachmentTile(
                 ShimmerBox(
                     modifier = Modifier.matchParentSize(),
                     isDelayed = false,
+                    announcesLoading = false,
                 ) {
                     Box(modifier = Modifier.matchParentSize().shimmer(thumbShape))
                 }

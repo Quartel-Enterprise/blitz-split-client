@@ -19,7 +19,7 @@ internal fun tilesOf(
     group: Group,
     nowMillis: Long,
     timeZone: TimeZone,
-    isOnline: Boolean = false,
+    isOnline: Boolean,
 ): List<BillAttachmentTile> {
     var photoNumber = 0
     return attachments.map { attachment ->

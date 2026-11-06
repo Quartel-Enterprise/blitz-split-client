@@ -79,17 +79,12 @@ class SplitBillViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<SplitBillUiEvent>(trackEvent) {
-    // Why: the receipt's photo Início's "Ler cupom fiscal" picked before opening a new bill, read once it can be.
-    private val pickedReceipt: ByteArray? =
-        if (route.scansReceipt && route.expenseId == null) takePickedReceipt() else null
-
     val uiState: StateFlow<SplitBillUiState>
         field = MutableStateFlow(
             createInitialBillState(
                 route = route,
                 now = currentTimeMillis(),
                 showsSats = false,
-                hasPickedReceipt = pickedReceipt != null,
             ),
         )
 
@@ -180,7 +175,7 @@ class SplitBillViewModel(
         },
         onRemoved = { categoryEditing.rematch { it.copy(receiptCategoryId = null) } },
         onReadStarted = items::forget,
-        pickedPhoto = pickedReceipt,
+        takePickedReceipt = takePickedReceipt,
         trackEvent = trackEvent,
     )
 

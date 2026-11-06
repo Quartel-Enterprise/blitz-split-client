@@ -27,7 +27,6 @@ internal fun createInitialBillState(
     route: Route.SplitBill,
     now: Long,
     showsSats: Boolean,
-    hasPickedReceipt: Boolean,
 ): SplitBillUiState {
     val currency = GroupCurrency.BRL
     return SplitBillUiState(
@@ -76,14 +75,9 @@ internal fun createInitialBillState(
         receiptCategoryId = null,
         /*
          * Why: Início's "Ler cupom fiscal" picks the photo first and opens Rachar conta reading it, after "Rachar em
-         * qual grupo?" (beta feedback, part 3, item 16). Without the photo (the app restored after the system closed
-         * it) it asks for one again.
+         * qual grupo?" (beta feedback, part 3, item 16). It is taken once it can be read (ReceiptScanning).
          */
-        receiptRequest = when {
-            !route.scansReceipt || route.expenseId != null -> null
-            hasPickedReceipt -> ReceiptRequest.Picked
-            else -> ReceiptRequest.Choice
-        },
+        receiptRequest = ReceiptRequest.Picked.takeIf { route.scansReceipt && route.expenseId == null },
         conflict = null,
         settledPair = null,
         deletion = null,
@@ -156,7 +150,8 @@ private fun SplitEditor.toUnit(
 
 /*
  * Why: Início's "Ler cupom fiscal" for a bill whose group splits in a cryptocurrency, once no other group is being
- * picked: the bill opens alone, and neither the choice nor the camera opens later when the bill moves to another group.
+ * picked: the bill opens alone, the photo picked on Início is never read, and neither the choice nor the camera opens
+ * later when the bill moves to another group.
  */
 internal fun SplitBillUiState.withReceiptRequestSettled(): SplitBillUiState {
     val isAskingNothing = groups.isNotEmpty() && groupSelection == null && !isPickedGroupLoading

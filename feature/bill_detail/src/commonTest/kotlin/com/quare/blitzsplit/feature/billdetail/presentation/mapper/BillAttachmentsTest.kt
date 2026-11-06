@@ -33,7 +33,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertEquals(listOf("receipt", "photo-a", "photo-b"), tiles.map { it.id })
@@ -50,7 +50,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertEquals(listOf("photo-a", "photo-b"), tiles.map { it.id })
@@ -69,7 +69,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertFalse(tiles[0].canRemove)
@@ -89,7 +89,15 @@ class BillAttachmentsTest {
         val jpeg = byteArrayOf(1, 2, 3)
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), mapOf("photo-a" to jpeg), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(
+            attachments,
+            emptyMap(),
+            mapOf("photo-a" to jpeg),
+            group,
+            now,
+            TimeZone.UTC,
+            isOnline = false,
+        ).single()
 
         // Then
         assertEquals(jpeg, tile.localImage)
@@ -104,7 +112,7 @@ class BillAttachmentsTest {
         val imageUrls = mapOf("photo-a" to "https://bucket/photo-a.jpg")
 
         // When
-        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("https://bucket/photo-a.jpg", tile.imageUrl)
@@ -118,7 +126,7 @@ class BillAttachmentsTest {
         val imageUrls = mapOf("photo-b" to "https://bucket/photo-b.jpg")
 
         // When
-        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, imageUrls, emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertNull(tile.imageUrl)
@@ -258,7 +266,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals(1200, tile.width)
@@ -272,7 +280,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = ANA))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("Ana", tile.adderName)
@@ -285,7 +293,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = PIERRE))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("Pierre", tile.adderName)
@@ -299,7 +307,7 @@ class BillAttachmentsTest {
         val renamed = group.copy(members = listOf(ana.copy(name = "Ana Paula"), pierre))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), renamed, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), renamed, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertEquals("Ana Paula", tile.adderName)
@@ -311,7 +319,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = FORMER))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertNull(tile.adderName)
@@ -324,7 +332,7 @@ class BillAttachmentsTest {
         val attachments = listOf(attachment(addedByMemberId = null))
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false).single()
 
         // Then
         assertNull(tile.adderName)
@@ -350,7 +358,7 @@ class BillAttachmentsTest {
         )
 
         // When
-        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC)
+        val tiles = tilesOf(attachments, emptyMap(), emptyMap(), group, now, TimeZone.UTC, isOnline = false)
 
         // Then
         assertEquals(listOf(RelativeDay.TODAY, RelativeDay.YESTERDAY, RelativeDay.OTHER), tiles.map { it.addedDay })
@@ -363,7 +371,7 @@ class BillAttachmentsTest {
         val brasilia = UtcOffset(hours = -3).asTimeZone()
 
         // When
-        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, brasilia).single()
+        val tile = tilesOf(attachments, emptyMap(), emptyMap(), group, now, brasilia, isOnline = false).single()
 
         // Then
         assertEquals(RelativeDay.YESTERDAY, tile.addedDay)

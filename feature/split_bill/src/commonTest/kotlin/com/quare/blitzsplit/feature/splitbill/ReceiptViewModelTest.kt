@@ -536,7 +536,7 @@ class ReceiptViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertNotNull(state.groupSelection)
-            assertTrue(state.isReceiptSourceRequested)
+            assertEquals(ReceiptRequest.Picked, state.receiptRequest)
             assertNull(state.receiptSource)
             assertNull(state.shownReceiptSource)
         }
@@ -562,7 +562,7 @@ class ReceiptViewModelTest {
         }
 
     @Test
-    fun `GIVEN Rachar em qual grupo open WHEN the choice is skipped THEN no choice opens after Continuar`() =
+    fun `GIVEN Rachar em qual grupo open WHEN the choice is skipped THEN the choice still asks after Continuar`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -577,8 +577,8 @@ class ReceiptViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertFalse(state.showsReceiptSourceChoice)
-            assertEquals(ReceiptPhotoSource.FILES, state.receiptSource)
+            assertTrue(state.showsReceiptSourceChoice)
+            assertNull(state.receiptSource)
         }
 
     @Test

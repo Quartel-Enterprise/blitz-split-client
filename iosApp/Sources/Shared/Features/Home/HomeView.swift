@@ -152,7 +152,12 @@ struct HomeView: View {
         .readingVerticalBar($hasVerticalBar)
         // The notification card asks, never Home on its own: it only reads what the system says
         .checkingNotificationPermission { model.checkNotificationPermission() }
+        // The pickers; the choice points at the shortcut's tile on iPhone and iPad, and the Mac's comes from its toolbar
+        #if os(macOS)
         .receiptSourcePickers(model.receiptSourceRequest)
+        #else
+        .receiptSourcePickers(model.receiptSourceRequest, showsDialog: false)
+        #endif
         // Record payment, which "Who paid whom?" or a face's settling up opened over Home, just closed
         .recordedPaymentNotice(
             state.recordedPayment,
@@ -381,7 +386,7 @@ struct HomeView: View {
     @ViewBuilder
     private var shortcuts: some View {
         #if os(iOS)
-        HomeShortcuts(canScanReceipt: state.canScanReceipt, send: model.send)
+        HomeShortcuts(canScanReceipt: state.canScanReceipt, receiptRequest: model.receiptSourceRequest, send: model.send)
         #endif
     }
 

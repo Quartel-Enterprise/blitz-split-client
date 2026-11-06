@@ -520,12 +520,7 @@ class HomeViewModel(
      */
     private fun openSplitBill() {
         if (!uiState.value.isLoaded) return
-        val recent = rows.firstOrNull()
-        if (recent == null) {
-            open(Route.CreateGroup)
-        } else {
-            open(Route.SplitBill.createPickingGroup(recent.id))
-        }
+        open(rows.firstOrNull()?.let { Route.SplitBill.createPickingGroup(it.id) } ?: Route.CreateGroup)
     }
 
     private fun refresh() {
