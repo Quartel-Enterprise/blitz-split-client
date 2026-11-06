@@ -326,7 +326,8 @@ private struct NewMemberSheet: View {
             NavigationStack {
                 Form {
                     Section {
-                        TextField("Your name", text: nameBinding)
+                        TextField("Your name", text: nameBinding.firstLetterCapitalized)
+                            .capitalizesFirstLetter(isPersonName: true)
                             .focused($isFocused)
                             .disabled(model.state.isJoiningAsNewMember)
                             .submitLabel(.join)

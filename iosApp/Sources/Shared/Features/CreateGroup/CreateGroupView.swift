@@ -156,7 +156,8 @@ private struct CreateGroupForm: View {
                 .listRowBackground(Color.clear)
         }
         Section {
-            TextField("Group name", text: nameBinding)
+            TextField("Group name", text: nameBinding.firstLetterCapitalized)
+                .capitalizesFirstLetter()
                 .focused($isNameFocused)
             Picker("Type", selection: typeBinding) {
                 ForEach(state.types, id: \.self) { type in
@@ -295,11 +296,10 @@ private struct MembersSection: View {
                     .onTapGesture(perform: focusDraft)
                 // The prompt, not a label: the Mac's grouped form would put the label on the left and the field,
                 // empty, on the right (beta feedback 3 item 10)
-                TextField("Add by name", text: draftBinding, prompt: Text("Add by name"))
+                TextField("Add by name", text: draftBinding.firstLetterCapitalized, prompt: Text("Add by name"))
                     .labelsHidden()
-                    #if os(iOS)
-                    .textInputAutocapitalization(.words)
-                    #else
+                    .capitalizesFirstLetter(isPersonName: true)
+                    #if os(macOS)
                     .multilineTextAlignment(.leading)
                     #endif
                     .focused($isDraftFocused)

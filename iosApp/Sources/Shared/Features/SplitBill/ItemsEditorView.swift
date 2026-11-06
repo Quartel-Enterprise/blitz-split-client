@@ -669,8 +669,8 @@ struct PhoneItemEditor: View {
     @ViewBuilder
     private func fields(_ editor: ItemEditor) -> some View {
         Section {
-            TextField("Item", text: model.itemName)
-                .textInputAutocapitalization(.sentences)
+            TextField("Item", text: model.itemName.firstLetterCapitalized)
+                .capitalizesFirstLetter()
             HStack {
                 Text("Quantity")
                 Spacer()
@@ -885,8 +885,9 @@ struct MacItemEditor: View {
                 Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 8, verticalSpacing: 10) {
                     GridRow {
                         Text("Item:").gridColumnAlignment(.trailing)
-                        TextField("Item", text: model.itemName)
+                        TextField("Item", text: model.itemName.firstLetterCapitalized)
                             .labelsHidden()
+                            .capitalizesFirstLetter()
                             .focused($isNameFocused)
                     }
                     GridRow {

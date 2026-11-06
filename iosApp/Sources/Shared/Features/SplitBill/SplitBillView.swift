@@ -404,8 +404,8 @@ private struct PhoneSplitBill: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Category: \(CategoryCopy.path(state.category, parent: state.categoryParent)). Change it")
-                TextField("What was it? E.g. Groceries", text: model.billDescription)
-                    .textInputAutocapitalization(.sentences)
+                TextField("What was it? E.g. Groceries", text: model.billDescription.firstLetterCapitalized)
+                    .capitalizesFirstLetter()
                     .submitLabel(.next)
                     .focused($focusedField, equals: .description)
                     .onSubmit { focusedField = .amount }
@@ -1042,10 +1042,11 @@ private struct MacBillForm: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 8) {
                                 MacCategoryMenu(model: model)
-                                TextField(text: model.billDescription, prompt: Text("What was it? E.g. Groceries")) {
+                                TextField(text: model.billDescription.firstLetterCapitalized, prompt: Text("What was it? E.g. Groceries")) {
                                     Text("Description")
                                 }
                                 .labelsHidden()
+                                .capitalizesFirstLetter()
                                 .focused($isDescriptionFocused)
                             }
                             if state.showsDescriptionError {

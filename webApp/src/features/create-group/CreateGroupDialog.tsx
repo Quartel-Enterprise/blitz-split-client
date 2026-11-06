@@ -17,6 +17,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { currencyLabel } from '@/lib/currency'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 import { useRef } from 'react'
 
@@ -162,7 +163,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <Label htmlFor={nameId}>{t('createGroup_nameLabel')}</Label>
-          <Input id={nameId} value={name} onChange={(event) => setName(event.target.value)} autoComplete="off" />
+          <Input id={nameId} {...freeTextProps(name, setName)} autoComplete="off" />
         </div>
       </div>
       {state.showsPhotoError && (
@@ -236,11 +237,10 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
             <Plus aria-hidden className="size-4 shrink-0 text-muted-foreground" />
             <Input
               ref={draftRef}
-              value={draft}
+              {...freeTextProps(draft, setDraft, 'words')}
               placeholder={t('createGroup_addPlaceholder')}
               aria-label={t('createGroup_addPlaceholder')}
               autoComplete="off"
-              onChange={(event) => setDraft(event.target.value)}
               onKeyDown={(event) => {
                 // Why: Enter adds the name, not the group; the field stays focused for the next one.
                 if (event.key === 'Enter') {

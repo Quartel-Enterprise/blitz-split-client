@@ -21,6 +21,12 @@ final class EditProfileModel {
         })
     }
 
+    /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: the name field reads
+    /// what it sent back at once, so the Mac's capital first letter never lands on a later keystroke.
+    var current: EditProfileUiState {
+        (holder.viewModel.uiState.value as? EditProfileUiState) ?? state
+    }
+
     func send(_ event: any EditProfileUiEvent) {
         holder.viewModel.onEvent(event: event)
     }
@@ -181,16 +187,11 @@ private struct EditProfileNameSections: View {
     private var sections: some View {
         let state = model.state
         Section {
-            TextField(
-                "Your name",
-                text: Binding(
-                    get: { model.state.name },
-                    set: { model.send(EditProfileUiEventOnNameChanged(name: $0)) },
-                ),
-            )
-            .textContentType(.name)
-            .submitLabel(.done)
-            .onSubmit { model.send(EditProfileUiEventOnSaveClicked.shared) }
+            TextField("Your name", text: nameBinding.firstLetterCapitalized)
+                .textContentType(.name)
+                .capitalizesFirstLetter(isPersonName: true)
+                .submitLabel(.done)
+                .onSubmit { model.send(EditProfileUiEventOnSaveClicked.shared) }
         } header: {
             Text("Your name")
         } footer: {
@@ -228,6 +229,13 @@ private struct EditProfileNameSections: View {
         } footer: {
             Text("Only people in your groups see your name and photo.")
         }
+    }
+
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: { model.current.name },
+            set: { model.send(EditProfileUiEventOnNameChanged(name: $0)) },
+        )
     }
 
     private func nameError(_ state: EditProfileUiState) -> LocalizedStringKey? {

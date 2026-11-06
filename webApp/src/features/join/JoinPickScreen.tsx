@@ -13,6 +13,7 @@ import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skele
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
+import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
 const nameId = 'new-member-name'
@@ -179,8 +180,7 @@ function NewMemberDialog({
         id={nameId}
         autoFocus
         autoComplete="name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
+        {...freeTextProps(name, setName, 'words')}
         disabled={isJoining}
         aria-describedby={`${nameId}-helper`}
       />
