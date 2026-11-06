@@ -14,9 +14,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalan
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -753,93 +751,6 @@ class ContactsViewModelTest {
     }
 
     @Test
-    fun `GIVEN groups on the device WHEN Contatos opens THEN offers the search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertTrue(state.canSearch)
-    }
-
-    @Test
-    fun `GIVEN no group WHEN Contatos opens THEN offers no search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            bills = emptyList(),
-        )
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertFalse(state.canSearch)
-    }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN Contatos opens THEN offers no search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(areGroupsRead = false)
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertFalse(state.canSearch)
-    }
-
-    @Test
-    fun `GIVEN only a settled group WHEN Contatos opens THEN offers the search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = listOf(futebol()),
-            bills = listOf(
-                owes(FUTEBOL, memberId("julia", FUTEBOL), meId(FUTEBOL), 3_000L, id = "ball"),
-                owes(FUTEBOL, meId(FUTEBOL), memberId("julia", FUTEBOL), 3_000L, id = "drinks"),
-            ),
-        )
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertTrue(state.canSearch)
-    }
-
-    @Test
-    fun `GIVEN no group WHEN a sync brings the first group THEN offers the search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            bills = emptyList(),
-        )
-
-        // When
-        groups.groups.value = listOf(ape())
-
-        // Then
-        assertTrue(viewModel.uiState.value.canSearch)
-    }
-
-    @Test
-    fun `GIVEN a single group WHEN a sync takes it away THEN offers no search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = listOf(ape()),
-            bills = emptyList(),
-        )
-
-        // When
-        groups.groups.value = emptyList()
-
-        // Then
-        assertFalse(viewModel.uiState.value.canSearch)
-    }
-
-    @Test
     fun `GIVEN Contatos on top WHEN the magnifier is tapped THEN opens the search over Contatos`() =
         runTest(testDispatcher) {
             // Given
@@ -853,7 +764,7 @@ class ContactsViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group WHEN the magnifier is tapped THEN opens nothing`() = runTest(testDispatcher) {
+    fun `GIVEN no group WHEN the magnifier is tapped THEN opens the search over Contatos`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             storedGroups = emptyList(),
@@ -864,19 +775,7 @@ class ContactsViewModelTest {
         viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN the magnifier is tapped THEN opens nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(areGroupsRead = false)
-
-        // When
-        viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
     }
 
     @Test
@@ -1047,19 +946,20 @@ class ContactsViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group WHEN the magnifier is tapped THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            bills = emptyList(),
-        )
+    fun `GIVEN no group WHEN the magnifier is tapped THEN sends the search opened from contacts`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                bills = emptyList(),
+            )
 
-        // When
-        viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
+            // When
+            viewModel.onEvent(ContactsUiEvent.OnSearchClicked)
 
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
+            // Then
+            assertEquals(listOf("search_opened" to contactsSource), trackedEvents)
+        }
 
     @Test
     fun `GIVEN Carla profile over Contatos WHEN the magnifier is tapped THEN sends nothing`() =
@@ -1373,7 +1273,6 @@ class ContactsViewModelTest {
         storedHidden: List<HiddenContact> = emptyList(),
         online: Boolean = true,
         isBookRead: Boolean = true,
-        areGroupsRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -1407,11 +1306,6 @@ class ContactsViewModelTest {
             ),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
-            observeHasGroups = if (areGroupsRead) {
-                ObserveHasGroupsUseCase(groups)
-            } else {
-                ObserveHasGroups { MutableSharedFlow() }
-            },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

@@ -11,8 +11,6 @@ class RoomGroupLocalDataSource(
 ) : GroupLocalDataSource {
     override fun observeGroups(): Flow<List<GroupEntity>> = dao.observeGroups()
 
-    override fun observeHasGroups(): Flow<Boolean> = dao.observeHasGroups()
-
     override fun observeMembers(): Flow<List<GroupMemberEntity>> = dao.observeMembers()
 
     override fun observeHasPending(): Flow<Boolean> = dao.observeHasPending()

@@ -56,6 +56,8 @@ struct BoraRacharApp: App {
         .commands {
             GroupsCommands()
             ActivityCommands()
+            SearchCommands()
+            NavigationCommands()
         }
         #endif
 

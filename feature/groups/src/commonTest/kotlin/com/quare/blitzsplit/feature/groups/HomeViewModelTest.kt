@@ -1266,7 +1266,6 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnSearchClicked)
 
         // Then
-        assertTrue(viewModel.uiState.value.canSearch)
         assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
     }
 
@@ -1289,7 +1288,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group WHEN a late tap on Buscar arrives THEN opens nothing`() = runTest(testDispatcher) {
+    fun `GIVEN no group WHEN tapping Buscar THEN opens the search over Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -1297,24 +1296,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnSearchClicked)
 
         // Then
-        assertFalse(viewModel.uiState.value.canSearch)
-        assertEquals(listOf(Route.Home), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN tapping Buscar THEN opens nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = listOf(trio()),
-            groupsRead = false,
-        )
-
-        // When
-        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
-
-        // Then
-        assertFalse(viewModel.uiState.value.canSearch)
-        assertEquals(listOf(Route.Home), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
     }
 
     @Test
@@ -1345,21 +1327,8 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnSearchClicked)
 
             // Then
-            assertTrue(viewModel.uiState.value.canSearch)
             assertEquals(listOf(Route.Home, Route.Search), navigator.backStack.value)
         }
-
-    @Test
-    fun `GIVEN no group WHEN a sync brings the first one THEN Buscar shows`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        groups.groups.value = listOf(trio())
-
-        // Then
-        assertTrue(viewModel.uiState.value.canSearch)
-    }
 
     @Test
     fun `GIVEN the profile over Inicio WHEN a late tap on Buscar arrives THEN the profile stays open`() =
@@ -2470,7 +2439,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group WHEN a late tap on Buscar arrives THEN tracks nothing`() = runTest(testDispatcher) {
+    fun `GIVEN no group WHEN tapping Buscar THEN tracks search_opened from the home`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -2478,22 +2447,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnSearchClicked)
 
         // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN tapping Buscar THEN tracks nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = listOf(trio()),
-            groupsRead = false,
-        )
-
-        // When
-        viewModel.onEvent(HomeUiEvent.OnSearchClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
+        assertEquals(listOf("search_opened" to mapOf<String, Any>("source" to "home")), trackedEvents)
     }
 
     @Test

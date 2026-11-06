@@ -48,7 +48,6 @@ class HomeSidebarViewModel(
                 accountProvider = null,
                 openGroups = emptyList(),
                 isLoaded = false,
-                canSearch = false,
             ),
         )
 
@@ -76,8 +75,6 @@ class HomeSidebarViewModel(
                     accountProvider = badge.accountProvider,
                     openGroups = rowsOf(items, clock).filterNot { row -> row.isSettled },
                     isLoaded = true,
-                    // Why: settled groups too, as on the tabs, from the same read as "Em aberto".
-                    canSearch = items.isNotEmpty(),
                 )
             }
         }.launchIn(viewModelScope)
@@ -93,9 +90,8 @@ class HomeSidebarViewModel(
         }
     }
 
-    // Why: back to the tab the page on top sits in, then the search over it; nothing before the first group.
+    // Why: back to the tab the page on top sits in, then the search over it.
     private fun openSearch() {
-        if (!uiState.value.canSearch) return
         if (navigator.openSearchFromPage()) trackEvent("search_opened", mapOf("source" to "sidebar"))
     }
 

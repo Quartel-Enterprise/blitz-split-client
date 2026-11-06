@@ -1,9 +1,10 @@
 import Shared
 import SwiftUI
 
-/// The tabs of the canvas: Home first, then Groups, Balances and Contacts. Search, once there is a group, is the search
-/// tab at the end of the bar, the room Activity left when it became Home's bell (Pierre's call); the Mac searches from
-/// Groups' toolbar instead.
+/// The tabs of the canvas: Home first, then Groups, Balances and Contacts. Search is the search tab at the end of the
+/// bar, the room Activity left when it became Home's bell (Pierre's call), there from the first launch, as an item of
+/// the navigation never comes and goes (Pierre's beta feedback); an iPad's and the Mac's sidebar hold it atop the
+/// tabs, the Mac's opened by ⌘K too, as the web's "Search… ⌘K".
 enum MainTab: Hashable {
     case home
     case groups
@@ -28,6 +29,8 @@ struct MainTabView: View {
     @State private var lastBalancesRoute: RouteGlobalBalances?
     #if os(macOS)
     @State private var sidebar = HomeSidebarModel()
+    /// Bumped by ⌘K, which focuses the search tab's field again.
+    @State private var searchFocusRequest = 0
     #endif
     init(path: Binding<[AppRoute]>) {
         _path = path
@@ -35,8 +38,12 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: tabSelection) {
+            #if os(macOS)
+            // Atop the sidebar's tabs, where the web's sidebar puts "Search… ⌘K"
+            searchTab
+            #endif
             Tab(value: MainTab.home) {
-                NavigationStack(path: homePath) {
+                SyncedNavigationStack(path: homePath) {
                     HomeView(model: home)
                         .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                 }
@@ -62,7 +69,7 @@ struct MainTabView: View {
             // filter opens it afresh. Its ViewModel then keeps reading the balances behind the other tabs for the
             // rest of the home, the price of coming back without a shimmer, as Home's and Groups' do.
             Tab("Balances", systemImage: "dollarsign.circle", value: MainTab.balances) {
-                NavigationStack(path: balancesPath) {
+                SyncedNavigationStack(path: balancesPath) {
                     if let route = shownBalancesRoute {
                         GlobalBalancesView(route: route)
                             .id(route)
@@ -84,15 +91,7 @@ struct MainTabView: View {
                     #endif
             }
             #if os(iOS)
-            // Nothing to look in before the first group
-            if hasSearchTab {
-                Tab(value: MainTab.search, role: .search) {
-                    // An iPad lying down opens the first result beside the results
-                    GroupsColumns(model: model, path: stackPath(isSearch: true), isInFront: isInFront(isSearch: true)) {
-                        GroupsSearchView(model: model)
-                    }
-                }
-            }
+            searchTab
             #endif
         }
         .tabViewStyle(.sidebarAdaptable)
@@ -100,6 +99,15 @@ struct MainTabView: View {
         .searchTabApart()
         #endif
         #if os(macOS)
+        // The sidebar's button at the detail's leading edge instead of the sidebar's header, as in Ajustes (the system's
+        // is hidden, `RootView`'s `hidingSystemSidebarToggle()`)
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                SidebarToggleButton()
+            }
+        }
+        // ⌘K (Edit › Search) opens the search tab, or brings the focus back to its field
+        .focusedSceneValue(\.openSearch, openSearch)
         // The open groups as Groups lists them, where the boards draw them: over Groups and a group's screens
         .tabViewSidebarFooter {
             if showsOpenGroups {
@@ -143,6 +151,27 @@ struct MainTabView: View {
         .onChange(of: balancesRoute, initial: true) { _, route in
             if let route { lastBalancesRoute = route }
         }
+    }
+
+    /// Search, the last tab of an iPhone's bar and the first of the Mac's sidebar.
+    private var searchTab: some TabContent<MainTab> {
+        #if os(macOS)
+        // A plain tab, which the sidebar keeps where it is declared; the search role would move it under the others
+        Tab("Search", systemImage: "magnifyingglass", value: MainTab.search) {
+            GroupsColumns(model: model, path: stackPath(isSearch: true), isInFront: isInFront(isSearch: true)) {
+                GroupsSearchView(model: model)
+            }
+            .environment(\.searchFocusRequest, searchFocusRequest)
+            .measuringNarrowWindow()
+        }
+        #else
+        Tab(value: MainTab.search, role: .search) {
+            // An iPad lying down opens the first result beside the results
+            GroupsColumns(model: model, path: stackPath(isSearch: true), isInFront: isInFront(isSearch: true)) {
+                GroupsSearchView(model: model)
+            }
+        }
+        #endif
     }
 
     /// Selecting a tab opens it right above Home. Leaving Search forgets it and goes back to the groups, past what its
@@ -251,23 +280,10 @@ struct MainTabView: View {
         )
     }
 
-    /// The search tab is selected; the Mac has none and searches in the groups' toolbar. Read
-    /// from the ViewModel at once, so a tap on the tab doesn't bounce back to Groups until the watcher catches up.
+    /// The search tab is selected. Read from the ViewModel at once, so a tap on the tab doesn't bounce back to Groups
+    /// until the watcher catches up.
     private var showsSearchTab: Bool {
-        #if os(iOS)
-        hasSearchTab && model.current.isSearching
-        #else
-        false
-        #endif
-    }
-
-    /// Four tabs leave room for the search tab on an iPhone too, as Apple's tab bar sets it apart at its end.
-    private var hasSearchTab: Bool {
-        #if os(iOS)
-        model.state.canSearch
-        #else
-        false
-        #endif
+        model.current.isSearching
     }
 
     /// The groups' stack goes to the tab that pushed it: Search while it is open, else Groups. The other tabs' stacks
@@ -283,6 +299,12 @@ struct MainTabView: View {
     }
 
     #if os(macOS)
+    /// ⌘K: the search tab, as a click on it in the sidebar, and its field focused.
+    private func openSearch() {
+        searchFocusRequest += 1
+        if selectedTab != .search { tabSelection.wrappedValue = .search }
+    }
+
     /// "Open" shows while Groups or a group's screen is in front, whichever tab opened the group.
     private var showsOpenGroups: Bool {
         path.last == .groups || selectedGroupId != nil
@@ -328,7 +350,7 @@ struct MainTabView: View {
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         // Home's bell, or a contact's "See all", pushes Activity
         case let .activity(route): ActivityView(route: route).id(route)
-        // Search over Home, Balances or Contacts on the Mac, as a sheet; an iPhone and an iPad have the search tab
+        // The search over Home, Balances or Contacts; every platform here has the search tab instead
         case .search: SearchView()
         default:
             #if os(macOS)
@@ -362,6 +384,26 @@ private struct SearchTabApart: ViewModifier {
             content.tabViewSearchActivation(.searchTabSelection)
         } else {
             content
+        }
+    }
+}
+#endif
+
+#if os(macOS)
+extension FocusedValues {
+    /// Opens the main window's search tab (⌘K).
+    @Entry var openSearch: (() -> Void)?
+}
+
+/// Edit › Search (⌘K), as the web's "Search… ⌘K": the search tab atop the sidebar, its field focused.
+struct SearchCommands: Commands {
+    @FocusedValue(\.openSearch) private var openSearch
+
+    var body: some Commands {
+        CommandGroup(after: .textEditing) {
+            Button("Search") { openSearch?() }
+                .keyboardShortcut("k", modifiers: .command)
+                .disabled(openSearch == nil)
         }
     }
 }

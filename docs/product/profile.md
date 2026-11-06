@@ -13,7 +13,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
     name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Save (✓). The Mac's profile is
     Settings (⌘,), the app's Settings window, never pushed: whatever opens the profile (any tab's avatar, "Protect your access", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
-    scrolls the form to the one picked, on every click (hidden under 700 pt), a key and Delete account open as sheets
+    scrolls the form to the one picked, on every click (hidden under 700 pt; its button at the leading edge of the
+    detail's toolbar, right of the divider, as in the main window, Pierre's beta feedback), a key and Delete account open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
   - On the web and the Mac, "App on your phone" (Settings › iPhone on the Mac) sits right under the profile once a

@@ -77,7 +77,7 @@ fun ContactsContent(
                 kind = homeBarsKindOf(layout.usesNavigationRail),
                 selected = HomeTab.CONTACTS,
                 onTabClick = onTabClick,
-                onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) }.takeIf { state.canSearch },
+                onSearchClick = { onEvent(ContactsUiEvent.OnSearchClicked) },
             ),
             // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
             modifier = Modifier.semantics { paneTitle = title },

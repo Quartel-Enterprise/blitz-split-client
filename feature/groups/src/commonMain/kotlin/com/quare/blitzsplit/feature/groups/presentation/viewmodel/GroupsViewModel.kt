@@ -260,10 +260,10 @@ class GroupsViewModel(
                         pendingChangeCount = home.pendingChangeCount,
                         latestBill = home.latestBill,
                         /*
-                         * Why: what the search found changes with the device's data, a sync's included. Once the last
-                         * group goes the search closes, so the next group doesn't bring back a forgotten search.
+                         * Why: what the search found changes with the device's data, a sync's included. It stays open
+                         * once the last group goes, as it opens before the first one (Pierre's beta feedback).
                          */
-                        search = if (home.rows.isEmpty()) GroupsSearch.closed else searchedOf(it.search, home.rows),
+                        search = searchedOf(it.search, home.rows),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -302,7 +302,6 @@ class GroupsViewModel(
             .launchIn(viewModelScope)
         GroupsSearchStack(navigator).watch(
             scope = viewModelScope,
-            canSearch = uiState.map { it.canSearch }.distinctUntilChanged(),
             isOpen = { uiState.value.search.isOpen },
             close = ::closeSearch,
             open = {
@@ -387,8 +386,7 @@ class GroupsViewModel(
 
             GroupsUiEvent.OnSearchOpened -> openSearch()
 
-            // Why: a tap that can't open the search (no group yet) leaves what is pushed where it is.
-            GroupsUiEvent.OnSearchTabClicked -> if (uiState.value.canSearch) {
+            GroupsUiEvent.OnSearchTabClicked -> {
                 if (!isListShown()) navigator.popToGroups()
                 openSearch()
             }
@@ -440,11 +438,11 @@ class GroupsViewModel(
     }
 
     /*
-     * Why: there is nothing to look in before the first group, and only from the groups on top, so ⌘K over a dialog
-     * on the web or iOS's search tab over a pushed screen doesn't open a search whose close would pop that screen.
+     * Why: only from the groups on top, so ⌘K over a dialog on the web or iOS's search tab over a pushed screen doesn't
+     * open a search whose close would pop that screen.
      */
     private fun openSearch() {
-        if (!uiState.value.canSearch || !isListShown()) return
+        if (!isListShown()) return
         if (!uiState.value.search.isOpen) trackEvent("search_opened", mapOf("source" to "groups"))
         uiState.update { it.copy(search = it.search.copy(isOpen = true)) }
         search { it }

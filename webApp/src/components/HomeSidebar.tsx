@@ -74,7 +74,7 @@ export function HomeFrame({ children }: { children: ReactNode }) {
       <HomeShellView
         {...chrome}
         profile={chrome.profile ?? (sidebarState && loadedProfile(sidebarState))}
-        search={chrome.search ?? (sidebarState?.canSearch ? { ...searchKeys, onOpen: nothing } : undefined)}
+        search={chrome.search ?? (sidebarState ? { ...searchKeys, onOpen: nothing } : undefined)}
         className={page ? undefined : 'invisible'}
       >
         {children}
@@ -154,10 +154,10 @@ export function PageShell({
 
 /**
  * A page's Search, with no shortcut. While the sidebar is still read it holds its place (a click does nothing yet), so
- * the phone's bottom navigation never lays out four items and then five; once read it shows only with a group.
+ * the phone's bottom navigation never lays out four items and then five.
  */
 function pageSearchOf(state: JsHomeSidebarState | null, presenter: HomeSidebarPresenter | undefined) {
   if (!state) return { ...pageSearchKeys, onOpen: nothing }
-  if (!state.canSearch || !presenter) return undefined
+  if (!presenter) return undefined
   return { ...pageSearchKeys, onOpen: () => presenter.openSearch() }
 }

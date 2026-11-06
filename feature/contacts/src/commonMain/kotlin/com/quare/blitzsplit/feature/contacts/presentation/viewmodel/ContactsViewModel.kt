@@ -7,7 +7,6 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
@@ -55,7 +54,6 @@ class ContactsViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-    observeHasGroups: ObserveHasGroups,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactsUiEvent>(trackEvent) {
     // Why: the screen these events come from, as their source param says.
@@ -79,7 +77,6 @@ class ContactsViewModel(
                 isDetailPaneShown = false,
                 pickedKey = null,
                 isAgendaPicked = false,
-                canSearch = false,
             ),
         )
 
@@ -130,9 +127,6 @@ class ContactsViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
-        observeHasGroups()
-            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
-            .launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: ContactsUiEvent) {
@@ -141,9 +135,7 @@ class ContactsViewModel(
 
             is ContactsUiEvent.OnDetailPaneChanged -> uiState.update { it.copy(isDetailPaneShown = event.isShown) }
 
-            ContactsUiEvent.OnSearchClicked -> if (uiState.value.canSearch &&
-                navigator.openSearchOver(HomeTab.CONTACTS)
-            ) {
+            ContactsUiEvent.OnSearchClicked -> if (navigator.openSearchOver(HomeTab.CONTACTS)) {
                 trackEvent("search_opened", sourceParams)
             }
 

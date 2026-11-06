@@ -40,8 +40,6 @@ data class GlobalBalancesUiState(
      * inspector) shows beside the list, as last picked; null until someone is picked.
      */
     val pickedPersonId: String?,
-    // Why: "Buscar" only once there is a group to look in, as on Grupos.
-    val canSearch: Boolean,
 ) {
     // Why: the people and the totals load together; until then nothing reads as settled or zero.
     val isLoaded: Boolean

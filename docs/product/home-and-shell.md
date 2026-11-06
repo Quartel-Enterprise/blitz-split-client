@@ -47,9 +47,19 @@ The home's four tabs and the web's and the Mac's shell.
     (the tab it sits in stays selected). A group
     picked there opens over Groups as its row does, in the place of what Groups opened (the one already open goes
     back to it, keeping its tab, and the one in front stays as it is). A Mac window under 800 pt (the boards' narrow window is 768 pt) moves the segments
-    the toolbar held below it, into the content (Groups' Open / Settled up, which a search's results hide at
-    every width, a group's Expenses / Balances / Members), and drops a column: Groups' "Latest activity" and Expenses' "Who paid" (`isNarrowWindow`, measured
+    the toolbar held below it, into the content (Groups' Open / Settled up, a group's Expenses / Balances / Members),
+    and drops a column: Groups' "Latest activity" and Expenses' "Who paid" (`isNarrowWindow`, measured
     per tab by `measuringNarrowWindow()`).
+  - The Mac's window and its navigation (Pierre's beta feedback). The sidebar's button sits at the leading edge of the
+    detail's toolbar, right of the sidebar's divider, in the main window and in Settings alike, never in the sidebar's
+    header (`SidebarToggleButton`; the system's own is hidden, `hidingSystemSidebarToggle()`); View › Hide Sidebar
+    still toggles it. The sidebar lists Search first, then Home, Groups, Balances and Contacts, ⌘K opening Search. The
+    mouse's back and forward buttons go back and forward, as in the Finder and Safari: back closes the screen on top
+    as its back button does (never under a sheet), forward opens again what back closed, and any other move (a tap, a
+    tab, a sheet) forgets what forward had, as a browser's history; Go › Back (⌘[) and Forward (⌘]) do the same from
+    the keyboard (`AppModel.goBack`, `goForward`). A group's row in Groups' table, a group in the sidebar's "Open"
+    and whatever else a tab opens draws over that tab (`SyncedNavigationStack`, which the Mac's `TabView` needs to
+    push a tab's path).
   - A home tab (Home, Groups, Balances, Contacts, Activity) shows its title only on a wide screen, on every platform
     (Pierre's call): the web from the tablet up (768 px, atop the content), an Android tablet or unfolded foldable
     (`HomeTabTitle`, 600 dp on the short side; a phone lying down stays untitled), an iPad's room (a large title under the

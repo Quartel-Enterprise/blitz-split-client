@@ -20,8 +20,6 @@ class JsHomeSidebarState(
     // Why: "Em aberto", in Grupos' order.
     val openGroups: Array<JsGroupRow>,
     val isLoaded: Boolean,
-    // Why: "Buscar" on the pages too, once there is a group to look in.
-    val canSearch: Boolean,
 )
 
 // Why: the home's sidebar around every page of its frame (tabs, group pages, Estatísticas, Perfil), kept as they change.
@@ -39,7 +37,6 @@ class HomeSidebarPresenter {
                 accountProvider = state.accountProvider?.code,
                 openGroups = state.openGroups.map(::toJsGroupRow).toTypedArray(),
                 isLoaded = state.isLoaded,
-                canSearch = state.canSearch,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

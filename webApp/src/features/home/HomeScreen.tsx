@@ -36,7 +36,7 @@ const tabEvents: Partial<Record<HomeTab, (presenter: HomePresenter) => void>> = 
 export function HomeScreen() {
   const presenter = usePresenter(() => new HomePresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsHomeState) => void) => p.observeState(onChange))
-  const search = useHomeSearch(presenter, state?.canSearch ?? false)
+  const search = useHomeSearch(presenter)
   useActions(
     presenter,
     (p, onAction: (action: string) => void) => p.observeActions(onAction),

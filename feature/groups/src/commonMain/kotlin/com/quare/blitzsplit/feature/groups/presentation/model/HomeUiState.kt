@@ -94,14 +94,11 @@ data class HomeUiState(
     val onlyPersonToPay: HomePerson?
         get() = people.valueOrNull()?.singleOrNull { it.netMinor < 0 }
 
-    // Why: "Rachar conta" and "Buscar" (5.2) need a group, settled ones included, to split in or look in.
+    // Why: "Rachar conta" needs a group, settled ones included, to split in.
     private val hasGroups: Boolean
         get() = isLoaded && groupCount > 0
 
     val showsSplitBillButton: Boolean
-        get() = hasGroups
-
-    val canSearch: Boolean
         get() = hasGroups
 
     // Why: reading a receipt needs the internet; offline it shows disabled with "Precisa de internet" (7.1d).

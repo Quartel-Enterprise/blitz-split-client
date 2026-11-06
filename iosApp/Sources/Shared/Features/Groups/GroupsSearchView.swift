@@ -217,6 +217,46 @@ private struct GroupsSearchField: View {
         .onAppear { if model.currentSearch.query.isEmpty { isFocused = true } }
     }
 }
+#else
+/// The Mac's search tab, atop the sidebar as the web's "Search… ⌘K" (Pierre's beta feedback): the field, which takes
+/// the focus as the tab opens and again on every ⌘K, and All / Groups / People / Expenses above the results.
+struct GroupsSearchView: View {
+    let model: any SearchSource
+    @Environment(\.searchFocusRequest) private var focusRequest
+    @FocusState private var isFieldFocused: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 10) {
+                TextField("Groups, people and expenses", text: GroupsSearchCopy.queryBinding(model))
+                    .textFieldStyle(.roundedBorder)
+                    .focused($isFieldFocused)
+                Picker("Search in", selection: GroupsSearchCopy.scopeBinding(model)) {
+                    ForEach(GroupsSearchCopy.scopes, id: \.self) { scope in
+                        Text(GroupsSearchCopy.scopeTitle(scope)).tag(scope)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .fixedSize()
+            }
+            .frame(maxWidth: 560)
+            .padding(16)
+            Divider()
+            GroupsSearchResultsList(model: model)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .navigationTitle("Search")
+        .onAppear { isFieldFocused = true }
+        .onChange(of: focusRequest) { isFieldFocused = true }
+    }
+}
+
+extension EnvironmentValues {
+    /// Bumped by every ⌘K, so the Mac's search field takes the focus again while its tab is already open.
+    @Entry var searchFocusRequest = 0
+}
 #endif
 
 /// The words and bindings of the search, the same on iPhone, iPad and Mac.

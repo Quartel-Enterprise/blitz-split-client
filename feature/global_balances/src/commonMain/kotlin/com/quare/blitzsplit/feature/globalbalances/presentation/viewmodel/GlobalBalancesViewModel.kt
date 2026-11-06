@@ -11,7 +11,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
 import com.quare.blitzsplit.core.groups.domain.model.UserBadge
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -63,7 +62,6 @@ class GlobalBalancesViewModel(
     observeAccount: ObserveAccount,
     observeFirstDownload: ObserveFirstDownload,
     connectivityObserver: NetworkConnectivityObserver,
-    observeHasGroups: ObserveHasGroups,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<GlobalBalancesUiEvent>(trackEvent) {
     val uiState: StateFlow<GlobalBalancesUiState>
@@ -81,7 +79,6 @@ class GlobalBalancesViewModel(
                 isOnline = true,
                 recordedPayment = null,
                 pickedPersonId = null,
-                canSearch = false,
             ),
         )
 
@@ -127,9 +124,6 @@ class GlobalBalancesViewModel(
                 )
             }
         }.launchIn(viewModelScope)
-        observeHasGroups()
-            .onEach { hasGroups -> uiState.update { it.copy(canSearch = hasGroups) } }
-            .launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
@@ -201,10 +195,8 @@ class GlobalBalancesViewModel(
 
             GlobalBalancesUiEvent.OnProfileClicked -> if (isOnTop()) navigator.navigate(Route.Profile)
 
-            GlobalBalancesUiEvent.OnSearchClicked -> if (uiState.value.canSearch) {
-                if (navigator.openSearchOver(HomeTab.BALANCES)) {
-                    trackEvent("search_opened", mapOf("source" to GLOBAL_BALANCES_SOURCE))
-                }
+            GlobalBalancesUiEvent.OnSearchClicked -> if (navigator.openSearchOver(HomeTab.BALANCES)) {
+                trackEvent("search_opened", mapOf("source" to GLOBAL_BALANCES_SOURCE))
             }
 
             GlobalBalancesUiEvent.OnUndoPaymentClicked -> undoSettledUp()

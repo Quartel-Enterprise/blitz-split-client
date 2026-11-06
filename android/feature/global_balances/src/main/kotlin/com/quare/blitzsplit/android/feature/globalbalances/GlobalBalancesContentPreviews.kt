@@ -148,7 +148,6 @@ private fun createPreviewState(
     isOnline = isOnline,
     recordedPayment = null,
     pickedPersonId = null,
-    canSearch = true,
 )
 
 @DevicePreviews

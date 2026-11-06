@@ -61,7 +61,7 @@ export function GroupsScreen() {
   useDeletedGroupNotice(presenter, state)
   // Why: Registrar pagamento, which a row's Acertar opened over the home, just closed.
   useRecordedPaymentNotice(presenter, state?.recordedPayment)
-  const search = useHomeSearch(presenter, state?.canSearch ?? false)
+  const search = useHomeSearch(presenter)
   const searchActions = useMemo(() => (presenter ? searchActionsOf(presenter) : null), [presenter])
   if (!presenter || !state) return null
   // Why: the first download draws the page before its first group, with what is still coming in gray.

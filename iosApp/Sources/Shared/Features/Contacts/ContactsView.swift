@@ -88,7 +88,7 @@ struct ContactsColumns: View {
         Group {
             if let model {
                 HStack(spacing: 0) {
-                    NavigationStack(path: $path) {
+                    SyncedNavigationStack(path: $path) {
                         ContactsView(model: model, showsDetail: showsDetail)
                             .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }
                     }
@@ -133,8 +133,7 @@ private struct ContactsPane: View {
     }
 }
 
-/// The people of your groups A to Z with the net with each, then the invites and whoever is hidden. The magnifier
-/// opens the home's search over Contacts (`Route.Search`).
+/// The people of your groups A to Z with the net with each, then the invites and whoever is hidden.
 struct ContactsView: View {
     let model: ContactsModel
     /// The column beside the list shows, so the row of what it shows is highlighted.
@@ -182,7 +181,6 @@ struct ContactsView: View {
                     model.send(ContactsUiEventOnInviteWithLinkClicked.shared)
                 }
             }
-            SearchToolbarItem(canSearch: state.canSearch) { model.send(ContactsUiEventOnSearchClicked.shared) }
             #endif
             ToolbarItem(placement: .primaryAction) {
                 ProfileToolbarButton(initial: state.avatarInitial, color: state.avatarColor, photoUrl: state.photoUrl) {

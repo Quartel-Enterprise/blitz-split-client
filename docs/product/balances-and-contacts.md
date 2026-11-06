@@ -46,7 +46,7 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     included, once (Balances' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 owes you", "R$ 0 · settled") and "3 groups" or the group's
     name, under the card "You owe / Owed to you / See balances" (Balances' totals). It all works offline on the device's
-    data ("Offline · this device's contacts"). Search, the navigation's item (a magnifier on the Mac), opens the home's "Search" (5.2) over Contacts (Pierre's call: the people are in its People, each once opening this profile, then once per group opening its Members), and the agenda is searched only in "Invite from contacts". "Hidden" holds whoever
+    data ("Offline · this device's contacts"). Search, the navigation's item (the sidebar's first on the Mac), opens the home's "Search" (5.2) over Contacts (Pierre's call: the people are in its People, each once opening this profile, then once per group opening its Members), and the agenda is searched only in "Invite from contacts". "Hidden" holds whoever
     was hidden ("Hide from Contacts", only while the balance with them is zero, asked first), synced to the user's
     other devices (`hidden_contact`, the server's `hidden_contacts`), with "Show"; someone hidden comes back by
     themselves once a bill shared with them is saved later or the balance opens again. The profile

@@ -16,9 +16,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUs
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveHasGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -39,9 +37,7 @@ import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBala
 import com.quare.blitzsplit.feature.globalbalances.presentation.model.GlobalBalancesUiEvent
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -1104,91 +1100,6 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
-    fun `GIVEN groups on the device WHEN Saldos opens THEN offers the search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val canSearch = viewModel.uiState.value.canSearch
-
-        // Then
-        assertTrue(canSearch)
-    }
-
-    @Test
-    fun `GIVEN every group settled WHEN Saldos opens THEN Tudo acertado still offers the search`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(bills = emptyList())
-
-            // When
-            val state = viewModel.uiState.value
-
-            // Then
-            assertEquals(BalancesEmptyState.SETTLED, state.emptyState)
-            assertTrue(state.canSearch)
-        }
-
-    @Test
-    fun `GIVEN no group at all WHEN Saldos opens THEN offers no search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            bills = emptyList(),
-        )
-
-        // When
-        val canSearch = viewModel.uiState.value.canSearch
-
-        // Then
-        assertFalse(canSearch)
-    }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN Saldos opens THEN offers no search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(groupsRead = false)
-
-        // When
-        val canSearch = viewModel.uiState.value.canSearch
-
-        // Then
-        assertFalse(canSearch)
-    }
-
-    @Test
-    fun `GIVEN no group at all WHEN a sync brings the first group THEN offers the search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            bills = emptyList(),
-        )
-        val firstGroup = defaultGroups.first()
-
-        // When
-        groups.groups.value = listOf(firstGroup)
-
-        // Then
-        assertTrue(viewModel.uiState.value.canSearch)
-    }
-
-    @Test
-    fun `GIVEN a single group WHEN a sync takes it away THEN offers no search`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = defaultGroups.take(1),
-            bills = emptyList(),
-        )
-        val noGroups = emptyList<Group>()
-
-        // When
-        groups.groups.value = noGroups
-
-        // Then
-        assertFalse(viewModel.uiState.value.canSearch)
-    }
-
-    @Test
     fun `GIVEN Saldos on top WHEN tapping the magnifier THEN opens the search over Saldos`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1214,31 +1125,20 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group at all WHEN the search is asked for THEN nothing opens`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            bills = emptyList(),
-        )
+    fun `GIVEN no group at all WHEN tapping the magnifier THEN opens the search over Saldos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                bills = emptyList(),
+            )
 
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
 
-        // Then
-        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
-    }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN the search is asked for THEN nothing opens`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(groupsRead = false)
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
-
-        // Then
-        assertEquals(listOf(Route.Home, route), navigator.backStack.value)
-    }
+            // Then
+            assertEquals(listOf(Route.Home, route, Route.Search), navigator.backStack.value)
+        }
 
     @Test
     fun `GIVEN settling up open over Saldos WHEN a late search arrives THEN nothing stacks over it`() =
@@ -1741,31 +1641,22 @@ class GlobalBalancesViewModelTest {
         }
 
     @Test
-    fun `GIVEN no group at all WHEN the search is asked for THEN sends no search opened`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = emptyList(),
-            bills = emptyList(),
-        )
-
-        // When
-        viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN the groups not read yet WHEN the search is asked for THEN sends no search opened`() =
+    fun `GIVEN no group at all WHEN tapping the magnifier THEN sends the search opened from Saldos`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(groupsRead = false)
+            prepareScenario(
+                storedGroups = emptyList(),
+                bills = emptyList(),
+            )
 
             // When
             viewModel.onEvent(GlobalBalancesUiEvent.OnSearchClicked)
 
             // Then
-            assertTrue(trackedEvents.isEmpty())
+            assertEquals(
+                listOf("search_opened" to mapOf<String, Any>("source" to "global_balances")),
+                trackedEvents,
+            )
         }
 
     @Test
@@ -1865,7 +1756,6 @@ class GlobalBalancesViewModelTest {
         bills: List<Expense> = defaultBills,
         storedSettlements: List<Settlement> = emptyList(),
         online: Boolean = true,
-        groupsRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
@@ -1896,12 +1786,6 @@ class GlobalBalancesViewModelTest {
             ),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
-            // Why: Room not read yet is a flow that hasn't emitted.
-            observeHasGroups = if (groupsRead) {
-                ObserveHasGroupsUseCase(groups)
-            } else {
-                ObserveHasGroups { flow { awaitCancellation() } }
-            },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

@@ -101,6 +101,11 @@ struct RootView: View {
         }
         // Ajustes' key or Excluir conta sits on top of the back stack this window also draws
         .disabled(app.settingsSheet != nil)
+        // The mouse's back and forward buttons, and Go › Back and Forward (⌘[ and ⌘])
+        .mouseNavigationButtons(back: { app.goBack() }, forward: { app.goForward() })
+        // The window's sidebar button sits at the detail's leading edge (`MainTabView`), never in the sidebar's header
+        .hidingSystemSidebarToggle()
+        .focusedSceneValue(\.windowNavigation, app)
         .frame(minWidth: 520, minHeight: 560)
         #endif
         // Outermost, so the sheets inherit the window the root measured

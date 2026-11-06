@@ -133,9 +133,6 @@ struct GlobalBalancesView: View {
                     FilterPicker(model: model)
                 }
             }
-            SearchToolbarItem(canSearch: model?.state.canSearch ?? false) {
-                model?.send(GlobalBalancesUiEventOnSearchClicked.shared)
-            }
             #endif
             ToolbarItem(placement: .primaryAction) {
                 ProfileToolbarButton(

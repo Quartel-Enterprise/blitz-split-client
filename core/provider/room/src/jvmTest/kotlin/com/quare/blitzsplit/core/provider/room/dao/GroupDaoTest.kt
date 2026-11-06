@@ -28,30 +28,6 @@ class GroupDaoTest {
     }
 
     @Test
-    fun `GIVEN a group on the device WHEN observing whether there is one THEN says so`() = runTest {
-        // Given
-        prepareScenario(stored = entity(updatedAt = 1L))
-
-        // When
-        val hasGroups = dao.observeHasGroups().first()
-
-        // Then
-        assertTrue(hasGroups)
-    }
-
-    @Test
-    fun `GIVEN the last group deleted WHEN observing whether there is one THEN says there is none`() = runTest {
-        // Given
-        prepareScenario(stored = entity(updatedAt = 1L))
-
-        // When
-        dao.deleteAll()
-
-        // Then
-        assertFalse(dao.observeHasGroups().first())
-    }
-
-    @Test
     fun `GIVEN a pushed group WHEN the server row has the same updatedAt THEN takes its invite code`() = runTest {
         // Given
         prepareScenario(stored = entity(updatedAt = 5L))

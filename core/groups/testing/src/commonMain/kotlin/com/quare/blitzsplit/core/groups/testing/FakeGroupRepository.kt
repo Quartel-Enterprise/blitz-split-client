@@ -97,8 +97,6 @@ class FakeGroupRepository(
 
     override fun observeGroups(): Flow<List<Group>> = groups
 
-    override fun observeHasGroups(): Flow<Boolean> = groups.map { it.isNotEmpty() }
-
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
     override suspend fun createGroup(
