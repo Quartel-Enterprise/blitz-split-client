@@ -25,12 +25,15 @@ internal fun simplificationDetailOf(
         simplification.paymentsBefore,
         simplification.paymentsAfter,
     )
+    // Why: the pair is in its own currency; the item's (the group's) only for an event that says none.
+    val newPairCurrency = simplification.newPair?.currency
+    val pairMoney = if (newPairCurrency == null) money else rememberMoneyFormatter(newPairCurrency)
     val newPair = simplification.newPair?.let { change ->
         val name = changeNameOf(change)
         if (change.afterMinor > 0) {
-            stringResource(R.string.activity_detail_simplify_pays_you, name, money.toText(change.afterMinor))
+            stringResource(R.string.activity_detail_simplify_pays_you, name, pairMoney.toText(change.afterMinor))
         } else {
-            stringResource(R.string.activity_detail_simplify_you_pay, name, money.toText(-change.afterMinor))
+            stringResource(R.string.activity_detail_simplify_you_pay, name, pairMoney.toText(-change.afterMinor))
         }
     }
     val gonePair = simplification.gonePair?.let { change ->
@@ -56,8 +59,11 @@ internal fun SimplificationChangeList(
     item: ActivityItem,
     simplification: ActivitySimplification,
 ) {
-    val money = rememberMoneyFormatter(item.currency ?: GroupCurrency.fallback)
+    val itemMoney = rememberMoneyFormatter(item.currency ?: GroupCurrency.fallback)
     simplification.myChanges.forEach { change ->
+        // Why: each pair is in its own currency, the item's only for an event that says none.
+        val pairCurrency = change.currency
+        val money = if (pairCurrency == null) itemMoney else rememberMoneyFormatter(pairCurrency)
         ChangeLineRow(
             label = changeNameOf(change),
             before = beforeTextOf(change.beforeMinor, money),

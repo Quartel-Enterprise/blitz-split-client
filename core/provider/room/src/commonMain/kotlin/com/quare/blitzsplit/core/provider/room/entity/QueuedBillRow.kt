@@ -9,6 +9,7 @@ data class QueuedBillRow(
     val groupId: String,
     val description: String,
     val amountMinor: Long,
+    val currency: String,
     val splitMode: String,
     val isDeleted: Boolean,
     val updatedAt: Long,

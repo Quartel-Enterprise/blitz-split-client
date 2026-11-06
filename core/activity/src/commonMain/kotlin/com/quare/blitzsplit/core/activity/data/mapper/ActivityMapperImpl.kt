@@ -47,6 +47,8 @@ class ActivityMapperImpl : ActivityMapper {
             occurredAt = entity.occurredAt,
             subject = data.findText("description") ?: data.findText("name"),
             amountMinor = data.findLong("amount_minor"),
+            currency = data.findText("currency"),
+            previousCurrency = data.findText("previous_currency"),
             code = codeOf(kind, data),
             fromMemberId = data.findText("from_member_id"),
             toMemberId = data.findText("to_member_id"),
@@ -74,6 +76,7 @@ class ActivityMapperImpl : ActivityMapper {
                 fromMemberId = pair.findText("from") ?: return@mapNotNull null,
                 toMemberId = pair.findText("to") ?: return@mapNotNull null,
                 amountMinor = pair.findLong("amount") ?: return@mapNotNull null,
+                currency = pair.findText("currency"),
             )
         }
 
@@ -149,6 +152,7 @@ class ActivityMapperImpl : ActivityMapper {
         },
         subject = row.description,
         amountMinor = row.amountMinor,
+        currency = row.currency,
         code = row.splitMode,
         fromMemberId = null,
         toMemberId = null,
@@ -161,6 +165,7 @@ class ActivityMapperImpl : ActivityMapper {
         kind = if (row.isDeleted) ActivityKind.PAYMENT_UNDONE else ActivityKind.PAYMENT_RECORDED,
         subject = null,
         amountMinor = row.amountMinor,
+        currency = row.currency,
         code = row.method,
         fromMemberId = row.fromMemberId,
         toMemberId = row.toMemberId,
@@ -178,6 +183,7 @@ class ActivityMapperImpl : ActivityMapper {
         },
         subject = row.name,
         amountMinor = null,
+        currency = null,
         code = if (!row.isNew && row.simplifyDebtsPending) simplifyCodeOf(row.simplifyDebts.toString()) else row.type,
         fromMemberId = null,
         toMemberId = null,

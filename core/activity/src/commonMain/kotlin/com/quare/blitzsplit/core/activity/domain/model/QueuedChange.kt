@@ -11,6 +11,8 @@ data class QueuedChange(
     val kind: ActivityKind,
     val subject: String?,
     val amountMinor: Long?,
+    // Why: the currency of the bill or payment, null for a group's change.
+    val currency: String? = null,
     val code: String?,
     val fromMemberId: String?,
     val toMemberId: String?,

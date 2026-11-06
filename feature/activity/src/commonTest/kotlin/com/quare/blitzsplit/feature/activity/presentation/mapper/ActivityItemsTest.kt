@@ -1707,6 +1707,7 @@ class ActivityItemsTest {
         name = name,
         beforeMinor = beforeMinor,
         afterMinor = afterMinor,
+        currency = GroupCurrency.BRL,
     )
 
     private fun payment(

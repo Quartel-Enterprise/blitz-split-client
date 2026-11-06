@@ -391,7 +391,8 @@ enum ActivityCopy {
         var after = ""
         if let pair = simplification.newPair {
             let name = PaymentCopy.name(pair.name)
-            let amount = debtAmount(abs(pair.afterMinor), currency: currency)
+            // Each pair is in its own currency; the item's only for an event that says none.
+            let amount = debtAmount(abs(pair.afterMinor), currency: pair.currency ?? currency)
             after = pair.afterMinor > 0
                 ? String(
                     localized: "Now \(name) pays you \(amount)",

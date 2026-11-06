@@ -666,8 +666,9 @@ struct ActivityBeforeAfter {
     /// "Diego  didn't owe you → owes you $64", what Simplify debts changed with someone (13.7b).
     init(change: ActivityDebtChange, currency: GroupCurrency?) {
         label = PaymentCopy.name(change.name)
-        before = ActivityCopy.debtSide(change.beforeMinor, isBefore: true, currency: currency)
-        after = ActivityCopy.debtSide(change.afterMinor, isBefore: false, currency: currency)
+        // Each pair is in its own currency; the item's only for an event that says none.
+        before = ActivityCopy.debtSide(change.beforeMinor, isBefore: true, currency: change.currency ?? currency)
+        after = ActivityCopy.debtSide(change.afterMinor, isBefore: false, currency: change.currency ?? currency)
     }
 
     /// What an item lists under "See changes": what changed for this device's user for Simplify debts, never its

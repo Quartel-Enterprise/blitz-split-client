@@ -169,12 +169,16 @@ function changesSummary(item: JsActivityItem): string | null {
  */
 function simplificationDetail(item: JsActivityItem, simplification: JsActivitySimplification | null | undefined): string {
   if (!simplification) return ''
-  const money = (minor: number) => (item.currency ? formatMoney(Math.abs(minor), item.currency, item.fractionDigits) : '')
+  // Each pair is in its own currency; the item's only for an event that says none.
+  const money = (minor: number, pair: JsActivityDebtChange) => {
+    const currency = pair.currency ?? item.currency
+    return currency ? formatMoney(Math.abs(minor), currency, pair.currency ? pair.fractionDigits : item.fractionDigits) : ''
+  }
   const counts = t('activity_simplifyCounts', { before: simplification.paymentsBefore, after: simplification.paymentsAfter })
   const added = simplification.newPair
   const gone = simplification.gonePair
   const now = added
-    ? t(added.afterMinor > 0 ? 'activity_simplifyNowPaysYou' : 'activity_simplifyNowYouPay', { name: nameOrFormer(added.name), amount: money(added.afterMinor) })
+    ? t(added.afterMinor > 0 ? 'activity_simplifyNowPaysYou' : 'activity_simplifyNowYouPay', { name: nameOrFormer(added.name), amount: money(added.afterMinor, added) })
     : null
   const goneOwedMe = gone != null && gone.beforeMinor > 0
   const goneName = { name: nameOrFormer(gone?.name) }
@@ -185,9 +189,10 @@ function simplificationDetail(item: JsActivityItem, simplification: JsActivitySi
 }
 
 /** One side of a "Ver mudanças" line of 13.7b: "te devia R$ 64", "você deve R$ 20", "não te devia", "não deve mais". */
-function debtSideText(item: JsActivityItem, minor: number, isAfter: boolean): string {
+function debtSideText(item: JsActivityItem, change: JsActivityDebtChange, minor: number, isAfter: boolean): string {
   if (minor === 0) return t(isAfter ? 'activity_debtOwesNothing' : 'activity_debtDidntOweYou')
-  const amount = item.currency ? formatMoney(Math.abs(minor), item.currency, item.fractionDigits) : ''
+  const currency = change.currency ?? item.currency
+  const amount = currency ? formatMoney(Math.abs(minor), currency, change.currency ? change.fractionDigits : item.fractionDigits) : ''
   if (minor > 0) return t(isAfter ? 'activity_debtOwesYou' : 'activity_debtOwedYou', { amount })
   return t(isAfter ? 'activity_debtYouOwe' : 'activity_debtYouOwed', { amount })
 }
@@ -206,8 +211,8 @@ export function changeRows(item: JsActivityItem): ChangeRow[] {
     return item.simplification.myChanges.map((change: JsActivityDebtChange, index) => ({
       key: `${index}`,
       label: nameOrFormer(change.name),
-      before: debtSideText(item, change.beforeMinor, false),
-      after: debtSideText(item, change.afterMinor, true),
+      before: debtSideText(item, change, change.beforeMinor, false),
+      after: debtSideText(item, change, change.afterMinor, true),
     }))
   }
   return item.changes.map((change) => ({
