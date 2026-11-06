@@ -425,7 +425,7 @@ extension GroupType {
     }
 }
 
-/// The "Currency" picker's options: the fiat currencies, then bitcoin and ether under "Cryptocurrencies".
+/// The "Default currency" picker's options: the fiat currencies, then bitcoin and ether under "Cryptocurrencies".
 struct CurrencyOptions: View {
     let currencies: [GroupCurrency]
 

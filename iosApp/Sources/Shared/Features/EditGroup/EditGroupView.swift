@@ -43,7 +43,7 @@ final class EditGroupModel {
 
 /// "Edit group": a sheet over the group on iPhone, iPad and Mac, with Cancel and Save (✓) in the bar, the canvas' 540 pt
 /// form sheet with an iPad's room. The same fields as "New group": the icon is a color or a photo (EditGroupIconSection),
-/// and the currency locks once the group has a bill. "Simplify debts" (13.1) applies apart from Save: its confirmation
+/// and the default currency stays editable, bills or not. "Simplify debts" (13.1) applies apart from Save: its confirmation
 /// is a sheet over the form on iPhone and iPad, and takes the form's place on the Mac. An iPhone lying down draws two
 /// columns and puts the avatar and "Change icon or photo" in one compact row.
 struct EditGroupView: View {

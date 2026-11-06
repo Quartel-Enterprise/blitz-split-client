@@ -425,9 +425,8 @@ private fun CurrencyRow(
             subtitle = stringResource(R.string.edit_group_currency_caption),
             value = groupCurrencyLabel(state.currency, locale),
             icon = Icons.Outlined.KeyboardArrowDown,
-            iconLabel = null,
-            isEnabled = true,
             isTop = true,
+            isEnabled = true,
             onClick = { isMenuOpen = true },
         )
         DropdownMenu(
@@ -457,7 +456,6 @@ private fun DefaultSplitRow(
         subtitle = stringResource(R.string.edit_group_default_split_help),
         value = stringResource(state.defaultSplitMode.labelRes),
         icon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-        iconLabel = null,
         isTop = false,
         isEnabled = !state.isSaving,
         onClick = { onEvent(EditGroupUiEvent.OnDefaultSplitClicked) },
@@ -476,7 +474,6 @@ private fun SettingRow(
     subtitle: String,
     value: String,
     icon: ImageVector,
-    iconLabel: String?,
     isTop: Boolean,
     isEnabled: Boolean,
     onClick: () -> Unit,
@@ -528,7 +525,7 @@ private fun SettingRow(
             )
             Icon(
                 imageVector = icon,
-                contentDescription = iconLabel,
+                contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

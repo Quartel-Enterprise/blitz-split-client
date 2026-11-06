@@ -21217,7 +21217,7 @@
       }
     },
     "Currency" : {
-      "comment" : "The new group's currency picker",
+      "comment" : "The currency field of a bill's history and of an activity's changes",
       "localizations" : {
         "es" : {
           "stringUnit" : {
