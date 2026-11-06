@@ -25,6 +25,8 @@ class JsProfileState(
     // Why: "google" or "apple", null while there is no account.
     val accountProvider: String?,
     val hasAccount: Boolean,
+    // Why: "Erase profile and sign out" in the place of "Sign out", and its dialog, when nothing brings it back.
+    val erasesProfileOnSignOut: Boolean,
     val maskedEmail: String?,
     val formattedRecoveryCode: String?,
     val hasRecoveryCode: Boolean,
@@ -105,6 +107,7 @@ class ProfilePresenter {
                 photoUrl = state.photoUrl,
                 accountProvider = state.accountProvider?.code,
                 hasAccount = state.hasAccount,
+                erasesProfileOnSignOut = state.erasesProfileOnSignOut,
                 maskedEmail = state.maskedEmail,
                 formattedRecoveryCode = state.formattedRecoveryCode,
                 hasRecoveryCode = state.hasRecoveryCode,

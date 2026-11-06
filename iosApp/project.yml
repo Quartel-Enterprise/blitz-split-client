@@ -126,6 +126,9 @@ targetTemplates:
         # Each screen is tracked by the shared code from the back stack, never by UIKit's or AppKit's view controllers
         FirebaseAutomaticScreenReportingEnabled: false
         GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS: false
+        # Profile's "Version 3.0.0-beta_7": the whole versionName, which CFBundleShortVersionString can't hold
+        # (generate-project.sh)
+        BlitzSplitVersionName: ${BLITZSPLIT_DISPLAY_VERSION}
 
 targets:
   BoraRachar-iOS:

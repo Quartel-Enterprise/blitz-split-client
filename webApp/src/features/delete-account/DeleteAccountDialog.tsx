@@ -87,6 +87,7 @@ function DeleteAccountContent({ presenter, state }: { presenter: DeleteAccountPr
     t('deleteAccount_deletedKeys'),
     // Why: the account is gone once deleted, and the screen closes right after
     ...accountItem,
+    ...(state.deletesRecoveryCode ? [t('deleteAccount_deletedRecoveryCode')] : []),
     t('deleteAccount_deletedDevice'),
   ]
   // Why: the provider's line waits for the account, in its place before the device's line.

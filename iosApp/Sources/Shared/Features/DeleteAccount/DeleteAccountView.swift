@@ -88,6 +88,9 @@ private struct DeleteAccountContent: View {
         if let provider = state.accountProvider.loaded(as: AccountProvider.self)?.displayName {
             items.append(String(localized: "The link to your \(provider) account", bundle: .appLanguage))
         }
+        if state.deletesRecoveryCode {
+            items.append(String(localized: "Your recovery code", bundle: .appLanguage))
+        }
         items.append(String(localized: "The copy of your data on this \(DeviceName.current)", bundle: .appLanguage))
         return items
     }
