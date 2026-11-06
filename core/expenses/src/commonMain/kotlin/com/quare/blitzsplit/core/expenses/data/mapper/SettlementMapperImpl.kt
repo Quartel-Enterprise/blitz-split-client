@@ -7,13 +7,13 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 
 class SettlementMapperImpl : SettlementMapper {
-    override fun toDomain(entity: SettlementEntity): Settlement = Settlement(
+    override fun toDomain(entity: SettlementEntity): Settlement? = Settlement(
         id = entity.id,
         groupId = entity.groupId,
         fromMemberId = entity.fromMemberId,
         toMemberId = entity.toMemberId,
         amountMinor = entity.amountMinor,
-        currency = GroupCurrency.fromCodeOrNull(entity.currency) ?: GroupCurrency.fallback,
+        currency = GroupCurrency.fromCodeOrNull(entity.currency) ?: return null,
         method = SettlementMethod.fromCode(entity.method),
         paidAt = entity.paidAt,
         isPending = entity.pendingSync,
