@@ -88,7 +88,13 @@ export function AppInviteCard({
         </ul>
         <span className="text-xs text-muted-foreground">
           {t(scanLabels[invite.stores] ?? 'appInvite_scanBoth')}{' '}
-          <a href={invite.link} target="_blank" rel="noopener" className="font-mono text-primary underline underline-offset-2">
+          <a
+            href={invite.link}
+            target="_blank"
+            rel="noopener"
+            className="font-mono text-primary underline underline-offset-2"
+            onClick={() => presenter.trackAppLink()}
+          >
             {link}
           </a>
         </span>
@@ -135,7 +141,13 @@ export function AppDownloadDialog({ route }: { route: JsRoute }) {
             <QrCode size={state.qrSize} modules={state.qrModules} label={t('appInvite_qrDescription')} className="size-40 md:size-44" />
           </span>
           <span className="flex items-center gap-1">
-            <a href={state.link} target="_blank" rel="noopener" className="font-mono text-xs text-primary underline underline-offset-2">
+            <a
+              href={state.link}
+              target="_blank"
+              rel="noopener"
+              className="font-mono text-xs text-primary underline underline-offset-2"
+              onClick={() => presenter.trackLink()}
+            >
               {shownLink(state.link)}
             </a>
             <Button variant="ghost" size="icon-sm" aria-label={t('appDownload_copyLink')} title={t('appDownload_copyLink')} onClick={() => presenter.copyLink()}>
@@ -208,7 +220,7 @@ function showsSmartAppBanner(stores: string): boolean {
  * which opens the app when installed or its store. ✕ hides it for good on this device (a device setting), also with
  * an account, since the banner belongs to the phone's browser.
  */
-export function AppBanner({ invite, onDismiss }: { invite: JsAppInvite; onDismiss: () => void }) {
+export function AppBanner({ invite, onOpen, onDismiss }: { invite: JsAppInvite; onOpen: () => void; onDismiss: () => void }) {
   if (showsSmartAppBanner(invite.stores)) return null
   return (
     <aside aria-label={t('appBanner_title')} className="flex min-h-16 items-center gap-2 rounded-lg border bg-muted py-2 pr-3 pl-1 md:hidden">
@@ -223,7 +235,9 @@ export function AppBanner({ invite, onDismiss }: { invite: JsAppInvite; onDismis
         <span className="text-xs text-muted-foreground">{t('appBanner_body')}</span>
       </span>
       <Button asChild size="sm" className="shrink-0">
-        <a href={invite.link}>{t('appBanner_open')}</a>
+        <a href={invite.link} onClick={onOpen}>
+          {t('appBanner_open')}
+        </a>
       </Button>
     </aside>
   )
@@ -238,12 +252,14 @@ export function ProfileAppRow({
   status,
   link,
   onOpenCode,
+  onOpenLink,
   onDismiss,
   className,
 }: {
   status: string
   link: string
   onOpenCode: () => void
+  onOpenLink: () => void
   onDismiss: () => void
   className?: string
 }) {
@@ -286,7 +302,7 @@ export function ProfileAppRow({
       </span>
       {isPhone ? (
         <Button asChild variant={isActive ? 'default' : 'outline'} className="h-11 w-full">
-          <a href={link} target="_blank" rel="noopener">
+          <a href={link} target="_blank" rel="noopener" onClick={onOpenLink}>
             {t(action)}
           </a>
         </Button>

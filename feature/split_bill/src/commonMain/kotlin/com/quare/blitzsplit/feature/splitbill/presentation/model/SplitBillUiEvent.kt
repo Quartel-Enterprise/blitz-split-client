@@ -204,6 +204,22 @@ sealed interface SplitBillUiEvent : UiEvent {
 
             OnReceiptRemoved -> EventAnalytics.Automatic("receipt_removed")
 
+            // Why: a toggle, sent with where it ended up.
+            is OnReceiptTorchClicked -> EventAnalytics.Automatic(
+                "receipt_camera_torch_toggled",
+                mapOf("is_on" to isOn),
+            )
+
+            OnReceiptCameraAllowClicked -> EventAnalytics.Automatic(
+                "camera_allow_clicked",
+                mapOf("source" to "receipt"),
+            )
+
+            OnReceiptCameraSettingsClicked -> EventAnalytics.Automatic(
+                "camera_settings_clicked",
+                mapOf("source" to "receipt"),
+            )
+
             // Why: the tap, then the bill once it is saved.
             OnSaveClicked -> EventAnalytics.Manual(setOf("split_bill_save_clicked", "bill_saved"))
 
@@ -514,6 +530,20 @@ sealed interface SplitBillUiEvent : UiEvent {
 
     // Why: "Tirar a foto do cupom": the bill keeps what was filled in, without the photo nor the receipt's items.
     data object OnReceiptRemoved : Receipt
+
+    /*
+     * Why: the receipt camera's flashlight, with where it ended up. The camera is each platform's own (Android's and
+     * iOS's), so the shared code only counts its taps.
+     */
+    data class OnReceiptTorchClicked(
+        val isOn: Boolean,
+    ) : Receipt
+
+    // Why: "Permitir câmera" on the receipt camera after a first refusal, which asks the system again (Android).
+    data object OnReceiptCameraAllowClicked : Receipt
+
+    // Why: "Abrir configurações" on the receipt camera once the camera was refused for good.
+    data object OnReceiptCameraSettingsClicked : Receipt
 
     data object OnSaveClicked : SplitBillUiEvent
 

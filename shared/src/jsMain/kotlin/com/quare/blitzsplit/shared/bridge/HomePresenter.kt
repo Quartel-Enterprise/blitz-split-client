@@ -340,6 +340,16 @@ class HomePresenter {
         viewModel.onEvent(HomeUiEvent.OnAppBannerDismissed)
     }
 
+    // Why: the app's link beside the card's QR code, which the browser opens.
+    fun trackAppLink() {
+        viewModel.onEvent(HomeUiEvent.OnAppInviteLinkClicked)
+    }
+
+    // Why: the banner's "Open in the app", which the browser opens.
+    fun trackAppBannerOpen() {
+        viewModel.onEvent(HomeUiEvent.OnAppBannerOpenClicked)
+    }
+
     // Why: the same invite again (each minute's tick, each sync state) hands React the same object, QR code included.
     private var lastAppInvite: Pair<HomeAppInvite, JsAppInvite>? = null
 

@@ -93,7 +93,10 @@ fun BillDetailScreen(
     BillAttachmentViewerDialog(
         state = state,
         snackbarHostState = snackbarHostState,
-        onDownloadClick = saveToGallery,
+        onDownloadClick = { source, fileName ->
+            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+            saveToGallery(source, fileName)
+        },
         onEvent = viewModel::onEvent,
     )
     state.deletion?.let { deletion ->

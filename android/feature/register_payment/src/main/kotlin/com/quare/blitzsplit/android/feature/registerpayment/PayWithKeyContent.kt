@@ -51,6 +51,7 @@ import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.platform.copyText
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
@@ -86,7 +87,8 @@ internal fun PayWithKeyContent(
 ) {
     val context = LocalContext.current
     // Why: a CPF is a document, so the clipboard keeps every key out of its preview and the keyboard's suggestions.
-    val onCopy: (String) -> Unit = { text ->
+    val onCopy: (String, PayCopyTarget) -> Unit = { text, target ->
+        onEvent(RegisterPaymentUiEvent.OnCopyClicked(target))
         context.copyText(
             text = text,
             isSensitive = true,
@@ -296,7 +298,7 @@ private fun KeyMethodPicker(
 private fun DefaultKeyCard(
     key: ReceiverKey,
     receiverName: String,
-    onCopy: (String) -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
 ) {
     Surface(
         shape = MaterialTheme.shapes.extraLarge,
@@ -333,7 +335,7 @@ private fun DefaultKeyCard(
                 fontWeight = FontWeight.Bold,
             )
             Button(
-                onClick = { onCopy(key.value) },
+                onClick = { onCopy(key.value, PayCopyTarget.KEY) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 48.dp),
@@ -358,7 +360,7 @@ private fun PixCodeCard(
     state: RegisterPaymentUiState,
     code: String,
     money: MoneyFormatter,
-    onCopy: (String) -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
 ) {
     Surface(
         shape = MaterialTheme.shapes.extraLarge,
@@ -389,7 +391,7 @@ private fun PixCodeCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 FilledTonalButton(
-                    onClick = { onCopy(code) },
+                    onClick = { onCopy(code, PayCopyTarget.PIX_CODE) },
                     modifier = Modifier.padding(top = 4.dp),
                 ) { Text(stringResource(R.string.register_payment_pay_copy_code)) }
             }
@@ -402,7 +404,7 @@ private fun PixCodeCard(
 private fun OtherKeysList(
     keys: List<ReceiverKey>,
     receiverName: String,
-    onCopy: (String) -> Unit,
+    onCopy: (String, PayCopyTarget) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
@@ -441,7 +443,7 @@ private fun OtherKeysList(
                             fontWeight = FontWeight.SemiBold,
                         )
                     }
-                    IconButton(onClick = { onCopy(key.value) }) {
+                    IconButton(onClick = { onCopy(key.value, PayCopyTarget.OTHER_KEY) }) {
                         Icon(
                             imageVector = Icons.Outlined.ContentCopy,
                             contentDescription = stringResource(

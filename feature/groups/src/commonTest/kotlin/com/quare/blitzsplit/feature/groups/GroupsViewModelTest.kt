@@ -349,6 +349,95 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the groups WHEN tapping the Overall balance card THEN opens Balances with everyone as its tab does`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group open over the groups WHEN tapping the Overall balance card THEN closes it and opens Balances`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "trio",
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the search open WHEN tapping the Overall balance card THEN closes the search and opens Balances`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.search.isOpen)
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Balances already open WHEN a late tap on the Overall balance card comes THEN stays as it is`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.GlobalBalances(BalancesFilter.YOU_OWE))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, Route.GlobalBalances(BalancesFilter.YOU_OWE)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the Overall balance card THEN asks the UI for nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val actions = mutableListOf<GroupsUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
     fun `GIVEN a group someone else deleted WHEN the home is on top THEN says so once`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -3003,6 +3092,52 @@ class GroupsViewModelTest {
 
             // Then
             assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping Overall balance THEN tracks balances_overall_clicked from the groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertEquals(
+                listOf("balances_overall_clicked" to mapOf<String, Any>("source" to "groups")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the groups WHEN tapping the Balances tab THEN still tracks nothing unlike the Overall balance card`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnBalancesTabClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Balances already open WHEN a late tap on the Overall balance card comes THEN still tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.GlobalBalances(BalancesFilter.ALL))
+
+            // When
+            viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertEquals(
+                listOf("balances_overall_clicked" to mapOf<String, Any>("source" to "groups")),
+                trackedEvents,
+            )
         }
 
     @Test

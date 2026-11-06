@@ -100,6 +100,9 @@ class AppDownloadViewModel(
                 }
             }
 
+            // Why: the browser opens the link; the tap is only tracked.
+            AppDownloadUiEvent.OnLinkClicked -> Unit
+
             AppDownloadUiEvent.OnCopyLinkClicked -> viewModelScope.launch {
                 uiAction.emit(AppDownloadUiAction.CopyLink(uiState.value.link))
             }

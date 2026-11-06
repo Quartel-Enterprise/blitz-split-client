@@ -253,6 +253,11 @@ class ProfilePresenter {
         viewModel.onEvent(ProfileUiEvent.OnAppInviteDismissed)
     }
 
+    // Why: "Download" or "Open in the app" in a phone's browser, which the browser opens.
+    fun trackAppLink() {
+        viewModel.onEvent(ProfileUiEvent.OnAppLinkClicked)
+    }
+
     fun categoryMap() {
         viewModel.onEvent(ProfileUiEvent.OnCategoryMapClicked)
     }

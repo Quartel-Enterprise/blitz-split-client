@@ -402,7 +402,9 @@ class GroupsViewModel(
                 navigator.openHomeTab(Route.Home)
             }
 
-            GroupsUiEvent.OnBalancesTabClicked -> openTab(toBalancesTab(BalancesFilter.ALL))
+            GroupsUiEvent.OnBalancesTabClicked,
+            GroupsUiEvent.OnOverallBalanceClicked,
+            -> openTab(toBalancesTab(BalancesFilter.ALL))
 
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 

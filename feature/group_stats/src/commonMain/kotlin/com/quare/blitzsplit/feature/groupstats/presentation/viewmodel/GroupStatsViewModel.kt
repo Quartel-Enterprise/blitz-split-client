@@ -181,6 +181,9 @@ class GroupStatsViewModel(
 
             is GroupStatsUiEvent.OnPeriodPicked -> pickPeriod(event.period)
 
+            // Why: the picker is each platform's own, so the tap is only tracked.
+            GroupStatsUiEvent.OnPickDatesClicked -> Unit
+
             is GroupStatsUiEvent.OnCustomPeriodPicked -> pickCustomPeriod(event.startMillis, event.endMillis)
 
             is GroupStatsUiEvent.OnPeopleViewPicked -> if (event.view != peopleView) {

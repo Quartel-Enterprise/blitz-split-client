@@ -41,6 +41,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnAppInviteClicked -> EventAnalytics.Automatic("app_invite_code_clicked", mapOf("source" to PROFILE_SOURCE))
 
+            OnAppLinkClicked -> EventAnalytics.Automatic("app_link_clicked", mapOf("source" to PROFILE_SOURCE))
+
             // Why: only while the row is highlighted, which the ViewModel knows.
             OnAppInviteDismissed -> EventAnalytics.Manual("app_invite_dismissed")
 
@@ -186,6 +188,12 @@ sealed interface ProfileUiEvent : UiEvent {
 
     // Why: "App on your phone"'s "See code" (the Mac's "Show code…"), which opens the app's code (14.2).
     data object OnAppInviteClicked : ProfileUiEvent
+
+    /*
+     * Why: "App on your phone"'s "Download" or "Open in the app" in a phone's browser, the app's link the browser opens
+     * itself; the shared code only counts it.
+     */
+    data object OnAppLinkClicked : ProfileUiEvent
 
     // Why: its ✕ while highlighted, which also takes Home's card away.
     data object OnAppInviteDismissed : ProfileUiEvent

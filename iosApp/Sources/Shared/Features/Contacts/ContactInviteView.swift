@@ -312,6 +312,7 @@ private struct InviteNotesAndButtons: View {
                         Label("Share", systemImage: "square.and.arrow.up")
                             .frame(maxWidth: .infinity)
                     }
+                    .onShareTap { model.send(ContactInviteUiEventOnShareClicked.shared) }
                     .buttonStyle(.borderedProminent)
                     .prominentLabel()
                 } else {

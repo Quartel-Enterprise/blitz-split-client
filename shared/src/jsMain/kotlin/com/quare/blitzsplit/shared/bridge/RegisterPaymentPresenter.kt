@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
@@ -216,6 +217,22 @@ class RegisterPaymentPresenter(
     fun pickKeyMethod(name: String) {
         val method = PaymentMethod.entries.firstOrNull { it.name == name } ?: return
         viewModel.onEvent(RegisterPaymentUiEvent.OnKeyMethodPicked(method))
+    }
+
+    /*
+     * Why: the copies of "Pagar Ana", which the page writes to the clipboard itself; one method each, so a target
+     * renamed in Kotlin breaks the web's build instead of dropping its event.
+     */
+    fun trackKeyCopy() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.KEY))
+    }
+
+    fun trackPixCodeCopy() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.PIX_CODE))
+    }
+
+    fun trackOtherKeyCopy() {
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCopyClicked(PayCopyTarget.OTHER_KEY))
     }
 
     // Why: "Marcar como pago", once paid in the bank or the wallet.

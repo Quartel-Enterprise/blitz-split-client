@@ -208,7 +208,7 @@ function SummaryCards({ presenter, state }: { presenter: GroupsPresenter; state:
         caption={t(summaryHints[summary.kind] ?? 'groups_summarySettledHint')}
         tone={balanceTone(totals.find((total) => total.netMinor !== 0)?.netMinor ?? 0)}
         isEnabled
-        onClick={() => presenter.openBalances()}
+        onClick={() => presenter.openOverallBalance()}
         className="col-span-2 md:col-span-1"
       />
       <SummaryCard

@@ -24,7 +24,10 @@ fun GroupStatsScreen(
     GroupStatsContent(
         state = state,
         onEvent = viewModel::onEvent,
-        onPickDates = { isPickingDates = true },
+        onPickDates = {
+            viewModel.onEvent(GroupStatsUiEvent.OnPickDatesClicked)
+            isPickingDates = true
+        },
     )
     if (isPickingDates) {
         StatsDateRangeDialog(

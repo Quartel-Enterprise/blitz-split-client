@@ -120,6 +120,12 @@ internal class ReceiptScanning(
             }
 
             SplitBillUiEvent.OnReceiptRemoved -> remove()
+
+            // Why: the camera is each platform's own; its taps are only tracked.
+            is SplitBillUiEvent.OnReceiptTorchClicked,
+            SplitBillUiEvent.OnReceiptCameraAllowClicked,
+            SplitBillUiEvent.OnReceiptCameraSettingsClicked,
+            -> Unit
         }
     }
 

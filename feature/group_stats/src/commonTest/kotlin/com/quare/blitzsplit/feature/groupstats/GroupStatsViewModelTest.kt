@@ -1131,6 +1131,21 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN the whole trip WHEN tapping Escolher datas THEN sends the tap and keeps the period`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val period = viewModel.uiState.value.period
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPickDatesClicked)
+
+            // Then
+            assertEquals(listOf("stats_pick_dates_clicked" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(period, viewModel.uiState.value.period)
+        }
+
+    @Test
     fun `GIVEN this month WHEN picking the whole trip from the menu THEN sends the whole period picked`() =
         runTest(testDispatcher) {
             // Given

@@ -46,6 +46,7 @@ export function payWithKeyPane(
   }
 }
 
+// Why: the page writes the clipboard itself; each caller first tells the shared code which copy it was.
 function copy(text: string) {
   navigator.clipboard
     .writeText(text)
@@ -92,7 +93,12 @@ function PayWithKeyBody({
             <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">{typeLabel(key)}</span>
           </div>
           <p className="text-xl font-bold break-all">{key.text}</p>
-          <Button onClick={() => copy(key.value)}>
+          <Button
+            onClick={() => {
+              presenter.trackKeyCopy()
+              copy(key.value)
+            }}
+          >
             <Copy aria-hidden />
             {t('payWithKey_copyKey')}
           </Button>
@@ -105,7 +111,15 @@ function PayWithKeyBody({
           <div className="flex min-w-0 flex-col items-start gap-1">
             <h3 className="font-semibold">{t('payWithKey_pixCode')}</h3>
             <p className="text-[13px] text-muted-foreground">{t('payWithKey_pixCodeAmount', { amount: money(state.debtMinor) })}</p>
-            <Button variant="outline" size="sm" className="mt-1" onClick={() => copy(state.pixCode!)}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-1"
+              onClick={() => {
+                presenter.trackPixCodeCopy()
+                copy(state.pixCode!)
+              }}
+            >
               {t('payWithKey_copyCode')}
             </Button>
           </div>
@@ -126,7 +140,10 @@ function PayWithKeyBody({
                   variant="ghost"
                   size="icon"
                   aria-label={t('payWithKey_copyOther', { type: typeLabel(other), name })}
-                  onClick={() => copy(other.value)}
+                  onClick={() => {
+                    presenter.trackOtherKeyCopy()
+                    copy(other.value)
+                  }}
                 >
                   <Copy aria-hidden />
                 </Button>

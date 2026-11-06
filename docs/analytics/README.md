@@ -108,6 +108,12 @@ Every tap on a button, a row, a tab, a menu item, a chip or a toggle is a user a
 opens a screen: the tap and the screen it opens are different signals (how many tapped, how many saw). Picking an
 option (a payer, a split mode, a category) is one too; typing isn't.
 
+A tap a UI answers by itself (a copy to the clipboard, a share sheet, a link the browser opens, a camera's flashlight,
+a picker kept in the view's state) still sends its `UiEvent`, which the ViewModel only tracks, so nothing is counted
+on one platform and missed on another. Apple's `ShareLink` takes no action of its own: `onShareTap` hands its tap to
+the shared code beside the sheet it opens. Being a tap gesture, it doesn't see a share started from VoiceOver or the
+keyboard (Full Keyboard Access, Space or Return on the Mac), so those go uncounted on Apple.
+
 Naming, as GA4 takes it:
 
 - `<object>_<action>`, the action in the past, snake case, at most 40 letters: `bill_saved`, `group_tab_clicked`,
@@ -183,7 +189,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `join_pick_join_clicked` | none | "Join as Bruno" | `:feature:join` |
 | `join_pick_not_in_list_clicked` | none | "I'm not on the list" | `:feature:join` |
 | `join_pick_new_member_confirmed` | none | "Join group" with a new name | `:feature:join` |
-| `camera_settings_clicked` | `source` (`join_with_link`) | "Open settings" with the camera denied | `:feature:join` |
+| `camera_settings_clicked` | `source` (`join_with_link`, `receipt`) | "Open settings" with the camera denied, on the reader or on the receipt camera (Android, iOS) | `:feature:join`, `:feature:split_bill` |
 | `join_with_link_open_camera_clicked` | none | "Open camera", the only tap that asks for the camera and starts it; a tap once it was asked, or on a device with no camera, doesn't count | `:feature:join` |
 | `join_with_link_torch_toggled` | `is_on` | The reader's flashlight, with where it ended up | `:feature:join` |
 | `join_with_link_paste_clicked` | none | The reader's Paste, also with an empty clipboard or one the browser won't read | `:feature:join` |
@@ -211,6 +217,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_clicked` | `source` (`home`, `groups`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `balances_to_receive_clicked` | `source` (`home`, `groups`) | "To get back" or "Owed to you" | `:feature:groups` |
 | `balances_to_pay_clicked` | `source` (`home`, `groups`) | "To pay" or "You owe" | `:feature:groups` |
+| `balances_overall_clicked` | `source` (`groups`) | The Groups tab's "Overall balance" card (web, Mac), which opens Balances | `:feature:groups` |
 | `create_group_clicked` | `source` (`home`, `groups`, `contact_invite`, `personal_invite` for a guest's own invite) | "New group" | `:feature:groups`, `:feature:contacts` |
 | `join_with_link_clicked` | `source` (`home`, `groups`) | "Join with a link or QR code" | `:feature:groups` |
 | `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contact_profile`) | A group's row, card or sidebar entry, a group of a person's "By group" on Balances, an item's group in Activity, or "Groups in common" on a contact | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |
@@ -244,6 +251,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `app_invite_downloaded_clicked` | `source` (`home`, `app_download`) | "I downloaded it" on Home's invite card or on the app's code, while the invite stands | `:feature:groups`, `:feature:app_download` |
 | `app_banner_dismissed` | none | The ✕ of Home's "Blitz Split in the app" banner in a phone's browser (web), kept on that device | `:feature:groups` |
 | `app_download_link_copied` | none | The copy button beside the link on the app's code | `:feature:app_download` |
+| `app_link_clicked` | `source` (`home`, `home_banner`, `app_download`, `profile`) | The app's link the browser opens (web): beside the QR code of Home's invite card, "Open in the app" of the phone's banner, under the app's code, or "Download" / "Open in the app" of Profile's "App on your phone" row in a phone's browser | `:feature:groups`, `:feature:app_download`, `:feature:profile` |
 | `group_stats_clicked` | none | The group's Statistics | `:feature:group_detail` |
 | `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Expenses, Balances or Members | `:feature:group_detail` |
 | `edit_group_clicked` | none | "Edit group" | `:feature:group_detail` |
@@ -292,6 +300,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_mark_as_paid_clicked` | none | "Mark as paid" | `:feature:register_payment` |
 | `payment_pay_otherwise_clicked` | none | "I paid another amount or another way" | `:feature:register_payment` |
 | `payment_paid_anyway_clicked` | none | "I paid anyway" (13.5c) | `:feature:register_payment` |
+| `payment_copy_clicked` | `target` (`key`, `pix_code`, `other_key`) | A copy on "Pay Ana": "Copy key", "Copy code" of the Pix code, or the copy of one of "Ana's other keys" | `:feature:register_payment` |
 | `payment_recorded` | `method`, `way` (`form`, `mark_as_paid`, `paid_anyway`), `kind` (`paid`, `received`, `between_others`), `groups` (how many payments, one per group), `is_full_debt` | A payment saved | `:feature:register_payment` |
 | `balances_filter_selected` | `filter` (`all`, `you_owe`, `owes_you`), `source` (`global_balances`) | All, You owe or Owe you, another than the one picked | `:feature:global_balances` |
 | `balances_person_expand_toggled` | `is_expanded` | "By group" opened or closed on a row | `:feature:global_balances` |
@@ -303,7 +312,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `charge_copy_clicked` | none | Request's "Copy message", while Request is open | `:feature:global_balances` |
 | `balances_empty_action_clicked` | none | The empty state's button ("See who owes you", "See who you owe", "See groups") | `:feature:global_balances` |
 | `payment_key_type_selected` | `type` | Another type for the key (CPF, Phone, Email, Random…) | `:feature:payment_key` |
-| `payment_key_paste_clicked` | none | The key's Paste | `:feature:payment_key` |
+| `payment_key_paste_clicked` | none | The key's Paste, also with an empty clipboard or one the browser won't read | `:feature:payment_key` |
 | `payment_key_default_toggled` | `is_default` | "Default Pix key" or "Default Bitcoin key", while it can change (not the only key of its method) | `:feature:payment_key` |
 | `payment_key_save_clicked` | none | The key's Save, also when it can't save yet | `:feature:payment_key` |
 | `payment_key_saved` | `type`, `is_new`, `is_default` | A key saved | `:feature:payment_key` |
@@ -311,6 +320,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_key_delete_confirmed` | none | Its question confirmed, while it was open | `:feature:payment_key` |
 | `payment_key_delete_cancelled` | none | Its question closed without confirming, while it was open | `:feature:payment_key` |
 | `stats_period_selected` | `period` | A period of the menu | `:feature:group_stats` |
+| `stats_pick_dates_clicked` | none | "Pick dates…" of the period menu, which opens the date picker | `:feature:group_stats` |
 | `stats_custom_period_selected` | none | The days picked in "Pick dates…" | `:feature:group_stats` |
 | `stats_people_view_selected` | `view` (`consumption`, `paid`) | "By person"'s Consumed or Paid, another than the one showing | `:feature:group_stats` |
 | `stats_chart_type_selected` | `chart_type` | Bars or Line, another than the one showing | `:feature:group_stats` |
@@ -383,6 +393,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_map_clicked` | `source` (`split_bill`, `profile`) | The "Category map" card | `:feature:split_bill`, `:feature:profile` |
 | `receipt_read` | `result` (`read`, `unreadable`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Scan receipt" began | `:feature:split_bill` |
 | `receipt_removed` | none | × on "Receipt photo" | `:feature:split_bill` |
+| `receipt_camera_torch_toggled` | `is_on` | The receipt camera's flashlight (Android, iOS), with where it ended up | `:feature:split_bill` |
+| `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
 | `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete bill", when its question opens; `group_detail` is a bill's ⋮ "Delete" on Expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
@@ -393,6 +405,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |
+| `bill_attachment_download_clicked` | `source` (`bill_detail`, `shared_bill`) | The viewer's Download, while it is open: Android's gallery, iOS's share sheet, the Mac's save panel, the browser's download | `:feature:bill_detail` |
 | `comment_send_clicked` | `is_reply` (never with an edit, which saves only its text), `is_edit`, `source` (`bill_detail`, `shared_bill`) | "Send comment", when the composer can send (offline too in Bill, where it waits in the queue) | `:feature:bill_detail` |
 | `comment_reply_clicked` | `source` (`bill_detail`, `shared_bill`) | "Reply", on a comment still there | `:feature:bill_detail` |
 | `comment_reply_cancelled` | `source` (`bill_detail`, `shared_bill`) | The ✕ of "Replying to Diego", while a reply is picked | `:feature:bill_detail` |
