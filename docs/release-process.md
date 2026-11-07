@@ -11,6 +11,7 @@ tags the release, publishes each platform to its own channel and records it as a
 | Android | Firebase App Distribution, group `beta`, project `blitz-split` |
 | Web | Cloudflare Pages, project `blitz-split-beta`: https://blitz-split-beta.pages.dev |
 | iOS and macOS | TestFlight, signed with the team's distribution certificate through fastlane match ([Apple signing](#apple-signing)) |
+| iOS, ad hoc | Firebase App Distribution, group `ios-beta`: the same archive exported again for the registered iPhones ([iOS on Firebase App Distribution](#ios-on-firebase-app-distribution)) |
 
 Each platform is a build job and a publish job of its own, between `plan` and `finalize`. The `android`, `web`, `ios` and
 `macos` inputs of the workflow turn a platform off for a run.
@@ -122,6 +123,29 @@ fastlane match appstore --platform macos --additional_cert_types mac_installer_d
 
 A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
 the same commands with `--force`.
+
+## iOS on Firebase App Distribution
+
+Besides TestFlight, the iOS job exports its archive a second time with the ad hoc profile `match AdHoc
+com.quare.blitzsplit` and `ios-distribute` sends that IPA to the Firebase App Distribution group `ios-beta`. An ad hoc
+build installs only on the iPhones the profile lists, so the group holds only testers whose iPhone is registered on the
+team; the Android testers of `beta` stay out of it.
+
+To add a tester's iPhone:
+
+1. Get its UDID: Finder (click the line under the iPhone's name until it shows the UDID), `xcrun devicectl list
+   devices` with the iPhone on a cable, or the device registration Firebase App Distribution offers when the tester
+   accepts an invite (then Firebase console › App Distribution › Testers & Groups › Export Apple UDIDs).
+2. Register it on the team: developer.apple.com › Certificates, Identifiers & Profiles › Devices, or
+   `fastlane run register_device name:"<name>" udid:"<udid>" platform:ios team_id:TTV2A365LG api_key_path:<key.json>`.
+3. Make the ad hoc profile again with the new device, from a Mac with the passphrase:
+
+   ```bash
+   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+   ```
+
+4. Add the tester to the group: `firebase appdistribution:testers:add --group-alias ios-beta --project blitz-split <email>`.
+5. Release a new beta: the builds already sent don't install on the new iPhone.
 
 ## Before the first beta: analytics consent
 

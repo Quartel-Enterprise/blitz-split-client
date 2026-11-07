@@ -24,7 +24,8 @@ APS_ENVIRONMENT = {
 skip_docs
 
 desc "Fetch the distribution certificate and the App Store profile, sign the target manually, write ExportOptions.plist"
-desc "Options: scheme (BoraRachar-iOS|BoraRachar-macOS), export_options (path of the plist to write)"
+desc "Options: scheme (BoraRachar-iOS|BoraRachar-macOS), export_options (path of the plist to write),"
+desc "adhoc_export_options (iOS only: path of the ad hoc plist, for Firebase App Distribution; omit to skip)"
 lane :apple_signing do |options|
   target = options.fetch(:scheme)
   platform = PLATFORMS.fetch(target)
@@ -56,6 +57,25 @@ lane :apple_signing do |options|
   )
   profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
 
+  # The ad hoc profile lists the iPhones registered on the team, which are the only ones the Firebase App
+  # Distribution build installs on. A new tester's iPhone needs registering and the profile made again
+  # (docs/release-process.md#ios-on-firebase-app-distribution). The archive keeps the App Store profile: the ad hoc
+  # export signs a copy of it again.
+  adhoc_export_options = options[:adhoc_export_options]
+  if adhoc_export_options
+    match(
+      type: "adhoc",
+      readonly: true,
+      platform: platform,
+      app_identifier: BUNDLE_ID,
+      team_id: TEAM_ID,
+      storage_mode: "git",
+      git_url: CERTS_REPO,
+      api_key: api_key,
+    )
+    adhoc_profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+  end
+
   # Only the app target and only Release: the Swift packages' frameworks take no profile, and the committed
   # project.yml keeps automatic signing for local builds
   update_code_signing_settings(
@@ -85,4 +105,12 @@ lane :apple_signing do |options|
   }
   export_options["installerSigningCertificate"] = "3rd Party Mac Developer Installer" if platform == "macos"
   File.write(options.fetch(:export_options), Plist::Emit.dump(export_options))
+
+  if adhoc_export_options
+    File.write(adhoc_export_options, Plist::Emit.dump(export_options.merge(
+      "method" => "release-testing",
+      "provisioningProfiles" => { BUNDLE_ID => adhoc_profile },
+      "uploadSymbols" => false,
+    )))
+  end
 end

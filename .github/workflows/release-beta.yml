@@ -58,6 +58,11 @@ env:
   FIREBASE_PROJECT: blitz-split
   FIREBASE_ANDROID_APP_ID: 1:791706056713:android:05eeec36250eb20299a0d8
   FIREBASE_GROUP: beta
+  # The iOS beta also goes to App Distribution as an ad hoc build, for the iPhones registered on the team
+  # (docs/release-process.md#ios-on-firebase-app-distribution), since a group of its own: the Android testers'
+  # devices are not registered
+  FIREBASE_IOS_APP_ID: 1:791706056713:ios:a3d191b81ce12a0f99a0d8
+  FIREBASE_IOS_GROUP: ios-beta
   CLOUDFLARE_PAGES_PROJECT: blitz-split-beta
   # Pinned: the versions the release was written with.
   FIREBASE_TOOLS_VERSION: 15.22.0
@@ -370,6 +375,7 @@ jobs:
           scheme: BoraRachar-iOS
           destination: generic/platform=iOS
           export-path: build/ios
+          adhoc-export-path: build/ios-adhoc
           version: ${{ needs.plan.outputs.display_version }}
           version-code: ${{ needs.plan.outputs.version_code }}
           google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
@@ -388,6 +394,57 @@ jobs:
           # A week, for the "Re-run failed jobs" of the upload: an IPA signed for the App Store installs nowhere else.
           retention-days: 7
           if-no-files-found: error
+
+      - name: Upload the ad hoc IPA as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-adhoc-ipa
+          path: build/ios-adhoc/*.ipa
+          # Installs on the registered iPhones: keep it short-lived on a public repository.
+          retention-days: 1
+          if-no-files-found: error
+
+  ios-distribute:
+    name: iOS, send to Firebase App Distribution
+    needs: [plan, ios-build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check the secret
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: ./scripts/release/require-env.sh FIREBASE_SERVICE_ACCOUNT_JSON
+
+      - name: Download the ad hoc IPA build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ios-adhoc-ipa
+          path: ipa
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Send the IPA to the iOS beta group
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          RELEASE_NOTES: "${{ needs.plan.outputs.display_version }} (build ${{ needs.plan.outputs.version_code }})"
+        run: |
+          trap 'rm -f "$RUNNER_TEMP/firebase-service-account.json"' EXIT
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-service-account.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-service-account.json"
+          npx --yes "firebase-tools@${FIREBASE_TOOLS_VERSION}" appdistribution:distribute ipa/*.ipa \
+            --project "$FIREBASE_PROJECT" \
+            --app "$FIREBASE_IOS_APP_ID" \
+            --groups "$FIREBASE_IOS_GROUP" \
+            --release-notes "$RELEASE_NOTES"
 
   ios-upload:
     name: iOS, send to TestFlight
@@ -488,14 +545,15 @@ jobs:
   # ---------------------------------------------------------------------------------------------
   finalize:
     name: Tag, pre-release and merge-back
-    needs: [plan, android-distribute, web, ios-upload, macos-upload]
+    needs: [plan, android-distribute, web, ios-distribute, ios-upload, macos-upload]
     # !cancelled() replaces the implicit success(): a platform the run skipped or that failed must
     # not hold the release back. One that published is enough, since the versionCode it used has to
     # reach main whatever happened to the others.
     if: >-
       ${{ !cancelled() && needs.plan.result == 'success' && (
       needs.android-distribute.result == 'success' || needs.web.result == 'success' ||
-      needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success') }}
+      needs.ios-distribute.result == 'success' || needs.ios-upload.result == 'success' ||
+      needs.macos-upload.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -520,14 +578,17 @@ jobs:
           ANDROID: ${{ needs.android-distribute.result }}
           WEB: ${{ needs.web.result }}
           IOS: ${{ needs.ios-upload.result }}
+          IOS_FIREBASE: ${{ needs.ios-distribute.result }}
           MACOS: ${{ needs.macos-upload.result }}
         run: |
           if gh release view "$DISPLAY_VERSION" > /dev/null 2>&1; then
             gh release view "$DISPLAY_VERSION" --json body --jq .body | tr -d '\r' | awk \
-              -v android="$ANDROID" -v web="$WEB" -v ios="$IOS" -v macos="$MACOS" -v pages="$CLOUDFLARE_PAGES_PROJECT" '
+              -v android="$ANDROID" -v web="$WEB" -v ios="$IOS" -v ios_firebase="$IOS_FIREBASE" -v macos="$MACOS" \
+              -v pages="$CLOUDFLARE_PAGES_PROJECT" '
               /^\| Android \|/ { print "| Android | Firebase App Distribution, group `beta` | " android " |"; next }
               /^\| Web \|/     { print "| Web | Cloudflare Pages, https://" pages ".pages.dev | " web " |"; next }
               /^\| iOS \|/     { print "| iOS | TestFlight | " ios " |"; next }
+              /^\| iOS, ad hoc \|/ { print "| iOS, ad hoc | Firebase App Distribution, group `ios-beta` | " ios_firebase " |"; next }
               /^\| macOS \|/   { print "| macOS | TestFlight | " macos " |"; next }
               { print }' > "$RUNNER_TEMP/notes.md"
             gh release edit "$DISPLAY_VERSION" --notes-file "$RUNNER_TEMP/notes.md"
@@ -544,6 +605,7 @@ jobs:
           | Android | Firebase App Distribution, group \`beta\` | $ANDROID |
           | Web | Cloudflare Pages, https://${CLOUDFLARE_PAGES_PROJECT}.pages.dev | $WEB |
           | iOS | TestFlight | $IOS |
+          | iOS, ad hoc | Firebase App Distribution, group \`ios-beta\` | $IOS_FIREBASE |
           | macOS | TestFlight | $MACOS |
           EOF
           gh release create "$DISPLAY_VERSION" \
@@ -564,7 +626,9 @@ jobs:
       # MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md, "Merge when green").
       - name: Merge the versionCode back into main
         # A web-only beta consumed no build number a store cares about, so it leaves main alone.
-        if: ${{ needs.android-distribute.result == 'success' || needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success' }}
+        if: >-
+          ${{ needs.android-distribute.result == 'success' || needs.ios-distribute.result == 'success' ||
+          needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}
           MERGE_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
