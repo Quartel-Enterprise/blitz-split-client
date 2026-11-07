@@ -63,18 +63,25 @@ lane :apple_signing do |options|
   # export signs a copy of it again.
   adhoc_export_options = options[:adhoc_export_options]
   UI.user_error!("adhoc_export_options is iOS only") if adhoc_export_options && platform != "ios"
+  # Best effort: a missing or broken ad hoc profile only costs the Firebase build. The App Store signing goes on, so
+  # TestFlight still gets its build, and no ad hoc plist is written, which skips the ad hoc export.
+  adhoc_profile = nil
   if adhoc_export_options
-    match(
-      type: "adhoc",
-      readonly: true,
-      platform: platform,
-      app_identifier: BUNDLE_ID,
-      team_id: TEAM_ID,
-      storage_mode: "git",
-      git_url: CERTS_REPO,
-      api_key: api_key,
-    )
-    adhoc_profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+    begin
+      match(
+        type: "adhoc",
+        readonly: true,
+        platform: platform,
+        app_identifier: BUNDLE_ID,
+        team_id: TEAM_ID,
+        storage_mode: "git",
+        git_url: CERTS_REPO,
+        api_key: api_key,
+      )
+      adhoc_profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+    rescue StandardError => e
+      UI.error("No ad hoc profile, so no Firebase App Distribution build: #{e.message}")
+    end
   end
 
   # Only the app target and only Release: the Swift packages' frameworks take no profile, and the committed
@@ -107,11 +114,14 @@ lane :apple_signing do |options|
   export_options["installerSigningCertificate"] = "3rd Party Mac Developer Installer" if platform == "macos"
   File.write(options.fetch(:export_options), Plist::Emit.dump(export_options))
 
-  if adhoc_export_options
-    File.write(adhoc_export_options, Plist::Emit.dump(export_options.merge(
+  # Only the keys a release-testing export takes, not the App Store ones
+  if adhoc_profile
+    File.write(adhoc_export_options, Plist::Emit.dump({
       "method" => "release-testing",
+      "teamID" => TEAM_ID,
+      "signingStyle" => "manual",
+      "signingCertificate" => "Apple Distribution",
       "provisioningProfiles" => { BUNDLE_ID => adhoc_profile },
-      "uploadSymbols" => false,
-    )))
+    }))
   end
 end

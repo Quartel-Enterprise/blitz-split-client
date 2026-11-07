@@ -175,13 +175,20 @@ runs:
         xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
         -exportPath "${{ inputs.export-path }}" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
 
-    # The same archive, signed again with the ad hoc profile: no second build
+    # The same archive, signed again with the ad hoc profile: no second build. Best effort, like the profile: without
+    # the plist (no ad hoc profile) it is skipped, and a failed export costs only the Firebase build, not TestFlight's.
     - name: Export the ad hoc app
       if: inputs.adhoc-export-path != ''
       shell: bash
-      run: >-
-        xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
-        -exportPath "${{ inputs.adhoc-export-path }}" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions-adhoc.plist"
+      run: |
+        if [ ! -f "$RUNNER_TEMP/ExportOptions-adhoc.plist" ]; then
+          echo "::warning::No ad hoc profile, so no Firebase App Distribution build."
+          exit 0
+        fi
+        if ! xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive" \
+          -exportPath "${{ inputs.adhoc-export-path }}" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions-adhoc.plist"; then
+          echo "::warning::The ad hoc export failed, so no Firebase App Distribution build."
+        fi
 
     # The keys and the certificate must not stay on the runner for the steps after this action, or for the next job on
     # a reused one.

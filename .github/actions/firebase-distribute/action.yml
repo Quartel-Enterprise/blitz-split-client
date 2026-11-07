@@ -1,0 +1,63 @@
+name: 'Send a build to Firebase App Distribution'
+description: >-
+  Sends an APK or IPA to a Firebase App Distribution group with the service account, for the Android and the iOS beta
+  jobs of release-beta.yml. The calling job checks out the repository and downloads the build first.
+
+inputs:
+  file:
+    description: 'The APK or IPA, a glob that matches one file'
+    required: true
+  app-id:
+    description: "The Firebase app's id"
+    required: true
+  group:
+    description: 'The App Distribution group alias'
+    required: true
+  release-notes:
+    description: "What testers read about the build"
+    required: true
+  project:
+    description: 'The Firebase project'
+    required: true
+  firebase-tools-version:
+    description: 'The pinned firebase-tools version'
+    required: true
+  service-account-json:
+    description: 'The service account key (JSON) with the Firebase App Distribution Admin role'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check the secret
+      shell: bash
+      env:
+        FIREBASE_SERVICE_ACCOUNT_JSON: ${{ inputs.service-account-json }}
+      run: ./scripts/release/require-env.sh FIREBASE_SERVICE_ACCOUNT_JSON
+
+    - name: Set up Node
+      uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+
+    - name: Send the build
+      shell: bash
+      env:
+        FIREBASE_SERVICE_ACCOUNT_JSON: ${{ inputs.service-account-json }}
+        FILE: ${{ inputs.file }}
+        APP_ID: ${{ inputs.app-id }}
+        GROUP: ${{ inputs.group }}
+        RELEASE_NOTES: ${{ inputs.release-notes }}
+        PROJECT: ${{ inputs.project }}
+        FIREBASE_TOOLS_VERSION: ${{ inputs.firebase-tools-version }}
+      run: |
+        trap 'rm -f "$RUNNER_TEMP/firebase-service-account.json"' EXIT
+        printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-service-account.json"
+        export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-service-account.json"
+        # Unquoted on purpose: the glob resolves to the one file the job downloaded
+        # shellcheck disable=SC2086
+        npx --yes "firebase-tools@${FIREBASE_TOOLS_VERSION}" appdistribution:distribute $FILE \
+          --project "$PROJECT" \
+          --app "$APP_ID" \
+          --groups "$GROUP" \
+          --release-notes "$RELEASE_NOTES"
