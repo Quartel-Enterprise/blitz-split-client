@@ -23,7 +23,7 @@ APS_ENVIRONMENT = {
 # No fastlane/README.md written into the checkout after each run
 skip_docs
 
-desc "Fetch the distribution certificate and the App Store profile, sign the target manually, write ExportOptions.plist"
+desc "Fetch the distribution certificate and the App Store (and ad hoc) profile, sign the target manually, write ExportOptions.plist"
 desc "Options: scheme (BoraRachar-iOS|BoraRachar-macOS), export_options (path of the plist to write),"
 desc "adhoc_export_options (iOS only: path of the ad hoc plist, for Firebase App Distribution; omit to skip)"
 lane :apple_signing do |options|
@@ -62,6 +62,7 @@ lane :apple_signing do |options|
   # (docs/release-process.md#ios-on-firebase-app-distribution). The archive keeps the App Store profile: the ad hoc
   # export signs a copy of it again.
   adhoc_export_options = options[:adhoc_export_options]
+  UI.user_error!("adhoc_export_options is iOS only") if adhoc_export_options && platform != "ios"
   if adhoc_export_options
     match(
       type: "adhoc",
