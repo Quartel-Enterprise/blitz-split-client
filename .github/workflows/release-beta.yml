@@ -8,8 +8,10 @@ name: release-beta
 #      jobs" repeats whole jobs: an upload that failed is sent again without building a second time.
 #        - Android: signed APK to the Firebase App Distribution `beta` group.
 #        - Web: Cloudflare Pages, https://blitz-split-beta.pages.dev.
-#        - iOS and macOS: TestFlight, signed by Xcode with the App Store Connect API key. The two share the
-#          composite actions .github/actions/apple-build and apple-upload.
+#        - iOS and macOS: TestFlight, signed with the team's distribution certificate through fastlane match. The
+#          two share the composite actions .github/actions/apple-build and apple-upload.
+#        - iOS, ad hoc: the same archive exported again for the registered iPhones, to the Firebase App
+#          Distribution `ios-beta` group. Best effort: it never holds back the TestFlight build.
 #   3. `finalize` tags the commit and publishes a GitHub pre-release listing what each channel got and the
 #      build number, then merges the versionCode this beta consumed back into main. The release goes first
 #      because it is what `plan` reads: the next beta takes its number and its versionCode from the releases,
@@ -38,7 +40,7 @@ on:
         type: boolean
         default: true
       ios:
-        description: "iOS, TestFlight"
+        description: "iOS, TestFlight and Firebase App Distribution (ad hoc)"
         type: boolean
         default: true
       macos:
@@ -58,6 +60,11 @@ env:
   FIREBASE_PROJECT: blitz-split
   FIREBASE_ANDROID_APP_ID: 1:791706056713:android:05eeec36250eb20299a0d8
   FIREBASE_GROUP: beta
+  # The iOS beta also goes to App Distribution as an ad hoc build, for the iPhones registered on the team
+  # (docs/release-process.md#ios-on-firebase-app-distribution), since a group of its own: the Android testers'
+  # devices are not registered
+  FIREBASE_IOS_APP_ID: 1:791706056713:ios:a3d191b81ce12a0f99a0d8
+  FIREBASE_IOS_GROUP: ios-beta
   CLOUDFLARE_PAGES_PROJECT: blitz-split-beta
   # Pinned: the versions the release was written with.
   FIREBASE_TOOLS_VERSION: 15.22.0
@@ -239,35 +246,22 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      - name: Check the secret
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-        run: ./scripts/release/require-env.sh FIREBASE_SERVICE_ACCOUNT_JSON
-
       - name: Download the APK build artifact
         uses: actions/download-artifact@v8
         with:
           name: android-apk
           path: apk
 
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
       - name: Send the APK to the beta group
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          RELEASE_NOTES: "${{ needs.plan.outputs.display_version }} (build ${{ needs.plan.outputs.version_code }})"
-        run: |
-          trap 'rm -f "$RUNNER_TEMP/firebase-service-account.json"' EXIT
-          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-service-account.json"
-          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-service-account.json"
-          npx --yes "firebase-tools@${FIREBASE_TOOLS_VERSION}" appdistribution:distribute apk/*.apk \
-            --project "$FIREBASE_PROJECT" \
-            --app "$FIREBASE_ANDROID_APP_ID" \
-            --groups "$FIREBASE_GROUP" \
-            --release-notes "$RELEASE_NOTES"
+        uses: ./.github/actions/firebase-distribute
+        with:
+          file: apk/*.apk
+          app-id: ${{ env.FIREBASE_ANDROID_APP_ID }}
+          group: ${{ env.FIREBASE_GROUP }}
+          release-notes: "${{ needs.plan.outputs.display_version }} (build ${{ needs.plan.outputs.version_code }})"
+          project: ${{ env.FIREBASE_PROJECT }}
+          firebase-tools-version: ${{ env.FIREBASE_TOOLS_VERSION }}
+          service-account-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
 
   # ---------------------------------------------------------------------------------------------
   # Web
@@ -356,6 +350,8 @@ jobs:
     if: ${{ inputs.ios }}
     # The Xcode 27 image, as apple.yml: the app uses the iOS 27 SDK's APIs.
     runs-on: xcode-27
+    outputs:
+      adhoc-ipa: ${{ steps.adhoc.outputs.ipa }}
     timeout-minutes: 90
     steps:
       - name: Checkout code
@@ -370,6 +366,7 @@ jobs:
           scheme: BoraRachar-iOS
           destination: generic/platform=iOS
           export-path: build/ios
+          adhoc-export-path: build/ios-adhoc
           version: ${{ needs.plan.outputs.display_version }}
           version-code: ${{ needs.plan.outputs.version_code }}
           google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
@@ -388,6 +385,58 @@ jobs:
           # A week, for the "Re-run failed jobs" of the upload: an IPA signed for the App Store installs nowhere else.
           retention-days: 7
           if-no-files-found: error
+
+      # Best effort, like the export: a missing ad hoc IPA warns here and skips ios-distribute, instead of failing the
+      # job TestFlight's upload needs.
+      - name: Check for the ad hoc IPA
+        id: adhoc
+        run: |
+          if compgen -G "build/ios-adhoc/*.ipa" > /dev/null; then
+            echo "ipa=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ipa=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload the ad hoc IPA as a build artifact
+        if: steps.adhoc.outputs.ipa == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-adhoc-ipa
+          path: build/ios-adhoc/*.ipa
+          # Installs on the registered iPhones: keep it short-lived on a public repository.
+          retention-days: 1
+          if-no-files-found: warn
+
+  ios-distribute:
+    name: iOS, send to Firebase App Distribution
+    needs: [plan, ios-build]
+    # Only when the best-effort ad hoc export produced an IPA
+    if: ${{ needs.ios-build.outputs.adhoc-ipa == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Download the ad hoc IPA build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ios-adhoc-ipa
+          path: ipa
+
+      - name: Send the IPA to the iOS beta group
+        uses: ./.github/actions/firebase-distribute
+        with:
+          file: ipa/*.ipa
+          app-id: ${{ env.FIREBASE_IOS_APP_ID }}
+          group: ${{ env.FIREBASE_IOS_GROUP }}
+          release-notes: "${{ needs.plan.outputs.display_version }} (build ${{ needs.plan.outputs.version_code }})"
+          project: ${{ env.FIREBASE_PROJECT }}
+          firebase-tools-version: ${{ env.FIREBASE_TOOLS_VERSION }}
+          service-account-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
 
   ios-upload:
     name: iOS, send to TestFlight
@@ -488,14 +537,15 @@ jobs:
   # ---------------------------------------------------------------------------------------------
   finalize:
     name: Tag, pre-release and merge-back
-    needs: [plan, android-distribute, web, ios-upload, macos-upload]
+    needs: [plan, android-distribute, web, ios-distribute, ios-upload, macos-upload]
     # !cancelled() replaces the implicit success(): a platform the run skipped or that failed must
     # not hold the release back. One that published is enough, since the versionCode it used has to
     # reach main whatever happened to the others.
     if: >-
       ${{ !cancelled() && needs.plan.result == 'success' && (
       needs.android-distribute.result == 'success' || needs.web.result == 'success' ||
-      needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success') }}
+      needs.ios-distribute.result == 'success' || needs.ios-upload.result == 'success' ||
+      needs.macos-upload.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -520,14 +570,17 @@ jobs:
           ANDROID: ${{ needs.android-distribute.result }}
           WEB: ${{ needs.web.result }}
           IOS: ${{ needs.ios-upload.result }}
+          IOS_FIREBASE: ${{ needs.ios-distribute.result }}
           MACOS: ${{ needs.macos-upload.result }}
         run: |
           if gh release view "$DISPLAY_VERSION" > /dev/null 2>&1; then
             gh release view "$DISPLAY_VERSION" --json body --jq .body | tr -d '\r' | awk \
-              -v android="$ANDROID" -v web="$WEB" -v ios="$IOS" -v macos="$MACOS" -v pages="$CLOUDFLARE_PAGES_PROJECT" '
+              -v android="$ANDROID" -v web="$WEB" -v ios="$IOS" -v ios_firebase="$IOS_FIREBASE" -v macos="$MACOS" \
+              -v pages="$CLOUDFLARE_PAGES_PROJECT" '
               /^\| Android \|/ { print "| Android | Firebase App Distribution, group `beta` | " android " |"; next }
               /^\| Web \|/     { print "| Web | Cloudflare Pages, https://" pages ".pages.dev | " web " |"; next }
               /^\| iOS \|/     { print "| iOS | TestFlight | " ios " |"; next }
+              /^\| iOS, ad hoc \|/ { print "| iOS, ad hoc | Firebase App Distribution, group `ios-beta` | " ios_firebase " |"; next }
               /^\| macOS \|/   { print "| macOS | TestFlight | " macos " |"; next }
               { print }' > "$RUNNER_TEMP/notes.md"
             gh release edit "$DISPLAY_VERSION" --notes-file "$RUNNER_TEMP/notes.md"
@@ -544,6 +597,7 @@ jobs:
           | Android | Firebase App Distribution, group \`beta\` | $ANDROID |
           | Web | Cloudflare Pages, https://${CLOUDFLARE_PAGES_PROJECT}.pages.dev | $WEB |
           | iOS | TestFlight | $IOS |
+          | iOS, ad hoc | Firebase App Distribution, group \`ios-beta\` | $IOS_FIREBASE |
           | macOS | TestFlight | $MACOS |
           EOF
           gh release create "$DISPLAY_VERSION" \
@@ -564,7 +618,9 @@ jobs:
       # MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md, "Merge when green").
       - name: Merge the versionCode back into main
         # A web-only beta consumed no build number a store cares about, so it leaves main alone.
-        if: ${{ needs.android-distribute.result == 'success' || needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success' }}
+        if: >-
+          ${{ needs.android-distribute.result == 'success' || needs.ios-distribute.result == 'success' ||
+          needs.ios-upload.result == 'success' || needs.macos-upload.result == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}
           MERGE_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}

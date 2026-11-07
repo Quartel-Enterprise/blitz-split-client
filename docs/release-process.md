@@ -11,6 +11,7 @@ tags the release, publishes each platform to its own channel and records it as a
 | Android | Firebase App Distribution, group `beta`, project `blitz-split` |
 | Web | Cloudflare Pages, project `blitz-split-beta`: https://blitz-split-beta.pages.dev |
 | iOS and macOS | TestFlight, signed with the team's distribution certificate through fastlane match ([Apple signing](#apple-signing)) |
+| iOS, ad hoc | Firebase App Distribution, group `ios-beta`: the same archive exported again for the registered iPhones ([iOS on Firebase App Distribution](#ios-on-firebase-app-distribution)) |
 
 Each platform is a build job and a publish job of its own, between `plan` and `finalize`. The `android`, `web`, `ios` and
 `macos` inputs of the workflow turn a platform off for a run.
@@ -32,11 +33,12 @@ Or **Actions → release-beta → Run workflow**. The script dispatches the work
 `gh workflow run` only finds a workflow that is on `main`, so the first beta can only run after this one has merged.
 
 1. `plan` resolves the version and shows it in the run summary.
-2. Each platform builds and publishes: `android-build` and `android-distribute`, `web`, `ios-build` and `ios-upload`,
-   `macos-build` and `macos-upload`. Build and publish are separate jobs, so **Re-run failed jobs** sends a failed
-   upload again without building a second time. The APK is kept as a build artifact for one day, since anyone can
-   install it from a public repository, and the IPA and the package for a week, since they install nowhere but
-   TestFlight: a re-run of an upload after that needs a new beta.
+2. Each platform builds and publishes: `android-build` and `android-distribute`, `web`, `ios-build` with
+   `ios-upload` and `ios-distribute`, `macos-build` and `macos-upload`. Build and publish are separate jobs, so
+   **Re-run failed jobs** sends a failed upload again without building a second time. The APK and the ad hoc IPA are
+   kept as build artifacts for one day, since anyone can install them (the ad hoc IPA on the registered iPhones) from
+   a public repository, and the App Store IPA and the package for a week, since they install nowhere but TestFlight:
+   a re-run of an upload after that needs a new beta.
 3. `finalize` tags the commit the run built and publishes the GitHub pre-release, whose notes list what each channel got
    and the build number, then squash-merges a pull request with the new `versionCode` into `main`. It runs when at
    least one platform published, and a platform that failed does not hold the release back. A re-run of `finalize`
@@ -113,15 +115,41 @@ says the app "does not satisfy its designated Requirement", and App Store Connec
 ("Invalid Signature").
 
 CI never creates a certificate or a profile. Once, from a Mac with fastlane and the passphrase, create the two App
-Store profiles of `com.quare.blitzsplit` (match reuses the certificates already in the repository):
+Store profiles of `com.quare.blitzsplit` and the iOS ad hoc one (match reuses the certificates already in the
+repository). The iOS job fetches the ad hoc profile too, so without it the iOS beta fails, TestFlight included:
 
 ```bash
 fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 fastlane match appstore --platform macos --additional_cert_types mac_installer_distribution --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 ```
 
 A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
 the same commands with `--force`.
+
+## iOS on Firebase App Distribution
+
+Besides TestFlight, the iOS job exports its archive a second time with the ad hoc profile `match AdHoc
+com.quare.blitzsplit` and `ios-distribute` sends that IPA to the Firebase App Distribution group `ios-beta`. An ad hoc
+build installs only on the iPhones the profile lists, so the group holds only testers whose iPhone is registered on the
+team; the Android testers of `beta` stay out of it. The group has to exist before the first beta, or `ios-distribute`
+fails: `firebase appdistribution:groups:create "iOS beta" ios-beta --project blitz-split`.
+
+To add a tester's iPhone:
+
+1. Get its UDID: Finder (click the line under the iPhone's name until it shows the UDID), `xcrun devicectl list
+   devices` with the iPhone on a cable, or the device registration Firebase App Distribution offers when the tester
+   accepts an invite (then Firebase console › App Distribution › Testers & Groups › Export Apple UDIDs).
+2. Register it on the team: developer.apple.com › Certificates, Identifiers & Profiles › Devices, or
+   `fastlane run register_device name:"<name>" udid:"<udid>" platform:ios team_id:TTV2A365LG api_key_path:<key.json>`.
+3. Make the ad hoc profile again with the new device, from a Mac with the passphrase:
+
+   ```bash
+   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+   ```
+
+4. Add the tester to the group: `firebase appdistribution:testers:add --group-alias ios-beta --project blitz-split <email>`.
+5. Release a new beta: the builds already sent don't install on the new iPhone.
 
 ## Before the first beta: analytics consent
 

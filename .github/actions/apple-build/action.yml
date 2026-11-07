@@ -15,6 +15,10 @@ inputs:
   export-path:
     description: 'Where the exported IPA or package lands'
     required: true
+  adhoc-export-path:
+    description: 'iOS only: where a second, ad hoc export of the same archive lands, for Firebase App Distribution. Empty: none'
+    required: false
+    default: ''
   build-settings:
     description: 'Extra build settings for the archive, e.g. ARCHS=arm64'
     required: false
@@ -144,7 +148,13 @@ runs:
         APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
         MATCH_PASSWORD: ${{ inputs.match-password }}
         GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ssh -o IdentitiesOnly=yes
-      run: fastlane apple_signing scheme:${{ inputs.scheme }} export_options:"$RUNNER_TEMP/ExportOptions.plist"
+        ADHOC_EXPORT_PATH: ${{ inputs.adhoc-export-path }}
+      run: |
+        adhoc=()
+        if [ -n "$ADHOC_EXPORT_PATH" ]; then
+          adhoc=(adhoc_export_options:"$RUNNER_TEMP/ExportOptions-adhoc.plist")
+        fi
+        fastlane apple_signing scheme:${{ inputs.scheme }} export_options:"$RUNNER_TEMP/ExportOptions.plist" "${adhoc[@]}"
 
     # No -clonedSourcePackagesDirPath: a Release build with the Firebase plist runs the Crashlytics dSYM script of
     # project.yml, which looks for the Firebase checkout in ${BUILD_DIR%/Build/*}/SourcePackages, that is, under the
@@ -164,6 +174,21 @@ runs:
       run: >-
         xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive"
         -exportPath "${{ inputs.export-path }}" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+    # The same archive, signed again with the ad hoc profile: no second build. Best effort, like the profile: without
+    # the plist (no ad hoc profile) it is skipped, and a failed export costs only the Firebase build, not TestFlight's.
+    - name: Export the ad hoc app
+      if: inputs.adhoc-export-path != ''
+      shell: bash
+      run: |
+        if [ ! -f "$RUNNER_TEMP/ExportOptions-adhoc.plist" ]; then
+          echo "::warning::No ad hoc profile, so no Firebase App Distribution build."
+          exit 0
+        fi
+        if ! xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/${{ inputs.scheme }}.xcarchive" \
+          -exportPath "${{ inputs.adhoc-export-path }}" -exportOptionsPlist "$RUNNER_TEMP/ExportOptions-adhoc.plist"; then
+          echo "::warning::The ad hoc export failed, so no Firebase App Distribution build."
+        fi
 
     # The keys and the certificate must not stay on the runner for the steps after this action, or for the next job on
     # a reused one.
