@@ -43,15 +43,15 @@ fun toSecondPerson(
 ): String = when (language) {
     SPANISH -> toSpanishSecondPerson(verb)
 
-    FRENCH, GERMAN, ITALIAN -> replaceFirstWord(verb, secondPersonAuxiliaries.getValue(language)::get)
-
-    POLISH -> replaceFirstWord(verb) {
-        it
-            .takeIf { it.endsWith(POLISH_THIRD_PERSON_SUFFIX) }
-            ?.let { word -> word.removeSuffix(POLISH_THIRD_PERSON_SUFFIX) + POLISH_SECOND_PERSON_SUFFIX }
+    POLISH -> replaceFirstWord(verb) { word ->
+        if (word.endsWith(POLISH_THIRD_PERSON_SUFFIX)) {
+            word.removeSuffix(POLISH_THIRD_PERSON_SUFFIX) + POLISH_SECOND_PERSON_SUFFIX
+        } else {
+            null
+        }
     }
 
-    else -> verb
+    else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
 
 // Why: the verb phrase with its first word replaced, or as it is when `replacement` has none for that word.

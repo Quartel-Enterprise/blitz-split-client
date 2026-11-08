@@ -63,21 +63,21 @@ const documentLanguages: Record<Locale, string> = {
   pl: 'pl',
 }
 
-function documentLanguage(): string {
-  return documentLanguages[locale]
-}
+const documentLanguage = documentLanguages[locale]
 
-const pluralRules = new Intl.PluralRules(documentLanguage())
+const pluralRules = new Intl.PluralRules(documentLanguage)
 
 /**
  * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many
  * (0, 5–21…). Its message for a `…Other` key with a `{count}` holds both, "{count} grupy|{count} grup", and this picks
- * the one `count` takes (a fraction taking few's, as Polish does). Any other message has one form.
+ * the one `count` takes (a fraction taking few's, as Polish does). Any other message has one form. `count` must be the
+ * number itself, not a formatted string: one that isn't a number gets the many form, the one most counts take.
  */
 function pluralFormOf(message: string, count: string | number | undefined): string {
   if (!message.includes('|')) return message
   const forms = message.split('|')
-  return pluralRules.select(Number(count)) === 'many' ? forms[1] : forms[0]
+  const category = typeof count === 'number' ? pluralRules.select(count) : 'many'
+  return category === 'many' ? forms[1] : forms[0]
 }
 
 /** The message for `key` in the app's locale, with each `{name}` replaced by `params.name`. */
@@ -133,6 +133,6 @@ export function verbForYou(verb: string): string {
 
 /** The page's language and title: Bora Rachar only in Portuguese, Blitz Split everywhere else. */
 export function applyDocumentLocale() {
-  document.documentElement.lang = documentLanguage()
+  document.documentElement.lang = documentLanguage
   document.title = t('appName')
 }

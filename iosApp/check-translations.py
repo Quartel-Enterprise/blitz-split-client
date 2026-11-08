@@ -64,6 +64,7 @@ def problems(key: str, entry: dict):
     wanted = placeholders(english)
     # A device variation ("/device.mac") is compared with the English one of the same device, else with the whole text
     english_variations = {path: placeholders(unit.get("value", "")) for path, unit in leaves(localizations.get("en", {}))}
+    english_plural_paths = [path for path in english_variations if PLURAL_PATH.match(path)]
     for language in REQUIRED:
         localization = localizations.get(language)
         if localization is None:
@@ -89,6 +90,9 @@ def problems(key: str, entry: dict):
         for path, categories in found_categories.items():
             if not wanted_categories <= categories:
                 yield f"{language}{path} lacks the plural forms {', '.join(sorted(wanted_categories - categories))}"
+        # A plain string where English varies by plural would show one form for every count
+        if wanted_categories and english_plural_paths and not found_categories:
+            yield f"{language} has no plural variations, though English varies by plural"
 
 
 def main(resources: str) -> int:
