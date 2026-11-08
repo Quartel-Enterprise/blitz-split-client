@@ -16,54 +16,54 @@ fun AvatarColor.toDataColor(isDark: Boolean): Color = if (isDark) darkData else 
 
 private val AvatarColor.lightContainer: Color
     get() = when (this) {
-        AvatarColor.BLUE -> Color(0xFFC9E6FF)
-        AvatarColor.PEACH -> Color(0xFFFFDBCE)
-        AvatarColor.GREEN -> Color(0xFFBDEFD3)
-        AvatarColor.LILAC -> Color(0xFFE8DDFF)
-        AvatarColor.SAND -> Color(0xFFFFE08B)
+        AvatarColor.BLUE -> Color(0xFFD7E2FF)
+        AvatarColor.PEACH -> Color(0xFFFFDCC0)
+        AvatarColor.GREEN -> Color(0xFFAAF5A4)
+        AvatarColor.LILAC -> Color(0xFFF0DBFF)
+        AvatarColor.SAND -> Color(0xFFF6E468)
     }
 
 private val AvatarColor.lightContent: Color
     get() = when (this) {
-        AvatarColor.BLUE -> Color(0xFF001E2F)
-        AvatarColor.PEACH -> Color(0xFF370E00)
-        AvatarColor.GREEN -> Color(0xFF00210F)
-        AvatarColor.LILAC -> Color(0xFF21005D)
-        AvatarColor.SAND -> Color(0xFF241A00)
+        AvatarColor.BLUE -> Color(0xFF001B3F)
+        AvatarColor.PEACH -> Color(0xFF2D1600)
+        AvatarColor.GREEN -> Color(0xFF002204)
+        AvatarColor.LILAC -> Color(0xFF2C0051)
+        AvatarColor.SAND -> Color(0xFF201C00)
     }
 
 private val AvatarColor.darkContainer: Color
     get() = when (this) {
-        AvatarColor.BLUE -> Color(0xFF004B6F)
-        AvatarColor.PEACH -> Color(0xFF71361C)
-        AvatarColor.GREEN -> Color(0xFF00513A)
-        AvatarColor.LILAC -> Color(0xFF4F378B)
-        AvatarColor.SAND -> Color(0xFF574500)
+        AvatarColor.BLUE -> Color(0xFF00458F)
+        AvatarColor.PEACH -> Color(0xFF6B3B00)
+        AvatarColor.GREEN -> Color(0xFF055315)
+        AvatarColor.LILAC -> Color(0xFF5B3383)
+        AvatarColor.SAND -> Color(0xFF504700)
     }
 
 private val AvatarColor.darkContent: Color
     get() = when (this) {
-        AvatarColor.BLUE -> Color(0xFFC9E6FF)
-        AvatarColor.PEACH -> Color(0xFFFFDBCE)
-        AvatarColor.GREEN -> Color(0xFFBDEFD3)
-        AvatarColor.LILAC -> Color(0xFFE8DDFF)
-        AvatarColor.SAND -> Color(0xFFFFE08B)
+        AvatarColor.BLUE -> Color(0xFFD7E2FF)
+        AvatarColor.PEACH -> Color(0xFFFFDCC0)
+        AvatarColor.GREEN -> Color(0xFFAAF5A4)
+        AvatarColor.LILAC -> Color(0xFFF0DBFF)
+        AvatarColor.SAND -> Color(0xFFF6E468)
     }
 
 private val AvatarColor.lightData: Color
     get() = when (this) {
-        AvatarColor.BLUE -> Color(0xFF017EB7)
-        AvatarColor.PEACH -> Color(0xFFB95D35)
-        AvatarColor.GREEN -> Color(0xFF008863)
-        AvatarColor.LILAC -> Color(0xFF8069C0)
-        AvatarColor.SAND -> Color(0xFF907400)
+        AvatarColor.BLUE -> Color(0xFF2A75DC)
+        AvatarColor.PEACH -> Color(0xFFAE650C)
+        AvatarColor.GREEN -> Color(0xFF418642)
+        AvatarColor.LILAC -> Color(0xFF8E65B8)
+        AvatarColor.SAND -> Color(0xFF857800)
     }
 
 private val AvatarColor.darkData: Color
     get() = when (this) {
-        AvatarColor.BLUE -> Color(0xFF69C1FE)
-        AvatarColor.PEACH -> Color(0xFFFFA17B)
-        AvatarColor.GREEN -> Color(0xFF5ACDA1)
-        AvatarColor.LILAC -> Color(0xFFC3ACFF)
-        AvatarColor.SAND -> Color(0xFFD9B53C)
+        AvatarColor.BLUE -> Color(0xFF94B9FF)
+        AvatarColor.PEACH -> Color(0xFFFDA54D)
+        AvatarColor.GREEN -> Color(0xFF82CA7D)
+        AvatarColor.LILAC -> Color(0xFFD3A6FF)
+        AvatarColor.SAND -> Color(0xFFCBBA42)
     }

@@ -28,7 +28,7 @@ class CategoryTreeTest {
         assertEquals(listOf("praia", AppCategory.OTHER.key), mains.takeLast(2))
         assertEquals("churrasco", food?.subcategories?.last()?.id)
         assertEquals(CategoryIcon.FOOD, food?.subcategories?.last()?.icon)
-        assertEquals(CategoryColor.BLUE, food?.subcategories?.last()?.color)
+        assertEquals(CategoryColor.ORANGE, food?.subcategories?.last()?.color)
     }
 
     @Test

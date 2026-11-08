@@ -8,11 +8,11 @@ type ColorTones = { light: [string, string]; dark: [string, string]; data: [stri
  * per theme, and the `data` tone [light, dark] a mark that stands for the person takes (a bar, a segment of a split).
  */
 export const avatarColors: Record<string, ColorTones & { label: MessageKey }> = {
-  blue: { label: 'color_blue', light: ['#C9E6FF', '#001E2F'], dark: ['#004B6F', '#C9E6FF'], data: ['#017EB7', '#69C1FE'] },
-  peach: { label: 'color_peach', light: ['#FFDBCE', '#370E00'], dark: ['#71361C', '#FFDBCE'], data: ['#B95D35', '#FFA17B'] },
-  green: { label: 'color_green', light: ['#BDEFD3', '#00210F'], dark: ['#00513A', '#BDEFD3'], data: ['#008863', '#5ACDA1'] },
-  lilac: { label: 'color_lilac', light: ['#E8DDFF', '#21005D'], dark: ['#4F378B', '#E8DDFF'], data: ['#8069C0', '#C3ACFF'] },
-  sand: { label: 'color_sand', light: ['#FFE08B', '#241A00'], dark: ['#574500', '#FFE08B'], data: ['#907400', '#D9B53C'] },
+  blue: { label: 'color_blue', light: ['#D7E2FF', '#001B3F'], dark: ['#00458F', '#D7E2FF'], data: ['#2A75DC', '#94B9FF'] },
+  peach: { label: 'color_peach', light: ['#FFDCC0', '#2D1600'], dark: ['#6B3B00', '#FFDCC0'], data: ['#AE650C', '#FDA54D'] },
+  green: { label: 'color_green', light: ['#AAF5A4', '#002204'], dark: ['#055315', '#AAF5A4'], data: ['#418642', '#82CA7D'] },
+  lilac: { label: 'color_lilac', light: ['#F0DBFF', '#2C0051'], dark: ['#5B3383', '#F0DBFF'], data: ['#8E65B8', '#D3A6FF'] },
+  sand: { label: 'color_sand', light: ['#F6E468', '#201C00'], dark: ['#504700', '#F6E468'], data: ['#857800', '#CBBA42'] },
 }
 
 /** The color's name for screen readers, or its code when the app doesn't know it. */
@@ -44,15 +44,15 @@ export function avatarStyle(code: string): React.CSSProperties {
  * 2:1 on a card, the data tone at 4:1 light and 7:1 dark (WCAG's 3:1 for a meaningful mark).
  */
 export const categoryColors: Record<string, ColorTones> = {
-  blue: { light: ['#C9E6FF', '#001E2F'], dark: ['#004B6F', '#C9E6FF'], data: ['#017EB7', '#69C1FE'] },
-  orange: { light: ['#FFDBCE', '#370E00'], dark: ['#71361C', '#FFDBCE'], data: ['#B95D35', '#FFA17B'] },
-  green: { light: ['#BDEFD3', '#00210F'], dark: ['#00513A', '#BDEFD3'], data: ['#008863', '#5ACDA1'] },
-  purple: { light: ['#E8DDFF', '#21005D'], dark: ['#4F378B', '#E8DDFF'], data: ['#8069C0', '#C3ACFF'] },
-  yellow: { light: ['#FFE08B', '#241A00'], dark: ['#574500', '#FFE08B'], data: ['#907400', '#D9B53C'] },
-  red: { light: ['#FFDAD6', '#410002'], dark: ['#93000A', '#FFDAD6'], data: ['#D93D35', '#FF9F94'] },
+  blue: { light: ['#D7E2FF', '#001B3F'], dark: ['#00458F', '#D7E2FF'], data: ['#2A75DC', '#94B9FF'] },
+  orange: { light: ['#FFDCC0', '#2D1600'], dark: ['#6B3B00', '#FFDCC0'], data: ['#AE650C', '#FDA54D'] },
+  green: { light: ['#AAF5A4', '#002204'], dark: ['#055315', '#AAF5A4'], data: ['#418642', '#82CA7D'] },
+  purple: { light: ['#F0DBFF', '#2C0051'], dark: ['#5B3383', '#F0DBFF'], data: ['#8E65B8', '#D3A6FF'] },
+  yellow: { light: ['#F6E468', '#201C00'], dark: ['#504700', '#F6E468'], data: ['#857800', '#CBBA42'] },
+  red: { light: ['#FFDADA', '#40000B'], dark: ['#8A182B', '#FFDADA'], data: ['#CC4A57', '#FF9EA2'] },
   teal: { light: ['#A5F0E6', '#00201C'], dark: ['#00504A', '#A5F0E6'], data: ['#00867C', '#3ECDC0'] },
   pink: { light: ['#FFD8EC', '#3E001D'], dark: ['#7B2951', '#FFD8EC'], data: ['#B55882', '#FF9AC4'] },
-  indigo: { light: ['#DDE1FF', '#00164E'], dark: ['#2F3A8F', '#DDE1FF'], data: ['#6570C7', '#ABB3FF'] },
+  indigo: { light: ['#E2DFFF', '#0E0664'], dark: ['#3D3C8F', '#E2DFFF'], data: ['#6E6EC3', '#B2B1FF'] },
   lime: { light: ['#DDF0A0', '#141E00'], dark: ['#3B4D00', '#DDF0A0'], data: ['#678020', '#A8C35C'] },
   brown: { light: ['#F1DFD1', '#2A1709'], dark: ['#5B4130', '#F1DFD1'], data: ['#986E53', '#E0AF90'] },
   gray: { light: ['#E0E3E8', '#191C20'], dark: ['#44474C', '#E0E3E8'], data: ['#74777C', '#B7B9BE'] },
