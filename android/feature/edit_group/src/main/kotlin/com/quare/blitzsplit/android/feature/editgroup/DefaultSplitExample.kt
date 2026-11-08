@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
-import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
+import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitUiState
 
@@ -107,7 +107,7 @@ private fun ShareBar(state: DefaultSplitUiState) {
                 modifier = Modifier
                     .weight(row.basisPoints.toFloat())
                     .height(8.dp)
-                    .background(row.person.avatarColor.toContainerColor(isDark), RoundedCornerShape(4.dp)),
+                    .background(row.person.avatarColor.toDataColor(isDark), RoundedCornerShape(4.dp)),
             )
         }
         if (missing > 0f) {

@@ -587,7 +587,7 @@ private struct ActivityRowMeta: View {
     var body: some View {
         HStack(spacing: 5) {
             RoundedRectangle(cornerRadius: 3)
-                .fill(item.groupColor?.container ?? Color.secondary.opacity(0.2))
+                .fill(item.groupColor?.data ?? Color.secondary.opacity(0.2))
                 .frame(width: 10, height: 10)
                 .accessibilityHidden(true)
             if let groupName = item.groupName {

@@ -103,6 +103,17 @@ extension AvatarColor {
         }
     }
 
+    /// A mark that stands for a person (a bar, a segment of a split) takes this tone, as a category's does.
+    var data: Color {
+        switch self {
+        case .peach: Color(light: 0xB95D35, dark: 0xFFA17B)
+        case .green: Color(light: 0x008863, dark: 0x5ACDA1)
+        case .lilac: Color(light: 0x8069C0, dark: 0xC3ACFF)
+        case .sand: Color(light: 0x907400, dark: 0xD9B53C)
+        default: Color(light: 0x017EB7, dark: 0x69C1FE)
+        }
+    }
+
     var label: String {
         switch self {
         case .peach: String(localized: "Peach", bundle: .appLanguage)
@@ -147,6 +158,26 @@ extension CategoryColor {
         case .brown: Color(light: 0x2A1709, dark: 0xF1DFD1)
         case .gray: Color(light: 0x191C20, dark: 0xE0E3E8)
         default: Color(light: 0x001E2F, dark: 0xC9E6FF)
+        }
+    }
+
+    /// A mark that carries the category (a slice, a legend dot, a bar) takes this tone, not the container's: the
+    /// container is a background and reads at under 2:1 on a card, while this one reads at 4:1 light and 7:1 dark
+    /// (WCAG's 3:1 for a meaningful mark), and it never equals one of the theme's own container colors.
+    var data: Color {
+        switch self {
+        case .orange: Color(light: 0xB95D35, dark: 0xFFA17B)
+        case .green: Color(light: 0x008863, dark: 0x5ACDA1)
+        case .purple: Color(light: 0x8069C0, dark: 0xC3ACFF)
+        case .yellow: Color(light: 0x907400, dark: 0xD9B53C)
+        case .red: Color(light: 0xD93D35, dark: 0xFF9F94)
+        case .teal: Color(light: 0x00867C, dark: 0x3ECDC0)
+        case .pink: Color(light: 0xB55882, dark: 0xFF9AC4)
+        case .indigo: Color(light: 0x6570C7, dark: 0xABB3FF)
+        case .lime: Color(light: 0x678020, dark: 0xA8C35C)
+        case .brown: Color(light: 0x986E53, dark: 0xE0AF90)
+        case .gray: Color(light: 0x74777C, dark: 0xB7B9BE)
+        default: Color(light: 0x017EB7, dark: 0x69C1FE)
         }
     }
 

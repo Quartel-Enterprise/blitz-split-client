@@ -11,6 +11,9 @@ fun AvatarColor.toContainerColor(isDark: Boolean): Color = if (isDark) darkConta
 
 fun AvatarColor.toContentColor(isDark: Boolean): Color = if (isDark) darkContent else lightContent
 
+// Why: a mark that stands for a person (a bar, a segment of a split) takes this tone, as a category's does.
+fun AvatarColor.toDataColor(isDark: Boolean): Color = if (isDark) darkData else lightData
+
 private val AvatarColor.lightContainer: Color
     get() = when (this) {
         AvatarColor.BLUE -> Color(0xFFC9E6FF)
@@ -45,4 +48,22 @@ private val AvatarColor.darkContent: Color
         AvatarColor.GREEN -> Color(0xFFBDEFD3)
         AvatarColor.LILAC -> Color(0xFFE8DDFF)
         AvatarColor.SAND -> Color(0xFFFFE08B)
+    }
+
+private val AvatarColor.lightData: Color
+    get() = when (this) {
+        AvatarColor.BLUE -> Color(0xFF017EB7)
+        AvatarColor.PEACH -> Color(0xFFB95D35)
+        AvatarColor.GREEN -> Color(0xFF008863)
+        AvatarColor.LILAC -> Color(0xFF8069C0)
+        AvatarColor.SAND -> Color(0xFF907400)
+    }
+
+private val AvatarColor.darkData: Color
+    get() = when (this) {
+        AvatarColor.BLUE -> Color(0xFF69C1FE)
+        AvatarColor.PEACH -> Color(0xFFFFA17B)
+        AvatarColor.GREEN -> Color(0xFF5ACDA1)
+        AvatarColor.LILAC -> Color(0xFFC3ACFF)
+        AvatarColor.SAND -> Color(0xFFD9B53C)
     }

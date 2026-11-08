@@ -410,8 +410,9 @@ private struct PendingMergeCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            // Why: amber is for what this device hasn't sent yet; this invite already went out.
             Image(systemName: "hourglass")
-                .foregroundStyle(Palette.pending)
+                .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Waiting for \(contact.name) to accept")

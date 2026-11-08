@@ -128,7 +128,7 @@ struct CategoryEditorForm<GroupField: View>: View {
                     Section("Icon") {
                         LazyVGrid(columns: iconColumns, spacing: 8) {
                             ForEach(CategoryIcon.entries, id: \.self) { icon in
-                                iconButton(icon, isSelected: icon == form.icon)
+                                iconButton(icon, color: form.color, isSelected: icon == form.icon)
                             }
                         }
                         .padding(.vertical, 4)
@@ -187,15 +187,20 @@ struct CategoryEditorForm<GroupField: View>: View {
         }
     }
 
-    private func iconButton(_ icon: CategoryIcon, isSelected: Bool) -> some View {
+    /// The picked icon sits on the category's own color, as the preview and the saved badge draw it, so the grid
+    /// never shows the accent as if it were the color.
+    private func iconButton(_ icon: CategoryIcon, color: CategoryColor, isSelected: Bool) -> some View {
         Button {
             actions.pickIcon(icon)
         } label: {
             Image(systemName: CategoryCopy.symbol(icon))
                 .font(.title3)
                 .frame(width: 44, height: 44)
-                .foregroundStyle(isSelected ? Palette.onAccent : Palette.accent)
-                .background(isSelected ? Palette.accent : Color.secondary.opacity(0.12), in: .rect(cornerRadius: 12))
+                .foregroundStyle(isSelected ? color.content : Color.secondary)
+                .background(isSelected ? color.container : Color.secondary.opacity(0.12), in: .rect(cornerRadius: 12))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12).strokeBorder(isSelected ? color.data : .clear, lineWidth: 2)
+                }
         }
         .buttonStyle(.plain)
         .accessibilityLabel(CategoryCopy.iconLabel(icon))

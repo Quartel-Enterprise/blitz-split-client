@@ -166,13 +166,37 @@
   color: var(--avatar-fg-dark);
 }
 
-/* A slice of Estatísticas' pie takes its category's avatar color (CategoriesCard). */
+/*
+ * A mark that carries a category or a person (a slice of Estatísticas' pie, a legend dot, a bar, a group's dot) takes
+ * the color's data tone, not the avatar's background, which reads at under 2:1 on a card.
+ */
 .avatar-stroke {
-  stroke: var(--avatar-bg);
+  stroke: var(--avatar-data);
 }
 
 .dark .avatar-stroke {
-  stroke: var(--avatar-bg-dark);
+  stroke: var(--avatar-data-dark);
+}
+
+.avatar-mark {
+  background: var(--avatar-data);
+}
+
+.dark .avatar-mark {
+  background: var(--avatar-data-dark);
+}
+
+/*
+ * A picked tile on its color (the category form's icon) is edged in the color's data tone, by an outline: the focus
+ * ring is a box-shadow, which an unlayered box-shadow here would replace.
+ */
+.avatar-edge {
+  outline: 2px solid var(--avatar-data);
+  outline-offset: -2px;
+}
+
+.dark .avatar-edge {
+  outline-color: var(--avatar-data-dark);
 }
 
 /* A placeholder block: the band sweeps left to right, and stays still under reduced motion. */

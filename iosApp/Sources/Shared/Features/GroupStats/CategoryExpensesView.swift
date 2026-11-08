@@ -182,7 +182,7 @@ private struct CategoryChipsFlow: View {
                                 .font(.caption.weight(.bold))
                         } else {
                             Circle()
-                                .fill(chip.category.color.container)
+                                .fill(chip.category.color.data)
                                 .frame(width: 10, height: 10)
                         }
                         Text(verbatim: CategoryCopy.name(chip.category))

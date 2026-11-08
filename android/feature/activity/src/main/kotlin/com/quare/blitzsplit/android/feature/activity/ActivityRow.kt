@@ -53,7 +53,7 @@ import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.pendingColor
-import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
+import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -155,7 +155,7 @@ internal fun GroupDotIcon(
         modifier = modifier
             .size(groupDotSize)
             .background(
-                color?.toContainerColor(isDark) ?: MaterialTheme.colorScheme.outlineVariant,
+                color?.toDataColor(isDark) ?: MaterialTheme.colorScheme.outlineVariant,
                 groupShapeOf(groupDotSize),
             ),
     )

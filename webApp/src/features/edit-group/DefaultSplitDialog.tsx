@@ -426,7 +426,7 @@ function Example({ state }: { state: JsDefaultSplitState }) {
       </strong>
       <span aria-hidden className="flex h-2 gap-0.5 overflow-hidden rounded-full">
         {parts.map((row) => (
-          <span key={row.id} className="avatar rounded-full" style={{ ...avatarStyle(row.color), flex: `${row.basisPoints} 1 0` }} />
+          <span key={row.id} className="avatar-mark rounded-full" style={{ ...avatarStyle(row.color), flex: `${row.basisPoints} 1 0` }} />
         ))}
         {missing > 0 && <span className="rounded-full bg-muted" style={{ flex: `${missing} 1 0` }} />}
       </span>

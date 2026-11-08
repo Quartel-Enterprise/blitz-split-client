@@ -68,7 +68,7 @@ import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
-import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
+import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpenseRow
@@ -277,7 +277,7 @@ private fun CategoryChip(
     chip: CategoryFilterChip,
     onClick: () -> Unit,
 ) {
-    val color = chip.category.color.toContainerColor(LocalIsDarkTheme.current)
+    val color = chip.category.color.toDataColor(LocalIsDarkTheme.current)
     FilterChip(
         selected = chip.isSelected,
         onClick = onClick,

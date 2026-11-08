@@ -163,9 +163,11 @@ function CategoryFormBody({ actions, form, icons, groupField }: { actions: Categ
                   aria-checked={isSelected}
                   aria-label={categoryIconLabel(code)}
                   onClick={() => actions.pickIcon(code)}
+                  // Why: the picked icon sits on the category's own color, as the preview and the saved badge draw it.
+                  style={isSelected ? categoryStyle(form.color) : undefined}
                   className={cn(
                     'flex aspect-square items-center justify-center rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                    isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-primary',
+                    isSelected ? 'avatar avatar-edge' : 'bg-muted text-muted-foreground',
                   )}
                 >
                   <IconOf aria-hidden className="size-5" />

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,8 +31,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -45,6 +46,8 @@ import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
+import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
@@ -82,8 +85,10 @@ internal fun StatsPeriodChip(
             Surface(
                 onClick = { isOpen = true },
                 shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                // Why: a neutral chip, as the web's and the Mac's, so the accent never sits beside the categories' colors.
+                color = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             ) {
                 Row(
                     modifier = Modifier
@@ -155,7 +160,11 @@ internal fun StatsPeriodChip(
     }
 }
 
-// Why: the period's total, how many bills (the queue's with the amber dot) and the average, then this person's part.
+/*
+ * Why: the period's total, how many bills (the queue's with the amber dot) and the average, then this person's part.
+ * On a neutral card, as iOS and the web draw it: the accent's container is the blue category's own, so a filled hero
+ * read as one more slice of the ring below it.
+ */
 @Composable
 internal fun StatsSummaryHero(
     state: GroupStatsUiState,
@@ -166,12 +175,12 @@ internal fun StatsSummaryHero(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(28.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(28.dp))
             .padding(20.dp)
             .semantics { contentDescription = summaryLabel },
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        val content = MaterialTheme.colorScheme.onPrimaryContainer
+        val content = MaterialTheme.colorScheme.onSurface
         Text(
             // Why: "Total gasto até agora" (5.1d) while a new device's first download still brings bills down.
             stringResource(
@@ -220,7 +229,7 @@ internal fun StatsSummaryHero(
                     top = 12.dp,
                     bottom = 8.dp,
                 ),
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.outlineVariant,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 StatsHeroFigureColumn(
@@ -247,7 +256,7 @@ private fun StatsHeroFigureColumn(
     hint: String,
     modifier: Modifier = Modifier,
 ) {
-    val content = MaterialTheme.colorScheme.onPrimaryContainer
+    val content = MaterialTheme.colorScheme.onSurface
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -382,7 +391,10 @@ private fun StatsPersonRowItem(
                     },
                 )
             }
-            StatsAmountBarIndicator(fraction = person.barFraction.toFloat())
+            StatsAmountBarIndicator(
+                fraction = person.barFraction.toFloat(),
+                color = person.avatarColor.toDataColor(LocalIsDarkTheme.current),
+            )
         }
     }
 }
@@ -533,7 +545,11 @@ private fun StatsAvatarRow(
 }
 
 @Composable
-internal fun StatsAmountBarIndicator(fraction: Float) {
+// Why: the bar takes the color of what it measures (the category's slice, the person's face), never the accent.
+internal fun StatsAmountBarIndicator(
+    fraction: Float,
+    color: Color,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -545,7 +561,7 @@ internal fun StatsAmountBarIndicator(fraction: Float) {
                 modifier = Modifier
                     .fillMaxWidth(fraction)
                     .height(6.dp)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape),
+                    .background(color, CircleShape),
             )
         }
     }

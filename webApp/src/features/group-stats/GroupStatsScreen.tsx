@@ -18,6 +18,7 @@ import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupPageSkeleton } from '@/features/group-detail/GroupPage'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
+import { avatarStyle } from '@/lib/avatar'
 import { formatDayTime, fromDateTimeInputs, toDateInputValue } from '@/lib/dates'
 import { formatMoney, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -363,7 +364,8 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
               <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
               <span className="w-[108px] shrink-0 truncate font-medium">{name}</span>
               <span role="img" aria-label={`${name}: ${money(person.amountMinor)}`} className="flex h-2 min-w-0 flex-1 rounded-full bg-muted">
-                <span className="rounded-full bg-primary" style={{ width: `${person.barFraction * 100}%` }} />
+                {/* Why: the bar takes the person's color, as their face, never the accent. */}
+                <span className="avatar-mark rounded-full" style={{ ...avatarStyle(person.color), width: `${person.barFraction * 100}%` }} />
               </span>
               <span className={cn('w-[92px] shrink-0 text-right font-semibold tabular-nums', person.amountMinor === 0 && 'text-muted-foreground')}>
                 {money(person.amountMinor)}

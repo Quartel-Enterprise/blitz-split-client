@@ -455,7 +455,7 @@ private struct ShareBar: View {
             HStack(spacing: 2) {
                 ForEach(rows, id: \.person.id) { row in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(row.person.avatarColor.container)
+                        .fill(row.person.avatarColor.data)
                         .frame(width: total > 0 ? width * Double(row.basisPoints) / total : 0)
                 }
                 if missing > 0 {

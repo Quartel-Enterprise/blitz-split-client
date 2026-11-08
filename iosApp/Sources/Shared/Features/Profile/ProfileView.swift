@@ -319,7 +319,7 @@ private struct AppInviteSection: View {
                     .scaledToFit()
                     .padding(7)
                     .frame(width: 36, height: 36)
-                    .foregroundStyle(isActive ? .white : .secondary)
+                    .foregroundStyle(isActive ? Palette.onAccent : .secondary)
                     .background(isActive ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.quaternary), in: .rect(cornerRadius: 9))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {

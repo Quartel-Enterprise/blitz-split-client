@@ -323,7 +323,7 @@ function ItemMeta({ item }: { item: JsActivityItem }) {
 // Why: a deleted group is no longer on the device, so its shape goes grey.
 function GroupMark({ color }: { color: string | null | undefined }) {
   if (!color) return <span aria-hidden className="size-3 shrink-0 rounded-[3px] bg-muted" />
-  return <span aria-hidden style={avatarStyle(color)} className="avatar size-3 shrink-0 rounded-[3px]" />
+  return <span aria-hidden style={avatarStyle(color)} className="avatar-mark size-3 shrink-0 rounded-[3px]" />
 }
 
 function kindIcon(item: JsActivityItem): ReactNode {
