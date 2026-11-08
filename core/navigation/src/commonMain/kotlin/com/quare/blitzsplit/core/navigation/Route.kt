@@ -154,8 +154,34 @@ sealed interface Route {
          * read (beta feedback, part 3, item 16); without one there (an app restored) the form asks for it again.
          */
         val scansReceipt: Boolean,
+        /*
+         * Why: "Duplicar" on a bill: a new bill (expenseId stays null) that opens filled in with this one's description,
+         * amount, category, payers and split, for the person to change whatever they want before saving it.
+         */
+        val duplicatesExpenseId: String?,
     ) : Route {
         companion object {
+            // Why: "Editar conta" for expenseId, in the group it is in.
+            fun createEditing(
+                groupId: String,
+                expenseId: String,
+            ): SplitBill = SplitBill(
+                groupId = groupId,
+                expenseId = expenseId,
+                picksGroupFirst = false,
+                scansReceipt = false,
+                duplicatesExpenseId = null,
+            )
+
+            // Why: "Rachar conta" for a new bill opened from the group, which is where it goes.
+            fun createNew(groupId: String): SplitBill = SplitBill(
+                groupId = groupId,
+                expenseId = null,
+                picksGroupFirst = false,
+                scansReceipt = false,
+                duplicatesExpenseId = null,
+            )
+
             // Why: a home tab's "Rachar conta" (7.1i): a new bill that asks "Rachar em qual grupo?" first, groupId marked.
             fun createPickingGroup(
                 groupId: String,
@@ -165,6 +191,7 @@ sealed interface Route {
                 expenseId = null,
                 picksGroupFirst = true,
                 scansReceipt = scansReceipt,
+                duplicatesExpenseId = null,
             )
         }
     }

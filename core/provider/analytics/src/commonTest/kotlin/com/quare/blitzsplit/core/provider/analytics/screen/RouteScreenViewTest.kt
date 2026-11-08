@@ -56,6 +56,7 @@ class RouteScreenViewTest {
             expenseId = "expense-1",
             picksGroupFirst = false,
             scansReceipt = false,
+            duplicatesExpenseId = null,
         )
 
         // When
@@ -79,6 +80,7 @@ class RouteScreenViewTest {
             expenseId = null,
             picksGroupFirst = true,
             scansReceipt = true,
+            duplicatesExpenseId = null,
         )
 
         // When

@@ -6,8 +6,9 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     currency control beside the total, the code ("BRL") with a menu that is New group's "Currency" list, the
     cryptocurrencies under their own header (`SplitBillUiEvent.OnCurrencyPicked`; Android a menu on a chip, SwiftUI a
     menu "Currency" row under the total, the web a menu button, labeled "Currency: BRL. Change it" for a screen
-    reader). A new bill opens in the group's currency (`Group.currency`, only the default), a bill being edited in
-    its own (`Expense.currency`); the state's `currency` is the one source, so saving an edit never moves the bill to
+    reader). A new bill opens in the group's currency (`Group.currency`, only the default), a bill being edited, and a duplicate of a
+    bill (bill's "Duplicate", `Route.SplitBill.duplicatesExpenseId`: a new bill filled in once with the original's
+    description, amount, category, payers and split, spent now), in its own (`Expense.currency`); the state's `currency` is the one source, so saving an edit never moves the bill to
     the group's. Nothing remembers the last pick: the next bill opens in the group's again, and a bill moved to
     another group starts in that group's. Changing it re-bases the form as moving the bill to a group of another
     currency does: the typed total, "Amounts" values and what each one paid keep their number with the decimals cut

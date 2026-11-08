@@ -761,6 +761,7 @@ class ReceiptLockViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val dinner = group(

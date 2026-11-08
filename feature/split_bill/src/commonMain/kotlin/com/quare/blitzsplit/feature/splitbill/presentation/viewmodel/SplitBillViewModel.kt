@@ -133,6 +133,12 @@ class SplitBillViewModel(
      */
     private var hasPickedSplit = false
 
+    // Why: the duplicate is copied once, as the form opens, so a later sync of the original never overwrites it.
+    private var hasFilledDuplicate = false
+
+    // Why: the original's category was already offered to the map once, so a duplicate keeping it doesn't ask again.
+    private var duplicatedCategoryId: String? = null
+
     // Why: Dividir's fifth mode, "Itens da conta" and its items, whose "Pronto" picks the bill's split too.
     private val items = ItemsEditing(
         uiState = uiState,
@@ -202,7 +208,7 @@ class SplitBillViewModel(
      * it may also bring someone else's edit of the bill, or its deletion, or a payment it unsettles.
      */
     init {
-        val expenseFlow = route.expenseId?.let { observeExpense(it) } ?: flowOf(null)
+        val expenseFlow = (route.expenseId ?: route.duplicatesExpenseId)?.let { observeExpense(it) } ?: flowOf(null)
         // Why: the form opens once bitcoin's unit is known, so nothing typed or filled in is in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
         combine(group, expenseFlow, showsSats, ::Triple)
@@ -357,7 +363,16 @@ class SplitBillViewModel(
         when {
             group == null -> handleGroupGone()
 
-            route.expenseId == null -> show(group)
+            route.expenseId == null -> {
+                if (expense != null && !hasFilledDuplicate) {
+                    // Why: "Duplicar" copies the original once, as the form opens, spent now, with its split kept.
+                    hasFilledDuplicate = true
+                    hasPickedSplit = true
+                    duplicatedCategoryId = expense.categoryId
+                    fill(group, expense.copy(spentAt = currentTimeMillis()))
+                }
+                show(group)
+            }
 
             expense == null -> handleBillGone()
 
@@ -514,36 +529,13 @@ class SplitBillViewModel(
         viewModelScope.launch {
             val expenseId = route.expenseId
             val result = if (expenseId == null) {
-                createExpense(
-                    groupId = state.groupId,
-                    description = state.description,
-                    amountMinor = amountMinor,
-                    currency = state.currency,
-                    payers = payers,
-                    splitMode = state.split.mode,
-                    shares = shares,
-                    items = state.split.items,
-                    categoryId = state.categoryIdToSave,
-                    spentAt = state.spentAt,
-                ).map { id ->
+                createExpense.saveNew(state, amountMinor, payers, shares).map { id ->
                     receipt.attachTo(id, state)
                     saveSplitAsDefault.saveOf(state)
-                    state.teachOfferOrNull(id)
+                    state.findTeachOfferUnlessKept(id, duplicatedCategoryId)
                 }
             } else {
-                updateExpense(
-                    expenseId = expenseId,
-                    groupId = route.groupId,
-                    description = state.description,
-                    amountMinor = amountMinor,
-                    currency = state.currency,
-                    payers = payers,
-                    splitMode = state.split.mode,
-                    shares = shares,
-                    items = state.split.items,
-                    categoryId = state.categoryIdToSave,
-                    spentAt = state.spentAt,
-                ).map { null }
+                updateExpense.saveEdit(expenseId, route.groupId, state, amountMinor, payers, shares).map { null }
             }
             result
                 .onSuccess { teachOffer ->

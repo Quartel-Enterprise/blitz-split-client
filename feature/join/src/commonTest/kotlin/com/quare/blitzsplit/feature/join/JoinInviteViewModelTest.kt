@@ -382,6 +382,7 @@ class JoinInviteViewModelTest {
                 expenseId = null,
                 picksGroupFirst = false,
                 scansReceipt = false,
+                duplicatesExpenseId = null,
             )
             prepareScenario(
                 invite = trip.copy(isMember = true),

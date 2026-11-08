@@ -2038,6 +2038,7 @@ class GlobalBalancesViewModelTest {
         expenseId = null,
         picksGroupFirst = true,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val route = Route.GlobalBalances(BalancesFilter.ALL)

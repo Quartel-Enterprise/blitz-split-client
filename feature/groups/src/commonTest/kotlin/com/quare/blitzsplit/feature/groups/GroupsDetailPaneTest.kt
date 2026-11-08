@@ -208,6 +208,7 @@ class GroupsDetailPaneTest {
                     expenseId = null,
                     picksGroupFirst = true,
                     scansReceipt = false,
+                    duplicatesExpenseId = null,
                 ),
                 navigator.backStack.value.last(),
             )

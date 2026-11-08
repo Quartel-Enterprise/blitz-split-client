@@ -1383,6 +1383,7 @@ class DefaultSplitBillViewModelTest {
             expenseId = expenseId,
             picksGroupFirst = false,
             scansReceipt = false,
+            duplicatesExpenseId = null,
         )
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(

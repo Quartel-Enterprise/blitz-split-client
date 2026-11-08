@@ -250,6 +250,7 @@ class EditAfterPaymentViewModelTest {
         EXPENSE_ID,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val yesterdayMillis = Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()

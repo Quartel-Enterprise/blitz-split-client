@@ -201,14 +201,7 @@ internal class GroupScreen(
     }
 
     fun openSplitBill() {
-        open(
-            Route.SplitBill(
-                groupId = groupId,
-                expenseId = null,
-                picksGroupFirst = false,
-                scansReceipt = false,
-            ),
-        )
+        open(Route.SplitBill.createNew(groupId))
     }
 
     fun openRegisterPayment(

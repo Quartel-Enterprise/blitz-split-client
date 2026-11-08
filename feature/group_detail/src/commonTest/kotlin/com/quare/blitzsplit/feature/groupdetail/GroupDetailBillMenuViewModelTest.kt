@@ -117,6 +117,56 @@ class GroupDetailBillMenuViewModelTest {
         }
 
     @Test
+    fun `GIVEN the group on top WHEN tapping Duplicate in a bill menu THEN opens Split a bill filled in`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExpenseDuplicateClicked("dinner"))
+
+            // Then
+            val duplicateDinner = Route.SplitBill(
+                groupId = GROUP_ID,
+                expenseId = null,
+                picksGroupFirst = false,
+                scansReceipt = false,
+                duplicatesExpenseId = "dinner",
+            )
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, duplicateDinner),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill in an unknown currency WHEN tapping Duplicate THEN opens nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner.copy(currency = GroupCurrency.fromCode("XYZ"))))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExpenseDuplicateClicked("dinner"))
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+            assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the group on top WHEN tapping Duplicate THEN tracks bill_duplicate_clicked from the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExpenseDuplicateClicked("dinner"))
+
+            // Then
+            assertEquals(listOf("bill_duplicate_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN a bill in an unknown currency WHEN tapping Edit bill THEN opens nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpenses = listOf(dinner.copy(currency = GroupCurrency.fromCode("XYZ"))))
@@ -816,6 +866,7 @@ class GroupDetailBillMenuViewModelTest {
         expenseId = "dinner",
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val pins = FakeGroupPinRepository()
