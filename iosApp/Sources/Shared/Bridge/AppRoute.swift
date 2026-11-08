@@ -150,7 +150,8 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return !isLargeWindow
             #endif
-        // "How it works" from the group is a sheet on the Mac, pushed inside Edit group's sheet everywhere
+        // "How it works" from the group is a sheet on the Mac, pushed inside Edit group's sheet everywhere; the group's
+        // photo big is a sheet on the Mac and covers the screen on iPhone and iPad (`presentsFullScreen`)
         case .joinWithLink, .joinInvite, .simplifyDebtsInfo, .groupPhoto:
             #if os(macOS)
             return true

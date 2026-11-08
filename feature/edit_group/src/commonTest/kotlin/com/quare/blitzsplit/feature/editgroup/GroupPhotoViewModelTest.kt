@@ -217,6 +217,22 @@ class GroupPhotoViewModelTest {
     }
 
     @Test
+    fun `GIVEN the group gone while the viewer still shows WHEN removing the photo THEN saves and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithPhoto)
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(GroupPhotoUiEvent.OnPhotoRemoved)
+
+            // Then
+            assertEquals(uploadedPhoto, viewModel.uiState.value.photo)
+            assertTrue(groups.updatedGroupIds.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the viewer WHEN another device renames the group THEN shows the new name initials and color`() =
         runTest(testDispatcher) {
             // Given

@@ -58,8 +58,8 @@ private val backdropBlurRadius = 18.dp
 private val backdropColor = Color(0xFF08080E).copy(alpha = 0.56f)
 private val closeButtonBackground = Color.Black.copy(alpha = 0.32f)
 private val neutralShortcutBackground = Color.White.copy(alpha = 0.16f)
-val PhotoViewerDestructiveBackground = Color(0xFFFF7878).copy(alpha = 0.22f)
-val PhotoViewerDestructiveContent = Color(0xFFFF9A9A)
+private val destructiveShortcutBackground = Color(0xFFFF7878).copy(alpha = 0.22f)
+private val destructiveContent = Color(0xFFFF9A9A)
 
 /*
  * Why: the photo big on a dimmed, blurred backdrop, with the shortcuts that change it under it, for the profile's and
@@ -183,15 +183,26 @@ fun PhotoViewerShortcutsRow(
         )
         if (onRemoveClick != null) {
             PhotoShortcutButton(
-                icon = { ShortcutIcon(Icons.Outlined.Delete, tint = PhotoViewerDestructiveContent) },
+                icon = { ShortcutIcon(Icons.Outlined.Delete, tint = destructiveContent) },
                 label = removeLabel,
                 accessibilityLabel = removeDescription,
                 onClick = onRemoveClick,
-                background = PhotoViewerDestructiveBackground,
-                content = PhotoViewerDestructiveContent,
+                background = destructiveShortcutBackground,
+                content = destructiveContent,
             )
         }
     }
+}
+
+// Why: the line under the photo when the photo picked couldn't be used, in both viewers.
+@Composable
+fun PhotoViewerError(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = destructiveContent,
+        textAlign = TextAlign.Center,
+    )
 }
 
 @Composable

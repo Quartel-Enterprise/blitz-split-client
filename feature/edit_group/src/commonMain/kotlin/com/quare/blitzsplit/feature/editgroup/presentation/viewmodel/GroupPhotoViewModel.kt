@@ -89,11 +89,14 @@ class GroupPhotoViewModel(
             }.launchIn(viewModelScope)
     }
 
-    // Why: a shortcut saves over the saved group, so nothing is saved before it was read.
+    /*
+     * Why: a shortcut saves over the saved group, so nothing is saved before it was read, nor once it went while the
+     * viewer still shows (its dismissal on the way).
+     */
     override fun isAccepted(event: GroupPhotoUiEvent): Boolean = when {
         event == GroupPhotoUiEvent.OnDismissed -> true
 
-        !uiState.value.isLoaded -> false
+        saved == null -> false
 
         // Why: the picker drops a pick and its Done while a photo saves, so neither counts then.
         photoSaver.isSaving -> !event.isDroppedWhileSaving()

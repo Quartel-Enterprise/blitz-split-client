@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,13 +14,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.PhotoShortcutButton
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerContent
-import com.quare.blitzsplit.android.designsystem.component.PhotoViewerDestructiveContent
+import com.quare.blitzsplit.android.designsystem.component.PhotoViewerError
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerIconSize
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerPreparingOverlay
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerShortcutsRow
@@ -57,12 +54,7 @@ internal fun ProfilePhotoContent(
             size = avatarSize,
         )
         if (state.showsPhotoError) {
-            Text(
-                text = stringResource(R.string.edit_profile_photo_error),
-                style = MaterialTheme.typography.bodyMedium,
-                color = PhotoViewerDestructiveContent,
-                textAlign = TextAlign.Center,
-            )
+            PhotoViewerError(stringResource(R.string.edit_profile_photo_error))
         }
         PhotoViewerShortcutsRow(
             cameraLabel = stringResource(R.string.profile_photo_camera),

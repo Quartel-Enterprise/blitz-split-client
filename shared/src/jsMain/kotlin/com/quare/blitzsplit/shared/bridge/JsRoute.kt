@@ -32,6 +32,7 @@ class JsRoute internal constructor(
         is Route.BillDetail -> route.groupId
         is Route.ShareBill -> route.groupId
         is Route.EditGroup -> route.groupId
+        is Route.GroupPhoto -> route.groupId
         is Route.DefaultSplit -> route.groupId
         is Route.GroupStats -> route.groupId
         is Route.CategoryExpenses -> route.groupId
