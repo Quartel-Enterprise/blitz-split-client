@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -208,7 +209,10 @@ class SplitBillViewModel(
      * it may also bring someone else's edit of the bill, or its deletion, or a payment it unsettles.
      */
     init {
-        val expenseFlow = (route.expenseId ?: route.duplicatesExpenseId)?.let { observeExpense(it) } ?: flowOf(null)
+        // Why: a duplicate reads its original once, so one that shows up later never overwrites what is being typed.
+        val expenseFlow = route.expenseId?.let { observeExpense(it) }
+            ?: route.duplicatesExpenseId?.let { observeExpense(it).take(1) }
+            ?: flowOf(null)
         // Why: the form opens once bitcoin's unit is known, so nothing typed or filled in is in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
         combine(group, expenseFlow, showsSats, ::Triple)
@@ -422,7 +426,7 @@ class SplitBillViewModel(
         exits.leaveToGroup()
     }
 
-    // Why: "Editar conta" opens filled in with the bill as it was saved, its split as it was typed.
+    // Why: "Editar conta" and "Duplicar" open filled in with the bill as it was saved, its split as it was typed.
     private fun fill(
         group: Group,
         expense: Expense,

@@ -143,7 +143,10 @@ sealed interface Route {
         val currency: GroupCurrency,
     ) : Route
 
-    // Why: "Rachar conta", a new bill in the group, or "Editar conta" for expenseId, with "Dividir" drawn over it.
+    /*
+     * Why: "Rachar conta", a new bill in the group (a copy of duplicatesExpenseId's), or "Editar conta" for expenseId,
+     * with "Dividir" drawn over it.
+     */
     data class SplitBill(
         val groupId: String,
         val expenseId: String?,
@@ -180,6 +183,18 @@ sealed interface Route {
                 picksGroupFirst = false,
                 scansReceipt = false,
                 duplicatesExpenseId = null,
+            )
+
+            // Why: "Duplicar" on a bill of the group: a new bill there, filled in with that one.
+            fun createDuplicating(
+                groupId: String,
+                expenseId: String,
+            ): SplitBill = SplitBill(
+                groupId = groupId,
+                expenseId = null,
+                picksGroupFirst = false,
+                scansReceipt = false,
+                duplicatesExpenseId = expenseId,
             )
 
             // Why: a home tab's "Rachar conta" (7.1i): a new bill that asks "Rachar em qual grupo?" first, groupId marked.

@@ -314,6 +314,23 @@ class DuplicateBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN the original missing as the form opened WHEN it shows up later THEN what is typed stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpense = null)
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Feira"))
+
+            // When
+            expenses.expenses.value = listOf(savedBill)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("Feira", state.description)
+            assertEquals("", state.amountText)
+            assertEquals(GroupCurrency.BRL, state.currency)
+        }
+
+    @Test
     fun `GIVEN a duplicate WHEN tapping Salvar THEN creates a new bill in the same group and updates none`() =
         runTest(testDispatcher) {
             // Given
