@@ -3415,6 +3415,7 @@ class ReceiptViewModelTest {
         parentId = parentId,
         name = name,
         icon = icon,
+        color = null,
         createdByMemberId = null,
         isDeleted = isDeleted,
         isPending = false,
@@ -3544,7 +3545,7 @@ class ReceiptViewModelTest {
             categoryUseCases = BillCategoryUseCases(
                 observeCategoryTree = ObserveCategoryTreeUseCase(categories),
                 observeCategoryMap = ObserveCategoryMapUseCase(terms),
-                saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+                saveGroupCategory = { _, _, _, _, _, _, _ -> Result.success("") },
                 deleteGroupCategory = { Result.success(Unit) },
             ),
             saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },

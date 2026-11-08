@@ -14,6 +14,8 @@ data class CategoryForm(
     val parentId: String?,
     // Why: a main category's; a subcategory shows its parent's.
     val icon: CategoryIcon,
+    // Why: a main category's color; a subcategory shows its parent's.
+    val color: CategoryColor,
     // Why: "Criada por Ana", for one being edited.
     val createdByMemberId: String?,
     val isSaving: Boolean,
@@ -29,6 +31,9 @@ data class CategoryForm(
     // Why: a subcategory takes its parent's icon, so it has none to pick.
     fun withIcon(icon: CategoryIcon): CategoryForm = if (isSubcategory) this else copy(icon = icon)
 
+    // Why: a subcategory takes its parent's color, so it has none to pick.
+    fun withColor(color: CategoryColor): CategoryForm = if (isSubcategory) this else copy(color = color)
+
     // Why: "Dentro de" lists only the group's main categories, and one with subcategories stays a main one.
     fun withParent(
         categories: CategoryTree,
@@ -39,6 +44,8 @@ data class CategoryForm(
         return copy(
             parentId = parent?.id,
             icon = parent?.icon ?: icon,
+            // Why: a main category keeps the color just picked; only a subcategory moved out of its parent gets one.
+            color = parent?.color ?: if (isSubcategory) categories.mainColorOf(categoryId) else color,
         )
     }
 
@@ -75,6 +82,7 @@ data class CategoryForm(
                 name = CategoryRules.toCapped(name.trim()),
                 parentId = parent?.id,
                 icon = parent?.icon ?: CategoryIcon.PAW,
+                color = parent?.color ?: categories.nextMainColor,
                 createdByMemberId = null,
                 isSaving = false,
             )
@@ -93,6 +101,7 @@ data class CategoryForm(
                 name = category.name.orEmpty(),
                 parentId = category.parentId,
                 icon = category.icon,
+                color = category.color,
                 createdByMemberId = category.createdByMemberId,
                 isSaving = false,
             )

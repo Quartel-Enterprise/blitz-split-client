@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
@@ -71,6 +72,17 @@ sealed interface CategoryMapUiEvent : UiEvent {
                 mapOf("icon" to icon, "source" to CATEGORY_MAP_SOURCE),
             )
 
+            is OnCategoryColorPicked -> EventAnalytics.Automatic(
+                "category_color_picked",
+                mapOf("color" to color.code, "source" to CATEGORY_MAP_SOURCE),
+            )
+
+            // Why: the color of one of the app's own categories, changed from its card (7.7); null is "Restore color".
+            is OnAppCategoryColorPicked -> EventAnalytics.Automatic(
+                "app_category_color_picked",
+                mapOf("category" to categoryKey, "color" to (color?.code ?: "default")),
+            )
+
             // Why: the tap, then the category once it is saved.
             OnCategoryFormSaveClicked -> EventAnalytics.Manual(setOf("category_save_clicked", "category_saved"))
 
@@ -140,6 +152,11 @@ sealed interface CategoryMapUiEvent : UiEvent {
 
     data object OnRemovedNoticeDismissed : CategoryMapUiEvent
 
+    data class OnAppCategoryColorPicked(
+        val categoryKey: String,
+        val color: CategoryColor?,
+    ) : CategoryMapUiEvent
+
     data object OnRestoreClicked : CategoryMapUiEvent
 
     data object OnRestoreConfirmed : CategoryMapUiEvent
@@ -176,6 +193,10 @@ sealed interface CategoryMapUiEvent : UiEvent {
 
     data class OnCategoryIconPicked(
         val icon: CategoryIcon,
+    ) : Categories
+
+    data class OnCategoryColorPicked(
+        val color: CategoryColor,
     ) : Categories
 
     data object OnCategoryFormSaveClicked : Categories

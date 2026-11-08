@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.SetAppCategoryColor
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -45,6 +46,7 @@ class CategoryMapViewModel(
     private val saveCategoryTerm: SaveCategoryTerm,
     private val removeCategoryTerm: RemoveCategoryTerm,
     private val restoreCategoryMap: RestoreCategoryMap,
+    private val setAppCategoryColor: SetAppCategoryColor,
     saveGroupCategory: SaveGroupCategory,
     deleteGroupCategory: DeleteGroupCategory,
     observeCategoryMap: ObserveCategoryMap,
@@ -218,6 +220,12 @@ class CategoryMapViewModel(
             CategoryMapUiEvent.OnRestoreDismissed -> {
                 if (uiState.value.isRestoreConfirmOpen) trackEvent("category_map_restore_cancelled", emptyMap())
                 uiState.update { it.copy(isRestoreConfirmOpen = false) }
+            }
+
+            // Why: on this device only, offline included; the tree behind the screen reads it back at once.
+            // Why: a failed local write leaves the swatch as it was, which is the answer; there is no notice for it.
+            is CategoryMapUiEvent.OnAppCategoryColorPicked -> viewModelScope.launch {
+                setAppCategoryColor(event.categoryKey, event.color)
             }
 
             is CategoryMapUiEvent.Categories -> categoryEditing.onEvent(event)

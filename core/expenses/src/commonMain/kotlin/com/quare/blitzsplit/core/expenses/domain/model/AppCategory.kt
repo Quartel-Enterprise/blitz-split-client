@@ -1,7 +1,5 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
-import com.quare.blitzsplit.core.model.AvatarColor
-
 /*
  * Why: the app's fixed categories (7.7), two levels, in the order "Todas as categorias" lists them. The key is what a
  * bill, a default split's exception and a term of the map store, so it never changes even if an entry is renamed. Each
@@ -72,16 +70,21 @@ enum class AppCategory(
         get() = ownIcon ?: parent?.icon ?: CategoryIcon.DOTS
 
     /*
-     * Why: each main category keeps one color of the avatar palette, in the pie of Estatísticas and in its row (6.6):
-     * Alimentação blue, Lazer peach, Transporte green, Casa lilac, Assinaturas sand, the others cycling after them.
+     * Why: each main category has a color of its own (Pierre's call: every category its own coloring), the same in the
+     * pie of Estatísticas and in its row (6.6); a subcategory takes its main category's. The person may change it.
      */
-    val color: AvatarColor
+    val defaultColor: CategoryColor
         get() = when (parent ?: this) {
-            FOOD, SHOPPING -> AvatarColor.BLUE
-            LEISURE, TRAVEL -> AvatarColor.PEACH
-            TRANSPORT, HEALTH -> AvatarColor.GREEN
-            HOME, EDUCATION -> AvatarColor.LILAC
-            else -> AvatarColor.SAND
+            FOOD -> CategoryColor.BLUE
+            HOME -> CategoryColor.PURPLE
+            TRANSPORT -> CategoryColor.GREEN
+            TRAVEL -> CategoryColor.TEAL
+            LEISURE -> CategoryColor.ORANGE
+            SUBSCRIPTIONS -> CategoryColor.INDIGO
+            SHOPPING -> CategoryColor.PINK
+            HEALTH -> CategoryColor.RED
+            EDUCATION -> CategoryColor.YELLOW
+            else -> CategoryColor.GRAY
         }
 
     companion object {

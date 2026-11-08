@@ -1,12 +1,13 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 
 fun interface SaveGroupCategory {
     /*
      * Why: "Nova categoria" (categoryId null) or "Editar categoria" (7.8, 7.8e); the category's id. A subcategory
-     * (parentId set) takes its parent's icon, so it stores none.
+     * (parentId set) takes its parent's icon and color, so it stores none.
      */
     suspend operator fun invoke(
         categoryId: String?,
@@ -14,6 +15,7 @@ fun interface SaveGroupCategory {
         name: String,
         parentId: String?,
         icon: CategoryIcon,
+        color: CategoryColor,
         createdByMemberId: String?,
     ): Result<String>
 }
@@ -28,5 +30,6 @@ suspend operator fun SaveGroupCategory.invoke(
     name = form.name,
     parentId = form.parentId,
     icon = form.icon,
+    color = form.color,
     createdByMemberId = form.createdByMemberId ?: meId,
 )

@@ -19,7 +19,6 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -96,7 +95,7 @@ private fun rememberStatsLayout(): StatsLayout {
 }
 
 /*
- * Why: "Estatísticas" (6.6) under the medium flexible bar, with Back and no "Rachar conta", laid out per size
+ * Why: "Estatísticas" (6.6) under the small bar, with Back and no "Rachar conta", laid out per size
  * (StatsLayout). Anywhere wider than a phone upright the home's rail stays beside it, as the canvas draws it, but on a
  * tabletop and in the group's pane beside the groups (a tablet lying down, decision 2).
  */
@@ -129,7 +128,7 @@ private fun GroupStatsScaffold(
     onPickDates: () -> Unit,
 ) {
     val layout = rememberStatsLayout()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberStatsTextFormatter()
     val times = rememberDateTimeTextFormatter()
@@ -150,7 +149,7 @@ private fun GroupStatsScaffold(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .then(if (isTabletop) Modifier else Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)),
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         topBar = {
             val title = @Composable { Text(stringResource(R.string.group_stats_title)) }
@@ -169,25 +168,22 @@ private fun GroupStatsScaffold(
                     )
                 }
             }
-            // Why: on a tabletop the bar stays small, the period in it, so the top half keeps room for the chart.
-            if (isTabletop) {
-                TopAppBar(
-                    title = title,
-                    subtitle = subtitle,
-                    navigationIcon = back,
-                    actions = {
+            /*
+             * Why: the small bar holds "Estatísticas" and the group, not the body, and leaves with the content on
+             * scroll; on a tabletop it also holds the period, so the top half keeps room for the chart.
+             */
+            TopAppBar(
+                title = title,
+                subtitle = subtitle,
+                navigationIcon = back,
+                actions = {
+                    if (isTabletop) {
                         currencyChips(Modifier.padding(end = 8.dp))
                         periodChip(Modifier.padding(end = 12.dp))
-                    },
-                )
-            } else {
-                MediumFlexibleTopAppBar(
-                    title = title,
-                    subtitle = subtitle,
-                    navigationIcon = back,
-                    scrollBehavior = scrollBehavior,
-                )
-            }
+                    }
+                },
+                scrollBehavior = scrollBehavior,
+            )
         },
     ) { padding ->
         Box(

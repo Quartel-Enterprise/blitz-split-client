@@ -7,7 +7,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReaderException
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 
 private const val HTTP_PAYLOAD_TOO_LARGE = 413
@@ -25,10 +29,14 @@ class SupabaseReceiptRemoteDataSource(
 
     override suspend fun readReceipt(request: ReadReceiptRequestDto): ReadReceiptResponseDto? {
         val response = try {
-            functions.invoke(
-                function = READ_RECEIPT_FUNCTION,
-                body = request,
-            )
+            functions.invoke(function = READ_RECEIPT_FUNCTION) {
+                contentType(ContentType.Application.Json)
+                setBody(json.encodeToString(request))
+                timeout {
+                    requestTimeoutMillis = READ_TIMEOUT_MILLIS
+                    socketTimeoutMillis = READ_TIMEOUT_MILLIS
+                }
+            }
         } catch (exception: RestException) {
             val failure = receiptReadFailureOf(exception.statusCode)
             if (failure == ReceiptReadFailure.UNREADABLE) return null
@@ -41,6 +49,13 @@ class SupabaseReceiptRemoteDataSource(
 
     private companion object {
         const val READ_RECEIPT_FUNCTION = "read-receipt"
+
+        /*
+         * Why: Claude may take more than the client's 30 s to read a long receipt, and on Android OkHttp gave up on a
+         * silent socket after its own 10 s, which read as "No connection". A minute covers the slowest reads with the
+         * upload.
+         */
+        const val READ_TIMEOUT_MILLIS = 60_000L
     }
 }
 

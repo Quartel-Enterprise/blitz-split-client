@@ -19,6 +19,7 @@ struct MapCategoryFormView: View {
                     set: { model.send(CategoryMapUiEventOnCategoryParentPicked(parentId: $0)) },
                 ),
                 pickIcon: { model.send(CategoryMapUiEventOnCategoryIconPicked(icon: $0)) },
+                pickColor: { model.send(CategoryMapUiEventOnCategoryColorPicked(color: $0)) },
                 save: { model.send(CategoryMapUiEventOnCategoryFormSaveClicked.shared) },
                 dismiss: { model.send(CategoryMapUiEventOnCategoryFormDismissed.shared) },
                 askToDelete: { model.send(CategoryMapUiEventOnCategoryDeleteClicked.shared) },
@@ -114,6 +115,38 @@ struct EditCategoryButton: View {
                 bundle: .appLanguage,
             ), systemImage: "pencil") {
                 model.send(CategoryMapUiEventOnEditCategoryClicked(categoryId: category.id))
+            }
+        }
+    }
+}
+
+/// "Change color of Food" (7.7): the color of one of the app's main categories, on this device only. A group's own
+/// category changes its color in its form instead.
+struct ChangeCategoryColorMenu: View {
+    let category: Shared.Category
+    let model: CategoryMapModel
+
+    var body: some View {
+        if let app = category.app, app.isMain, !category.isOther {
+            Menu(String(
+                localized: "Change color of \(CategoryCopy.name(category))",
+                bundle: .appLanguage,
+            ), systemImage: "paintpalette") {
+                ForEach(CategoryColor.entries, id: \.self) { color in
+                    Button {
+                        model.send(CategoryMapUiEventOnAppCategoryColorPicked(categoryKey: category.id, color: color))
+                    } label: {
+                        if color == category.color {
+                            Label(color.label, systemImage: "checkmark")
+                        } else {
+                            Text(verbatim: color.label)
+                        }
+                    }
+                }
+                Divider()
+                Button("Restore color") {
+                    model.send(CategoryMapUiEventOnAppCategoryColorPicked(categoryKey: category.id, color: nil))
+                }
             }
         }
     }

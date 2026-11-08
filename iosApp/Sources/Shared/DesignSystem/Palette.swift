@@ -114,6 +114,60 @@ extension AvatarColor {
     }
 }
 
+/// The twelve category colors, with the same values on every platform (see the canvas rules).
+extension CategoryColor {
+    var container: Color {
+        switch self {
+        case .orange: Color(light: 0xFFDBCE, dark: 0x71361C)
+        case .green: Color(light: 0xBDEFD3, dark: 0x00513A)
+        case .purple: Color(light: 0xE8DDFF, dark: 0x4F378B)
+        case .yellow: Color(light: 0xFFE08B, dark: 0x574500)
+        case .red: Color(light: 0xFFDAD6, dark: 0x93000A)
+        case .teal: Color(light: 0xA5F0E6, dark: 0x00504A)
+        case .pink: Color(light: 0xFFD8EC, dark: 0x7B2951)
+        case .indigo: Color(light: 0xDDE1FF, dark: 0x2F3A8F)
+        case .lime: Color(light: 0xDDF0A0, dark: 0x3B4D00)
+        case .brown: Color(light: 0xF1DFD1, dark: 0x5B4130)
+        case .gray: Color(light: 0xE0E3E8, dark: 0x44474C)
+        default: Color(light: 0xC9E6FF, dark: 0x004B6F)
+        }
+    }
+
+    var content: Color {
+        switch self {
+        case .orange: Color(light: 0x370E00, dark: 0xFFDBCE)
+        case .green: Color(light: 0x00210F, dark: 0xBDEFD3)
+        case .purple: Color(light: 0x21005D, dark: 0xE8DDFF)
+        case .yellow: Color(light: 0x241A00, dark: 0xFFE08B)
+        case .red: Color(light: 0x410002, dark: 0xFFDAD6)
+        case .teal: Color(light: 0x00201C, dark: 0xA5F0E6)
+        case .pink: Color(light: 0x3E001D, dark: 0xFFD8EC)
+        case .indigo: Color(light: 0x00164E, dark: 0xDDE1FF)
+        case .lime: Color(light: 0x141E00, dark: 0xDDF0A0)
+        case .brown: Color(light: 0x2A1709, dark: 0xF1DFD1)
+        case .gray: Color(light: 0x191C20, dark: 0xE0E3E8)
+        default: Color(light: 0x001E2F, dark: 0xC9E6FF)
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .orange: String(localized: "Orange", bundle: .appLanguage)
+        case .green: String(localized: "Green", bundle: .appLanguage)
+        case .purple: String(localized: "Purple", bundle: .appLanguage)
+        case .yellow: String(localized: "Yellow", bundle: .appLanguage)
+        case .red: String(localized: "Red", bundle: .appLanguage)
+        case .teal: String(localized: "Teal", bundle: .appLanguage)
+        case .pink: String(localized: "Pink", bundle: .appLanguage)
+        case .indigo: String(localized: "Indigo", bundle: .appLanguage)
+        case .lime: String(localized: "Lime", bundle: .appLanguage)
+        case .brown: String(localized: "Brown", bundle: .appLanguage)
+        case .gray: String(localized: "Gray", bundle: .appLanguage)
+        default: String(localized: "Blue", bundle: .appLanguage)
+        }
+    }
+}
+
 extension Color {
     /// A color that follows the light and dark appearance. Nonisolated: SwiftUI resolves colors off the
     /// main thread while it renders.

@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryHint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -169,6 +170,11 @@ class SplitCategoriesPresenter internal constructor(
     fun pickIcon(code: String) {
         val icon = CategoryIcon.fromCodeOrNull(code) ?: return
         send(SplitBillUiEvent.OnCategoryIconPicked(icon))
+    }
+
+    fun pickColor(code: String) {
+        val color = CategoryColor.fromCodeOrNull(code) ?: return
+        send(SplitBillUiEvent.OnCategoryColorPicked(color))
     }
 
     fun save() {

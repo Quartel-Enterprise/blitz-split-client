@@ -5081,6 +5081,7 @@ class HomeViewModelTest {
         parentId = null,
         name = "Churrasco",
         icon = CategoryIcon.GIFT,
+        color = null,
         createdByMemberId = "member-Ana",
         isDeleted = false,
         isPending = false,

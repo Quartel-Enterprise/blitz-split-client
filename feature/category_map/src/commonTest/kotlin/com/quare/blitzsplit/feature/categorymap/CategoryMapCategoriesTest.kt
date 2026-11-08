@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.categorymap
 
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
@@ -14,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetAppCategoryColorUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -602,6 +604,61 @@ class CategoryMapCategoriesTest {
             viewModel.uiState.value.categoryForm
                 ?.icon,
         )
+    }
+
+    @Test
+    fun `GIVEN a new main category WHEN picking a color THEN the form holds it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(CategoryColor.BROWN))
+
+        // Then
+        assertEquals(
+            CategoryColor.BROWN,
+            viewModel.uiState.value.categoryForm
+                ?.color,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new subcategory WHEN picking a color THEN it keeps its parent color`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = AppCategory.TRANSPORT.key))
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(CategoryColor.BROWN))
+
+        // Then
+        assertEquals(
+            AppCategory.TRANSPORT.defaultColor,
+            viewModel.uiState.value.categoryForm
+                ?.color,
+        )
+    }
+
+    @Test
+    fun `GIVEN an app main category WHEN picking its color THEN the tree wears it until restored`() = runTest {
+        // Given
+        prepareScenario()
+        val food = AppCategory.FOOD
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(food.key, CategoryColor.RED))
+        val picked = viewModel.uiState.value.categories
+            .findOrNull(food.key)
+            ?.color
+        viewModel.onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(food.key, null))
+        val restored = viewModel.uiState.value.categories
+            .findOrNull(food.key)
+            ?.color
+
+        // Then
+        assertEquals(CategoryColor.RED, picked)
+        assertEquals(food.defaultColor, restored)
     }
 
     @Test
@@ -1578,6 +1635,7 @@ class CategoryMapCategoriesTest {
         name = name,
         parentId = parentId,
         icon = icon,
+        color = null,
         createdByMemberId = createdBy,
         isDeleted = false,
         isPending = false,
@@ -1628,9 +1686,18 @@ class CategoryMapCategoriesTest {
             saveCategoryTerm = SaveCategoryTermUseCase(terms) { NOW },
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },
             restoreCategoryMap = RestoreCategoryMapUseCase(terms) { NOW },
-            saveGroupCategory = SaveGroupCategory { categoryId, groupId, name, parentId, icon, createdByMemberId ->
+            setAppCategoryColor = SetAppCategoryColorUseCase(categories),
+            saveGroupCategory = SaveGroupCategory {
+                categoryId,
+                groupId,
+                name,
+                parentId,
+                icon,
+                color,
+                createdByMemberId,
+                ->
                 if (holdsWrites) writeGate.await()
-                saveGroupCategory(categoryId, groupId, name, parentId, icon, createdByMemberId)
+                saveGroupCategory(categoryId, groupId, name, parentId, icon, color, createdByMemberId)
             },
             deleteGroupCategory = { categoryId ->
                 if (holdsWrites) writeGate.await()

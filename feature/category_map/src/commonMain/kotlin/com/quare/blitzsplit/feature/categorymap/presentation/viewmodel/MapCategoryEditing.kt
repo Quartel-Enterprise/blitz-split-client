@@ -84,6 +84,8 @@ internal class MapCategoryEditing(
 
             is CategoryMapUiEvent.OnCategoryIconPicked -> changeForm { _, form -> form.withIcon(event.icon) }
 
+            is CategoryMapUiEvent.OnCategoryColorPicked -> changeForm { _, form -> form.withColor(event.color) }
+
             CategoryMapUiEvent.OnCategoryFormSaveClicked -> {
                 trackEvent("category_save_clicked", mapOf("source" to CATEGORY_MAP_SOURCE))
                 save()

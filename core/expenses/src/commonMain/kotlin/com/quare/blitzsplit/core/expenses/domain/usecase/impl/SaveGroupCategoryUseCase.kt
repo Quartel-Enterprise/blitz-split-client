@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
@@ -21,6 +22,7 @@ class SaveGroupCategoryUseCase(
         name: String,
         parentId: String?,
         icon: CategoryIcon,
+        color: CategoryColor,
         createdByMemberId: String?,
     ): Result<String> {
         val trimmed = CategoryRules.toCapped(name.trim()).trimEnd()
@@ -29,6 +31,7 @@ class SaveGroupCategoryUseCase(
             return Result.failure(IllegalArgumentException("Invalid parent"))
         }
         val iconCode = icon.code.takeIf { parentId == null }
+        val colorCode = color.code.takeIf { parentId == null }
         val now = currentTimeMillis()
         if (categoryId != null) {
             return repository
@@ -37,6 +40,7 @@ class SaveGroupCategoryUseCase(
                     name = trimmed,
                     parentId = parentId,
                     icon = iconCode,
+                    color = colorCode,
                     updatedAt = now,
                 ).map { categoryId }
         }
@@ -49,6 +53,7 @@ class SaveGroupCategoryUseCase(
                     parentId = parentId,
                     name = trimmed,
                     icon = icon.takeIf { parentId == null },
+                    color = color.takeIf { parentId == null },
                     createdByMemberId = createdByMemberId,
                     isDeleted = false,
                     isPending = true,

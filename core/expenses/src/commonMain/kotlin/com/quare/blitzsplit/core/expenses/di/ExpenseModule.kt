@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.di
 
+import com.quare.blitzsplit.core.expenses.data.datasource.AppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillCommentLocalDataSource
@@ -12,6 +13,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSourc
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ReceiptRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomAppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillCommentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomCategoryTermLocalDataSource
@@ -119,6 +121,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.RestoreCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
+import com.quare.blitzsplit.core.expenses.domain.usecase.SetAppCategoryColor
 import com.quare.blitzsplit.core.expenses.domain.usecase.SetBillShareLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.SetSimplifiesDebts
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
@@ -173,6 +176,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetAppCategoryColorUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetBillShareLinkUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetSimplifiesDebtsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
@@ -226,12 +230,14 @@ val expenseModule = module {
     factoryOf(::SetSimplifiesDebtsUseCase).bind<SetSimplifiesDebts>()
     factoryOf(::ObserveSettledUpUseCase).bind<ObserveSettledUp>()
     singleOf(::RoomGroupCategoryLocalDataSource).bind<GroupCategoryLocalDataSource>()
+    singleOf(::RoomAppCategoryColorLocalDataSource).bind<AppCategoryColorLocalDataSource>()
     singleOf(::SupabaseGroupCategoryRemoteDataSource).bind<GroupCategoryRemoteDataSource>()
     singleOf(::GroupCategoryMapperImpl).bind<GroupCategoryMapper>()
     singleOf(::CategoryRepositoryImpl).bind<CategoryRepository>()
     factoryOf(::ObserveCategoryTreeUseCase).bind<ObserveCategoryTree>()
     factoryOf(::SaveGroupCategoryUseCase).bind<SaveGroupCategory>()
     factoryOf(::DeleteGroupCategoryUseCase).bind<DeleteGroupCategory>()
+    factoryOf(::SetAppCategoryColorUseCase).bind<SetAppCategoryColor>()
     factoryOf(::ObserveMapCategoriesUseCase).bind<ObserveMapCategories>()
     singleOf(::RoomCategoryTermLocalDataSource).bind<CategoryTermLocalDataSource>()
     singleOf(::SupabaseCategoryTermRemoteDataSource).bind<CategoryTermRemoteDataSource>()

@@ -9,6 +9,8 @@ data class GroupCategory(
     val name: String,
     // Why: a main category's icon; null for a subcategory, which takes its parent's.
     val icon: CategoryIcon?,
+    // Why: a main category's color; null until one is picked (it takes its place's default), and for a subcategory.
+    val color: CategoryColor?,
     // Why: "Criada por Ana".
     val createdByMemberId: String?,
     val isDeleted: Boolean,

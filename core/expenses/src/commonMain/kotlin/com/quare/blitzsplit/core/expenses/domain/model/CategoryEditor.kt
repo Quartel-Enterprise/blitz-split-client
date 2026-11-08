@@ -1,7 +1,5 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
-import com.quare.blitzsplit.core.model.AvatarColor
-
 /*
  * Why: what "Nova categoria" (7.8) draws, the same from a bill's Categoria and from the map (flow 9): the form, the
  * categories of the group it goes in, which its name and "Dentro de" are checked against, and "Apagar “X”?" over it.
@@ -37,12 +35,9 @@ data class CategoryEditor(
     val canSave: Boolean
         get() = form.canSaveIn(categories)
 
-    /*
-     * Why: the preview's color: its parent's, else the one it has or gets as a main category (a subcategory moved out
-     * of its parent included), the next one for a new main category.
-     */
-    val color: AvatarColor
-        get() = parent?.color ?: categories.mainColorOf(form.categoryId)
+    // Why: the preview's color: its parent's for a subcategory, the one picked in the form for a main category.
+    val color: CategoryColor
+        get() = parent?.color ?: form.color
 
     // Why: "Sem internet: a categoria fica salva no aparelho e sobe ao reconectar." (7.8d).
     val showsOfflineNotice: Boolean

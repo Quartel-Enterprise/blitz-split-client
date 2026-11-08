@@ -1464,7 +1464,7 @@ class EditBillViewModelTest {
             categoryUseCases = BillCategoryUseCases(
                 observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
                 observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
-                saveGroupCategory = { _, _, _, _, _, _ -> Result.success("") },
+                saveGroupCategory = { _, _, _, _, _, _, _ -> Result.success("") },
                 deleteGroupCategory = { Result.success(Unit) },
             ),
             saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
