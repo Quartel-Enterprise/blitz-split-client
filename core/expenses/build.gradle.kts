@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.core.expenses.testing)
             implementation(projects.core.groups.testing)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.ktor.client.mock)
         }
         jvmTest.dependencies {
             // Why: RoomExpenseLocalDataSourceTest runs over an in-memory Room on the jvm target.

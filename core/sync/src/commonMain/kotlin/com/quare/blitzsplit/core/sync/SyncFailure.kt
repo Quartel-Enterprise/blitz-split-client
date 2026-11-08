@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
+import io.ktor.client.plugins.HttpRequestTimeoutException
 
 /*
  * Why: what a sync that failed online tells Crashlytics: each failure's kind and the server's codes, cause by cause,
@@ -14,8 +15,13 @@ internal class SyncFailure(
 ) : Exception(codesOf(failure)),
     ReportableFailure
 
-// Why: a request that never got an answer, a timeout or a connection that dropped, which the device may still call online.
-internal fun Throwable.isConnectionFailure(): Boolean = getCauses().any { it is HttpRequestException }
+/*
+ * Why: a request that never got an answer, a timeout or a connection that dropped, which the device may still call
+ * online. supabase-kt wraps every failure in HttpRequestException except Ktor's request timeout, which it rethrows.
+ */
+internal fun Throwable.isConnectionFailure(): Boolean = getCauses().any {
+    it is HttpRequestException || it is HttpRequestTimeoutException
+}
 
 private fun codesOf(failure: Throwable): String = failure.getCauses().joinToString(separator = " ← ") { cause ->
     val name = cause::class.simpleName ?: "Throwable"
