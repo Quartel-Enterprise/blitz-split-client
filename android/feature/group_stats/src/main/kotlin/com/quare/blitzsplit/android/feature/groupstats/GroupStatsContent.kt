@@ -23,10 +23,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -126,6 +128,7 @@ private fun GroupStatsScaffold(
     onPickDates: () -> Unit,
 ) {
     val layout = rememberStatsLayout()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberStatsTextFormatter()
     val times = rememberDateTimeTextFormatter()
@@ -144,7 +147,9 @@ private fun GroupStatsScaffold(
     }
     val currencyChips = @Composable { chipModifier: Modifier -> StatsCurrencyChipRow(state, onEvent, chipModifier) }
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         topBar = {
             val title = @Composable { Text(stringResource(R.string.group_stats_title)) }
@@ -177,6 +182,7 @@ private fun GroupStatsScaffold(
                         periodChip(Modifier.padding(end = 12.dp))
                     }
                 },
+                scrollBehavior = scrollBehavior,
             )
         },
     ) { padding ->
