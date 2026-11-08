@@ -57,8 +57,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - A category's or a person's color has three tones on every platform (Android's `toContainerColor`,
     `toContentColor`, `toDataColor`; Apple's `.container`, `.content`, `.data`; the web's `--avatar-bg`,
     `--avatar-fg` and `--avatar-data`, which `avatarStyle()` and `categoryStyle()` set, the `avatar` class painting
-    the first two and `avatar-mark`, `avatar-stroke` and `avatar-edge` the data tone): a badge or a face is the container with the content on it, and a mark that carries the color
-    by itself (a slice, a legend dot, a bar, a segment of the default split, a group's dot in Activity) takes the data
+    the first two and `avatar-mark`, `avatar-stroke` and `avatar-edge` the data tone): a badge or a face is the
+    container with the content on it, and a mark that carries the color by itself (a slice, a legend dot, a bar, a segment of the default split, a group's dot in Activity) takes the data
     tone, Material tone 50 light and 75 dark of the color's hue (4:1 and 7:1 on a card), since the container reads at
     under 2:1 there. A bar measures in the color of what it measures, never the accent, and a picked icon in the
     category form sits on the category's color, not the accent's.

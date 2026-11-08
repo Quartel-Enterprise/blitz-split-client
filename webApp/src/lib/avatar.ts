@@ -1,10 +1,13 @@
 import { t, type MessageKey } from '@/i18n'
 
+/** A color's [background, text] pair per theme, and its `data` tone [light, dark]. */
+type ColorTones = { light: [string, string]; dark: [string, string]; data: [string, string] }
+
 /**
  * The five avatar colors, with the same values on every platform (see the canvas rules): a [background, text] pair
  * per theme, and the `data` tone [light, dark] a mark that stands for the person takes (a bar, a segment of a split).
  */
-export const avatarColors: Record<string, { label: MessageKey; light: [string, string]; dark: [string, string]; data: [string, string] }> = {
+export const avatarColors: Record<string, ColorTones & { label: MessageKey }> = {
   blue: { label: 'color_blue', light: ['#C9E6FF', '#001E2F'], dark: ['#004B6F', '#C9E6FF'], data: ['#017EB7', '#69C1FE'] },
   peach: { label: 'color_peach', light: ['#FFDBCE', '#370E00'], dark: ['#71361C', '#FFDBCE'], data: ['#B95D35', '#FFA17B'] },
   green: { label: 'color_green', light: ['#BDEFD3', '#00210F'], dark: ['#00513A', '#BDEFD3'], data: ['#008863', '#5ACDA1'] },
@@ -18,9 +21,8 @@ export function avatarColorLabel(code: string): string {
   return color ? t(color.label) : code
 }
 
-/** CSS variables for an avatar color; index.css picks the light or dark pair. */
-export function avatarStyle(code: string): React.CSSProperties {
-  const color = avatarColors[code] ?? avatarColors.blue
+/** The CSS variables the `avatar`, `avatar-mark`, `avatar-stroke` and `avatar-edge` classes read. */
+function colorStyle(color: ColorTones): React.CSSProperties {
   return {
     '--avatar-bg': color.light[0],
     '--avatar-fg': color.light[1],
@@ -31,12 +33,17 @@ export function avatarStyle(code: string): React.CSSProperties {
   } as React.CSSProperties
 }
 
+/** CSS variables for an avatar color; index.css picks the light or dark pair. */
+export function avatarStyle(code: string): React.CSSProperties {
+  return colorStyle(avatarColors[code] ?? avatarColors.blue)
+}
+
 /**
  * The twelve category colors, with the same values on every platform (see the canvas rules). A mark that carries the
  * category (a slice, a legend dot, a bar) takes the `data` tone, not the background: the background reads at under
  * 2:1 on a card, the data tone at 4:1 light and 7:1 dark (WCAG's 3:1 for a meaningful mark).
  */
-export const categoryColors: Record<string, { light: [string, string]; dark: [string, string]; data: [string, string] }> = {
+export const categoryColors: Record<string, ColorTones> = {
   blue: { light: ['#C9E6FF', '#001E2F'], dark: ['#004B6F', '#C9E6FF'], data: ['#017EB7', '#69C1FE'] },
   orange: { light: ['#FFDBCE', '#370E00'], dark: ['#71361C', '#FFDBCE'], data: ['#B95D35', '#FFA17B'] },
   green: { light: ['#BDEFD3', '#00210F'], dark: ['#00513A', '#BDEFD3'], data: ['#008863', '#5ACDA1'] },
@@ -61,13 +68,5 @@ export function categoryColorLabel(code: string): string {
 
 /** CSS variables for a category color, the same ones an avatar takes so the `avatar` class paints it. */
 export function categoryStyle(code: string): React.CSSProperties {
-  const color = categoryColors[code] ?? categoryColors.blue
-  return {
-    '--avatar-bg': color.light[0],
-    '--avatar-fg': color.light[1],
-    '--avatar-bg-dark': color.dark[0],
-    '--avatar-fg-dark': color.dark[1],
-    '--avatar-data': color.data[0],
-    '--avatar-data-dark': color.data[1],
-  } as React.CSSProperties
+  return colorStyle(categoryColors[code] ?? categoryColors.blue)
 }

@@ -544,8 +544,8 @@ private fun StatsAvatarRow(
     }
 }
 
-@Composable
 // Why: the bar takes the color of what it measures (the category's slice, the person's face), never the accent.
+@Composable
 internal fun StatsAmountBarIndicator(
     fraction: Float,
     color: Color,
