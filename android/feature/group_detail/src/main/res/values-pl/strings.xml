@@ -90,6 +90,7 @@
     <string name="group_detail_simplified_pair">Nowa para dzięki uproszczeniu</string>
     <string name="group_detail_balances_note_simplified">Przy uproszczonych długach aplikacja proponuje najmniej płatności. „Otrzymano” i „Już zapłacono” zapisują płatność dokonaną poza aplikacją (Pix, gotówka, przelew).</string>
     <string name="group_detail_entry_edit">Edytuj</string>
+    <string name="group_detail_entry_duplicate">Duplikuj</string>
     <string name="group_detail_entry_share">Udostępnij</string>
     <string name="group_detail_entry_delete">Usuń</string>
     <string name="group_detail_entry_options">Opcje: %s</string>

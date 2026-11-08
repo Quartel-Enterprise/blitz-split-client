@@ -57,10 +57,17 @@ Every translator, human or agent, reads it first; without it each one picks its 
 An activity row is "<actor> <verb phrase> <object>", one sentence for every actor. A language that conjugates by person
 needs the user's rows turned to the second person: `toSecondPerson` (Android `SecondPersonVerbs.kt`), `SecondPerson`
 (Apple) and `verbForYou` (web `i18n/index.ts`) do it the same way on the three platforms. Spanish rewrites the verb's
-ending; French requires every verb phrase to be a passé composé starting with "a" and turns it into "as". Pick the
-simplest rule the language allows, put it in the glossary, add it to the three helpers and describe it in
+ending. French, German and Italian require every verb phrase to start with their perfect's auxiliary and swap it
+("a" → "as", "hat"/"ist" → "hast"/"bist", "ha" → "hai"): a language like them only adds its entry to the auxiliary maps
+(`secondPersonAuxiliaries` on Android and the web, `auxiliaries` on Apple). Polish, whose past says the gender the app
+doesn't know, starts every verb phrase with a past in "ł(a)" and turns it into "łeś(-aś)". Pick the simplest rule the
+language allows, put it in the glossary, add it to the three helpers and describe it in
 [activity-and-push.md](../../../docs/product/activity-and-push.md). A language whose verb does not change with the
 person needs none of this.
+
+A language that conjugates also says the deleted-item notice with who deleted it first ("Tu as supprimé…"): add it to
+`youSubjectLanguages` in `SecondPersonVerbs.kt`, so Android uses "You" and the verb rule instead of "by you". Apple's
+notice always starts with the actor, and the web has its own `activity_deletedByMe` message.
 
 ## 5. The strings
 
@@ -79,9 +86,15 @@ unsure about.
 
 ## 6. Make the checks know it
 
-- `iosApp/check-translations.py`: add the language to `REQUIRED`, so a key without it fails the build.
+- `iosApp/check-translations.py`: add the language to `REQUIRED`, so a key without it fails the build, and to
+  `PLURAL_CATEGORIES` when its plural has more forms than one and other (Polish's few and many), so a plural
+  variation without one of them fails too.
 - Android's `lintDebug` already fails on a missing or extra `values-xx` string, and `npm --prefix webApp run
   check:messages` on a web key or `{placeholder}` that differs from English: they need no change.
+- The web picks `…One` for 1 and `…Other` for any other count. A language with two plurals past one (Polish) writes
+  an `…Other` message with a `{count}` as "few|many", and `pluralFormOf` in `i18n/index.ts` picks one with
+  `Intl.PluralRules` (many takes the second form, any other category the first); `check:messages` rejects a "|"
+  anywhere else. A language with more forms than that needs `pluralFormOf` extended first.
 - The docs that list the languages: `CLAUDE.md`, `README.md`, `docs/ai_agents.md`, `docs/architecture/code-style.md`,
   `docs/architecture/new-feature-checklist.md`, `docs/product/general.md`, `docs/product/profile.md`,
   `.claude/skills/review-conventions/SKILL.md`, the comments of `androidApp/build.gradle.kts` and `iosApp/project.yml`.

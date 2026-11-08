@@ -344,6 +344,7 @@ export const pl: Record<MessageKey, string> = {
   groupDetail_columnBalance: 'Twój udział',
   groupDetail_columnOptions: 'Opcje',
   groupDetail_entryEdit: 'Edytuj',
+  groupDetail_entryDuplicate: 'Duplikuj',
   groupDetail_entryShare: 'Udostępnij',
   groupDetail_entryDelete: 'Usuń',
   groupDetail_entryOptions: 'Opcje: {name}',

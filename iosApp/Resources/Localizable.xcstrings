@@ -65135,6 +65135,12 @@
     "Duplicate" : {
       "comment" : "Duplicates a bill from its menu, opening Split a bill filled in with it",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplizieren"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -65145,6 +65151,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dupliquer"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplica"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikuj"
           }
         },
         "pt-BR" : {
@@ -65158,6 +65176,12 @@
     "Duplicate…" : {
       "comment" : "Duplicates a bill from its menu on the Mac",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplizieren…"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -65168,6 +65192,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dupliquer…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplica…"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikuj…"
           }
         },
         "pt-BR" : {

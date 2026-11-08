@@ -341,6 +341,7 @@ export const it: Record<MessageKey, string> = {
   groupDetail_columnBalance: 'La tua quota',
   groupDetail_columnOptions: 'Opzioni',
   groupDetail_entryEdit: 'Modifica',
+  groupDetail_entryDuplicate: 'Duplica',
   groupDetail_entryShare: 'Condividi',
   groupDetail_entryDelete: 'Elimina',
   groupDetail_entryOptions: 'Opzioni per {name}',

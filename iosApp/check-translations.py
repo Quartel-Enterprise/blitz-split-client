@@ -18,7 +18,7 @@ Xcode runs it after Compile Sources, as a postCompileScript of project.yml:
 import json
 import re
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 # Every language the app is translated into, but English (the source) and es-ES (partial)
@@ -32,6 +32,8 @@ CATALOGS = ("Localizable.xcstrings", "InfoPlist.xcstrings")
 # for the actor and the object
 PLACEHOLDER = re.compile(r"%(?:\d+\$)?[-+0#]*\d*(?:\.\d+)?(?:hh|h|ll|l|q|L|z|t|j)?[diouxXeEfFgGaAcCsSp@]|[\ue000\ue001]")
 POSITION = re.compile(r"^%\d+\$")
+# A leaf's path inside a plural variation: what comes before it, and the category
+PLURAL_PATH = re.compile(r"^(.*?)/plural\.([a-z]+)")
 
 
 def placeholders(text: str) -> Counter:
@@ -50,17 +52,6 @@ def leaves(localization: dict, path: str = ""):
     # The substitutions of a plural sentence ("%#@count@") each hold their own variations
     for name, substitution in localization.get("substitutions", {}).items():
         yield from leaves(substitution, f"{path}/{name}")
-
-
-def plurals(localization: dict, path: str = ""):
-    """Every (variation path, plural categories) of a localization."""
-    for kind, variants in localization.get("variations", {}).items():
-        if kind == "plural":
-            yield path, set(variants)
-        for name, variant in variants.items():
-            yield from plurals(variant, f"{path}/{kind}.{name}")
-    for name, substitution in localization.get("substitutions", {}).items():
-        yield from plurals(substitution, f"{path}/{name}")
 
 
 def problems(key: str, entry: dict):
@@ -91,7 +82,11 @@ def problems(key: str, entry: dict):
         if not found:
             yield f"{language} has no value"
         wanted_categories = PLURAL_CATEGORIES.get(language)
-        for path, categories in plurals(localization) if wanted_categories else ():
+        found_categories = defaultdict(set)
+        for path, _ in leaves(localization) if wanted_categories else ():
+            if match := PLURAL_PATH.match(path):
+                found_categories[match[1]].add(match[2])
+        for path, categories in found_categories.items():
             if not wanted_categories <= categories:
                 yield f"{language}{path} lacks the plural forms {', '.join(sorted(wanted_categories - categories))}"
 

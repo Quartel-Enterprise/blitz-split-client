@@ -342,6 +342,7 @@ export const de: Record<MessageKey, string> = {
   groupDetail_columnBalance: 'Dein Anteil',
   groupDetail_columnOptions: 'Optionen',
   groupDetail_entryEdit: 'Bearbeiten',
+  groupDetail_entryDuplicate: 'Duplizieren',
   groupDetail_entryShare: 'Teilen',
   groupDetail_entryDelete: 'Löschen',
   groupDetail_entryOptions: 'Optionen für {name}',

@@ -77,7 +77,7 @@
     <string name="bill_detail_history_amount">zmienił(a) kwotę</string>
     <string name="bill_detail_history_description">zmienił(a) opis</string>
     <string name="bill_detail_history_spent_at">zmienił(a) datę</string>
-    <string name="bill_detail_history_payers">zmienił(a), kto zapłacił</string>
+    <string name="bill_detail_history_payers">zmienił(a) listę płacących</string>
     <string name="bill_detail_history_split">zmienił(a) podział</string>
     <string name="bill_detail_history_receipt_added">dodał(a) paragon</string>
     <string name="bill_detail_history_photo_removed">skasował(a) zdjęcie</string>

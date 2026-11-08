@@ -14,15 +14,15 @@ export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl'
 
 const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl }
 
+// Why: the languages with one variant for every tag of theirs.
+const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl']
+
 /**
  * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
  * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
  * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it` or `pl` tag (de-AT, it-CH, pl-PL…)
  * is German, Italian or Polish, any `en` tag is English, and English when none matches.
  */
-// Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl']
-
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
     const [language, ...rest] = tag.toLowerCase().split('-')
@@ -75,8 +75,8 @@ const pluralRules = new Intl.PluralRules(documentLanguage())
  * the one `count` takes (a fraction taking few's, as Polish does). Any other message has one form.
  */
 function pluralFormOf(message: string, count: string | number | undefined): string {
+  if (!message.includes('|')) return message
   const forms = message.split('|')
-  if (forms.length === 1) return message
   return pluralRules.select(Number(count)) === 'many' ? forms[1] : forms[0]
 }
 
