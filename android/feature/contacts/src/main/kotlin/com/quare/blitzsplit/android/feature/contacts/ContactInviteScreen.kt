@@ -267,11 +267,6 @@ private fun GroupChipsSection(
         return
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.contacts_invite_group_label),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
         if (state.hasNoGroups) {
             Text(
                 text = stringResource(R.string.contacts_invite_no_groups),
@@ -297,6 +292,11 @@ private fun GroupChipsSection(
             }
             return@Column
         }
+        Text(
+            text = stringResource(R.string.contacts_invite_group_label),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),

@@ -76,11 +76,6 @@ export function ContactInviteDialog({ route }: { route: JsRoute }) {
 }
 
 function InviteBody({ presenter, state, isDesktop }: { presenter: ContactInvitePresenter; state: JsContactInviteState; isDesktop: boolean }) {
-  const sub = state.isPersonal
-    ? t('contactInvite_subPersonal', { name: state.name ?? '' })
-    : state.name
-      ? t('contactInvite_subNamed', { name: state.name })
-      : t('contactInvite_sub')
   if (state.hasNoGroups) {
     return (
       <div className="flex flex-col gap-4">
@@ -94,6 +89,11 @@ function InviteBody({ presenter, state, isDesktop }: { presenter: ContactInviteP
       </div>
     )
   }
+  const sub = state.isPersonal
+    ? t('contactInvite_subPersonal', { name: state.name ?? '' })
+    : state.name
+      ? t('contactInvite_subNamed', { name: state.name })
+      : t('contactInvite_sub')
   return (
     <div className="flex flex-col gap-4">
       <div role="radiogroup" aria-label={t('contactInvite_groupLabel')} className="flex flex-wrap gap-2">
