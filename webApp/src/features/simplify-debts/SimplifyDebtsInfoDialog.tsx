@@ -97,7 +97,8 @@ function ExampleFigure({ isSimplified, amount }: { isSimplified: boolean; amount
   const label = t(isSimplified ? 'simplifyInfo_afterLabel' : 'simplifyInfo_beforeLabel', { amount })
   const node = 'absolute size-9 text-[11px]'
   return (
-    <figure className={cn('m-0 flex flex-col gap-1.5 rounded-xl px-1.5 pt-2.5 pb-3', isSimplified ? 'bg-primary/10' : 'border bg-card')}>
+    // Why: the result stands out by an accent edge, not a tint, which the blue face sat on (as Android and Apple draw it).
+    <figure className={cn('m-0 flex flex-col gap-1.5 rounded-xl bg-card px-1.5 pt-2.5 pb-3', isSimplified ? 'border-2 border-primary' : 'border')}>
       <figcaption className="px-1 text-[13px] font-semibold text-muted-foreground">{t(isSimplified ? 'simplifyInfo_after' : 'simplifyInfo_before')}</figcaption>
       <div role="img" aria-label={label} className="relative mx-auto h-[132px] w-[164px]">
         <svg viewBox="0 0 164 132" aria-hidden className="absolute inset-0 size-full overflow-visible text-primary">

@@ -172,6 +172,10 @@ private struct SimplifyExampleFigure: View {
         .padding(.horizontal, 4)
         .frame(maxWidth: .infinity)
         .background(Palette.groupedBackground, in: .rect(cornerRadius: 18))
+        // Why: the result stands out by an accent edge, as Android and the web draw it, never a tint under the blue face.
+        .overlay {
+            RoundedRectangle(cornerRadius: 18).strokeBorder(isSimplified ? Palette.accent : .clear, lineWidth: 2)
+        }
     }
 
     private var caption: LocalizedStringKey {
