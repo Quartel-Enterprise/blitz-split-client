@@ -28,11 +28,11 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -124,7 +124,7 @@ private fun CategoryExpensesScaffold(
     state: CategoryExpensesUiState,
     onEvent: (CategoryExpensesUiEvent) -> Unit,
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val money = rememberMoneyFormatter(state.currency)
     val times = rememberDateTimeTextFormatter()
     val isBook = rememberFoldLayout().bookSplit != null
@@ -134,7 +134,7 @@ private fun CategoryExpensesScaffold(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         topBar = {
-            MediumFlexibleTopAppBar(
+            TopAppBar(
                 title = { Text(stringResource(R.string.category_expenses_title)) },
                 subtitle = {
                     // Why: nothing is guessed while the bills are read: the group and its period only once they are.

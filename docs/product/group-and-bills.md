@@ -161,7 +161,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     a screen of its own over Statistics, back returning to them, rather than the group's Expenses filtered (whose
     header, tabs and payments aren't about a category, and whose back would leave the statistics). Its subtitle is
     the group and the period Statistics showed ("Viagem Floripa · October 2026"); "The whole trip" or "All time"
-    follows new bills, any other period stays those days. Chips list the period's main categories, the largest first
+    follows new bills, any other period stays those days. On Android its bar is Statistics's: small, with the title
+    and subtitle in it, leaving with the content on scroll. Chips list the period's main categories, the largest first
     as "By category" does, the one tapped picked: a tap picks or lets go of more (several at once), "Clear" shows while
     one is picked, and with none picked the list shows every bill of the period; a category picked with no bill left
     stays as a picked chip, over "No expenses in these categories"; with none picked and no bill left in the period it
