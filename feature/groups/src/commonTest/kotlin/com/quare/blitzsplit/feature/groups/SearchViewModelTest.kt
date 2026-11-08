@@ -294,7 +294,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `GIVEN the search over Contatos WHEN a sync deletes every group THEN goes back to Contatos`() =
+    fun `GIVEN the search over Contatos WHEN a sync deletes every group THEN stays open with what was typed`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(tab = Route.Contacts)
@@ -304,7 +304,8 @@ class SearchViewModelTest {
             groups.groups.value = emptyList()
 
             // Then
-            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Contacts, Route.Search), navigator.backStack.value)
+            assertEquals("apê", viewModel.uiState.value.search.query)
         }
 
     @Test
@@ -323,24 +324,6 @@ class SearchViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Home, balances, Route.Search), backStack)
-        }
-
-    @Test
-    fun `GIVEN the search opened with no group WHEN a sync brings one then deletes it THEN goes back to Contatos`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                tab = Route.Contacts,
-                storedGroups = emptyList(),
-                storedExpenses = emptyList(),
-            )
-            groups.groups.value = listOf(churrasco)
-
-            // When
-            groups.groups.value = emptyList()
-
-            // Then
-            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
         }
 
     @Test

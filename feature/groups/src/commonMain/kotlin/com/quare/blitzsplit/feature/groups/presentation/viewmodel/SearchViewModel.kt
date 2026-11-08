@@ -61,14 +61,12 @@ class SearchViewModel(
                     timeZone = currentTimeZone(),
                 )
                 /*
-                 * Why: it opens before the first group, as Grupos' own search does, so only groups that were there
-                 * and a sync took away close it, leaving nothing to look in.
+                 * Why: like Grupos' own search, it opens before the first group and stays open once the last one
+                 * goes (Pierre's beta feedback), finding nothing then.
                  */
-                val hadGroups = groups.isNotEmpty()
                 groups = items
                 rows = rowsOf(items, clock)
                 search { it }
-                if (hadGroups && items.isEmpty()) handleEvent(SearchUiEvent.OnClosed)
             }.launchIn(viewModelScope)
     }
 
