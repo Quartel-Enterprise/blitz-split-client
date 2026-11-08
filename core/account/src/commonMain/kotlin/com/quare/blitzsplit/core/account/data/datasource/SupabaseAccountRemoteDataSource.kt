@@ -27,6 +27,7 @@ import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
@@ -71,13 +72,17 @@ class SupabaseAccountRemoteDataSource(
         }
     }
 
+    /*
+     * Why: conflated, so the status is read on while a collector runs its sync: suspended in emit, the StateFlow would
+     * skip a failure and its recovery that both happen meanwhile, and the sync that failed then would never run again.
+     */
     override fun observeSessionRecoveries(): Flow<Unit> = flow {
         var wasRefreshing = false
         auth.sessionStatus.collect { status ->
             if (wasRefreshing && status is SessionStatus.Authenticated) emit(Unit)
             wasRefreshing = status is SessionStatus.RefreshFailure
         }
-    }
+    }.conflate()
 
     /*
      * Why: Supabase's browser sign in imports its session as External, the only one that carries the

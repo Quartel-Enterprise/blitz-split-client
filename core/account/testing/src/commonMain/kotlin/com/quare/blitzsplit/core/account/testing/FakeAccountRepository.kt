@@ -127,9 +127,9 @@ class FakeAccountRepository(
         snapshot.collect { }
     }
 
-    // Why: the fake has no remote session to read Apple's tokens from, so it only counts the calls.
     override fun observeSessionRecoveries(): Flow<Unit> = sessionRecoveries
 
+    // Why: the fake has no remote session to read Apple's tokens from, so it only counts the calls.
     override suspend fun keepAppleTokens() {
         keepAppleTokensCount++
     }
