@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import io.github.jan.supabase.exceptions.HttpRequestException
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.url
 import kotlin.test.Test
@@ -115,6 +116,21 @@ class SyncFailureTest {
     fun `GIVEN a failure caused by a request that got no answer WHEN checking it THEN it is a connection failure`() {
         // Given
         val failure = IllegalStateException("sync failed", IllegalArgumentException("pull failed", noAnswer))
+
+        // When
+        val isConnectionFailure = failure.isConnectionFailure()
+
+        // Then
+        assertTrue(isConnectionFailure)
+    }
+
+    @Test
+    fun `GIVEN a request that timed out WHEN checking the failure THEN it is a connection failure`() {
+        // Given
+        val failure = IllegalStateException(
+            "pull failed",
+            HttpRequestTimeoutException(url = "https://example.supabase.co/rest/v1/expenses", timeoutMillis = 30_000),
+        )
 
         // When
         val isConnectionFailure = failure.isConnectionFailure()
