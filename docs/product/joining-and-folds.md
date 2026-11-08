@@ -11,6 +11,15 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     Android opens the links in the app only for a build whose signing key's SHA-256 is in blitzsplit.com's
     `assetlinks.json`, which lists the Play keys: a debug build, or a beta signed with a key not listed there, opens the
     browser (Android 8 to 11 asks which app opens it), and so the web app (see [Release process](../release-process.md#outside-the-stores)).
+  - An invite link's preview (WhatsApp, iMessage, Telegram) shows the invite: blitzsplit.com's Worker
+    (`blitz-split-site`) serves the meta tags and the image the API's `invite-preview` edge function answers from
+    `get_invite`. The group's link reads "Join <group>" with how many people split there, and an image of the group's
+    photo (or its initials on its color), name, type and up to five faces; a personal link reads "Join <group> as <member>"
+    with who saved them the spot (`?from=`) and the member's initial on their color; a code nobody has any longer (a
+    changed link, a used personal link) shows the brand's card, as the landing does. A crawler says nothing of who
+    reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora Rachar"), ARS, CLP, COP, MXN,
+    PEN, UYU and PYG Spanish, any other English. The redirect to the web app, once it is back, must still give
+    crawlers these meta tags.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on the group's Expenses (3.3, `Route.GroupDetail` with `joinedAs`) with "You joined as
     <name>" over the bills and, while the account has no Google or Apple, "Protect your access", which opens the
