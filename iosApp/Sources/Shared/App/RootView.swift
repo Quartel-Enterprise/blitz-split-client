@@ -176,6 +176,7 @@ struct RootView: View {
             ProfileView()
             #endif
         case .editProfile: EditProfileView()
+        case let .groupPhoto(route): GroupPhotoView(route: route)
         case .profilePhoto: ProfilePhotoView()
         case .deleteAccount: DeleteAccountView()
         case .notificationSettings: NotificationSettingsView()

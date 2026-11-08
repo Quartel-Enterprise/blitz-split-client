@@ -118,7 +118,7 @@ src/commonMain/kotlin/com/quare/blitzsplit/core/<name>/
 ├── connect/             # :core:sync only: ProviderConnector, the Google or Apple link state every screen shares
 ├── signin/              # :core:sync only: ProviderSignIn and ProviderSignInController, the Google or Apple sign in every screen shares
 ├── exit/                # :core:sync only: GroupExitController, "Sair do grupo" and "Apagar grupo" from the group and from the home
-├── photo/               # :core:profile only: ProfilePhotoPicker, the photo picked in the profile setup and "Editar perfil"
+├── photo/               # :core:profile only: ProfilePhotoPicker, the photo picked in the profile setup and "Editar perfil", and InstantPhotoSaver, which the profile's and the group's photo opened big save through
 ├── di/                  # One Koin module
 └── domain/
     ├── model/           # Domain models and exceptions

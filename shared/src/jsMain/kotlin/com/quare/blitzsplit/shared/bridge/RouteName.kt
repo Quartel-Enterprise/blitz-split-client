@@ -51,6 +51,8 @@ internal fun toRouteName(route: Route): String = when (route) {
 
     is Route.EditGroup -> "edit-group"
 
+    is Route.GroupPhoto -> "group-photo"
+
     is Route.DefaultSplit -> "default-split"
 
     is Route.SimplifyDebtsInfo -> "simplify-debts-info"

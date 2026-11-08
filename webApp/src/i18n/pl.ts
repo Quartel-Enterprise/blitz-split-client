@@ -872,6 +872,8 @@ export const pl: Record<MessageKey, string> = {
   profilePhoto_gallery: 'Galeria',
   profilePhoto_remove: 'Usuń',
   profilePhoto_open: 'Zobacz zdjęcie',
+  groupPhoto_title: 'Zdjęcie grupy',
+  groupPhoto_open: 'Zobacz zdjęcie grupy',
   editProfile_changePhoto: 'Zmień zdjęcie',
   editProfile_takePhoto: 'Zrób zdjęcie',
   editProfile_choosePhoto: 'Wybierz z galerii',

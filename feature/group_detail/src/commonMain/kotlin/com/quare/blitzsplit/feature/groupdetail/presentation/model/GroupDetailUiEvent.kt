@@ -21,6 +21,8 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             OnStatsClicked -> EventAnalytics.Automatic("group_stats_clicked")
 
+            OnPhotoClicked -> EventAnalytics.Automatic("group_photo_clicked")
+
             is OnCurrencySelected -> EventAnalytics.Automatic(
                 "balances_currency_clicked",
                 mapOf("source" to GROUP_DETAIL_SOURCE),
@@ -143,6 +145,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: "Rachar conta", the button and the empty state's.
     data object OnSplitBillClicked : GroupDetailUiEvent
+
+    // Why: the group's avatar in its header, which opens the photo big (Route.GroupPhoto).
+    data object OnPhotoClicked : GroupDetailUiEvent
 
     // Why: "Convidar pessoas", the top bar's and the empty state's.
     data object OnInviteClicked : GroupDetailUiEvent

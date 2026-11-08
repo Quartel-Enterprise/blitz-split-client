@@ -45,7 +45,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     shown), "Camera" where there is one, "Gallery" and "Remove" (with a photo). Each saves the profile's photo at
     once, offline too, with no Save, and the viewer stays open showing the new one; a photo picked opens "Adjust photo" over it first, and is still saved when the viewer closes while it is prepared. ✕, a tap outside, back and
     Esc close it. Android draws it as a dialog over the whole window (a book's right half), iOS covers the screen,
-    the Mac opens it as a sheet on Settings and the web as a dialog over the profile.
+    the Mac opens it as a sheet on Settings and the web as a dialog over the profile. The group's own photo opens the same
+    way from its header ([The group screen](group-and-bills.md)).
   - In-app update, as Bible Planner's (`:core:in_app_update`, `:feature:in_app_update`): each time the app comes to
     the front (`AppViewModel`, once the first screen is in place) a newer version is offered at most once an hour,
     kept per device (`lastUpdatePromptAt` in `device_settings`), and the offer waits until a home tab or a group's

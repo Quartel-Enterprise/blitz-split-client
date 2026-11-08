@@ -205,4 +205,9 @@
     <string name="simplify_info_anyone_text">W „Edytuj grupę”. Aktywność pokazuje, kto to zmienił, a kto teraz płaci komuś innemu lub dostaje od kogoś innego, dostaje powiadomienie.</string>
     <string name="simplify_info_undo_title">Wyłączenie przywraca poprzedni stan</string>
     <string name="simplify_info_undo_text">Płatności wracają do osób, które dzieliły każdy wydatek. Żaden wydatek ani zapisana płatność się nie zmienia.</string>
+    <string name="group_photo_title">Zdjęcie grupy</string>
+    <string name="group_photo_camera">Aparat</string>
+    <string name="group_photo_gallery">Galeria</string>
+    <string name="group_photo_remove">Usuń</string>
+    <string name="group_photo_remove_photo">Usuń zdjęcie</string>
 </resources>

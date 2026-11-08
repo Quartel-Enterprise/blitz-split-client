@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.editgroup.di
 
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
+import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.GroupPhotoViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -9,4 +10,5 @@ import org.koin.dsl.module
 val editGroupModule = module {
     viewModelOf(::EditGroupViewModel)
     viewModelOf(::DefaultSplitViewModel)
+    viewModelOf(::GroupPhotoViewModel)
 }

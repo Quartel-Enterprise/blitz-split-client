@@ -16,21 +16,17 @@ import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
-import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
+import com.quare.blitzsplit.core.profile.photo.InstantPhotoSaver
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.PROFILE_PHOTO_SOURCE
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 /*
  * Why: the profile's avatar opened big (Route.ProfilePhoto), as Bible Planner's: its shortcuts change the photo at
@@ -65,22 +61,13 @@ class ProfilePhotoViewModel(
 
     private var saved: UserProfile? = null
 
-    private var isSaving = false
-
-    /*
-     * Why: a photo chosen is framed, prepared and saved even when the viewer closes meanwhile (✕, back, Esc), which
-     * clears viewModelScope with the entry; only the state nobody draws any more is updated in vain.
-     */
-    private val saveScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-
-    private val photoPicker = ProfilePhotoPicker(
+    private val photoSaver = InstantPhotoSaver(
         loadCropPhoto = loadCropPhoto,
         prepareProfilePhoto = prepareProfilePhoto,
-        scope = saveScope,
         showStatus = ::showPhotoStatus,
         showEditor = ::showPhotoCrop,
-        onPrepared = ::savePhoto,
-        isBusy = { isSaving },
+        showPhoto = ::showPhoto,
+        save = ::saveProfilePhoto,
     )
 
     init {
@@ -115,7 +102,7 @@ class ProfilePhotoViewModel(
         !uiState.value.isLoaded -> false
 
         // Why: the picker drops a pick and its Done while a photo saves, so neither counts then.
-        isSaving -> !event.isDroppedWhileSaving()
+        photoSaver.isSaving -> !event.isDroppedWhileSaving()
 
         else -> true
     }
@@ -125,15 +112,15 @@ class ProfilePhotoViewModel(
 
     override fun handleEvent(event: ProfilePhotoUiEvent) {
         when (event) {
-            is ProfilePhotoUiEvent.OnPhotoPicked -> photoPicker.prepare(event.source)
+            is ProfilePhotoUiEvent.OnPhotoPicked -> photoSaver.prepare(event.source)
 
-            is ProfilePhotoUiEvent.OnPhotoCrop -> photoPicker.onEvent(event.event)
+            is ProfilePhotoUiEvent.OnPhotoCrop -> photoSaver.onEvent(event.event)
 
-            ProfilePhotoUiEvent.OnPhotoUnreadable -> photoPicker.fail()
+            ProfilePhotoUiEvent.OnPhotoUnreadable -> photoSaver.fail()
 
             ProfilePhotoUiEvent.OnAccountPhotoSelected -> useAccountPhoto()
 
-            ProfilePhotoUiEvent.OnPhotoRemoved -> if (uiState.value.photo != null && replacePhoto(null)) {
+            ProfilePhotoUiEvent.OnPhotoRemoved -> if (uiState.value.photo != null && photoSaver.replace(null)) {
                 trackEvent("photo_removed", mapOf("source" to PROFILE_PHOTO_SOURCE))
             }
 
@@ -145,25 +132,12 @@ class ProfilePhotoViewModel(
     // Why: the account's picture is already a public URL, so nothing is prepared or uploaded.
     private fun useAccountPhoto() {
         val url = uiState.value.accountPhotoUrl ?: return
-        if (replacePhoto(ProfilePhoto.Remote(url))) {
+        if (photoSaver.replace(ProfilePhoto.Remote(url))) {
             trackEvent("account_photo_selected", mapOf("source" to PROFILE_PHOTO_SOURCE))
         }
     }
 
-    /*
-     * Why: whatever replaces the photo wins over a pick still being read or framed. It says whether it took the
-     * photo, which Analytics counts: one saving drops any other.
-     */
-    private fun replacePhoto(photo: ProfilePhoto?): Boolean {
-        if (isSaving) return false
-        photoPicker.cancel()
-        savePhoto(photo)
-        return true
-    }
-
-    private fun savePhoto(photo: ProfilePhoto?) {
-        val profile = saved ?: return
-        isSaving = true
+    private fun showPhoto(photo: ProfilePhoto?) {
         uiState.update {
             it.copy(
                 photo = photo,
@@ -171,10 +145,11 @@ class ProfilePhotoViewModel(
                 showsPhotoError = false,
             )
         }
-        saveScope.launch {
-            saveProfile(profile.copy(photo = photo))
-            isSaving = false
-        }
+    }
+
+    private suspend fun saveProfilePhoto(photo: ProfilePhoto?) {
+        val profile = saved ?: return
+        saveProfile(profile.copy(photo = photo))
     }
 
     private fun showPhotoCrop(editor: PhotoCropEditor?) {

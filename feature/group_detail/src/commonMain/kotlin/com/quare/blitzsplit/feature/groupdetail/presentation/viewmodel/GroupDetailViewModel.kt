@@ -265,6 +265,8 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnInviteClicked -> screen.open(Route.Invite(route.groupId, isNewGroup = false))
 
+            GroupDetailUiEvent.OnPhotoClicked -> screen.open(Route.GroupPhoto(route.groupId))
+
             GroupDetailUiEvent.OnStatsClicked -> screen.open(Route.GroupStats(route.groupId))
 
             is GroupDetailUiEvent.OnTabSelected -> selectTab(event.tab)

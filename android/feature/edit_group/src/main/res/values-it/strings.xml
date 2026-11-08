@@ -194,4 +194,9 @@
     <string name="simplify_info_anyone_text">In Modifica gruppo. Attività mostra chi l’ha cambiato e chi ora paga o riceve da qualcun altro riceve una notifica.</string>
     <string name="simplify_info_undo_title">Disattivandolo si torna come prima</string>
     <string name="simplify_info_undo_text">I pagamenti tornano a essere tra chi ha diviso ogni spesa. Nessuna spesa o pagamento registrato cambia.</string>
+    <string name="group_photo_title">Foto del gruppo</string>
+    <string name="group_photo_camera">Fotocamera</string>
+    <string name="group_photo_gallery">Galleria</string>
+    <string name="group_photo_remove">Rimuovi</string>
+    <string name="group_photo_remove_photo">Rimuovi foto</string>
 </resources>

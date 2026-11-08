@@ -64,6 +64,7 @@ final class GroupDetailModel {
             select: { [weak self] in self?.send(GroupDetailUiEventOnTabSelected(tab: $0.shared)) },
             invite: { [weak self] in self?.send(GroupDetailUiEventOnInviteClicked.shared) },
             stats: { [weak self] in self?.send(GroupDetailUiEventOnStatsClicked.shared) },
+            photo: { [weak self] in self?.send(GroupDetailUiEventOnPhotoClicked.shared) },
             editGroup: { [weak self] in self?.send(GroupDetailUiEventOnEditGroupClicked.shared) },
             togglePin: { [weak self] in self?.send(GroupDetailUiEventOnPinToggled.shared) },
             leaveGroup: { [weak self] in self?.send(GroupDetailUiEventOnLeaveGroupClicked.shared) },

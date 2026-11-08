@@ -4,6 +4,7 @@ package com.quare.blitzsplit.android.feature.groupdetail
 internal enum class GroupAction {
     BACK,
     INVITE,
+    PHOTO,
     STATS,
     PIN,
     EDIT_GROUP,

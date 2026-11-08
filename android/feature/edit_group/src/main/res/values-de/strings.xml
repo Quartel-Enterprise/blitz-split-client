@@ -183,4 +183,9 @@
     <string name="simplify_info_anyone_text">In „Gruppe bearbeiten“. In „Aktivität“ steht, wer es geändert hat, und wer jetzt an jemand anderen zahlt oder von jemand anderem bekommt, erhält eine Mitteilung.</string>
     <string name="simplify_info_undo_title">Ausschalten macht es rückgängig</string>
     <string name="simplify_info_undo_text">Zahlungen laufen wieder zwischen denen, die jede Ausgabe geteilt haben. Keine Ausgabe und keine erfasste Zahlung ändert sich.</string>
+    <string name="group_photo_title">Gruppenfoto</string>
+    <string name="group_photo_camera">Kamera</string>
+    <string name="group_photo_gallery">Galerie</string>
+    <string name="group_photo_remove">Entfernen</string>
+    <string name="group_photo_remove_photo">Foto entfernen</string>
 </resources>

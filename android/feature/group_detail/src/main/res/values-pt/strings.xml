@@ -86,4 +86,5 @@
     <string name="group_detail_entry_share">Compartilhar</string>
     <string name="group_detail_entry_delete">Apagar</string>
     <string name="group_detail_entry_options">Opções de %s</string>
+    <string name="group_detail_photo_open">Ver foto do grupo</string>
 </resources>

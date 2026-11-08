@@ -186,4 +186,9 @@
     <string name="simplify_info_anyone_text">Em Editar grupo. A Atividade mostra quem mudou, e quem passa a pagar ou receber de outra pessoa recebe um aviso.</string>
     <string name="simplify_info_undo_title">Desligar volta ao que era</string>
     <string name="simplify_info_undo_text">Os pagamentos voltam a ser entre quem dividiu cada conta. Nenhuma despesa nem pagamento registrado muda.</string>
+    <string name="group_photo_title">Foto do grupo</string>
+    <string name="group_photo_camera">Câmera</string>
+    <string name="group_photo_gallery">Galeria</string>
+    <string name="group_photo_remove">Remover</string>
+    <string name="group_photo_remove_photo">Remover foto</string>
 </resources>

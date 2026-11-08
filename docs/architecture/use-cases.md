@@ -86,6 +86,10 @@ The profile setup and "Editar perfil" prepare a picked photo the same way, throu
 be read. The ViewModel shows the spinner and the error (`showStatus`) and the photo (`onPrepared`) in its own state,
 and ignores a pick while saving; the profile setup's Continue waits for `pickInProgress`.
 
+The photo opened big (`ProfilePhotoViewModel`, `GroupPhotoViewModel`) saves each shortcut at once through
+`InstantPhotoSaver` (`:core:profile`), which wraps `ProfilePhotoPicker`: it drops a pick, a Done or a shortcut while a
+photo saves, and saves in its own scope, so a photo chosen is saved even when the viewer closes meanwhile.
+
 ### Many use cases in one ViewModel
 
 ViewModels take each use case as its own constructor parameter (`ProfileViewModel` takes fourteen). If a constructor

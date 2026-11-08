@@ -193,4 +193,9 @@
     <string name="simplify_info_anyone_text">En Editar grupo. Actividad muestra quién lo cambió, y quien ahora pague o reciba de otra persona recibe una notificación.</string>
     <string name="simplify_info_undo_title">Al desactivarlo, todo vuelve atrás</string>
     <string name="simplify_info_undo_text">Los pagos vuelven a ser entre quienes dividieron cada gasto. Ningún gasto ni pago registrado cambia.</string>
+    <string name="group_photo_title">Foto del grupo</string>
+    <string name="group_photo_camera">Cámara</string>
+    <string name="group_photo_gallery">Galería</string>
+    <string name="group_photo_remove">Quitar</string>
+    <string name="group_photo_remove_photo">Quitar foto</string>
 </resources>

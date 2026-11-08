@@ -867,6 +867,8 @@ export const en = {
   profilePhoto_gallery: 'Gallery',
   profilePhoto_remove: 'Remove',
   profilePhoto_open: 'View photo',
+  groupPhoto_title: 'Group photo',
+  groupPhoto_open: 'View group photo',
   editProfile_changePhoto: 'Change photo',
   editProfile_takePhoto: 'Take photo',
   editProfile_choosePhoto: 'Choose from gallery',
