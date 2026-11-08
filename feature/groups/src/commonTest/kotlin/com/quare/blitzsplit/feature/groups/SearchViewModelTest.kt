@@ -308,6 +308,42 @@ class SearchViewModelTest {
         }
 
     @Test
+    fun `GIVEN no group on the device WHEN the search opens over Saldos THEN it stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            val balances = Route.GlobalBalances(BalancesFilter.ALL)
+            prepareScenario(
+                tab = balances,
+                storedGroups = emptyList(),
+                storedExpenses = emptyList(),
+            )
+
+            // When
+            val backStack = navigator.backStack.value
+
+            // Then
+            assertEquals(listOf(Route.Home, balances, Route.Search), backStack)
+        }
+
+    @Test
+    fun `GIVEN the search opened with no group WHEN a sync brings one then deletes it THEN goes back to Contatos`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                tab = Route.Contacts,
+                storedGroups = emptyList(),
+                storedExpenses = emptyList(),
+            )
+            groups.groups.value = listOf(churrasco)
+
+            // When
+            groups.groups.value = emptyList()
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Contacts), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the search over Contatos WHEN tapping a group THEN its Despesas takes the search place`() =
         runTest(testDispatcher) {
             // Given
