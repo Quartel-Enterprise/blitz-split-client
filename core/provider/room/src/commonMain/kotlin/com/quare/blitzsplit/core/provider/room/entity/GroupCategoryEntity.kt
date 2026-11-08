@@ -34,6 +34,8 @@ data class GroupCategoryEntity(
     val name: String,
     // Why: a main category's icon code ("paw"); null for a subcategory, which takes its parent's.
     val icon: String?,
+    // Why: a main category's color code ("orange"); null until someone picks one, then it takes its place's default.
+    val color: String?,
     // Why: "Apagar categoria" keeps a tombstone, so its bills read as its parent everywhere.
     val isDeleted: Boolean,
     val addedAt: Long,

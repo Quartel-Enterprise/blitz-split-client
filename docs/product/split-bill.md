@@ -96,6 +96,15 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     tablets); Other is picked at once. A bill saved as Other without a pick stores no category. The app's
     categories (10 main ones and their subcategories, `AppCategory`) are named by each platform; Expenses' rows and
     Bill show the category's badge in its main category's color, Bill also "Food › Groceries".
+    Every main category has a color of its own (Pierre's call, beta feedback 20): one of 12 (`CategoryColor`, the
+    same values on every platform), the app's ten each starting with a different one (Food blue, Home purple,
+    Transport green, Travel teal, Leisure orange, Subscriptions indigo, Shopping pink, Health red, Education yellow,
+    Other gray), and a subcategory shows its main category's. A group's own main category picks its color in its form
+    ("Color", under "Icon"; a new one starts with the first color no main category uses), stored on the category
+    (`group_categories.color`) and synced to the group's members like its icon. The app's own categories are the same
+    for everyone, so their color is changed per person, on this device only (`app_category_color`): Category map's
+    palette button on each main category but Other (a menu on Apple and the web, a dialog on Android) with "Restore
+    color", which brings the app's default back.
   - "New category" (7.8, `GroupCategory`, the group's `group_categories`): anyone in the group may create, rename,
     move and delete the group's own categories, offline too (the change waits in the queue, Last-Write-Wins per
     row). A name has 1 to 30 letters and can't repeat inside the same main category, the app's names included; a

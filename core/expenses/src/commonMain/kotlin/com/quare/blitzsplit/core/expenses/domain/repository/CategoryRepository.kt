@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.repository
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import kotlinx.coroutines.flow.Flow
 
@@ -9,6 +10,15 @@ interface CategoryRepository {
 
     // Why: every group's categories on the device, which a term of the map may send titles to (9.2).
     fun observeAllGroupCategories(): Flow<List<GroupCategory>>
+
+    // Why: the colors this device's person gave the app's own categories, by key; only the ones changed (7.7).
+    fun observeAppColors(): Flow<Map<String, CategoryColor>>
+
+    // Why: on this device only, as the app's categories are not the group's; null brings the default back.
+    suspend fun saveAppCategoryColor(
+        categoryKey: String,
+        color: CategoryColor?,
+    ): Result<Unit>
 
     fun observeHasPendingChanges(): Flow<Boolean>
 
@@ -26,6 +36,7 @@ interface CategoryRepository {
         name: String,
         parentId: String?,
         icon: String?,
+        color: String?,
         updatedAt: Long,
     ): Result<Unit>
 

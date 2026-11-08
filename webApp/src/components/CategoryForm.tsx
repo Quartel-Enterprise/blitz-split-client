@@ -1,4 +1,4 @@
-import { CloudOff } from 'lucide-react'
+import { Check, CloudOff } from 'lucide-react'
 import type { JsCategoryDeletion, JsCategoryForm } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDraft } from '@/hooks/useDraft'
 import { t } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { categoryColorCodes, categoryColorLabel, categoryStyle } from '@/lib/avatar'
 import { categoryIconLabel, categoryIconOf, categoryName } from '@/lib/categories'
 import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
@@ -25,6 +25,7 @@ export interface CategoryFormActions {
   getName(): string
   pickParent(parentId: string | null): void
   pickIcon(code: string): void
+  pickColor(code: string): void
   save(): void
   dismissForm(): void
   askToDelete(): void
@@ -129,7 +130,7 @@ function CategoryFormBody({ actions, form, icons, groupField }: { actions: Categ
           <p className="text-[13px] text-muted-foreground">{parentHelp}</p>
         </div>
         <div className="flex items-center gap-3 rounded-2xl bg-card p-3">
-          <span aria-hidden style={avatarStyle(form.color)} className="avatar flex size-10 items-center justify-center rounded-xl">
+          <span aria-hidden style={categoryStyle(form.color)} className="avatar flex size-10 items-center justify-center rounded-xl">
             <Icon className="size-5" />
           </span>
           <span>
@@ -168,6 +169,31 @@ function CategoryFormBody({ actions, form, icons, groupField }: { actions: Categ
                   )}
                 >
                   <IconOf aria-hidden className="size-5" />
+                </button>
+              )
+            })}
+          </div>
+          <span id="category-color-label" className="mt-3 text-sm font-semibold text-muted-foreground">
+            {t('splitBill_categoryColor')}
+          </span>
+          <div role="radiogroup" aria-labelledby="category-color-label" className="flex flex-wrap gap-3">
+            {categoryColorCodes.map((code) => {
+              const isSelected = code === form.color
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={categoryColorLabel(code)}
+                  onClick={() => actions.pickColor(code)}
+                  style={categoryStyle(code)}
+                  className={cn(
+                    'avatar flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                    isSelected && 'ring-[3px] ring-primary',
+                  )}
+                >
+                  {isSelected && <Check aria-hidden className="size-5" />}
                 </button>
               )
             })}

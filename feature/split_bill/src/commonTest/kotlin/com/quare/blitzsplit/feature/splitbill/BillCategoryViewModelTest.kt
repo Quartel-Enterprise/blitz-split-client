@@ -448,6 +448,7 @@ class BillCategoryViewModelTest {
         parentId = AppCategory.FOOD.key,
         name = "Churrasco",
         icon = null,
+        color = null,
         createdByMemberId = ANA,
         isDeleted = false,
         isPending = false,

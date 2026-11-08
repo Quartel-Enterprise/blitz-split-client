@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.data.mapper.ReceiptMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ReceiptRepositoryImpl
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -18,7 +19,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptItem
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.expenses.testing.noReceiptCategoryHints
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
@@ -356,6 +356,7 @@ class ReceiptRepositoryImplTest {
         parentId = null,
         name = "Pet",
         icon = CategoryIcon.DOTS,
+        color = null,
         createdByMemberId = "ana",
         isDeleted = false,
         isPending = false,
@@ -380,7 +381,7 @@ class ReceiptRepositoryImplTest {
         app = null,
         name = "Pet",
         icon = CategoryIcon.DOTS,
-        color = AvatarColor.LILAC,
+        color = CategoryColor.PURPLE,
         parentId = null,
         createdByMemberId = "ana",
         isPending = false,

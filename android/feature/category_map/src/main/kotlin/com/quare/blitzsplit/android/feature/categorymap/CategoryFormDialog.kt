@@ -40,6 +40,7 @@ internal fun CategoryFormDialog(
             onNameChanged = { onEvent(CategoryMapUiEvent.OnCategoryNameChanged(it)) },
             onParentPicked = { onEvent(CategoryMapUiEvent.OnCategoryParentPicked(it)) },
             onIconPicked = { onEvent(CategoryMapUiEvent.OnCategoryIconPicked(it)) },
+            onColorPicked = { onEvent(CategoryMapUiEvent.OnCategoryColorPicked(it)) },
             onSave = { onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked) },
             onDismiss = { onEvent(CategoryMapUiEvent.OnCategoryFormDismissed) },
             onDelete = { onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked) },

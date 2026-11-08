@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.core.expenses.data.repository
 
+import com.quare.blitzsplit.core.expenses.data.datasource.AppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapper
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
+import com.quare.blitzsplit.core.provider.room.entity.AppCategoryColorEntity
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -14,6 +17,7 @@ class CategoryRepositoryImpl(
     private val groupLocal: GroupCategoryLocalDataSource,
     private val groupRemote: GroupCategoryRemoteDataSource,
     private val groupMapper: GroupCategoryMapper,
+    private val appColorLocal: AppCategoryColorLocalDataSource,
 ) : CategoryRepository {
     override fun observeGroupCategories(groupId: String): Flow<List<GroupCategory>> = groupLocal
         .observeCategories(groupId)
@@ -24,6 +28,32 @@ class CategoryRepositoryImpl(
         .observeAllCategories()
         .map { entities -> entities.map(groupMapper::toDomain) }
         .distinctUntilChanged()
+
+    // Why: a color this version doesn't know is left out, so the category reads as the app's default.
+    override fun observeAppColors(): Flow<Map<String, CategoryColor>> = appColorLocal
+        .observeColors()
+        .map { entities ->
+            entities
+                .mapNotNull { entity ->
+                    CategoryColor.fromCodeOrNull(entity.color)?.let { entity.categoryKey to it }
+                }.toMap()
+        }.distinctUntilChanged()
+
+    override suspend fun saveAppCategoryColor(
+        categoryKey: String,
+        color: CategoryColor?,
+    ): Result<Unit> = suspendRunCatching {
+        if (color == null) {
+            appColorLocal.clearColor(categoryKey)
+        } else {
+            appColorLocal.setColor(
+                AppCategoryColorEntity(
+                    categoryKey = categoryKey,
+                    color = color.code,
+                ),
+            )
+        }
+    }
 
     override fun observeHasPendingChanges(): Flow<Boolean> = groupLocal.observeHasPending().distinctUntilChanged()
 
@@ -41,6 +71,7 @@ class CategoryRepositoryImpl(
         name: String,
         parentId: String?,
         icon: String?,
+        color: String?,
         updatedAt: Long,
     ): Result<Unit> = suspendRunCatching {
         groupLocal.updateCategory(
@@ -48,6 +79,7 @@ class CategoryRepositoryImpl(
             name = name,
             parentId = parentId,
             icon = icon,
+            color = color,
             now = updatedAt,
         )
     }

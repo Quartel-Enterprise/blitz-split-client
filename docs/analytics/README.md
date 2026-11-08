@@ -347,6 +347,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_group_picked` | `source` (`category_map`) | The new category's Group | `:feature:category_map` |
 | `category_parent_picked` | `source` (`category_map`, `split_bill`) | The category's "Inside" | `:feature:category_map`, `:feature:split_bill` |
 | `category_icon_picked` | `icon`, `source` (`category_map`, `split_bill`) | One of the 18 icons | `:feature:category_map`, `:feature:split_bill` |
+| `category_color_picked` | `color`, `source` (`category_map`, `split_bill`) | One of the 12 colors in the category's form | `:feature:category_map`, `:feature:split_bill` |
+| `app_category_color_picked` | `category` (the app category's key), `color` (a color, or `default` for "Restore color") | The color of one of the app's own categories, from the map | `:feature:category_map` |
 | `category_save_clicked` | `source` (`category_map`, `split_bill`) | The category's Save, also when it can't save yet | `:feature:category_map`, `:feature:split_bill` |
 | `category_saved` | `is_new`, `is_subcategory`, `source` (`category_map`, `split_bill`) | A category saved | `:feature:category_map`, `:feature:split_bill` |
 | `category_delete_clicked` | `source` (`category_map`, `split_bill`) | The category's Delete, which asks first | `:feature:category_map`, `:feature:split_bill` |

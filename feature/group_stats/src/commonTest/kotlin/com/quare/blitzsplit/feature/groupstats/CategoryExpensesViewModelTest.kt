@@ -275,6 +275,7 @@ class CategoryExpensesViewModelTest {
                         AppCategory.FOOD.key,
                         "Churrasco",
                         null,
+                        null,
                         ANA,
                         isDeleted = true,
                         isPending = false,

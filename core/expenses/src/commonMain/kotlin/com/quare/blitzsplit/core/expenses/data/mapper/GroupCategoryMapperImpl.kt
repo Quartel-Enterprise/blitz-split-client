@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.data.mapper
 
 import com.quare.blitzsplit.core.expenses.data.dto.GroupCategoryDto
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.provider.room.entity.GroupCategoryEntity
@@ -13,6 +14,8 @@ class GroupCategoryMapperImpl : GroupCategoryMapper {
         parentId = entity.parentId,
         name = entity.name,
         icon = entity.icon?.let { CategoryIcon.fromCodeOrNull(it) ?: CategoryIcon.DOTS },
+        // Why: a color this version doesn't know reads as none picked, the place's default.
+        color = CategoryColor.fromCodeOrNull(entity.color),
         createdByMemberId = entity.createdByMemberId,
         isDeleted = entity.isDeleted,
         isPending = entity.pendingSync,
@@ -29,6 +32,7 @@ class GroupCategoryMapperImpl : GroupCategoryMapper {
         parentId = category.parentId,
         name = category.name,
         icon = category.icon?.code,
+        color = category.color?.code,
         isDeleted = false,
         addedAt = createdAt,
         updatedAt = createdAt,
@@ -43,6 +47,7 @@ class GroupCategoryMapperImpl : GroupCategoryMapper {
         parentId = dto.parentId,
         name = dto.name,
         icon = dto.icon,
+        color = dto.color,
         isDeleted = dto.isDeleted,
         addedAt = dto.addedAt,
         updatedAt = dto.updatedAt,
@@ -61,6 +66,7 @@ class GroupCategoryMapperImpl : GroupCategoryMapper {
         parentId = entity.parentId,
         name = entity.name,
         icon = entity.icon,
+        color = entity.color,
         isDeleted = entity.isDeleted,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,

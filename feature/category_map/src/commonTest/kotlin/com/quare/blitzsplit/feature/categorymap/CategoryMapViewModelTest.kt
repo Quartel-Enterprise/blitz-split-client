@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RemoveCategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.RestoreCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetAppCategoryColorUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -936,6 +937,7 @@ class CategoryMapViewModelTest {
                     name = "Churrasco",
                     parentId = AppCategory.FOOD.key,
                     icon = null,
+                    color = null,
                     createdByMemberId = null,
                     isDeleted = isGroupCategoryDeleted,
                     isPending = false,
@@ -952,6 +954,7 @@ class CategoryMapViewModelTest {
             saveCategoryTerm = SaveCategoryTermUseCase(terms) { NOW },
             removeCategoryTerm = RemoveCategoryTermUseCase(terms) { NOW },
             restoreCategoryMap = RestoreCategoryMapUseCase(terms) { NOW },
+            setAppCategoryColor = SetAppCategoryColorUseCase(categories),
             saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
             deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             observeCategoryMap = ObserveCategoryMapUseCase(terms),

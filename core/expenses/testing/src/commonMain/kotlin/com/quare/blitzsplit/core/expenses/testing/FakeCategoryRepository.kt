@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.testing
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
@@ -13,6 +14,7 @@ class FakeCategoryRepository(
     initialGroupCategories: List<GroupCategory> = emptyList(),
 ) : CategoryRepository {
     val groupCategories = MutableStateFlow(initialGroupCategories)
+    val appColors = MutableStateFlow(emptyMap<String, CategoryColor>())
     val hasPendingChanges = MutableStateFlow(false)
     val pendingVersions = MutableStateFlow(emptyList<Long>())
     val uploadedUserIds = mutableListOf<String>()
@@ -26,6 +28,17 @@ class FakeCategoryRepository(
         groupCategories.map { list -> list.filter { it.groupId == groupId } }
 
     override fun observeAllGroupCategories(): Flow<List<GroupCategory>> = groupCategories
+
+    override fun observeAppColors(): Flow<Map<String, CategoryColor>> = appColors
+
+    override suspend fun saveAppCategoryColor(
+        categoryKey: String,
+        color: CategoryColor?,
+    ): Result<Unit> {
+        saveError?.let { return Result.failure(it) }
+        appColors.update { if (color == null) it - categoryKey else it + (categoryKey to color) }
+        return Result.success(Unit)
+    }
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
@@ -45,6 +58,7 @@ class FakeCategoryRepository(
         name: String,
         parentId: String?,
         icon: String?,
+        color: String?,
         updatedAt: Long,
     ): Result<Unit> {
         saveError?.let { return Result.failure(it) }
@@ -55,6 +69,7 @@ class FakeCategoryRepository(
                         name = name,
                         parentId = parentId,
                         icon = icon?.let(CategoryIcon::fromCodeOrNull),
+                        color = CategoryColor.fromCodeOrNull(color),
                         isPending = true,
                     )
                 } else {

@@ -835,6 +835,7 @@ class ActivityItemsTest {
             parentId = null,
             name = "Praia",
             icon = CategoryIcon.SUN,
+            color = null,
             createdByMemberId = null,
             isDeleted = false,
             isPending = false,

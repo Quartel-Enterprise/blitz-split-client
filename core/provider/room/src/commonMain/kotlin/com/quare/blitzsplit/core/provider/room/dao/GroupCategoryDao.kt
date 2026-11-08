@@ -57,7 +57,7 @@ interface GroupCategoryDao {
      * behind the device that saved it last. Answers how many changed: none once it was deleted meanwhile.
      */
     @Query(
-        "UPDATE group_category SET name = :name, parentId = :parentId, icon = :icon, " +
+        "UPDATE group_category SET name = :name, parentId = :parentId, icon = :icon, color = :color, " +
             "updatedAt = MAX(:now, updatedAt + 1), pendingSync = 1 WHERE id = :id AND isDeleted = 0",
     )
     suspend fun updateCategory(
@@ -65,6 +65,7 @@ interface GroupCategoryDao {
         name: String,
         parentId: String?,
         icon: String?,
+        color: String?,
         now: Long,
     ): Int
 
@@ -90,6 +91,7 @@ interface GroupCategoryDao {
                 parentId = entity.parentId,
                 name = entity.name,
                 icon = entity.icon,
+                color = entity.color,
                 isDeleted = entity.isDeleted,
                 addedAt = entity.addedAt,
                 remoteUpdatedAt = entity.updatedAt,
@@ -103,7 +105,8 @@ interface GroupCategoryDao {
     // Why: Last-Write-Wins as the server keeps it, a newer server row winning even over a change not pushed yet.
     @Query(
         "UPDATE group_category SET createdBy = :createdBy, createdByMemberId = :createdByMemberId, " +
-            "parentId = :parentId, name = :name, icon = :icon, isDeleted = :isDeleted, addedAt = :addedAt, " +
+            "parentId = :parentId, name = :name, icon = :icon, color = :color, isDeleted = :isDeleted, " +
+            "addedAt = :addedAt, " +
             "updatedAt = :remoteUpdatedAt, pendingSync = 0 WHERE id = :id AND updatedAt < :remoteUpdatedAt",
     )
     suspend fun updateFromRemote(
@@ -113,6 +116,7 @@ interface GroupCategoryDao {
         parentId: String?,
         name: String,
         icon: String?,
+        color: String?,
         isDeleted: Boolean,
         addedAt: Long,
         remoteUpdatedAt: Long,

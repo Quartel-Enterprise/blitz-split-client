@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.data
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomAppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomGroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.dto.GroupCategoryDto
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapperImpl
@@ -114,7 +115,7 @@ class CategoryRepositoryImplTest {
                 ),
                 createdAt = 5L,
             )
-            repository.updateGroupCategory("cat-1", "Bichos", null, "paw", updatedAt = 7L)
+            repository.updateGroupCategory("cat-1", "Bichos", null, "paw", null, updatedAt = 7L)
 
             // When
             remote.rows = listOf(
@@ -248,7 +249,7 @@ class CategoryRepositoryImplTest {
                 ),
                 createdAt = 5L,
             )
-            repository.updateGroupCategory("cat-1", "Bichos", null, "paw", updatedAt = 7L)
+            repository.updateGroupCategory("cat-1", "Bichos", null, "paw", null, updatedAt = 7L)
             remote.rows = listOf(
                 dto(
                     id = "cat-1",
@@ -276,7 +277,7 @@ class CategoryRepositoryImplTest {
             ),
             createdAt = 5L,
         )
-        repository.updateGroupCategory("cat-1", "Bichos", null, "paw", updatedAt = 7L)
+        repository.updateGroupCategory("cat-1", "Bichos", null, "paw", null, updatedAt = 7L)
         remote.rows = listOf(
             dto(
                 id = "cat-1",
@@ -336,6 +337,7 @@ class CategoryRepositoryImplTest {
         parentId = parentId,
         name = name,
         icon = icon,
+        color = null,
         createdByMemberId = "member-1",
         isDeleted = false,
         isPending = true,
@@ -354,6 +356,7 @@ class CategoryRepositoryImplTest {
         parentId = null,
         name = name,
         icon = "paw",
+        color = null,
         isDeleted = false,
         addedAt = 1L,
         updatedAt = updatedAt,
@@ -394,6 +397,7 @@ class CategoryRepositoryImplTest {
             groupLocal = RoomGroupCategoryLocalDataSource(database.groupCategoryDao()),
             groupRemote = remote,
             groupMapper = GroupCategoryMapperImpl(),
+            appColorLocal = RoomAppCategoryColorLocalDataSource(database.appCategoryColorDao()),
         )
     }
 

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -181,6 +182,11 @@ sealed interface SplitBillUiEvent : UiEvent {
             is OnCategoryIconPicked -> EventAnalytics.Automatic(
                 "category_icon_picked",
                 mapOf("icon" to icon, "source" to SPLIT_BILL_SOURCE),
+            )
+
+            is OnCategoryColorPicked -> EventAnalytics.Automatic(
+                "category_color_picked",
+                mapOf("color" to color.code, "source" to SPLIT_BILL_SOURCE),
             )
 
             // Why: the tap, then the category once it is saved.
@@ -493,6 +499,10 @@ sealed interface SplitBillUiEvent : UiEvent {
 
     data class OnCategoryIconPicked(
         val icon: CategoryIcon,
+    ) : Categories
+
+    data class OnCategoryColorPicked(
+        val color: CategoryColor,
     ) : Categories
 
     data object OnCategoryFormSaveClicked : Categories
