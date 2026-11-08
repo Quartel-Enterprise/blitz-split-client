@@ -67,7 +67,8 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     searches instead (`SearchUiEvent.OnSuggestionClicked`); close matches never mix with exact ones, so "churros"
     doesn't bring "Churrasco". It is the same search on all four tabs (Home, Groups, Balances, Contacts, Pierre's call; Activity, no tab
     since its bell, has none), there from the first launch, before the first group too, as an item of the navigation
-    never comes and goes (Pierre's beta feedback; with nothing on the device it says where it looks and finds nothing).
+    never comes and goes (Pierre's beta feedback; with nothing on the device it says where it looks and finds nothing),
+    and an open search stays open with what was typed once a sync takes the last group away, on every tab.
     It is an item of the navigation (Pierre's call),
     placed where each platform looks for it: iOS's search tab at the end of the tab bar on an iPhone, lying down
     too, and in an iPad's narrow window, a round button apart from the tabs' capsule on every tab (Pierre's call;
