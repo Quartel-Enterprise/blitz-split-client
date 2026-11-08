@@ -100,9 +100,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     `PaymentRow.currency`), as do the bill's details and the "Search" and Home bill rows. Statistics have their own chip
     row and read the bills and payments of that currency only; its category list opens the bills of that currency.
   - "Statistics" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Expenses and Balances;
-    "Statistics" with text on the web from the tablet up), with Back and no "Split a bill". It counts only the bills
-    on the device, those in the queue too ("7 expenses, 1 queued", the amber dot), never the payments of Balances
-    (but in "Settling up"), so it works offline. Periods (only this screen keeps one): a trip lists "The whole trip" (the default, from its first
+    "Statistics" with text on the web from the tablet up), with Back and no "Split a bill". On Android its bar is
+    small, with "Statistics" and the group in it rather than in the body, and leaves with the content on scroll (iOS
+    and the web keep their native titles). It counts only the bills on the device, those in the queue too ("7 expenses, 1 queued", the amber dot),
+    never the payments of Balances (but in "Settling up"), so it works offline. Periods (only this screen keeps one): a trip lists "The whole trip" (the default, from its first
     to its last day with a bill), "This month", "Last month" and "Pick dates…"; any other group "This year", "This
     month", "Last month", "All time" (the default, as the notes say) and "Pick dates…" (each platform's date
     range picker, never after today). Total spent, how many bills, "Average per person" (the total over every member,
@@ -160,7 +161,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     a screen of its own over Statistics, back returning to them, rather than the group's Expenses filtered (whose
     header, tabs and payments aren't about a category, and whose back would leave the statistics). Its subtitle is
     the group and the period Statistics showed ("Viagem Floripa · October 2026"); "The whole trip" or "All time"
-    follows new bills, any other period stays those days. Chips list the period's main categories, the largest first
+    follows new bills, any other period stays those days. On Android its bar is Statistics's: small, with the title
+    and subtitle in it, leaving with the content on scroll. Chips list the period's main categories, the largest first
     as "By category" does, the one tapped picked: a tap picks or lets go of more (several at once), "Clear" shows while
     one is picked, and with none picked the list shows every bill of the period; a category picked with no bill left
     stays as a picked chip, over "No expenses in these categories"; with none picked and no bill left in the period it
