@@ -81,7 +81,3 @@ export function CategoryBadge({ category, className }: { category: JsCategory; c
   )
 }
 
-/** The pie's slice color, the avatar color's background in light and dark. */
-export function categoryFill(color: string): React.CSSProperties {
-  return categoryStyle(color)
-}

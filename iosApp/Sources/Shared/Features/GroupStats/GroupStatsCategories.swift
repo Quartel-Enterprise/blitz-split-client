@@ -37,7 +37,7 @@ struct StatsCategoriesSection: View {
                                 outerRadius: .ratio(selected == index ? 1 : 0.92),
                                 angularInset: state.categories.count > 1 ? 1.5 : 0,
                             )
-                            .foregroundStyle(row.category.color.container)
+                            .foregroundStyle(row.category.color.data)
                             .opacity(selected == nil || selected == index ? 1 : 0.4)
                         }
                         // The rest of the turn while the ring sweeps in, drawn in no color
@@ -89,7 +89,7 @@ struct StatsCategoriesSection: View {
                             } label: {
                                 HStack(spacing: 8) {
                                     RoundedRectangle(cornerRadius: 4)
-                                        .fill(row.category.color.container)
+                                        .fill(row.category.color.data)
                                         .frame(width: 12, height: 12)
                                     Text(verbatim: CategoryCopy.name(row.category))
                                         .font(.footnote)
@@ -184,7 +184,7 @@ private struct StatsCategoryLine: View {
                         .font(.subheadline.weight(.semibold))
                         .monospacedDigit()
                 }
-                StatsAmountBar(fraction: row.barFraction)
+                StatsAmountBar(fraction: row.barFraction, color: row.category.color.data)
             }
             Image(systemName: "chevron.forward")
                 .font(.footnote.weight(.semibold))

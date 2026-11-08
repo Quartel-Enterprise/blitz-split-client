@@ -456,7 +456,7 @@ struct ActivityFilterSheet: View {
         } label: {
             pickRow(isOn: isOn) {
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(color?.container ?? .clear)
+                    .fill(color?.data ?? .clear)
                     .frame(width: 20, height: 20)
                 Text(verbatim: name)
             }

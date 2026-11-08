@@ -107,7 +107,7 @@ export function CategoriesCard({
                   selected !== null && selected !== index && 'opacity-40',
                 )}
               >
-                <span style={categoryStyle(row.category.color)} className="avatar size-3 shrink-0 rounded-[4px]" />
+                <span style={categoryStyle(row.category.color)} className="avatar-mark size-3 shrink-0 rounded-[4px]" />
                 <span className="truncate">{categoryName(row.category)}</span>
                 <span className="text-muted-foreground tabular-nums">{row.percent}%</span>
               </button>
@@ -141,7 +141,8 @@ function CategoryLine({ row, money, onOpen }: { row: JsStatsCategory; money: (mi
             <span className="font-semibold tabular-nums">{money(row.amountMinor)}</span>
           </span>
           <span role="img" aria-label={t('groupStats_categoryShare', { name, percent: row.percent })} className="flex h-2 rounded-full bg-muted">
-            <span className="rounded-full bg-primary" style={{ width: `${row.barFraction * 100}%` }} />
+            {/* Why: the bar takes its category's color, as its slice and its legend dot, never the accent. */}
+            <span className="avatar-mark rounded-full" style={{ ...categoryStyle(row.category.color), width: `${row.barFraction * 100}%` }} />
           </span>
         </span>
         <ChevronRight aria-hidden className="size-4 shrink-0 self-center text-muted-foreground" />

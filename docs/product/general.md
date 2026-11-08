@@ -54,6 +54,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     takes the other theme's amber, and the web's is a badge on the amber container): never the orange of what you
     owe (the system's orange matched it in dark mode), and outside the scheme like the green (Android's
     `pendingColor()`, Apple's `Palette.pending`, the web's `--pending`).
+  - A category's or a person's color has three tones on every platform (Android's `toContainerColor`,
+    `toContentColor`, `toDataColor`; Apple's `.container`, `.content`, `.data`; the web's `--avatar-bg`,
+    `--avatar-fg` and `--avatar-data`, which `avatarStyle()` and `categoryStyle()` set, the `avatar` class painting
+    the first two and `avatar-mark`, `avatar-stroke` and `avatar-edge` the data tone): a badge or a face is the
+    container with the content on it, and a mark that carries the color by itself (a slice, a legend dot, a bar, a segment of the default split, a group's dot in Activity) takes the data
+    tone, Material tone 50 light and 75 dark of the color's hue (4:1 and 7:1 on a card), since the container reads at
+    under 2:1 there. A bar measures in the color of what it measures, never the accent, and a picked icon in the
+    category form sits on the category's color, not the accent's.
   - Every text reads at 4.5:1 or more on what is behind it, and a dot, an icon or a field's edge that carries meaning
     at 3:1 (WCAG AA), in light and dark. A filled button's label takes the color made for its fill: on the dark accent
     `#95CDF7` it is `#00344E` (the system's white reads at 1.7:1, so every prominent button on Apple sets

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.designsystem.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,6 +55,7 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
+import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
@@ -147,6 +149,7 @@ fun CategoryFormContent(
             if (!form.isSubcategory) {
                 IconGrid(
                     selected = form.icon,
+                    color = editor.color,
                     onIconPicked = actions.onIconPicked,
                 )
                 Text(
@@ -337,13 +340,18 @@ private fun PreviewRow(editor: CategoryEditor) {
     }
 }
 
-// Why: the 18 icons a main category may take (7.8), a radio group for TalkBack.
+/*
+ * Why: the 18 icons a main category may take (7.8), a radio group for TalkBack. The picked one sits on the category's
+ * own color, as the preview and the saved badge draw it, so the grid never shows the accent as if it were the color.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun IconGrid(
     selected: CategoryIcon,
+    color: CategoryColor,
     onIconPicked: (CategoryIcon) -> Unit,
 ) {
+    val isDark = LocalIsDarkTheme.current
     Text(
         text = stringResource(R.string.designsystem_category_icon),
         style = MaterialTheme.typography.titleSmall,
@@ -360,15 +368,16 @@ private fun IconGrid(
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 color = if (isSelected) {
-                    MaterialTheme.colorScheme.primaryContainer
+                    color.toContainerColor(isDark)
                 } else {
                     MaterialTheme.colorScheme.surfaceContainerHighest
                 },
                 contentColor = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
+                    color.toContentColor(isDark)
                 } else {
-                    MaterialTheme.colorScheme.primary
+                    MaterialTheme.colorScheme.onSurfaceVariant
                 },
+                border = if (isSelected) BorderStroke(2.dp, color.toDataColor(isDark)) else null,
                 modifier = Modifier
                     .size(48.dp)
                     .semantics { contentDescription = label }

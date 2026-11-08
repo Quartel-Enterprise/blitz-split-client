@@ -107,7 +107,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     to its last day with a bill), "This month", "Last month" and "Pick dates…"; any other group "This year", "This
     month", "Last month", "All time" (the default, as the notes say) and "Pick dates…" (each platform's date
     range picker, never after today). Total spent, how many bills, "Average per person" (the total over every member,
-    who hasn't joined included), "Your share" and "You paid"; "By person" shows Consumed (each part as each bill
+    who hasn't joined included), "Your share" and "You paid", on a neutral card under a neutral period chip on every
+    platform (the accent's container is the blue category's own, so a filled card read as one more slice of the ring);
+    "By person" shows Consumed (each part as each bill
     split it) or Paid, the largest first, someone who left the group as "Former member". "Settling up" (Pierre's call, beta
     feedback 12, `GroupStatsUiState.settling`, `SettlingCalculator`) names under it who "Settles fastest" and who
     "Slowest to settle" ("2 days on average", "same day on average", "R$ 80 still open"): each member's bills and
@@ -139,7 +141,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     grain, the period or the chart type changes.
     Then the most expensive one, and "Biggest expense", which opens its Bill. A group without bills says "Nothing to show yet" with "Split a bill"; a period without bills offers "See the whole trip". "By category" draws the
     period's spending as a ring in each main category's color (its own, or the one the person gave it), the largest in its center, then each main
-    category with its amount and its bar, and no list of subcategories under it, which would only crowd the row
+    category with its amount and its bar (the ring, the legend's dots, the bars and Expenses by category's chips in the
+    color's data tone, a person's bar in their face's, never the accent), and no list of subcategories under it, which would only crowd the row
     (`StatsCategoryRow`, whole percentages adding up to 100), a bill without a category counted in Other and one of
     a deleted category in its parent or Other.
     The slice the mouse is over, or its legend line hovered (focused, on the web), pops out while the others fade,

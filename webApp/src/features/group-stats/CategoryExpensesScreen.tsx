@@ -115,7 +115,7 @@ function CategoryChips({ state, presenter }: { state: JsCategoryExpensesState; p
           {chip.isSelected ? (
             <Check aria-hidden className="size-3.5" />
           ) : (
-            <span aria-hidden style={categoryStyle(chip.category.color)} className="avatar size-2.5 rounded-full" />
+            <span aria-hidden style={categoryStyle(chip.category.color)} className="avatar-mark size-2.5 rounded-full" />
           )}
           {categoryName(chip.category)}
         </button>

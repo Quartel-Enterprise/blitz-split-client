@@ -545,7 +545,7 @@ private struct StatsPersonLine: View {
                         .monospacedDigit()
                         .foregroundStyle(person.amountMinor > 0 ? .primary : .secondary)
                 }
-                StatsAmountBar(fraction: person.barFraction)
+                StatsAmountBar(fraction: person.barFraction, color: person.avatarColor.data)
             }
         }
         .opensProfile(person.opensProfile ? onOpen : nil)
@@ -573,14 +573,16 @@ struct StatsAvatarRow<Content: View>: View {
     }
 }
 
+/// The bar takes the color of what it measures (the category's slice, the person's face), never the accent.
 struct StatsAmountBar: View {
     let fraction: Double
+    let color: Color
 
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Capsule().fill(.fill.tertiary)
-                Capsule().fill(Palette.accent).frame(width: geometry.size.width * fraction)
+                Capsule().fill(color).frame(width: geometry.size.width * fraction)
             }
         }
         .frame(height: 6)

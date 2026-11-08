@@ -216,12 +216,13 @@ private fun ExampleFigureBox(
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.large,
-        color = if (isSimplified) {
-            MaterialTheme.colorScheme.primaryContainer
+        // Why: the result stands out by its accent edge, not a fill: the accent's container is the blue face's own color.
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        border = if (isSimplified) {
+            BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
         } else {
-            MaterialTheme.colorScheme.surfaceContainerLowest
+            BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
         },
-        border = if (isSimplified) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
         Column(
             modifier = Modifier

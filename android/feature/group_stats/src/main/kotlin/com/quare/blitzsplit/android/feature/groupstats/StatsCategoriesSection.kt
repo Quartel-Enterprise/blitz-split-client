@@ -47,7 +47,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
-import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
+import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
@@ -180,7 +180,7 @@ private fun CategoryPieDisplay(
         )
     }
     val description = stringResource(R.string.group_stats_category_pie, parts.joinToString(", "))
-    val colors = rows.map { it.category.color.toContainerColor(isDark) }
+    val colors = rows.map { it.category.color.toDataColor(isDark) }
     val pops = rows.indices.map { index ->
         animateFloatAsState(if (pick.selected == index) 1f else 0f, label = "slice").value
     }
@@ -317,7 +317,7 @@ private fun LegendLine(
         Box(
             modifier = Modifier
                 .size(12.dp)
-                .background(row.category.color.toContainerColor(isDark), RoundedCornerShape(4.dp)),
+                .background(row.category.color.toDataColor(isDark), RoundedCornerShape(4.dp)),
         )
         Text(
             text = categoryName(row.category),
@@ -372,7 +372,10 @@ private fun CategoryRowItem(
                     style = MaterialTheme.typography.titleSmall,
                 )
             }
-            StatsAmountBarIndicator(fraction = row.barFraction.toFloat())
+            StatsAmountBarIndicator(
+                fraction = row.barFraction.toFloat(),
+                color = row.category.color.toDataColor(LocalIsDarkTheme.current),
+            )
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,

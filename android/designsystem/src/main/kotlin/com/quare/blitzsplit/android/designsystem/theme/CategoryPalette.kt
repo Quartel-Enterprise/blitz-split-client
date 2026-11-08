@@ -11,6 +11,13 @@ fun CategoryColor.toContainerColor(isDark: Boolean): Color = if (isDark) darkCon
 
 fun CategoryColor.toContentColor(isDark: Boolean): Color = if (isDark) darkContent else lightContent
 
+/*
+ * Why: a mark that carries the category (a slice, a legend dot, a bar) takes this tone, not the container's: the
+ * container is a background and reads at under 2:1 on a card, while this one reads at 4:1 light and 7:1 dark (WCAG's
+ * 3:1 for a meaningful mark), and it never equals one of the theme's own container roles.
+ */
+fun CategoryColor.toDataColor(isDark: Boolean): Color = if (isDark) darkData else lightData
+
 private val CategoryColor.lightContainer: Color
     get() = when (this) {
         CategoryColor.BLUE -> Color(0xFFC9E6FF)
@@ -61,3 +68,35 @@ private val CategoryColor.darkContainer: Color
 
 private val CategoryColor.darkContent: Color
     get() = lightContainer
+
+private val CategoryColor.lightData: Color
+    get() = when (this) {
+        CategoryColor.BLUE -> Color(0xFF017EB7)
+        CategoryColor.ORANGE -> Color(0xFFB95D35)
+        CategoryColor.GREEN -> Color(0xFF008863)
+        CategoryColor.PURPLE -> Color(0xFF8069C0)
+        CategoryColor.YELLOW -> Color(0xFF907400)
+        CategoryColor.RED -> Color(0xFFD93D35)
+        CategoryColor.TEAL -> Color(0xFF00867C)
+        CategoryColor.PINK -> Color(0xFFB55882)
+        CategoryColor.INDIGO -> Color(0xFF6570C7)
+        CategoryColor.LIME -> Color(0xFF678020)
+        CategoryColor.BROWN -> Color(0xFF986E53)
+        CategoryColor.GRAY -> Color(0xFF74777C)
+    }
+
+private val CategoryColor.darkData: Color
+    get() = when (this) {
+        CategoryColor.BLUE -> Color(0xFF69C1FE)
+        CategoryColor.ORANGE -> Color(0xFFFFA17B)
+        CategoryColor.GREEN -> Color(0xFF5ACDA1)
+        CategoryColor.PURPLE -> Color(0xFFC3ACFF)
+        CategoryColor.YELLOW -> Color(0xFFD9B53C)
+        CategoryColor.RED -> Color(0xFFFF9F94)
+        CategoryColor.TEAL -> Color(0xFF3ECDC0)
+        CategoryColor.PINK -> Color(0xFFFF9AC4)
+        CategoryColor.INDIGO -> Color(0xFFABB3FF)
+        CategoryColor.LIME -> Color(0xFFA8C35C)
+        CategoryColor.BROWN -> Color(0xFFE0AF90)
+        CategoryColor.GRAY -> Color(0xFFB7B9BE)
+    }
