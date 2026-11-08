@@ -72,6 +72,7 @@ class FakeAccountRepository(
         }
     var sessionUser: SessionUser? = null
     val abandonedBrowserSignIns = MutableSharedFlow<AbandonedBrowserSignIn>()
+    val sessionRecoveries = MutableSharedFlow<Unit>()
     val returningBrowserSignIn = MutableStateFlow<AccountProvider?>(null)
     val browserSignInReturningToProfile = MutableStateFlow<AccountProvider?>(null)
 
@@ -127,6 +128,8 @@ class FakeAccountRepository(
     }
 
     // Why: the fake has no remote session to read Apple's tokens from, so it only counts the calls.
+    override fun observeSessionRecoveries(): Flow<Unit> = sessionRecoveries
+
     override suspend fun keepAppleTokens() {
         keepAppleTokensCount++
     }

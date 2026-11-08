@@ -19,6 +19,9 @@ interface AccountRepository {
     // Why: never returns, like mirrorSession: sends the server each Apple token a browser sign in brings.
     suspend fun keepAppleTokens()
 
+    // Why: a session whose token couldn't be refreshed got one again, so the sync that failed meanwhile runs again.
+    fun observeSessionRecoveries(): Flow<Unit>
+
     suspend fun getCurrentUserOrNull(): SessionUser?
 
     suspend fun ensureRegistered(): Result<String>

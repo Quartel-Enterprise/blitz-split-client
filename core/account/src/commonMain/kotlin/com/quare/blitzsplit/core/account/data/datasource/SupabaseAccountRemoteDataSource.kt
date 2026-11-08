@@ -29,6 +29,7 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withTimeoutOrNull
@@ -53,6 +54,29 @@ class SupabaseAccountRemoteDataSource(
     override suspend fun getCurrentUserOrNull(): SessionUser? {
         auth.awaitInitialization()
         return auth.currentUserOrNull()?.let(::toSessionUser)
+    }
+
+    // Why: supabase-kt drops the session from currentSessionOrNull while a refresh fails, but keeps it to retry.
+    override suspend fun getSession(): RemoteSession {
+        auth.awaitInitialization()
+        return when (val status = auth.sessionStatus.value) {
+            is SessionStatus.Authenticated ->
+                status.session.user
+                    ?.let { user -> RemoteSession.Active(toSessionUser(user)) }
+                    ?: RemoteSession.None
+
+            is SessionStatus.RefreshFailure -> RemoteSession.Refreshing
+
+            else -> RemoteSession.None
+        }
+    }
+
+    override fun observeSessionRecoveries(): Flow<Unit> = flow {
+        var wasRefreshing = false
+        auth.sessionStatus.collect { status ->
+            if (wasRefreshing && status is SessionStatus.Authenticated) emit(Unit)
+            wasRefreshing = status is SessionStatus.RefreshFailure
+        }
     }
 
     /*

@@ -386,6 +386,27 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a session whose refresh failed WHEN it gets a token again THEN syncs again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.sessionRecoveries.emit(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            listOf(FakeAccountRepository.ANONYMOUS_USER_ID, FakeAccountRepository.ANONYMOUS_USER_ID),
+            profile.downloadedUserIds,
+        )
+    }
+
+    @Test
     fun `GIVEN the other user profile fails to come down WHEN switching THEN pushes nothing over it`() = runTest {
         // Given
         prepareScenario(

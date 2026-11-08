@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.ktor.client.request.HttpRequestBuilder
@@ -115,6 +116,18 @@ class SyncFailureTest {
     fun `GIVEN a failure caused by a request that got no answer WHEN checking it THEN it is a connection failure`() {
         // Given
         val failure = IllegalStateException("sync failed", IllegalArgumentException("pull failed", noAnswer))
+
+        // When
+        val isConnectionFailure = failure.isConnectionFailure()
+
+        // Then
+        assertTrue(isConnectionFailure)
+    }
+
+    @Test
+    fun `GIVEN a session waiting for its refresh WHEN checking the failure THEN it is a connection failure`() {
+        // Given
+        val failure = SessionRefreshingException()
 
         // When
         val isConnectionFailure = failure.isConnectionFailure()
