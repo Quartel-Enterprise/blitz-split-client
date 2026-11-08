@@ -28,6 +28,10 @@
   /* What is saved here and not on the server yet (the queue's dot, "Aguardando envio"): amber, apart from the
      destructive orange of what is owed. */
   --pending: #7c5800;
+  /* The accent's container, behind Activity's badge of a bill, a charge or Simplify debts, as Android's
+     primaryContainer: its own token, since no avatar or category color copies a theme color. */
+  --primary-container: #c9e6ff;
+  --primary-container-foreground: #001e2f;
   --pending-container: #ffdea8;
   --pending-container-foreground: #271900;
   /* The same amber on what stays dark in both themes (the attachment viewer), as --camera-error is. */
@@ -77,6 +81,8 @@
   --destructive-foreground: #552108;
   --positive: #6edbaa;
   --pending: #f9bc3e;
+  --primary-container: #004b6f;
+  --primary-container-foreground: #c9e6ff;
   --pending-container: #5e4200;
   --pending-container-foreground: #ffdea8;
   --border: #27272a;
@@ -120,6 +126,8 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-positive: var(--positive);
   --color-pending: var(--pending);
+  --color-primary-container: var(--primary-container);
+  --color-primary-container-foreground: var(--primary-container-foreground);
   --color-pending-container: var(--pending-container);
   --color-pending-container-foreground: var(--pending-container-foreground);
   --color-pending-on-dark: var(--pending-on-dark);

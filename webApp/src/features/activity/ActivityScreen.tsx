@@ -360,14 +360,17 @@ function kindIcon(item: JsActivityItem): ReactNode {
   }
 }
 
+// Why: a theme color, so its own token: the avatar blue no longer copies the accent's container.
+const accentContainerTone = { className: 'bg-primary-container text-primary-container-foreground' }
+
 // Why: as the canvas colors the badge: bills and charges blue, payments green, people and groups grey, deleted red.
 function badgeTone(item: JsActivityItem): { className: string; style?: React.CSSProperties } {
   if (item.deletion) return { className: 'bg-destructive text-background' }
   if (item.type === 'payments') return { className: 'avatar', style: avatarStyle('green') }
-  if (item.type === 'bills' || item.type === 'charges') return { className: 'avatar', style: avatarStyle('blue') }
+  if (item.type === 'bills' || item.type === 'charges') return accentContainerTone
   if (item.type === 'comments') return { className: 'bg-primary text-primary-foreground' }
-  // Why: "Simplificar dívidas" (13.7) takes the boards' secondary container among the people and groups.
-  if (item.kind === 'simplify_debts_changed') return { className: 'avatar', style: avatarStyle('blue') }
+  // Why: "Simplificar dívidas" (13.7) takes the accent's container among the people and groups.
+  if (item.kind === 'simplify_debts_changed') return accentContainerTone
   return { className: 'bg-muted text-foreground' }
 }
 
