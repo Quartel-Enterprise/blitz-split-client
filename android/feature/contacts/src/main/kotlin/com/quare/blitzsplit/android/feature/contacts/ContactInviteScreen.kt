@@ -139,7 +139,7 @@ internal fun ContactInviteContent(
                 ).semantics { paneTitle = title },
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            InviteHeader(title, onEvent)
+            InviteHeader(title, state.hasNoGroups, onEvent)
             InviteBodyContent(state, onEvent)
         }
 
@@ -157,7 +157,7 @@ internal fun ContactInviteContent(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                InviteHeader(title, onEvent)
+                InviteHeader(title, state.hasNoGroups, onEvent)
                 InviteBodyContent(state, onEvent)
             }
         }
@@ -178,7 +178,7 @@ internal fun ContactInviteContent(
                             .padding(horizontal = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        InviteHeader(title, onEvent)
+                        InviteHeader(title, state.hasNoGroups, onEvent)
                         LinkCard(state)
                     }
                 },
@@ -203,6 +203,7 @@ internal fun ContactInviteContent(
 @Composable
 private fun InviteHeader(
     title: String,
+    hasNoGroups: Boolean,
     onEvent: (ContactInviteUiEvent) -> Unit,
 ) {
     Row(verticalAlignment = Alignment.Top) {
@@ -217,11 +218,14 @@ private fun InviteHeader(
                 modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.headlineSmall,
             )
-            Text(
-                text = stringResource(R.string.contacts_invite_pick_group),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            // Why: with no group there is nothing to pick, and the body already says to create one.
+            if (!hasNoGroups) {
+                Text(
+                    text = stringResource(R.string.contacts_invite_pick_group),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         IconButton(onClick = { onEvent(ContactInviteUiEvent.OnCloseClicked) }) {
             Icon(
@@ -267,17 +271,36 @@ private fun GroupChipsSection(
         return
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.contacts_invite_group_label),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
         if (state.hasNoGroups) {
             Text(
                 text = stringResource(R.string.contacts_invite_no_groups),
                 style = MaterialTheme.typography.bodyMedium,
             )
+            if (!state.isPersonal) {
+                Button(
+                    onClick = { onEvent(ContactInviteUiEvent.OnNewGroupClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 56.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                    )
+                    Text(
+                        text = stringResource(R.string.contacts_invite_new_group),
+                        modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
+                    )
+                }
+            }
+            return@Column
         }
+        Text(
+            text = stringResource(R.string.contacts_invite_group_label),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -406,6 +429,8 @@ private fun InviteButtonsRow(
     state: ContactInviteUiState,
     onEvent: (ContactInviteUiEvent) -> Unit,
 ) {
+    // Why: with no group there is no link to copy or share: "Novo grupo" is the only way on, so nothing is disabled.
+    if (state.hasNoGroups) return
     val hasLink = state.link != null
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(

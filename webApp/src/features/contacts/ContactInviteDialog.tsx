@@ -55,9 +55,10 @@ export function ContactInviteDialog({ route }: { route: JsRoute }) {
       }}
       pane={{
         title: state.name ? t('contactProfile_invite', { name: state.name }) : t('contacts_inviteWithLink'),
-        description: t('contactInvite_pick'),
+        description: state.hasNoGroups ? undefined : t('contactInvite_pick'),
         body: <InviteBody presenter={presenter} state={state} isDesktop={isDesktop} />,
-        footer: (
+        // Why: with no group there is no link to copy or share, so the footer is empty (it still pads the drawer's bottom): "Novo grupo" is the only way on.
+        footer: state.hasNoGroups ? null : (
           <>
             <Button variant="outline" disabled={!hasLink} onClick={() => presenter.copy()} aria-live="polite">
               {state.isLinkCopied ? <Check /> : <Copy />}
@@ -75,6 +76,19 @@ export function ContactInviteDialog({ route }: { route: JsRoute }) {
 }
 
 function InviteBody({ presenter, state, isDesktop }: { presenter: ContactInvitePresenter; state: JsContactInviteState; isDesktop: boolean }) {
+  if (state.hasNoGroups) {
+    return (
+      <div className="flex flex-col gap-4">
+        <p className="text-sm text-muted-foreground">{t('contactInvite_noGroups')}</p>
+        {!state.isPersonal && (
+          <Button size="lg" className="w-full" onClick={() => presenter.newGroup()}>
+            <Plus />
+            {t('contactInvite_newGroup')}
+          </Button>
+        )}
+      </div>
+    )
+  }
   const sub = state.isPersonal
     ? t('contactInvite_subPersonal', { name: state.name ?? '' })
     : state.name
@@ -114,7 +128,6 @@ function InviteBody({ presenter, state, isDesktop }: { presenter: ContactInviteP
           </button>
         )}
       </div>
-      {state.hasNoGroups && <p className="text-sm text-muted-foreground">{t('contactInvite_noGroups')}</p>}
       {state.selectedGroupName != null && (
         <>
           <div className="flex items-center gap-4">

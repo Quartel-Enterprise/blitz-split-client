@@ -102,7 +102,8 @@ private struct ContactInviteContent: View {
 
     var body: some View {
         Group {
-            if let fold = horizontalFold {
+            // With no group there is no QR code: the choices take the whole sheet, in one column.
+            if let fold = horizontalFold, !model.state.hasNoGroups {
                 VStack(spacing: 0) {
                     InviteQrCard(state: model.state)
                         .padding(.horizontal, 24)
@@ -117,7 +118,7 @@ private struct ContactInviteContent: View {
                             .frame(maxWidth: .infinity)
                     }
                 }
-            } else if layout.usesTwoColumns {
+            } else if layout.usesTwoColumns, !model.state.hasNoGroups {
                 ScrollView {
                     TwoColumnsLayout(spacing: 24) {
                         InviteQrCard(state: model.state)
@@ -171,27 +172,46 @@ private struct InviteGroupPicker: View {
             Text(state.hasNoGroups ? "Create a group first: an invite is always a group's link." : "The invite is for a group. Pick which.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-            ScrollView(.horizontal) {
-                HStack(spacing: 8) {
-                    ForEach(state.groups, id: \.groupId) { group in
-                        chip(isSelected: group.groupId == state.selectedGroupId) {
-                            Text(verbatim: group.name)
-                        } action: {
-                            model.send(ContactInviteUiEventOnGroupPicked(groupId: group.groupId))
-                        }
+            if state.hasNoGroups {
+                if !state.isPersonal {
+                    Button {
+                        model.send(ContactInviteUiEventOnNewGroupClicked.shared)
+                    } label: {
+                        Label("New group", systemImage: "plus")
+                            .frame(maxWidth: .infinity)
                     }
-                    if !state.isPersonal {
-                        chip(isSelected: false) {
-                            Label("New group", systemImage: "plus")
-                        } action: {
-                            model.send(ContactInviteUiEventOnNewGroupClicked.shared)
-                        }
+                    .buttonStyle(.borderedProminent)
+                    .prominentLabel()
+                    .sheetButtonSize()
+                    .buttonBorderShape(.capsule)
+                }
+            } else {
+                chips
+            }
+        }
+    }
+
+    private var chips: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 8) {
+                ForEach(state.groups, id: \.groupId) { group in
+                    chip(isSelected: group.groupId == state.selectedGroupId) {
+                        Text(verbatim: group.name)
+                    } action: {
+                        model.send(ContactInviteUiEventOnGroupPicked(groupId: group.groupId))
+                    }
+                }
+                if !state.isPersonal {
+                    chip(isSelected: false) {
+                        Label("New group", systemImage: "plus")
+                    } action: {
+                        model.send(ContactInviteUiEventOnNewGroupClicked.shared)
                     }
                 }
             }
-            .scrollIndicators(.hidden)
-            .accessibilityLabel(Text("Group of the invite"))
         }
+        .scrollIndicators(.hidden)
+        .accessibilityLabel(Text("Group of the invite"))
     }
 
     private func chip(
@@ -280,6 +300,13 @@ private struct InviteNotesAndButtons: View {
     }
 
     var body: some View {
+        // With no group there is no link to copy or share: "New group" is the only way on, so nothing sits disabled.
+        if !state.hasNoGroups {
+            notesAndButtons
+        }
+    }
+
+    private var notesAndButtons: some View {
         VStack(alignment: .leading, spacing: 14) {
             if state.selectedGroup != nil {
                 Text(verbatim: whoJoins)

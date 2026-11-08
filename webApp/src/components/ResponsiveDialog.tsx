@@ -54,7 +54,7 @@ export function ResponsiveDialog({
           <DialogDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DialogDescription>
         </DialogHeader>
         {pane.body}
-        <DialogFooter>{pane.footer}</DialogFooter>
+        {pane.footer != null && <DialogFooter>{pane.footer}</DialogFooter>}
       </DialogContent>
     </Dialog>
   ) : (

@@ -80,7 +80,8 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     the contacts picked under iOS's limited access); no phone number leaves the device, so nobody is shown as
     already using the app. Every invite is a group's link: "Invite with link or QR" (`Route.ContactInvite`) picks
     the group (chips, the most recent first, and "New group") and shows its QR and link, offline too once the
-    group has it. Wide windows (the same as Balances') list the people beside the one picked
+    group has it. With no group yet the sheet shows only why and a filled, full-width "New group" button: Copy link
+    and Share are hidden, never left disabled. Wide windows (the same as Balances') list the people beside the one picked
     (`ContactsUiState.selectedKey`) or the agenda; the invite is a bottom sheet on an Android phone, a 560 dp dialog
     on its tablets (the book's right half), a sheet on iOS and the Mac (540 pt on the iPad), a 480 px dialog on the
     web (a drawer on a phone).
