@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
@@ -12,7 +13,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ReadReceiptUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeReceiptRepository
 import com.quare.blitzsplit.core.expenses.testing.noReceiptCategoryHints
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.provider.image.BillImage
 import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
@@ -172,7 +172,7 @@ class ReadReceiptUseCaseTest {
         app = null,
         name = "Pet",
         icon = CategoryIcon.DOTS,
-        color = AvatarColor.LILAC,
+        color = CategoryColor.PURPLE,
         parentId = null,
         createdByMemberId = "ana",
         isPending = false,

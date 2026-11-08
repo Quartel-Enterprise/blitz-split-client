@@ -81,4 +81,7 @@
     <string name="category_map_new_subcategory_in">Nouvelle sous-catégorie dans %s</string>
     <string name="category_map_edit_category">Modifier %s</string>
     <string name="category_map_category_group">Groupe</string>
+    <string name="category_map_change_color">Changer la couleur de %1$s</string>
+    <string name="category_map_restore_color">Rétablir la couleur</string>
+    <string name="category_map_color_done">Terminé</string>
 </resources>

@@ -54,6 +54,7 @@ import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
@@ -64,6 +65,7 @@ private val previewActions = CategoryFormActions(
     onNameChanged = {},
     onParentPicked = {},
     onIconPicked = {},
+    onColorPicked = {},
     onSave = {},
     onDismiss = {},
     onDelete = {},
@@ -75,6 +77,7 @@ data class CategoryFormActions(
     val onNameChanged: (String) -> Unit,
     val onParentPicked: (String?) -> Unit,
     val onIconPicked: (CategoryIcon) -> Unit,
+    val onColorPicked: (CategoryColor) -> Unit,
     val onSave: () -> Unit,
     val onDismiss: () -> Unit,
     val onDelete: () -> Unit,
@@ -145,6 +148,15 @@ fun CategoryFormContent(
                 IconGrid(
                     selected = form.icon,
                     onIconPicked = actions.onIconPicked,
+                )
+                Text(
+                    text = stringResource(R.string.designsystem_category_color),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                CategoryColorPicker(
+                    selected = form.color,
+                    onSelected = actions.onColorPicked,
                 )
             }
             if (form.isEditing) {

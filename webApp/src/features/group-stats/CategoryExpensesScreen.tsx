@@ -7,7 +7,7 @@ import { SkeletonRows } from '@/components/ui/skeleton'
 import { DayRowGroup, DayRowsTable, ExpenseLine } from '@/features/group-detail/ExpenseRows'
 import { GroupPageSkeleton } from '@/features/group-detail/GroupPage'
 import { t } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { categoryStyle } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -115,7 +115,7 @@ function CategoryChips({ state, presenter }: { state: JsCategoryExpensesState; p
           {chip.isSelected ? (
             <Check aria-hidden className="size-3.5" />
           ) : (
-            <span aria-hidden style={avatarStyle(chip.category.color)} className="avatar size-2.5 rounded-full" />
+            <span aria-hidden style={categoryStyle(chip.category.color)} className="avatar size-2.5 rounded-full" />
           )}
           {categoryName(chip.category)}
         </button>

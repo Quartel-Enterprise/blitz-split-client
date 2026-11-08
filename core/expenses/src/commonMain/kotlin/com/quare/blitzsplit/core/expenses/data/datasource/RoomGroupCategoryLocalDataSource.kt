@@ -27,6 +27,7 @@ class RoomGroupCategoryLocalDataSource(
         name: String,
         parentId: String?,
         icon: String?,
+        color: String?,
         now: Long,
     ) {
         val changed = dao.updateCategory(
@@ -34,6 +35,7 @@ class RoomGroupCategoryLocalDataSource(
             name = name,
             parentId = parentId,
             icon = icon,
+            color = color,
             now = now,
         )
         check(changed == 1) { "No category $id" }

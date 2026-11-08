@@ -81,6 +81,7 @@ struct CategoryEditorActions {
     let name: Binding<String>
     let parent: Binding<String?>
     let pickIcon: (CategoryIcon) -> Void
+    let pickColor: (CategoryColor) -> Void
     let save: () -> Void
     let dismiss: () -> Void
     let askToDelete: () -> Void
@@ -128,6 +129,14 @@ struct CategoryEditorForm<GroupField: View>: View {
                         LazyVGrid(columns: iconColumns, spacing: 8) {
                             ForEach(CategoryIcon.entries, id: \.self) { icon in
                                 iconButton(icon, isSelected: icon == form.icon)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    Section("Color") {
+                        LazyVGrid(columns: iconColumns, spacing: 8) {
+                            ForEach(CategoryColor.entries, id: \.self) { color in
+                                colorButton(color, isSelected: color == form.color)
                             }
                         }
                         .padding(.vertical, 4)
@@ -190,6 +199,26 @@ struct CategoryEditorForm<GroupField: View>: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(CategoryCopy.iconLabel(icon))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private func colorButton(_ color: CategoryColor, isSelected: Bool) -> some View {
+        Button {
+            actions.pickColor(color)
+        } label: {
+            Circle()
+                .fill(color.container)
+                .frame(width: 36, height: 36)
+                .overlay {
+                    if isSelected {
+                        Image(systemName: "checkmark").font(.footnote.bold()).foregroundStyle(color.content)
+                    }
+                }
+                .overlay { Circle().strokeBorder(isSelected ? Palette.accent : .clear, lineWidth: 3) }
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(color.label)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 

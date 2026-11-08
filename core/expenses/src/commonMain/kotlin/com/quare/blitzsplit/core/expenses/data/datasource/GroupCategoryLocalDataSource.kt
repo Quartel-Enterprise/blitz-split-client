@@ -23,6 +23,7 @@ interface GroupCategoryLocalDataSource {
         name: String,
         parentId: String?,
         icon: String?,
+        color: String?,
         now: Long,
     )
 

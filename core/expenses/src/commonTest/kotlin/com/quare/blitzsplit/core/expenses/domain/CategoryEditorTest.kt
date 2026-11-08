@@ -1,12 +1,12 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
-import com.quare.blitzsplit.core.model.AvatarColor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -119,7 +119,7 @@ class CategoryEditorTest {
         val color = editor(form).color
 
         // Then
-        assertEquals(AvatarColor.BLUE, color)
+        assertEquals(CategoryColor.BLUE, color)
     }
 
     @Test
@@ -136,7 +136,7 @@ class CategoryEditorTest {
         val color = editor(form, categories = categories).color
 
         // Then
-        assertEquals(AvatarColor.PEACH, color)
+        assertEquals(CategoryColor.ORANGE, color)
         assertEquals(categories.findOrNull("bar")?.color, color)
     }
 
@@ -144,14 +144,23 @@ class CategoryEditorTest {
     fun `GIVEN a subcategory moved out of its parent WHEN reading the color THEN it is its color as a main category`() {
         // Given
         val form = CategoryForm.editingOrNull(tree, GROUP_ID, "quiosque")!!.withParent(tree, null)
-        val saved = CategoryTree.of(listOf(churrasco, praia, quiosque.copy(parentId = null)))
+        val saved = CategoryTree.of(
+            listOf(
+                churrasco,
+                praia,
+                quiosque.copy(
+                    parentId = null,
+                    color = form.color,
+                ),
+            ),
+        )
 
         // When
         val color = editor(form).color
 
         // Then
         assertEquals(saved.findOrNull("quiosque")?.color, color)
-        assertEquals(AvatarColor.PEACH, color)
+        assertEquals(tree.nextMainColor, color)
     }
 
     @Test
@@ -164,7 +173,7 @@ class CategoryEditorTest {
 
         // Then
         assertEquals(tree.nextMainColor, color)
-        assertEquals(AvatarColor.PEACH, color)
+        assertEquals(CategoryColor.LIME, color)
     }
 
     @Test
@@ -332,6 +341,7 @@ class CategoryEditorTest {
         parentId = AppCategory.FOOD.key,
         name = "Churrasco",
         icon = null,
+        color = null,
         createdByMemberId = "ana",
         isDeleted = false,
         isPending = false,
@@ -343,6 +353,7 @@ class CategoryEditorTest {
         parentId = null,
         name = "Praia",
         icon = CategoryIcon.SUN,
+        color = null,
         createdByMemberId = "carla",
         isDeleted = false,
         isPending = false,

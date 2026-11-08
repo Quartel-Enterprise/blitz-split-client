@@ -6,6 +6,7 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.provider.room.dao.AccountDao
 import com.quare.blitzsplit.core.provider.room.dao.ActivityDao
+import com.quare.blitzsplit.core.provider.room.dao.AppCategoryColorDao
 import com.quare.blitzsplit.core.provider.room.dao.AppInviteDao
 import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
@@ -28,6 +29,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityEventEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityReadEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityStateEntity
+import com.quare.blitzsplit.core.provider.room.entity.AppCategoryColorEntity
 import com.quare.blitzsplit.core.provider.room.entity.AppInviteEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
@@ -74,8 +76,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         BillAttachmentEntity::class,
         BillCommentLikeEntity::class,
         PushSettingsEntity::class,
+        AppCategoryColorEntity::class,
     ],
-    version = 40,
+    version = 41,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -236,6 +239,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             to = 40,
             spec = ExpenseCurrencyMigrationSpec::class,
         ),
+        AutoMigration(
+            from = 40,
+            to = 41,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -263,6 +270,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun hiddenContactDao(): HiddenContactDao
 
     abstract fun groupPinDao(): GroupPinDao
+
+    abstract fun appCategoryColorDao(): AppCategoryColorDao
 
     abstract fun groupCategoryDao(): GroupCategoryDao
 

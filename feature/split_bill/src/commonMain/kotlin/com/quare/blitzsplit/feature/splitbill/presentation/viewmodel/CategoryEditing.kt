@@ -131,6 +131,10 @@ internal class CategoryEditing(
                 state.copy(categoryForm = state.categoryForm?.withIcon(event.icon))
             }
 
+            is SplitBillUiEvent.OnCategoryColorPicked -> uiState.update { state ->
+                state.copy(categoryForm = state.categoryForm?.withColor(event.color))
+            }
+
             SplitBillUiEvent.OnCategoryFormSaveClicked -> {
                 trackEvent("category_save_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
                 save()

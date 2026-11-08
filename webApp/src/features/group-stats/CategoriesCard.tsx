@@ -2,7 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { JsGroupStatsState, JsStatsCategory } from 'blitzsplit-shared'
 import { t } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { categoryStyle } from '@/lib/avatar'
 import { CategoryBadge, categoryName } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { useReplay } from './useReplay'
@@ -72,7 +72,7 @@ export function CategoriesCard({
                   selected === index && 'scale-[1.07]',
                   selected !== null && selected !== index && 'opacity-40',
                 )}
-                style={avatarStyle(row.category.color)}
+                style={categoryStyle(row.category.color)}
                 strokeDasharray={isSwept ? `${length} ${circumference - length}` : `0 ${circumference}`}
                 strokeDashoffset={isSwept ? -offset : 0}
                 onPointerEnter={(event) => {
@@ -107,7 +107,7 @@ export function CategoriesCard({
                   selected !== null && selected !== index && 'opacity-40',
                 )}
               >
-                <span style={avatarStyle(row.category.color)} className="avatar size-3 shrink-0 rounded-[4px]" />
+                <span style={categoryStyle(row.category.color)} className="avatar size-3 shrink-0 rounded-[4px]" />
                 <span className="truncate">{categoryName(row.category)}</span>
                 <span className="text-muted-foreground tabular-nums">{row.percent}%</span>
               </button>

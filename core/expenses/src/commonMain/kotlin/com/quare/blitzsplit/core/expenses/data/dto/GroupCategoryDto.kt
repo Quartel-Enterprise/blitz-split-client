@@ -13,6 +13,7 @@ data class GroupCategoryDto(
     @SerialName("parent_id") val parentId: String?,
     @SerialName("name") val name: String,
     @SerialName("icon") val icon: String?,
+    @SerialName("color") val color: String?,
     @SerialName("is_deleted") val isDeleted: Boolean,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,

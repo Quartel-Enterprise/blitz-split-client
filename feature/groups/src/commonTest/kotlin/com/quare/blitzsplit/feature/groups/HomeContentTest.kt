@@ -745,6 +745,7 @@ class HomeContentTest {
         parentId = parentId,
         name = name,
         icon = icon,
+        color = null,
         createdByMemberId = null,
         isDeleted = isDeleted,
         isPending = false,

@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.utils.TextFolding
 
 /*
@@ -11,6 +10,8 @@ import com.quare.blitzsplit.core.utils.TextFolding
 class CategoryTree private constructor(
     val branches: List<CategoryBranch>,
     private val groupCategories: Map<String, GroupCategory>,
+    // Why: the colors the person gave the app's own categories, by key; the rest keep the app's default.
+    val appColors: Map<String, CategoryColor> = emptyMap(),
 ) {
     // Why: every category one can pick, main ones and subcategories, in the order they are listed.
     val all: List<Category> = branches.flatMap { listOf(it.category) + it.subcategories }
@@ -64,22 +65,32 @@ class CategoryTree private constructor(
     // Why: the subcategories a group category has, which it can't become a subcategory with (two levels only).
     fun hasSubcategories(id: String): Boolean = branchOf(id)?.subcategories?.isNotEmpty() == true
 
-    // Why: a new main category's color, as of() gives it by its place among the group's main categories, deleted too.
-    val nextMainColor: AvatarColor
-        get() = mainColorOf(null)
+    // Why: the color a main category shows, the group's own picked one or the place's default, by id.
+    private val mainColors: Map<String, CategoryColor> =
+        branches.associate { it.category.id to it.category.color }
 
     /*
-     * Why: the color a category gets as a main one, as of() gives it by its place among the group's main categories,
-     * deleted too: its own for a main one, the slot it takes for a subcategory made a main one, the next for a new one.
+     * Why: a new main category's color: the first one no main category uses yet, so each has a coloring of its own
+     * while there are colors left, then around again by how many main categories there are.
      */
-    fun mainColorOf(categoryId: String?): AvatarColor =
-        findColorAt(groupCategories.values.takeWhile { it.id != categoryId }.count { it.parentId == null })
+    val nextMainColor: CategoryColor
+        get() {
+            val used = branches.map { it.category.color }.toSet()
+            return CategoryColor.entries.firstOrNull { it !in used }
+                ?: findColorAt(branches.size)
+        }
+
+    /*
+     * Why: the color a category gets as a main one: its own for a main one, the next for a new one or for a
+     * subcategory made a main one.
+     */
+    fun mainColorOf(categoryId: String?): CategoryColor = categoryId?.let(mainColors::get) ?: nextMainColor
 
     /*
      * Why: one group's categories out of every group's (the map's, flow 9), which a category created or edited there
      * is checked against, as a bill's Categoria checks its group's.
      */
-    fun ofGroup(groupId: String): CategoryTree = of(groupCategories.values.filter { it.groupId == groupId })
+    fun ofGroup(groupId: String): CategoryTree = of(groupCategories.values.filter { it.groupId == groupId }, appColors)
 
     // Why: how many bills each category has, by the category they read as: "usada em 3 contas" (7.8e).
     fun usageOf(expenses: List<Expense>): Map<String, Int> = expenses
@@ -91,7 +102,13 @@ class CategoryTree private constructor(
         // Why: two levels, so a deleted subcategory reaches a live category in at most two steps.
         private const val MAX_DEPTH = 3
 
-        fun of(groupCategories: List<GroupCategory>): CategoryTree {
+        // Why: the colors a group category could have before they were picked.
+        private const val LEGACY_COLOR_COUNT = 5
+
+        fun of(
+            groupCategories: List<GroupCategory>,
+            appColors: Map<String, CategoryColor> = emptyMap(),
+        ): CategoryTree {
             val liveGroup = groupCategories.filterNot { it.isDeleted }
             val groupMains = liveGroup.filter { it.parentId == null }
             // Why: a group main category's color goes by its place among all of them, so deleting one moves none.
@@ -100,18 +117,19 @@ class CategoryTree private constructor(
                 .mapIndexed { index, main -> main.id to index }
                 .toMap()
             val appBranches = AppCategory.mains.map { main ->
-                val category = appCategoryOf(main)
+                val category = appCategoryOf(main, appColors)
                 CategoryBranch(
                     category = category,
-                    subcategories = AppCategory.entries.filter { it.parentKey == main.key }.map(::appCategoryOf) +
-                        groupSubcategoriesOf(liveGroup, category),
+                    subcategories =
+                        AppCategory.entries.filter { it.parentKey == main.key }.map { appCategoryOf(it, appColors) } +
+                            groupSubcategoriesOf(liveGroup, category),
                 )
             }
             val groupBranches = groupMains.map { main ->
                 val category = groupCategoryOf(
                     category = main,
                     icon = main.icon ?: CategoryIcon.DOTS,
-                    color = findColorAt(colorIndexes.getValue(main.id)),
+                    color = main.color ?: findLegacyColorAt(colorIndexes.getValue(main.id)),
                 )
                 CategoryBranch(
                     category = category,
@@ -122,6 +140,7 @@ class CategoryTree private constructor(
             return CategoryTree(
                 branches = appBranches.dropLast(1) + groupBranches + other,
                 groupCategories = groupCategories.associateBy { it.id },
+                appColors = appColors,
             )
         }
 
@@ -129,10 +148,13 @@ class CategoryTree private constructor(
          * Why: every group's categories on the device, for the person's map (9.1): each group's tree built on its
          * own, so a category keeps the color it has in its group, then their branches merged, in the groups' order.
          */
-        fun ofGroups(groupCategories: List<GroupCategory>): CategoryTree {
-            val trees = groupCategories.groupBy { it.groupId }.values.map(::of)
+        fun ofGroups(
+            groupCategories: List<GroupCategory>,
+            appColors: Map<String, CategoryColor> = emptyMap(),
+        ): CategoryTree {
+            val trees = groupCategories.groupBy { it.groupId }.values.map { of(it, appColors) }
             trees.singleOrNull()?.let { return it }
-            val appBranches = appOnly.branches.map { branch ->
+            val appBranches = of(emptyList(), appColors).branches.map { branch ->
                 CategoryBranch(
                     category = branch.category,
                     subcategories = branch.subcategories + trees.flatMap { tree ->
@@ -148,13 +170,26 @@ class CategoryTree private constructor(
             return CategoryTree(
                 branches = appBranches.dropLast(1) + groupBranches + appBranches.last(),
                 groupCategories = groupCategories.associateBy { it.id },
+                appColors = appColors,
             )
         }
 
         // Why: the app's alone, for a bill whose group has no category of its own; built once, as it never changes.
         val appOnly: CategoryTree by lazy { of(emptyList()) }
 
-        private fun findColorAt(mainIndex: Int): AvatarColor = AvatarColor.entries[mainIndex % AvatarColor.entries.size]
+        private fun findColorAt(mainIndex: Int): CategoryColor = CategoryColor.entries[
+            mainIndex %
+                CategoryColor.entries.size,
+        ]
+
+        // Why: a category made before colors could be picked keeps the five colors it always had, by its place.
+        private fun findLegacyColorAt(mainIndex: Int): CategoryColor = when (mainIndex % LEGACY_COLOR_COUNT) {
+            0 -> CategoryColor.BLUE
+            1 -> CategoryColor.ORANGE
+            2 -> CategoryColor.GREEN
+            3 -> CategoryColor.PURPLE
+            else -> CategoryColor.YELLOW
+        }
 
         private fun groupSubcategoriesOf(
             groupCategories: List<GroupCategory>,
@@ -169,12 +204,15 @@ class CategoryTree private constructor(
                 )
             }
 
-        private fun appCategoryOf(category: AppCategory): Category = Category(
+        private fun appCategoryOf(
+            category: AppCategory,
+            appColors: Map<String, CategoryColor>,
+        ): Category = Category(
             id = category.key,
             app = category,
             name = null,
             icon = category.icon,
-            color = category.color,
+            color = appColors[(category.parent ?: category).key] ?: category.defaultColor,
             parentId = category.parentKey,
             createdByMemberId = null,
             isPending = false,
@@ -183,7 +221,7 @@ class CategoryTree private constructor(
         private fun groupCategoryOf(
             category: GroupCategory,
             icon: CategoryIcon,
-            color: AvatarColor,
+            color: CategoryColor,
         ): Category = Category(
             id = category.id,
             app = null,

@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import type { JsCategory } from 'blitzsplit-shared'
 import { t, type MessageKey } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { categoryStyle } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
 /** The lucide icon of each CategoryIcon code, the same pictures the other platforms draw. */
@@ -75,7 +75,7 @@ export function categoryPath(category: JsCategory, parent: JsCategory | null | u
 export function CategoryBadge({ category, className }: { category: JsCategory; className?: string }) {
   const Icon = categoryIconOf(category.icon)
   return (
-    <span aria-hidden style={avatarStyle(category.color)} className={cn('avatar flex size-10 shrink-0 items-center justify-center rounded-xl', className)}>
+    <span aria-hidden style={categoryStyle(category.color)} className={cn('avatar flex size-10 shrink-0 items-center justify-center rounded-xl', className)}>
       <Icon className="size-[55%]" />
     </span>
   )
@@ -83,5 +83,5 @@ export function CategoryBadge({ category, className }: { category: JsCategory; c
 
 /** The pie's slice color, the avatar color's background in light and dark. */
 export function categoryFill(color: string): React.CSSProperties {
-  return avatarStyle(color)
+  return categoryStyle(color)
 }

@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -239,6 +240,19 @@ class CategoryMapPresenter {
     fun pickIcon(code: String) {
         val icon = CategoryIcon.fromCodeOrNull(code) ?: return
         viewModel.onEvent(CategoryMapUiEvent.OnCategoryIconPicked(icon))
+    }
+
+    fun pickColor(code: String) {
+        val color = CategoryColor.fromCodeOrNull(code) ?: return
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(color))
+    }
+
+    // Why: the color of one of the app's own categories, on this device only; a null code brings the default back.
+    fun pickAppCategoryColor(
+        categoryKey: String,
+        code: String?,
+    ) {
+        viewModel.onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(categoryKey, CategoryColor.fromCodeOrNull(code)))
     }
 
     fun save() {

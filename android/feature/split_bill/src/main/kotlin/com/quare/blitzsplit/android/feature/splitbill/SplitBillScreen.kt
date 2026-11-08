@@ -311,6 +311,7 @@ private fun BillCategoryFormContent(
                 onNameChanged = { onEvent(SplitBillUiEvent.OnCategoryNameChanged(it)) },
                 onParentPicked = { onEvent(SplitBillUiEvent.OnCategoryParentPicked(it)) },
                 onIconPicked = { onEvent(SplitBillUiEvent.OnCategoryIconPicked(it)) },
+                onColorPicked = { onEvent(SplitBillUiEvent.OnCategoryColorPicked(it)) },
                 onSave = { onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked) },
                 onDismiss = { onEvent(SplitBillUiEvent.OnCategoryFormDismissed) },
                 onDelete = { onEvent(SplitBillUiEvent.OnCategoryDeleteClicked) },

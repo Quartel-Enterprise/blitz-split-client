@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
@@ -22,7 +23,7 @@ class SaveGroupCategoryUseCaseTest {
         val name = "  Pet  "
 
         // When
-        val id = save(null, GROUP_ID, name, null, CategoryIcon.PAW, "me").getOrThrow()
+        val id = save(null, GROUP_ID, name, null, CategoryIcon.PAW, CategoryColor.TEAL, "me").getOrThrow()
 
         // Then
         val stored = repository.groupCategories.value.single()
@@ -36,7 +37,7 @@ class SaveGroupCategoryUseCaseTest {
         val parentId = "food"
 
         // When
-        save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, "me")
+        save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, CategoryColor.TEAL, "me")
 
         // Then
         assertNull(
@@ -52,7 +53,7 @@ class SaveGroupCategoryUseCaseTest {
         val name = "   "
 
         // When
-        val result = save(null, GROUP_ID, name, null, CategoryIcon.PAW, "me")
+        val result = save(null, GROUP_ID, name, null, CategoryIcon.PAW, CategoryColor.TEAL, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -70,6 +71,7 @@ class SaveGroupCategoryUseCaseTest {
                     null,
                     "Pet",
                     CategoryIcon.PAW,
+                    null,
                     "ana",
                     isDeleted = false,
                     isPending = false,
@@ -77,7 +79,7 @@ class SaveGroupCategoryUseCaseTest {
             )
 
             // When
-            save("cat-1", GROUP_ID, "Bichos", "home", CategoryIcon.PAW, "me")
+            save("cat-1", GROUP_ID, "Bichos", "home", CategoryIcon.PAW, CategoryColor.TEAL, "me")
             val edited = repository.observeGroupCategories(GROUP_ID).first().single()
             DeleteGroupCategoryUseCase(repository) { 2_000L }("cat-1")
 
@@ -96,7 +98,7 @@ class SaveGroupCategoryUseCaseTest {
         val parentId = "other"
 
         // When
-        val result = save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, "me")
+        val result = save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, CategoryColor.TEAL, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -109,7 +111,7 @@ class SaveGroupCategoryUseCaseTest {
         repository.groupCategories.value = listOf(category("pet", parentId = null), category("vet", parentId = "pet"))
 
         // When
-        val result = save(null, GROUP_ID, "Banho", "vet", CategoryIcon.PAW, "me")
+        val result = save(null, GROUP_ID, "Banho", "vet", CategoryIcon.PAW, CategoryColor.TEAL, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -121,7 +123,7 @@ class SaveGroupCategoryUseCaseTest {
         repository.groupCategories.value = listOf(category("pet", parentId = null))
 
         // When
-        val id = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, "me").getOrThrow()
+        val id = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, CategoryColor.TEAL, "me").getOrThrow()
 
         // Then
         assertEquals(
@@ -144,7 +146,7 @@ class SaveGroupCategoryUseCaseTest {
         )
 
         // When
-        val result = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, "me")
+        val result = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, CategoryColor.TEAL, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -158,7 +160,7 @@ class SaveGroupCategoryUseCaseTest {
                 listOf(category("pet", parentId = null), category("vet", parentId = "pet"))
 
             // When
-            val result = save("pet", GROUP_ID, "Pet", "home", CategoryIcon.PAW, "me")
+            val result = save("pet", GROUP_ID, "Pet", "home", CategoryIcon.PAW, CategoryColor.TEAL, "me")
 
             // Then
             assertTrue(result.isFailure)
@@ -179,6 +181,7 @@ class SaveGroupCategoryUseCaseTest {
         parentId = parentId,
         name = id,
         icon = CategoryIcon.PAW.takeIf { parentId == null },
+        color = null,
         createdByMemberId = "ana",
         isDeleted = isDeleted,
         isPending = false,

@@ -223,6 +223,8 @@ struct MapDetailSections: View {
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
+                    ChangeCategoryColorMenu(category: section.category, model: model)
+                        .labelStyle(.iconOnly)
                     EditCategoryButton(category: section.category, model: model)
                         .labelStyle(.iconOnly)
                 }
@@ -256,6 +258,8 @@ struct MapSectionCard: View {
                         .font(.caption)
                 }
                 Spacer()
+                ChangeCategoryColorMenu(category: section.category, model: model)
+                    .labelStyle(.iconOnly)
                 EditCategoryButton(category: section.category, model: model)
                     .labelStyle(.iconOnly)
             }

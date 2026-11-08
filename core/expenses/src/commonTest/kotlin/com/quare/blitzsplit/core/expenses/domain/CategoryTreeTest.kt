@@ -1,12 +1,12 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,7 +28,7 @@ class CategoryTreeTest {
         assertEquals(listOf("praia", AppCategory.OTHER.key), mains.takeLast(2))
         assertEquals("churrasco", food?.subcategories?.last()?.id)
         assertEquals(CategoryIcon.FOOD, food?.subcategories?.last()?.icon)
-        assertEquals(AvatarColor.BLUE, food?.subcategories?.last()?.color)
+        assertEquals(CategoryColor.BLUE, food?.subcategories?.last()?.color)
     }
 
     @Test
@@ -195,7 +195,7 @@ class CategoryTreeTest {
     }
 
     @Test
-    fun `GIVEN only the app categories WHEN asking the next main color THEN it is the first of the palette`() {
+    fun `GIVEN only the app categories WHEN asking the next main color THEN it is the first unused color`() {
         // Given
         val tree = CategoryTree.appOnly
 
@@ -203,11 +203,11 @@ class CategoryTreeTest {
         val color = tree.nextMainColor
 
         // Then
-        assertEquals(AvatarColor.entries.first(), color)
+        assertEquals(CategoryColor.LIME, color)
     }
 
     @Test
-    fun `GIVEN a deleted main a live main and a sub WHEN asking the next main color THEN mains count`() {
+    fun `GIVEN a deleted main a live main and a sub WHEN asking the next main color THEN the deleted one takes none`() {
         // Given
         val bar = praia.copy(
             id = "bar",
@@ -219,16 +219,17 @@ class CategoryTreeTest {
         val color = tree.nextMainColor
 
         // Then
-        assertEquals(AvatarColor.entries[2], color)
+        assertEquals(CategoryColor.LIME, color)
     }
 
     @Test
     fun `GIVEN as many main categories as colors WHEN asking the next main color THEN it starts the palette again`() {
         // Given
-        val mains = AvatarColor.entries.indices.map { index ->
+        val mains = CategoryColor.entries.indices.map { index ->
             praia.copy(
                 id = "main-$index",
                 name = "Main $index",
+                color = CategoryColor.entries[index],
             )
         }
         val tree = CategoryTree.of(mains)
@@ -237,7 +238,7 @@ class CategoryTreeTest {
         val color = tree.nextMainColor
 
         // Then
-        assertEquals(AvatarColor.entries.first(), color)
+        assertEquals(CategoryColor.entries[tree.branches.size % CategoryColor.entries.size], color)
     }
 
     @Test
@@ -247,6 +248,7 @@ class CategoryTreeTest {
         val bar = praia.copy(
             id = "bar",
             name = "Bar",
+            color = before.nextMainColor,
         )
 
         // When
@@ -314,6 +316,7 @@ class CategoryTreeTest {
         parentId = AppCategory.FOOD.key,
         name = "Churrasco",
         icon = null,
+        color = null,
         createdByMemberId = "ana",
         isDeleted = false,
         isPending = false,
@@ -325,6 +328,7 @@ class CategoryTreeTest {
         parentId = null,
         name = "Praia",
         icon = CategoryIcon.SUN,
+        color = null,
         createdByMemberId = "carla",
         isDeleted = false,
         isPending = true,

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.domain
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
@@ -11,8 +12,8 @@ import kotlin.test.assertEquals
 
 class SaveGroupCategoryFormTest {
     private val calls = mutableListOf<List<Any?>>()
-    private val save = SaveGroupCategory { categoryId, groupId, name, parentId, icon, createdByMemberId ->
-        calls += listOf(categoryId, groupId, name, parentId, icon, createdByMemberId)
+    private val save = SaveGroupCategory { categoryId, groupId, name, parentId, icon, color, createdByMemberId ->
+        calls += listOf(categoryId, groupId, name, parentId, icon, color, createdByMemberId)
         Result.success(categoryId ?: "new-id")
     }
 
@@ -30,7 +31,9 @@ class SaveGroupCategoryFormTest {
         // Then
         assertEquals("new-id", result.getOrThrow())
         assertEquals(
-            listOf<List<Any?>>(listOf(null, "group-2", "Feira", AppCategory.FOOD.key, CategoryIcon.FOOD, "me")),
+            listOf<List<Any?>>(
+                listOf(null, "group-2", "Feira", AppCategory.FOOD.key, CategoryIcon.FOOD, CategoryColor.BLUE, "me"),
+            ),
             calls,
         )
     }
@@ -48,7 +51,9 @@ class SaveGroupCategoryFormTest {
 
         // Then
         assertEquals(
-            listOf<List<Any?>>(listOf("feira", "group-2", "Feira", AppCategory.FOOD.key, CategoryIcon.FOOD, "ana")),
+            listOf<List<Any?>>(
+                listOf("feira", "group-2", "Feira", AppCategory.FOOD.key, CategoryIcon.FOOD, CategoryColor.BLUE, "ana"),
+            ),
             calls,
         )
     }
@@ -77,6 +82,7 @@ class SaveGroupCategoryFormTest {
         name = "Feira",
         parentId = AppCategory.FOOD.key,
         icon = CategoryIcon.FOOD,
+        color = CategoryColor.BLUE,
         createdByMemberId = createdByMemberId,
         isSaving = false,
     )

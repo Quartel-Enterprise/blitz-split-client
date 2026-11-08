@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +28,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +45,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.CategoryColorPicker
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
@@ -125,10 +132,53 @@ private fun SectionHeader(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        ChangeColorButton(
+            category = section.category,
+            onEvent = onEvent,
+        )
         EditCategoryButton(
             category = section.category,
             state = state,
             onEvent = onEvent,
+        )
+    }
+}
+
+// Why: "Cor da categoria" on one of the app's main categories (7.7), on this device only; a group's changes its color in its form.
+@Composable
+private fun ChangeColorButton(
+    category: Category,
+    onEvent: (CategoryMapUiEvent) -> Unit,
+) {
+    val app = category.app
+    if (app == null || !app.isMain || category.isOther) return
+    var isOpen by remember { mutableStateOf(false) }
+    IconButton(onClick = { isOpen = true }) {
+        Icon(
+            imageVector = Icons.Outlined.Palette,
+            contentDescription = stringResource(R.string.category_map_change_color, categoryName(category)),
+        )
+    }
+    if (isOpen) {
+        AlertDialog(
+            onDismissRequest = { isOpen = false },
+            title = { Text(stringResource(R.string.category_map_change_color, categoryName(category))) },
+            text = {
+                CategoryColorPicker(
+                    selected = category.color,
+                    onSelected = { onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(category.id, it)) },
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { isOpen = false }) {
+                    Text(stringResource(R.string.category_map_color_done))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(category.id, null)) }) {
+                    Text(stringResource(R.string.category_map_restore_color))
+                }
+            },
         )
     }
 }
