@@ -84,7 +84,7 @@ private class CategoryPick(
 
 /*
  * Why: "Por categoria" (6.6): the pie with the largest category in its center and the legend with the percentages,
- * then each main category with its subcategories under it, each in its fixed color.
+ * then each main category, each in its fixed color.
  */
 @Composable
 internal fun StatsCategoriesSection(
@@ -333,7 +333,7 @@ private fun LegendLine(
     }
 }
 
-// Why: "Casa R$ 8.000,00 · 80%", its bar, and "Aluguel R$ 7.000,00 · Condomínio R$ 1.000,00" under it.
+// Why: "Casa R$ 8.000,00 · 80%", and its bar.
 @Composable
 private fun CategoryRowItem(
     row: StatsCategoryRow,
@@ -342,7 +342,6 @@ private fun CategoryRowItem(
 ) {
     val name = categoryName(row.category)
     val share = stringResource(R.string.group_stats_category_share, name, row.percent)
-    val subcategories = row.subcategories.map { "${categoryName(it.category)} ${money.toText(it.amountMinor)}" }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -374,13 +373,6 @@ private fun CategoryRowItem(
                 )
             }
             StatsAmountBarIndicator(fraction = row.barFraction.toFloat())
-            if (subcategories.isNotEmpty()) {
-                Text(
-                    text = subcategories.joinToString(" · "),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,

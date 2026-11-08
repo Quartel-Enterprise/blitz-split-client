@@ -160,17 +160,11 @@ class JsGroupStatsState(
     val homeTab: String,
 )
 
-class JsStatsSubcategory(
-    val category: JsCategory,
-    val amountMinor: Double,
-)
-
 class JsStatsCategory(
     val category: JsCategory,
     val amountMinor: Double,
     val percent: Int,
     val barFraction: Double,
-    val subcategories: Array<JsStatsSubcategory>,
 )
 
 class GroupStatsPresenter(
@@ -319,9 +313,6 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
                 amountMinor = row.amountMinor.toDouble(),
                 percent = row.percent,
                 barFraction = row.barFraction,
-                subcategories = row.subcategories
-                    .map { JsStatsSubcategory(toJsCategory(it.category), it.amountMinor.toDouble()) }
-                    .toTypedArray(),
             )
         }.toTypedArray(),
     isGroupEmpty = state.isGroupEmpty,

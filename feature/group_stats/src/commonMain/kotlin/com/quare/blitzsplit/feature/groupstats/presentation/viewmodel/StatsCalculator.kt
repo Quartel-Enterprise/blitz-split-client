@@ -21,7 +21,6 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleVie
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -239,22 +238,16 @@ internal class StatsCalculator(
         val byMain = byCategory.entries.groupBy({ categories.mainOf(it.key) }, { it })
         val total = spending.totalMinor
         val mains = byMain
-            .map { (main, entries) ->
-                val subcategories = entries
-                    .filter { (category, _) -> category.id != main.id }
-                    .map { (category, bills) -> StatsSubcategory(category, bills.sumOf { it.amountMinor }) }
-                    .sortedByDescending { it.amountMinor }
-                main to (entries.sumOf { (_, bills) -> bills.sumOf { it.amountMinor } } to subcategories)
-            }.sortedByDescending { it.second.first }
-        val percents = findRoundedPercents(mains.map { it.second.first }, total)
-        val largest = mains.firstOrNull()?.second?.first ?: 0L
-        return mains.mapIndexed { index, (main, amounts) ->
+            .map { (main, entries) -> main to entries.sumOf { (_, bills) -> bills.sumOf { it.amountMinor } } }
+            .sortedByDescending { it.second }
+        val percents = findRoundedPercents(mains.map { it.second }, total)
+        val largest = mains.firstOrNull()?.second ?: 0L
+        return mains.mapIndexed { index, (main, amount) ->
             StatsCategoryRow(
                 category = main,
-                amountMinor = amounts.first,
+                amountMinor = amount,
                 percent = percents[index],
-                barFraction = if (largest > 0) amounts.first.toDouble() / largest else 0.0,
-                subcategories = amounts.second,
+                barFraction = if (largest > 0) amount.toDouble() / largest else 0.0,
             )
         }
     }

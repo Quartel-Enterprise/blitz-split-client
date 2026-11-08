@@ -138,8 +138,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     grain, the period or the chart type changes.
     Then the most expensive one, and "Biggest expense", which opens its Bill. A group without bills says "Nothing to show yet" with "Split a bill"; a period without bills offers "See the whole trip". "By category" draws the
     period's spending as a ring in each main category's fixed color, the largest in its center, then each main
-    category with its amount, its bar and its subcategories' amounts (`StatsCategoryRow`, whole percentages adding up
-    to 100), a bill without a category counted in Other and one of a deleted category in its parent or Other.
+    category with its amount and its bar, and no list of subcategories under it, which would only crowd the row
+    (`StatsCategoryRow`, whole percentages adding up to 100), a bill without a category counted in Other and one of
+    a deleted category in its parent or Other.
     The slice the mouse is over, or its legend line hovered (focused, on the web), pops out while the others fade,
     and the ring's middle names it with its share instead of the largest category. A tap or a click on a slice, a
     legend line (which makes even a 2% slice easy to reach) or a category's row, which ends in a chevron, opens that

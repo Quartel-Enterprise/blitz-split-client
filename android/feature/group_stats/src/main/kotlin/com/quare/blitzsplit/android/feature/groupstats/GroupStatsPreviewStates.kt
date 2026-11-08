@@ -22,7 +22,6 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettler
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettling
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSubcategory
 import kotlin.time.Duration.Companion.days
 
 // Why: Viagem Floripa as the canvas draws it, 24 to 29 October 2026.
@@ -160,9 +159,6 @@ private fun createPreviewCategories(): List<StatsCategoryRow> {
             amountMinor = amount,
             percent = percent,
             barFraction = amount / 120_000.0,
-            subcategories = tree.branchOf(category.key)?.subcategories.orEmpty().take(2).map {
-                StatsSubcategory(it, amount / 2)
-            },
         )
     }
 }
