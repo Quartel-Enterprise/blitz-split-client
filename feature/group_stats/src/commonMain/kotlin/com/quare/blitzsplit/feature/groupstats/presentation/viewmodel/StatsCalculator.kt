@@ -234,11 +234,10 @@ internal class StatsCalculator(
      * they add up to 100 by the largest remainders.
      */
     fun createCategories(spending: GroupSpending): List<StatsCategoryRow> {
-        val byCategory = spending.expenses.groupBy { categories.resolve(it.categoryId) }
-        val byMain = byCategory.entries.groupBy({ categories.mainOf(it.key) }, { it })
         val total = spending.totalMinor
-        val mains = byMain
-            .map { (main, entries) -> main to entries.sumOf { (_, bills) -> bills.sumOf { it.amountMinor } } }
+        val mains = spending.expenses
+            .groupBy { categories.mainOf(categories.resolve(it.categoryId)) }
+            .map { (main, bills) -> main to bills.sumOf { it.amountMinor } }
             .sortedByDescending { it.second }
         val percents = findRoundedPercents(mains.map { it.second }, total)
         val largest = mains.firstOrNull()?.second ?: 0L

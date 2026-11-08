@@ -3,10 +3,9 @@ import Shared
 import SwiftUI
 
 /// "By category" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
-/// legend with the percentages, then each main category with its bar. The slice the pointer is
-/// over (or its legend line) pops out, the others fade, and the center names it with its share; a tap or a click on a
-/// slice, a legend line or a row opens the category's bills ("Expenses by category"). The ring sweeps in when the
-/// period changes.
+/// legend with the percentages, then each main category with its bar. The slice the pointer is over (or its legend
+/// line) pops out, the others fade, and the center names it with its share; a tap or a click on a slice, a legend line
+/// or a row opens the category's bills ("Expenses by category"). The ring sweeps in when the period changes.
 struct StatsCategoriesSection: View {
     let state: GroupStatsUiState
     var pieSize: CGFloat = 132
