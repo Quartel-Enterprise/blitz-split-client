@@ -1,4 +1,4 @@
-import { ChevronRight, CircleCheck, HandCoins, Pencil, ReceiptText, Share2, ShieldCheck, Trash2, X } from 'lucide-react'
+import { ChevronRight, CircleCheck, Copy, HandCoins, Pencil, ReceiptText, Share2, ShieldCheck, Trash2, X } from 'lucide-react'
 import {
   GroupDetailPresenter,
   type JsExpenseRow,
@@ -192,7 +192,7 @@ function ExpensesTable({ presenter, state }: { presenter: GroupDetailPresenter; 
   )
 }
 
-/** A bill's line, its ⋮ offering Conta's Editar, Compartilhar and Apagar without opening it. */
+/** A bill's line, its ⋮ offering Conta's Editar, Duplicar, Compartilhar and Apagar without opening it. */
 function ExpenseRowItem({ presenter, expense }: { presenter: GroupDetailPresenter; expense: JsExpenseRow }) {
   return (
     <ExpenseLine
@@ -202,6 +202,7 @@ function ExpenseRowItem({ presenter, expense }: { presenter: GroupDetailPresente
       onOpen={() => presenter.openExpense(expense.id)}
       options={[
         { icon: <Pencil />, label: t('groupDetail_entryEdit'), onSelect: () => presenter.editExpense(expense.id) },
+        { icon: <Copy />, label: t('groupDetail_entryDuplicate'), onSelect: () => presenter.duplicateExpense(expense.id) },
         { icon: <Share2 />, label: t('groupDetail_entryShare'), onSelect: () => presenter.shareExpense(expense.id) },
         { icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.askToDeleteExpense(expense.id) },
       ]}

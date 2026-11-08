@@ -545,14 +545,7 @@ class BillDetailViewModel(
     private fun edit() {
         if (!uiState.value.canEdit || !isOnTop()) return
         trackEvent("bill_edit_clicked", emptyMap())
-        navigator.navigate(
-            Route.SplitBill(
-                groupId = route.groupId,
-                expenseId = route.expenseId,
-                picksGroupFirst = false,
-                scansReceipt = false,
-            ),
-        )
+        navigator.navigate(Route.SplitBill.createEditing(route.groupId, route.expenseId))
     }
 
     private fun askToDelete() {

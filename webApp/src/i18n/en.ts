@@ -339,6 +339,7 @@ export const en = {
   groupDetail_columnBalance: 'Your share',
   groupDetail_columnOptions: 'Options',
   groupDetail_entryEdit: 'Edit',
+  groupDetail_entryDuplicate: 'Duplicate',
   groupDetail_entryShare: 'Share',
   groupDetail_entryDelete: 'Delete',
   groupDetail_entryOptions: 'Options for {name}',

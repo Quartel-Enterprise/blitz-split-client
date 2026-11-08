@@ -290,6 +290,10 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseEditClicked(expenseId))
     }
 
+    fun duplicateExpense(expenseId: String) {
+        viewModel.onEvent(GroupDetailUiEvent.OnExpenseDuplicateClicked(expenseId))
+    }
+
     fun shareExpense(expenseId: String) {
         viewModel.onEvent(GroupDetailUiEvent.OnExpenseShareClicked(expenseId))
     }

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Share
@@ -19,7 +20,7 @@ internal class EntryMenuItem(
     val event: GroupDetailUiEvent,
 )
 
-// Why: what Conta's top bar offers, in the same order, so the bill's options don't need it opened first.
+// Why: what Conta's top bar offers, in the same order (plus Duplicar), so the bill's options don't need it opened first.
 @Composable
 internal fun expenseMenuItemsOf(expenseId: String): List<EntryMenuItem> = listOf(
     EntryMenuItem(
@@ -27,6 +28,12 @@ internal fun expenseMenuItemsOf(expenseId: String): List<EntryMenuItem> = listOf
         icon = Icons.Outlined.Edit,
         isDestructive = false,
         event = GroupDetailUiEvent.OnExpenseEditClicked(expenseId),
+    ),
+    EntryMenuItem(
+        label = stringResource(R.string.group_detail_entry_duplicate),
+        icon = Icons.Outlined.ContentCopy,
+        isDestructive = false,
+        event = GroupDetailUiEvent.OnExpenseDuplicateClicked(expenseId),
     ),
     EntryMenuItem(
         label = stringResource(R.string.group_detail_entry_share),

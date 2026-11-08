@@ -341,6 +341,7 @@ export const es: Record<MessageKey, string> = {
   groupDetail_columnBalance: 'Tu parte',
   groupDetail_columnOptions: 'Opciones',
   groupDetail_entryEdit: 'Editar',
+  groupDetail_entryDuplicate: 'Duplicar',
   groupDetail_entryShare: 'Compartir',
   groupDetail_entryDelete: 'Eliminar',
   groupDetail_entryOptions: 'Opciones de {name}',

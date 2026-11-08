@@ -82,6 +82,7 @@
     <string name="group_detail_simplified_pair">Par novo da simplificação</string>
     <string name="group_detail_balances_note_simplified">Com as dívidas simplificadas, o app sugere o menor número de pagamentos. “Recebi” e “Já pagou” anotam um pagamento feito fora do app (Pix, dinheiro, transferência).</string>
     <string name="group_detail_entry_edit">Editar</string>
+    <string name="group_detail_entry_duplicate">Duplicar</string>
     <string name="group_detail_entry_share">Compartilhar</string>
     <string name="group_detail_entry_delete">Apagar</string>
     <string name="group_detail_entry_options">Opções de %s</string>

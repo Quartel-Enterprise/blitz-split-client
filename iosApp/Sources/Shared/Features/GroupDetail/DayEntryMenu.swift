@@ -2,7 +2,7 @@ import Shared
 import SwiftUI
 
 /// The options of a line of the group's Expenses, without opening it first: a bill's are the Bill toolbar's own
-/// (Edit, Share, Delete, which asks first), a payment's is Delete, which asks first too. The row's "⋯", its long press
+/// (Edit, Duplicate, Share, Delete, which asks first), a payment's is Delete, which asks first too. The row's "⋯", its long press
 /// on iPhone and iPad, and its right click on the Mac all show these.
 struct DayEntryMenuItems: View {
     let entry: any DayEntry
@@ -18,6 +18,9 @@ struct DayEntryMenuItems: View {
         } else {
             Button(editTitle, systemImage: "pencil") {
                 model.send(GroupDetailUiEventOnExpenseEditClicked(expenseId: entry.id))
+            }
+            Button(duplicateTitle, systemImage: "plus.square.on.square") {
+                model.send(GroupDetailUiEventOnExpenseDuplicateClicked(expenseId: entry.id))
             }
             Button(shareTitle, systemImage: "square.and.arrow.up") {
                 model.send(GroupDetailUiEventOnExpenseShareClicked(expenseId: entry.id))
@@ -37,6 +40,14 @@ struct DayEntryMenuItems: View {
         "Edit…"
         #else
         "Edit"
+        #endif
+    }
+
+    private var duplicateTitle: LocalizedStringKey {
+        #if os(macOS)
+        "Duplicate…"
+        #else
+        "Duplicate"
         #endif
     }
 

@@ -366,6 +366,7 @@ class EditSeveralPayersViewModelTest {
         EXPENSE_ID,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val yesterdayMillis = NOW_MILLIS - 20.hours.inWholeMilliseconds

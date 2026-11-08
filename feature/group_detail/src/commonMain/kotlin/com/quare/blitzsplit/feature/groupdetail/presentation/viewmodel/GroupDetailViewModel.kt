@@ -235,14 +235,16 @@ class GroupDetailViewModel(
 
             is GroupDetailUiEvent.OnExpenseEditClicked -> {
                 val isOpened = openBill(event.expenseId, needsKnownCurrency = true) {
-                    Route.SplitBill(
-                        groupId = route.groupId,
-                        expenseId = event.expenseId,
-                        picksGroupFirst = false,
-                        scansReceipt = false,
-                    )
+                    Route.SplitBill.createEditing(route.groupId, event.expenseId)
                 }
                 if (isOpened) trackEvent("bill_edit_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+            }
+
+            is GroupDetailUiEvent.OnExpenseDuplicateClicked -> {
+                val isOpened = openBill(event.expenseId, needsKnownCurrency = true) {
+                    Route.SplitBill.createDuplicating(route.groupId, event.expenseId)
+                }
+                if (isOpened) trackEvent("bill_duplicate_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
             }
 
             is GroupDetailUiEvent.OnExpenseShareClicked -> {

@@ -2944,6 +2944,7 @@ class SplitBillViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()

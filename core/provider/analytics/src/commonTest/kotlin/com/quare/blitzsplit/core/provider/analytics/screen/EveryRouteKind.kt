@@ -55,6 +55,7 @@ internal val everyRouteKind: List<Route> = listOf(
         expenseId = "secret-expense",
         picksGroupFirst = true,
         scansReceipt = true,
+        duplicatesExpenseId = null,
     ),
     Route.BillDetail(
         groupId = "secret-group",

@@ -1243,6 +1243,7 @@ class ItemsViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val editRoute = Route.SplitBill(
@@ -1250,6 +1251,7 @@ class ItemsViewModelTest {
         EXPENSE_ID,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private fun member(

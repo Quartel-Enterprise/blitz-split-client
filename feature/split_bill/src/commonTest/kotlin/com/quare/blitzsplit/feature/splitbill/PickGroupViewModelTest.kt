@@ -353,6 +353,7 @@ class PickGroupViewModelTest {
                 "bill-1",
                 picksGroupFirst = false,
                 scansReceipt = false,
+                duplicatesExpenseId = null,
             ),
         )
 
@@ -598,6 +599,7 @@ class PickGroupViewModelTest {
         expenseId = null,
         picksGroupFirst = true,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val fromGroup = Route.SplitBill(
@@ -605,6 +607,7 @@ class PickGroupViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val trip = group(

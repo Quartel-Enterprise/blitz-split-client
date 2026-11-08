@@ -36419,6 +36419,52 @@
         }
       }
     },
+    "Duplicate" : {
+      "comment" : "Duplicates a bill from its menu, opening Split a bill filled in with it",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dupliquer"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicar"
+          }
+        }
+      }
+    },
+    "Duplicate…" : {
+      "comment" : "Duplicates a bill from its menu on the Mac",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicar…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dupliquer…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicar…"
+          }
+        }
+      }
+    },
     "E.g. %@ and %@" : {
       "comment" : "Default split: under Percentage; two percentages",
       "localizations" : {

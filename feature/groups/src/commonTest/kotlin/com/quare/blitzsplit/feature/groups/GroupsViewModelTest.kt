@@ -2365,6 +2365,7 @@ class GroupsViewModelTest {
                 expenseId = null,
                 picksGroupFirst = false,
                 scansReceipt = false,
+                duplicatesExpenseId = null,
             )
             navigator.navigate(splitBill)
 
@@ -2414,6 +2415,7 @@ class GroupsViewModelTest {
                         expenseId = null,
                         picksGroupFirst = true,
                         scansReceipt = false,
+                        duplicatesExpenseId = null,
                     ),
                 ),
                 navigator.backStack.value,

@@ -1575,6 +1575,7 @@ class CryptoBillViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = scansReceipt,
+        duplicatesExpenseId = null,
     )
 
     private fun editRoute(): Route.SplitBill = Route.SplitBill(
@@ -1582,6 +1583,7 @@ class CryptoBillViewModelTest {
         EXPENSE_ID,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private fun fromHome(
@@ -1592,6 +1594,7 @@ class CryptoBillViewModelTest {
         expenseId = null,
         picksGroupFirst = true,
         scansReceipt = scansReceipt,
+        duplicatesExpenseId = null,
     )
 
     // Why: "Pizza", 12.345 sats Pierre paid, split equally among Pierre, Ana and Bruno unless said otherwise.
