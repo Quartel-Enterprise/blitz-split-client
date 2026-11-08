@@ -625,6 +625,7 @@ class GroupStatsViewModelTest {
                 expenseId = null,
                 picksGroupFirst = false,
                 scansReceipt = false,
+                duplicatesExpenseId = null,
             ),
             navigator.backStack.value.last(),
         )

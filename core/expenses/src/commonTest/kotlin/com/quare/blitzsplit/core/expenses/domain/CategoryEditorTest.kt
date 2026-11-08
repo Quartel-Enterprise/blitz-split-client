@@ -111,7 +111,7 @@ class CategoryEditorTest {
     }
 
     @Test
-    fun `GIVEN Alimentacao as the parent WHEN reading the color THEN it is blue`() {
+    fun `GIVEN Alimentacao as the parent WHEN reading the color THEN it is orange`() {
         // Given
         val form = CategoryForm.create(tree, GROUP_ID, AppCategory.FOOD.key, "Feira")
 
@@ -119,7 +119,7 @@ class CategoryEditorTest {
         val color = editor(form).color
 
         // Then
-        assertEquals(CategoryColor.BLUE, color)
+        assertEquals(CategoryColor.ORANGE, color)
     }
 
     @Test

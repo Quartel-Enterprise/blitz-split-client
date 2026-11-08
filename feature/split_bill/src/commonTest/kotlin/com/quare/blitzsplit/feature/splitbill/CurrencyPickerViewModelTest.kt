@@ -965,6 +965,7 @@ class CurrencyPickerViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val editRoute = Route.SplitBill(
@@ -972,6 +973,7 @@ class CurrencyPickerViewModelTest {
         EXPENSE_ID,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val pierre = member(PIERRE, "Pierre", isMe = true)

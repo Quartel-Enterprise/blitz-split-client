@@ -215,14 +215,7 @@ class GroupStatsViewModel(
 
             is GroupStatsUiEvent.OnPersonClicked -> openPerson(event.memberId)
 
-            GroupStatsUiEvent.OnSplitBillClicked -> open(
-                Route.SplitBill(
-                    groupId = route.groupId,
-                    expenseId = null,
-                    picksGroupFirst = false,
-                    scansReceipt = false,
-                ),
-            )
+            GroupStatsUiEvent.OnSplitBillClicked -> open(Route.SplitBill.createNew(route.groupId))
 
             GroupStatsUiEvent.OnWholePeriodClicked -> pickPeriod(StatsPeriod.ALL)
         }

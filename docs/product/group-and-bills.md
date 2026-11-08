@@ -11,9 +11,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     group never stacks over itself.
   - Each line of Expenses ends in a ⋮ (⋯ on iOS and macOS) with its options, so they don't need the bill opened
     first; a long press (Android, iPhone, iPad) or a right click (the Mac, the web) on the line opens the same menu.
-    A bill's are Bill's own top bar, named as short (Pierre's call): "Edit" (Edit bill over the group), "Share" (Share
-    bill) and "Delete", which asks Bill's "Delete this bill?" in the same words (`GroupDetailUiState.billToDelete`)
-    and stays on the group, the bill leaving the list; a payment's is "Delete", which asks "Delete this payment?" at
+    A bill's are Bill's own top bar, named as short (Pierre's call), plus "Duplicate" (below), which only the list
+    has, in this order: "Edit" (Edit bill over the group), "Duplicate", "Share" (Share bill) and "Delete", which asks
+    Bill's "Delete this bill?" in the same words (`GroupDetailUiState.billToDelete`) and stays on the group, the bill
+    leaving the list; a payment's is "Delete", which asks "Delete this payment?" at
     once. A tap on a payment never asks to delete: it opens the payment's details (`GroupDetailUiState.paymentToView`:
     who paid whom, the amount, when ("Today, Nov 6 · 10:20 AM", "Yesterday, …", or the weekday and date, as a bill's "When"), how, "queued" while it waits), a bottom sheet on an Android phone, a dialog on
     its tablets and foldables' halves, a sheet on iOS and the Mac, a dialog on the web, with "Delete" in it (the web's
@@ -108,7 +109,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     month", "Last month", "All time" (the default, as the notes say) and "Pick dates…" (each platform's date
     range picker, never after today). Total spent, how many bills, "Average per person" (the total over every member,
     who hasn't joined included), "Your share" and "You paid", on a neutral card under a neutral period chip on every
-    platform (the accent's container is the blue category's own, so a filled card read as one more slice of the ring);
+    platform (a pale blue fill read as one more slice of the ring);
     "By person" shows Consumed (each part as each bill
     split it) or Paid, the largest first, someone who left the group as "Former member". "Settling up" (Pierre's call, beta
     feedback 12, `GroupStatsUiState.settling`, `SettlingCalculator`) names under it who "Settles fastest" and who
@@ -182,6 +183,13 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     breadcrumb "Groups › Viagem Floripa › Statistics › Expenses by category" from the tablet up (the group's crumb
     going back to the group past Statistics), with the group's Expenses table. Its subtitle writes the period as
     Statistics did: "This month" and "Last month" as the month, picked dates as their days.
+  - "Duplicate", only in a bill's ⋮ on Expenses (Bill's top bar has no such button), opens "Split a bill" as a new bill
+    in the same group (`Route.SplitBill.duplicatesExpenseId`) filled in with the original's description, amount,
+    currency, category, payers and split, spent now, to change whatever the person wants before saving; nothing is
+    saved until then, and "Back" leaves the original alone. Its attachments, comments and history are not copied, nor
+    are people who left the group. A bill in a currency this version doesn't know can't be duplicated, as it can't be
+    edited. As in any new bill, the group can still be changed ("Split in which group?"), which starts payers and
+    split over among that group's people. Mac: "Duplicate…".
   - Any member may edit or delete a bill. "Edit bill" is "Split a bill" filled in (`Route.SplitBill` with the
     bill's id), keeping who created it and when, with "Anyone in the group can edit or delete it." and "Delete
     bill"; saving goes back to Bill. Members who left the group are dropped from the edited split, but a payer who

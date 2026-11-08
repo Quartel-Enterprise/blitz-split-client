@@ -82,6 +82,7 @@
     <string name="group_detail_simplified_pair">New pair from simplifying</string>
     <string name="group_detail_balances_note_simplified">With simplified debts, the app suggests the fewest payments. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer).</string>
     <string name="group_detail_entry_edit">Edit</string>
+    <string name="group_detail_entry_duplicate">Duplicate</string>
     <string name="group_detail_entry_share">Share</string>
     <string name="group_detail_entry_delete">Delete</string>
     <string name="group_detail_entry_options">Options for %s</string>

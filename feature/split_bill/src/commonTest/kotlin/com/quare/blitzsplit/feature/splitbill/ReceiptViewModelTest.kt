@@ -3437,6 +3437,7 @@ class ReceiptViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = scansReceipt,
+        duplicatesExpenseId = null,
     )
 
     private fun editRoute(scansReceipt: Boolean): Route.SplitBill = Route.SplitBill(
@@ -3444,6 +3445,7 @@ class ReceiptViewModelTest {
         EXPENSE_ID,
         picksGroupFirst = false,
         scansReceipt = scansReceipt,
+        duplicatesExpenseId = null,
     )
 
     private fun fromHome(scansReceipt: Boolean): Route.SplitBill = Route.SplitBill(
@@ -3451,6 +3453,7 @@ class ReceiptViewModelTest {
         expenseId = null,
         picksGroupFirst = true,
         scansReceipt = scansReceipt,
+        duplicatesExpenseId = null,
     )
 
     private fun group(

@@ -75,11 +75,11 @@ enum class AppCategory(
      */
     val defaultColor: CategoryColor
         get() = when (parent ?: this) {
-            FOOD -> CategoryColor.BLUE
+            FOOD -> CategoryColor.ORANGE
             HOME -> CategoryColor.PURPLE
             TRANSPORT -> CategoryColor.GREEN
             TRAVEL -> CategoryColor.TEAL
-            LEISURE -> CategoryColor.ORANGE
+            LEISURE -> CategoryColor.BLUE
             SUBSCRIPTIONS -> CategoryColor.INDIGO
             SHOPPING -> CategoryColor.PINK
             HEALTH -> CategoryColor.RED

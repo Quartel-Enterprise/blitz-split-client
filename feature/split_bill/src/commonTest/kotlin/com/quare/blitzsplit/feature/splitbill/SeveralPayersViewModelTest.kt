@@ -946,6 +946,7 @@ class SeveralPayersViewModelTest {
         expenseId = null,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val ana = member(ANA, "Ana", AvatarColor.PEACH, hasJoined = true)

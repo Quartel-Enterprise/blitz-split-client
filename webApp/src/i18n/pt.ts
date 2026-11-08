@@ -340,6 +340,7 @@ export const pt: Record<MessageKey, string> = {
   groupDetail_columnBalance: 'Sua parte',
   groupDetail_columnOptions: 'Opções',
   groupDetail_entryEdit: 'Editar',
+  groupDetail_entryDuplicate: 'Duplicar',
   groupDetail_entryShare: 'Compartilhar',
   groupDetail_entryDelete: 'Apagar',
   groupDetail_entryOptions: 'Opções de {name}',

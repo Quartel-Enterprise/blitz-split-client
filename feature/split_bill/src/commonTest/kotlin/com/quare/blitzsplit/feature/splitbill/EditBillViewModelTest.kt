@@ -1111,6 +1111,7 @@ class EditBillViewModelTest {
                 expenseId = null,
                 picksGroupFirst = false,
                 scansReceipt = false,
+                duplicatesExpenseId = null,
             ),
         )
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100"))
@@ -1151,6 +1152,7 @@ class EditBillViewModelTest {
                 expenseId = null,
                 picksGroupFirst = false,
                 scansReceipt = false,
+                duplicatesExpenseId = null,
             ),
         )
 
@@ -1312,6 +1314,7 @@ class EditBillViewModelTest {
         EXPENSE_ID,
         picksGroupFirst = false,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private val billDetail = Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null)

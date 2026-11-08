@@ -31,6 +31,19 @@ class CategoryColorsTest {
     }
 
     @Test
+    fun `GIVEN Food and Leisure WHEN reading their default colors THEN Food is orange and Leisure blue`() {
+        // Given
+        val food = AppCategory.FOOD
+        val leisure = AppCategory.LEISURE
+
+        // When
+        val colors = food.defaultColor to leisure.defaultColor
+
+        // Then
+        assertEquals(CategoryColor.ORANGE to CategoryColor.BLUE, colors)
+    }
+
+    @Test
     fun `GIVEN a subcategory of the app WHEN reading its color THEN it is its main category color`() {
         // Given
         val tree = CategoryTree.appOnly

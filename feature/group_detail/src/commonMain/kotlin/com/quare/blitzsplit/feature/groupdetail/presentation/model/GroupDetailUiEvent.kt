@@ -68,6 +68,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
             // Why: only once Editar conta opened, as Conta counts it: never for a bill gone or a group covered.
             is OnExpenseEditClicked -> EventAnalytics.Manual("bill_edit_clicked")
 
+            // Why: only once Rachar conta opened filled in, as Editar: never for a bill gone or a group covered.
+            is OnExpenseDuplicateClicked -> EventAnalytics.Manual("bill_duplicate_clicked")
+
             is OnExpenseShareClicked -> EventAnalytics.Manual("bill_share_clicked")
 
             // Why: only when the question opens, not a second tap before it draws.
@@ -201,6 +204,11 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: "Editar" in a bill's ⋮ on the list, Conta's Editar without opening it first.
     data class OnExpenseEditClicked(
+        val expenseId: String,
+    ) : GroupDetailUiEvent
+
+    // Why: "Duplicar" in a bill's ⋮ on the list, which opens "Rachar conta" filled in with the bill.
+    data class OnExpenseDuplicateClicked(
         val expenseId: String,
     ) : GroupDetailUiEvent
 

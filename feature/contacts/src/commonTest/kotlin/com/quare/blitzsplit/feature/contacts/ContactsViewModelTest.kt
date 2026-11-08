@@ -1586,6 +1586,7 @@ class ContactsViewModelTest {
         expenseId = null,
         picksGroupFirst = true,
         scansReceipt = false,
+        duplicatesExpenseId = null,
     )
 
     private fun TestScope.prepareScenario(

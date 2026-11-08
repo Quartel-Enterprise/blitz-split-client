@@ -1097,6 +1097,7 @@ class BillCategoryViewModelTest {
             expenseId = expenseId,
             picksGroupFirst = false,
             scansReceipt = false,
+            duplicatesExpenseId = null,
         )
         terms = FakeCategoryTermRepository(initialChanges = termChanges)
         teach = InMemoryCategoryTeachRepository()
