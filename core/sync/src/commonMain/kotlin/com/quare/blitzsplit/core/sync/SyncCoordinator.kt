@@ -122,8 +122,7 @@ class SyncCoordinator(
         scope.launch { accountRepository.keepAppleTokens() }
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
-        // Why: a sync while the session waited for its refresh failed, and nothing else changes when its token is back.
-        scope.launch { accountRepository.observeSessionRecoveries().collect { syncUntilSettled() } }
+        scope.launch { syncOnSessionRecovery(accountRepository, outcomes.lastSyncFailed, ::syncUntilSettled) }
         scope.launch { syncWhenDue() }
         scope.launch { registerPushDevice(pushDeviceRepository, accountRepository, connectivityObserver) }
         scope.launch {

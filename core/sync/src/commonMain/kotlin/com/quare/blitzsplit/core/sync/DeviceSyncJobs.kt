@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.profile.domain.repository.AppInviteRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -81,4 +82,17 @@ internal suspend fun syncAppInviteDismissals(
         .distinctUntilChanged()
         .filter { it }
         .collect { sync() }
+}
+
+/*
+ * Why: a sync while the session waited for its refresh failed and left the device as it was, and nothing else changes
+ * when its token comes back (the same user, maybe online all along), so that sync runs again then. One that went
+ * through needs no other.
+ */
+internal suspend fun syncOnSessionRecovery(
+    accountRepository: AccountRepository,
+    lastSyncFailed: StateFlow<Boolean>,
+    sync: suspend () -> Unit,
+) {
+    accountRepository.observeSessionRecoveries().collect { if (lastSyncFailed.value) sync() }
 }

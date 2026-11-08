@@ -20,7 +20,7 @@ internal fun createBlitzSplitSupabaseClient(): SupabaseClient = createSupabaseCl
     requestTimeout = 30.seconds
     httpConfig {
         install(
-            createUserTableAccess(
+            createSignedInRestAccess(
                 supabaseUrl = SupabaseConfig.SUPABASE_URL,
                 publishableKey = SupabaseConfig.SUPABASE_PUBLISHABLE_KEY,
             ),

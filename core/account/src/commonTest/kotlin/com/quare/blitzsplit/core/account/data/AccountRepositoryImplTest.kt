@@ -2479,6 +2479,28 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a session waiting for its refresh WHEN disconnecting Google THEN stays the same user with a new code`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUserWithEmail)
+            repository.ensureRegistered()
+            repository.updateAwaitsFullSync(true)
+            remote.isRefreshing = true
+
+            // When
+            val result = repository.removeSocialIdentity()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertTrue(result.isSuccess)
+            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+            assertEquals("P3XR7MQA2TKE", account.recoveryCode)
+            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+            assertTrue(account.awaitsFullSync)
+            assertNull(account.email)
+        }
+
+    @Test
     fun `GIVEN an Apple account WHEN disconnecting Apple THEN the same user becomes anonymous with a new code due`() =
         runTest {
             // Given

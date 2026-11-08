@@ -61,10 +61,10 @@ class SupabaseAccountRemoteDataSource(
     override suspend fun getSession(): RemoteSession {
         auth.awaitInitialization()
         return when (val status = auth.sessionStatus.value) {
-            is SessionStatus.Authenticated ->
-                status.session.user
-                    ?.let { user -> RemoteSession.Active(toSessionUser(user)) }
-                    ?: RemoteSession.None
+            // Why: a session imported without its user is still live; taken for none, a sign in would replace it.
+            is SessionStatus.Authenticated -> RemoteSession.Active(
+                toSessionUser(status.session.user ?: auth.retrieveUserForCurrentSession(updateSession = true)),
+            )
 
             is SessionStatus.RefreshFailure -> RemoteSession.Refreshing
 
