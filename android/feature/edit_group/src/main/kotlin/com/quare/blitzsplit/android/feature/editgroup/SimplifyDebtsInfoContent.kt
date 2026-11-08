@@ -216,7 +216,7 @@ private fun ExampleFigureBox(
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.large,
-        // Why: the result stands out by its accent edge, not a fill: the accent's container is the blue face's own color.
+        // Why: the result stands out by its accent edge, not a fill: a tint under the blue face read as the face's color.
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
         border = if (isSimplified) {
             BorderStroke(2.dp, MaterialTheme.colorScheme.primary)

@@ -144,7 +144,7 @@ internal fun ActorAvatarIcon(
     }
 }
 
-// Why: the group's own shape and color from Grupos, small before its name.
+// Why: the group's own shape from Grupos in its color's data tone, small before its name.
 @Composable
 internal fun GroupDotIcon(
     color: AvatarColor?,

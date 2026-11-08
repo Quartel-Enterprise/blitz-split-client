@@ -62,6 +62,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     tone, Material tone 50 light and 75 dark of the color's hue (4:1 and 7:1 on a card), since the container reads at
     under 2:1 there. A bar measures in the color of what it measures, never the accent, and a picked icon in the
     category form sits on the category's color, not the accent's.
+  - No category or avatar color copies a color of the theme (Pierre's call): each one's hue stays apart from the
+    accent's blues, the orange of what you owe, the green of what comes back, the pending amber and Android Dynamic's
+    red, so a slice, a badge or a face never reads as a status or a link. Blue is a royal blue (HCT hue 264), Orange a
+    true orange (62), Green a true green (146), Yellow (Sand) a lemon yellow (103), Red a crimson (16), with Indigo
+    (286) and Purple (Lilac, 310) moved to make room. Each colored container (Gray is the neutral) sits at a CIEDE2000
+    distance of 5 or more from every role container of the brand's scheme, in light and dark; Red's light one alone
+    sits 1.7 from the Dynamic red's, as no red at tone 90 can sit further from it. The avatars share the values of the
+    category color of the same hue (Blue, Peach = Orange, Green, Lilac = Purple, Sand = Yellow), and what shows a theme
+    color (Activity's badge of a bill on the web) takes the theme's token, never an avatar or category color.
   - Every text reads at 4.5:1 or more on what is behind it, and a dot, an icon or a field's edge that carries meaning
     at 3:1 (WCAG AA), in light and dark. A filled button's label takes the color made for its fill: on the dark accent
     `#95CDF7` it is `#00344E` (the system's white reads at 1.7:1, so every prominent button on Apple sets
