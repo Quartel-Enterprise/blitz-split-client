@@ -25,6 +25,7 @@ import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGro
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
+import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.GroupPhotoViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.ProfilePhotoViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.ChargeViewModel
@@ -210,6 +211,9 @@ object BlitzSplitApple : KoinComponent {
 
     fun createCategoryExpensesViewModel(route: Route.CategoryExpenses): ViewModelHolder<CategoryExpensesViewModel> =
         ViewModelHolder(CategoryExpensesViewModel::class) { get { parametersOf(route) } }
+
+    fun createGroupPhotoViewModel(route: Route.GroupPhoto): ViewModelHolder<GroupPhotoViewModel> =
+        ViewModelHolder(GroupPhotoViewModel::class) { get { parametersOf(route) } }
 
     fun createEditGroupViewModel(route: Route.EditGroup): ViewModelHolder<EditGroupViewModel> =
         ViewModelHolder(EditGroupViewModel::class) { get { parametersOf(route) } }

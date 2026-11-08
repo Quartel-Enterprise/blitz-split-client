@@ -9,6 +9,14 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
     group. Invite's "Go to the group" and "See who joined" open it in Invite's place (`openGroup`), so the
     group never stacks over itself.
+  - The group's avatar in the header (its rounded square, the photo or the initials on the color; the web's page header, the top bar on Android, the header on iOS and the Mac) opens the photo big (Pierre's call, `Route.GroupPhoto`,
+    `GroupPhotoViewModel`), as the profile's avatar does ([the profile's viewer](profile.md)): the group's square, 200 pt/dp/px (260 once both sides have 600) over the
+    dimmed, blurred group, with "Camera" where there is one, "Gallery" and "Remove" (with a photo) under it. Each saves
+    the group's photo at once over the group as it is, offline too, with no Save (the photo goes up with the group's next sync, as in
+    Edit group), and the viewer stays open showing the new one; a photo picked opens "Adjust photo" over it first, framed in the group's square, and is still
+    saved when the viewer closes while it is prepared. Any member can change it, as in Edit group. ✕, a tap outside, back and Esc close it, and so does the
+    group going away. Android draws it as a dialog over the whole window, iOS covers the screen, the Mac opens it as a sheet and the web as a dialog over the group.
+    To TalkBack, VoiceOver and the web's screen readers the avatar is "View group photo".
   - Each line of Expenses ends in a ⋮ (⋯ on iOS and macOS) with its options, so they don't need the bill opened
     first; a long press (Android, iPhone, iPad) or a right click (the Mac, the web) on the line opens the same menu.
     A bill's are Bill's own top bar, named as short (Pierre's call), plus "Duplicate" (below), which only the list

@@ -26,6 +26,7 @@ export interface GroupPageEvents extends GroupExitEvents {
   back(): void
   invite(): void
   stats(): void
+  photo(): void
   togglePin(): void
   editGroup(): void
   leaveGroup(): void
@@ -105,7 +106,15 @@ export function GroupPage({
             </span>
           </nav>
           <div className="flex items-start gap-4">
-            <GroupAvatar initials={header.groupInitials} color={header.groupColor} photoUrl={header.groupPhotoUrl} className="size-12 rounded-xl text-base md:size-14 md:text-lg" />
+            {/* Why: the avatar opens the group's photo big, as the profile's avatar opens its own. */}
+            <button
+              type="button"
+              aria-label={t('groupPhoto_open')}
+              onClick={() => events.photo()}
+              className="block shrink-0 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+            >
+              <GroupAvatar initials={header.groupInitials} color={header.groupColor} photoUrl={header.groupPhotoUrl} className="size-12 rounded-xl text-base md:size-14 md:text-lg" />
+            </button>
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <h1 className="sr-only text-2xl leading-[30px] font-semibold tracking-tight md:not-sr-only md:truncate">{header.groupName}</h1>
               <span className="text-sm text-muted-foreground">{meta}</span>

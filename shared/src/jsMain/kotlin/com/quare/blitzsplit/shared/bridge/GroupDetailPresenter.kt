@@ -236,6 +236,10 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
     }
 
+    fun photo() {
+        viewModel.onEvent(GroupDetailUiEvent.OnPhotoClicked)
+    }
+
     fun stats() {
         viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
     }

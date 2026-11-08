@@ -48,6 +48,7 @@ internal val everyRouteKind: List<Route> = listOf(
         isMonthPeriod = false,
     ),
     Route.EditGroup(groupId = "secret-group"),
+    Route.GroupPhoto(groupId = "secret-group"),
     Route.DefaultSplit(groupId = "secret-group"),
     Route.SimplifyDebtsInfo(currency = GroupCurrency.BRL),
     Route.SplitBill(

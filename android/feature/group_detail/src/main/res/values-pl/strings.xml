@@ -94,4 +94,5 @@
     <string name="group_detail_entry_share">Udostępnij</string>
     <string name="group_detail_entry_delete">Usuń</string>
     <string name="group_detail_entry_options">Opcje: %s</string>
+    <string name="group_detail_photo_open">Zobacz zdjęcie grupy</string>
 </resources>

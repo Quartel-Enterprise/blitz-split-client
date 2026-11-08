@@ -183,4 +183,9 @@
     <string name="simplify_info_anyone_text">In Edit group. Activity shows who changed it, and whoever now pays or receives from someone else gets a notification.</string>
     <string name="simplify_info_undo_title">Turning it off goes back</string>
     <string name="simplify_info_undo_text">Payments go back to being between whoever split each bill. No bill or recorded payment changes.</string>
+    <string name="group_photo_title">Group photo</string>
+    <string name="group_photo_camera">Camera</string>
+    <string name="group_photo_gallery">Gallery</string>
+    <string name="group_photo_remove">Remove</string>
+    <string name="group_photo_remove_photo">Remove photo</string>
 </resources>

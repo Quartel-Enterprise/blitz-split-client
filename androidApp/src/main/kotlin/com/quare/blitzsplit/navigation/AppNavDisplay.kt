@@ -42,6 +42,7 @@ import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
 import com.quare.blitzsplit.android.feature.editgroup.EditGroupScreen
+import com.quare.blitzsplit.android.feature.editgroup.GroupPhotoScreen
 import com.quare.blitzsplit.android.feature.editgroup.SimplifyDebtsInfoScreen
 import com.quare.blitzsplit.android.feature.editgroup.rememberUsesDefaultSplitDialog
 import com.quare.blitzsplit.android.feature.editgroup.rememberUsesEditGroupDialog
@@ -265,6 +266,17 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 ),
             ) {
                 ProfilePhotoScreen()
+            }
+            // Why: the group's photo big over the group, as the profile's, the whole window dimmed behind it.
+            entry<Route.GroupPhoto>(
+                metadata = FoldDialogSceneStrategy.dialogMetadataOf(
+                    DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        decorFitsSystemWindows = false,
+                    ),
+                ),
+            ) { route ->
+                GroupPhotoScreen(route = route)
             }
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }
             entry<Route.CategoryMap> { CategoryMapScreen() }

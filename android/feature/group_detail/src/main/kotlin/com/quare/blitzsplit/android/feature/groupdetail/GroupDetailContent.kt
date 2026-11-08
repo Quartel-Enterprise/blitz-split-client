@@ -163,6 +163,7 @@ private fun splitBillButtonOf(
 private fun eventOf(action: GroupAction): GroupDetailUiEvent = when (action) {
     GroupAction.BACK -> GroupDetailUiEvent.OnBackClicked
     GroupAction.INVITE -> GroupDetailUiEvent.OnInviteClicked
+    GroupAction.PHOTO -> GroupDetailUiEvent.OnPhotoClicked
     GroupAction.STATS -> GroupDetailUiEvent.OnStatsClicked
     GroupAction.PIN -> GroupDetailUiEvent.OnPinToggled
     GroupAction.EDIT_GROUP -> GroupDetailUiEvent.OnEditGroupClicked

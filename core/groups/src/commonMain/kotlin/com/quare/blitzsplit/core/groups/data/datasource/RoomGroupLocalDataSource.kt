@@ -46,6 +46,20 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun updateGroupPhoto(
+        id: String,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
+        updatedAt: Long,
+    ) {
+        dao.updateGroupPhoto(
+            id = id,
+            photoUrl = photoUrl,
+            pendingPhoto = pendingPhoto,
+            updatedAt = updatedAt,
+        )
+    }
+
     override suspend fun updateGroup(
         id: String,
         name: String,

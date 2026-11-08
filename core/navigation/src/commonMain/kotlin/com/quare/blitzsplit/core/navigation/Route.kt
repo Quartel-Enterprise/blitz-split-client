@@ -121,6 +121,14 @@ sealed interface Route {
         val isMonthPeriod: Boolean,
     ) : Route
 
+    /*
+     * Why: the group's avatar tapped on its screen: the photo, or the initials on the color, big over the group, with
+     * shortcuts that change the photo at once, as the profile's (ProfilePhoto).
+     */
+    data class GroupPhoto(
+        val groupId: String,
+    ) : Route
+
     // Why: "Editar grupo", from the group's ⋮ menu: a sheet over the group on iOS and macOS, a dialog on the web.
     data class EditGroup(
         val groupId: String,

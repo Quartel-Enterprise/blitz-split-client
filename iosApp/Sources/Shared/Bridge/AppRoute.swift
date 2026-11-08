@@ -39,6 +39,9 @@ enum AppRoute: Hashable, Identifiable {
     case shareBill(RouteShareBill)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case editGroup(RouteEditGroup)
+    /// The group's photo big, with the shortcuts that change it; holds the Kotlin route itself, which its ViewModel
+    /// reads the group from.
+    case groupPhoto(RouteGroupPhoto)
     /// The group's default split, pushed inside Edit group's sheet; holds the Kotlin route itself, which its ViewModel
     /// reads the group from.
     case defaultSplit(RouteDefaultSplit)
@@ -100,6 +103,7 @@ enum AppRoute: Hashable, Identifiable {
         case let billDetail as RouteBillDetail: self = .billDetail(billDetail)
         case let shareBill as RouteShareBill: self = .shareBill(shareBill)
         case let editGroup as RouteEditGroup: self = .editGroup(editGroup)
+        case let groupPhoto as RouteGroupPhoto: self = .groupPhoto(groupPhoto)
         case let defaultSplit as RouteDefaultSplit: self = .defaultSplit(defaultSplit)
         case let simplifyDebtsInfo as RouteSimplifyDebtsInfo: self = .simplifyDebtsInfo(simplifyDebtsInfo)
         case let groupStats as RouteGroupStats: self = .groupStats(groupStats)
@@ -146,8 +150,9 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return !isLargeWindow
             #endif
-        // "How it works" from the group is a sheet on the Mac, pushed inside Edit group's sheet everywhere
-        case .joinWithLink, .joinInvite, .simplifyDebtsInfo:
+        // "How it works" from the group is a sheet on the Mac, pushed inside Edit group's sheet everywhere; the group's
+        // photo big is a sheet on the Mac and covers the screen on iPhone and iPad (`presentsFullScreen`)
+        case .joinWithLink, .joinInvite, .simplifyDebtsInfo, .groupPhoto:
             #if os(macOS)
             return true
             #else
@@ -185,7 +190,7 @@ enum AppRoute: Hashable, Identifiable {
     /// it hides instead of showing as a page.
     var drawsOnlyAsModal: Bool {
         switch self {
-        case .joinWithLink, .profilePhoto: true
+        case .joinWithLink, .profilePhoto, .groupPhoto: true
         default: isSheetEverywhere
         }
     }
@@ -267,7 +272,7 @@ enum AppRoute: Hashable, Identifiable {
     var presentsFullScreen: Bool {
         #if os(iOS)
         switch self {
-        case .joinWithLink, .profilePhoto: return true
+        case .joinWithLink, .profilePhoto, .groupPhoto: return true
         default: return false
         }
         #else

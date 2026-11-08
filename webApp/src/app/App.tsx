@@ -31,6 +31,7 @@ import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
 import { JoinPickScreen } from '@/features/join/JoinPickScreen'
 import { JoinWithLinkDialog } from '@/features/join/JoinWithLinkDialog'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
+import { GroupPhotoDialog } from '@/features/group-detail/GroupPhotoDialog'
 import { ProfilePhotoDialog } from '@/features/profile/ProfilePhotoDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
 import { CategoryMapScreen } from '@/features/category-map/CategoryMapScreen'
@@ -141,6 +142,8 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   const isDeleteAccount = top.name === 'delete-account'
   // Why: the profile's photo big, over the profile, whose avatar opened it.
   const isProfilePhoto = top.name === 'profile-photo'
+  // Why: the group's photo big, over the group, whose avatar opened it.
+  const isGroupPhoto = top.name === 'group-photo'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
   // Why: Contatos' "Convidar com link ou QR" (and a guest's "Convidar Diego") opens over Contatos or the profile.
@@ -171,7 +174,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   const isDialog =
     isNotificationSettings ||
     isAppDownload ||
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto || isGroupPhoto
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -215,6 +218,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       {isNotificationSettings && <NotificationSettingsDialog />}
       {isAppDownload && <AppDownloadDialog route={top} />}
       {isProfilePhoto && <ProfilePhotoDialog />}
+      {isGroupPhoto && <GroupPhotoDialog key={top.groupId} route={top} />}
       {isCreateGroup && <CreateGroupDialog />}
       {isInvite && <InviteDialog key={top.groupId} route={top} />}
       {isContactInvite && <ContactInviteDialog key={top.personKey ?? ''} route={top} />}

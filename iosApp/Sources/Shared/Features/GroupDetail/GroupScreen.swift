@@ -7,6 +7,8 @@ struct GroupScreenActions {
     let select: (GroupTab) -> Void
     let invite: () -> Void
     let stats: () -> Void
+    /// The group's avatar in its header, which opens the photo big.
+    let photo: () -> Void
     let editGroup: () -> Void
     /// "Pin to Home" or "Unpin from Home", as the header says the group is.
     let togglePin: () -> Void
@@ -26,6 +28,7 @@ struct GroupScreenActions {
         select: { _ in },
         invite: {},
         stats: {},
+        photo: {},
         editGroup: {},
         togglePin: {},
         leaveGroup: {},
@@ -486,12 +489,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
     private var top: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 14) {
-                GroupAvatar(
-                    initials: header.groupInitials,
-                    color: header.groupColor,
-                    photoUrl: header.groupPhotoUrl,
-                    size: 56
-                )
+                GroupPhotoButton(header: header, size: 56, action: actions.photo)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: header.groupName)
                         .font(.title.bold())
@@ -561,13 +559,7 @@ struct MacGroupTop: View {
                     .fixedSize()
             }
             HStack(spacing: 12) {
-                GroupAvatar(
-                    initials: header.groupInitials,
-                    color: header.groupColor,
-                    photoUrl: header.groupPhotoUrl,
-                    size: 36
-                )
-                .accessibilityHidden(true)
+                GroupPhotoButton(header: header, size: 36, action: actions.photo)
                 GroupFaces(header: header, size: 24) { actions.select(.members) }
                 Spacer()
             }
@@ -584,3 +576,23 @@ struct MacGroupTop: View {
     }
 }
 #endif
+
+/// The group's avatar in its header, a button that opens the photo big.
+struct GroupPhotoButton: View {
+    let header: GroupHeader
+    let size: CGFloat
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            GroupAvatar(
+                initials: header.groupInitials,
+                color: header.groupColor,
+                photoUrl: header.groupPhotoUrl,
+                size: size
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("View group photo")
+    }
+}

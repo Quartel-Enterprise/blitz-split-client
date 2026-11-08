@@ -36,6 +36,13 @@ interface GroupLocalDataSource {
         updatedAt: Long,
     )
 
+    suspend fun updateGroupPhoto(
+        id: String,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
+        updatedAt: Long,
+    )
+
     suspend fun updateGroup(
         id: String,
         name: String,

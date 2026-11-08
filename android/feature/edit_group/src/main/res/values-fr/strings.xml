@@ -194,4 +194,9 @@
     <string name="simplify_info_anyone_text">Dans Modifier le groupe. Activité montre qui a fait le changement, et les personnes dont les paiements changent reçoivent une notification.</string>
     <string name="simplify_info_undo_title">Le désactiver revient en arrière</string>
     <string name="simplify_info_undo_text">Les paiements redeviennent ceux entre les personnes de chaque dépense. Aucune dépense ni aucun paiement enregistré ne change.</string>
+    <string name="group_photo_title">Photo du groupe</string>
+    <string name="group_photo_camera">Appareil photo</string>
+    <string name="group_photo_gallery">Galerie</string>
+    <string name="group_photo_remove">Supprimer</string>
+    <string name="group_photo_remove_photo">Supprimer la photo</string>
 </resources>

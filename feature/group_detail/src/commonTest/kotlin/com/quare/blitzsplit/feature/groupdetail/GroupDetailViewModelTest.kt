@@ -1098,6 +1098,20 @@ class GroupDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN the screen on top WHEN tapping the group avatar THEN opens the photo of the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val event = GroupDetailUiEvent.OnPhotoClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, route, Route.GroupPhoto(GROUP_ID)), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN the screen on top WHEN tapping Estatisticas THEN opens the statistics of the group`() =
         runTest(testDispatcher) {
             // Given

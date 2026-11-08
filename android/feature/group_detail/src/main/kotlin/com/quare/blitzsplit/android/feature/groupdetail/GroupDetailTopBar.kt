@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,18 +27,23 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -66,6 +72,7 @@ internal fun GroupTopBar(
             GroupTitle(
                 header = header,
                 badgeSize = 40.dp,
+                onAction = onAction,
             )
         },
         subtitle = {
@@ -100,6 +107,7 @@ internal fun GroupCompactTopBar(
             GroupTitle(
                 header = header,
                 badgeSize = 32.dp,
+                onAction = onAction,
             )
         },
         navigationIcon = { GroupBackButton(onAction) },
@@ -117,17 +125,33 @@ internal fun GroupCompactTopBar(
 private fun GroupTitle(
     header: GroupHeader,
     badgeSize: Dp,
+    onAction: (GroupAction) -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        GroupBadge(
-            initials = header.groupInitials,
-            color = header.groupColor,
-            photoUrl = header.groupPhotoUrl,
-            size = badgeSize,
-        )
+        /*
+         * Why: the avatar opens the group's photo big, as the profile's avatar opens its own; the touch target keeps
+         * the 48 dp minimum around the smaller badge.
+         */
+        Box(
+            modifier = Modifier
+                .minimumInteractiveComponentSize()
+                .clip(groupShapeOf(48.dp))
+                .clickable(
+                    onClickLabel = stringResource(R.string.group_detail_photo_open),
+                    role = Role.Button,
+                ) { onAction(GroupAction.PHOTO) },
+            contentAlignment = Alignment.Center,
+        ) {
+            GroupBadge(
+                initials = header.groupInitials,
+                color = header.groupColor,
+                photoUrl = header.groupPhotoUrl,
+                size = badgeSize,
+            )
+        }
         Text(
             text = header.groupName,
             maxLines = 1,
