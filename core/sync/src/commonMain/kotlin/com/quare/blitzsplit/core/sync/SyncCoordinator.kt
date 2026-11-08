@@ -122,6 +122,7 @@ class SyncCoordinator(
         scope.launch { accountRepository.keepAppleTokens() }
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
+        scope.launch { syncOnSessionRecovery(accountRepository, outcomes.lastSyncFailed, ::syncUntilSettled) }
         scope.launch { syncWhenDue() }
         scope.launch { registerPushDevice(pushDeviceRepository, accountRepository, connectivityObserver) }
         scope.launch {

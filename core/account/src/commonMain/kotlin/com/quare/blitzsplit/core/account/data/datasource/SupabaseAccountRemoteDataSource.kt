@@ -27,8 +27,10 @@ import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withTimeoutOrNull
@@ -54,6 +56,33 @@ class SupabaseAccountRemoteDataSource(
         auth.awaitInitialization()
         return auth.currentUserOrNull()?.let(::toSessionUser)
     }
+
+    // Why: supabase-kt drops the session from currentSessionOrNull while a refresh fails, but keeps it to retry.
+    override suspend fun getSession(): RemoteSession {
+        auth.awaitInitialization()
+        return when (val status = auth.sessionStatus.value) {
+            // Why: a session imported without its user is still live; taken for none, a sign in would replace it.
+            is SessionStatus.Authenticated -> RemoteSession.Active(
+                toSessionUser(status.session.user ?: auth.retrieveUserForCurrentSession(updateSession = true)),
+            )
+
+            is SessionStatus.RefreshFailure -> RemoteSession.Refreshing
+
+            else -> RemoteSession.None
+        }
+    }
+
+    /*
+     * Why: conflated, so the status is read on while a collector runs its sync: suspended in emit, the StateFlow would
+     * skip a failure and its recovery that both happen meanwhile, and the sync that failed then would never run again.
+     */
+    override fun observeSessionRecoveries(): Flow<Unit> = flow {
+        var wasRefreshing = false
+        auth.sessionStatus.collect { status ->
+            if (wasRefreshing && status is SessionStatus.Authenticated) emit(Unit)
+            wasRefreshing = status is SessionStatus.RefreshFailure
+        }
+    }.conflate()
 
     /*
      * Why: Supabase's browser sign in imports its session as External, the only one that carries the

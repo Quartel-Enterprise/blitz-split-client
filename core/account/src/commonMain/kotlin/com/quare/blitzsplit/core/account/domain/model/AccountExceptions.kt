@@ -7,3 +7,6 @@ class TooManyRecoveryAttemptsException : Exception("too_many_attempts")
 class IdentityAlreadyLinkedException : Exception("identity_already_exists")
 
 class SocialAccountHasNoRecoveryCodeException : Exception("has_social_account")
+
+// Why: the session waits for its refresh, so nothing is asked of the server as nobody until it settles.
+class SessionRefreshingException : Exception("session_refreshing")

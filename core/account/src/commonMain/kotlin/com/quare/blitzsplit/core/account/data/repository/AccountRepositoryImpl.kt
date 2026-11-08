@@ -3,12 +3,14 @@ package com.quare.blitzsplit.core.account.data.repository
 import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
+import com.quare.blitzsplit.core.account.data.datasource.RemoteSession
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
+import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.model.SocialAccountHasNoRecoveryCodeException
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
@@ -87,8 +89,10 @@ class AccountRepositoryImpl(
 
     override suspend fun getCurrentUserOrNull(): SessionUser? = remote.getCurrentUserOrNull()
 
+    override fun observeSessionRecoveries(): Flow<Unit> = remote.observeSessionRecoveries()
+
     override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
-        val user = remote.getCurrentUserOrNull() ?: remote.signInAnonymously()
+        val user = getUserUnlessRefreshing() ?: remote.signInAnonymously()
         local.update { account -> account.toMirrorOf(user) }
         user.userId
     }
@@ -100,7 +104,7 @@ class AccountRepositoryImpl(
         fullName: String?,
         authorizationCode: String?,
     ): Result<ConnectResult> = suspendRunCatching {
-        val current = remote.getCurrentUserOrNull()
+        val current = getUserUnlessRefreshing()
         val result = when {
             current == null -> {
                 remote.signInWithIdToken(
@@ -141,7 +145,7 @@ class AccountRepositoryImpl(
         provider: AccountProvider,
         isFromProfile: Boolean,
     ): Result<Unit> = suspendRunCatching {
-        val current = remote.getCurrentUserOrNull()
+        val current = getUserUnlessRefreshing()
         if (current != null && current.socialProvider == null) {
             linkWithBrowser(
                 provider = provider,
@@ -256,10 +260,21 @@ class AccountRepositoryImpl(
 
     override suspend fun removeSocialIdentity(): Result<Unit> = suspendRunCatching {
         val code = remote.removeSocialIdentity()
-        // Why: the server removes every Google and Apple identity, so the user is anonymous even if its read failed.
-        val user = remote.getCurrentUserOrNull()?.copy(socialProvider = null)
+        val session = remote.getSession()
         local.update { account ->
-            account.toMirrorOf(user).copy(
+            // Why: the server removes every Google and Apple identity, so the user is anonymous even if its read failed.
+            val mirrored = when (session) {
+                is RemoteSession.Active -> account.toMirrorOf(session.user.copy(socialProvider = null))
+
+                // Why: still this user, so its id, scheduled sign out and awaited sync stay until the session settles.
+                RemoteSession.Refreshing -> account.copy(
+                    provider = null,
+                    email = null,
+                )
+
+                RemoteSession.None -> account.toMirrorOf(null)
+            }
+            mirrored.copy(
                 recoveryCode = code,
                 recoveryCodePrompt = RecoveryCodePrompt.DUE.code,
             )
@@ -382,6 +397,17 @@ class AccountRepositoryImpl(
             rawNonce = rawNonce,
         )
         ConnectResult.SWITCHED
+    }
+
+    /*
+     * Why: a session that only waits for its refresh is still this user's. Taken for none, a sync would sign in a new
+     * anonymous user and a Google or Apple sign in would switch users instead of linking, and either one's sync would
+     * take the device's groups and bills away from them. So the call fails and runs again once the session settles.
+     */
+    private suspend fun getUserUnlessRefreshing(): SessionUser? = when (val session = remote.getSession()) {
+        is RemoteSession.Active -> session.user
+        RemoteSession.Refreshing -> throw SessionRefreshingException()
+        RemoteSession.None -> null
     }
 
     private fun toSnapshot(account: AccountEntity): AccountSnapshot = AccountSnapshot(

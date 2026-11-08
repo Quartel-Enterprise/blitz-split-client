@@ -12,6 +12,12 @@ interface AccountRemoteDataSource {
 
     suspend fun getCurrentUserOrNull(): SessionUser?
 
+    // Why: getCurrentUserOrNull says null while a session waits for its refresh, though the user is still signed in.
+    suspend fun getSession(): RemoteSession
+
+    // Why: a session whose refresh failed got a token again, so what failed meanwhile can run again.
+    fun observeSessionRecoveries(): Flow<Unit>
+
     // Why: Apple's refresh token of each browser sign in to a user with an Apple identity, once.
     fun observeAppleRefreshTokens(): Flow<String>
 
