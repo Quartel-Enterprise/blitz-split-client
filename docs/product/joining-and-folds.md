@@ -4,22 +4,27 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
 
   - Where a link opens: a device with the app (Android, iPhone, iPad or Mac) opens a group's link (`/g/`) and a comment's (`/b/`) in the app,
     through Android App Links and Apple Universal Links, before any browser asks for them. Anywhere else the browser
-    asks blitzsplit.com, which answers `/g/…`, `/b/…` and `/c/…` (a bill's link, which the apps leave to the browser)
-    with a 302 to the same path and query of the web app, and the web app opens the invite, the comment or the bill
-    (beta feedback 3, item 24). The web app is `WEB_APP_URL` of `blitz-split-site`'s `wrangler.jsonc`: the beta,
-    https://blitz-split-beta.pages.dev, until app.blitzsplit.com serves it. `/.well-known/*` is never redirected.
+    asks blitzsplit.com, which is meant to answer `/g/…`, `/b/…` and `/c/…` (a bill's link, which the apps leave to the
+    browser) with a 302 to the same path and query of the web app, which opens the invite, the comment or the bill
+    (beta feedback 3, item 24): the beta, https://blitz-split-beta.pages.dev, until app.blitzsplit.com serves it. That
+    302 is paused until the beta web app is deployed (`blitz-split-site` #13): meanwhile blitzsplit.com answers them
+    with its home page and a note to open the invite on a phone with the app. `/.well-known/*` is never redirected.
     Android opens the links in the app only for a build whose signing key's SHA-256 is in blitzsplit.com's
     `assetlinks.json`, which lists the Play keys: a debug build, or a beta signed with a key not listed there, opens the
     browser (Android 8 to 11 asks which app opens it), and so the web app (see [Release process](../release-process.md#outside-the-stores)).
   - An invite link's preview (WhatsApp, iMessage, Telegram) shows the invite: blitzsplit.com's Worker
     (`blitz-split-site`) serves the meta tags and the image the API's `invite-preview` edge function answers from
-    `get_invite`. The group's link reads "Join <group>" with how many people split there, and an image of the group's
-    photo (or its initials on its color), name, type and up to five faces; a personal link reads "Join <group> as <member>"
-    with who saved them the spot (`?from=`) and the member's initial on their color; a code nobody has any longer (a
-    changed link, a used personal link) shows the brand's card, as the landing does. A crawler says nothing of who
-    reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora Rachar"), ARS, CLP, COP, MXN,
-    PEN, UYU and PYG Spanish, any other English. The redirect to the web app, once it is back, must still give
-    crawlers these meta tags.
+    `get_invite`, whatever the 302 above does to people's browsers. The group's link reads "Join <group>" with how many
+    people split there, and an image of the group's photo (or its initials on its color), name, type and up to five
+    members' initials on their colors. A personal link reads "Join <group> as <member>" with who saved them the spot
+    (`?from=`), or only that the spot is saved when `?from=` is missing or names nobody, and an image of the member's
+    initial on their color. Any code `get_invite` doesn't resolve (a changed link, a used personal link, a deleted
+    group, a removed member) shows the brand's card, the same image blitzsplit.com's home page shows in a preview. A
+    messenger keeps a preview it already fetched: changing the link doesn't change the previews already posted.
+    A crawler says nothing of who reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora
+    Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, any other English. No currency picks French, since the euro,
+    the Swiss franc and the Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish
+    speakers gets English too: an accepted trade-off.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on the group's Expenses (3.3, `Route.GroupDetail` with `joinedAs`) with "You joined as
     <name>" over the bills and, while the account has no Google or Apple, "Protect your access", which opens the
