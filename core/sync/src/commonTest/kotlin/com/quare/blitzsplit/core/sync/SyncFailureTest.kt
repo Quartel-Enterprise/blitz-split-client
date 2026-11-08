@@ -129,7 +129,10 @@ class SyncFailureTest {
         // Given
         val failure = IllegalStateException(
             "pull failed",
-            HttpRequestTimeoutException(url = "https://example.supabase.co/rest/v1/expenses", timeoutMillis = 30_000),
+            HttpRequestTimeoutException(
+                url = "https://example.supabase.co/rest/v1/expenses",
+                timeoutMillis = 30_000,
+            ),
         )
 
         // When
