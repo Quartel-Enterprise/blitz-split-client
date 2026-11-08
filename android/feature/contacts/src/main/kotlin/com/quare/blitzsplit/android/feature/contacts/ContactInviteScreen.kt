@@ -277,6 +277,25 @@ private fun GroupChipsSection(
                 text = stringResource(R.string.contacts_invite_no_groups),
                 style = MaterialTheme.typography.bodyMedium,
             )
+            if (!state.isPersonal) {
+                Button(
+                    onClick = { onEvent(ContactInviteUiEvent.OnNewGroupClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 56.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                    )
+                    Text(
+                        text = stringResource(R.string.contacts_invite_new_group),
+                        modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
+                    )
+                }
+            }
+            return@Column
         }
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -406,6 +425,8 @@ private fun InviteButtonsRow(
     state: ContactInviteUiState,
     onEvent: (ContactInviteUiEvent) -> Unit,
 ) {
+    // Why: with no group there is no link to copy or share: "Novo grupo" is the only way on, so nothing is disabled.
+    if (state.hasNoGroups) return
     val hasLink = state.link != null
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(
