@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroupPhoto
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.PhotoCropEvent
@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.update
 class GroupPhotoViewModel(
     private val route: Route.GroupPhoto,
     private val navigator: Navigator,
-    private val updateGroup: UpdateGroup,
+    private val updateGroupPhoto: UpdateGroupPhoto,
     observeGroup: ObserveGroup,
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
@@ -140,15 +140,10 @@ class GroupPhotoViewModel(
 
     private suspend fun saveGroupPhoto(photo: ProfilePhoto?) {
         val group = saved ?: return
-        updateGroup(
+        // Why: only the photo is written, so another member's rename or a newer app's type and color stay untouched.
+        updateGroupPhoto(
             groupId = route.groupId,
-            name = group.name,
-            type = group.type,
-            color = group.color,
-            // Why: the shape a group has stays as Room has it, as Editar grupo leaves it.
-            shape = null,
             photo = photo,
-            currency = group.currency,
         ).onFailure {
             // Why: Room kept the old photo and won't emit again, so the viewer shows the one that is saved.
             showPhoto(group.photo)

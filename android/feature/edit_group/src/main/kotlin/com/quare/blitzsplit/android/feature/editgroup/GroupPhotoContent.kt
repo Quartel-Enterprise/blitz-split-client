@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerContent
-import com.quare.blitzsplit.android.designsystem.component.PhotoViewerError
+import com.quare.blitzsplit.android.designsystem.component.PhotoViewerErrorText
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerPreparingOverlay
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerShortcutsRow
 import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
@@ -44,7 +44,7 @@ internal fun GroupPhotoContent(
             size = avatarSize,
         )
         if (state.showsPhotoError) {
-            PhotoViewerError(stringResource(R.string.edit_group_photo_error))
+            PhotoViewerErrorText(stringResource(R.string.edit_group_photo_error))
         }
         PhotoViewerShortcutsRow(
             cameraLabel = stringResource(R.string.group_photo_camera),

@@ -196,7 +196,7 @@ fun PhotoViewerShortcutsRow(
 
 // Why: the line under the photo when the photo picked couldn't be used, in both viewers.
 @Composable
-fun PhotoViewerError(text: String) {
+fun PhotoViewerErrorText(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,

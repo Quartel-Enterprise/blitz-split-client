@@ -131,6 +131,19 @@ class GroupRepositoryImpl(
         )
     }
 
+    override suspend fun updateGroupPhoto(
+        groupId: String,
+        photo: ProfilePhoto?,
+        updatedAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.updateGroupPhoto(
+            id = groupId,
+            photoUrl = (photo as? ProfilePhoto.Remote)?.url,
+            pendingPhoto = (photo as? ProfilePhoto.Pending)?.jpeg,
+            updatedAt = updatedAt,
+        )
+    }
+
     /*
      * Why: written over the stored JSON, so the keys a newer app added survive. Back to splitting equally is null,
      * those keys included: the server only takes a default split with a mode.

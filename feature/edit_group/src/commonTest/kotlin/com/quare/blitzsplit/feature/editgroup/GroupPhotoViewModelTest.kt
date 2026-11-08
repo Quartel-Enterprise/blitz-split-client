@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModelStore
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupPhotoUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.CropPhoto
@@ -807,7 +807,7 @@ class GroupPhotoViewModelTest {
             trackEvent = { name, params -> trackedEvents += name to params },
             route = groupPhoto,
             navigator = navigator,
-            updateGroup = UpdateGroupUseCase(groups) { 1_000L },
+            updateGroupPhoto = UpdateGroupPhotoUseCase(groups) { 1_000L },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { unreadRoom },
             loadCropPhoto = { source ->
                 heldLoad.await()

@@ -194,6 +194,21 @@ interface GroupDao {
     )
 
     /*
+     * Why: the group's photo opened big saves only the photo, so the name, type, color and currency stay as the row
+     * has them, the raw codes of a newer app included. Stamped after the row like "Editar grupo".
+     */
+    @Query(
+        "UPDATE split_group SET photoUrl = :photoUrl, pendingPhoto = :pendingPhoto, " +
+            "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
+    )
+    suspend fun updateGroupPhoto(
+        id: String,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
+        updatedAt: Long,
+    )
+
+    /*
      * Why: "Divisão padrão" saves only itself, so the rest of the group stays as this device last read it, and the
      * incomes "Pela renda" was typed with stay here. Stamped after the row like "Editar grupo".
      */

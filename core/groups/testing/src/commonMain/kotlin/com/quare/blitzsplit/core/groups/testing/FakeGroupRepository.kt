@@ -209,6 +209,29 @@ class FakeGroupRepository(
         return Result.success(Unit)
     }
 
+    override suspend fun updateGroupPhoto(
+        groupId: String,
+        photo: ProfilePhoto?,
+        updatedAt: Long,
+    ): Result<Unit> {
+        updateGroupGate?.await()
+        updateGroupError?.let { return Result.failure(it) }
+        updatedGroupIds += groupId
+        groupUpdateTimes += updatedAt
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) {
+                group.copy(
+                    photo = photo,
+                    isPending = true,
+                )
+            } else {
+                group
+            }
+        }
+        hasPendingChanges.value = true
+        return Result.success(Unit)
+    }
+
     override suspend fun addMember(
         groupId: String,
         member: GroupMember,

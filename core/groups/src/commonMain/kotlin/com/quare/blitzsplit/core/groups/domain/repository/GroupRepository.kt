@@ -42,6 +42,16 @@ interface GroupRepository {
     ): Result<Unit>
 
     /*
+     * Why: the group's photo opened big, by any member, offline too: only the photo changes, so the name, type, color
+     * and currency stay as the device has them. A Pending one goes up with the next sync; null takes the photo off.
+     */
+    suspend fun updateGroupPhoto(
+        groupId: String,
+        photo: ProfilePhoto?,
+        updatedAt: Long,
+    ): Result<Unit>
+
+    /*
      * Why: "Divisão padrão" (6.7), by any member, offline too: only the split changes, null back to splitting equally
      * among everyone. The incomes "Pela renda" was typed with, by member id in minor units, stay on this device.
      */

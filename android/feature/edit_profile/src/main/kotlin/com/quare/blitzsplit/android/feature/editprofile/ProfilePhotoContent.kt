@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.PhotoShortcutButton
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerContent
-import com.quare.blitzsplit.android.designsystem.component.PhotoViewerError
+import com.quare.blitzsplit.android.designsystem.component.PhotoViewerErrorText
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerIconSize
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerPreparingOverlay
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerShortcutsRow
@@ -54,7 +54,7 @@ internal fun ProfilePhotoContent(
             size = avatarSize,
         )
         if (state.showsPhotoError) {
-            PhotoViewerError(stringResource(R.string.edit_profile_photo_error))
+            PhotoViewerErrorText(stringResource(R.string.edit_profile_photo_error))
         }
         PhotoViewerShortcutsRow(
             cameraLabel = stringResource(R.string.profile_photo_camera),

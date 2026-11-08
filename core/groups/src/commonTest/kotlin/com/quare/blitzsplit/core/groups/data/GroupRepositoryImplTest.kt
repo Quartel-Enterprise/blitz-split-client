@@ -2517,6 +2517,58 @@ class GroupRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a group of a newer app WHEN saving only its photo THEN keeps its type color and name as stored`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(id = "group-1").copy(
+                        name = "Concert",
+                        type = "concert",
+                        color = "ultraviolet",
+                        pendingSync = false,
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.updateGroupPhoto(
+                groupId = "group-1",
+                photo = ProfilePhoto.Remote("https://example.com/photo.jpg"),
+                updatedAt = 7_000L,
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            val stored = local.group("group-1")
+            assertEquals("Concert", stored?.name)
+            assertEquals("concert", stored?.type)
+            assertEquals("ultraviolet", stored?.color)
+            assertEquals("https://example.com/photo.jpg", stored?.photoUrl)
+            assertEquals(7_000L, stored?.updatedAt)
+            assertTrue(stored?.pendingSync == true)
+        }
+
+    @Test
+    fun `GIVEN a failing write WHEN saving only the photo THEN returns the failure`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            groupWriteError = IllegalStateException("room failed"),
+        )
+
+        // When
+        val result = repository.updateGroupPhoto(
+            groupId = "group-1",
+            photo = null,
+            updatedAt = 7_000L,
+        )
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
     fun `GIVEN a synced group WHEN editing it THEN the group shows pending until the next sync`() = runTest {
         // Given
         prepareScenario(
@@ -6420,6 +6472,27 @@ private class FakeGroupLocalDataSource(
                 it.copy(
                     name = name,
                     updatedAt = updatedAt,
+                    pendingSync = true,
+                )
+            } else {
+                it
+            }
+        }
+    }
+
+    override suspend fun updateGroupPhoto(
+        id: String,
+        photoUrl: String?,
+        pendingPhoto: ByteArray?,
+        updatedAt: Long,
+    ) {
+        groupWriteError?.let { throw it }
+        groups.value = groups.value.map {
+            if (it.id == id) {
+                it.copy(
+                    photoUrl = photoUrl,
+                    pendingPhoto = pendingPhoto,
+                    updatedAt = maxOf(updatedAt, it.updatedAt + 1),
                     pendingSync = true,
                 )
             } else {
