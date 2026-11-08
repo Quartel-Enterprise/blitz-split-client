@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Nessun termine</string>
+    <string name="category_map_title">Mappa delle categorie</string>
+    <string name="category_map_search">Cerca termini</string>
+    <string name="category_map_add">Aggiungi termine</string>
+    <string name="category_map_more">Altre opzioni</string>
+    <string name="category_map_restore">Ripristina predefinita</string>
+    <string name="category_map_back">Indietro</string>
+    <string name="category_map_intro">Quando il titolo di una spesa contiene una di queste parole, la categoria arriva da sola. «Uber per casa» diventa Trasporti.</string>
+    <string name="category_map_intro_offline">La mappa funziona offline: le modifiche valgono subito su questo dispositivo e arrivano sugli altri tuoi dispositivi appena torni online.</string>
+    <string name="category_map_device_only">La tua mappa resta solo su questo dispositivo. Per portarla sugli altri tuoi dispositivi, accedi con Google o Apple nel tuo Profilo.</string>
+    <string name="category_map_open_profile">Apri Profilo</string>
+    <string name="category_map_longest_wins">Quando due termini corrispondono a un titolo, vince il più lungo.</string>
+    <string name="category_map_no_result">Nessun termine con «%1$s»</string>
+    <string name="category_map_no_result_body">Aggiungilo e le spese con questa parola nel titolo arriveranno con la categoria giusta.</string>
+    <string name="category_map_add_query">Aggiungi «%1$s»</string>
+    <string name="category_map_empty_title">La tua mappa è vuota</string>
+    <string name="category_map_empty_body">Senza termini, la categoria non arriva dal titolo: la scegli in ogni spesa.</string>
+    <string name="category_map_group_category"> · categoria di %1$s</string>
+    <string name="category_map_only_main">Solo %1$s</string>
+    <string name="category_map_only_in_group">solo in %1$s</string>
+    <string name="category_map_no_terms_yet">Ancora nessun termine.</string>
+    <string name="category_map_add_in">Aggiungi termine in %1$s</string>
+    <string name="category_map_tip">Tocca un termine per cambiarne la categoria o rimuoverlo. Corrisponde alla parola intera, ignorando accenti e maiuscole.</string>
+    <string name="category_map_queued">in coda</string>
+    <string name="category_map_term_action">%1$s, %2$s. Modifica</string>
+    <string name="category_map_new_term">Nuovo termine</string>
+    <string name="category_map_edit_term">Modifica termine</string>
+    <string name="category_map_term_label">Parola o frase</string>
+    <string name="category_map_term_help">Corrisponde alla parola intera, ignorando accenti e maiuscole.</string>
+    <string name="category_map_term_help_app">Un termine dell’app. Ripristina predefinita lo riporta com’era.</string>
+    <string name="category_map_term_duplicate">«%1$s» sceglie già %2$s. Ogni termine ha una sola categoria.</string>
+    <string name="category_map_term_too_short">Usa almeno 2 lettere.</string>
+    <string name="category_map_term_too_long">Usa al massimo 30 lettere.</string>
+    <string name="category_map_term_invalid">Usa solo lettere, cifre e spazi.</string>
+    <string name="category_map_category">Categoria</string>
+    <string name="category_map_category_help">Può essere la categoria o una sottocategoria.</string>
+    <string name="category_map_category_help_edit">Cambiandola qui sposti il termine in un’altra categoria.</string>
+    <string name="category_map_category_help_move">Spostandolo, il termine esce da %1$s.</string>
+    <string name="category_map_example">Esempio</string>
+    <string name="category_map_example_move">Se spostato</string>
+    <string name="category_map_remove">Rimuovi</string>
+    <string name="category_map_cancel">Annulla</string>
+    <string name="category_map_save">Salva</string>
+    <string name="category_map_move_to">Sposta in %1$s</string>
+    <string name="category_map_removed">«%1$s» è uscito dalla mappa</string>
+    <string name="category_map_undo">Annulla</string>
+    <string name="category_map_restore_title">Ripristinare la mappa predefinita?</string>
+    <string name="category_map_restore_body">I 60 termini dell’app tornano com’erano, compresi quelli che hai rimosso o spostato.</string>
+    <string name="category_map_restore_own_one">Il termine che hai creato, «%1$s», resta.</string>
+    <string name="category_map_restore_confirm">Ripristina</string>
+    <string name="category_map_save_error">Impossibile salvare la mappa. Riprova.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d termine</item>
+        <item quantity="many">%d termini</item>
+        <item quantity="other">%d termini</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d sottocategoria</item>
+        <item quantity="many">%d sottocategorie</item>
+        <item quantity="other">%d sottocategorie</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d termine con «%2$s»</item>
+        <item quantity="many">%1$d termini con «%2$s»</item>
+        <item quantity="other">%1$d termini con «%2$s»</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d modifica in coda</item>
+        <item quantity="many">Offline · %d modifiche in coda</item>
+        <item quantity="other">Offline · %d modifiche in coda</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">I %d termini che hai creato restano.</item>
+        <item quantity="many">I %d termini che hai creato restano.</item>
+        <item quantity="other">I %d termini che hai creato restano.</item>
+    </plurals>
+    <string name="category_map_new_category">Nuova categoria</string>
+    <string name="category_map_new_subcategory_in">Nuova sottocategoria in %s</string>
+    <string name="category_map_edit_category">Modifica %s</string>
+    <string name="category_map_category_group">Gruppo</string>
+    <string name="category_map_change_color">Cambia colore di %1$s</string>
+    <string name="category_map_restore_color">Ripristina colore</string>
+    <string name="category_map_color_done">Fine</string>
+</resources>

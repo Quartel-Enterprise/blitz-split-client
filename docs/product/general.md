@@ -6,13 +6,18 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (`RecoveryCodeUiState.isConnectExpanded`).
   - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
     iPad); Google comes first on Android and in any other browser.
-  - Every UI is in English, Portuguese, Spanish and French: the device's language, English for any other, unless Profile ›
-    Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Spanish variants, a neutral
+  - Every UI is in English, Portuguese, Spanish, French, German, Italian and Polish: the device's language, English
+    for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Spanish variants, a neutral
     Latin-American one for every `es` tag, and Spain's `es-ES` overriding only the words Spain says differently, the
     rest coming from `es` on every platform; Spanish calls the app Blitz Split, as English does). French is one
     variant for every `fr` tag (fr-FR, fr-CA, fr-BE, fr-CH…), talks to the user as "tu" (Pierre's call: friends splitting
-    a bill, as Spanish's "tú") and calls the app Blitz Split. The brand badge
-    shows the currency symbol of the device's region, `$` when there is none.
+    a bill, as Spanish's "tú") and calls the app Blitz Split. German, Italian and Polish (Pierre's calls) are likewise one
+    variant each for every tag of theirs (de-AT and de-CH are `de`, it-CH is `it`), talk to the user informally ("du",
+    "tu", "ty") and call the app Blitz Split. Polish's past tense says the speaker's gender, which the app never knows,
+    so Polish prefers wording without a gendered verb (impersonal "Dodano", nouns, the present, imperatives on buttons)
+    and, where a past about a person can't be avoided, writes both forms the usual way: "dodał(a)", "dodałeś(-aś)".
+    Polish also has two plurals (few: "2 grupy", many: "5 grup") where the other languages have one, in every plural
+    of the three platforms. The brand badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
     keyboard, digits coming in from the right with the bill's currency's decimals fixed (`GroupCurrency.fractionDigits`:

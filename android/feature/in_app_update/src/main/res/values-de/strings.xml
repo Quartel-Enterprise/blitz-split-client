@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">Update wird heruntergeladen…</string>
+    <string name="in_app_update_download_failed">Das Update konnte nicht heruntergeladen werden. Versuch es später noch einmal.</string>
+</resources>

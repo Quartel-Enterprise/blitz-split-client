@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Zamknij</string>
+    <string name="invite_group_created">Utworzono grupę</string>
+    <string name="invite_title">Zaproś wszystkich do grupy %s</string>
+    <string name="invite_qr_description">Kod QR linku z zaproszeniem do grupy</string>
+    <string name="invite_copy">Kopiuj</string>
+    <string name="invite_copied">Skopiowano</string>
+    <string name="invite_who_picks">Kto otworzy link, wybiera z listy, kim jest: %s. Konto nie jest potrzebne.</string>
+    <string name="invite_names_or">%1$s lub %2$s</string>
+    <string name="invite_anyone_joins">Kto otworzy link, dołącza do grupy. Konto nie jest potrzebne.</string>
+    <string name="invite_pending_title">Link w przygotowaniu</string>
+    <string name="invite_pending_offline">Utworzymy go, gdy tylko będziesz online.</string>
+    <string name="invite_pending_online">Tworzenie linku…</string>
+    <string name="invite_failed_title">Nie udało się utworzyć linku</string>
+    <string name="invite_failed_body">Coś poszło nie tak podczas synchronizacji grupy.</string>
+    <string name="invite_retry">Spróbuj ponownie</string>
+    <string name="invite_share">Udostępnij link</string>
+    <string name="invite_see_who_joined">Zobacz, kto dołączył</string>
+    <string name="invite_add_person">Dodaj kogoś bez aplikacji</string>
+    <string name="invite_go_to_group">Przejdź do grupy</string>
+    <string name="invite_change_link">Zmień link</string>
+    <string name="invite_change_link_title">Zmienić link z zaproszeniem?</string>
+    <string name="invite_change_link_message">Obecny link i kod QR przestaną działać, także niewykorzystane osobiste zaproszenia. Kto już dołączył, zostaje w grupie.</string>
+    <string name="invite_change_link_failed">Nie udało się zmienić linku. Spróbuj ponownie.</string>
+    <string name="invite_share_message">Dzielmy wydatki grupy %1$s w aplikacji Blitz Split. Dołącz przez ten link: %2$s</string>
+</resources>

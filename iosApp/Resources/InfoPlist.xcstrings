@@ -5,6 +5,12 @@
       "comment" : "The name under the app icon: Bora Rachar only in Portuguese",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -18,6 +24,18 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -35,6 +53,12 @@
       "comment" : "The app name in menus and the About window",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -53,6 +77,18 @@
             "value" : "Blitz Split"
           }
         },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -65,6 +101,12 @@
       "comment" : "Why the app asks for the camera: scanning an invite's or the recovery QR code, and taking the profile photo and a bill's photos",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um den QR-Code einer Einladung oder von deinem alten Gerät zu scannen und dein Profilfoto und Fotos von Ausgaben aufzunehmen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -83,6 +125,18 @@
             "value" : "Pour scanner le QR code d’une invitation ou de ton ancien appareil, et pour prendre ta photo de profil et des photos de dépenses."
           }
         },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per scansionare il codice QR di un invito o del tuo vecchio dispositivo, e per scattare la tua foto profilo e le foto delle spese."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby skanować kod QR zaproszenia lub ze starego urządzenia oraz robić zdjęcie profilowe i zdjęcia wydatków."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -95,6 +149,12 @@
       "comment" : "Why the app asks for the contacts: inviting someone from them with a group's link",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um Personen aus deinen Kontakten mit dem Link einer Gruppe einzuladen. Ihre Nummern bleiben auf diesem Gerät."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -113,6 +173,18 @@
             "value" : "Pour inviter des personnes de tes contacts avec le lien d’un groupe. Leurs numéros restent uniquement sur cet appareil."
           }
         },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per invitare persone dai tuoi contatti con il link di un gruppo. I loro numeri restano su questo dispositivo."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby zapraszać osoby z kontaktów za pomocą linku do grupy. Ich numery zostają na tym urządzeniu."
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -125,6 +197,12 @@
       "comment" : "Why the app asks to add to Photos: saving a bill's photo from its viewer (Download, then Save Image)",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um die Fotos einer Ausgabe in deiner Mediathek zu sichern."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -141,6 +219,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour enregistrer les photos des dépenses dans ta photothèque."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per salvare le foto di una spesa nella tua libreria."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby zapisywać zdjęcia wydatków w bibliotece."
           }
         },
         "pt-BR" : {

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldi</string>
+    <string name="global_balances_profile">Profilo</string>
+    <string name="global_balances_offline">Offline · saldi di questo dispositivo</string>
+    <string name="global_balances_filter">Mostra</string>
+    <string name="global_balances_filter_all">Tutti</string>
+    <string name="global_balances_filter_you_owe">Devi</string>
+    <string name="global_balances_filter_owes_you">Ti devono</string>
+    <string name="global_balances_hint">Già compensati tra i gruppi: ogni persona appare una sola volta.</string>
+    <string name="global_balances_hint_empty">Sommando tutti i gruppi su questo dispositivo.</string>
+    <string name="global_balances_section_you_owe">Devi · %d</string>
+    <string name="global_balances_section_owes_you">Ti devono · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d gruppo</item>
+        <item quantity="many">%d gruppi</item>
+        <item quantity="other">%d gruppi</item>
+    </plurals>
+    <string name="global_balances_guest">%s · ospite</string>
+    <string name="global_balances_you_owe">devi</string>
+    <string name="global_balances_owes_you">ti deve</string>
+    <string name="global_balances_by_group_show">Mostra %s per gruppo</string>
+    <string name="global_balances_by_group_hide">Nascondi %s per gruppo</string>
+    <string name="global_balances_received">Ricevuto</string>
+    <string name="global_balances_received_from">Ricevuto da %s</string>
+    <string name="global_balances_settle">Salda</string>
+    <string name="global_balances_settle_with">Salda con %s</string>
+    <string name="global_balances_charge">Richiedi</string>
+    <string name="global_balances_charge_person">Richiedi a %s</string>
+    <string name="global_balances_detail_pane">Saldo con %s</string>
+    <string name="global_balances_detail_owes_you">%s ti deve</string>
+    <string name="global_balances_detail_you_owe">Devi a %s</string>
+    <string name="global_balances_detail_guest">%s · ospite senza l’app</string>
+    <string name="global_balances_detail_note_owed">Il netto compensa già i gruppi: Richiedi e Ricevuto usano %s. L’app registra un pagamento in ogni gruppo.</string>
+    <string name="global_balances_detail_note_settle">Il netto compensa già i gruppi: Salda usa %s. L’app registra un pagamento in ogni gruppo.</string>
+    <string name="global_balances_detail_note_single">Un solo gruppo aperto con %s.</string>
+    <string name="global_balances_settled_title">Tutto in pari</string>
+    <string name="global_balances_settled_body">Nessuno ti deve niente e tu non devi niente a nessuno. Quando qualcuno aggiunge una spesa, il saldo appare qui.</string>
+    <string name="global_balances_settled_action">Vedi gruppi</string>
+    <string name="global_balances_nothing_to_pay_title">Non devi niente</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Sei in pari con tutti. Hai ancora %2$s da ricevere da %1$d persona.</item>
+        <item quantity="many">Sei in pari con tutti. Hai ancora %2$s da ricevere da %1$d persone.</item>
+        <item quantity="other">Sei in pari con tutti. Hai ancora %2$s da ricevere da %1$d persone.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Vedi chi ti deve soldi</string>
+    <string name="global_balances_nothing_to_receive_title">Nessuno ti deve niente</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Devi ancora %2$s a %1$d persona.</item>
+        <item quantity="many">Devi ancora %2$s a %1$d persone.</item>
+        <item quantity="other">Devi ancora %2$s a %1$d persone.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Vedi a chi devi soldi</string>
+    <string name="global_balances_coming_soon">Prossimamente</string>
+    <string name="global_balances_change_error">Impossibile salvare la modifica. Riprova.</string>
+    <string name="global_balances_copied">Copiato</string>
+    <string name="global_balances_charge_title">Richiedi a %s</string>
+    <string name="global_balances_charge_owes">Ti deve %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Chiudi</string>
+    <string name="global_balances_charge_guest">%s è ospite senza l’app. Lo saprà solo da questo messaggio, che quindi spiega già cosa è entrato nella spesa.</string>
+    <string name="global_balances_charge_message">Messaggio</string>
+    <string name="global_balances_charge_pix">Includi la mia chiave Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Copia messaggio</string>
+    <string name="global_balances_charge_send">Invia</string>
+    <string name="global_balances_message">Ciao %1$s! Secondo i conti di Blitz Split, mi devi %2$s per %3$s.</string>
+    <string name="global_balances_message_guest">Ciao %1$s! Mi devi %2$s per %3$s: la tua parte di %4$s.</string>
+    <string name="global_balances_message_guest_paid">Ciao %1$s! Mi devi %2$s per %3$s: la tua parte di %4$s, meno %5$s che hai già pagato.</string>
+    <string name="global_balances_message_group">il gruppo %s</string>
+    <string name="global_balances_message_groups">i gruppi %s</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefono</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Chiave casuale</string>
+    <string name="global_balances_message_reroute">%1$s ha semplificato i suoi debiti: invece di pagare %2$s, paghi direttamente me; il tuo totale non è cambiato.</string>
+</resources>

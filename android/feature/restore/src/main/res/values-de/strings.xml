@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Hol deine Gruppen zurück</string>
+    <string name="restore_subtitle">Warst du schon mit einem Konto angemeldet? Melde dich einfach wieder an. Wenn nicht, nutze den Wiederherstellungscode oder den QR-Code von deinem alten Gerät.</string>
+    <string name="restore_no_connection_title">Keine Verbindung</string>
+    <string name="restore_no_connection_body">Für die Anmeldung mit einem Konto oder Code brauchst du Internet, um deine Gruppen herunterzuladen. Deine Eingabe bleibt erhalten.</string>
+    <string name="restore_code_label">Oder nutze den Wiederherstellungscode</string>
+    <string name="restore_code_hint">12 Buchstaben und Ziffern. Bindestriche sind optional.</string>
+    <string name="restore_scan_qr_title">Scanne den QR-Code von deinem alten Gerät</string>
+    <string name="restore_scan_qr_body">Dort: Profil › Wiederherstellung › QR-Code anzeigen</string>
+    <string name="restore_recover">Wiederherstellen</string>
+    <string name="restore_try_again">Erneut versuchen</string>
+    <string name="restore_start_fresh">Auf diesem Gerät neu starten</string>
+    <string name="restore_error_invalid_code">Code nicht gefunden. Prüfe die Buchstaben und versuch es noch einmal.</string>
+    <string name="restore_error_too_many_attempts">Zu viele Versuche. Warte ein paar Minuten und versuch es noch einmal.</string>
+    <string name="restore_error_sign_in_failed">Anmeldung gerade nicht möglich. Versuch es noch einmal.</string>
+    <string name="restore_error_unknown">Etwas ist schiefgelaufen. Versuch es noch einmal.</string>
+</resources>

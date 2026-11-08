@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Neue Gruppe</string>
+    <string name="create_group_close">Schließen</string>
+    <string name="create_group_create">Erstellen</string>
+    <string name="create_group_change_color">Farbe der Gruppe ändern</string>
+    <string name="create_group_name_label">Gruppenname</string>
+    <string name="create_group_type_label">Gruppentyp</string>
+    <string name="create_group_members_title">Wer ist dabei</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d Person</item>
+        <item quantity="other">%d Personen</item>
+    </plurals>
+    <string name="create_group_me">du</string>
+    <string name="create_group_remove_member">%s entfernen</string>
+    <string name="create_group_add_placeholder">Nach Namen hinzufügen</string>
+    <string name="create_group_add">Hinzufügen</string>
+    <string name="create_group_no_app_notice">Gerade braucht niemand die App. Du kannst schon Ausgaben für alle erfassen und den Link später schicken.</string>
+    <string name="create_group_currency">Standardwährung</string>
+    <string name="create_group_currency_caption">Neue Ausgaben starten in dieser Währung; jede Ausgabe kann eine andere verwenden.</string>
+    <string name="create_group_save_error">Die Gruppe konnte nicht gespeichert werden. Versuch es noch einmal.</string>
+    <string name="create_group_photo">Gruppenfoto</string>
+    <string name="create_group_take_photo">Foto aufnehmen</string>
+    <string name="create_group_choose_photo">Foto auswählen</string>
+    <string name="create_group_remove_photo">Foto entfernen</string>
+    <string name="create_group_photo_error">Dieses Foto lässt sich nicht verwenden. Versuch ein anderes.</string>
+</resources>

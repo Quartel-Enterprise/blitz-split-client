@@ -32,7 +32,8 @@ it in the stores.
 - **Activity and notifications** for what involves you, and statistics for each group.
 - **Every screen size.** Phones, tablets, foldables (book and tabletop postures), the iPhone Duo, the web and the Mac,
   each drawn by its own native UI.
-- **English, Portuguese, Spanish** (Latin American and Spain) **and French**, English for any other language.
+- **English, Portuguese, Spanish** (Latin American and Spain), **French, German, Italian and Polish**, English for any
+  other language.
 
 ## 🧱 One codebase, three native UIs
 

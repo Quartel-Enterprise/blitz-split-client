@@ -433,6 +433,9 @@ private struct LanguageName: View {
         case .portuguese: Text("Portuguese (BR)", comment: "A language of Profile › Language, in the app's language")
         case .spanish: Text("Spanish", comment: "A language of Profile › Language, in the app's language")
         case .french: Text("French", comment: "A language of Profile › Language, in the app's language")
+        case .german: Text("German", comment: "A language of Profile › Language, in the app's language")
+        case .italian: Text("Italian", comment: "A language of Profile › Language, in the app's language")
+        case .polish: Text("Polish", comment: "A language of Profile › Language, in the app's language")
         default: Text("System")
         }
     }

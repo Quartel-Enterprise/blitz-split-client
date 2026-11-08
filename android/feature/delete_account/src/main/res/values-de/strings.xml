@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Konto löschen</string>
+    <string name="delete_account_offline_title">Kein Internet.</string>
+    <string name="delete_account_offline_body">Zum Löschen deines Kontos brauchst du eine Internetverbindung. Verbinde dich und versuch es noch einmal.</string>
+    <string name="delete_account_heading">Dein Konto und deine Daten löschen?</string>
+    <string name="delete_account_deleted_title">Was gelöscht wird</string>
+    <string name="delete_account_deleted_profile">Dein Profil (Name, Foto und Farbe)</string>
+    <string name="delete_account_deleted_keys">Deine Pix- und Bitcoin-Schlüssel</string>
+    <string name="delete_account_deleted_provider">Die Verknüpfung mit deinem %1$s-Konto</string>
+    <string name="delete_account_deleted_recovery_code">Dein Wiederherstellungscode</string>
+    <string name="delete_account_deleted_device">Die Kopie deiner Daten auf diesem Gerät</string>
+    <string name="delete_account_export">Erst meine Daten exportieren</string>
+    <string name="delete_account_confirm">Ich verstehe, dass sich das nicht rückgängig machen lässt</string>
+    <string name="delete_account_delete">Konto löschen</string>
+    <string name="delete_account_cancel">Abbrechen</string>
+    <string name="delete_account_failed">Dein Konto konnte nicht gelöscht werden. Versuch es noch einmal.</string>
+</resources>

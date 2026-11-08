@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Edytuj profil</string>
+    <string name="edit_profile_save">Zapisz</string>
+    <string name="edit_profile_change_photo">Zmień zdjęcie</string>
+    <string name="edit_profile_take_photo">Zrób zdjęcie</string>
+    <string name="edit_profile_choose_photo">Wybierz z galerii</string>
+    <string name="edit_profile_use_account_photo">Użyj zdjęcia z konta %1$s</string>
+    <string name="edit_profile_remove_photo">Usuń zdjęcie</string>
+    <string name="edit_profile_photo_error">Nie udało się użyć tego zdjęcia. Spróbuj innego.</string>
+    <string name="edit_profile_avatar_color">Kolor awatara</string>
+    <string name="edit_profile_avatar_color_hint">Widoczny, gdy nie masz zdjęcia.</string>
+    <string name="edit_profile_name_label">Twoje imię</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Minimalna liczba liter: %d.</string>
+    <string name="edit_profile_name_too_long">Maksymalna liczba znaków: %d.</string>
+    <string name="edit_profile_account_notice">Imię i zdjęcie pochodzą z twojego konta %1$s. Zmiana tutaj dotyczy tylko aplikacji Blitz Split i nie zmienia twojego konta %1$s.</string>
+    <string name="edit_profile_footer">Twoje imię i zdjęcie widzą tylko osoby z twoich grup.</string>
+    <string name="profile_photo_close">Zamknij</string>
+    <string name="profile_photo_camera">Aparat</string>
+    <string name="profile_photo_gallery">Galeria</string>
+    <string name="profile_photo_remove">Usuń</string>
+    <string name="profile_photo_title">Zdjęcie profilowe</string>
+</resources>

@@ -44,7 +44,12 @@ The feed, unread state, real time and push notifications.
     uniste a", "deshizo" to "deshiciste"); other languages and other people's rows keep the verb as it is. French does
     it with its auxiliary: every French verb phrase is a passé composé that starts with "a" ("Ana a divisé Dîner"), and
     the user's rows say "Tu as divisé Dîner" (the leading "a" becomes "as"), so a French verb phrase never starts with
-    another word.
+    another word. German and Italian do the same with theirs: every German verb phrase is a perfect starting with "hat"
+    or "ist" ("Ana hat Abendessen aufgeteilt", "Du hast…", "ist beigetreten" to "bist beigetreten"), every Italian one a
+    passato prossimo starting with "ha", never "è" ("Ana ha diviso Cena", "Tu hai diviso…"). Polish's past says the
+    gender, which the app doesn't know, so every Polish verb phrase starts with a regular past written for both,
+    "podzielił(a)", which becomes "podzieliłeś(-aś)" for the user ("Ty podzieliłeś(-aś) Kolacja"). The deleted-item
+    notice starts with who deleted it in these three languages too, as in Spanish and French.
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

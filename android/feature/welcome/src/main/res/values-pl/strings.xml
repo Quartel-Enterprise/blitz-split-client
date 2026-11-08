@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Dziel rachunki bez kłopotu</string>
+    <string name="welcome_offline_title">Działa offline</string>
+    <string name="welcome_offline_body">Wszystko zostaje na twoim urządzeniu i synchronizuje się później.</string>
+    <string name="welcome_optional_title">Konto jest opcjonalne</string>
+    <string name="welcome_optional_body">Google lub Apple chronią tylko przed utratą danych przy zmianie urządzenia.</string>
+    <string name="welcome_invite_title">Zapraszaj linkiem lub kodem QR</string>
+    <string name="welcome_invite_body">Znajomi dołączają do grupy bez zakładania konta.</string>
+    <string name="welcome_no_connection_title">Brak połączenia.</string>
+    <string name="welcome_no_connection_body">Logowanie przez konto wymaga internetu. Korzystaj teraz bez konta i połącz je później w Profilu.</string>
+    <string name="welcome_or">lub</string>
+    <string name="welcome_use_without_account">Korzystaj bez konta</string>
+    <string name="welcome_used_on_another_device">Mam już aplikację na innym urządzeniu</string>
+    <string name="welcome_sign_in_failed">Nie udało się teraz zalogować. Spróbuj ponownie.</string>
+</resources>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Brak haseł</string>
+    <string name="category_map_title">Mapa kategorii</string>
+    <string name="category_map_search">Szukaj haseł</string>
+    <string name="category_map_add">Dodaj hasło</string>
+    <string name="category_map_more">Więcej opcji</string>
+    <string name="category_map_restore">Przywróć domyślne</string>
+    <string name="category_map_back">Wstecz</string>
+    <string name="category_map_intro">Gdy tytuł wydatku zawiera jedno z tych słów, kategoria wybiera się sama. „Uber do domu” trafia do kategorii Transport.</string>
+    <string name="category_map_intro_offline">Mapa działa offline: zmiany obowiązują od razu na tym urządzeniu i trafią na twoje pozostałe urządzenia po ponownym połączeniu.</string>
+    <string name="category_map_device_only">Twoja mapa zostaje tylko na tym urządzeniu. Aby mieć ją na innych urządzeniach, zaloguj się przez Google lub Apple w Profilu.</string>
+    <string name="category_map_open_profile">Otwórz Profil</string>
+    <string name="category_map_longest_wins">Gdy do tytułu pasują dwa hasła, wygrywa dłuższe.</string>
+    <string name="category_map_no_result">Brak haseł z „%1$s”</string>
+    <string name="category_map_no_result_body">Dodaj je, a wydatki z tym słowem w tytule dostaną właściwą kategorię.</string>
+    <string name="category_map_add_query">Dodaj „%1$s”</string>
+    <string name="category_map_empty_title">Twoja mapa jest pusta</string>
+    <string name="category_map_empty_body">Bez haseł kategoria nie wynika z tytułu: wybierasz ją przy każdym wydatku.</string>
+    <string name="category_map_group_category"> · kategoria grupy %1$s</string>
+    <string name="category_map_only_main">Tylko %1$s</string>
+    <string name="category_map_only_in_group">tylko w grupie %1$s</string>
+    <string name="category_map_no_terms_yet">Na razie brak haseł.</string>
+    <string name="category_map_add_in">Dodaj hasło w kategorii %1$s</string>
+    <string name="category_map_tip">Dotknij hasła, aby zmienić jego kategorię lub je usunąć. Pasuje do całego słowa, bez względu na akcenty i wielkość liter.</string>
+    <string name="category_map_queued">w kolejce</string>
+    <string name="category_map_term_action">%1$s, %2$s. Edytuj</string>
+    <string name="category_map_new_term">Nowe hasło</string>
+    <string name="category_map_edit_term">Edytuj hasło</string>
+    <string name="category_map_term_label">Słowo lub fraza</string>
+    <string name="category_map_term_help">Pasuje do całego słowa, bez względu na akcenty i wielkość liter.</string>
+    <string name="category_map_term_help_app">Hasło aplikacji. „Przywróć domyślne” przywróci je w pierwotnej postaci.</string>
+    <string name="category_map_term_duplicate">„%1$s” już wybiera kategorię %2$s. Każde hasło ma jedną kategorię.</string>
+    <string name="category_map_term_too_short">Użyj co najmniej 2 liter.</string>
+    <string name="category_map_term_too_long">Użyj najwyżej 30 liter.</string>
+    <string name="category_map_term_invalid">Używaj tylko liter, cyfr i spacji.</string>
+    <string name="category_map_category">Kategoria</string>
+    <string name="category_map_category_help">Może to być kategoria lub podkategoria.</string>
+    <string name="category_map_category_help_edit">Zmiana tutaj przenosi hasło do innej kategorii.</string>
+    <string name="category_map_category_help_move">Przeniesienie zabiera hasło z kategorii %1$s.</string>
+    <string name="category_map_example">Przykład</string>
+    <string name="category_map_example_move">Po przeniesieniu</string>
+    <string name="category_map_remove">Usuń</string>
+    <string name="category_map_cancel">Anuluj</string>
+    <string name="category_map_save">Zapisz</string>
+    <string name="category_map_move_to">Przenieś do kategorii %1$s</string>
+    <string name="category_map_removed">Usunięto „%1$s” z mapy</string>
+    <string name="category_map_undo">Cofnij</string>
+    <string name="category_map_restore_title">Przywrócić domyślną mapę?</string>
+    <string name="category_map_restore_body">60 haseł aplikacji wróci w pierwotnej postaci, także te usunięte lub przeniesione.</string>
+    <string name="category_map_restore_own_one">Utworzone przez ciebie hasło „%1$s” zostaje.</string>
+    <string name="category_map_restore_confirm">Przywróć</string>
+    <string name="category_map_save_error">Nie udało się zapisać mapy. Spróbuj ponownie.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d hasło</item>
+        <item quantity="few">%d hasła</item>
+        <item quantity="many">%d haseł</item>
+        <item quantity="other">%d hasła</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d podkategoria</item>
+        <item quantity="few">%d podkategorie</item>
+        <item quantity="many">%d podkategorii</item>
+        <item quantity="other">%d podkategorii</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d hasło z „%2$s”</item>
+        <item quantity="few">%1$d hasła z „%2$s”</item>
+        <item quantity="many">%1$d haseł z „%2$s”</item>
+        <item quantity="other">%1$d hasła z „%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d zmiana w kolejce</item>
+        <item quantity="few">Offline · %d zmiany w kolejce</item>
+        <item quantity="many">Offline · %d zmian w kolejce</item>
+        <item quantity="other">Offline · %d zmiany w kolejce</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d hasło utworzone przez ciebie zostaje.</item>
+        <item quantity="few">%d hasła utworzone przez ciebie zostają.</item>
+        <item quantity="many">%d haseł utworzonych przez ciebie zostaje.</item>
+        <item quantity="other">%d hasła utworzone przez ciebie zostają.</item>
+    </plurals>
+    <string name="category_map_new_category">Nowa kategoria</string>
+    <string name="category_map_new_subcategory_in">Nowa podkategoria w kategorii %s</string>
+    <string name="category_map_edit_category">Edytuj: %s</string>
+    <string name="category_map_category_group">Grupa</string>
+    <string name="category_map_change_color">Zmień kolor: %1$s</string>
+    <string name="category_map_restore_color">Przywróć kolor</string>
+    <string name="category_map_color_done">Gotowe</string>
+</resources>

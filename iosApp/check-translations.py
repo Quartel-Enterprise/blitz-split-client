@@ -2,10 +2,11 @@
 """Fails the build on a string the Apple app has not translated into every language.
 
 Localizable.xcstrings holds the English literal of each SwiftUI text as its key, and Xcode only warns about a key
-that lacks a language in the editor, so an untranslated key ships as English in pt-BR, Spanish or French. This checks,
+that lacks a language in the editor, so an untranslated key ships as English in another language. This checks,
 for every language in REQUIRED, that each key has a translated, non-empty value (each plural and device variation
 too) and that the value keeps the key's placeholders (%lld, %@, %1$@, the private-use stand-ins of the activity
-sentences): a dropped or renamed one prints "%lld" on screen or crashes the formatting.
+sentences): a dropped or renamed one prints "%lld" on screen or crashes the formatting. A language whose plural has more
+forms than one and other (Polish's few and many) must give each of them in every plural variation.
 
 es-ES is not required: it holds only the words Spain says differently, and the build fills the rest from es
 (merge-regional-strings.py). A key with "shouldTranslate": false or a stale one is skipped.
@@ -17,17 +18,22 @@ Xcode runs it after Compile Sources, as a postCompileScript of project.yml:
 import json
 import re
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 # Every language the app is translated into, but English (the source) and es-ES (partial)
-REQUIRED = ("pt-BR", "es", "fr")
+REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl")
+# The plural categories each language needs when it varies by plural, where it needs more than one and other: a
+# missing one shows English's other form, or nothing
+PLURAL_CATEGORIES = {"pl": {"one", "few", "many", "other"}}
 CATALOGS = ("Localizable.xcstrings", "InfoPlist.xcstrings")
 
 # %lld, %@, %1$@, %.2f, %% (a literal percent) and the private-use characters the activity sentences use as stand-ins
 # for the actor and the object
 PLACEHOLDER = re.compile(r"%(?:\d+\$)?[-+0#]*\d*(?:\.\d+)?(?:hh|h|ll|l|q|L|z|t|j)?[diouxXeEfFgGaAcCsSp@]|[\ue000\ue001]")
 POSITION = re.compile(r"^%\d+\$")
+# A leaf's path inside a plural variation: what comes before it, and the category
+PLURAL_PATH = re.compile(r"^(.*?)/plural\.([a-z]+)")
 
 
 def placeholders(text: str) -> Counter:
@@ -58,6 +64,7 @@ def problems(key: str, entry: dict):
     wanted = placeholders(english)
     # A device variation ("/device.mac") is compared with the English one of the same device, else with the whole text
     english_variations = {path: placeholders(unit.get("value", "")) for path, unit in leaves(localizations.get("en", {}))}
+    english_plural_paths = [path for path in english_variations if PLURAL_PATH.match(path)]
     for language in REQUIRED:
         localization = localizations.get(language)
         if localization is None:
@@ -75,6 +82,17 @@ def problems(key: str, entry: dict):
                 yield f'{language}{path} "{value}" does not keep the placeholders of the key'
         if not found:
             yield f"{language} has no value"
+        wanted_categories = PLURAL_CATEGORIES.get(language)
+        found_categories = defaultdict(set)
+        for path, _ in leaves(localization) if wanted_categories else ():
+            if match := PLURAL_PATH.match(path):
+                found_categories[match[1]].add(match[2])
+        for path, categories in found_categories.items():
+            if not wanted_categories <= categories:
+                yield f"{language}{path} lacks the plural forms {', '.join(sorted(wanted_categories - categories))}"
+        # A plain string where English varies by plural would show one form for every count
+        if wanted_categories and english_plural_paths and not found_categories:
+            yield f"{language} has no plural variations, though English varies by plural"
 
 
 def main(resources: str) -> int:

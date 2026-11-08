@@ -6,7 +6,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi`, `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
-| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test` and `compileKotlinIosArm64`; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es or fr translation |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test` and `compileKotlinIosArm64`; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |

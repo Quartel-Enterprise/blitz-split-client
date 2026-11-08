@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Promemoria per saldare</string>
+    <string name="push_bill_created">%1$s ha aggiunto «%2$s» con te</string>
+    <string name="push_bill_edited">%1$s ha modificato «%2$s»</string>
+    <string name="push_bill_deleted">%1$s ha eliminato «%2$s»</string>
+    <string name="push_comment_added">%1$s ha commentato «%2$s»: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ha segnato di averti pagato</string>
+    <string name="push_payment_to_you">%1$s ha segnato che %2$s ti ha pagato</string>
+    <string name="push_payment_received_yours">%1$s ha segnato il tuo pagamento come ricevuto</string>
+    <string name="push_payment_from_you">%1$s ha segnato che hai pagato %2$s</string>
+    <string name="push_payment_undone">%1$s ha annullato un pagamento con te</string>
+    <string name="push_charge_sent">%1$s ti ha inviato un promemoria per saldare</string>
+    <string name="push_settle_reminder">Hai un saldo aperto in %1$s</string>
+    <string name="push_settle_reminders">Hai saldi aperti in %1$s gruppi</string>
+    <string name="push_added_to_group">%1$s ti ha aggiunto al gruppo</string>
+    <string name="push_member_joined">%1$s ha raggiunto il gruppo</string>
+    <string name="push_debts_simplified_to_you">%1$s ha semplificato i debiti. Ora %2$s ti paga %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s ha semplificato i debiti. Ora paghi %3$s a %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s ha semplificato i debiti. Guarda cosa cambia per te.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ha disattivato Semplifica debiti. Ora %2$s ti paga %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ha disattivato Semplifica debiti. Ora paghi %3$s a %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ha disattivato Semplifica debiti. Guarda cosa cambia per te.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Non fai parte di questo gruppo</string>
+    <string name="bill_link_not_in_group_message">Questo commento è in un gruppo di cui non fai parte. Chiedi l’invito a chi ti ha mandato il link.</string>
+    <string name="bill_link_offline_title">Nessuna connessione</string>
+    <string name="bill_link_offline_message">Apri di nuovo il link quando torni online.</string>
+    <string name="bill_link_go_home">Vai alla Home</string>
+</resources>

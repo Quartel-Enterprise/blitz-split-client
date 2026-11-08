@@ -52,6 +52,9 @@
     <string name="profile_language_portuguese">Portugués (BR)</string>
     <string name="profile_language_spanish">Español</string>
     <string name="profile_language_french">Francés</string>
+    <string name="profile_language_german">Alemán</string>
+    <string name="profile_language_italian">Italiano</string>
+    <string name="profile_language_polish">Polaco</string>
     <string name="profile_language_system_detail">Idioma del dispositivo</string>
     <string name="profile_notifications">Notificaciones</string>
     <plurals name="profile_notifications_active">

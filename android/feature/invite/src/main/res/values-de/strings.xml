@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Schließen</string>
+    <string name="invite_group_created">Gruppe erstellt</string>
+    <string name="invite_title">Lade alle zu %s ein</string>
+    <string name="invite_qr_description">QR-Code des Einladungslinks der Gruppe</string>
+    <string name="invite_copy">Kopieren</string>
+    <string name="invite_copied">Kopiert</string>
+    <string name="invite_who_picks">Wer den Link öffnet, wählt sich selbst in der Liste aus: %s. Kein Konto nötig.</string>
+    <string name="invite_names_or">%1$s oder %2$s</string>
+    <string name="invite_anyone_joins">Wer den Link öffnet, tritt der Gruppe bei. Kein Konto nötig.</string>
+    <string name="invite_pending_title">Link ausstehend</string>
+    <string name="invite_pending_offline">Er wird erstellt, sobald du online bist.</string>
+    <string name="invite_pending_online">Link wird erstellt…</string>
+    <string name="invite_failed_title">Link konnte nicht erstellt werden</string>
+    <string name="invite_failed_body">Beim Synchronisieren der Gruppe ist etwas schiefgelaufen.</string>
+    <string name="invite_retry">Erneut versuchen</string>
+    <string name="invite_share">Link teilen</string>
+    <string name="invite_see_who_joined">Sehen, wer beigetreten ist</string>
+    <string name="invite_add_person">Jemanden ohne die App hinzufügen</string>
+    <string name="invite_go_to_group">Zur Gruppe</string>
+    <string name="invite_change_link">Link ändern</string>
+    <string name="invite_change_link_title">Einladungslink ändern?</string>
+    <string name="invite_change_link_message">Der aktuelle Link und der QR-Code funktionieren dann nicht mehr, auch nicht genutzte persönliche Einladungen. Wer schon beigetreten ist, bleibt in der Gruppe.</string>
+    <string name="invite_change_link_failed">Link konnte nicht geändert werden. Versuch es noch einmal.</string>
+    <string name="invite_share_message">Lass uns die Ausgaben von %1$s mit Blitz Split aufteilen. Tritt über diesen Link bei: %2$s</string>
+</resources>

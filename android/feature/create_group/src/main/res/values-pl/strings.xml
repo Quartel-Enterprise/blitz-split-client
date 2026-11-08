@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nowa grupa</string>
+    <string name="create_group_close">Zamknij</string>
+    <string name="create_group_create">Utwórz</string>
+    <string name="create_group_change_color">Zmień kolor grupy</string>
+    <string name="create_group_name_label">Nazwa grupy</string>
+    <string name="create_group_type_label">Typ grupy</string>
+    <string name="create_group_members_title">Kto bierze udział</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d osoba</item>
+        <item quantity="few">%d osoby</item>
+        <item quantity="many">%d osób</item>
+        <item quantity="other">%d osoby</item>
+    </plurals>
+    <string name="create_group_me">ty</string>
+    <string name="create_group_remove_member">Usuń: %s</string>
+    <string name="create_group_add_placeholder">Dodaj po imieniu</string>
+    <string name="create_group_add">Dodaj</string>
+    <string name="create_group_no_app_notice">Na razie nikt nie potrzebuje aplikacji. Możesz już dodawać wydatki dla wszystkich, a link wysłać później.</string>
+    <string name="create_group_currency">Domyślna waluta</string>
+    <string name="create_group_currency_caption">Nowe wydatki zaczynają się w tej walucie; każdy wydatek może mieć inną.</string>
+    <string name="create_group_save_error">Nie udało się zapisać grupy. Spróbuj ponownie.</string>
+    <string name="create_group_photo">Zdjęcie grupy</string>
+    <string name="create_group_take_photo">Zrób zdjęcie</string>
+    <string name="create_group_choose_photo">Wybierz zdjęcie</string>
+    <string name="create_group_remove_photo">Usuń zdjęcie</string>
+    <string name="create_group_photo_error">Nie udało się użyć tego zdjęcia. Wybierz inne.</string>
+</resources>
