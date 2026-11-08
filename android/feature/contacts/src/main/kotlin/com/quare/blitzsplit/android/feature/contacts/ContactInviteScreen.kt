@@ -139,7 +139,7 @@ internal fun ContactInviteContent(
                 ).semantics { paneTitle = title },
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            InviteHeader(title, onEvent)
+            InviteHeader(title, state.hasNoGroups, onEvent)
             InviteBodyContent(state, onEvent)
         }
 
@@ -157,7 +157,7 @@ internal fun ContactInviteContent(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                InviteHeader(title, onEvent)
+                InviteHeader(title, state.hasNoGroups, onEvent)
                 InviteBodyContent(state, onEvent)
             }
         }
@@ -178,7 +178,7 @@ internal fun ContactInviteContent(
                             .padding(horizontal = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        InviteHeader(title, onEvent)
+                        InviteHeader(title, state.hasNoGroups, onEvent)
                         LinkCard(state)
                     }
                 },
@@ -203,6 +203,7 @@ internal fun ContactInviteContent(
 @Composable
 private fun InviteHeader(
     title: String,
+    hasNoGroups: Boolean,
     onEvent: (ContactInviteUiEvent) -> Unit,
 ) {
     Row(verticalAlignment = Alignment.Top) {
@@ -217,11 +218,14 @@ private fun InviteHeader(
                 modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.headlineSmall,
             )
-            Text(
-                text = stringResource(R.string.contacts_invite_pick_group),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            // Why: with no group there is nothing to pick, and the body already says to create one.
+            if (!hasNoGroups) {
+                Text(
+                    text = stringResource(R.string.contacts_invite_pick_group),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         IconButton(onClick = { onEvent(ContactInviteUiEvent.OnCloseClicked) }) {
             Icon(

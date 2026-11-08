@@ -55,7 +55,7 @@ export function ContactInviteDialog({ route }: { route: JsRoute }) {
       }}
       pane={{
         title: state.name ? t('contactProfile_invite', { name: state.name }) : t('contacts_inviteWithLink'),
-        description: t('contactInvite_pick'),
+        description: state.hasNoGroups ? undefined : t('contactInvite_pick'),
         body: <InviteBody presenter={presenter} state={state} isDesktop={isDesktop} />,
         // Why: with no group there is no link to copy or share, so the footer is empty (it still pads the drawer's bottom): "Novo grupo" is the only way on.
         footer: state.hasNoGroups ? null : (

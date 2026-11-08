@@ -102,7 +102,8 @@ private struct ContactInviteContent: View {
 
     var body: some View {
         Group {
-            if let fold = horizontalFold {
+            // With no group there is no QR code: the choices take the whole sheet, in one column.
+            if let fold = horizontalFold, !model.state.hasNoGroups {
                 VStack(spacing: 0) {
                     InviteQrCard(state: model.state)
                         .padding(.horizontal, 24)
@@ -117,7 +118,7 @@ private struct ContactInviteContent: View {
                             .frame(maxWidth: .infinity)
                     }
                 }
-            } else if layout.usesTwoColumns {
+            } else if layout.usesTwoColumns, !model.state.hasNoGroups {
                 ScrollView {
                     TwoColumnsLayout(spacing: 24) {
                         InviteQrCard(state: model.state)
