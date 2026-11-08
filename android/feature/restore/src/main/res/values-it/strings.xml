@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Recupera i tuoi gruppi</string>
+    <string name="restore_subtitle">Hai già effettuato l’accesso con un account? Accedi di nuovo e basta. Altrimenti, usa il codice di recupero o il codice QR del tuo vecchio dispositivo.</string>
+    <string name="restore_no_connection_title">Nessuna connessione</string>
+    <string name="restore_no_connection_body">Per accedere con un account o un codice serve internet per scaricare i tuoi gruppi. Quello che hai digitato resta salvato.</string>
+    <string name="restore_code_label">Oppure usa il codice di recupero</string>
+    <string name="restore_code_hint">12 lettere e numeri. I trattini sono facoltativi.</string>
+    <string name="restore_scan_qr_title">Scansiona il codice QR del tuo vecchio dispositivo</string>
+    <string name="restore_scan_qr_body">Lì: Profilo › Recupero › Mostra codice QR</string>
+    <string name="restore_recover">Recupera</string>
+    <string name="restore_try_again">Riprova</string>
+    <string name="restore_start_fresh">Ricomincia da zero su questo dispositivo</string>
+    <string name="restore_error_invalid_code">Codice non trovato. Controlla le lettere e riprova.</string>
+    <string name="restore_error_too_many_attempts">Troppi tentativi. Aspetta qualche minuto e riprova.</string>
+    <string name="restore_error_sign_in_failed">Impossibile accedere ora. Riprova.</string>
+    <string name="restore_error_unknown">Qualcosa è andato storto. Riprova.</string>
+</resources>

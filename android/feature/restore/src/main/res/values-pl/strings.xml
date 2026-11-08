@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Przywróć swoje grupy</string>
+    <string name="restore_subtitle">Masz już konto? Wystarczy zalogować się ponownie. Jeśli nie, użyj kodu odzyskiwania lub kodu QR ze starego urządzenia.</string>
+    <string name="restore_no_connection_title">Brak połączenia</string>
+    <string name="restore_no_connection_body">Logowanie przez konto lub kod wymaga internetu, by pobrać twoje grupy. To, co wpisano, zostaje zachowane.</string>
+    <string name="restore_code_label">Albo użyj kodu odzyskiwania</string>
+    <string name="restore_code_hint">12 liter i cyfr. Myślniki są opcjonalne.</string>
+    <string name="restore_scan_qr_title">Zeskanuj kod QR ze starego urządzenia</string>
+    <string name="restore_scan_qr_body">Tam: Profil › Kod odzyskiwania › Pokaż kod QR</string>
+    <string name="restore_recover">Odzyskaj</string>
+    <string name="restore_try_again">Spróbuj ponownie</string>
+    <string name="restore_start_fresh">Zacznij od nowa na tym urządzeniu</string>
+    <string name="restore_error_invalid_code">Nie znaleziono kodu. Sprawdź litery i spróbuj ponownie.</string>
+    <string name="restore_error_too_many_attempts">Za dużo prób. Odczekaj kilka minut i spróbuj ponownie.</string>
+    <string name="restore_error_sign_in_failed">Nie udało się teraz zalogować. Spróbuj ponownie.</string>
+    <string name="restore_error_unknown">Coś poszło nie tak. Spróbuj ponownie.</string>
+</resources>

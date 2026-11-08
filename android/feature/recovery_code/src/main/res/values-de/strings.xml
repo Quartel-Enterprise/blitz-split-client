@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Speichere deinen Wiederherstellungscode</string>
+    <string name="recovery_code_body">Du nutzt die App ohne Konto. Mit diesem Code bekommst du deine Gruppen zurück, wenn du das Gerät wechselst oder verlierst.</string>
+    <string name="recovery_code_copy">Code kopieren</string>
+    <string name="recovery_code_save_to_password_manager">Im Passwortmanager speichern</string>
+    <string name="recovery_code_connect_instead">Stattdessen Google oder Apple verbinden</string>
+    <string name="recovery_code_connect_instead_body">Kein Code nötig</string>
+    <string name="recovery_code_sign_in_failed">Verbindung gerade nicht möglich. Versuch es noch einmal.</string>
+    <string name="recovery_code_also_in_profile">Du findest ihn auch unter Profil › Wiederherstellung.</string>
+    <string name="recovery_code_remind_later">Später erinnern</string>
+    <string name="recovery_code_saved">Ich habe ihn gespeichert</string>
+</resources>

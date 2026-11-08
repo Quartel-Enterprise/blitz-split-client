@@ -2,25 +2,31 @@ import { browserLanguages } from '@/lib/platform'
 import { en, type MessageKey } from './en'
 import { es } from './es'
 import { esES } from './esES'
+import { de } from './de'
 import { fr } from './fr'
+import { it } from './it'
+import { pl } from './pl'
 import { pt } from './pt'
 
 export type { MessageKey }
 /** `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently. */
-export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr'
+export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl }
 
 /**
  * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
  * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
- * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `en` tag is English, and English when none
- * matches.
+ * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it` or `pl` tag (de-AT, it-CH, pl-PL…)
+ * is German, Italian or Polish, any `en` tag is English, and English when none matches.
  */
+// Why: the languages with one variant for every tag of theirs.
+const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl']
+
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
     const [language, ...rest] = tag.toLowerCase().split('-')
-    if (language === 'pt' || language === 'en' || language === 'fr') return language
+    if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'es') return rest.length === 1 && rest[0] === 'es' ? 'es-ES' : 'es'
   }
   return 'en'
@@ -46,9 +52,37 @@ export const locale: Locale = pickLocale([storedLanguage(), ...browserLanguages(
 /** Both Spanishes, for the few places where the language rather than the wording decides the grammar. */
 export const isSpanish = locale === 'es' || locale === 'es-ES'
 
+const documentLanguages: Record<Locale, string> = {
+  en: 'en',
+  pt: 'pt-BR',
+  es: 'es-419',
+  'es-ES': 'es-ES',
+  fr: 'fr',
+  de: 'de',
+  it: 'it',
+  pl: 'pl',
+}
+
+function documentLanguage(): string {
+  return documentLanguages[locale]
+}
+
+const pluralRules = new Intl.PluralRules(documentLanguage())
+
+/**
+ * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many
+ * (0, 5–21…). Its message for a `…Other` key with a `{count}` holds both, "{count} grupy|{count} grup", and this picks
+ * the one `count` takes (a fraction taking few's, as Polish does). Any other message has one form.
+ */
+function pluralFormOf(message: string, count: string | number | undefined): string {
+  const forms = message.split('|')
+  if (forms.length === 1) return message
+  return pluralRules.select(Number(count)) === 'many' ? forms[1] : forms[0]
+}
+
 /** The message for `key` in the app's locale, with each `{name}` replaced by `params.name`. */
 export function t(key: MessageKey, params?: Record<string, string | number>): string {
-  const message = messages[locale][key]
+  const message = pluralFormOf(messages[locale][key], params?.count)
   if (!params) return message
   return message.replace(/\{(\w+)\}/g, (match, name: string) => (name in params ? String(params[name]) : match))
 }
@@ -65,13 +99,28 @@ const irregularSecondPerson: Record<string, string> = {
   anunció: 'anunciaste',
 }
 
+// Why: each language's perfect auxiliary in the third person, with its second person.
+const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> = {
+  fr: { a: 'as' },
+  de: { hat: 'hast', ist: 'bist' },
+  it: { ha: 'hai' },
+}
+
 /**
  * An activity verb ("dividió", "se unió a", "cambió la división de") said to the user, who is "Tú" in Spanish:
- * "dividiste", "te uniste a". French verbs all start with the auxiliary "a" ("a divisé"), which becomes "as" for the
- * user, who is "Tu" ("as divisé"). Other languages keep the verb as it is.
+ * "dividiste", "te uniste a". French, German and Italian verb phrases all start with their perfect's auxiliary ("a
+ * divisé", "hat geteilt", "ist beigetreten", "ha diviso"), which becomes the user's ("as divisé", "hast geteilt", "bist
+ * beigetreten", "hai diviso"). Polish ones start with a past in "ł(a)", the app not knowing the gender: "podzielił(a)"
+ * becomes "podzieliłeś(-aś)". Other languages keep the verb as it is. Same rules as Android's `toSecondPerson` and the
+ * Apple app's `SecondPerson`.
  */
 export function verbForYou(verb: string): string {
-  if (locale === 'fr') return verb.replace(/^a(?= |$)/, 'as')
+  const auxiliary = secondPersonAuxiliaries[locale]
+  if (auxiliary) {
+    const [first, ...rest] = verb.split(' ')
+    return Object.hasOwn(auxiliary, first) ? [auxiliary[first], ...rest].join(' ') : verb
+  }
+  if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
   if (!isSpanish) return verb
   const [first, ...rest] = verb.split(' ')
   if (first === 'se' && rest.length > 0) return ['te', verbForYou(rest[0]), ...rest.slice(1)].join(' ')
@@ -82,10 +131,8 @@ export function verbForYou(verb: string): string {
   return verb
 }
 
-const documentLanguages: Record<Locale, string> = { en: 'en', pt: 'pt-BR', es: 'es-419', 'es-ES': 'es-ES', fr: 'fr' }
-
 /** The page's language and title: Bora Rachar only in Portuguese, Blitz Split everywhere else. */
 export function applyDocumentLocale() {
-  document.documentElement.lang = documentLanguages[locale]
+  document.documentElement.lang = documentLanguage()
   document.title = t('appName')
 }

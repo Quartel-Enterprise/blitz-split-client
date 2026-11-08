@@ -1,8 +1,9 @@
 import SwiftUI
 
-/// Spanish says "Ana dividió" but "Tú dividiste", and French "Ana a divisé" but "Tu as divisé": one localized sentence
-/// serves every actor, so when the actor is this device's user the verb after the "Tú" or "Tu" is conjugated to the
-/// second person. Other languages are left as they are.
+/// Spanish says "Ana dividió" but "Tú dividiste", French "Ana a divisé" but "Tu as divisé", German "Ana hat geteilt"
+/// but "Du hast geteilt", Italian "Ana ha diviso" but "Tu hai diviso" and Polish "Ana podzielił(a)" but "Ty
+/// podzieliłeś(-aś)": one localized sentence serves every actor, so when the actor is this device's user the verb after
+/// the "Tú", "Tu", "Du" or "Ty" is conjugated to the second person. Other languages are left as they are.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -17,6 +18,13 @@ enum SecondPerson {
         "envió": "enviaste", "inició": "iniciaste", "copió": "copiaste", "vació": "vaciaste", "anunció": "anunciaste",
     ]
 
+    /// Each language's perfect auxiliary in the third person, with its second person.
+    private static let auxiliaries = [
+        "fr": ["a": "as"],
+        "de": ["hat": "hast", "ist": "bist"],
+        "it": ["ha": "hai"],
+    ]
+
     /// The two-letter code of the language the sentences are localized in ("es", "fr"…): the `.lproj` Profile › Language
     /// picked, which `Bundle.main` only follows at the next launch.
     private static var language: String? {
@@ -28,20 +36,27 @@ enum SecondPerson {
     }
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French: every verb phrase is a passé composé that starts with "a", so "a divisé" → "as divisé". Another language
-    /// keeps the verb as it is.
+    /// French, German and Italian: every verb phrase is a perfect that starts with its auxiliary, so "a divisé" → "as
+    /// divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" → "hai diviso".
+    /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
+    /// "podzieliłeś(-aś)". Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = SecondPerson.language) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
-        case "fr": return frenchVerbForYou(verb)
+        case "pl": return replacingFirstWord(of: verb) { word in
+                word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
+            }
+        case let .some(code) where auxiliaries[code] != nil:
+            return replacingFirstWord(of: verb) { auxiliaries[code]?[$0] }
         default: return verb
         }
     }
 
-    private static func frenchVerbForYou(_ verb: String) -> String {
+    /// The verb phrase with its first word replaced, or as it is when `replacement` has none for that word.
+    private static func replacingFirstWord(of verb: String, with replacement: (String) -> String?) -> String {
         var words = verb.split(separator: " ", omittingEmptySubsequences: false).map(String.init)
-        guard words.first == "a" else { return verb }
-        words[0] = "as"
+        guard let first = words.first, let replaced = replacement(first) else { return verb }
+        words[0] = replaced
         return words.joined(separator: " ")
     }
 
@@ -61,8 +76,8 @@ enum SecondPerson {
         return words.joined(separator: " ")
     }
 
-    /// The localized sentence with the verb right after the actor said to "Tú" or "Tu" when the actor is the user, in
-    /// Spanish and French.
+    /// The localized sentence with the verb right after the actor said to the user when the actor is the user, in the
+    /// languages `verbForYou` conjugates.
     static func template(_ template: String, actorIsMe: Bool) -> String {
         guard actorIsMe, template.hasPrefix(actor + " ") else { return template }
         let rest = template.dropFirst(actor.count + 1)

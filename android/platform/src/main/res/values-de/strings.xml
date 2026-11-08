@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · Wiederherstellungscode</string>
+    <string name="platform_export_file_name">blitz-split-daten-%1$s.json</string>
+    <string name="platform_camera_denied">Erlaube die Kamera in den Einstellungen, um ein Foto aufzunehmen.</string>
+    <string name="platform_camera_settings">Einstellungen</string>
+    <string name="platform_receipt_source_camera">Foto aufnehmen</string>
+    <string name="platform_receipt_source_gallery">Aus der Galerie auswählen</string>
+    <string name="platform_receipt_source_file">Datei auswählen</string>
+    <string name="platform_receipt_camera_title">Beleg scannen</string>
+    <string name="platform_receipt_camera_close">Schließen</string>
+    <string name="platform_receipt_camera_flash_on">Blitz einschalten</string>
+    <string name="platform_receipt_camera_flash_off">Blitz ausschalten</string>
+    <string name="platform_receipt_camera_hint">Bring den ganzen Beleg in den Rahmen. Wir füllen Betrag, Datum und Beschreibung aus; du prüfst vor dem Speichern.</string>
+    <string name="platform_receipt_camera_gallery">Aus der Galerie auswählen</string>
+    <string name="platform_receipt_camera_shutter">Foto aufnehmen</string>
+    <string name="platform_receipt_camera_unavailable">Die Kamera ist nicht verfügbar. Wähl ein Foto des Belegs aus der Galerie.</string>
+    <string name="platform_receipt_camera_permission">Erlaube die Kamera, um den Beleg zu scannen, oder wähl ein Foto aus der Galerie.</string>
+    <string name="platform_receipt_camera_allow">Kamera erlauben</string>
+    <string name="platform_receipt_camera_settings">Einstellungen öffnen</string>
+</resources>

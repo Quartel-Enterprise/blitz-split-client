@@ -2,10 +2,11 @@
 """Fails the build on a string the Apple app has not translated into every language.
 
 Localizable.xcstrings holds the English literal of each SwiftUI text as its key, and Xcode only warns about a key
-that lacks a language in the editor, so an untranslated key ships as English in pt-BR, Spanish or French. This checks,
+that lacks a language in the editor, so an untranslated key ships as English in another language. This checks,
 for every language in REQUIRED, that each key has a translated, non-empty value (each plural and device variation
 too) and that the value keeps the key's placeholders (%lld, %@, %1$@, the private-use stand-ins of the activity
-sentences): a dropped or renamed one prints "%lld" on screen or crashes the formatting.
+sentences): a dropped or renamed one prints "%lld" on screen or crashes the formatting. A language whose plural has more
+forms than one and other (Polish's few and many) must give each of them in every plural variation.
 
 es-ES is not required: it holds only the words Spain says differently, and the build fills the rest from es
 (merge-regional-strings.py). A key with "shouldTranslate": false or a stale one is skipped.
@@ -21,7 +22,10 @@ from collections import Counter
 from pathlib import Path
 
 # Every language the app is translated into, but English (the source) and es-ES (partial)
-REQUIRED = ("pt-BR", "es", "fr")
+REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl")
+# The plural categories each language needs when it varies by plural, where it needs more than one and other: a
+# missing one shows English's other form, or nothing
+PLURAL_CATEGORIES = {"pl": {"one", "few", "many", "other"}}
 CATALOGS = ("Localizable.xcstrings", "InfoPlist.xcstrings")
 
 # %lld, %@, %1$@, %.2f, %% (a literal percent) and the private-use characters the activity sentences use as stand-ins
@@ -46,6 +50,17 @@ def leaves(localization: dict, path: str = ""):
     # The substitutions of a plural sentence ("%#@count@") each hold their own variations
     for name, substitution in localization.get("substitutions", {}).items():
         yield from leaves(substitution, f"{path}/{name}")
+
+
+def plurals(localization: dict, path: str = ""):
+    """Every (variation path, plural categories) of a localization."""
+    for kind, variants in localization.get("variations", {}).items():
+        if kind == "plural":
+            yield path, set(variants)
+        for name, variant in variants.items():
+            yield from plurals(variant, f"{path}/{kind}.{name}")
+    for name, substitution in localization.get("substitutions", {}).items():
+        yield from plurals(substitution, f"{path}/{name}")
 
 
 def problems(key: str, entry: dict):
@@ -75,6 +90,10 @@ def problems(key: str, entry: dict):
                 yield f'{language}{path} "{value}" does not keep the placeholders of the key'
         if not found:
             yield f"{language} has no value"
+        wanted_categories = PLURAL_CATEGORIES.get(language)
+        for path, categories in plurals(localization) if wanted_categories else ():
+            if not wanted_categories <= categories:
+                yield f"{language}{path} lacks the plural forms {', '.join(sorted(wanted_categories - categories))}"
 
 
 def main(resources: str) -> int:

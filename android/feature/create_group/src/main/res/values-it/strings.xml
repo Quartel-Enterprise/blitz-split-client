@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nuovo gruppo</string>
+    <string name="create_group_close">Chiudi</string>
+    <string name="create_group_create">Crea</string>
+    <string name="create_group_change_color">Cambia il colore del gruppo</string>
+    <string name="create_group_name_label">Nome del gruppo</string>
+    <string name="create_group_type_label">Tipo di gruppo</string>
+    <string name="create_group_members_title">Chi partecipa</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d persona</item>
+        <item quantity="many">%d persone</item>
+        <item quantity="other">%d persone</item>
+    </plurals>
+    <string name="create_group_me">tu</string>
+    <string name="create_group_remove_member">Rimuovi %s</string>
+    <string name="create_group_add_placeholder">Aggiungi per nome</string>
+    <string name="create_group_add">Aggiungi</string>
+    <string name="create_group_no_app_notice">Per ora nessuno ha bisogno dell’app. Puoi già aggiungere spese per tutti e mandare il link più tardi.</string>
+    <string name="create_group_currency">Valuta predefinita</string>
+    <string name="create_group_currency_caption">Le nuove spese partono in questa valuta; ogni spesa può usarne un’altra.</string>
+    <string name="create_group_save_error">Impossibile salvare il gruppo. Riprova.</string>
+    <string name="create_group_photo">Foto del gruppo</string>
+    <string name="create_group_take_photo">Scatta foto</string>
+    <string name="create_group_choose_photo">Scegli foto</string>
+    <string name="create_group_remove_photo">Rimuovi foto</string>
+    <string name="create_group_photo_error">Impossibile usare questa foto. Provane un’altra.</string>
+</resources>

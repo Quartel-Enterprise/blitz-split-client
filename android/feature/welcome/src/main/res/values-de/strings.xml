@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Ausgaben aufteilen, ganz ohne Stress</string>
+    <string name="welcome_offline_title">Funktioniert offline</string>
+    <string name="welcome_offline_body">Alles bleibt auf deinem Gerät und wird später synchronisiert.</string>
+    <string name="welcome_optional_title">Ein Konto ist optional</string>
+    <string name="welcome_optional_body">Google oder Apple sorgen nur dafür, dass du beim Gerätewechsel nichts verlierst.</string>
+    <string name="welcome_invite_title">Lade mit Link oder QR-Code ein</string>
+    <string name="welcome_invite_body">Freunde treten der Gruppe bei, ohne ein Konto zu erstellen.</string>
+    <string name="welcome_no_connection_title">Keine Verbindung.</string>
+    <string name="welcome_no_connection_body">Für die Anmeldung mit einem Konto brauchst du Internet. Nutze die App jetzt ohne Konto und verbinde es später unter Profil.</string>
+    <string name="welcome_or">oder</string>
+    <string name="welcome_use_without_account">Ohne Konto nutzen</string>
+    <string name="welcome_used_on_another_device">Ich habe die App schon auf einem anderen Gerät genutzt</string>
+    <string name="welcome_sign_in_failed">Anmeldung gerade nicht möglich. Versuch es noch einmal.</string>
+</resources>

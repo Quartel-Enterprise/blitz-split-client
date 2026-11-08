@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Keine Begriffe</string>
+    <string name="category_map_title">Kategorienzuordnung</string>
+    <string name="category_map_search">Begriffe suchen</string>
+    <string name="category_map_add">Begriff hinzufügen</string>
+    <string name="category_map_more">Weitere Optionen</string>
+    <string name="category_map_restore">Standard wiederherstellen</string>
+    <string name="category_map_back">Zurück</string>
+    <string name="category_map_intro">Wenn der Titel einer Ausgabe eines dieser Wörter enthält, wird die Kategorie automatisch gesetzt. „Uber nach Hause“ wird zu Verkehr.</string>
+    <string name="category_map_intro_offline">Die Zuordnung funktioniert offline: Änderungen gelten sofort auf diesem Gerät und erreichen deine anderen Geräte, sobald du wieder online bist.</string>
+    <string name="category_map_device_only">Deine Zuordnung bleibt nur auf diesem Gerät. Um sie auf deine anderen Geräte mitzunehmen, melde dich in deinem Profil mit Google oder Apple an.</string>
+    <string name="category_map_open_profile">Profil öffnen</string>
+    <string name="category_map_longest_wins">Wenn zwei Begriffe zu einem Titel passen, gewinnt der längere.</string>
+    <string name="category_map_no_result">Kein Begriff mit „%1$s“</string>
+    <string name="category_map_no_result_body">Füg ihn hinzu und Ausgaben mit diesem Wort im Titel kommen mit der richtigen Kategorie.</string>
+    <string name="category_map_add_query">„%1$s“ hinzufügen</string>
+    <string name="category_map_empty_title">Deine Zuordnung ist leer</string>
+    <string name="category_map_empty_body">Ohne Begriffe ergibt sich die Kategorie nicht aus dem Titel: Du wählst sie bei jeder Ausgabe.</string>
+    <string name="category_map_group_category"> · Kategorie von %1$s</string>
+    <string name="category_map_only_main">Nur %1$s</string>
+    <string name="category_map_only_in_group">nur in %1$s</string>
+    <string name="category_map_no_terms_yet">Noch keine Begriffe.</string>
+    <string name="category_map_add_in">Begriff in %1$s hinzufügen</string>
+    <string name="category_map_tip">Tipp auf einen Begriff, um seine Kategorie zu ändern oder ihn zu entfernen. Er passt auf das ganze Wort, unabhängig von Akzenten und Groß-/Kleinschreibung.</string>
+    <string name="category_map_queued">in der Warteschlange</string>
+    <string name="category_map_term_action">%1$s, %2$s. Bearbeiten</string>
+    <string name="category_map_new_term">Neuer Begriff</string>
+    <string name="category_map_edit_term">Begriff bearbeiten</string>
+    <string name="category_map_term_label">Wort oder Ausdruck</string>
+    <string name="category_map_term_help">Passt auf das ganze Wort, unabhängig von Akzenten und Groß-/Kleinschreibung.</string>
+    <string name="category_map_term_help_app">Ein Begriff der App. „Standard wiederherstellen“ bringt ihn im Originalzustand zurück.</string>
+    <string name="category_map_term_duplicate">„%1$s“ wählt bereits %2$s. Jeder Begriff hat eine Kategorie.</string>
+    <string name="category_map_term_too_short">Verwende mindestens 2 Buchstaben.</string>
+    <string name="category_map_term_too_long">Verwende höchstens 30 Buchstaben.</string>
+    <string name="category_map_term_invalid">Verwende nur Buchstaben, Ziffern und Leerzeichen.</string>
+    <string name="category_map_category">Kategorie</string>
+    <string name="category_map_category_help">Das kann die Kategorie oder eine Unterkategorie sein.</string>
+    <string name="category_map_category_help_edit">Eine Änderung hier verschiebt den Begriff in eine andere Kategorie.</string>
+    <string name="category_map_category_help_move">Durch das Verschieben verlässt der Begriff %1$s.</string>
+    <string name="category_map_example">Beispiel</string>
+    <string name="category_map_example_move">Nach dem Verschieben</string>
+    <string name="category_map_remove">Entfernen</string>
+    <string name="category_map_cancel">Abbrechen</string>
+    <string name="category_map_save">Speichern</string>
+    <string name="category_map_move_to">Nach %1$s verschieben</string>
+    <string name="category_map_removed">„%1$s“ wurde aus der Zuordnung entfernt</string>
+    <string name="category_map_undo">Rückgängig</string>
+    <string name="category_map_restore_title">Standardzuordnung wiederherstellen?</string>
+    <string name="category_map_restore_body">Die 60 Begriffe der App kommen im Originalzustand zurück, auch die, die du entfernt oder verschoben hast.</string>
+    <string name="category_map_restore_own_one">Der Begriff, den du erstellt hast, „%1$s“, bleibt.</string>
+    <string name="category_map_restore_confirm">Wiederherstellen</string>
+    <string name="category_map_save_error">Die Zuordnung konnte nicht gespeichert werden. Versuch es noch einmal.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d Begriff</item>
+        <item quantity="other">%d Begriffe</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d Unterkategorie</item>
+        <item quantity="other">%d Unterkategorien</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d Begriff mit „%2$s“</item>
+        <item quantity="other">%1$d Begriffe mit „%2$s“</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d Änderung in der Warteschlange</item>
+        <item quantity="other">Offline · %d Änderungen in der Warteschlange</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Der %d Begriff, den du erstellt hast, bleibt.</item>
+        <item quantity="other">Die %d Begriffe, die du erstellt hast, bleiben.</item>
+    </plurals>
+    <string name="category_map_new_category">Neue Kategorie</string>
+    <string name="category_map_new_subcategory_in">Neue Unterkategorie in %s</string>
+    <string name="category_map_edit_category">%s bearbeiten</string>
+    <string name="category_map_category_group">Gruppe</string>
+    <string name="category_map_change_color">Farbe von %1$s ändern</string>
+    <string name="category_map_restore_color">Farbe wiederherstellen</string>
+    <string name="category_map_color_done">Fertig</string>
+</resources>

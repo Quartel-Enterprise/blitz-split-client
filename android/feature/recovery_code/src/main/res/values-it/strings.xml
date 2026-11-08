@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Salva il tuo codice di recupero</string>
+    <string name="recovery_code_body">Stai usando l’app senza account. Questo codice ti restituisce i tuoi gruppi se cambi o perdi il dispositivo.</string>
+    <string name="recovery_code_copy">Copia codice</string>
+    <string name="recovery_code_save_to_password_manager">Salva nel gestore di password</string>
+    <string name="recovery_code_connect_instead">Collega invece Google o Apple</string>
+    <string name="recovery_code_connect_instead_body">Nessun codice necessario</string>
+    <string name="recovery_code_sign_in_failed">Impossibile collegarsi ora. Riprova.</string>
+    <string name="recovery_code_also_in_profile">Lo trovi anche in Profilo › Recupero.</string>
+    <string name="recovery_code_remind_later">Ricordamelo più tardi</string>
+    <string name="recovery_code_saved">L’ho salvato</string>
+</resources>

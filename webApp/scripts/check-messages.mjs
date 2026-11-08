@@ -5,6 +5,9 @@
 // types can't see: the placeholders and the empty values. A regional file (esES.ts, a language and a region) holds only
 // the words that region says differently, so it may lack keys, but never has an extra one.
 //
+// A language with two plurals where English has one (Polish's few and many) writes them as "few|many" in an `…Other`
+// message with a {count}; `t()` picks one. A "|" anywhere else, or forms that aren't two, would print on screen.
+//
 // Runs on the TypeScript sources through Node's own type stripping, with no build:  node scripts/check-messages.mjs
 import { readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -37,6 +40,15 @@ for (const language of languages) {
       if (!isRegional(language)) fail(language, key, 'is missing')
     } else if (typeof messages[key] !== 'string' || messages[key].trim() === '') {
       fail(language, key, 'is empty')
+    } else if (messages[key].includes('|')) {
+      const forms = messages[key].split('|')
+      if (!key.endsWith('Other') || !/\{count\}/.test(en[key])) fail(language, key, 'has a "|", which only an …Other message with a {count} may hold')
+      else if (forms.length !== 2 || forms.some((form) => form.trim() === '')) fail(language, key, 'must hold exactly two plural forms, "few|many"')
+      for (const form of forms) {
+        if (placeholdersOf(form) !== placeholdersOf(en[key])) {
+          fail(language, key, `has a form with the placeholders {${placeholdersOf(form)}} instead of English's {${placeholdersOf(en[key])}}`)
+        }
+      }
     } else if (placeholdersOf(messages[key]) !== placeholdersOf(en[key])) {
       fail(language, key, `has the placeholders {${placeholdersOf(messages[key])}} instead of English's {${placeholdersOf(en[key])}}`)
     }

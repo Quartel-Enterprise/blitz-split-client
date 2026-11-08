@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Jak mówią na ciebie znajomi?</string>
+    <string name="profile_setup_subtitle">Twoje imię widzą tylko osoby z twoich grup.</string>
+    <string name="profile_setup_avatar_color">Kolor awatara</string>
+    <string name="profile_setup_add_photo">Dodaj zdjęcie</string>
+    <string name="profile_setup_photo_error">Nie udało się użyć tego zdjęcia. Wybierz inne.</string>
+    <string name="profile_setup_name_label">Twoje imię</string>
+    <string name="profile_setup_name_placeholder">Jan Kowalski</string>
+    <string name="profile_setup_name_too_short">Wpisz więcej liter (minimum: %d).</string>
+    <string name="profile_setup_name_too_long">Maksymalna liczba znaków: %d.</string>
+    <string name="profile_setup_name_hint">Możesz to później zmienić w Profilu.</string>
+    <string name="profile_setup_saved_locally">Na razie zapisane tylko na tym urządzeniu.</string>
+    <string name="profile_setup_continue">Dalej</string>
+</resources>

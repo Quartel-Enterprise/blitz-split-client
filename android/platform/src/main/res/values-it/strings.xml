@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · codice di recupero</string>
+    <string name="platform_export_file_name">blitz-split-dati-%1$s.json</string>
+    <string name="platform_camera_denied">Consenti l’accesso alla fotocamera nelle Impostazioni per scattare una foto.</string>
+    <string name="platform_camera_settings">Impostazioni</string>
+    <string name="platform_receipt_source_camera">Scatta foto</string>
+    <string name="platform_receipt_source_gallery">Scegli dalla galleria</string>
+    <string name="platform_receipt_source_file">Scegli file</string>
+    <string name="platform_receipt_camera_title">Scansiona scontrino</string>
+    <string name="platform_receipt_camera_close">Chiudi</string>
+    <string name="platform_receipt_camera_flash_on">Attiva il flash</string>
+    <string name="platform_receipt_camera_flash_off">Disattiva il flash</string>
+    <string name="platform_receipt_camera_hint">Inquadra tutto lo scontrino. Compiliamo importo, data e descrizione; tu controlli prima di salvare.</string>
+    <string name="platform_receipt_camera_gallery">Scegli dalla galleria</string>
+    <string name="platform_receipt_camera_shutter">Scatta foto</string>
+    <string name="platform_receipt_camera_unavailable">La fotocamera non è disponibile. Scegli una foto dello scontrino dalla galleria.</string>
+    <string name="platform_receipt_camera_permission">Consenti l’accesso alla fotocamera per scansionare lo scontrino, oppure scegli una foto dalla galleria.</string>
+    <string name="platform_receipt_camera_allow">Consenti fotocamera</string>
+    <string name="platform_receipt_camera_settings">Apri impostazioni</string>
+</resources>

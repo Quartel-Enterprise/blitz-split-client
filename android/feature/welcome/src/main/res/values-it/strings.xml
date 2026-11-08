@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Dividi il conto, senza complicazioni</string>
+    <string name="welcome_offline_title">Funziona offline</string>
+    <string name="welcome_offline_body">Tutto resta sul tuo dispositivo e si sincronizza più tardi.</string>
+    <string name="welcome_optional_title">L’account è facoltativo</string>
+    <string name="welcome_optional_body">Google o Apple servono solo a non perdere nulla quando cambi dispositivo.</string>
+    <string name="welcome_invite_title">Invita con un link o un codice QR</string>
+    <string name="welcome_invite_body">Gli amici entrano nel gruppo senza creare un account.</string>
+    <string name="welcome_no_connection_title">Nessuna connessione.</string>
+    <string name="welcome_no_connection_body">Per accedere con un account serve internet. Usa l’app senza account ora e collegalo più tardi in Profilo.</string>
+    <string name="welcome_or">oppure</string>
+    <string name="welcome_use_without_account">Usa senza account</string>
+    <string name="welcome_used_on_another_device">Ho già usato l’app su un altro dispositivo</string>
+    <string name="welcome_sign_in_failed">Impossibile accedere ora. Riprova.</string>
+</resources>

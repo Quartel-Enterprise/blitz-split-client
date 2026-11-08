@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · kod odzyskiwania</string>
+    <string name="platform_export_file_name">blitz-split-dane-%1$s.json</string>
+    <string name="platform_camera_denied">Zezwól na dostęp do aparatu w Ustawieniach, aby zrobić zdjęcie.</string>
+    <string name="platform_camera_settings">Ustawienia</string>
+    <string name="platform_receipt_source_camera">Zrób zdjęcie</string>
+    <string name="platform_receipt_source_gallery">Wybierz z galerii</string>
+    <string name="platform_receipt_source_file">Wybierz plik</string>
+    <string name="platform_receipt_camera_title">Zeskanuj paragon</string>
+    <string name="platform_receipt_camera_close">Zamknij</string>
+    <string name="platform_receipt_camera_flash_on">Włącz lampę błyskową</string>
+    <string name="platform_receipt_camera_flash_off">Wyłącz lampę błyskową</string>
+    <string name="platform_receipt_camera_hint">Zmieść cały paragon w ramce. Uzupełnimy kwotę, datę i opis; sprawdzisz je przed zapisaniem.</string>
+    <string name="platform_receipt_camera_gallery">Wybierz z galerii</string>
+    <string name="platform_receipt_camera_shutter">Zrób zdjęcie</string>
+    <string name="platform_receipt_camera_unavailable">Aparat jest niedostępny. Wybierz zdjęcie paragonu z galerii.</string>
+    <string name="platform_receipt_camera_permission">Zezwól na dostęp do aparatu, aby zeskanować paragon, albo wybierz zdjęcie z galerii.</string>
+    <string name="platform_receipt_camera_allow">Zezwól na aparat</string>
+    <string name="platform_receipt_camera_settings">Otwórz ustawienia</string>
+</resources>

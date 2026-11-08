@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Przypomnienie o rozliczeniu</string>
+    <string name="push_bill_created">%1$s dodał(a) wspólny wydatek „%2$s”</string>
+    <string name="push_bill_edited">%1$s edytował(a) „%2$s”</string>
+    <string name="push_bill_deleted">%1$s skasował(a) „%2$s”</string>
+    <string name="push_comment_added">%1$s skomentował(a) „%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s oznaczył(a), że ci zapłacił(a)</string>
+    <string name="push_payment_to_you">%1$s oznaczył(a), że %2$s ci zapłacił(a)</string>
+    <string name="push_payment_received_yours">%1$s oznaczył(a) twoją płatność jako otrzymaną</string>
+    <string name="push_payment_from_you">%1$s oznaczył(a), że zapłaciłeś(-aś) osobie %2$s</string>
+    <string name="push_payment_undone">%1$s anulował(a) płatność między wami</string>
+    <string name="push_charge_sent">%1$s wysłał(a) ci przypomnienie o rozliczeniu</string>
+    <string name="push_settle_reminder">Masz nierozliczone saldo w grupie %1$s</string>
+    <string name="push_settle_reminders">Masz nierozliczone salda w %1$s grupach</string>
+    <string name="push_added_to_group">%1$s dodał(a) cię do grupy</string>
+    <string name="push_member_joined">%1$s dołączył(a) do grupy</string>
+    <string name="push_debts_simplified_to_you">%1$s uprościł(a) długi. Teraz %2$s płaci ci %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s uprościł(a) długi. Teraz płacisz %3$s osobie %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s uprościł(a) długi. Zobacz, jak to wygląda u ciebie.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s wyłączył(a) „Uprość długi”. Teraz %2$s płaci ci %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s wyłączył(a) „Uprość długi”. Teraz płacisz %3$s osobie %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s wyłączył(a) „Uprość długi”. Zobacz, jak to wygląda u ciebie.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Nie należysz do tej grupy</string>
+    <string name="bill_link_not_in_group_message">Ten komentarz jest w grupie, do której nie należysz. Poproś osobę, która wysłała ci link, o zaproszenie.</string>
+    <string name="bill_link_offline_title">Brak internetu</string>
+    <string name="bill_link_offline_message">Otwórz link ponownie, gdy znów będziesz online.</string>
+    <string name="bill_link_go_home">Przejdź do Startu</string>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Link z zaproszeniem</string>
+    <string name="members_link_pending">Jeszcze nie utworzono</string>
+    <string name="members_share">Udostępnij</string>
+    <string name="members_me">%s (ty)</string>
+    <string name="members_status_this_device">To urządzenie</string>
+    <string name="members_status_joined">Dołączył(a)</string>
+    <string name="members_status_not_joined">Jeszcze nie dołączył(a)</string>
+    <string name="members_options">Opcje: %s</string>
+    <string name="members_rename">Zmień imię</string>
+    <string name="members_personal_invite">Osobiste zaproszenie: %s</string>
+    <string name="members_personal_message">Kto otworzy ten link, dołączy od razu jako %s, bez wybierania z listy. Działa tylko raz.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Kto otworzy ten link, dołączy od razu jako %1$s, bez wybierania z listy, i od razu zobaczy swój udział w wysokości %2$s w dodanym dotąd wydatku. Działa tylko raz.</item>
+        <item quantity="few">Kto otworzy ten link, dołączy od razu jako %1$s, bez wybierania z listy, i od razu zobaczy swój udział w wysokości %2$s w %3$d dodanych dotąd wydatkach. Działa tylko raz.</item>
+        <item quantity="many">Kto otworzy ten link, dołączy od razu jako %1$s, bez wybierania z listy, i od razu zobaczy swój udział w wysokości %2$s w %3$d dodanych dotąd wydatkach. Działa tylko raz.</item>
+        <item quantity="other">Kto otworzy ten link, dołączy od razu jako %1$s, bez wybierania z listy, i od razu zobaczy swój udział w wysokości %2$s w %3$d dodanych dotąd wydatkach. Działa tylko raz.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopiuj link</string>
+    <string name="members_personal_copied">Skopiowano</string>
+    <string name="members_personal_share">Udostępnij: %s</string>
+    <string name="members_personal_share_message">Dołącz do grupy %1$s jako %2$s w aplikacji Blitz Split: %3$s</string>
+    <string name="members_remove">Usuń z grupy</string>
+    <string name="members_remove_joined">%s już dołączył(a) do grupy</string>
+    <string name="members_remove_title">Usunąć osobę %s z grupy?</string>
+    <string name="members_remove_message">%s jeszcze nie dołączył(a). Możesz później dodać tę osobę ponownie.</string>
+    <string name="members_remove_confirm">Usuń</string>
+    <string name="members_release">Zwolnij imię</string>
+    <string name="members_release_title">Zwolnić imię %s?</string>
+    <string name="members_release_message">Kto dołączył jako %1$s, opuści grupę. Imię %1$s, kolor i wydatki zostają, a imię %1$s będzie można znów wybrać przez link grupy.</string>
+    <string name="members_release_confirm">Zwolnij</string>
+    <string name="members_release_error">Nie udało się zwolnić imienia. Sprawdź połączenie i spróbuj ponownie.</string>
+    <string name="members_add">Dodaj osobę</string>
+    <string name="members_invite_instead">Ma aplikację? Zaproś przez link</string>
+    <string name="members_name_label">Imię</string>
+    <string name="members_save">Zapisz</string>
+    <string name="members_cancel">Anuluj</string>
+    <string name="members_change_error">Nie udało się zapisać zmiany. Spróbuj ponownie.</string>
+    <string name="members_remove_open_balance">%s ma nierozliczone saldo</string>
+    <string name="members_balance_to_get_back">%s do odzyskania</string>
+    <string name="members_balance_owes">%s do oddania</string>
+    <string name="members_balance_settled">Rozliczone</string>
+</resources>

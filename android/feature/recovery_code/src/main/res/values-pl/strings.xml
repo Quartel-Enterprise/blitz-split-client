@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Zapisz swój kod odzyskiwania</string>
+    <string name="recovery_code_body">Korzystasz z aplikacji bez konta. Ten kod przywróci twoje grupy, jeśli zmienisz lub zgubisz urządzenie.</string>
+    <string name="recovery_code_copy">Kopiuj kod</string>
+    <string name="recovery_code_save_to_password_manager">Zapisz w menedżerze haseł</string>
+    <string name="recovery_code_connect_instead">Zamiast tego połącz Google lub Apple</string>
+    <string name="recovery_code_connect_instead_body">Kod nie będzie potrzebny</string>
+    <string name="recovery_code_sign_in_failed">Nie udało się teraz połączyć. Spróbuj ponownie.</string>
+    <string name="recovery_code_also_in_profile">Znajdziesz go też tutaj: Profil › Kod odzyskiwania.</string>
+    <string name="recovery_code_remind_later">Przypomnij mi później</string>
+    <string name="recovery_code_saved">Kod zapisany</string>
+</resources>

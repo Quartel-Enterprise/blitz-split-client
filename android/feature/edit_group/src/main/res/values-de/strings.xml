@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="edit_group_title">Gruppe bearbeiten</string>
+    <string name="edit_group_close">Schließen</string>
+    <string name="edit_group_save">Speichern</string>
+    <string name="edit_group_change_icon">Symbol oder Foto ändern</string>
+    <string name="edit_group_icon_title">Gruppensymbol</string>
+    <string name="edit_group_icon_color">Farbe</string>
+    <string name="edit_group_choose_photo">Foto auswählen</string>
+    <string name="edit_group_take_photo">Foto aufnehmen</string>
+    <string name="edit_group_use_icon">Dieses Symbol verwenden</string>
+    <string name="edit_group_photo_error">Dieses Foto lässt sich nicht verwenden. Versuch ein anderes.</string>
+    <string name="edit_group_name_label">Gruppenname</string>
+    <string name="edit_group_name_help">Alle in der Gruppe sehen den neuen Namen.</string>
+    <string name="edit_group_name_error">Gib der Gruppe einen Namen mit bis zu 40 Zeichen.</string>
+    <string name="edit_group_name_count">%1$d/%2$d</string>
+    <string name="edit_group_type_label">Typ</string>
+    <string name="edit_group_currency">Standardwährung</string>
+    <string name="edit_group_currency_caption">Neue Ausgaben starten in dieser Währung; jede Ausgabe kann eine andere verwenden.</string>
+    <string name="edit_group_note">Alle in der Gruppe können Name, Symbol, Typ und „Schulden vereinfachen“ ändern. In „Aktivität“ steht, wer es geändert hat.</string>
+    <string name="edit_group_offline_note">Kein Internet: Die Änderung gilt jetzt auf diesem Gerät und erreicht die anderen, sobald es wieder verbunden ist. Ein neues Foto wird dann mit hochgeladen.</string>
+    <string name="edit_group_save_error">Die Gruppe konnte nicht gespeichert werden. Versuch es noch einmal.</string>
+    <string name="edit_group_default_split">Standardaufteilung</string>
+    <string name="edit_group_default_split_help">Wie neue Ausgaben aufgeteilt werden</string>
+    <string name="default_split_title">Standardaufteilung</string>
+    <string name="default_split_subtitle">%s · für neue Ausgaben</string>
+    <string name="default_split_back">Zurück zu „Gruppe bearbeiten“</string>
+    <string name="default_split_cancel">Abbrechen</string>
+    <string name="default_split_note">Gilt für neue Ausgaben. Jede Ausgabe kann sie direkt ändern. Bereits erfasste Ausgaben ändern sich nicht.</string>
+    <string name="default_split_offline_note">Kein Internet: Die neue Aufteilung gilt jetzt auf diesem Gerät und erreicht die anderen, sobald es wieder verbunden ist.</string>
+    <string name="default_split_save_error">Die Aufteilung konnte nicht gespeichert werden. Versuch es noch einmal.</string>
+    <plurals name="default_split_joined">
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s ist der Gruppe beigetreten</item>
+        <item quantity="other">%s sind der Gruppe beigetreten</item>
+    </plurals>
+    <plurals name="default_split_joined_equal">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Schon in der Aufteilung</item>
+        <item quantity="other">Alle schon in der Aufteilung</item>
+    </plurals>
+    <plurals name="default_split_joined_shares">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Startet mit 1 Anteil</item>
+        <item quantity="other">Alle starten mit 1 Anteil</item>
+    </plurals>
+    <plurals name="default_split_joined_percent">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Startet bei 0%</item>
+        <item quantity="other">Alle starten bei 0%</item>
+    </plurals>
+    <string name="default_split_joined_sentence">%1$s. %2$s; pass es bei Bedarf an.</string>
+    <string name="default_split_modes">Wie aufteilen</string>
+    <string name="default_split_hint_equal">Alle zahlen gleich viel</string>
+    <string name="default_split_hint_shares">Z. B. 3 zu 1. Gut für Paare und Familien</string>
+    <string name="default_split_hint_percent">Z. B. 75% und 25%</string>
+    <string name="default_split_hint_income">Jeder Anteil richtet sich nach dem Einkommen</string>
+    <string name="default_split_list_equal">Wer ist in der Aufteilung</string>
+    <string name="default_split_list_shares">Anteile pro Person</string>
+    <string name="default_split_list_percent">Prozent pro Person</string>
+    <string name="default_split_list_income">Einkommen pro Person</string>
+    <string name="default_split_income_note">Einkommen bleiben nur auf diesem Gerät. Die Gruppe sieht nur die Prozentsätze.</string>
+    <string name="default_split_parts_of">Anteile von %s</string>
+    <string name="default_split_percent_of">Prozentsatz von %s</string>
+    <string name="default_split_income_of">Einkommen von %s</string>
+    <string name="default_split_less">Ein Anteil weniger</string>
+    <string name="default_split_more">Ein Anteil mehr</string>
+    <string name="default_split_sum_left">Die Summe ist %1$d%%. Es fehlen %2$d%%.</string>
+    <string name="default_split_sum_over">Die Summe ist %1$d%%. %2$d%% zu viel.</string>
+    <string name="default_split_sum_help">Passe die Prozentsätze an, bis sie zusammen 100 Prozent ergeben, um zu speichern.</string>
+    <string name="default_split_example_equal">Bei einer Ausgabe von %1$s: je %2$s</string>
+    <string name="default_split_example">Bei einer Ausgabe von %s:</string>
+    <string name="default_split_example_equal_help">Wer bei einer Ausgabe nicht dabei ist, fällt beim Aufteilen raus.</string>
+    <string name="default_split_example_part">%1$s %2$s</string>
+    <string name="default_split_row_equal">1 von %1$d · %2$s%%</string>
+    <string name="default_split_row_out">Standardmäßig nicht in der Aufteilung</string>
+    <string name="default_split_row_shares">%d%% jeder Ausgabe</string>
+    <string name="default_split_row_percent">%1$s von je %2$s</string>
+    <string name="default_split_row_income">Einkommen pro Monat · %d%% jeder Ausgabe</string>
+    <string name="default_split_row_new">%s · gerade beigetreten</string>
+    <string name="default_split_me">%s (du)</string>
+    <string name="default_split_exceptions">Ausnahmen nach Kategorie</string>
+    <string name="default_split_exceptions_none">Keine. Jede Kategorie folgt der Aufteilung oben.</string>
+    <string name="default_split_exception_add">Ausnahme hinzufügen</string>
+    <string name="default_split_exception_title">Ausnahme nach Kategorie</string>
+    <string name="default_split_exception_lead">Ausgaben dieser Kategorie werden anders aufgeteilt.</string>
+    <string name="default_split_exception_category">Kategorie</string>
+    <string name="default_split_exception_how">Wie aufteilen</string>
+    <string name="default_split_exception_equal_all">Gleichmäßig unter allen</string>
+    <string name="default_split_exception_shares">Anteile, %s</string>
+    <string name="default_split_exception_percent">Prozent, %s</string>
+    <string name="default_split_exception_example">Bei einer Ausgabe von %1$s in %2$s: %3$s</string>
+    <string name="default_split_exception_pick">Wähl eine Kategorie für die Ausnahme.</string>
+    <string name="default_split_exception_taken">%s hat schon eine Ausnahme.</string>
+    <string name="default_split_exception_save">Ausnahme speichern</string>
+    <string name="default_split_exception_remove">Ausnahme entfernen</string>
+    <string name="default_split_exception_percent_error">Die Summe ist %1$d%%. Es fehlen %2$d%%.</string>
+    <string name="default_split_exception_percent_over">Die Summe ist %1$d%%. %2$d%% zu viel.</string>
+    <string name="default_split_exception_mode_equal">Gleichmäßig</string>
+    <string name="default_split_exception_mode_shares">Anteile</string>
+    <string name="default_split_exception_mode_percent">Prozent</string>
+    <plurals name="default_split_exception_equal_among">
+        <item quantity="one">Gleichmäßig unter %d</item>
+        <item quantity="other">Gleichmäßig unter %d</item>
+    </plurals>
+    <string name="default_split_exception_shares_two">%1$d zu %2$d</string>
+    <string name="default_split_exception_percent_value">%d%%</string>
+    <string name="simplify_section">Zahlungen</string>
+    <string name="simplify_title">Schulden vereinfachen</string>
+    <string name="simplify_status_off">Fasst die Schulden der Gruppe zu weniger Zahlungen zusammen. Niemand zahlt oder bekommt mehr.</string>
+    <plurals name="simplify_status_on">
+        <item quantity="one">An · %1$d Zahlung statt %2$d</item>
+        <item quantity="other">An · %1$d Zahlungen statt %2$d</item>
+    </plurals>
+    <plurals name="simplify_status_currency_row">
+        <item quantity="one">%1$s · %2$d → %3$d Zahlung</item>
+        <item quantity="other">%1$s · %2$d → %3$d Zahlungen</item>
+    </plurals>
+    <string name="simplify_status_on_minimal">An · schon die wenigsten Zahlungen</string>
+    <string name="simplify_status_pending_on">An auf diesem Gerät · wartet auf Upload</string>
+    <string name="simplify_status_pending_off">Aus auf diesem Gerät · wartet auf Upload</string>
+    <string name="simplify_status_needs_third">Bei 2 Personen ist es schon eine einzige Zahlung. Verfügbar, sobald eine dritte Person beitritt.</string>
+    <string name="simplify_how_it_works">So funktioniert’s</string>
+    <string name="simplify_offline_note">Kein Internet: Die vorgeschlagenen Zahlungen haben sich auf diesem Gerät schon geändert. Die Gruppe sieht es, sobald es wieder verbunden ist.</string>
+    <string name="simplify_confirm_title_on">Schulden vereinfachen?</string>
+    <string name="simplify_confirm_title_off">„Schulden vereinfachen“ ausschalten?</string>
+    <plurals name="simplify_payments_label">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Zahlung</item>
+        <item quantity="other">Zahlungen</item>
+    </plurals>
+    <plurals name="simplify_payments">
+        <item quantity="one">%d Zahlung</item>
+        <item quantity="other">%d Zahlungen</item>
+    </plurals>
+    <string name="simplify_confirm_counts">Aus %1$s werden %2$s</string>
+    <string name="simplify_confirm_body_on">Alle zahlen oder bekommen weiterhin dieselbe Summe. Es ändert sich nur, wer wem zahlt.</string>
+    <string name="simplify_confirm_body_off">Zahlungen laufen wieder zwischen denen, die jede Ausgabe geteilt haben. Die Summen ändern sich nicht.</string>
+    <string name="simplify_confirm_body_minimal">%s hat schon die wenigsten Zahlungen. Schalte es trotzdem ein und die nächsten Ausgaben kommen vereinfacht.</string>
+    <string name="simplify_confirm_what_changes">Was sich ändert</string>
+    <string name="simplify_change_guest">%s · Gast</string>
+    <string name="simplify_change_amount_to">%1$s an %2$s</string>
+    <string name="simplify_change_amount_to_you">%s an dich</string>
+    <string name="simplify_change_stops_paying">Zahlt %s nicht mehr.</string>
+    <string name="simplify_change_stops_paying_me">Du zahlst %s nicht mehr.</string>
+    <string name="simplify_change_pays">Zahlt %s.</string>
+    <string name="simplify_change_pays_me">Du zahlst %s.</string>
+    <string name="simplify_change_stops_receiving">Bekommt nichts mehr von %s.</string>
+    <string name="simplify_change_stops_receiving_me">Du bekommst nichts mehr von %s.</string>
+    <string name="simplify_change_receives">Bekommt etwas von %s.</string>
+    <string name="simplify_change_receives_me">Du bekommst etwas von %s.</string>
+    <string name="simplify_change_guest_note">Hat die App nicht: Gib über „Anfordern“ Bescheid.</string>
+    <string name="simplify_you_lowercase">du</string>
+    <string name="simplify_queued_one">Du hast 1 Zahlung in der Warteschlange: %s. Die Vereinfachung berücksichtigt sie; ändert sie sich, passen sich die vorgeschlagenen Zahlungen von selbst an.</string>
+    <string name="simplify_queued_paid_you">%1$s hat dir %2$s gezahlt</string>
+    <string name="simplify_queued_you_paid">du hast %2$s %1$s gezahlt</string>
+    <string name="simplify_queued_paid">%1$s hat %3$s %2$s gezahlt</string>
+    <plurals name="simplify_queued_several">
+        <item quantity="one">Du hast %d Zahlung in der Warteschlange. Die Vereinfachung berücksichtigt sie; ändert sie sich, passen sich die vorgeschlagenen Zahlungen von selbst an.</item>
+        <item quantity="other">Du hast %d Zahlungen in der Warteschlange. Die Vereinfachung berücksichtigt sie; ändern sie sich, passen sich die vorgeschlagenen Zahlungen von selbst an.</item>
+    </plurals>
+    <string name="simplify_confirm_foot_on">Alle sehen es in „Aktivität“. Wer jetzt an jemand anderen zahlt oder von jemand anderem bekommt, erhält eine Mitteilung. Du kannst es jederzeit ausschalten.</string>
+    <string name="simplify_confirm_foot_minimal">Alle sehen es in „Aktivität“. Du kannst es jederzeit ausschalten.</string>
+    <string name="simplify_confirm_foot_off_none">Alle sehen es in „Aktivität“.</string>
+    <plurals name="simplify_confirm_foot_off">
+        <item quantity="one">Bei %d weiteren Person ändert sich etwas. Alle sehen es in „Aktivität“ und wen es betrifft, erhält eine Mitteilung.</item>
+        <item quantity="other">Bei %d weiteren Personen ändert sich etwas. Alle sehen es in „Aktivität“ und wen es betrifft, erhält eine Mitteilung.</item>
+    </plurals>
+    <string name="simplify_confirm_not_now">Nicht jetzt</string>
+    <string name="simplify_confirm_cancel">Abbrechen</string>
+    <string name="simplify_confirm_on">Vereinfachen</string>
+    <string name="simplify_confirm_minimal">Trotzdem einschalten</string>
+    <string name="simplify_confirm_off">Ausschalten</string>
+    <string name="simplify_info_back">Zurück</string>
+    <string name="simplify_info_intro">In einer Gruppe erzeugt jede Ausgabe Schulden zwischen zwei Personen. Mit der Zeit fließt das Geld im Kreis. Vereinfachen fasst diese Schulden zusammen und schlägt weniger Zahlungen vor.</string>
+    <string name="simplify_info_example">Ein Beispiel</string>
+    <string name="simplify_info_example_text">Carla schuldet Elisa %1$s und Elisa schuldet dir %1$s.</string>
+    <string name="simplify_info_before">Vorher</string>
+    <string name="simplify_info_after">Vereinfacht</string>
+    <string name="simplify_info_before_a11y">Vorher: Carla zahlt Elisa %1$s und Elisa zahlt dir %1$s. 2 Zahlungen.</string>
+    <string name="simplify_info_after_a11y">Vereinfacht: Carla zahlt dir %1$s direkt. Elisa zahlt nichts. 1 Zahlung.</string>
+    <string name="simplify_info_example_result">Vereinfacht zahlt Carla dir %s direkt und Elisa zahlt nichts.</string>
+    <string name="simplify_info_total_title">Die Summen ändern sich nicht</string>
+    <string name="simplify_info_total_text">Wer in der Gruppe %1$s geschuldet hat, schuldet weiterhin %1$s. Es ändert sich nur, wohin das Geld geht.</string>
+    <string name="simplify_info_stranger_title">Du schuldest vielleicht jemandem, mit dem du nie eine Ausgabe geteilt hast</string>
+    <string name="simplify_info_stranger_text">In den Salden der Gruppe zeigt dir das Label „Vereinfachte Schulden“, wann das passiert.</string>
+    <string name="simplify_info_anyone_title">Alle können es ein- oder ausschalten</string>
+    <string name="simplify_info_anyone_text">In „Gruppe bearbeiten“. In „Aktivität“ steht, wer es geändert hat, und wer jetzt an jemand anderen zahlt oder von jemand anderem bekommt, erhält eine Mitteilung.</string>
+    <string name="simplify_info_undo_title">Ausschalten macht es rückgängig</string>
+    <string name="simplify_info_undo_text">Zahlungen laufen wieder zwischen denen, die jede Ausgabe geteilt haben. Keine Ausgabe und keine erfasste Zahlung ändert sich.</string>
+</resources>

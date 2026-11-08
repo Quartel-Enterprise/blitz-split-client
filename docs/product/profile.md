@@ -74,8 +74,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
   - Profile › Preferences › "Language", as Bible Planner's (Pierre's call): "System" first, the default, which follows
     the device's language (English for one the app doesn't have), then each language named in the app's language
     (Pierre's call, changed from each language in its own name: only translated names, with the region when the
-    language is written for one), "English", "Portuguese (BR)", "Spanish" and "French" in English, "Inglês",
-    "Português (BR)", "Espanhol" and "Francês" in Portuguese; "Spanish" is Spain's Spanish (es-ES) on a device whose
+    language is written for one), "English", "Portuguese (BR)", "Spanish", "French", "German", "Italian" and "Polish"
+    in English, "Inglês", "Português (BR)", "Espanhol", "Francês", "Alemão", "Italiano" and "Polonês" in Portuguese; "Spanish" is Spain's Spanish (es-ES) on a device whose
     region is Spain, the neutral one anywhere else, so it carries no region. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's
