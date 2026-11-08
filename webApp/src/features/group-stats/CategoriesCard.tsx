@@ -14,10 +14,10 @@ const gap = 2
 
 /**
  * "Por categoria" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
- * legend with the percentages, then each main category with its bar and its subcategories. The slice the mouse is over
- * (or its legend line, hovered or focused) pops out, the others fade, and the center names it with its share; a click
- * or a tap on a slice, a legend line or a row opens the category's bills ("Expenses by category"). The ring sweeps in
- * again when the period changes.
+ * legend with the percentages, then each main category with its bar. The slice the mouse is over (or its legend line,
+ * hovered or focused) pops out, the others fade, and the center names it with its share; a click or a tap on a slice,
+ * a legend line or a row opens the category's bills ("Expenses by category"). The ring sweeps in again when the
+ * period changes.
  */
 export function CategoriesCard({
   state,
@@ -143,11 +143,6 @@ function CategoryLine({ row, money, onOpen }: { row: JsStatsCategory; money: (mi
           <span role="img" aria-label={t('groupStats_categoryShare', { name, percent: row.percent })} className="flex h-2 rounded-full bg-muted">
             <span className="rounded-full bg-primary" style={{ width: `${row.barFraction * 100}%` }} />
           </span>
-          {row.subcategories.length > 0 && (
-            <span className="text-xs text-muted-foreground">
-              {row.subcategories.map((sub) => `${categoryName(sub.category)} ${money(sub.amountMinor)}`).join(' · ')}
-            </span>
-          )}
         </span>
         <ChevronRight aria-hidden className="size-4 shrink-0 self-center text-muted-foreground" />
       </button>

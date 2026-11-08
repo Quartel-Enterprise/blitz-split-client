@@ -1812,11 +1812,6 @@ class GroupStatsViewModelTest {
             )
             assertEquals(listOf(80, 18, 2), rows.map { it.percent })
             assertEquals(
-                listOf(AppCategory.HOME_RENT.key, AppCategory.HOME_CONDO.key),
-                rows.first().subcategories.map { it.category.id },
-            )
-            assertEquals(listOf(AppCategory.FOOD_MARKET.key), rows[1].subcategories.map { it.category.id })
-            assertEquals(
                 AppCategory.HOME.key,
                 viewModel.uiState.value.topCategory
                     ?.category
