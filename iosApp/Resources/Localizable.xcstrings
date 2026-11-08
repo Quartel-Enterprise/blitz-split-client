@@ -28714,7 +28714,7 @@
       }
     },
     "Type" : {
-      "comment" : "The new group's type picker: trip, home, event or other",
+      "comment" : "The new group's type picker: event, trip, home or other",
       "localizations" : {
         "es" : {
           "stringUnit" : {

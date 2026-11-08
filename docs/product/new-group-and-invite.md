@@ -2,6 +2,8 @@
 
 Creating a group and inviting people.
 
+  - The group's type is picked from "Event", "Trip", "Home" and "Other", in that order, and a new group starts as
+    "Event": people split more bills at events than on trips (feedback on the beta). Editing a group keeps its type.
   - "New group" opens full screen on an Android phone, in two columns lying down (the group, then "Who's
     in"), and as a dialog over the home anywhere wider: 560 dp on a tablet and a foldable upright, in a book's
     right half and a tabletop's top half; a sheet on iOS (two columns on an iPhone lying down, a 540 pt form sheet

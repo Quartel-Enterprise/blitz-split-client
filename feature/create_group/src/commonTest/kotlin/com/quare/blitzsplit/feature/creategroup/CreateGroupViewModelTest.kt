@@ -173,7 +173,7 @@ class CreateGroupViewModelTest {
             // Then
             assertEquals("", state.name)
             assertEquals("", state.initials)
-            assertEquals(GroupType.TRIP, state.type)
+            assertEquals(GroupType.EVENT, state.type)
             assertEquals("", state.draft)
             assertFalse(state.isCreating)
             assertFalse(state.canCreate)
@@ -1637,7 +1637,7 @@ class CreateGroupViewModelTest {
         // Then
         assertEquals(
             "group_created" to mapOf<String, Any>(
-                "type" to GroupType.TRIP,
+                "type" to GroupType.EVENT,
                 "currency" to GroupCurrency.BRL,
                 "members" to 1,
                 "has_photo" to false,

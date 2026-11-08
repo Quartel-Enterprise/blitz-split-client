@@ -10,7 +10,7 @@ const typeLabels: Record<string, MessageKey> = {
   other: 'createGroup_typeOther',
 }
 
-/** "Viagem", "Casa", "Evento" or "Outro", by the GroupType's code. */
+/** "Evento", "Viagem", "Casa" or "Outro", by the GroupType's code. */
 export function groupTypeLabel(code: string): string {
   return t(typeLabels[code] ?? 'createGroup_typeOther')
 }

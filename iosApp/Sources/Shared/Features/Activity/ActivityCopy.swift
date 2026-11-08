@@ -609,7 +609,7 @@ enum ActivityCopy {
 }
 
 private extension GroupType {
-    /// "Trip", "Home", "Event" or "Other", as Novo grupo names them.
+    /// "Event", "Trip", "Home" or "Other", as Novo grupo names them.
     var typeLabel: String {
         switch self {
         case .home: String(localized: "Home", bundle: .appLanguage)
