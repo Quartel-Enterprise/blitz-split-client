@@ -108,7 +108,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     month", "Last month", "All time" (the default, as the notes say) and "Pick dates…" (each platform's date
     range picker, never after today). Total spent, how many bills, "Average per person" (the total over every member,
     who hasn't joined included), "Your share" and "You paid", on a neutral card under a neutral period chip on every
-    platform (the accent's container is the blue category's own, so a filled card read as one more slice of the ring);
+    platform (a pale blue fill read as one more slice of the ring);
     "By person" shows Consumed (each part as each bill
     split it) or Paid, the largest first, someone who left the group as "Former member". "Settling up" (Pierre's call, beta
     feedback 12, `GroupStatsUiState.settling`, `SettlingCalculator`) names under it who "Settles fastest" and who

@@ -3,18 +3,6 @@ import { t, type MessageKey } from '@/i18n'
 /** A color's [background, text] pair per theme, and its `data` tone [light, dark]. */
 type ColorTones = { light: [string, string]; dark: [string, string]; data: [string, string] }
 
-/**
- * The five avatar colors, with the same values on every platform (see the canvas rules): a [background, text] pair
- * per theme, and the `data` tone [light, dark] a mark that stands for the person takes (a bar, a segment of a split).
- */
-export const avatarColors: Record<string, ColorTones & { label: MessageKey }> = {
-  blue: { label: 'color_blue', light: ['#D7E2FF', '#001B3F'], dark: ['#00458F', '#D7E2FF'], data: ['#2A75DC', '#94B9FF'] },
-  peach: { label: 'color_peach', light: ['#FFDCC0', '#2D1600'], dark: ['#6B3B00', '#FFDCC0'], data: ['#AE650C', '#FDA54D'] },
-  green: { label: 'color_green', light: ['#AAF5A4', '#002204'], dark: ['#055315', '#AAF5A4'], data: ['#418642', '#82CA7D'] },
-  lilac: { label: 'color_lilac', light: ['#F0DBFF', '#2C0051'], dark: ['#5B3383', '#F0DBFF'], data: ['#8E65B8', '#D3A6FF'] },
-  sand: { label: 'color_sand', light: ['#F6E468', '#201C00'], dark: ['#504700', '#F6E468'], data: ['#857800', '#CBBA42'] },
-}
-
 /** The color's name for screen readers, or its code when the app doesn't know it. */
 export function avatarColorLabel(code: string): string {
   const color = avatarColors[code]
@@ -56,6 +44,19 @@ export const categoryColors: Record<string, ColorTones> = {
   lime: { light: ['#DDF0A0', '#141E00'], dark: ['#3B4D00', '#DDF0A0'], data: ['#678020', '#A8C35C'] },
   brown: { light: ['#F1DFD1', '#2A1709'], dark: ['#5B4130', '#F1DFD1'], data: ['#986E53', '#E0AF90'] },
   gray: { light: ['#E0E3E8', '#191C20'], dark: ['#44474C', '#E0E3E8'], data: ['#74777C', '#B7B9BE'] },
+}
+
+/**
+ * The five avatar colors share the values of the category color of the same hue on every platform (see the canvas
+ * rules), so a face and a slice of one hue never drift apart; the `data` tone is what a mark that stands for the
+ * person takes (a bar, a segment of a split).
+ */
+export const avatarColors: Record<string, ColorTones & { label: MessageKey }> = {
+  blue: { label: 'color_blue', ...categoryColors.blue },
+  peach: { label: 'color_peach', ...categoryColors.orange },
+  green: { label: 'color_green', ...categoryColors.green },
+  lilac: { label: 'color_lilac', ...categoryColors.purple },
+  sand: { label: 'color_sand', ...categoryColors.yellow },
 }
 
 /** The category colors' codes, in the order the picker lists them. */

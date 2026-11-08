@@ -162,8 +162,7 @@ internal fun StatsPeriodChip(
 
 /*
  * Why: the period's total, how many bills (the queue's with the amber dot) and the average, then this person's part.
- * On a neutral card, as iOS and the web draw it: the accent's container is the blue category's own, so a filled hero
- * read as one more slice of the ring below it.
+ * On a neutral card, as iOS and the web draw it: a pale blue fill read as one more slice of the ring below it.
  */
 @Composable
 internal fun StatsSummaryHero(

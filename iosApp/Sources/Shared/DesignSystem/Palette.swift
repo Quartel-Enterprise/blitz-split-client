@@ -81,36 +81,23 @@ extension View {
     }
 }
 
-/// The five avatar colors, with the same values on every platform (see the canvas rules).
+/// The five avatar colors share the values of the category color of the same hue on every platform (see the canvas
+/// rules), so a face and a slice of one hue never drift apart.
 extension AvatarColor {
-    var container: Color {
-        switch self {
-        case .peach: Color(light: 0xFFDCC0, dark: 0x6B3B00)
-        case .green: Color(light: 0xAAF5A4, dark: 0x055315)
-        case .lilac: Color(light: 0xF0DBFF, dark: 0x5B3383)
-        case .sand: Color(light: 0xF6E468, dark: 0x504700)
-        default: Color(light: 0xD7E2FF, dark: 0x00458F)
-        }
-    }
+    var container: Color { categoryColor.container }
 
-    var content: Color {
-        switch self {
-        case .peach: Color(light: 0x2D1600, dark: 0xFFDCC0)
-        case .green: Color(light: 0x002204, dark: 0xAAF5A4)
-        case .lilac: Color(light: 0x2C0051, dark: 0xF0DBFF)
-        case .sand: Color(light: 0x201C00, dark: 0xF6E468)
-        default: Color(light: 0x001B3F, dark: 0xD7E2FF)
-        }
-    }
+    var content: Color { categoryColor.content }
 
     /// A mark that stands for a person (a bar, a segment of a split) takes this tone, as a category's does.
-    var data: Color {
+    var data: Color { categoryColor.data }
+
+    private var categoryColor: CategoryColor {
         switch self {
-        case .peach: Color(light: 0xAE650C, dark: 0xFDA54D)
-        case .green: Color(light: 0x418642, dark: 0x82CA7D)
-        case .lilac: Color(light: 0x8E65B8, dark: 0xD3A6FF)
-        case .sand: Color(light: 0x857800, dark: 0xCBBA42)
-        default: Color(light: 0x2A75DC, dark: 0x94B9FF)
+        case .peach: .orange
+        case .green: .green
+        case .lilac: .purple
+        case .sand: .yellow
+        default: .blue
         }
     }
 
