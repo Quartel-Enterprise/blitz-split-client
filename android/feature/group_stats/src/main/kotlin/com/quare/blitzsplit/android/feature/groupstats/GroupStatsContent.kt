@@ -95,7 +95,7 @@ private fun rememberStatsLayout(): StatsLayout {
 }
 
 /*
- * Why: "Estatísticas" (6.6) under the small, pinned bar, with Back and no "Rachar conta", laid out per size
+ * Why: "Estatísticas" (6.6) under the small bar, with Back and no "Rachar conta", laid out per size
  * (StatsLayout). Anywhere wider than a phone upright the home's rail stays beside it, as the canvas draws it, but on a
  * tabletop and in the group's pane beside the groups (a tablet lying down, decision 2).
  */
@@ -128,7 +128,7 @@ private fun GroupStatsScaffold(
     onPickDates: () -> Unit,
 ) {
     val layout = rememberStatsLayout()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberStatsTextFormatter()
     val times = rememberDateTimeTextFormatter()
@@ -169,8 +169,8 @@ private fun GroupStatsScaffold(
                 }
             }
             /*
-             * Why: the small bar keeps "Estatísticas" and the group pinned while the content scrolls; on a tabletop
-             * it also holds the period, so the top half keeps room for the chart.
+             * Why: the small bar holds "Estatísticas" and the group, not the body, and leaves with the content on
+             * scroll; on a tabletop it also holds the period, so the top half keeps room for the chart.
              */
             TopAppBar(
                 title = title,

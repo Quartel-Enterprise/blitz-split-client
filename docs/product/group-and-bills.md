@@ -100,9 +100,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     `PaymentRow.currency`), as do the bill's details and the "Search" and Home bill rows. Statistics have their own chip
     row and read the bills and payments of that currency only; its category list opens the bills of that currency.
   - "Statistics" (6.6, `Route.GroupStats`) opens from the chart button on the group's bar (Expenses and Balances;
-    "Statistics" with text on the web from the tablet up), with Back and no "Split a bill". On Android its bar stays
-    small and pinned, "Statistics" and the group in it, while the content scrolls (iOS and the web keep their native
-    titles). It counts only the bills on the device, those in the queue too ("7 expenses, 1 queued", the amber dot),
+    "Statistics" with text on the web from the tablet up), with Back and no "Split a bill". On Android its bar is
+    small, with "Statistics" and the group in it rather than in the body, and leaves with the content on scroll (iOS
+    and the web keep their native titles). It counts only the bills on the device, those in the queue too ("7 expenses, 1 queued", the amber dot),
     never the payments of Balances (but in "Settling up"), so it works offline. Periods (only this screen keeps one): a trip lists "The whole trip" (the default, from its first
     to its last day with a bill), "This month", "Last month" and "Pick dates…"; any other group "This year", "This
     month", "Last month", "All time" (the default, as the notes say) and "Pick dates…" (each platform's date
