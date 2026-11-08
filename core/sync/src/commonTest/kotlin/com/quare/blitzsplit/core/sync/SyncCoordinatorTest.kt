@@ -386,6 +386,44 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a sync that failed while the session refreshed WHEN it gets a token again THEN syncs again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
+        profile.pullError = IllegalStateException("session refreshing")
+        coordinator.start()
+        runCurrent()
+        profile.pullError = null
+
+        // When
+        account.sessionRecoveries.emit(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the last sync went through WHEN the session gets a token again THEN syncs no more`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
+        coordinator.start()
+        runCurrent()
+
+        // When
+        account.sessionRecoveries.emit(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.downloadedUserIds)
+    }
+
+    @Test
     fun `GIVEN the other user profile fails to come down WHEN switching THEN pushes nothing over it`() = runTest {
         // Given
         prepareScenario(

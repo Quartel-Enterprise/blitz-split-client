@@ -39,6 +39,16 @@ Functions, Storage and Realtime, and binds each plugin on its own so data source
 serializes channel removals around supabase-kt#1414 (a deferred disconnect that would drop a live channel). The URL, the publishable key and the Google web client id come from the BuildKonfig object
 `SupabaseConfig` (see [getting-started.md](../getting-started.md#supabase)).
 
+The client also installs `SignedInRestAccess` (`createSignedInRestAccess`), a Ktor plugin that fails any request to
+the database (`/rest/v1/`) sent without a user's token. supabase-kt falls back to the publishable key while the
+session has no usable token, as when a token that expired in the background can't be refreshed yet (no internet right
+after the app comes back), and row level security answers a read with no rows instead of an error, a table's or a
+function's that reads the user's rows (`first_download_groups`, `pending_guest_merges`). A download would take that
+empty answer as everything gone from the server and drop the device's groups and bills until the next sync. With the
+plugin the sync fails instead (a connection failure for `SyncFailure`) and Room keeps what it has. Only the functions
+the API grants to `anon` go without a user: `get_invite`, `get_shared_bill` and `unregister_push_device`; a new one
+granted to `anon` and called without an account goes in the plugin's list too.
+
 | Remote data source | Talks to |
 | --- | --- |
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
@@ -221,7 +231,13 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   so whatever changed meanwhile comes too. The first download ends with the loop, with the sync when it fails, or
   once the device is offline with the restored profile, since no sync runs then.
 - **Register**: `ensureRegistered()` reuses the current session or signs in anonymously. The sync never registers
-  an install that has no profile yet.
+  an install that has no profile yet. A session that only waits for its refresh (supabase-kt's `RefreshFailure`) is
+  still the user's, so `ensureRegistered()` fails with `SessionRefreshingException` then instead of signing in a new
+  anonymous user, whose sync would delete the other user's groups from the device; a Google or Apple sign in fails the
+  same way instead of switching users. The session is read once (`RemoteSession`), so a refresh that settles between
+  two reads can't make it look like none. The sync counts that failure as a connection failure (not reported), and
+  runs again once the session gets a token back (`observeSessionRecoveries()`) if the last sync failed, since nothing
+  else changes then.
 - **Pull, then push, Last-Write-Wins by `updatedAt`.** Every synced row carries `updatedAt` and `pendingSync`. A
   local write sets `pendingSync = true` with the injected clock. The pull applies a server row only when the local
   one is **not pending and strictly older** (`ProfileDao.applyRemote`), so a change made offline never loses to an

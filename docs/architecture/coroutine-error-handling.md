@@ -25,7 +25,7 @@ suspend fun ensureRegistered(): Result<String> = try {
 
 ```kotlin
 override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
-    val user = remote.getCurrentUserOrNull() ?: remote.signInAnonymously()
+    val user = getUserUnlessRefreshing() ?: remote.signInAnonymously()
     local.update { account -> account.toMirrorOf(user) }
     user.userId
 }

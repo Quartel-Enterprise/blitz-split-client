@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.account.data
 import com.quare.blitzsplit.core.account.data.datasource.AccountLocalDataSource
 import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
+import com.quare.blitzsplit.core.account.data.datasource.RemoteSession
 import com.quare.blitzsplit.core.account.data.repository.AccountRepositoryImpl
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
@@ -11,6 +12,7 @@ import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
 import com.quare.blitzsplit.core.account.domain.model.RecoveryCredentials
+import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.model.SocialAccountHasNoRecoveryCodeException
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -64,6 +66,21 @@ class AccountRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a session waiting for its refresh WHEN ensuring registration THEN fails without a new user`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        remote.isRefreshing = true
+
+        // When
+        val result = repository.ensureRegistered()
+
+        // Then
+        assertIs<SessionRefreshingException>(result.exceptionOrNull())
+        assertEquals(0, remote.anonymousSignIns)
+        assertEquals(AccountStatus.LocalOnly, repository.observeStatus().first())
+    }
+
+    @Test
     fun `GIVEN a session WHEN ensuring registration THEN reuses it`() = runTest {
         // Given
         prepareScenario(currentUser = anonymousUser)
@@ -94,6 +111,59 @@ class AccountRepositoryImplTest {
         assertEquals(ConnectResult.LINKED, result.getOrNull())
         assertEquals(listOf("token"), remote.linkedTokens)
         assertTrue(remote.signedInTokens.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a session waiting for its refresh WHEN connecting Google THEN fails without signing in`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        remote.isRefreshing = true
+
+        // When
+        val result = repository.signInWithIdToken(
+            AccountProvider.GOOGLE,
+            idToken = "token",
+            rawNonce = "nonce",
+            fullName = null,
+            authorizationCode = null,
+        )
+
+        // Then
+        assertIs<SessionRefreshingException>(result.exceptionOrNull())
+        assertTrue(remote.signedInTokens.isEmpty())
+        assertTrue(remote.linkedTokens.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a session waiting for its refresh WHEN connecting Apple in the browser THEN fails without leaving`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            remote.isRefreshing = true
+
+            // When
+            val result = repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = true)
+
+            // Then
+            assertIs<SessionRefreshingException>(result.exceptionOrNull())
+            assertTrue(remote.browserSignIns.isEmpty())
+            assertTrue(remote.browserLinks.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a session whose refresh failed WHEN it gets a token again THEN tells its recovery`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+        val recoveries = mutableListOf<Unit>()
+        backgroundScope.launch { repository.observeSessionRecoveries().collect { recoveries += it } }
+        runCurrent()
+
+        // When
+        remote.sessionRecoveries.emit(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(1, recoveries.size)
     }
 
     @Test
@@ -2409,6 +2479,28 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN a session waiting for its refresh WHEN disconnecting Google THEN stays the same user with a new code`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUserWithEmail)
+            repository.ensureRegistered()
+            repository.updateAwaitsFullSync(true)
+            remote.isRefreshing = true
+
+            // When
+            val result = repository.removeSocialIdentity()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertTrue(result.isSuccess)
+            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+            assertEquals("P3XR7MQA2TKE", account.recoveryCode)
+            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+            assertTrue(account.awaitsFullSync)
+            assertNull(account.email)
+        }
+
+    @Test
     fun `GIVEN an Apple account WHEN disconnecting Apple THEN the same user becomes anonymous with a new code due`() =
         runTest {
             // Given
@@ -2722,6 +2814,8 @@ private class FakeAccountRemoteDataSource(
     val savedDisplayNames = mutableListOf<String>()
     var saveDisplayNameError: Throwable? = null
     var anonymousSignIns = 0
+    var isRefreshing = false
+    val sessionRecoveries = MutableSharedFlow<Unit>()
     var signOutCount = 0
     var signOutError: Throwable? = null
     var sessionUpdates: Flow<SessionUser?> = emptyFlow()
@@ -2742,6 +2836,14 @@ private class FakeAccountRemoteDataSource(
     override fun observeAppleRefreshTokens(): Flow<String> = appleRefreshTokens
 
     override suspend fun getCurrentUserOrNull(): SessionUser? = currentUser ?: sessionUsers.value
+
+    override suspend fun getSession(): RemoteSession = if (isRefreshing) {
+        RemoteSession.Refreshing
+    } else {
+        getCurrentUserOrNull()?.let(RemoteSession::Active) ?: RemoteSession.None
+    }
+
+    override fun observeSessionRecoveries(): Flow<Unit> = sessionRecoveries
 
     override suspend fun signInAnonymously(): SessionUser {
         anonymousSignIns++
