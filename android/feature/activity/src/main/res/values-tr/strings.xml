@@ -57,12 +57,12 @@
     <string name="activity_kind_group_edited">%1$s grubu düzenledi: %2$s</string>
     <string name="activity_kind_group_deleted">%1$s grubu sildi: %2$s</string>
     <string name="activity_kind_invite_link_changed">%1$s davet bağlantısını değiştirdi: %2$s</string>
-    <string name="activity_kind_member_added">%1$s ekledi: %2$s</string>
+    <string name="activity_kind_member_added">%1$s bir üye ekledi: %2$s</string>
     <string name="activity_kind_member_joined">%1$s gruba katıldı: %2$s</string>
     <string name="activity_kind_member_left">%1$s gruptan ayrıldı: %2$s</string>
-    <string name="activity_kind_member_removed">%1$s gruptan çıkardı: %2$s</string>
+    <string name="activity_kind_member_removed">%1$s bir üyeyi çıkardı: %2$s</string>
     <string name="activity_kind_member_released">%1$s adı serbest bıraktı: %2$s</string>
-    <string name="activity_kind_member_renamed">%1$s adını değiştirdi: %2$s</string>
+    <string name="activity_kind_member_renamed">%1$s bir üyenin adını değiştirdi: %2$s</string>
     <string name="activity_kind_charge_sent">%1$s ödeme istedi: %2$s</string>
     <string name="activity_kind_comment_added">%1$s yorum yaptı: %2$s</string>
     <string name="activity_kind_comment_deleted">%1$s bir yorumu sildi: %2$s</string>

@@ -537,7 +537,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ üye ekledi: %@"
+            "value" : "%@ bir üye ekledi: %@"
           }
         }
       }
@@ -8310,7 +8310,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ sildi: %@"
+            "value" : "%@ bir harcamayı sildi: %@"
           }
         }
       }
@@ -8487,7 +8487,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ düzenledi: %@"
+            "value" : "%@ bir harcamayı düzenledi: %@"
           }
         }
       }
@@ -18616,7 +18616,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ üyeyi çıkardı: %@"
+            "value" : "%@ bir üyeyi çıkardı: %@"
           }
         }
       }
@@ -18675,7 +18675,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ üyeyi yeniden adlandırdı: %@"
+            "value" : "%@ bir üyenin adını değiştirdi: %@"
           }
         }
       }

@@ -27,16 +27,6 @@ enum SecondPerson {
         "nl": ["heeft": "hebt", "is": "bent"],
     ]
 
-    /// The two-letter code of the language the sentences are localized in ("es", "fr"…): the `.lproj` Profile › Language
-    /// picked, which `Bundle.main` only follows at the next launch.
-    static var language: String? {
-        let bundle = Bundle.appLanguage
-        let name = bundle.bundleURL.pathExtension == "lproj"
-            ? bundle.bundleURL.deletingPathExtension().lastPathComponent
-            : bundle.preferredLocalizations.first
-        return name.map { String($0.prefix(2)) }
-    }
-
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
     /// French, German, Italian and Dutch: every verb phrase is a perfect that starts with its auxiliary, so "a divisé" →
     /// "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" → "hai diviso",
@@ -44,7 +34,7 @@ enum SecondPerson {
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
     /// "böldün:". Another language keeps the verb as it is.
-    static func verbForYou(_ verb: String, language: String? = SecondPerson.language) -> String {
+    static func verbForYou(_ verb: String, language: String? = Bundle.appLanguageCode) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
         case "tr": return turkishVerbForYou(verb)
@@ -74,9 +64,7 @@ enum SecondPerson {
             end = verb.index(before: end)
         }
         let clause = verb[..<end]
-        // The simple past's "-dı", "-di", "-du", "-dü" or, after a voiceless consonant, "-tı"…
-        guard let vowel = clause.last, "ıiuü".contains(vowel), let consonant = clause.dropLast().last,
-              "dt".contains(consonant) else { return verb }
+        guard clause.range(of: "[dt][ıiuü]$", options: .regularExpression) != nil else { return verb }
         return String(clause) + "n" + String(verb[end...])
     }
 
