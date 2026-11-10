@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Profiel bewerken</string>
+    <string name="edit_profile_save">Opslaan</string>
+    <string name="edit_profile_change_photo">Foto wijzigen</string>
+    <string name="edit_profile_take_photo">Foto maken</string>
+    <string name="edit_profile_choose_photo">Kiezen uit galerij</string>
+    <string name="edit_profile_use_account_photo">Foto van %1$s-account gebruiken</string>
+    <string name="edit_profile_remove_photo">Foto verwijderen</string>
+    <string name="edit_profile_photo_error">Kan deze foto niet gebruiken. Probeer een andere.</string>
+    <string name="edit_profile_avatar_color">Avatarkleur</string>
+    <string name="edit_profile_avatar_color_hint">Zichtbaar als je geen foto hebt.</string>
+    <string name="edit_profile_name_label">Je naam</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Typ minstens %d letters.</string>
+    <string name="edit_profile_name_too_long">Gebruik maximaal %d tekens.</string>
+    <string name="edit_profile_account_notice">Naam en foto komen van je %1$s-account. Als je ze hier wijzigt, geldt dat alleen voor Blitz Split en verandert je %1$s-account niet.</string>
+    <string name="edit_profile_footer">Alleen mensen in je groepen zien je naam en foto.</string>
+    <string name="profile_photo_close">Sluiten</string>
+    <string name="profile_photo_camera">Camera</string>
+    <string name="profile_photo_gallery">Galerij</string>
+    <string name="profile_photo_remove">Verwijderen</string>
+    <string name="profile_photo_title">Profielfoto</string>
+</resources>

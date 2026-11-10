@@ -8,6 +8,7 @@ private const val FRENCH = "fr"
 private const val GERMAN = "de"
 private const val ITALIAN = "it"
 private const val POLISH = "pl"
+private const val DUTCH = "nl"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -16,8 +17,9 @@ private val secondPersonAuxiliaries = mapOf(
     FRENCH to mapOf("a" to "as"),
     GERMAN to mapOf("hat" to "hast", "ist" to "bist"),
     ITALIAN to mapOf("ha" to "hai"),
+    DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
 )
-private val youSubjectLanguages = setOf(SPANISH, FRENCH, GERMAN, ITALIAN, POLISH)
+private val youSubjectLanguages = setOf(SPANISH, FRENCH, GERMAN, ITALIAN, POLISH, DUTCH)
 private val irregularSecondPerson = mapOf(
     "deshizo" to "deshiciste",
     "cambió" to "cambiaste",
@@ -31,11 +33,11 @@ private val irregularSecondPerson = mapOf(
 /*
  * Why: "Ana dividió", but "Tú dividiste": Spanish conjugates the verb for the person, and one message serves them all.
  * "dividió" becomes "dividiste" and "se unió a" "te uniste a". French does the same with its auxiliary, every verb
- * phrase being a passé composé that starts with "a": "Ana a divisé", "Tu as divisé". German and Italian too, with
- * their perfect's auxiliary: "Ana hat geteilt", "Du hast geteilt"; "Ana ha diviso", "Tu hai diviso". Polish's past
- * says the gender, which the app doesn't know, so its verb phrases start with a past in "ł(a)": "Ana podzielił(a)",
- * "Ty podzieliłeś(-aś)". Any other language keeps the verb as it is. Same rules as the web's and the Apple app's
- * `verbForYou`.
+ * phrase being a passé composé that starts with "a": "Ana a divisé", "Tu as divisé". German, Italian and Dutch too,
+ * with their perfect's auxiliary: "Ana hat geteilt", "Du hast geteilt"; "Ana ha diviso", "Tu hai diviso"; "Ana heeft
+ * verdeeld", "Jij hebt verdeeld". Polish's past says the gender, which the app doesn't know, so its verb phrases start
+ * with a past in "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Any other language keeps the verb as it is. Same
+ * rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -83,8 +85,8 @@ private fun toSpanishSecondPerson(verb: String): String {
 }
 
 /*
- * Why: Spanish, French, German, Italian and Polish say "Tú", "Tu", "Du" or "Ty" and conjugate the verb after it, unlike
- * the other languages.
+ * Why: Spanish, French, German, Italian, Polish and Dutch say "Tú", "Tu", "Du", "Ty" or "Jij" and conjugate the verb
+ * after it, unlike the other languages.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = LocalLocale.current.platformLocale.language in youSubjectLanguages

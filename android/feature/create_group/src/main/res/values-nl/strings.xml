@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nieuwe groep</string>
+    <string name="create_group_close">Sluiten</string>
+    <string name="create_group_create">Maken</string>
+    <string name="create_group_change_color">Kleur van de groep wijzigen</string>
+    <string name="create_group_name_label">Groepsnaam</string>
+    <string name="create_group_type_label">Soort groep</string>
+    <string name="create_group_members_title">Wie doet mee</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d persoon</item>
+        <item quantity="other">%d mensen</item>
+    </plurals>
+    <string name="create_group_me">jij</string>
+    <string name="create_group_remove_member">%s verwijderen</string>
+    <string name="create_group_add_placeholder">Toevoegen op naam</string>
+    <string name="create_group_add">Toevoegen</string>
+    <string name="create_group_no_app_notice">Niemand heeft de app nu nodig. Je kunt al uitgaven voor iedereen toevoegen en de link later sturen.</string>
+    <string name="create_group_currency">Standaardvaluta</string>
+    <string name="create_group_currency_caption">Nieuwe uitgaven beginnen in deze valuta; elke uitgave kan een andere gebruiken.</string>
+    <string name="create_group_save_error">Kan de groep niet opslaan. Probeer het opnieuw.</string>
+    <string name="create_group_photo">Groepsfoto</string>
+    <string name="create_group_take_photo">Foto maken</string>
+    <string name="create_group_choose_photo">Foto kiezen</string>
+    <string name="create_group_remove_photo">Foto verwijderen</string>
+    <string name="create_group_photo_error">Kan deze foto niet gebruiken. Probeer een andere.</string>
+</resources>

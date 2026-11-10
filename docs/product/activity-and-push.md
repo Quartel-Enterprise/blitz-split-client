@@ -48,8 +48,11 @@ The feed, unread state, real time and push notifications.
     or "ist" ("Ana hat Abendessen aufgeteilt", "Du hast…", "ist beigetreten" to "bist beigetreten"), every Italian one a
     passato prossimo starting with "ha", never "è" ("Ana ha diviso Cena", "Tu hai diviso…"). Polish's past says the
     gender, which the app doesn't know, so every Polish verb phrase starts with a regular past written for both,
-    "podzielił(a)", which becomes "podzieliłeś(-aś)" for the user ("Ty podzieliłeś(-aś) Kolacja"). The deleted-item
-    notice starts with who deleted it in these three languages too, as in Spanish and French.
+    "podzielił(a)", which becomes "podzieliłeś(-aś)" for the user ("Ty podzieliłeś(-aś) Kolacja"). Dutch does as German:
+    every Dutch verb phrase is a perfect starting with "heeft" or "is" ("Ana heeft Diner verdeeld", "Ana is lid
+    geworden van Reis"), which the user's rows turn into "hebt" or "bent" ("Jij hebt Diner verdeeld", "Jij bent lid
+    geworden van Reis"). The deleted-item notice starts with who deleted it in these four languages too, as in Spanish
+    and French.
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

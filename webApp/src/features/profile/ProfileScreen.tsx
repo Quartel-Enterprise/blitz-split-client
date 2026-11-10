@@ -38,6 +38,7 @@ const languageNames: Record<string, MessageKey> = {
   de: 'profile_languageGerman',
   it: 'profile_languageItalian',
   pl: 'profile_languagePolish',
+  nl: 'profile_languageDutch',
 }
 
 /**

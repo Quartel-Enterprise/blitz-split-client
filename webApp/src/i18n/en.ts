@@ -800,6 +800,7 @@ export const en = {
   profile_languageGerman: 'German',
   profile_languageItalian: 'Italian',
   profile_languagePolish: 'Polish',
+  profile_languageDutch: 'Dutch',
   profile_bitcoinInSats: 'Bitcoin in satoshis',
   profile_bitcoinInSatsDetail: 'Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).',
   money_sats: '{amount} sats',
