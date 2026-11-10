@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Arkadaşların sana ne der?</string>
+    <string name="profile_setup_subtitle">Adını yalnızca gruplarındaki kişiler görür.</string>
+    <string name="profile_setup_avatar_color">Avatar rengi</string>
+    <string name="profile_setup_add_photo">Fotoğraf ekle</string>
+    <string name="profile_setup_photo_error">Bu fotoğraf kullanılamadı. Başka birini dene.</string>
+    <string name="profile_setup_name_label">Adın</string>
+    <string name="profile_setup_name_placeholder">Ahmet Yılmaz</string>
+    <string name="profile_setup_name_too_short">En az %d harf yaz.</string>
+    <string name="profile_setup_name_too_long">En fazla %d karakter kullan.</string>
+    <string name="profile_setup_name_hint">Daha sonra Profil\'den değiştirebilirsin.</string>
+    <string name="profile_setup_saved_locally">Şimdilik yalnızca bu cihazda kayıtlı.</string>
+    <string name="profile_setup_continue">Devam et</string>
+</resources>

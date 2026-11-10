@@ -9,6 +9,7 @@ private const val GERMAN = "de"
 private const val ITALIAN = "it"
 private const val POLISH = "pl"
 private const val DUTCH = "nl"
+private const val TURKISH = "tr"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -19,7 +20,8 @@ private val secondPersonAuxiliaries = mapOf(
     ITALIAN to mapOf("ha" to "hai"),
     DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
 )
-private val youSubjectLanguages = setOf(SPANISH, FRENCH, GERMAN, ITALIAN, POLISH, DUTCH)
+private val youSubjectLanguages = setOf(SPANISH, FRENCH, GERMAN, ITALIAN, POLISH, DUTCH, TURKISH)
+private val turkishPast = Regex("[dt][ıiuü]$")
 private val irregularSecondPerson = mapOf(
     "deshizo" to "deshiciste",
     "cambió" to "cambiaste",
@@ -36,8 +38,8 @@ private val irregularSecondPerson = mapOf(
  * phrase being a passé composé that starts with "a": "Ana a divisé", "Tu as divisé". German, Italian and Dutch too,
  * with their perfect's auxiliary: "Ana hat geteilt", "Du hast geteilt"; "Ana ha diviso", "Tu hai diviso"; "Ana heeft
  * verdeeld", "Jij hebt verdeeld". Polish's past says the gender, which the app doesn't know, so its verb phrases start
- * with a past in "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Any other language keeps the verb as it is. Same
- * rules as the web's and the Apple app's `verbForYou`.
+ * with a past in "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü",
+ * "Sen böldün". Any other language keeps the verb as it is. Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -53,6 +55,8 @@ fun toSecondPerson(
         }
     }
 
+    TURKISH -> toTurkishSecondPerson(verb)
+
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
 
@@ -64,6 +68,17 @@ private fun replaceFirstWord(
     val words = verb.split(' ')
     val first = replacement(words.first()) ?: return verb
     return (listOf(first) + words.drop(1)).joinToString(" ")
+}
+
+/*
+ * Why: Turkish puts the verb last, so every Turkish verb phrase ends with its simple past, before the colon that
+ * leads to the object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the
+ * vowel ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
+ */
+private fun toTurkishSecondPerson(verb: String): String {
+    val clause = verb.substringBefore(':').trimEnd()
+    if (!turkishPast.containsMatchIn(clause)) return verb
+    return clause + "n" + verb.substring(clause.length)
 }
 
 private fun toSpanishSecondPerson(verb: String): String {
@@ -85,8 +100,8 @@ private fun toSpanishSecondPerson(verb: String): String {
 }
 
 /*
- * Why: Spanish, French, German, Italian, Polish and Dutch say "Tú", "Tu", "Du", "Ty" or "Jij" and conjugate the verb
- * after it, unlike the other languages.
+ * Why: Spanish, French, German, Italian, Polish, Dutch and Turkish say "Tú", "Tu", "Du", "Ty", "Jij" or "Sen" and
+ * conjugate the verb for it, unlike the other languages.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = LocalLocale.current.platformLocale.language in youSubjectLanguages

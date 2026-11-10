@@ -37,7 +37,8 @@ enum FirstLetter {
     /// after it.
     static func capitalized(_ typed: String, after previous: String) -> String? {
         guard typed.count == 1, typed.first?.isLowercase == true, !previous.contains(typed) else { return nil }
-        let uppercased = typed.uppercased()
+        // Why: in the app's language, so Turkish's "i" becomes "İ", not the capital of its dotless "ı"
+        let uppercased = typed.uppercased(with: Locale(identifier: SecondPerson.language ?? "en"))
         // "ß" uppercases to "SS": two letters where one was typed
         return uppercased.count == 1 && previous != uppercased ? uppercased : nil
     }

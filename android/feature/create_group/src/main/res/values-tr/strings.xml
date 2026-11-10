@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Yeni grup</string>
+    <string name="create_group_close">Kapat</string>
+    <string name="create_group_create">Oluştur</string>
+    <string name="create_group_change_color">Grubun rengini değiştir</string>
+    <string name="create_group_name_label">Grup adı</string>
+    <string name="create_group_type_label">Grup türü</string>
+    <string name="create_group_members_title">Kimler var</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d kişi</item>
+        <item quantity="other">%d kişi</item>
+    </plurals>
+    <string name="create_group_me">sen</string>
+    <string name="create_group_remove_member">Kaldır: %s</string>
+    <string name="create_group_add_placeholder">Adıyla ekle</string>
+    <string name="create_group_add">Ekle</string>
+    <string name="create_group_no_app_notice">Şu an kimsenin uygulamaya ihtiyacı yok. Herkes için harcama eklemeye hemen başlayabilir, bağlantıyı sonra gönderebilirsin.</string>
+    <string name="create_group_currency">Varsayılan para birimi</string>
+    <string name="create_group_currency_caption">Yeni harcamalar bu para birimiyle başlar; her harcama başka birini kullanabilir.</string>
+    <string name="create_group_save_error">Grup kaydedilemedi. Tekrar dene.</string>
+    <string name="create_group_photo">Grup fotoğrafı</string>
+    <string name="create_group_take_photo">Fotoğraf çek</string>
+    <string name="create_group_choose_photo">Fotoğraf seç</string>
+    <string name="create_group_remove_photo">Fotoğrafı kaldır</string>
+    <string name="create_group_photo_error">Bu fotoğraf kullanılamadı. Başka birini dene.</string>
+</resources>

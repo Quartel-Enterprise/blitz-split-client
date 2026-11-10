@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Terim yok</string>
+    <string name="category_map_title">Kategori haritası</string>
+    <string name="category_map_search">Terim ara</string>
+    <string name="category_map_add">Terim ekle</string>
+    <string name="category_map_more">Diğer seçenekler</string>
+    <string name="category_map_restore">Varsayılana döndür</string>
+    <string name="category_map_back">Geri</string>
+    <string name="category_map_intro">Bir harcamanın başlığında bu kelimelerden biri varsa kategorisi kendiliğinden gelir. “Eve Uber” Ulaşım olur.</string>
+    <string name="category_map_intro_offline">Harita çevrimdışı çalışır: değişiklikler bu cihazda hemen geçerli olur, internet gelince diğer cihazlarına ulaşır.</string>
+    <string name="category_map_device_only">Haritan yalnızca bu cihazda kalır. Diğer cihazlarına taşımak için Profil\'den Google ya da Apple ile giriş yap.</string>
+    <string name="category_map_open_profile">Profili aç</string>
+    <string name="category_map_longest_wins">İki terim bir başlıkla eşleşirse en uzun olan kazanır.</string>
+    <string name="category_map_no_result">“%1$s” ile terim yok</string>
+    <string name="category_map_no_result_body">Ekle, başlığında bu kelime geçen harcamalar doğru kategoriyle gelsin.</string>
+    <string name="category_map_add_query">“%1$s” ekle</string>
+    <string name="category_map_empty_title">Haritan boş</string>
+    <string name="category_map_empty_body">Terim olmadan kategori başlıktan gelmez: her harcamada sen seçersin.</string>
+    <string name="category_map_group_category"> · %1$s grubunun kategorisi</string>
+    <string name="category_map_only_main">Yalnızca %1$s</string>
+    <string name="category_map_only_in_group">yalnızca şu grupta: %1$s</string>
+    <string name="category_map_no_terms_yet">Henüz terim yok.</string>
+    <string name="category_map_add_in">Terim ekle: %1$s</string>
+    <string name="category_map_tip">Kategorisini değiştirmek ya da kaldırmak için bir terime dokun. Aksanları ve büyük/küçük harfi yok sayarak kelimenin tamamıyla eşleşir.</string>
+    <string name="category_map_queued">sırada</string>
+    <string name="category_map_term_action">%1$s, %2$s. Düzenle</string>
+    <string name="category_map_new_term">Yeni terim</string>
+    <string name="category_map_edit_term">Terimi düzenle</string>
+    <string name="category_map_term_label">Kelime ya da ifade</string>
+    <string name="category_map_term_help">Aksanları ve büyük/küçük harfi yok sayarak kelimenin tamamıyla eşleşir.</string>
+    <string name="category_map_term_help_app">Uygulamanın bir terimi. Varsayılana döndür onu ilk hâline getirir.</string>
+    <string name="category_map_term_duplicate">“%1$s” zaten şunu seçiyor: %2$s. Her terimin tek kategorisi olur.</string>
+    <string name="category_map_term_too_short">En az 2 harf kullan.</string>
+    <string name="category_map_term_too_long">En fazla 30 harf kullan.</string>
+    <string name="category_map_term_invalid">Yalnızca harf, rakam ve boşluk kullan.</string>
+    <string name="category_map_category">Kategori</string>
+    <string name="category_map_category_help">Kategori ya da alt kategori olabilir.</string>
+    <string name="category_map_category_help_edit">Burada değiştirmek terimi başka bir kategoriye taşır.</string>
+    <string name="category_map_category_help_move">Taşımak terimi şuradan çıkarır: %1$s.</string>
+    <string name="category_map_example">Örnek</string>
+    <string name="category_map_example_move">Taşınırsa</string>
+    <string name="category_map_remove">Kaldır</string>
+    <string name="category_map_cancel">İptal</string>
+    <string name="category_map_save">Kaydet</string>
+    <string name="category_map_move_to">Taşı: %1$s</string>
+    <string name="category_map_removed">“%1$s” haritadan çıktı</string>
+    <string name="category_map_undo">Geri al</string>
+    <string name="category_map_restore_title">Varsayılan harita geri yüklensin mi?</string>
+    <string name="category_map_restore_body">Uygulamanın 60 terimi, kaldırdıkların ve taşıdıkların dahil, ilk hâliyle geri gelir.</string>
+    <string name="category_map_restore_own_one">Oluşturduğun “%1$s” terimi kalır.</string>
+    <string name="category_map_restore_confirm">Geri yükle</string>
+    <string name="category_map_save_error">Harita kaydedilemedi. Tekrar dene.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d terim</item>
+        <item quantity="other">%d terim</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d alt kategori</item>
+        <item quantity="other">%d alt kategori</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” ile %1$d terim</item>
+        <item quantity="other">“%2$s” ile %1$d terim</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Çevrimdışı · %d değişiklik sırada</item>
+        <item quantity="other">Çevrimdışı · %d değişiklik sırada</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Oluşturduğun %d terim kalır.</item>
+        <item quantity="other">Oluşturduğun %d terim kalır.</item>
+    </plurals>
+    <string name="category_map_new_category">Yeni kategori</string>
+    <string name="category_map_new_subcategory_in">Yeni alt kategori: %s</string>
+    <string name="category_map_edit_category">Düzenle: %s</string>
+    <string name="category_map_category_group">Grup</string>
+    <string name="category_map_change_color">Rengi değiştir: %1$s</string>
+    <string name="category_map_restore_color">Rengi geri yükle</string>
+    <string name="category_map_color_done">Bitti</string>
+</resources>
