@@ -9,7 +9,8 @@ const formatters = new Map<string, Intl.NumberFormat>()
  * or server, and is written by its raw code ("XYZ 12,50"), never by the symbol a browser may have for it.
  */
 const knownCurrencies = new Set([
-  'BRL', 'USD', 'EUR', 'GBP', 'ARS', 'CLP', 'COP', 'MXN', 'PEN', 'UYU', 'PYG', 'CAD', 'AUD', 'JPY', 'CHF', 'BTC', 'ETH',
+  'BRL', 'USD', 'EUR', 'GBP', 'ARS', 'CLP', 'COP', 'MXN', 'PEN', 'UYU', 'PYG', 'CAD', 'AUD', 'JPY', 'CHF', 'PLN', 'TRY',
+  'IDR', 'BTC', 'ETH',
 ])
 
 function moneyFormat(currency: string, fractionDigits: number): Intl.NumberFormat {

@@ -12,12 +12,16 @@ object ExpenseRules {
     // Why: never more bitcoin than will ever exist.
     private const val MAX_BITCOIN = 21_000_000L
 
+    // Why: 100 million rupiah is only about US$ 6,000, less than a week's villa in Bali; this is about US$ 6 million.
+    private const val MAX_RUPIAH = 100_000_000_000L
+
     // Why: below the ether there is (about 120 million), and the most the web's numbers count to the unit (9e15).
     private const val MAX_ETHER = 90_000_000L
 
     fun maxAmountMinorFor(currency: GroupCurrency): Long = when (currency) {
         GroupCurrency.BTC -> MAX_BITCOIN
         GroupCurrency.ETH -> MAX_ETHER
+        GroupCurrency.IDR -> MAX_RUPIAH
         else -> MAX_AMOUNT_MAJOR
     } * minorPerMajorFor(currency)
 

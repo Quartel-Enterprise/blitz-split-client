@@ -107,12 +107,18 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     amount in it is valid (`ExpenseRules.isAmountValid`, and the expense and settlement repositories refuse to store
     one); the stored code goes back to the server as it came. A group whose own default currency is unknown reads as
     the fallback, USD (`GroupMapperImpl`), which only sets the default of a new bill.
+  - The zloty (PLN), the Turkish lira (TRY) and the rupiah (IDR) are listed after the Swiss franc, and start a new
+    group in Poland, Turkey and Indonesia. The rupiah has no decimals (Pierre's call), as the yen, though ISO 4217
+    gives it 2: no price or receipt there shows sen. Its bills and payments cap at 100 billion, not 100 million
+    (Pierre's call: 100 million rupiah is only about US$ 6,000). An app version from before it reads IDR as an
+    unknown code with two decimals and shows its amounts 100 times smaller until it updates (Pierre's call: an
+    accepted beta trade-off, since no group split in rupiah before).
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
     bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
-    count to the unit), every other currency keeping 100 million (`ExpenseRules.maxAmountMinorFor`, the API's
-    `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts a symbol and only the decimals the amount
+    count to the unit), every other currency keeping 100 million but the rupiah (above)
+    (`ExpenseRules.maxAmountMinorFor`, the API's `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts a symbol and only the decimals the amount
     needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8 ("0,00000001"). Profile › Preferences' "Bitcoin in
     satoshis" (always shown, Settings on the Mac), kept per device and never synced (`showsBitcoinInSats` in
     `device_settings`), shows every bitcoin amount as whole sats ("125,000 sats", the field's symbol "sats") and

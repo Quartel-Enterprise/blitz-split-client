@@ -166,6 +166,30 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Poland Turkey and Indonesia WHEN picking their currency THEN it is the zloty lira and rupiah`() {
+        // Given
+        val regions = listOf("PL", "TR", "ID")
+
+        // When
+        val currencies = regions.map { GroupCurrency.ofRegion(it) }
+
+        // Then
+        assertEquals(listOf(GroupCurrency.PLN, GroupCurrency.TRY, GroupCurrency.IDR), currencies)
+    }
+
+    @Test
+    fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
+        // Given
+        val currency = GroupCurrency.IDR
+
+        // When
+        val digits = currency.getTypedFractionDigits(showsSats = false)
+
+        // Then
+        assertEquals(0, digits)
+    }
+
+    @Test
     fun `GIVEN 125 thousand satoshis WHEN picking the digits to show THEN it shows the 5 it needs`() {
         // Given
         val amountMinor = 125_000L
