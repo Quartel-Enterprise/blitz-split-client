@@ -4,31 +4,8 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "webApp",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "5173",
-        "--strictPort"
-      ],
+      "runtimeArgs": ["--prefix", "webApp", "run", "dev", "--", "--port", "5173", "--strictPort"],
       "port": 5173
-    },
-    {
-      "name": "site-copied-code",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "../site-copied-code",
-        "run",
-        "dev",
-        "--",
-        "--port",
-        "8790"
-      ],
-      "port": 8790
     }
   ]
 }
