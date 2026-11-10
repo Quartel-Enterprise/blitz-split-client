@@ -13,16 +13,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-// The Duo's inner display (2007x2853 px) at 2x in a black bezel, and the Mac window at its captured 1440x900 points.
-private val duoScreenWidth = 1003.dp
-private val duoScreenHeight = 1426.dp
+// The Duo closed, its outer display (1398x2034 px) at 2x in a black bezel, and the Mac window at its captured 1440x900
+// points.
+private val duoScreenWidth = 699.dp
+private val duoScreenHeight = 1017.dp
 private val duoBezel = 18.dp
-private val duoCorner = 56.dp
+private val duoCorner = 44.dp
 private val macWindowWidth = 1440.dp
 private val macWindowHeight = 900.dp
 private val macCorner = 16.dp
 
-/** The iPhone Duo open, drawn as a plain bezel: store-screenshots has no Duo frame. */
+/** The iPhone Duo closed, drawn as a plain bezel: store-screenshots has no Duo frame. */
 @Composable
 internal fun DuoBezelSurface(content: @Composable () -> Unit) {
     Box(

@@ -11,9 +11,10 @@
 #
 # Each slot's simulator is the one whose screen matches what the frame draws (AppleScreenshotSlot): Dynamic Island
 # (medium), the size App Store Connect requires, from an iPhone 17 Pro (1206x2622); Dynamic Island (large) from an
-# iPhone 16 Plus (1290x2796); the 13" iPad from an iPad Air 13" (2048x2732); the iPhone Duo open, its inner display
-# (2007x2853), on the runtime that has it. No tool can fold the Duo, so its outer display isn't captured. The
-# simulators are made once, named "Store screenshots <slot>", and their status bar shows Apple's 9:41.
+# iPhone 16 Plus (1290x2796); the 13" iPad from an iPad Air 13" (2048x2732), switched to full-screen apps by the test;
+# the iPhone Duo, on the runtime that has it, which boots closed: its outer display (1398x2034). No tool can unfold it,
+# so the inner display isn't captured. The simulators are made once, named "Store screenshots <slot>", and their
+# status bar shows Apple's 9:41.
 
 set -eo pipefail
 
@@ -82,7 +83,8 @@ for slot in $SLOTS; do
   xcrun simctl bootstatus "$udid" -b > /dev/null
   xcrun simctl status_bar "$udid" override --time "9:41" --dataNetwork wifi --wifiMode active --wifiBars 3 \
     --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
-  rm -rf "${OUTPUT:?}/$slot"
+  # Only the locales asked for are captured again: the others keep their PNGs.
+  if [ -z "$STORE_SCREENSHOTS_LOCALES" ]; then rm -rf "${OUTPUT:?}/$slot"; fi
   TEST_RUNNER_STORE_SCREENSHOTS_OUTPUT="$OUTPUT" \
     TEST_RUNNER_STORE_SCREENSHOTS_SLOT="$slot" \
     TEST_RUNNER_STORE_SCREENSHOTS_ASSETS="$ROOT/scripts/store-screenshots" \

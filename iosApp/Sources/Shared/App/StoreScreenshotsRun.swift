@@ -47,11 +47,15 @@ struct StoreScreenshotsRun {
     }
 
     #if os(macOS)
-    /// Every capture of the Mac is the same window size, whatever the last run left it at.
+    /// Every capture of the Mac is the same window size, whatever the last run left it at, alone on the desktop: the
+    /// other apps' windows are hidden (as ⌥⌘H does, no permission needed), so the sidebar's glass shows nothing of
+    /// them. They come back with a click on their Dock icon.
     static func sizeWindow() {
         guard current != nil, let window = NSApplication.shared.windows.first else { return }
+        NSApplication.shared.hideOtherApplications(nil)
         window.setContentSize(windowSize)
         window.center()
+        window.makeKeyAndOrderFront(nil)
     }
     #endif
 }

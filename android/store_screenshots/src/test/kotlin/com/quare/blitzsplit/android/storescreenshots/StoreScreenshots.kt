@@ -148,13 +148,13 @@ internal class IPad11StoreScreenshots :
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
 
-// The iPhone Duo open: the library has no Duo bezel, so its inner display goes in a plain rounded one.
+// The iPhone Duo: the simulator boots it closed, so this is its outer display, in a plain rounded bezel of its own.
 internal class IPhoneDuoStoreScreenshots :
     StoreScreenshots(
         appleSlot = AppleScreenshotSlot.IPHONE_DUO,
         formFactor = FormFactor.AppleIPad13,
         outputSubdir = "iphoneduo",
-        canvas = ScreenshotCanvas.px(2007, 2853),
+        canvas = ScreenshotCanvas.px(1398, 2034),
         mockupFrame = { content -> DuoBezelSurface(content) },
     )
 

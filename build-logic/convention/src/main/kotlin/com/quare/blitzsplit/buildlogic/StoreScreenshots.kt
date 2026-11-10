@@ -99,7 +99,15 @@ fun Project.configureStoreScreenshots() {
         name.endsWith("AppStoreScreenshots") || name == "collectStoreScreenshots" || name == "stageStoreScreenshots"
     }
 
+    // `./gradlew build` and `test` would draw every image twice (debug and release): the generators run only when a
+    // build asks for the screenshots, or for this module's debug tests by name.
+    val modulePath = path
+    val generatesScreenshots = gradle.startParameter.taskNames.any { requested ->
+        requested.endsWith("StoreScreenshots") || requested == "$modulePath:$GENERATE_TASK"
+    }
     tasks.withType<Test>().configureEach {
+        val isGenerator = name == GENERATE_TASK
+        onlyIf("the build asked for the store screenshots") { isGenerator && generatesScreenshots }
         systemProperty("storeScreenshots.outputRoot", generatedDir.absolutePath)
         systemProperty("appleScreenshots.capturesDir", capturesDir.absolutePath)
         systemProperty("storeScreenshots.facesDir", facesDir.absolutePath)

@@ -102,13 +102,16 @@ five in every language; the receipt's photo is `scripts/store-screenshots/receip
 | Device | Play | App Store (Apple's screenshot specifications, November 2026) |
 | --- | --- | --- |
 | Phone | `phoneScreenshots`, 1242x2484 | **Dynamic Island (medium), 1206x2622, the one App Store Connect requires**, from an iPhone 17 Pro. Dynamic Island (large), 1290x2796, from an iPhone 16 Plus. Face ID (large) is only a fallback for the large size, so it isn't made |
-| Foldable | | iPhone Duo open, its inner display at 2007x2853, from the Duo simulator (on the runtime that has it). Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
+| Foldable | | iPhone Duo closed, its outer display at 1398x2034, from the Duo simulator (on the runtime that has it), which boots closed. Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
 | Tablet | `sevenInchScreenshots`, `tenInchScreenshots` | 13" (2048x2732) from an iPad Air 13", and 11" framing the same capture on a taller canvas |
 | Mac | | The Mac app's window at 1440x900 points, framed on 2880x1800 (16:10) |
 
-**The Duo's outer display isn't captured.** Neither `simctl` nor XCUITest can fold the simulator, and the Duo
-opens unfolded. deliver files either size under the one Duo display type. If the outer one (1398x2034) is wanted, fold the
-simulator by hand (Device menu), capture `09_…` with `xcrun simctl io <udid> screenshot --display=5`, and add a slot.
+**The Duo's inner display isn't captured.** The simulator boots closed, and neither `simctl` nor XCUITest can unfold
+it. deliver files either Duo size under the one Duo display type. If the inner one (2007x2853) is wanted, unfold the
+simulator by hand (Device menu), capture with `xcrun simctl io <udid> screenshot --display=3`, and add a slot.
+
+**The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short
+of the screen. On an iPad slot, the UI test first switches Settings › Multitasking & Gestures to full-screen apps.
 
 store-screenshots has no frame for the Duo or the Mac. They get a plain rounded bezel and a window shadow
 (`CustomBezels.kt`), with the same banner as the other shots.
@@ -153,13 +156,17 @@ usual). That entry point:
    taps once, on "Split" (`splitBill.split`) for Items, so the run never depends on the language's labels.
 
 Each simulator's status bar is set to 9:41 with a full battery, and the frame draws no status bar over the capture.
-On the Mac, `StoreScreenshotsRun.sizeWindow` gives the window the same size on every launch, and the test captures
-the window alone.
+On the Mac, `StoreScreenshotsRun.sizeWindow` gives the window the same size on every launch and hides every other
+app's windows first (as ⌥⌘H does), so the sidebar's glass shows the wallpaper and nothing else. The test captures
+the window alone. The hidden apps come back with a click on their Dock icon.
 The capture's points must match the frame's screen (`AppleScreenshotSlot`), or the PNG is stretched. Check them
 after a library upgrade.
 
 ## Things that bite
 
+- **The generators run only when asked for.** They are the unit tests of `:android:store_screenshots`, but a
+  `./gradlew build` or `test` skips them. Only a `*StoreScreenshots` task, or
+  `:android:store_screenshots:testDebugUnitTest` asked for by name, draws the images.
 - **Robolectric has no SDK 37**: the library pins SDK 35 for the generators.
 - **The Play tablets** render the screens' own tablet layouts at the frame's size, and the iPad capture is the
   iPad's real layout.

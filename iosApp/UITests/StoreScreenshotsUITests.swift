@@ -23,7 +23,7 @@ final class StoreScreenshotsUITests: XCTestCase {
     private static let locales = [
         ListingLocale(tag: "en-US", language: "en", appleLanguage: "en-US", appleLocale: "en_US"),
         ListingLocale(tag: "pt-BR", language: "pt", appleLanguage: "pt-BR", appleLocale: "pt_BR"),
-        ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_MX"),
+        ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_ES"),
         ListingLocale(tag: "fr", language: "fr", appleLanguage: "fr-FR", appleLocale: "fr_FR"),
         ListingLocale(tag: "de", language: "de", appleLanguage: "de-DE", appleLocale: "de_DE"),
         ListingLocale(tag: "it", language: "it", appleLanguage: "it-IT", appleLocale: "it_IT"),
@@ -65,6 +65,7 @@ final class StoreScreenshotsUITests: XCTestCase {
         let onlyScreens = Self.subset(environment["STORE_SCREENSHOTS_SCREENS"])
         #if os(iOS)
         XCUIDevice.shared.orientation = .portrait
+        if slot.hasPrefix("ipad") { useFullScreenApps() }
         #endif
         for locale in Self.locales where onlyLocales?.contains(locale.tag) ?? true {
             let directory = output.appendingPathComponent(slot).appendingPathComponent(locale.tag)
@@ -75,6 +76,26 @@ final class StoreScreenshotsUITests: XCTestCase {
             }
         }
     }
+
+    #if os(iOS)
+    /// iPadOS 26 opens apps in windows by default, which leaves the app short of the screen: Settings' Multitasking &
+    /// Gestures switches the simulator to full-screen apps first. Settings runs in the simulator's own language,
+    /// English, whatever the listing's.
+    @MainActor
+    private func useFullScreenApps() {
+        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+        settings.launch()
+        let multitasking = settings.staticTexts["Multitasking & Gestures"]
+        if multitasking.waitForExistence(timeout: Self.settle) {
+            multitasking.tap()
+            let fullScreen = settings.descendants(matching: .any)
+                .matching(NSPredicate(format: "label BEGINSWITH 'Full Screen'"))
+                .firstMatch
+            if fullScreen.waitForExistence(timeout: Self.settle) { fullScreen.tap() }
+        }
+        settings.terminate()
+    }
+    #endif
 
     /// A comma-separated list narrowing the run, nil (everything) when unset or empty.
     private static func subset(_ list: String?) -> Set<String>? {
