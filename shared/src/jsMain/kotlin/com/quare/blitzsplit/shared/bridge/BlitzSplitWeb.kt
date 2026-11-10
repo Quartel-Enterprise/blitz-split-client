@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
@@ -123,6 +124,9 @@ fun setPushDevice(
         ),
     )
 }
+
+// Why: the currencies this version lists, so the web writes theirs by symbol and any other code by its raw code.
+fun getKnownCurrencyCodes(): Array<String> = GroupCurrency.entries.toCurrencyCodes()
 
 // Why: real time listens only while the page is visible (document.visibilityState).
 fun setAppForeground(isForeground: Boolean) {

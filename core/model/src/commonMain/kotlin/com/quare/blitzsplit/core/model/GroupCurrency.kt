@@ -9,7 +9,10 @@ package com.quare.blitzsplit.core.model
 class GroupCurrency private constructor(
     val code: String,
     private val regions: Set<String>,
-    // Why: the digits of the minor unit, as ISO 4217 has them, so an amount is stored as a whole number of it.
+    /*
+     * Why: the digits of the minor unit, as ISO 4217 has them, so an amount is stored as a whole number of it. The
+     * rupiah is the exception: ISO gives it 2, but no price or receipt in Indonesia shows sen, so it has none.
+     */
     val fractionDigits: Int = 2,
     // Why: "Criptomoedas" in the picker, and shown with only the decimals an amount needs.
     val isCrypto: Boolean = false,
@@ -96,6 +99,9 @@ class GroupCurrency private constructor(
         val AUD = GroupCurrency("AUD", setOf("AU"))
         val JPY = GroupCurrency("JPY", setOf("JP"), fractionDigits = 0)
         val CHF = GroupCurrency("CHF", setOf("CH", "LI"))
+        val PLN = GroupCurrency("PLN", setOf("PL"))
+        val TRY = GroupCurrency("TRY", setOf("TR"))
+        val IDR = GroupCurrency("IDR", setOf("ID"), fractionDigits = 0)
 
         // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
         val BTC = GroupCurrency(
@@ -130,6 +136,9 @@ class GroupCurrency private constructor(
             AUD,
             JPY,
             CHF,
+            PLN,
+            TRY,
+            IDR,
             BTC,
             ETH,
         )
