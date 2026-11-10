@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Bildirimler</string>
+    <string name="notification_settings_denied_title">Blitz Split bildirimleri Android\'de kapalı.</string>
+    <string name="notification_settings_denied_body">Aşağıdaki anlık bildirimleri almak için sistem ayarlarından aç. Zil çalışmaya devam eder.</string>
+    <string name="notification_settings_open_settings">Ayarları aç</string>
+    <string name="notification_settings_refused_body">Aşağıdaki anlık bildirimleri almak için Android bir kez daha izin vermene olanak tanır. Zil çalışmaya devam eder.</string>
+    <string name="notification_settings_turn_on">Aç</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Android\'de engellendi</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Android ayarlarını aç: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Anlık bildirimler</string>
+    <string name="notification_settings_push_switch_detail">Yalnızca bu cihazda</string>
+    <string name="notification_settings_section">Bana şunları bildir</string>
+    <string name="notification_settings_push">Anlık</string>
+    <string name="notification_settings_in_app">Uygulamada</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Anlık, bu cihaza bir bildirim gönderir. Uygulamada, zilde ve Etkinlik\'te yeni olarak işaretler; kapalıyken yine Etkinlik\'te, okunmuş olarak görünür.</string>
+    <string name="notification_settings_bills">Harcamalar</string>
+    <string name="notification_settings_bills_detail">İçinde olduğun yeni, düzenlenen ya da silinen harcamalar</string>
+    <string name="notification_settings_payments">Ödemeler ve hesaplaşmalar</string>
+    <string name="notification_settings_payments_detail">Sana ya da senden ödemeler ve sadeleştirilen borçlar</string>
+    <string name="notification_settings_comments">Yorumlar</string>
+    <string name="notification_settings_comments_detail">İçinde olduğun harcamalarda ve yazdığın konuşmalarda</string>
+    <string name="notification_settings_people_and_groups">Kişiler ve gruplar</string>
+    <string name="notification_settings_people_and_groups_detail">Gruplarına kimin katıldığı ya da ayrıldığı ve onlarda neyin değiştiği</string>
+    <string name="notification_settings_payment_requests">Ödeme istekleri</string>
+    <string name="notification_settings_payment_requests_detail">Biri senden ödeme istediğinde</string>
+    <string name="notification_settings_balance_reminder">Açık bakiye hatırlatıcısı</string>
+    <string name="notification_settings_balance_reminder_detail">Açık bir bakiye varsa haftada bir</string>
+    <string name="notification_settings_footer">Bildirimler internet olduğunda gelir. Bir grubu sessize almak için grubun içindeki menüyü kullan.</string>
+</resources>

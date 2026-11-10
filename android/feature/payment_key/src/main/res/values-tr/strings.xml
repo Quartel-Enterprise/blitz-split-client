@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Yeni Pix anahtarı</string>
+    <string name="payment_key_title_pix_edit">Pix anahtarını düzenle</string>
+    <string name="payment_key_title_bitcoin_new">Yeni Bitcoin anahtarı</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin anahtarını düzenle</string>
+    <string name="payment_key_save">Kaydet</string>
+
+    <string name="payment_key_pix_intro">Sana ödeme yapan kişi hesaplaşırken bu anahtarı görür. Hangi tür anahtar?</string>
+    <string name="payment_key_pix_question">Hangi tür anahtar?</string>
+    <string name="payment_key_pix_explanation">Sana ödeme yapan kişi hesaplaşırken bu anahtarı görür.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-posta</string>
+    <string name="payment_key_type_random">Rastgele</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Alan koduyla cep telefonu numarası</string>
+    <string name="payment_key_label_email">E-posta</string>
+    <string name="payment_key_label_random">Rastgele anahtar</string>
+
+    <string name="payment_key_bitcoin_intro">Nasıl almak istersin?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">hızlı, düşük ücret</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">blokzincirinde</string>
+    <string name="payment_key_label_lightning">Lightning Address ya da LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin adresi</string>
+
+    <string name="payment_key_paste">Yapıştır</string>
+
+    <string name="payment_key_hint_cpf">Biçim: 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Biçim: +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Biçim: ad@alanadi.com</string>
+    <string name="payment_key_hint_random">Bankanın gösterdiği gibi 32 harf ve rakam</string>
+    <string name="payment_key_hint_lightning">ad@cuzdan.com ya da LNURL1… gibi</string>
+    <string name="payment_key_hint_onchain">bc1q ya da bc1p ile başlayan mainnet adresi</string>
+
+    <string name="payment_key_valid_cpf">Biçim: 000.000.000-00 · kontrol basamakları uyuyor</string>
+    <string name="payment_key_valid_phone">Biçim: +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Biçim: ad@alanadi.com</string>
+    <string name="payment_key_valid_random">Rastgele anahtar tanındı (32 karakter)</string>
+    <string name="payment_key_valid_lightning_address">Geçerli Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Geçerli LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Geçersiz CPF: kontrol basamakları uymuyor.</string>
+    <string name="payment_key_error_invalid_phone">Eksik cep numarası: alan kodunu ve 9 ile başlayan 9 haneyi kullan.</string>
+    <string name="payment_key_error_invalid_email">Eksik e-posta: .com ya da .com.br gibi alan adı eksik.</string>
+    <string name="payment_key_error_invalid_random">Eksik rastgele anahtar: 32 harf ve rakamdan oluşur.</string>
+    <string name="payment_key_error_invalid_lightning">Bu bir Lightning Address (ad@cuzdan) ya da LNURL değil.</string>
+    <string name="payment_key_error_lightning_invoice">Bu bir Lightning faturası (lnbc…): bir kez ödenir ve süresi dolar. Bir Lightning Address ya da LNURL yapıştır.</string>
+    <string name="payment_key_error_invalid_onchain">Geçersiz adres. bc1q ya da bc1p ile başlayan bir mainnet adresi kullan.</string>
+    <string name="payment_key_error_testnet_address">Bu bir testnet adresi (tb1…). Burada yalnızca bc1… adresleriyle Bitcoin mainnet çalışır.</string>
+    <string name="payment_key_error_already_saved">Bu anahtar zaten sende var.</string>
+
+    <string name="payment_key_switched_to_onchain">Bu bir on-chain adres, bu yüzden On-chain\'e geçtik.</string>
+    <string name="payment_key_switched_to_lightning">Bu bir Lightning Address, bu yüzden Lightning\'e geçtik.</string>
+    <string name="payment_key_cpf_notice">Sana ödeme yapan kişi CPF\'nin tamamını görür. Paylaşmak istemezsen telefon, e-posta ya da rastgele anahtar kullan.</string>
+
+    <string name="payment_key_accepted_title">Kabul ettiklerimiz</string>
+    <string name="payment_key_accepted_lightning_address_sample">ad@cuzdan.app</string>
+
+    <string name="payment_key_default_pix_title">Varsayılan Pix anahtarı</string>
+    <string name="payment_key_default_bitcoin_title">Varsayılan Bitcoin anahtarı</string>
+    <string name="payment_key_default_pix_detail">Hesaplaşırken ilk o gösterilir.</string>
+    <string name="payment_key_default_bitcoin_detail">Biri BTC ile ödediğinde ilk o gösterilir.</string>
+    <string name="payment_key_default_now">Şu an: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Değiştirmek için başka bir anahtarı varsayılan yap.</string>
+    <string name="payment_key_default_locked_new">Bu türdeki ilk anahtarın varsayılandır.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-posta</string>
+    <string name="payment_key_default_type_random">rastgele anahtar</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split para aktarmaz: ödeyen kişi kendi banka uygulamasından öder. Anahtarın senin adına olduğunu kontrol et.</string>
+    <string name="payment_key_footer_bitcoin">Hesaplaşırken tutarı güncel kurla sats olarak gösteririz. Bu yalnızca bir tahmin: ödeyen kişi tutarı cüzdanında onaylar.</string>
+
+    <string name="payment_key_delete">Anahtarı sil</string>
+    <string name="payment_key_delete_title">Bu anahtar silinsin mi?</string>
+    <string name="payment_key_delete_body">Sana borcu olanlar hesaplaşırken artık bu anahtarı görmez.</string>
+    <string name="payment_key_delete_confirm">Sil</string>
+</resources>

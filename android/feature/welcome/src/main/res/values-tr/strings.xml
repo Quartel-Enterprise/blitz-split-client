@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Hesabı zahmetsizce bölüş</string>
+    <string name="welcome_offline_title">Çevrimdışı çalışır</string>
+    <string name="welcome_offline_body">Her şey cihazında kalır ve sonra eşitlenir.</string>
+    <string name="welcome_optional_title">Hesap isteğe bağlı</string>
+    <string name="welcome_optional_body">Google ya da Apple yalnızca cihaz değiştirdiğinde hiçbir şey kaybetmemeni sağlar.</string>
+    <string name="welcome_invite_title">Bağlantı ya da QR koduyla davet et</string>
+    <string name="welcome_invite_body">Arkadaşlar hesap oluşturmadan gruba katılır.</string>
+    <string name="welcome_no_connection_title">Bağlantı yok.</string>
+    <string name="welcome_no_connection_body">Hesapla giriş yapmak internet gerektirir. Şimdi hesapsız kullan, sonra Profil\'den bağlan.</string>
+    <string name="welcome_or">ya da</string>
+    <string name="welcome_use_without_account">Hesapsız kullan</string>
+    <string name="welcome_used_on_another_device">Başka bir cihazda kullandım</string>
+    <string name="welcome_sign_in_failed">Şu an giriş yapılamadı. Tekrar dene.</string>
+</resources>

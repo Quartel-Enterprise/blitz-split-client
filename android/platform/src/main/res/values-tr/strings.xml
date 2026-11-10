@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · kurtarma kodu</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Fotoğraf çekmek için Ayarlar\'da kameraya izin ver.</string>
+    <string name="platform_camera_settings">Ayarlar</string>
+    <string name="platform_receipt_source_camera">Fotoğraf çek</string>
+    <string name="platform_receipt_source_gallery">Galeriden seç</string>
+    <string name="platform_receipt_source_file">Dosya seç</string>
+    <string name="platform_receipt_camera_title">Fiş tara</string>
+    <string name="platform_receipt_camera_close">Kapat</string>
+    <string name="platform_receipt_camera_flash_on">Flaşı aç</string>
+    <string name="platform_receipt_camera_flash_off">Flaşı kapat</string>
+    <string name="platform_receipt_camera_hint">Fişin tamamını çerçeveye sığdır. Tutarı, tarihi ve açıklamayı biz doldururuz; kaydetmeden önce sen kontrol edersin.</string>
+    <string name="platform_receipt_camera_gallery">Galeriden seç</string>
+    <string name="platform_receipt_camera_shutter">Fotoğraf çek</string>
+    <string name="platform_receipt_camera_unavailable">Kamera kullanılamıyor. Galeriden fişin bir fotoğrafını seç.</string>
+    <string name="platform_receipt_camera_permission">Fişi taramak için kameraya izin ver ya da galeriden bir fotoğraf seç.</string>
+    <string name="platform_receipt_camera_allow">Kameraya izin ver</string>
+    <string name="platform_receipt_camera_settings">Ayarları aç</string>
+</resources>

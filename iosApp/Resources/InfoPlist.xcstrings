@@ -58,6 +58,12 @@
             "state" : "translated",
             "value" : "Bora Rachar"
           }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
         }
       }
     },
@@ -117,6 +123,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bora Rachar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
           }
         }
       }
@@ -178,6 +190,12 @@
             "state" : "translated",
             "value" : "Para ler o QR code de um convite ou do seu aparelho antigo, e tirar a foto do seu perfil e fotos das contas."
           }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir davetin ya da eski cihazının QR kodunu taramak, profil fotoğrafını ve harcama fotoğraflarını çekmek için."
+          }
         }
       }
     },
@@ -238,6 +256,12 @@
             "state" : "translated",
             "value" : "Para convidar gente da sua agenda com o link de um grupo. Os números ficam só neste aparelho."
           }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kişilerinden birini bir grubun bağlantısıyla davet etmek için. Numaraları bu cihazda kalır."
+          }
         }
       }
     },
@@ -297,6 +321,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para salvar as fotos das contas na sua galeria."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir harcamanın fotoğraflarını fotoğraf arşivine kaydetmek için."
           }
         }
       }

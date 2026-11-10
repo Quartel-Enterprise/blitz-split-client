@@ -55,6 +55,7 @@
     <string name="profile_language_polish">ポーランド語</string>
     <string name="profile_language_dutch">オランダ語</string>
     <string name="profile_language_japanese">日本語</string>
+    <string name="profile_language_turkish">トルコ語</string>
     <string name="profile_language_system_detail">デバイスの言語</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

@@ -4,7 +4,7 @@ import Foundation
 /// Japanese, which writes them with none and ends a sentence with "。", not ".". The same rule as the web's `wordGap`
 /// and Android's `wordGapUi`.
 enum WordGap {
-    private static var isUnspaced: Bool { SecondPerson.language == "ja" }
+    private static var isUnspaced: Bool { Bundle.appLanguageCode == "ja" }
 
     static var gap: String { isUnspaced ? "" : " " }
 

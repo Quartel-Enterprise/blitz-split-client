@@ -59,6 +59,7 @@
     <string name="profile_language_polish">Polish</string>
     <string name="profile_language_dutch">Dutch</string>
     <string name="profile_language_japanese">Japanese</string>
+    <string name="profile_language_turkish">Turkish</string>
     <string name="profile_language_system_detail">Device language</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">

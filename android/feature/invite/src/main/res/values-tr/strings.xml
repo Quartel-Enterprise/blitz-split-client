@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Kapat</string>
+    <string name="invite_group_created">Grup oluşturuldu</string>
+    <string name="invite_title">Herkesi davet et: %s</string>
+    <string name="invite_qr_description">Grubun davet bağlantısının QR kodu</string>
+    <string name="invite_copy">Kopyala</string>
+    <string name="invite_copied">Kopyalandı</string>
+    <string name="invite_who_picks">Bağlantıyı açan kişi listeden kim olduğunu seçer: %s. Hesap gerekmez.</string>
+    <string name="invite_names_or">%1$s ya da %2$s</string>
+    <string name="invite_anyone_joins">Bağlantıyı açan kişi gruba katılır. Hesap gerekmez.</string>
+    <string name="invite_pending_title">Bağlantı bekliyor</string>
+    <string name="invite_pending_offline">İnternete bağlanır bağlanmaz oluşturulur.</string>
+    <string name="invite_pending_online">Bağlantı oluşturuluyor…</string>
+    <string name="invite_failed_title">Bağlantı oluşturulamadı</string>
+    <string name="invite_failed_body">Grup eşitlenirken bir şeyler ters gitti.</string>
+    <string name="invite_retry">Tekrar dene</string>
+    <string name="invite_share">Bağlantıyı paylaş</string>
+    <string name="invite_see_who_joined">Kimlerin katıldığını gör</string>
+    <string name="invite_add_person">Uygulaması olmayan birini ekle</string>
+    <string name="invite_go_to_group">Gruba git</string>
+    <string name="invite_change_link">Bağlantıyı değiştir</string>
+    <string name="invite_change_link_title">Davet bağlantısı değiştirilsin mi?</string>
+    <string name="invite_change_link_message">Mevcut bağlantı ve QR kodu, kullanılmamış kişisel davetler dahil, çalışmayı bırakır. Zaten katılmış olanlar grupta kalır.</string>
+    <string name="invite_change_link_failed">Bağlantı değiştirilemedi. Tekrar dene.</string>
+    <string name="invite_share_message">Blitz Split\'te harcamaları bölelim: %1$s. Bu bağlantıyla katıl: %2$s</string>
+</resources>

@@ -2,9 +2,9 @@ import SwiftUI
 
 /// Spanish says "Ana dividió" but "Tú dividiste", French "Ana a divisé" but "Tu as divisé", German "Ana hat geteilt"
 /// but "Du hast geteilt", Italian "Ana ha diviso" but "Tu hai diviso", Dutch "Ana heeft verdeeld" but "Jij hebt
-/// verdeeld" and Polish "Ana podzielił(a)" but "Ty podzieliłeś(-aś)": one localized sentence serves every actor, so
-/// when the actor is this device's user the verb after the "Tú", "Tu", "Du", "Jij" or "Ty" is conjugated to the second
-/// person. Other languages are left as they are.
+/// verdeeld", Polish "Ana podzielił(a)" but "Ty podzieliłeś(-aś)" and Turkish "Ana böldü" but "Sen böldün": one
+/// localized sentence serves every actor, so when the actor is this device's user the verb of the "Tú", "Tu", "Du",
+/// "Jij", "Ty" or "Sen" is conjugated to the second person. Other languages are left as they are.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -27,25 +27,17 @@ enum SecondPerson {
         "nl": ["heeft": "hebt", "is": "bent"],
     ]
 
-    /// The two-letter code of the language the sentences are localized in ("es", "fr"…): the `.lproj` Profile › Language
-    /// picked, which `Bundle.main` only follows at the next launch.
-    static var language: String? {
-        let bundle = Bundle.appLanguage
-        let name = bundle.bundleURL.pathExtension == "lproj"
-            ? bundle.bundleURL.deletingPathExtension().lastPathComponent
-            : bundle.preferredLocalizations.first
-        return name.map { String($0.prefix(2)) }
-    }
-
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
     /// French, German, Italian and Dutch: every verb phrase is a perfect that starts with its auxiliary, so "a divisé" →
     /// "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" → "hai diviso",
     /// "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
-    /// "podzieliłeś(-aś)". Another language keeps the verb as it is.
-    static func verbForYou(_ verb: String, language: String? = SecondPerson.language) -> String {
+    /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
+    /// "böldün:". Another language keeps the verb as it is.
+    static func verbForYou(_ verb: String, language: String? = Bundle.appLanguageCode) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
+        case "tr": return turkishVerbForYou(verb)
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }
@@ -61,6 +53,19 @@ enum SecondPerson {
         guard let first = words.first, let replaced = replacement(first) else { return verb }
         words[0] = replaced
         return words.joined(separator: " ")
+    }
+
+    /// Turkish puts the verb last, so every Turkish verb phrase ends with its simple past, before the colon that leads to
+    /// the object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the vowel
+    /// ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
+    private static func turkishVerbForYou(_ verb: String) -> String {
+        var end = verb.firstIndex(of: ":") ?? verb.endIndex
+        while end > verb.startIndex, verb[verb.index(before: end)].isWhitespace {
+            end = verb.index(before: end)
+        }
+        let clause = verb[..<end]
+        guard clause.range(of: "[dt][ıiuü]$", options: .regularExpression) != nil else { return verb }
+        return String(clause) + "n" + String(verb[end...])
     }
 
     private static func spanishVerbForYou(_ verb: String) -> String {

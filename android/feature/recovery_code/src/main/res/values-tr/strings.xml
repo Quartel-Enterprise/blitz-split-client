@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Kurtarma kodunu kaydet</string>
+    <string name="recovery_code_body">Uygulamayı hesapsız kullanıyorsun. Cihazını değiştirir ya da kaybedersen bu kod gruplarını geri getirir.</string>
+    <string name="recovery_code_copy">Kodu kopyala</string>
+    <string name="recovery_code_save_to_password_manager">Şifre yöneticisine kaydet</string>
+    <string name="recovery_code_connect_instead">Bunun yerine Google ya da Apple bağla</string>
+    <string name="recovery_code_connect_instead_body">Kod gerekmez</string>
+    <string name="recovery_code_sign_in_failed">Şu an bağlanılamadı. Tekrar dene.</string>
+    <string name="recovery_code_also_in_profile">Ayrıca Profil › Kurtarma\'da da var.</string>
+    <string name="recovery_code_remind_later">Sonra hatırlat</string>
+    <string name="recovery_code_saved">Kaydettim</string>
+</resources>
