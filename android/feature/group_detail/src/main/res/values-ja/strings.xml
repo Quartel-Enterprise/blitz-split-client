@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_detail_back">戻る</string>
+    <string name="group_detail_stats">統計</string>
+    <string name="group_detail_invite">メンバーを招待</string>
+    <string name="group_detail_more">グループのその他のオプション</string>
+    <string name="group_detail_pin">ホームにピン留め</string>
+    <string name="group_detail_unpin">ホームのピン留めを解除</string>
+    <string name="group_detail_edit_group">グループを編集</string>
+    <string name="group_detail_leave_group">グループから退出</string>
+    <string name="group_detail_delete_group">グループを削除</string>
+    <plurals name="group_detail_member_count">
+        <item quantity="other">メンバー%d人</item>
+    </plurals>
+    <string name="group_detail_meta_total">%1$s · 合計%2$s</string>
+    <string name="group_detail_meta_empty">%s · まだ支出はありません</string>
+    <string name="group_detail_extra_members">+%d</string>
+    <plurals name="group_detail_not_joined">
+        <item quantity="other">%d人が未参加</item>
+    </plurals>
+    <string name="group_detail_see_members">メンバーを見る</string>
+    <string name="group_detail_tabs">グループのセクション</string>
+    <string name="group_detail_tab_expenses">支出</string>
+    <string name="group_detail_tab_balances">残高</string>
+    <string name="group_detail_tab_members">メンバー</string>
+    <string name="group_detail_today">今日</string>
+    <string name="group_detail_yesterday">昨日</string>
+    <string name="group_detail_queued">送信待ち</string>
+    <string name="group_detail_empty_title">まだ支出はありません</string>
+    <string name="group_detail_empty_message">最初の支出を追加するか、一緒に割り勘する人を招待しましょう。アプリを使っていない人も数に入ります。</string>
+    <string name="group_detail_split_bill">支出を割り勘</string>
+    <string name="group_detail_change_error">変更を保存できませんでした。もう一度お試しください。</string>
+    <string name="group_detail_bill_deleted">この支出は削除されました</string>
+    <string name="group_detail_payment_paid_you">%sがあなたに支払いました</string>
+    <string name="group_detail_payment_you_paid">あなたが%sに支払いました</string>
+    <string name="group_detail_payment_paid">%1$sが%2$sに支払いました</string>
+    <string name="group_detail_payment_meta">支払い</string>
+    <string name="group_detail_payment_tag">支払い</string>
+    <string name="group_detail_delete_payment_title">この支払いを削除しますか？</string>
+    <string name="group_detail_delete_payment_message">支払いはグループから削除され、借りが残高に戻ります。</string>
+    <string name="group_detail_delete_payment_confirm">削除</string>
+    <string name="group_detail_balances_with_you">あなたとの残高</string>
+    <string name="group_detail_balances_between_others">ほかのメンバー同士</string>
+    <string name="group_detail_balances_hint_get">%sを受け取る</string>
+    <string name="group_detail_balances_hint_owe">%sを支払う</string>
+    <plurals name="group_detail_balances_settle_count">
+        <item quantity="other">未精算%d件</item>
+    </plurals>
+    <string name="group_detail_balances_settle">精算する</string>
+    <string name="group_detail_balances_got_paid">受け取った</string>
+    <string name="group_detail_balances_already_paid">支払い済み</string>
+    <string name="group_detail_balances_note">2人の間の貸し借りはすでに差し引かれています。Anaがあなたに借りがあり、あなたもAnaに借りがある場合は、差額だけが表示されます。「受け取った」と「支払い済み」は、アプリ外での支払い（Pix、現金、振込）を記録します。</string>
+    <string name="group_detail_balances_empty_title">まだ貸し借りはありません</string>
+    <string name="group_detail_balances_empty_message">最初の支出が追加されると残高が表示されます。</string>
+    <string name="group_detail_balances_settled_title">全員精算済みです</string>
+    <string name="group_detail_balances_settled_message">このグループに貸し借りはありません。旅行が終わったら、全員のためにグループを削除できます。</string>
+    <string name="group_detail_category_path">%1$s › %2$s</string>
+    <string name="group_detail_teach_offer">支出はマップが提案した%2$sではなく、%1$sに保存されました。マップに覚えさせますか？</string>
+    <string name="group_detail_teach_offer_no_map">支出は%1$sに保存されました。マップに覚えさせますか？</string>
+    <string name="group_detail_teach">覚えさせる</string>
+    <string name="group_detail_teach_title">マップに覚えさせる</string>
+    <string name="group_detail_teach_question">次の支出から%2$sを選ぶのは、「%1$s」のどの言葉にしますか？</string>
+    <string name="group_detail_teach_word_new">マップに新規追加。「%1$s」を含むタイトルは%2$sになります。</string>
+    <string name="group_detail_teach_word_moves">%1$sから外れます。「%2$s」を含むタイトルは%3$sになります。</string>
+    <string name="group_detail_teach_footer">保存済みの支出は変わりません。カテゴリマップで元に戻せます。</string>
+    <string name="group_detail_teach_cancel">キャンセル</string>
+    <string name="group_detail_teach_error">マップに覚えさせられませんでした。もう一度お試しください。</string>
+    <string name="group_detail_joined_title">%sとして参加しました</string>
+    <string name="group_detail_joined_message">あなたの分として追加されたものはすべてここに表示されます。</string>
+    <string name="group_detail_joined_dismiss">閉じる</string>
+    <string name="group_detail_protect_title">アクセスを保護しましょう</string>
+    <string name="group_detail_protect_message">アカウントなしで参加しています。コードを保存するか、GoogleまたはAppleと連携してください。</string>
+    <plurals name="group_detail_simplified_text">
+        <item quantity="other">%2$d件ではなく%1$d件の支払いです。一緒に割り勘したことのない人と支払いや受け取りをすることがあります。</item>
+    </plurals>
+    <string name="group_detail_simplified_minimal">すでに支払い回数は最小です。今後の支出もシンプルに精算されます。</string>
+    <string name="group_detail_simplified_how">仕組み</string>
+    <string name="group_detail_simplified_pair">シンプル化による新しい組み合わせ</string>
+    <string name="group_detail_balances_note_simplified">精算をシンプルにすると、アプリが最小の支払い回数を提案します。「受け取った」と「支払い済み」は、アプリ外での支払い（Pix、現金、振込）を記録します。</string>
+    <string name="group_detail_entry_edit">編集</string>
+    <string name="group_detail_entry_duplicate">複製</string>
+    <string name="group_detail_entry_share">共有</string>
+    <string name="group_detail_entry_delete">削除</string>
+    <string name="group_detail_entry_options">%sのオプション</string>
+    <string name="group_detail_photo_open">グループの写真を表示</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">割り勘を、手間なく</string>
+    <string name="welcome_offline_title">オフラインで使える</string>
+    <string name="welcome_offline_body">すべてデバイスに保存され、後で同期されます。</string>
+    <string name="welcome_optional_title">アカウントは任意</string>
+    <string name="welcome_optional_body">GoogleやAppleは、デバイスを替えたときにデータを失わないためだけに使います。</string>
+    <string name="welcome_invite_title">リンクやQRコードで招待</string>
+    <string name="welcome_invite_body">友だちはアカウントを作らずにグループに参加できます。</string>
+    <string name="welcome_no_connection_title">接続されていません。</string>
+    <string name="welcome_no_connection_body">アカウントでログインするにはインターネット接続が必要です。今はアカウントなしで使い、後でプロフィールから連携してください。</string>
+    <string name="welcome_or">または</string>
+    <string name="welcome_use_without_account">アカウントなしで使う</string>
+    <string name="welcome_used_on_another_device">別のデバイスで使ったことがある</string>
+    <string name="welcome_sign_in_failed">今はログインできませんでした。もう一度お試しください。</string>
+</resources>

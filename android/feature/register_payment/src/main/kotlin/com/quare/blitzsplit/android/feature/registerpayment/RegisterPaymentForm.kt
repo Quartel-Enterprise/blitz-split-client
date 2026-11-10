@@ -47,6 +47,7 @@ import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
@@ -347,7 +348,7 @@ private fun InfoLine(state: RegisterPaymentUiState) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = listOfNotNull(stringResource(R.string.register_payment_info), forOthers).joinToString(" "),
+            text = listOfNotNull(stringResource(R.string.register_payment_info), forOthers).joinToString(wordGapUi()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

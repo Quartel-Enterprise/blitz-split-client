@@ -7,6 +7,7 @@ import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyAmount
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyDebtsConfirmation
 import com.quare.blitzsplit.feature.editgroup.presentation.model.SimplifyName
@@ -55,7 +56,7 @@ internal fun changeTextOf(change: SimplifyPersonChange): String {
             sentence = if (isMe) R.string.simplify_change_receives_me else R.string.simplify_change_receives,
         ),
         stringResource(R.string.simplify_change_guest_note).takeIf { change.isGuest },
-    ).joinToString(" ")
+    ).joinToString(wordGapUi())
 }
 
 @Composable

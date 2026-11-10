@@ -1,7 +1,7 @@
 import type { JsActivityChange, JsActivityDebtChange, JsActivityDeletion, JsActivityItem, JsActivitySimplification, JsActivityValue } from 'blitzsplit-shared'
 import { nameOrFormer, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { groupTypeLabel } from '@/features/create-group/GroupTypePicker'
-import { locale, t, verbForYou, type MessageKey } from '@/i18n'
+import { clauseBreak, fullStop, locale, t, verbForYou, wordGap, type MessageKey } from '@/i18n'
 import { avatarColorLabel } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
 import { uiTag } from '@/lib/currency'
@@ -118,7 +118,7 @@ export function headline(item: JsActivityItem): Headline {
 /** The headline as one sentence, for a row's accessible name and the detail's region. */
 export function headlineText(item: JsActivityItem): string {
   const line = headline(item)
-  return [line.who, line.verb, line.subject].filter(Boolean).join(' ')
+  return [line.who, line.verb, line.subject].filter(Boolean).join(wordGap)
 }
 
 function amountOf(item: JsActivityItem): string {
@@ -183,9 +183,9 @@ function simplificationDetail(simplification: JsActivitySimplification | null | 
     : null
   const goneOwedMe = gone != null && gone.beforeMinor > 0
   const goneName = { name: nameOrFormer(gone?.name) }
-  if (now && gone) return `${counts} ${now}, ${t(goneOwedMe ? 'activity_simplifyAndNoLongerOwesYou' : 'activity_simplifyAndYouNoLongerOwe', goneName)}.`
-  if (now) return `${counts} ${now}.`
-  if (gone) return `${counts} ${t(goneOwedMe ? 'activity_simplifyNoLongerOwesYou' : 'activity_simplifyYouNoLongerOwe', goneName)}.`
+  if (now && gone) return `${counts}${wordGap}${now}${clauseBreak}${t(goneOwedMe ? 'activity_simplifyAndNoLongerOwesYou' : 'activity_simplifyAndYouNoLongerOwe', goneName)}${fullStop}`
+  if (now) return `${counts}${wordGap}${now}${fullStop}`
+  if (gone) return `${counts}${wordGap}${t(goneOwedMe ? 'activity_simplifyNoLongerOwesYou' : 'activity_simplifyYouNoLongerOwe', goneName)}${fullStop}`
   return counts
 }
 
@@ -315,6 +315,6 @@ export function deletionText(deletion: JsActivityDeletion): string {
     : deletion.byName
       ? t('activity_deletedBy', { name: deletion.byName, subject })
       : t(deletion.isGroup ? 'activity_groupDeletedPassive' : 'activity_billDeletedPassive', { subject })
-  const when = deletion.atMillis != null ? ` ${onDay(deletion.atMillis)}` : ''
-  return `${who}${when}. ${t(deletion.isGroup ? 'activity_deletedGroupTail' : 'activity_deletedBillTail')}`
+  const when = deletion.atMillis != null ? `${wordGap}${onDay(deletion.atMillis)}` : ''
+  return `${who}${when}${fullStop}${wordGap}${t(deletion.isGroup ? 'activity_deletedGroupTail' : 'activity_deletedBillTail')}`
 }

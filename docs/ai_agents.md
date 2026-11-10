@@ -27,12 +27,12 @@ so the three platforms walk the same flow.
 
 Write code, comments, docs, commit messages and pull requests in English, even when the conversation is in
 another language. User-facing strings are the exception: each one exists in English (the fallback for every
-language but the ones translated), Portuguese, Spanish, French, German, Italian, Polish and Dutch, in each platform's own
+language but the ones translated), Portuguese, Spanish, French, German, Italian, Polish, Dutch and Japanese, in each platform's own
 place for them — `res/values/strings.xml`, `res/values-pt/strings.xml`, `res/values-es/strings.xml` (plus
 `values-es-rES` for the few words Spain says differently), `res/values-fr/strings.xml`, `res/values-de/strings.xml`,
-`res/values-it/strings.xml`, `res/values-pl/strings.xml` and `res/values-nl/strings.xml` of the `:android:*` module, the English SwiftUI literals of
-the Apple app with their pt-BR, es (Latin American), es-ES, fr, de, it, pl and nl translations in `Localizable.xcstrings`,
-and the `en` / `pt` / `es` / `esES` / `fr` / `de` / `it` / `pl` / `nl` dictionaries of `webApp/src/i18n` on the web. The product is "Bora Rachar"
+`res/values-it/strings.xml`, `res/values-pl/strings.xml`, `res/values-nl/strings.xml` and `res/values-ja/strings.xml` of the `:android:*` module, the English SwiftUI literals of
+the Apple app with their pt-BR, es (Latin American), es-ES, fr, de, it, pl, nl and ja translations in `Localizable.xcstrings`,
+and the `en` / `pt` / `es` / `esES` / `fr` / `de` / `it` / `pl` / `nl` / `ja` dictionaries of `webApp/src/i18n` on the web. The product is "Bora Rachar"
 in Portuguese and "Blitz Split" in every other language. To add a language, follow the `add-language` skill. Never send UI copy from Kotlin: the
 shared code hands the UIs enums and booleans (`RestoreError`, `SyncBadge`, `showsOfflineNotice`) and each platform
 picks its words.

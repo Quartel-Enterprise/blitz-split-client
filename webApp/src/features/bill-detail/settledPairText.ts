@@ -1,5 +1,5 @@
 import type { JsSettledPair } from 'blitzsplit-shared'
-import { t, type MessageKey } from '@/i18n'
+import { fullStop, t, wordGap, type MessageKey } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 
 /**
@@ -21,7 +21,7 @@ export function settledPairDetail(change: JsSettledPair): string {
 
 /** The lead and the detail in one go, as "Apagar esta conta?" says them. */
 export function settledPairSentence(change: JsSettledPair): string {
-  return `${settledPairLead(change)}. ${settledPairDetail(change)}`
+  return `${settledPairLead(change)}${fullStop}${wordGap}${settledPairDetail(change)}`
 }
 
 /** "volta a dever" what was settled, "passa a dever" more or the other way round, "fica devendo" less of it. */

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillDefaultSplit
@@ -59,7 +60,7 @@ internal fun DefaultSplitNoticeCard(
             editorMode.takeIf { it != default.editor.mode }?.let {
                 stringResource(R.string.split_bill_default_off_now, stringResource(it.billWordRes))
             },
-        ).joinToString(" ")
+        ).joinToString(wordGapUi())
     } else {
         stringResource(R.string.split_bill_default_body)
     }

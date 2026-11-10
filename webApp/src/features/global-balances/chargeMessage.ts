@@ -1,6 +1,6 @@
 import type { JsChargeDraft } from 'blitzsplit-shared'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
-import { t } from '@/i18n'
+import { t, wordGap } from '@/i18n'
 import { formatMoney, formatNames } from '@/lib/money'
 
 /**
@@ -24,6 +24,6 @@ export function chargeMessageOf(charge: JsChargeDraft, pixKey: string | null | u
       ? t('globalBalances_messageGuestPaid', { ...params, paid: money(charge.guestPaidMinor) })
       : t('globalBalances_messageGuest', params)
   const reroutes = charge.reroutes.map((reroute) => t('globalBalances_messageReroute', { group: reroute.groupName, names: formatNames(reroute.insteadOfNames) }))
-  const message = [body, ...reroutes].join(' ')
+  const message = [body, ...reroutes].join(wordGap)
   return charge.includesPixKey && pixKey ? t('globalBalances_messagePix', { message, key: pixKey }) : message
 }

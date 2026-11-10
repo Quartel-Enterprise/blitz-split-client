@@ -1,7 +1,7 @@
 import { locale, pickLocale } from '@/i18n'
 import { browserLanguages } from '@/lib/platform'
 
-// Why: pickLocale answers English for a tag it doesn't know ("nl"), which must not pick that tag for the picker.
+// Why: pickLocale answers English for a tag it doesn't know ("sv"), which must not pick that tag for the picker.
 const isSupportedTag = (tag: string) => pickLocale([tag]) !== 'en' || /^en(-|$)/i.test(tag)
 const supportedTag = browserLanguages().find((tag) => isSupportedTag(tag) && pickLocale([tag]) === locale)
 /**

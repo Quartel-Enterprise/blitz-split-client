@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.fullStopUi
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChange
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivitySimplification
@@ -42,7 +44,7 @@ internal fun simplificationDetailOf(simplification: ActivitySimplification): Str
         }
     }
     if (newPair == null && gonePair == null) return counts
-    return "$counts ${newPair.orEmpty()}${gonePair.orEmpty()}."
+    return "$counts${wordGapUi()}${newPair.orEmpty()}${gonePair.orEmpty()}${fullStopUi()}"
 }
 
 /*

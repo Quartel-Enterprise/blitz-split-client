@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsGrainNote
@@ -126,7 +127,7 @@ internal fun grainNoteTextOf(state: GroupStatsUiState): String? = state.grainNot
                 }
             },
         )
-    }.joinToString(" ")
+    }.joinToString(wordGapUi())
     .ifEmpty { null }
 
 // Why: "Nenhuma despesa em setembro" (or "em 2026"), "nesse período" for picked dates or the whole period.

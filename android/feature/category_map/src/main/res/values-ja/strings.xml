@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">キーワードなし</string>
+    <string name="category_map_title">カテゴリマップ</string>
+    <string name="category_map_search">キーワードを検索</string>
+    <string name="category_map_add">キーワードを追加</string>
+    <string name="category_map_more">その他のオプション</string>
+    <string name="category_map_restore">デフォルトに戻す</string>
+    <string name="category_map_back">戻る</string>
+    <string name="category_map_intro">支出のタイトルにこれらの言葉が含まれると、カテゴリが自動で設定されます。「Uberで帰宅」は交通になります。</string>
+    <string name="category_map_intro_offline">マップはオフラインでも使えます。変更はこのデバイスですぐに反映され、オンラインに戻るとほかのデバイスにも届きます。</string>
+    <string name="category_map_device_only">マップはこのデバイスにだけ保存されます。ほかのデバイスでも使うには、プロフィールでGoogleまたはAppleでログインしてください。</string>
+    <string name="category_map_open_profile">プロフィールを開く</string>
+    <string name="category_map_longest_wins">2つのキーワードがタイトルに一致した場合は、長いほうが優先されます。</string>
+    <string name="category_map_no_result">「%1$s」を含むキーワードはありません</string>
+    <string name="category_map_no_result_body">追加すると、タイトルにこの言葉を含む支出に正しいカテゴリが付きます。</string>
+    <string name="category_map_add_query">「%1$s」を追加</string>
+    <string name="category_map_empty_title">マップは空です</string>
+    <string name="category_map_empty_body">キーワードがないと、カテゴリはタイトルから決まりません。支出ごとに選んでください。</string>
+    <string name="category_map_group_category"> · %1$sのカテゴリ</string>
+    <string name="category_map_only_main">%1$sのみ</string>
+    <string name="category_map_only_in_group">%1$sのみ</string>
+    <string name="category_map_no_terms_yet">まだキーワードはありません。</string>
+    <string name="category_map_add_in">%1$sにキーワードを追加</string>
+    <string name="category_map_tip">キーワードをタップすると、カテゴリの変更や削除ができます。単語全体で一致し、アクセントや大文字・小文字は区別しません。</string>
+    <string name="category_map_queued">送信待ち</string>
+    <string name="category_map_term_action">%1$s、%2$s。編集</string>
+    <string name="category_map_new_term">新しいキーワード</string>
+    <string name="category_map_edit_term">キーワードを編集</string>
+    <string name="category_map_term_label">単語またはフレーズ</string>
+    <string name="category_map_term_help">単語全体で一致し、アクセントや大文字・小文字は区別しません。</string>
+    <string name="category_map_term_help_app">アプリのキーワードです。「デフォルトに戻す」で元の状態に戻ります。</string>
+    <string name="category_map_term_duplicate">「%1$s」はすでに%2$sに割り当てられています。キーワードごとにカテゴリは1つです。</string>
+    <string name="category_map_term_too_short">2文字以上で入力してください。</string>
+    <string name="category_map_term_too_long">30文字以内で入力してください。</string>
+    <string name="category_map_term_invalid">文字、数字、スペースのみ使えます。</string>
+    <string name="category_map_category">カテゴリ</string>
+    <string name="category_map_category_help">カテゴリでもサブカテゴリでも指定できます。</string>
+    <string name="category_map_category_help_edit">ここで変更すると、キーワードは別のカテゴリに移動します。</string>
+    <string name="category_map_category_help_move">移動すると、キーワードは%1$sから外れます。</string>
+    <string name="category_map_example">例</string>
+    <string name="category_map_example_move">移動した場合</string>
+    <string name="category_map_remove">削除</string>
+    <string name="category_map_cancel">キャンセル</string>
+    <string name="category_map_save">保存</string>
+    <string name="category_map_move_to">%1$sに移動</string>
+    <string name="category_map_removed">「%1$s」をマップから削除しました</string>
+    <string name="category_map_undo">元に戻す</string>
+    <string name="category_map_restore_title">デフォルトのマップに戻しますか？</string>
+    <string name="category_map_restore_body">削除や移動したものも含め、アプリの60個のキーワードが元の状態に戻ります。</string>
+    <string name="category_map_restore_own_one">あなたが作成したキーワード「%1$s」は残ります。</string>
+    <string name="category_map_restore_confirm">戻す</string>
+    <string name="category_map_save_error">マップを保存できませんでした。もう一度お試しください。</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">%d個のキーワード</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">%d個のサブカテゴリ</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">「%2$s」を含むキーワード%1$d個</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">オフライン · %d件の変更が送信待ち</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">あなたが作成した%d個のキーワードは残ります。</item>
+    </plurals>
+    <string name="category_map_new_category">新しいカテゴリ</string>
+    <string name="category_map_new_subcategory_in">%sに新しいサブカテゴリ</string>
+    <string name="category_map_edit_category">%sを編集</string>
+    <string name="category_map_category_group">グループ</string>
+    <string name="category_map_change_color">%1$sの色を変更</string>
+    <string name="category_map_restore_color">色を戻す</string>
+    <string name="category_map_color_done">完了</string>
+</resources>

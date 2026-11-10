@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">グループを復元</string>
+    <string name="restore_subtitle">以前アカウントでログインしていた場合は、もう一度ログインするだけです。そうでない場合は、復元コードか古いデバイスのQRコードを使ってください。</string>
+    <string name="restore_no_connection_title">接続されていません</string>
+    <string name="restore_no_connection_body">アカウントやコードでログインするには、グループをダウンロードするためのインターネット接続が必要です。入力した内容は保持されます。</string>
+    <string name="restore_code_label">または復元コードを使用</string>
+    <string name="restore_code_hint">12桁の英数字。ハイフンは省略できます。</string>
+    <string name="restore_scan_qr_title">古いデバイスのQRコードをスキャン</string>
+    <string name="restore_scan_qr_body">場所：プロフィール › 復元 › QRコードを表示</string>
+    <string name="restore_recover">復元</string>
+    <string name="restore_try_again">再試行</string>
+    <string name="restore_start_fresh">このデバイスで新しく始める</string>
+    <string name="restore_error_invalid_code">コードが見つかりません。文字を確認して、もう一度お試しください。</string>
+    <string name="restore_error_too_many_attempts">試行回数が多すぎます。数分待ってから、もう一度お試しください。</string>
+    <string name="restore_error_sign_in_failed">今はログインできませんでした。もう一度お試しください。</string>
+    <string name="restore_error_unknown">問題が発生しました。もう一度お試しください。</string>
+</resources>

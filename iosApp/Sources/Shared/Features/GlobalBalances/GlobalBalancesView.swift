@@ -809,7 +809,7 @@ enum GlobalBalancesCopy {
                 comment: "Request's message: %1$@ is the group, %2$@ whom they would pay by the bills",
             )
         }
-        let explained = ([body] + reroutes).joined(separator: " ")
+        let explained = ([body] + reroutes).joined(separator: WordGap.gap)
         guard charge.includesPixKey, let pixKey else { return explained }
         return String(localized: "\(explained) Pix: \(pixKey.value)", bundle: .appLanguage)
     }

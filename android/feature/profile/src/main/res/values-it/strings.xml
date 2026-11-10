@@ -56,6 +56,7 @@
     <string name="profile_language_italian">Italiano</string>
     <string name="profile_language_polish">Polacco</string>
     <string name="profile_language_dutch">Olandese</string>
+    <string name="profile_language_japanese">Giapponese</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>
     <plurals name="profile_notifications_active">

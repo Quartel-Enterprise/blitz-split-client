@@ -5,6 +5,7 @@ import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.settledPairSentenceOf
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
@@ -42,7 +43,7 @@ fun DeleteBillDialog(
     val settled = settledPair?.let { settledPairSentenceOf(it) }
     ConfirmDialog(
         title = stringResource(R.string.designsystem_delete_bill_title),
-        message = listOfNotNull(consequence, myPart, settled).joinToString(" "),
+        message = listOfNotNull(consequence, myPart, settled).joinToString(wordGapUi()),
         confirmLabel = stringResource(R.string.designsystem_delete_bill_confirm),
         onConfirm = onConfirm,
         onDismiss = onDismiss,

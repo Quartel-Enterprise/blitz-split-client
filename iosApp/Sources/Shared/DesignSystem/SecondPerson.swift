@@ -29,7 +29,7 @@ enum SecondPerson {
 
     /// The two-letter code of the language the sentences are localized in ("es", "fr"…): the `.lproj` Profile › Language
     /// picked, which `Bundle.main` only follows at the next launch.
-    private static var language: String? {
+    static var language: String? {
         let bundle = Bundle.appLanguage
         let name = bundle.bundleURL.pathExtension == "lproj"
             ? bundle.bundleURL.deletingPathExtension().lastPathComponent

@@ -194,7 +194,7 @@ enum SimplifyDebtsCopy {
                 bundle: .appLanguage,
             ))
         }
-        return sentences.joined(separator: " ")
+        return sentences.joined(separator: WordGap.gap)
     }
 
     /// "Elisa paid you $50": a payment waiting to go up (13.3d).

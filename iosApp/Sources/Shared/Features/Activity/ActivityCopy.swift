@@ -429,7 +429,7 @@ enum ActivityCopy {
                     comment: "Activity: a new pair and one that went",
                 )
         }
-        return after.isEmpty ? counts : "\(counts) \(after)."
+        return after.isEmpty ? counts : counts + WordGap.gap + after + WordGap.fullStop
     }
 
     /// One side of "See changes" of Simplify debts: "owed you $20", "you owe $64", "didn't owe you".
@@ -502,7 +502,7 @@ enum ActivityCopy {
         let second = deletion.isGroup
             ? String(localized: "The entry stays in Activity, but the group no longer opens.", bundle: .appLanguage)
             : String(localized: "The entry stays in Activity, but the bill no longer opens.", bundle: .appLanguage)
-        return "\(first) \(second)"
+        return first + WordGap.gap + second
     }
 
     // MARK: - The screen

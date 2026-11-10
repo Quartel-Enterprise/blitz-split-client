@@ -219,7 +219,7 @@ enum SplitBillCopy {
             : nil
         return Status(
             title: title,
-            detail: sentences.isEmpty ? nil : sentences.joined(separator: " "),
+            detail: sentences.isEmpty ? nil : sentences.joined(separator: WordGap.gap),
             isError: !editor.addsUp,
             progress: progress,
         )

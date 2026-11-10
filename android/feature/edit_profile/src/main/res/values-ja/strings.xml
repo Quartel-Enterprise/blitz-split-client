@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">プロフィールを編集</string>
+    <string name="edit_profile_save">保存</string>
+    <string name="edit_profile_change_photo">写真を変更</string>
+    <string name="edit_profile_take_photo">写真を撮る</string>
+    <string name="edit_profile_choose_photo">ギャラリーから選ぶ</string>
+    <string name="edit_profile_use_account_photo">%1$sアカウントの写真を使用</string>
+    <string name="edit_profile_remove_photo">写真を削除</string>
+    <string name="edit_profile_photo_error">この写真は使用できません。別の写真をお試しください。</string>
+    <string name="edit_profile_avatar_color">アバターの色</string>
+    <string name="edit_profile_avatar_color_hint">写真がないときに表示されます。</string>
+    <string name="edit_profile_name_label">名前</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">%d文字以上で入力してください。</string>
+    <string name="edit_profile_name_too_long">%d文字以内で入力してください。</string>
+    <string name="edit_profile_account_notice">名前と写真は%1$sアカウントから取得しました。ここでの変更はBlitz Splitにだけ反映され、%1$sアカウントは変更されません。</string>
+    <string name="edit_profile_footer">あなたの名前と写真は、グループのメンバーにだけ表示されます。</string>
+    <string name="profile_photo_close">閉じる</string>
+    <string name="profile_photo_camera">カメラ</string>
+    <string name="profile_photo_gallery">ギャラリー</string>
+    <string name="profile_photo_remove">削除</string>
+    <string name="profile_photo_title">プロフィール写真</string>
+</resources>

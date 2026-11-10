@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">新しいPixキー</string>
+    <string name="payment_key_title_pix_edit">Pixキーを編集</string>
+    <string name="payment_key_title_bitcoin_new">新しいBitcoinキー</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoinキーを編集</string>
+    <string name="payment_key_save">保存</string>
+
+    <string name="payment_key_pix_intro">あなたに支払う人は、精算時にこのキーを見ます。キーの種類はどれですか？</string>
+    <string name="payment_key_pix_question">キーの種類はどれですか？</string>
+    <string name="payment_key_pix_explanation">あなたに支払う人は、精算時にこのキーを見ます。</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">電話番号</string>
+    <string name="payment_key_type_email">メール</string>
+    <string name="payment_key_type_random">ランダム</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">市外局番付きの携帯電話番号</string>
+    <string name="payment_key_label_email">メール</string>
+    <string name="payment_key_label_random">ランダムキー</string>
+
+    <string name="payment_key_bitcoin_intro">どの方法で受け取りますか？</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">高速・低手数料</string>
+    <string name="payment_key_network_onchain">オンチェーン</string>
+    <string name="payment_key_network_onchain_detail">ブロックチェーン上</string>
+    <string name="payment_key_label_lightning">Lightning AddressまたはLNURL</string>
+    <string name="payment_key_label_onchain">Bitcoinアドレス</string>
+
+    <string name="payment_key_paste">貼り付け</string>
+
+    <string name="payment_key_hint_cpf">形式：000.000.000-00</string>
+    <string name="payment_key_hint_phone">形式：+55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">形式：name@domain.com</string>
+    <string name="payment_key_hint_random">銀行に表示されるとおりの32桁の英数字</string>
+    <string name="payment_key_hint_lightning">name@wallet.comやLNURL1…など</string>
+    <string name="payment_key_hint_onchain">bc1qまたはbc1pで始まるメインネットのアドレス</string>
+
+    <string name="payment_key_valid_cpf">形式：000.000.000-00 · チェックディジット一致</string>
+    <string name="payment_key_valid_phone">形式：+55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">形式：name@domain.com</string>
+    <string name="payment_key_valid_random">ランダムキーを認識しました（32文字）</string>
+    <string name="payment_key_valid_lightning_address">有効なLightning Address</string>
+    <string name="payment_key_valid_lnurl">有効なLNURL</string>
+    <string name="payment_key_valid_segwit">SegWit（bc1q）· メインネット</string>
+    <string name="payment_key_valid_taproot">Taproot（bc1p）· メインネット</string>
+
+    <string name="payment_key_error_invalid_cpf">無効なCPFです。チェックディジットが一致しません。</string>
+    <string name="payment_key_error_invalid_phone">携帯電話番号が不完全です。市外局番と、9で始まる9桁の番号を入力してください。</string>
+    <string name="payment_key_error_invalid_email">メールアドレスが不完全です。.comや.com.brなどのドメインがありません。</string>
+    <string name="payment_key_error_invalid_random">ランダムキーが不完全です。32桁の英数字です。</string>
+    <string name="payment_key_error_invalid_lightning">これはLightning Address（name@wallet）でもLNURLでもありません。</string>
+    <string name="payment_key_error_lightning_invoice">これはLightningの請求書（lnbc…）です。1回しか支払えず、期限切れになります。Lightning AddressかLNURLを貼り付けてください。</string>
+    <string name="payment_key_error_invalid_onchain">無効なアドレスです。メインネットのbc1qまたはbc1pアドレスを使ってください。</string>
+    <string name="payment_key_error_testnet_address">これはテストネットのアドレス（tb1…）です。ここではbc1…で始まるBitcoinメインネットのアドレスのみ使えます。</string>
+    <string name="payment_key_error_already_saved">このキーはすでに登録されています。</string>
+
+    <string name="payment_key_switched_to_onchain">オンチェーンのアドレスのため、オンチェーンに切り替えました。</string>
+    <string name="payment_key_switched_to_lightning">Lightning Addressのため、Lightningに切り替えました。</string>
+    <string name="payment_key_cpf_notice">あなたに支払う人には、CPFがすべて表示されます。共有したくない場合は、電話番号、メール、ランダムキーを使ってください。</string>
+
+    <string name="payment_key_accepted_title">対応形式</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">デフォルトのPixキー</string>
+    <string name="payment_key_default_bitcoin_title">デフォルトのBitcoinキー</string>
+    <string name="payment_key_default_pix_detail">精算時に最初に表示されます。</string>
+    <string name="payment_key_default_bitcoin_detail">誰かがBTCで支払うときに最初に表示されます。</string>
+    <string name="payment_key_default_now">現在：%1$s。</string>
+    <string name="payment_key_default_locked_editing">変更するには、別のキーをデフォルトにしてください。</string>
+    <string name="payment_key_default_locked_new">この種類の最初のキーがデフォルトになります。</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">電話番号</string>
+    <string name="payment_key_default_type_email">メール</string>
+    <string name="payment_key_default_type_random">ランダムキー</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">オンチェーン</string>
+
+    <string name="payment_key_footer_pix">Blitz Splitはお金を動かしません。支払う人は自分の銀行アプリで支払います。キーがあなた名義であることを確認してください。</string>
+    <string name="payment_key_footer_bitcoin">精算時には、現在のレートで換算したsatsの金額を表示します。あくまで目安で、支払う人がウォレットで確認します。</string>
+
+    <string name="payment_key_delete">キーを削除</string>
+    <string name="payment_key_delete_title">このキーを削除しますか？</string>
+    <string name="payment_key_delete_body">あなたに支払う人には、精算時に表示されなくなります。</string>
+    <string name="payment_key_delete_confirm">削除</string>
+</resources>

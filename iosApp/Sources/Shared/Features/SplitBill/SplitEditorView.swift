@@ -84,7 +84,7 @@ private struct DefaultSplitNotice: View {
         case .items: String(localized: "This bill splits by items.", bundle: .appLanguage)
         default: String(localized: "This bill splits equally.", bundle: .appLanguage)
         }
-        return "\(base) \(now)"
+        return base + WordGap.gap + now
     }
 }
 

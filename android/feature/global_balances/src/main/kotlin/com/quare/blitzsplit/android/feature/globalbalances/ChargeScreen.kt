@@ -46,6 +46,7 @@ import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
 import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptions
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.android.designsystem.layout.alertDialogPane
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.android.platform.copyText
@@ -342,7 +343,7 @@ private fun chargeMessageOf(
     val reroutes = charge.reroutes.map { reroute ->
         stringResource(R.string.global_balances_message_reroute, reroute.groupName, nameListOf(reroute.insteadOfNames))
     }
-    val explained = (listOf(body) + reroutes).joinToString(" ")
+    val explained = (listOf(body) + reroutes).joinToString(wordGapUi())
     val composed = if (charge.includesPixKey && pixKey != null) {
         stringResource(R.string.global_balances_message_pix, explained, pixKey.value)
     } else {

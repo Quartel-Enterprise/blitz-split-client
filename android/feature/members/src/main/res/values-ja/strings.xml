@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">招待リンク</string>
+    <string name="members_link_pending">まだ作成されていません</string>
+    <string name="members_share">共有</string>
+    <string name="members_me">%s（あなた）</string>
+    <string name="members_status_this_device">このデバイス</string>
+    <string name="members_status_joined">参加済み</string>
+    <string name="members_status_not_joined">未参加</string>
+    <string name="members_options">%sのオプション</string>
+    <string name="members_rename">名前を変更</string>
+    <string name="members_personal_invite">%sへの個別の招待</string>
+    <string name="members_personal_message">このリンクを開いた人は、リストから選ばずに%sとしてそのまま参加します。使えるのは1回だけです。</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">このリンクを開いた人は、リストから選ばずに%1$sとしてそのまま参加し、これまでに追加された%3$d件の支出の負担分%2$sがすぐに表示されます。使えるのは1回だけです。</item>
+    </plurals>
+    <string name="members_personal_copy">リンクをコピー</string>
+    <string name="members_personal_copied">コピーしました</string>
+    <string name="members_personal_share">%sと共有</string>
+    <string name="members_personal_share_message">Blitz Splitの%1$sに%2$sとして参加しましょう：%3$s</string>
+    <string name="members_remove">グループから外す</string>
+    <string name="members_remove_joined">%sはすでにグループに参加しています</string>
+    <string name="members_remove_title">%sをグループから外しますか？</string>
+    <string name="members_remove_message">%sはまだ参加していません。後でもう一度追加できます。</string>
+    <string name="members_remove_confirm">外す</string>
+    <string name="members_release">名前を解放</string>
+    <string name="members_release_title">%sの名前を解放しますか？</string>
+    <string name="members_release_message">%1$sとして参加した人はグループから退出します。%1$sの名前、色、支出は残り、グループのリンクから再び%1$sを選べるようになります。</string>
+    <string name="members_release_confirm">解放</string>
+    <string name="members_release_error">名前を解放できませんでした。接続を確認して、もう一度お試しください。</string>
+    <string name="members_add">メンバーを追加</string>
+    <string name="members_invite_instead">アプリを使っていますか？リンクで招待</string>
+    <string name="members_name_label">名前</string>
+    <string name="members_save">保存</string>
+    <string name="members_cancel">キャンセル</string>
+    <string name="members_change_error">変更を保存できませんでした。もう一度お試しください。</string>
+    <string name="members_remove_open_balance">%sには未精算の残高があります</string>
+    <string name="members_balance_to_get_back">%sを受け取る</string>
+    <string name="members_balance_owes">%sを支払う</string>
+    <string name="members_balance_settled">精算済み</string>
+</resources>

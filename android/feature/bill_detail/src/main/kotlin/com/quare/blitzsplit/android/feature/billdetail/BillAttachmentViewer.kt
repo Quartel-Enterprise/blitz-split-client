@@ -60,6 +60,7 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.shimmer
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
@@ -361,7 +362,7 @@ private fun ViewerFooter(
         )
         if (hints.isNotEmpty()) {
             Text(
-                text = hints.joinToString(" "),
+                text = hints.joinToString(wordGapUi()),
                 color = viewerContent.copy(alpha = SECONDARY_TEXT_ALPHA),
                 fontSize = 13.sp,
                 lineHeight = 18.sp,

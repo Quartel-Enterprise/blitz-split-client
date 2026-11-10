@@ -16,6 +16,7 @@ enum class AppLanguage(
     ITALIAN("it"),
     POLISH("pl"),
     DUTCH("nl"),
+    JAPANESE("ja"),
     ;
 
     // Why: Spain's Spanish (es-ES) only overrides the words Spain says differently, so a device in Spain keeps them.
@@ -29,8 +30,8 @@ enum class AppLanguage(
 
     companion object {
         /*
-         * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch or English tag the platform kept (pt-PT,
-         * es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE, en-GB), SYSTEM for none or any other.
+         * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese or English tag the platform kept
+         * (pt-PT, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE, ja-JP, en-GB), SYSTEM for none or any other.
          */
         fun fromTag(tag: String?): AppLanguage {
             val language = tag

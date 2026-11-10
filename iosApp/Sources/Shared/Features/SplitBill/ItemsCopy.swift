@@ -198,7 +198,7 @@ enum ItemsCopy {
                     localized: "\(Int(status.parts)) shares of \(currency.format(status.partMinor))",
                     bundle: .appLanguage,
                 ),
-                several.isEmpty ? among(status.totalMinor, count: Int(status.count), currency: currency) : several.joined(separator: " "),
+                several.isEmpty ? among(status.totalMinor, count: Int(status.count), currency: currency) : several.joined(separator: WordGap.gap),
             )
         case let status as ItemStatusAmountAddsUp:
             return (String(localized: "Adds up: \(currency.format(status.totalMinor))", bundle: .appLanguage), String(
@@ -286,7 +286,7 @@ enum ItemsCopy {
             )
             : String(localized: "“\(deletion.name)” (\(amount)) leaves the bill.", bundle: .appLanguage)
         guard let left = deletion.leftMinor else { return first }
-        return "\(first) \(String(localized: "The items no longer add up to the total: \(currency.format(left.int64Value)) is left to split.", bundle: .appLanguage))"
+        return first + WordGap.gap + String(localized: "The items no longer add up to the total: \(currency.format(left.int64Value)) is left to split.", bundle: .appLanguage)
     }
 
     static func feeTitle(_ fee: ItemsFee) -> LocalizedStringKey {

@@ -1,5 +1,5 @@
 import type { JsGroupStatsState, JsStatsBar, JsStatsPayer, JsStatsPeriodOption } from 'blitzsplit-shared'
-import { t, type MessageKey } from '@/i18n'
+import { t, wordGap, type MessageKey } from '@/i18n'
 import { uiTag } from '@/lib/currency'
 import { formatShortDate } from '@/lib/dates'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
@@ -118,7 +118,7 @@ const grainNotes: Record<string, MessageKey> = {
 export function grainNoteText(state: JsGroupStatsState): string {
   return state.grainNotes
     .map((note) => (note === 'YEAR_SWITCHES_PERIOD' && state.isTrip ? t('stats_noteYearSwitchesTrip') : t(grainNotes[note] ?? 'stats_noteDay')))
-    .join(' ')
+    .join(wordGap)
 }
 
 /** "Nenhuma despesa em setembro" (or "em 2026"), "nesse período" for picked dates or the whole period. */

@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { Avatar, PendingDot, PersonButton } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
-import { t } from '@/i18n'
+import { t, wordGap } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
 import { historyActor, historyDiffs, historyNote, historyVerb, type HistoryDiff } from './billHistoryText'
 
@@ -129,7 +129,9 @@ function HistoryLine({
       <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-1 pb-3.5">
         <span className="flex items-baseline gap-2">
           <span className="min-w-0 flex-1 text-sm leading-5">
-            <span className="font-medium">{historyActor(entry)}</span> <span className="text-muted-foreground">{historyVerb(entry)}</span>
+            <span className="font-medium">{historyActor(entry)}</span>
+            {wordGap}
+            <span className="text-muted-foreground">{historyVerb(entry)}</span>
           </span>
           <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
             {entry.isPending && (

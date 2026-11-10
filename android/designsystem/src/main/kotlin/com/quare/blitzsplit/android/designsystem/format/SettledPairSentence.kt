@@ -25,7 +25,7 @@ fun settledPairSentenceOf(change: SettledPairChange): String {
         head,
         stringResource(R.string.designsystem_settled_pair_redone),
         outcomeOf(change, formerMember),
-    ).joinToString(" ")
+    ).joinToString(wordGapUi())
 }
 
 @Composable

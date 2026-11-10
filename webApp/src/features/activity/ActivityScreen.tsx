@@ -9,7 +9,7 @@ import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t } from '@/i18n'
+import { t, wordGap } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { formatDayTime, formatLongDayLabel, formatTime } from '@/lib/dates'
@@ -290,10 +290,12 @@ function HeadlineLine({ item, isBold = item.isUnread, className }: { item: JsAct
   const strong = isBold ? 'font-bold' : 'font-semibold'
   return (
     <span className={className}>
-      <strong className={strong}>{line.who}</strong> {line.verb}
+      <strong className={strong}>{line.who}</strong>
+      {wordGap}
+      {line.verb}
       {line.subject && (
         <>
-          {' '}
+          {wordGap}
           <strong className={strong}>{line.subject}</strong>
         </>
       )}
