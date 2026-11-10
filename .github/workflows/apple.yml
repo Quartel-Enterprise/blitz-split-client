@@ -150,14 +150,14 @@ jobs:
       # other caches, only main saves them.
       - name: Cache the Swift packages
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: iosApp/build/SourcePackages
           key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
 
       - name: Restore the Swift packages
         if: github.ref != 'refs/heads/main'
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: iosApp/build/SourcePackages
           key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
