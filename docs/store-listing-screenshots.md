@@ -94,9 +94,7 @@ without swiping. Play holds 8 per device type and the App Store 10 per display s
 
 **The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
-language's currency, at round rates and rounded the way a menu there prices them. Turkish and Indonesian have banner
-copy and a sample trip but no app translation yet, so their screens show the app in English until those languages
-ship. The faces are AI-generated portraits of people who don't exist (`scripts/store-screenshots/faces/`), the same
+language's currency, at round rates and rounded the way a menu there prices them. The faces are AI-generated portraits of people who don't exist (`scripts/store-screenshots/faces/`), the same
 five in every language; the receipt's photo is `scripts/store-screenshots/receipt.jpg`.
 
 | Device | Play | App Store (Apple's screenshot specifications, November 2026) |
