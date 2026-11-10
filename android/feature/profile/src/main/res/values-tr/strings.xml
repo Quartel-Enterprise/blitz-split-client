@@ -57,6 +57,7 @@
     <string name="profile_language_dutch">Felemenkçe</string>
     <string name="profile_language_japanese">Japonca</string>
     <string name="profile_language_turkish">Türkçe</string>
+    <string name="profile_language_indonesian">Endonezce</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

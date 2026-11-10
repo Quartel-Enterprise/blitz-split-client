@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · kode pemulihan</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Izinkan kamera di Pengaturan untuk mengambil foto.</string>
+    <string name="platform_camera_settings">Pengaturan</string>
+    <string name="platform_receipt_source_camera">Ambil foto</string>
+    <string name="platform_receipt_source_gallery">Pilih dari galeri</string>
+    <string name="platform_receipt_source_file">Pilih file</string>
+    <string name="platform_receipt_camera_title">Pindai struk</string>
+    <string name="platform_receipt_camera_close">Tutup</string>
+    <string name="platform_receipt_camera_flash_on">Nyalakan flash</string>
+    <string name="platform_receipt_camera_flash_off">Matikan flash</string>
+    <string name="platform_receipt_camera_hint">Masukkan seluruh struk ke dalam bingkai. Kami mengisi jumlah, tanggal, dan deskripsi; kamu memeriksanya sebelum menyimpan.</string>
+    <string name="platform_receipt_camera_gallery">Pilih dari galeri</string>
+    <string name="platform_receipt_camera_shutter">Ambil foto</string>
+    <string name="platform_receipt_camera_unavailable">Kamera tidak tersedia. Pilih foto struk dari galeri.</string>
+    <string name="platform_receipt_camera_permission">Izinkan kamera untuk memindai struk, atau pilih foto dari galeri.</string>
+    <string name="platform_receipt_camera_allow">Izinkan kamera</string>
+    <string name="platform_receipt_camera_settings">Buka pengaturan</string>
+</resources>

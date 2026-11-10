@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Grup baru</string>
+    <string name="create_group_close">Tutup</string>
+    <string name="create_group_create">Buat</string>
+    <string name="create_group_change_color">Ganti warna grup</string>
+    <string name="create_group_name_label">Nama grup</string>
+    <string name="create_group_type_label">Jenis grup</string>
+    <string name="create_group_members_title">Siapa saja yang ikut</string>
+    <plurals name="create_group_member_count">
+        <item quantity="other">%d orang</item>
+    </plurals>
+    <string name="create_group_me">kamu</string>
+    <string name="create_group_remove_member">Hapus %s</string>
+    <string name="create_group_add_placeholder">Tambah dengan nama</string>
+    <string name="create_group_add">Tambah</string>
+    <string name="create_group_no_app_notice">Belum ada yang perlu aplikasinya sekarang. Kamu sudah bisa menambahkan pengeluaran untuk semua orang dan mengirim tautannya nanti.</string>
+    <string name="create_group_currency">Mata uang default</string>
+    <string name="create_group_currency_caption">Tagihan baru dimulai dengan mata uang ini; setiap tagihan bisa memakai mata uang lain.</string>
+    <string name="create_group_save_error">Tidak dapat menyimpan grup. Coba lagi.</string>
+    <string name="create_group_photo">Foto grup</string>
+    <string name="create_group_take_photo">Ambil foto</string>
+    <string name="create_group_choose_photo">Pilih foto</string>
+    <string name="create_group_remove_photo">Hapus foto</string>
+    <string name="create_group_photo_error">Tidak dapat memakai foto ini. Coba foto lain.</string>
+</resources>

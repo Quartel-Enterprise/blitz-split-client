@@ -4,6 +4,7 @@ import { es } from './es'
 import { esES } from './esES'
 import { de } from './de'
 import { fr } from './fr'
+import { id } from './id'
 import { it } from './it'
 import { ja } from './ja'
 import { nl } from './nl'
@@ -13,23 +14,25 @@ import { tr } from './tr'
 
 export type { MessageKey }
 /** `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently. */
-export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr'
+export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr']
+const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id']
 
 /**
  * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
  * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
- * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`, `pl`, `nl`, `ja` or `tr` tag
- * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY…) is German, Italian, Polish, Dutch, Japanese or Turkish, any `en` tag is
- * English, and English when none matches.
+ * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`, `pl`, `nl`, `ja`, `tr` or `id`
+ * tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID…) is German, Italian, Polish, Dutch,
+ * Japanese, Turkish or Indonesian, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
-    const [language, ...rest] = tag.toLowerCase().split('-')
+    const [subtag, ...rest] = tag.toLowerCase().split(/[-_]/)
+    // Why: "in" is Indonesian's legacy code, which older Android WebViews still send; AppLanguage.fromTag maps it too.
+    const language = subtag === 'in' ? 'id' : subtag
     if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'es') return rest.length === 1 && rest[0] === 'es' ? 'es-ES' : 'es'
   }
@@ -84,6 +87,7 @@ const documentLanguages: Record<Locale, string> = {
   nl: 'nl',
   ja: 'ja',
   tr: 'tr',
+  id: 'id',
 }
 
 const documentLanguage = documentLanguages[locale]

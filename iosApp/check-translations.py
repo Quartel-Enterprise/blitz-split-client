@@ -22,7 +22,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 # Every language the app is translated into, but English (the source) and es-ES (partial)
-REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr")
+REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id")
 # The plural categories each language needs when it varies by plural, where it needs more than one and other: a
 # missing one shows English's other form, or nothing
 PLURAL_CATEGORIES = {"pl": {"one", "few", "many", "other"}}
