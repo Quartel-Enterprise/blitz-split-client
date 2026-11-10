@@ -3,7 +3,7 @@ package com.quare.blitzsplit.android.storescreenshots
 /**
  * A language of the listings. [tag] names the generated folder and is what Robolectric switches the resources to;
  * [language] picks the sample trip and the banner copy. The stores' own codes (es-419, es-MX…) come from these in
- * the staging tasks of the root build.gradle.kts.
+ * the staging tasks of build-logic's StoreScreenshots.kt.
  */
 internal data class StoreLocale(
     val tag: String,

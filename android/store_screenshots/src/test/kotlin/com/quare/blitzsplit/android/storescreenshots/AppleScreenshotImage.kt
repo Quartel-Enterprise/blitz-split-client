@@ -25,7 +25,7 @@ internal fun AppleScreenshotImage(
             "$CAPTURES_DIRECTORY_PROPERTY is not set: generate the App Store screenshots through an *AppStoreScreenshots task"
         }
         val file = File(directory, "${slot.directoryName}/$locale/$fileName.png")
-        check(file.isFile) { "No iOS capture at $file: run the iOS capture first (captureAppleScreenshots)" }
+        check(file.isFile) { "No iOS capture at $file: run scripts/store-screenshots/capture-ios.sh first" }
         BitmapFactory.decodeFile(file.path).asImageBitmap()
     }
     Image(

@@ -2,11 +2,14 @@ package com.quare.blitzsplit.android.storescreenshots
 
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.core.expenses.domain.model.BillItemsSplit
+import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.shared.storescreenshots.SampleBill
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
@@ -48,19 +51,28 @@ internal fun relativeDayOf(daysAgo: Int): RelativeDay = when (daysAgo) {
     else -> RelativeDay.OTHER
 }
 
-/** Each person's part of [bill], by index: the items' totals for a bill split by items, an equal fifth otherwise. */
+/**
+ * Each person's part of [bill], by index: the items' totals for a bill split by items, an equal fifth otherwise, its
+ * cents left over handed out as the app's own split does.
+ */
 internal fun SampleTrip.sharesOf(bill: SampleBill): Map<Int, Long> {
     val items = bill.items
+    val payerIds = bill.payers.map { memberIdOf(it.person) }
     if (items != null) {
-        val payerIds = bill.payers.map { memberIdOf(it.person) }
         return BillItemsSplit
             .breakdownOf(items, payerIds)
             .people
             .associate { it.memberId.toInt() to it.totalMinor }
     }
-    val base = bill.totalMinor / people.size
-    val leftover = bill.totalMinor - base * people.size
-    return people.indices.associateWith { if (it < leftover) base + 1 else base }
+    val shares = BillSplit.split(
+        totalMinor = bill.totalMinor,
+        mode = SplitMode.EQUAL,
+        entries = people.indices.map { SplitEntry(memberId = memberIdOf(it), value = 1) },
+        payerIds = payerIds,
+    )
+    return checkNotNull(shares) { "${bill.description} doesn't split" }.associate {
+        it.memberId.toInt() to it.amountMinor
+    }
 }
 
 /** What [person] is owed (positive) or owes (negative) for [bill]. */

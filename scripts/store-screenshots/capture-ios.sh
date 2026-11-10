@@ -3,7 +3,7 @@
 # Captures the App Store screenshots' screens on the iOS simulator (docs/store-listing-screenshots.md): builds the
 # BoraRachar-iOS-StoreScreenshots UI tests once, then runs them on one simulator per App Store slot, which write
 #   build/outputs/apple-screenshot-captures/<slot>/<locale>/<screen>.png
-# for the Robolectric generators of :android:store_screenshots to frame. Gradle's captureAppleScreenshots runs it.
+# for the Robolectric generators of :android:store_screenshots to frame. `fastlane screenshots` runs it.
 #
 #   ./scripts/store-screenshots/capture-ios.sh                  # every slot, language and screen
 #   STORE_SCREENSHOTS_SLOTS=iphone63 STORE_SCREENSHOTS_LOCALES=en-US,ja STORE_SCREENSHOTS_SCREENS=group,items \
@@ -83,8 +83,8 @@ for slot in $SLOTS; do
   xcrun simctl bootstatus "$udid" -b > /dev/null
   xcrun simctl status_bar "$udid" override --time "9:41" --dataNetwork wifi --wifiMode active --wifiBars 3 \
     --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
-  # Only the locales asked for are captured again: the others keep their PNGs.
-  if [ -z "$STORE_SCREENSHOTS_LOCALES" ]; then rm -rf "${OUTPUT:?}/$slot"; fi
+  # Only the locales and screens asked for are captured again: a narrowed run keeps the others' PNGs.
+  if [ -z "$STORE_SCREENSHOTS_LOCALES" ] && [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then rm -rf "${OUTPUT:?}/$slot"; fi
   TEST_RUNNER_STORE_SCREENSHOTS_OUTPUT="$OUTPUT" \
     TEST_RUNNER_STORE_SCREENSHOTS_SLOT="$slot" \
     TEST_RUNNER_STORE_SCREENSHOTS_ASSETS="$ROOT/scripts/store-screenshots" \

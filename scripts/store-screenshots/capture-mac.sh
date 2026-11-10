@@ -23,7 +23,8 @@ xcodebuild build-for-testing \
   -derivedDataPath "$DERIVED_DATA" \
   -quiet
 
-rm -rf "${OUTPUT:?}/mac"
+# Only the locales and screens asked for are captured again: a narrowed run keeps the others' PNGs.
+if [ -z "$STORE_SCREENSHOTS_LOCALES" ] && [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then rm -rf "${OUTPUT:?}/mac"; fi
 TEST_RUNNER_STORE_SCREENSHOTS_OUTPUT="$OUTPUT" \
   TEST_RUNNER_STORE_SCREENSHOTS_SLOT="mac" \
   TEST_RUNNER_STORE_SCREENSHOTS_ASSETS="$ROOT/scripts/store-screenshots" \

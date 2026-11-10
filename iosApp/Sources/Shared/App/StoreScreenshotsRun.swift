@@ -16,8 +16,9 @@ struct StoreScreenshotsRun {
     /// The Mac window's size in points: 2880x1800 on a Retina display, the largest the Mac slot takes.
     static let windowSize = CGSize(width: 1440, height: 900)
 
-    /// Set only when the app was launched with `-StoreScreenshotsLanguage <code>`, which a person never does.
-    static var current: StoreScreenshotsRun? {
+    /// Set only when the app was launched with `-StoreScreenshotsLanguage <code>`, which a person never does. Read
+    /// once, so the assets are written once per launch however often the window appears.
+    static let current: StoreScreenshotsRun? = {
         let defaults = UserDefaults.standard
         guard let language = defaults.string(forKey: "StoreScreenshotsLanguage") else { return nil }
         return StoreScreenshotsRun(
@@ -26,7 +27,7 @@ struct StoreScreenshotsRun {
             assetsDirectory: writeAssets(),
             screen: defaults.string(forKey: "StoreScreenshotsScreen"),
         )
-    }
+    }()
 
     /// The faces and the receipt the UI test passed as base64, written where this app may read them: the shared code
     /// reads `faces/person<n>.jpg` and `receipt.jpg` there. Nil when the test passed none.

@@ -55,7 +55,7 @@ private val appleDevices = mapOf(
     "iphoneduo" to "iphone_duo",
 )
 private val macDevices = mapOf("mac" to "mac")
-private val appleFrameClasses = listOf("*.IPhone*", "*.IPad*")
+private val appleFrameClasses = listOf("*.IPhone*", "*.IPad*", "*.Mac*")
 
 private fun copyGenerated(
     generated: File,

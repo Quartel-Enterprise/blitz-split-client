@@ -17,7 +17,7 @@ The two stores draw the screen differently, because the app has a native UI on e
 ## One command
 
 ```bash
-bundle exec fastlane screenshots                     # or plain `fastlane screenshots`: everything, then upload
+fastlane screenshots                                 # everything, then upload
 fastlane screenshots skip_upload:true                # generate only, nothing reaches a store
 fastlane screenshots platform:android skip_upload:true
 fastlane screenshots platform:ios skip_capture:true  # frame the iOS captures already in build/ again
@@ -125,7 +125,7 @@ build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, th
 fastlane/Fastfile                              # the screenshots and upload lanes
 ```
 
-- **Banner copy:** `BannerCopy.kt`, per screen and language. The frame wraps the description to two lines, so keep it
+- **Banner copy:** `BannerCopies.kt`, per screen and language. The frame wraps the description to two lines, so keep it
   short.
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on iOS) and in the UI
@@ -168,6 +168,6 @@ after a library upgrade.
 - **Robolectric has no SDK 37**: the library pins SDK 35 for the generators.
 - **The Play tablets** render the screens' own tablet layouts at the frame's size, and the iPad capture is the
   iPad's real layout.
-- **Faces on Play** come through Coil's preview handler (`FaceImages`), which answers at once. A real load would
+- **Faces on Play** come through Coil's preview handler (`SampleFacesComponent`), which answers at once. A real load would
   still be running when Robolectric captures.
 - **`ItemsEditorContent` is public** so the generator can draw "Bill items" without the ViewModel.

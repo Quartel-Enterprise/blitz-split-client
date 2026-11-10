@@ -188,8 +188,6 @@ object SampleTrips {
         "ja" to GroupCurrency.JPY,
     )
 
-    val languages: List<String> = copies.keys.toList()
-
     fun tripOf(language: String): SampleTrip {
         val copy = copies[language] ?: copies.getValue("en")
         val currency = currencies[language] ?: GroupCurrency.USD

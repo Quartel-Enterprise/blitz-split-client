@@ -174,15 +174,26 @@ lane :upload_screenshots do |options|
 end
 
 # The Mac app is a version of its own on App Store Connect, so its screenshots go up apart (platform osx), and only
-# when they were staged: a run with skip_mac leaves its listing as it is.
+# when they were staged and skip_mac wasn't passed: a run with skip_mac leaves its listing as it is, even when an
+# earlier run's Mac captures were framed again. The stores name a language differently (es-419 on Play, es-MX on the
+# App Store), so a locale: goes only to the stores that have it staged.
 def upload_store_screenshots(repo_root, platforms, options)
-  upload_play_screenshots(File.join(repo_root, "fastlane/metadata/android"), options[:locale]) if platforms.include?("android")
-  return unless platforms.include?("ios")
+  locale = options[:locale]
+  play_path = File.join(repo_root, "fastlane/metadata/android")
+  app_store_path = File.join(repo_root, "fastlane/screenshots")
+  stores = { "android" => play_path, "ios" => app_store_path }.select do |platform, path|
+    platforms.include?(platform) && (locale.nil? || File.directory?(File.join(path, locale)))
+  end
+  UI.user_error!("No store has screenshots staged for #{locale}") if stores.empty?
+  upload_play_screenshots(play_path, locale) if stores.key?("android")
+  return unless stores.key?("ios")
 
-  upload_app_store_screenshots(File.join(repo_root, "fastlane/screenshots"), options[:locale], "ios")
+  upload_app_store_screenshots(app_store_path, locale, "ios")
   mac_path = File.join(repo_root, "fastlane/screenshots-mac")
-  if Dir.glob(File.join(mac_path, "*", "*.png")).any?
-    upload_app_store_screenshots(mac_path, options[:locale], "osx")
+  if options[:skip_mac]
+    UI.important("skip_mac: the Mac listing keeps its own")
+  elsif Dir.glob(File.join(mac_path, "*", "*.png")).any?
+    upload_app_store_screenshots(mac_path, locale, "osx")
   else
     UI.important("No Mac screenshots staged: the Mac listing keeps its own")
   end
