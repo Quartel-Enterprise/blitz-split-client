@@ -25,12 +25,14 @@ const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl', 'nl'
  * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
  * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
  * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`, `pl`, `nl`, `ja`, `tr` or `id`
- * tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID…) is German, Italian, Polish, Dutch, Japanese, Turkish or
- * Indonesian, any `en` tag is English, and English when none matches.
+ * tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID…) is German, Italian, Polish, Dutch,
+ * Japanese, Turkish or Indonesian, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
-    const [language, ...rest] = tag.toLowerCase().split('-')
+    const [subtag, ...rest] = tag.toLowerCase().split(/[-_]/)
+    // Why: "in" is Indonesian's legacy code, which older Android WebViews still send; AppLanguage.fromTag maps it too.
+    const language = subtag === 'in' ? 'id' : subtag
     if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'es') return rest.length === 1 && rest[0] === 'es' ? 'es-ES' : 'es'
   }

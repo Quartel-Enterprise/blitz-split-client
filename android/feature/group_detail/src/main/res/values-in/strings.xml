@@ -47,9 +47,9 @@
         <item quantity="other">%d perlu dilunasi</item>
     </plurals>
     <string name="group_detail_balances_settle">Lunasi</string>
-    <string name="group_detail_balances_got_paid">Sudah dibayar</string>
+    <string name="group_detail_balances_got_paid">Sudah menerima</string>
     <string name="group_detail_balances_already_paid">Sudah bayar</string>
-    <string name="group_detail_balances_note">Utang setiap pasangan sudah diimbangi: jika Ana berutang ke kamu dan kamu berutang ke dia, hanya selisihnya yang muncul. “Sudah dibayar” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
+    <string name="group_detail_balances_note">Utang setiap pasangan sudah diimbangi: jika Ana berutang ke kamu dan kamu berutang ke dia, hanya selisihnya yang muncul. “Sudah menerima” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
     <string name="group_detail_balances_empty_title">Belum ada yang berutang</string>
     <string name="group_detail_balances_empty_message">Saldo muncul setelah pengeluaran pertama ditambahkan.</string>
     <string name="group_detail_balances_settled_title">Semua sudah lunas</string>
@@ -76,7 +76,7 @@
     <string name="group_detail_simplified_minimal">Sudah jumlah pembayaran paling sedikit. Tagihan berikutnya langsung disederhanakan.</string>
     <string name="group_detail_simplified_how">Cara kerjanya</string>
     <string name="group_detail_simplified_pair">Pasangan baru dari penyederhanaan</string>
-    <string name="group_detail_balances_note_simplified">Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah dibayar” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
+    <string name="group_detail_balances_note_simplified">Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah menerima” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
     <string name="group_detail_entry_edit">Edit</string>
     <string name="group_detail_entry_duplicate">Duplikat</string>
     <string name="group_detail_entry_share">Bagikan</string>

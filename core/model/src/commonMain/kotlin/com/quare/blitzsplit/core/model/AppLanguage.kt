@@ -31,7 +31,7 @@ enum class AppLanguage(
     }
 
     companion object {
-        // Why: Java's Locale named Indonesian by its legacy code, which an older stored tag may still carry.
+        // Why: Android still names Indonesian by its legacy code "in" (values-in), so a tag read from it may carry it.
         private const val LEGACY_INDONESIAN = "in"
 
         /*

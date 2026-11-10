@@ -47836,7 +47836,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saldo bersih sudah mengimbangkan semua grup: Minta dan Sudah dibayar memakai %@. Aplikasi mencatat pembayaran di setiap grup."
+            "value" : "Saldo bersih sudah mengimbangkan semua grup: Tagih dan Sudah menerima memakai %@. Aplikasi mencatat pembayaran di setiap grup."
           }
         },
         "it" : {
@@ -86958,7 +86958,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sudah dibayar"
+            "value" : "Sudah bayar"
           }
         },
         "it" : {
@@ -87818,7 +87818,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utang setiap pasangan sudah diperhitungkan: kalau Ana berutang ke kamu dan kamu berutang ke dia, hanya selisihnya yang tampil. “Sudah dibayar” dan “Sudah menerima” mencatat pembayaran di luar aplikasi (Pix, tunai, transfer)."
+            "value" : "Utang setiap pasangan sudah diperhitungkan: kalau Ana berutang ke kamu dan kamu berutang ke dia, hanya selisihnya yang tampil. “Sudah menerima” dan “Sudah bayar” mencatat pembayaran di luar aplikasi (Pix, tunai, transfer)."
           }
         },
         "it" : {
@@ -120242,7 +120242,7 @@
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah menerima” dan “Sudah dibayar” mencatat pembayaran di luar aplikasi (Pix, tunai, transfer)."
+            "value" : "Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah menerima” dan “Sudah bayar” mencatat pembayaran di luar aplikasi (Pix, tunai, transfer)."
           }
         },
         "it" : {

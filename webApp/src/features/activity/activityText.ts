@@ -1,7 +1,7 @@
 import type { JsActivityChange, JsActivityDebtChange, JsActivityDeletion, JsActivityItem, JsActivitySimplification, JsActivityValue } from 'blitzsplit-shared'
 import { nameOrFormer, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { groupTypeLabel } from '@/features/create-group/GroupTypePicker'
-import { clauseBreak, fullStop, locale, t, verbForYou, wordGap, type MessageKey } from '@/i18n'
+import { clauseBreak, fullStop, locale, t, verbForYou, wordGap, type Locale, type MessageKey } from '@/i18n'
 import { avatarColorLabel } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
 import { uiTag } from '@/lib/currency'
@@ -292,15 +292,17 @@ export function openLabel(item: JsActivityItem): string {
 }
 
 // Why: Portuguese says "no sábado" and "no domingo" but "na sexta"; English "on" and Spanish "el" for every day.
+// Why: mid-sentence, the Romance languages and Polish write the weekday in lower case; English, German and Indonesian
+// keep its capital ("am Freitag", "pada Jumat").
+const capitalizedWeekdayLocales: ReadonlySet<Locale> = new Set<Locale>(['en', 'de', 'id'])
+
 function onDay(millis: number): string {
   const relative = relativeDayOf(millis)
   if (relative === 'today') return t('activity_onToday')
   if (relative === 'yesterday') return t('activity_onYesterday')
   const weekday = new Date(millis).getDay()
   const longDay = formatLongDay(millis)
-  // Why: mid-sentence, the Romance languages and Polish write the weekday in lower case; English, German and Indonesian
-  // keep its capital ("am Freitag", "pada Jumat").
-  const day = locale === 'en' || locale === 'de' || locale === 'id' ? longDay : longDay.charAt(0).toLocaleLowerCase(uiTag) + longDay.slice(1)
+  const day = capitalizedWeekdayLocales.has(locale) ? longDay : longDay.charAt(0).toLocaleLowerCase(uiTag) + longDay.slice(1)
   return t(weekday === 0 || weekday === 6 ? 'activity_onDayMasculine' : 'activity_onDayFeminine', { day })
 }
 
