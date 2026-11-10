@@ -23,9 +23,9 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     someone makes it add up again; one person holding the whole total is one payer again. "When"
     picks date and time, never after now. The form asks what it was before how much (Pierre's call, beta feedback
     10): "Description" with its category's icon and the line saying why, then "Amount", in every layout, a new bill
-    opening on the description. A bill is 0.01 to 100 million in its own currency (the bitcoin, ether and rupiah caps of
-    `ExpenseRules.maxAmountMinorFor`; a new bill starts in the group's default currency, and "Edit bill" keeps the
-    bill's own, whatever the default became since) with a
+    opening on the description. A bill is 0.01 to 100 million in its own currency (but the bitcoin, ether and rupiah
+    caps of `ExpenseRules.maxAmountMinorFor`; a new bill starts in the group's default currency, and "Edit bill" keeps
+    the bill's own, whatever the default became since) with a
     description; Save stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Expenses in its place. "Split" splits by Equal,
     Amounts, % (whole numbers adding up to 100), Shares or Items, and only changes the bill on "Done". A new bill starts

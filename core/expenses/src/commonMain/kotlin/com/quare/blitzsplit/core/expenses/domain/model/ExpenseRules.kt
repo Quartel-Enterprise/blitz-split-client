@@ -6,14 +6,14 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 object ExpenseRules {
     const val DESCRIPTION_MAX_LENGTH = 100
 
-    // Why: "até R$ 100 milhões", in the major unit of whatever currency the group splits in.
+    // Why: "até R$ 100 milhões", in the major unit of the bill's currency, unless it has a cap of its own below.
     private const val MAX_AMOUNT_MAJOR = 100_000_000L
-
-    // Why: never more bitcoin than will ever exist.
-    private const val MAX_BITCOIN = 21_000_000L
 
     // Why: 100 million rupiah is only about US$ 6,000, less than a week's villa in Bali; this is about US$ 6 million.
     private const val MAX_RUPIAH = 100_000_000_000L
+
+    // Why: never more bitcoin than will ever exist.
+    private const val MAX_BITCOIN = 21_000_000L
 
     // Why: below the ether there is (about 120 million), and the most the web's numbers count to the unit (9e15).
     private const val MAX_ETHER = 90_000_000L

@@ -118,14 +118,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
     bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
     count to the unit), every other currency keeping 100 million but the rupiah (above)
-    (`ExpenseRules.maxAmountMinorFor`, the API's `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts a symbol and only the decimals the amount
-    needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8 ("0,00000001"). Profile › Preferences' "Bitcoin in
-    satoshis" (always shown, Settings on the Mac), kept per device and never synced (`showsBitcoinInSats` in
-    `device_settings`), shows every bitcoin amount as whole sats ("125,000 sats", the field's symbol "sats") and
-    types them so (`GroupCurrency.getTypedFractionDigits`); a form open when it changes (the Mac's Settings is a window
-    of its own) turns what was typed into the new unit, keeping its value (`TypedText.toUnit`). "Scan receipt"
-    isn't offered in a group in either (no receipt is printed in them), and Home's shortcut opens such a bill
-    without the camera; the reader refuses them too.
+    (`ExpenseRules.maxAmountMinorFor`, the API's `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts
+    a symbol and only the decimals the amount needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8
+    ("0,00000001"). Profile › Preferences' "Bitcoin in satoshis" (always shown, Settings on the Mac), kept per
+    device and never synced (`showsBitcoinInSats` in `device_settings`), shows every bitcoin amount as whole sats
+    ("125,000 sats", the field's symbol "sats") and types them so (`GroupCurrency.getTypedFractionDigits`); a form
+    open when it changes (the Mac's Settings is a window of its own) turns what was typed into the new unit, keeping
+    its value (`TypedText.toUnit`). "Scan receipt" isn't offered in a group in either (no receipt is printed in
+    them), and Home's shortcut opens such a bill without the camera; the reader refuses them too.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
     SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
   - The Apple app has no floating action button (Pierre's call): a screen's main button ("Split a bill", on every
