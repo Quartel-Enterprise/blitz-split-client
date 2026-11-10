@@ -147,7 +147,7 @@ intent gives is a **Should fix**; one that breaks a platform or the module graph
   `collectAsStateWithLifecycle()`, collects `uiAction` in a `LaunchedEffect(viewModel)`, and hands
   the state to a stateless `XContent(state, onEvent, modifier)` that never sees the ViewModel.
 - Text comes from the module's string resources through `stringResource`: English in
-  `res/values/strings.xml` Portuguese in `res/values-pt/strings.xml`, Spanish in `res/values-es/strings.xml`, French in `res/values-fr/strings.xml`, German in `res/values-de/strings.xml`, Italian in `res/values-it/strings.xml`, Polish in `res/values-pl/strings.xml`, Dutch in `res/values-nl/strings.xml`, Japanese in `res/values-ja/strings.xml` and Turkish in `res/values-tr/strings.xml`, all always complete (`values-es-rES` holds only what Spain says differently). Colors and shapes come from `MaterialTheme` and
+  `res/values/strings.xml` Portuguese in `res/values-pt/strings.xml`, Spanish in `res/values-es/strings.xml`, French in `res/values-fr/strings.xml`, German in `res/values-de/strings.xml`, Italian in `res/values-it/strings.xml`, Polish in `res/values-pl/strings.xml`, Dutch in `res/values-nl/strings.xml`, Japanese in `res/values-ja/strings.xml`, Turkish in `res/values-tr/strings.xml` and Indonesian in `res/values-in/strings.xml`, all always complete (`values-es-rES` holds only what Spain says differently). Colors and shapes come from `MaterialTheme` and
   `BlitzSplitTheme` (`:android:designsystem`), not literals in a feature.
 - Layouts adapt through `AdaptiveScreen`/`DeviceLayout` (phone upright and lying down, tablet), with
   `@DevicePreviews` on the content, and respect insets (`safeDrawingPadding`, `imePadding` under the
@@ -168,7 +168,7 @@ intent gives is a **Should fix**; one that breaks a platform or the module graph
   a file of the same type name in `Sources/iOS` and `Sources/macOS` (as `QRScannerView`), or
   `#if os(macOS)` for a small difference.
 - Layouts adapt through `ScreenLayout` and `measuringScreenLayout` (one column, two columns on iPad
-  and Mac), colors come from `Palette`, and text is an English literal with its pt-BR, es, (where Spain differs) es-ES, fr, de, it, pl, nl, ja and tr translations in `Localizable.xcstrings`.
+  and Mac), colors come from `Palette`, and text is an English literal with its pt-BR, es, (where Spain differs) es-ES, fr, de, it, pl, nl, ja, tr and id translations in `Localizable.xcstrings`.
 - Navigation binds the shared back stack: `AppRoute` mirrors `Route`, and a native back gesture
   reaches Kotlin as `navigator.popTo(size:)`. A new `Route` needs its `AppRoute` case and its
   `screen(for:)` arm in `RootView`. On the sign in buttons, Apple comes first.

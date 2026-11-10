@@ -73,7 +73,8 @@ notice always starts with the actor, and the web has its own `activity_deletedBy
 
 Translate from the English, never from another translation:
 
-- **Android**: `res/values-xx/strings.xml` next to each `res/values/strings.xml` (about 28 modules, `androidApp` and
+- **Android**: `res/values-xx/strings.xml` (Android's own code for the few languages it still names by a legacy one:
+  `values-in` for Indonesian, `values-iw` for Hebrew; `AppLanguage.fromTag` then maps that code back) next to each `res/values/strings.xml` (about 28 modules, `androidApp` and
   `android/designsystem` included), same keys, same order, every plural category the language needs.
 - **Apple**: an `xx` localization for every key of `iosApp/Resources/Localizable.xcstrings` and
   `InfoPlist.xcstrings`, with the same plural and device variations as `es`. Edit the JSON with a script that keeps

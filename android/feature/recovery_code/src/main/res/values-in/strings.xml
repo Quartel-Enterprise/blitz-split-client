@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Simpan kode pemulihanmu</string>
+    <string name="recovery_code_body">Kamu memakai aplikasi tanpa akun. Kode ini mengembalikan grupmu jika kamu ganti atau kehilangan perangkat.</string>
+    <string name="recovery_code_copy">Salin kode</string>
+    <string name="recovery_code_save_to_password_manager">Simpan ke pengelola sandi</string>
+    <string name="recovery_code_connect_instead">Hubungkan Google atau Apple saja</string>
+    <string name="recovery_code_connect_instead_body">Tidak perlu kode</string>
+    <string name="recovery_code_sign_in_failed">Tidak dapat terhubung sekarang. Coba lagi.</string>
+    <string name="recovery_code_also_in_profile">Kode ini juga ada di Profil › Kode pemulihan.</string>
+    <string name="recovery_code_remind_later">Ingatkan nanti</string>
+    <string name="recovery_code_saved">Sudah saya simpan</string>
+</resources>

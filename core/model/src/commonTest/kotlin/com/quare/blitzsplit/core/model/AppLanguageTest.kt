@@ -149,6 +149,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Indonesian tag including the legacy in WHEN reading it THEN is Indonesian`() {
+        // Given
+        val tags = listOf("id", "id-ID", "in", "in_ID", "IN-id")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.INDONESIAN }, languages)
+    }
+
+    @Test
     fun `GIVEN a device in any region WHEN a language with one variant is picked THEN is the bare language`() {
         // Given
         val languages = listOf(
@@ -158,13 +170,14 @@ class AppLanguageTest {
             AppLanguage.DUTCH,
             AppLanguage.JAPANESE,
             AppLanguage.TURKISH,
+            AppLanguage.INDONESIAN,
         )
 
         // When
         val tags = languages.map { it.toTag("BE") }
 
         // Then
-        assertEquals(listOf("de", "it", "pl", "nl", "ja", "tr"), tags)
+        assertEquals(listOf("de", "it", "pl", "nl", "ja", "tr", "id"), tags)
     }
 
     @Test

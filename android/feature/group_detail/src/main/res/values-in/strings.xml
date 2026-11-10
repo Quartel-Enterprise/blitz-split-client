@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_detail_back">Kembali</string>
+    <string name="group_detail_stats">Statistik</string>
+    <string name="group_detail_invite">Undang orang</string>
+    <string name="group_detail_more">Opsi grup lainnya</string>
+    <string name="group_detail_pin">Sematkan ke Beranda</string>
+    <string name="group_detail_unpin">Lepas dari Beranda</string>
+    <string name="group_detail_edit_group">Edit grup</string>
+    <string name="group_detail_leave_group">Keluar dari grup</string>
+    <string name="group_detail_delete_group">Hapus grup</string>
+    <plurals name="group_detail_member_count">
+        <item quantity="other">%d anggota</item>
+    </plurals>
+    <string name="group_detail_meta_total">%1$s · total %2$s</string>
+    <string name="group_detail_meta_empty">%s · belum ada pengeluaran</string>
+    <string name="group_detail_extra_members">+%d</string>
+    <plurals name="group_detail_not_joined">
+        <item quantity="other">%d belum bergabung</item>
+    </plurals>
+    <string name="group_detail_see_members">Lihat anggota</string>
+    <string name="group_detail_tabs">Bagian grup</string>
+    <string name="group_detail_tab_expenses">Pengeluaran</string>
+    <string name="group_detail_tab_balances">Saldo</string>
+    <string name="group_detail_tab_members">Anggota</string>
+    <string name="group_detail_today">Hari ini</string>
+    <string name="group_detail_yesterday">Kemarin</string>
+    <string name="group_detail_queued">dalam antrean</string>
+    <string name="group_detail_empty_title">Belum ada pengeluaran</string>
+    <string name="group_detail_empty_message">Tambahkan pengeluaran pertama atau undang yang ikut patungan denganmu. Orang tanpa aplikasi juga dihitung.</string>
+    <string name="group_detail_split_bill">Bagi tagihan</string>
+    <string name="group_detail_change_error">Tidak dapat menyimpan perubahan. Coba lagi.</string>
+    <string name="group_detail_bill_deleted">Tagihan ini sudah dihapus</string>
+    <string name="group_detail_payment_paid_you">%s membayarmu</string>
+    <string name="group_detail_payment_you_paid">Kamu membayar %s</string>
+    <string name="group_detail_payment_paid">%1$s membayar %2$s</string>
+    <string name="group_detail_payment_meta">Pembayaran</string>
+    <string name="group_detail_payment_tag">pembayaran</string>
+    <string name="group_detail_delete_payment_title">Hapus pembayaran ini?</string>
+    <string name="group_detail_delete_payment_message">Pembayaran ini keluar dari grup dan utangnya kembali ke saldo.</string>
+    <string name="group_detail_delete_payment_confirm">Hapus</string>
+    <string name="group_detail_balances_with_you">Denganmu</string>
+    <string name="group_detail_balances_between_others">Antara yang lain</string>
+    <string name="group_detail_balances_hint_get">terima %s</string>
+    <string name="group_detail_balances_hint_owe">utang %s</string>
+    <plurals name="group_detail_balances_settle_count">
+        <item quantity="other">%d perlu dilunasi</item>
+    </plurals>
+    <string name="group_detail_balances_settle">Lunasi</string>
+    <string name="group_detail_balances_got_paid">Sudah dibayar</string>
+    <string name="group_detail_balances_already_paid">Sudah bayar</string>
+    <string name="group_detail_balances_note">Utang setiap pasangan sudah diimbangi: jika Ana berutang ke kamu dan kamu berutang ke dia, hanya selisihnya yang muncul. “Sudah dibayar” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
+    <string name="group_detail_balances_empty_title">Belum ada yang berutang</string>
+    <string name="group_detail_balances_empty_message">Saldo muncul setelah pengeluaran pertama ditambahkan.</string>
+    <string name="group_detail_balances_settled_title">Semua sudah lunas</string>
+    <string name="group_detail_balances_settled_message">Tidak ada yang berutang di grup ini. Jika perjalanannya sudah selesai, kamu bisa menghapus grup ini untuk semua orang.</string>
+    <string name="group_detail_category_path">%1$s › %2$s</string>
+    <string name="group_detail_teach_offer">Tagihan disimpan di %1$s, bukan di %2$s yang disarankan peta. Ajari peta?</string>
+    <string name="group_detail_teach_offer_no_map">Tagihan disimpan di %1$s. Ajari peta?</string>
+    <string name="group_detail_teach">Ajari</string>
+    <string name="group_detail_teach_title">Ajari peta</string>
+    <string name="group_detail_teach_question">Kata mana dari “%1$s” yang harus memilih %2$s di tagihan berikutnya?</string>
+    <string name="group_detail_teach_word_new">Baru di peta. Judul dengan “%1$s” masuk ke %2$s.</string>
+    <string name="group_detail_teach_word_moves">Keluar dari %1$s: judul dengan “%2$s” masuk ke %3$s.</string>
+    <string name="group_detail_teach_footer">Tagihan yang sudah disimpan tidak berubah. Kamu bisa mengurungkannya di Peta kategori.</string>
+    <string name="group_detail_teach_cancel">Batal</string>
+    <string name="group_detail_teach_error">Tidak dapat mengajari peta. Coba lagi.</string>
+    <string name="group_detail_joined_title">Kamu bergabung sebagai %s</string>
+    <string name="group_detail_joined_message">Semua yang ditambahkan untukmu muncul di sini.</string>
+    <string name="group_detail_joined_dismiss">Tutup</string>
+    <string name="group_detail_protect_title">Lindungi aksesmu</string>
+    <string name="group_detail_protect_message">Kamu bergabung tanpa akun. Simpan kodenya atau hubungkan Google atau Apple.</string>
+    <plurals name="group_detail_simplified_text">
+        <item quantity="other">%1$d pembayaran, bukan %2$d. Kamu mungkin membayar atau menerima dari seseorang yang belum pernah berbagi tagihan denganmu.</item>
+    </plurals>
+    <string name="group_detail_simplified_minimal">Sudah jumlah pembayaran paling sedikit. Tagihan berikutnya langsung disederhanakan.</string>
+    <string name="group_detail_simplified_how">Cara kerjanya</string>
+    <string name="group_detail_simplified_pair">Pasangan baru dari penyederhanaan</string>
+    <string name="group_detail_balances_note_simplified">Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah dibayar” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
+    <string name="group_detail_entry_edit">Edit</string>
+    <string name="group_detail_entry_duplicate">Duplikat</string>
+    <string name="group_detail_entry_share">Bagikan</string>
+    <string name="group_detail_entry_delete">Hapus</string>
+    <string name="group_detail_entry_options">Opsi untuk %s</string>
+    <string name="group_detail_photo_open">Lihat foto grup</string>
+</resources>

@@ -803,6 +803,7 @@ export const en = {
   profile_languageDutch: 'Dutch',
   profile_languageJapanese: 'Japanese',
   profile_languageTurkish: 'Turkish',
+  profile_languageIndonesian: 'Indonesian',
   profile_bitcoinInSats: 'Bitcoin in satoshis',
   profile_bitcoinInSatsDetail: 'Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).',
   money_sats: '{amount} sats',

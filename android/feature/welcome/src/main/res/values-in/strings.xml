@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Bagi tagihan, tanpa ribet</string>
+    <string name="welcome_offline_title">Berfungsi offline</string>
+    <string name="welcome_offline_body">Semuanya tersimpan di perangkatmu dan disinkronkan nanti.</string>
+    <string name="welcome_optional_title">Akun itu opsional</string>
+    <string name="welcome_optional_body">Google atau Apple hanya menjagamu agar tidak kehilangan apa pun saat ganti perangkat.</string>
+    <string name="welcome_invite_title">Undang dengan tautan atau kode QR</string>
+    <string name="welcome_invite_body">Teman bergabung ke grup tanpa membuat akun.</string>
+    <string name="welcome_no_connection_title">Tidak ada koneksi.</string>
+    <string name="welcome_no_connection_body">Masuk dengan akun butuh internet. Pakai tanpa akun sekarang dan hubungkan nanti di Profil.</string>
+    <string name="welcome_or">atau</string>
+    <string name="welcome_use_without_account">Pakai tanpa akun</string>
+    <string name="welcome_used_on_another_device">Saya pernah memakainya di perangkat lain</string>
+    <string name="welcome_sign_in_failed">Tidak dapat masuk sekarang. Coba lagi.</string>
+</resources>

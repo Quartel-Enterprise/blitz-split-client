@@ -59,7 +59,8 @@ The feed, unread state, real time and push notifications.
     the colon that leads to the object ("Ana bir harcamayı böldü: Akşam yemeği"), and the user's rows add an "n" to
     that past ("Sen bir harcamayı böldün: …", "Sen gruba katıldın: …"); its deleted-item notice starts with who deleted
     it too ("Sen sildin: …"). A line that names the user without a verb rule (a photo's "added by") is impersonal in
-    Turkish ("Sen · bugün, 09:12 eklendi").
+    Turkish ("Sen · bugün, 09:12 eklendi"). Indonesian verbs don't change with the person, so its rows need no rule
+    ("Ana membagi Makan malam", "Kamu membagi…").
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

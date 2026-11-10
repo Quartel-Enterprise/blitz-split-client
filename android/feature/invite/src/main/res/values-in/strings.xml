@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Tutup</string>
+    <string name="invite_group_created">Grup dibuat</string>
+    <string name="invite_title">Undang semua orang ke %s</string>
+    <string name="invite_qr_description">Kode QR tautan undangan grup</string>
+    <string name="invite_copy">Salin</string>
+    <string name="invite_copied">Disalin</string>
+    <string name="invite_who_picks">Siapa pun yang membuka tautan memilih dirinya di daftar: %s. Tidak perlu akun.</string>
+    <string name="invite_names_or">%1$s atau %2$s</string>
+    <string name="invite_anyone_joins">Siapa pun yang membuka tautan bergabung ke grup. Tidak perlu akun.</string>
+    <string name="invite_pending_title">Tautan tertunda</string>
+    <string name="invite_pending_offline">Tautan dibuat begitu kamu online.</string>
+    <string name="invite_pending_online">Membuat tautan…</string>
+    <string name="invite_failed_title">Tidak dapat membuat tautan</string>
+    <string name="invite_failed_body">Terjadi masalah saat menyinkronkan grup.</string>
+    <string name="invite_retry">Coba lagi</string>
+    <string name="invite_share">Bagikan tautan</string>
+    <string name="invite_see_who_joined">Lihat siapa yang bergabung</string>
+    <string name="invite_add_person">Tambah orang tanpa aplikasi</string>
+    <string name="invite_go_to_group">Buka grup</string>
+    <string name="invite_change_link">Ganti tautan</string>
+    <string name="invite_change_link_title">Ganti tautan undangan?</string>
+    <string name="invite_change_link_message">Tautan dan kode QR saat ini tidak berfungsi lagi, termasuk undangan pribadi yang belum dipakai. Yang sudah bergabung tetap ada di grup.</string>
+    <string name="invite_change_link_failed">Tidak dapat mengganti tautan. Coba lagi.</string>
+    <string name="invite_share_message">Yuk bagi tagihan %1$s di Blitz Split. Gabung lewat tautan ini: %2$s</string>
+</resources>

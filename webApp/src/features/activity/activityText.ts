@@ -298,9 +298,9 @@ function onDay(millis: number): string {
   if (relative === 'yesterday') return t('activity_onYesterday')
   const weekday = new Date(millis).getDay()
   const longDay = formatLongDay(millis)
-  // Why: mid-sentence, the Romance languages and Polish write the weekday in lower case; English and German keep its
-  // capital ("am Freitag").
-  const day = locale === 'en' || locale === 'de' ? longDay : longDay.charAt(0).toLocaleLowerCase(uiTag) + longDay.slice(1)
+  // Why: mid-sentence, the Romance languages and Polish write the weekday in lower case; English, German and Indonesian
+  // keep its capital ("am Freitag", "pada Jumat").
+  const day = locale === 'en' || locale === 'de' || locale === 'id' ? longDay : longDay.charAt(0).toLocaleLowerCase(uiTag) + longDay.slice(1)
   return t(weekday === 0 || weekday === 6 ? 'activity_onDayMasculine' : 'activity_onDayFeminine', { day })
 }
 

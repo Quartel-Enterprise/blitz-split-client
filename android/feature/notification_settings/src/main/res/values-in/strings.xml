@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notifikasi</string>
+    <string name="notification_settings_denied_title">Notifikasi Blitz Split dimatikan di Android.</string>
+    <string name="notification_settings_denied_body">Nyalakan di pengaturan sistem untuk menerima push di bawah. Lonceng tetap berfungsi.</string>
+    <string name="notification_settings_open_settings">Buka pengaturan</string>
+    <string name="notification_settings_refused_body">Android mengizinkanmu menyalakannya sekali lagi untuk menerima push di bawah. Lonceng tetap berfungsi.</string>
+    <string name="notification_settings_turn_on">Nyalakan</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Diblokir di Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Buka pengaturan Android untuk %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Notifikasi push</string>
+    <string name="notification_settings_push_switch_detail">Hanya di perangkat ini</string>
+    <string name="notification_settings_section">Beri tahu saya tentang</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Di aplikasi</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push mengirim notifikasi ke perangkat ini. Di aplikasi menandainya sebagai baru di lonceng dan di Aktivitas; jika dimatikan, tetap muncul di Aktivitas, sudah dibaca.</string>
+    <string name="notification_settings_bills">Tagihan</string>
+    <string name="notification_settings_bills_detail">Tagihan baru, diedit, atau dihapus yang melibatkanmu</string>
+    <string name="notification_settings_payments">Pembayaran dan pelunasan</string>
+    <string name="notification_settings_payments_detail">Pembayaran ke atau dari kamu, dan utang yang disederhanakan</string>
+    <string name="notification_settings_comments">Komentar</string>
+    <string name="notification_settings_comments_detail">Di tagihan yang melibatkanmu dan diskusi tempat kamu menulis</string>
+    <string name="notification_settings_people_and_groups">Orang dan grup</string>
+    <string name="notification_settings_people_and_groups_detail">Siapa yang bergabung atau keluar dari grupmu, dan apa yang berubah di sana</string>
+    <string name="notification_settings_payment_requests">Permintaan pembayaran</string>
+    <string name="notification_settings_payment_requests_detail">Saat seseorang memintamu membayar</string>
+    <string name="notification_settings_balance_reminder">Pengingat saldo terbuka</string>
+    <string name="notification_settings_balance_reminder_detail">Seminggu sekali, jika ada saldo terbuka</string>
+    <string name="notification_settings_footer">Pemberitahuan tiba saat ada internet. Untuk membisukan grup, gunakan menu di dalamnya.</string>
+</resources>
