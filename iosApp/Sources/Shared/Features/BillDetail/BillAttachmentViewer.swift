@@ -194,7 +194,7 @@ struct BillAttachmentViewer: View {
             parts.append(String(localized: "Swipe to see the next one.", bundle: .appLanguage))
             #endif
         }
-        return parts.isEmpty ? nil : parts.joined(separator: " ")
+        return parts.isEmpty ? nil : parts.joined(separator: WordGap.gap)
     }
 
     #if os(macOS)

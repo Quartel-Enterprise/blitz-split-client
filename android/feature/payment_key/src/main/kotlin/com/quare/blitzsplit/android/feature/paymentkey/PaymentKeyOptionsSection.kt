@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiEvent
@@ -335,7 +336,7 @@ internal fun DefaultKeySwitchRow(
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = listOfNotNull(detail, suffix).joinToString(" "),
+                    text = listOfNotNull(detail, suffix).joinToString(wordGapUi()),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

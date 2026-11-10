@@ -164,7 +164,7 @@ enum GroupStatsCopy {
             }
             return String(localized: "Day works for periods of up to 3 months.", bundle: .appLanguage)
         }
-        return sentences.isEmpty ? nil : sentences.joined(separator: " ")
+        return sentences.isEmpty ? nil : sentences.joined(separator: WordGap.gap)
     }
 
     /// "No expenses in September" (or "in 2026"), "in that period" for picked dates or the whole period.

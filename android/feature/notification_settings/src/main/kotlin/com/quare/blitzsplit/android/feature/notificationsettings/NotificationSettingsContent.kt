@@ -55,6 +55,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -184,6 +185,7 @@ private fun PermissionDeniedBanner(
                     contentDescription = null,
                 )
                 val title = stringResource(R.string.notification_settings_denied_title)
+                val gap = wordGapUi()
                 val body = stringResource(
                     if (canAskAgain) {
                         R.string.notification_settings_refused_body
@@ -194,7 +196,7 @@ private fun PermissionDeniedBanner(
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(title) }
-                        append(" ")
+                        append(gap)
                         append(body)
                     },
                     style = MaterialTheme.typography.bodyMedium,

@@ -5,6 +5,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.nameListOf
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemDeletion
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemStatus
@@ -12,7 +13,6 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsItemRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsPersonRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsStatus
 
-private const val SENTENCE_SEPARATOR = " "
 private const val FULL_PERCENT = 100L
 
 // Why: the first line of "Itens da conta"'s status: "2 itens sem ninguém", "Faltam R$ 15,00" or "Fechou: R$ 642,00".
@@ -222,7 +222,7 @@ internal fun itemStatusDetailOf(
                     )
                 }
             }.ifEmpty { listOf(amongTextOf(status.totalMinor, status.count, money)) }
-            .joinToString(SENTENCE_SEPARATOR)
+            .joinToString(wordGapUi())
 
     is ItemStatus.AmountAddsUp -> stringResource(R.string.split_bill_item_amount_closed)
 
@@ -302,5 +302,5 @@ internal fun itemDeletionTextOf(
         money.toText(deletion.totalMinor),
     )
     val left = deletion.leftMinor?.let { stringResource(R.string.split_bill_item_delete_left, money.toText(it)) }
-    return listOfNotNull(first, left).joinToString(SENTENCE_SEPARATOR)
+    return listOfNotNull(first, left).joinToString(wordGapUi())
 }

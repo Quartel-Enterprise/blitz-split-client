@@ -121,7 +121,7 @@ enum BillCopy {
 
     /// "Elisa already settled up with Bruno after this bill. The payment still counts …", in one go.
     static func settledPair(_ change: SettledPairChange) -> String {
-        "\(settledPairLead(change)). \(settledPairDetail(change))"
+        settledPairLead(change) + WordGap.fullStop + WordGap.gap + settledPairDetail(change)
     }
 
     /// "Elisa already settled up with Bruno after this bill", "You already settled up with Bruno …" or "Elisa already

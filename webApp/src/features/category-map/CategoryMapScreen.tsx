@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input'
 import { LoadingRegion, Skeleton, SkeletonCard, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t } from '@/i18n'
+import { t, wordGap } from '@/i18n'
 import { categoryColorCodes, categoryColorLabel, categoryStyle } from '@/lib/avatar'
 import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
@@ -207,8 +207,8 @@ function MapSkeleton({ isWide }: { isWide: boolean }) {
 function restoreMessage(state: JsCategoryMapState): string {
   const body = t('categoryMap_restoreBody')
   if (state.ownTerms.length === 0) return body
-  if (state.ownTerms.length === 1) return `${body} ${t('categoryMap_restoreOwnOne', { term: state.ownTerms[0] })}`
-  return `${body} ${t('categoryMap_restoreOwnMany', { count: state.ownTerms.length })}`
+  if (state.ownTerms.length === 1) return `${body}${wordGap}${t('categoryMap_restoreOwnOne', { term: state.ownTerms[0] })}`
+  return `${body}${wordGap}${t('categoryMap_restoreOwnMany', { count: state.ownTerms.length })}`
 }
 
 function MapNotices({ presenter, state }: { presenter: CategoryMapPresenter; state: JsCategoryMapState }) {

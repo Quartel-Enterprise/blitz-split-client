@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
 import com.quare.blitzsplit.feature.categorymap.presentation.model.MapSearchResult
@@ -306,10 +307,11 @@ internal fun RestoreMapDialog(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     val own = state.ownTerms
+    val gap = wordGapUi()
     val ownText = when (own.size) {
         0 -> ""
-        1 -> " " + stringResource(R.string.category_map_restore_own_one, own.first().term)
-        else -> " " + pluralStringResource(R.plurals.category_map_restore_own_many, own.size, own.size)
+        1 -> gap + stringResource(R.string.category_map_restore_own_one, own.first().term)
+        else -> gap + pluralStringResource(R.plurals.category_map_restore_own_many, own.size, own.size)
     }
     AlertDialog(
         onDismissRequest = { onEvent(CategoryMapUiEvent.OnRestoreDismissed) },

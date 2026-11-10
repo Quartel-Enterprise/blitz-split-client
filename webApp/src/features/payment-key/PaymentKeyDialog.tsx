@@ -22,7 +22,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t, type MessageKey } from '@/i18n'
+import { t, wordGap, type MessageKey } from '@/i18n'
 import type { BitcoinKeyType, PaymentKeyError, PaymentKeyFormat, PaymentKeyType, PaymentMethod } from '@/lib/paymentKey'
 import { canReadClipboard } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -344,11 +344,11 @@ function DefaultRow({ presenter, state }: { presenter: PaymentKeyPresenter; stat
 function defaultDetail(state: JsPaymentKeyState): string {
   const detail = t(`paymentKey_defaultDetail${state.method as PaymentMethod}`)
   if (state.isDefaultLocked) {
-    return `${detail} ${t(state.isEditing ? 'paymentKey_defaultLockedEditing' : 'paymentKey_defaultLockedNew')}`
+    return `${detail}${wordGap}${t(state.isEditing ? 'paymentKey_defaultLockedEditing' : 'paymentKey_defaultLockedNew')}`
   }
   if (state.currentDefaultType) {
     const type = t(`paymentKey_defaultType${state.currentDefaultType as PaymentKeyType}`)
-    return `${detail} ${t('paymentKey_defaultNow', { type })}`
+    return `${detail}${wordGap}${t('paymentKey_defaultNow', { type })}`
   }
   return detail
 }

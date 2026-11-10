@@ -144,7 +144,7 @@ export function itemStatusText(status: JsItemStatus, money: Money): { title: str
 export function itemDeletionText(deletion: JsItemDeletion, money: Money): string {
   const params = { name: deletion.name, amount: money(deletion.totalMinor) }
   const first = t(deletion.redoesService ? 'item_deleteTextService' : 'item_deleteText', params)
-  return deletion.leftMinor != null ? `${first} ${t('item_deleteLeft', { amount: money(deletion.leftMinor) })}` : first
+  return deletion.leftMinor != null ? `${first}${wordGap}${t('item_deleteLeft', { amount: money(deletion.leftMinor) })}` : first
 }
 
 /** Whether a mode's people take a field: Valor and %, and on the web Unidades and Partes too. */

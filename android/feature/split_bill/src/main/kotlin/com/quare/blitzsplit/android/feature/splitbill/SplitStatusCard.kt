@@ -24,10 +24,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
-
-private const val SENTENCE_SEPARATOR = " "
 
 // Why: whether the split adds up, said per mode, with the bar of "Valores" filling up to the total.
 @Composable
@@ -46,7 +45,7 @@ internal fun SplitStatusCard(
                 fact = fact,
                 money = money,
             )
-        }.joinToString(SENTENCE_SEPARATOR)
+        }.joinToString(wordGapUi())
     StatusCard(
         isOk = isOk,
         title = title,

@@ -55,8 +55,8 @@ enum CategoryMapCopy {
         let own = state.ownTerms
         switch own.count {
         case 0: return body
-        case 1: return "\(body) \(String(localized: "The term you created, “\(own[0].term)”, stays.", bundle: .appLanguage))"
-        default: return "\(body) \(String(localized: "The \(own.count) terms you created stay.", bundle: .appLanguage))"
+        case 1: return body + WordGap.gap + String(localized: "The term you created, “\(own[0].term)”, stays.", bundle: .appLanguage)
+        default: return body + WordGap.gap + String(localized: "The \(own.count) terms you created stay.", bundle: .appLanguage)
         }
     }
 
