@@ -1,3 +1,4 @@
+import { getKnownCurrencyCodes } from 'blitzsplit-shared'
 import { t } from '@/i18n'
 import { uiTag } from '@/lib/currency'
 
@@ -8,10 +9,7 @@ const formatters = new Map<string, Intl.NumberFormat>()
  * The currencies this version lists (`GroupCurrency.entries` of the shared code). Any other code came from a newer app
  * or server, and is written by its raw code ("XYZ 12,50"), never by the symbol a browser may have for it.
  */
-const knownCurrencies = new Set([
-  'BRL', 'USD', 'EUR', 'GBP', 'ARS', 'CLP', 'COP', 'MXN', 'PEN', 'UYU', 'PYG', 'CAD', 'AUD', 'JPY', 'CHF', 'PLN', 'TRY',
-  'IDR', 'BTC', 'ETH',
-])
+const knownCurrencies = new Set(getKnownCurrencyCodes())
 
 function moneyFormat(currency: string, fractionDigits: number): Intl.NumberFormat {
   const key = `${currency}:${fractionDigits}`
