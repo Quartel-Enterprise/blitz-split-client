@@ -553,6 +553,8 @@ private struct PhoneSplitBill: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            // The App Store screenshots' UI test opens "Bill items" through it, whatever the language
+            .accessibilityIdentifier("splitBill.split")
         } header: {
             Text("Details")
         } footer: {

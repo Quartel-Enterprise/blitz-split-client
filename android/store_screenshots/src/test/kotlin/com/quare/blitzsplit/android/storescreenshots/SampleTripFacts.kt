@@ -17,7 +17,8 @@ internal const val TODAY_MILLIS = 1_792_713_600_000L
 internal const val DAY_MILLIS = 86_400_000L
 internal const val MINUTE_MILLIS = 60_000L
 
-private val avatarColors = listOf(AvatarColor.BLUE, AvatarColor.PEACH, AvatarColor.GREEN, AvatarColor.LILAC, AvatarColor.SAND)
+private val avatarColors =
+    listOf(AvatarColor.BLUE, AvatarColor.PEACH, AvatarColor.GREEN, AvatarColor.LILAC, AvatarColor.SAND)
 
 /** Member ids are the people's indexes, as in SampleTrip's items. */
 internal fun memberIdOf(person: Int): String = person.toString()
@@ -96,7 +97,12 @@ internal val SampleTrip.debts: List<Debt>
             val creditor = nets.maxBy { it.value }
             if (debtor.value >= 0 || creditor.value <= 0) break
             val amount = minOf(-debtor.value, creditor.value)
-            debts += Debt(fromMemberId = memberIdOf(debtor.key), toMemberId = memberIdOf(creditor.key), amountMinor = amount)
+            debts +=
+                Debt(
+                    fromMemberId = memberIdOf(debtor.key),
+                    toMemberId = memberIdOf(creditor.key),
+                    amountMinor = amount,
+                )
             nets[debtor.key] = debtor.value + amount
             nets[creditor.key] = creditor.value - amount
         }
@@ -106,7 +112,7 @@ internal val SampleTrip.debts: List<Debt>
 internal val SampleTrip.me: Int
     get() = SampleTrips.ME.toInt()
 
-/** A sample person's face: an AI-generated portrait (scripts/store-screenshots/faces), which [FaceImages] loads. */
+/** A sample person's face: an AI-generated portrait (scripts/store-screenshots/faces), which [SampleFacesComponent] loads. */
 internal fun photoUrlOf(person: Int): String = "$FACE_SCHEME$person"
 
 internal const val FACE_SCHEME = "face://person"

@@ -20,6 +20,9 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyl
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
 import kotlin.math.roundToInt
 
+private const val PERCENT = 100L
+private const val TICKS = 3L
+
 /** Statistics of the trip in its own currency: the days, who consumed what and where the money went. */
 @Composable
 internal fun StatisticsScreenshotContent(trip: SampleTrip) {
@@ -91,7 +94,12 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
         },
         chartType = StatsChartType.BARS,
         grain = StatsGrain.DAY,
-        grains = StatsGrain.entries.map { StatsGrainOption(it, isEnabled = it == StatsGrain.DAY || it == StatsGrain.WEEK) },
+        grains = StatsGrain.entries.map {
+            StatsGrainOption(
+                it,
+                isEnabled = it == StatsGrain.DAY || it == StatsGrain.WEEK,
+            )
+        },
         bars = days.map { (daysAgo, dayBills) ->
             val amount = dayBills.sumOf { it.totalMinor }
             StatsBar(
@@ -129,6 +137,3 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
         homeTab = HomeTab.GROUPS,
     )
 }
-
-private const val PERCENT = 100L
-private const val TICKS = 3L

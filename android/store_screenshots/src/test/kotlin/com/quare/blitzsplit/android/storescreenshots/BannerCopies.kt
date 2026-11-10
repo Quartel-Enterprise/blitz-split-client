@@ -1,0 +1,185 @@
+package com.quare.blitzsplit.android.storescreenshots
+
+private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
+    StoreScreen.GROUP to mapOf(
+        "en" to ("Who paid what, at a glance" over "Every bill of the trip in one place, with your balance on top"),
+        "pt" to ("Quem pagou o quê, num relance" over "Todas as contas da viagem num só lugar, seu saldo no topo"),
+        "es" to
+            ("Quién pagó qué, de un vistazo" over "Todos los gastos del viaje en un solo lugar, con tu saldo arriba"),
+        "fr" to
+            (
+                "Qui a payé quoi, en un coup d'œil" over
+                    "Toutes les dépenses du voyage au même endroit, votre solde en haut"
+            ),
+        "de" to
+            ("Wer was bezahlt hat, auf einen Blick" over "Alle Ausgaben der Reise an einem Ort, dein Saldo ganz oben"),
+        "it" to
+            (
+                "Chi ha pagato cosa, a colpo d'occhio" over
+                    "Tutte le spese del viaggio in un posto solo, con il tuo saldo in alto"
+            ),
+        "pl" to
+            (
+                "Kto za co zapłacił, w mgnieniu oka" over
+                    "Wszystkie wydatki z wyjazdu w jednym miejscu, Twoje saldo na górze"
+            ),
+        "nl" to
+            ("Wie wat betaalde, in één oogopslag" over "Alle uitgaven van de trip op één plek, met je saldo bovenaan"),
+        "tr" to ("Kim neyi ödedi, tek bakışta" over "Tatilin tüm harcamaları tek yerde, bakiyen en üstte"),
+        "id" to ("Siapa bayar apa, sekilas saja" over "Semua tagihan liburan di satu tempat, saldomu di paling atas"),
+        "ja" to ("誰が何を払ったか、ひと目で" over "旅の支払いをまとめて表示。あなたの残高も一番上に"),
+    ),
+    StoreScreen.ITEMS to mapOf(
+        "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
+        "pt" to
+            ("Divida pelo que cada um consumiu" over "Marque quem pediu cada item e o serviço se divide na proporção"),
+        "es" to
+            (
+                "Divide según lo que pidió cada uno" over
+                    "Marca quién pidió cada plato y el servicio se reparte en proporción"
+            ),
+        "fr" to
+            (
+                "Partagez selon ce que chacun a pris" over
+                    "Cochez qui a pris chaque plat, le service se répartit au prorata"
+            ),
+        "de" to
+            ("Teilen nach dem, was jeder hatte" over "Hak ab, wer was hatte, und der Service wird anteilig verteilt"),
+        "it" to
+            (
+                "Dividi in base a cosa ha preso ognuno" over
+                    "Segna chi ha preso ogni piatto e il servizio si divide in proporzione"
+            ),
+        "pl" to
+            ("Podziel według tego, co kto zamówił" over "Zaznacz, kto co jadł, a serwis rozłoży się proporcjonalnie"),
+        "nl" to ("Verdeel naar wat ieder had" over "Vink aan wie wat had en de service wordt eerlijk verdeeld"),
+        "tr" to ("Herkes ne yediyse onu ödesin" over "Her ürünü kimin aldığını işaretle, servis adilce bölünsün"),
+        "id" to ("Bagi sesuai pesanan masing-masing" over "Tandai siapa pesan apa, biaya layanan terbagi adil"),
+        "ja" to ("注文したものごとに割り勘" over "誰が何を頼んだかを選ぶだけ。サービス料も公平に分配"),
+    ),
+    StoreScreen.RECEIPT to mapOf(
+        "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
+        "pt" to ("Fotografe o cupom e pronto" over "Os itens se preenchem sozinhos a partir da foto"),
+        "es" to ("Saca una foto al ticket y listo" over "Los platos se completan solos a partir de la foto"),
+        "fr" to
+            ("Photographiez le ticket, c'est tout" over "Les articles se remplissent tout seuls à partir de la photo"),
+        "de" to ("Beleg fotografieren, fertig" over "Die Positionen füllen sich aus dem Foto von selbst"),
+        "it" to ("Fotografa lo scontrino ed è fatta" over "Le voci si compilano da sole a partire dalla foto"),
+        "pl" to ("Zrób zdjęcie paragonu i gotowe" over "Pozycje uzupełnią się same ze zdjęcia"),
+        "nl" to ("Maak een foto van de bon, klaar" over "De items vullen zich vanzelf in vanaf de foto"),
+        "tr" to ("Fişin fotoğrafını çek, yeter" over "Ürünler fotoğraftan kendiliğinden dolsun"),
+        "id" to ("Foto struknya, beres" over "Daftar item terisi sendiri dari foto"),
+        "ja" to ("レシートを撮るだけ" over "写真から品目が自動で入力されます"),
+    ),
+    StoreScreen.BALANCES to mapOf(
+        "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
+        "pt" to ("Saiba quem deve a quem" over "Acerte em um toque e registre o pagamento"),
+        "es" to ("Sabe quién le debe a quién" over "Salda cuentas con un toque y registra el pago"),
+        "fr" to ("Sachez qui doit à qui" over "Réglez en un geste et enregistrez le paiement"),
+        "de" to ("Wisse, wer wem was schuldet" over "Mit einem Tipp begleichen und die Zahlung eintragen"),
+        "it" to ("Sai sempre chi deve a chi" over "Salda con un tocco e registra il pagamento"),
+        "pl" to ("Wiesz, kto komu ile jest winien" over "Rozlicz się jednym dotknięciem i zapisz płatność"),
+        "nl" to ("Weet wie wie wat schuldig is" over "Reken af met één tik en leg de betaling vast"),
+        "tr" to ("Kim kime borçlu, hep bil" over "Tek dokunuşla hesaplaş, ödemeyi kaydet"),
+        "id" to ("Tahu siapa berutang ke siapa" over "Lunasi sekali ketuk dan catat pembayarannya"),
+        "ja" to ("誰が誰にいくら、すぐわかる" over "ワンタップで精算して支払いを記録"),
+    ),
+    StoreScreen.INVITE to mapOf(
+        "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
+        "pt" to ("Convide por link ou QR code" over "A galera entra no grupo em segundos, sem cadastro"),
+        "es" to ("Invita con un enlace o código QR" over "Tus amigos se unen en segundos, sin registrarse"),
+        "fr" to
+            ("Invitez par lien ou QR code" over "Vos amis rejoignent le groupe en quelques secondes, sans inscription"),
+        "de" to ("Per Link oder QR-Code einladen" over "Freunde treten in Sekunden bei, ganz ohne Anmeldung"),
+        "it" to
+            ("Invita con un link o un codice QR" over "Gli amici entrano nel gruppo in pochi secondi, senza account"),
+        "pl" to ("Zaproś linkiem lub kodem QR" over "Znajomi dołączą w kilka sekund, bez rejestracji"),
+        "nl" to ("Nodig uit met een link of QR-code" over "Vrienden doen in seconden mee, zonder account"),
+        "tr" to ("Bağlantıyla ya da QR kodla davet et" over "Arkadaşların saniyeler içinde katılır, kayıt gerekmez"),
+        "id" to ("Undang lewat tautan atau kode QR" over "Teman bergabung dalam hitungan detik, tanpa daftar"),
+        "ja" to ("リンクやQRコードで招待" over "友だちは登録不要、数秒でグループに参加"),
+    ),
+    StoreScreen.STATISTICS to mapOf(
+        "en" to ("See where the money went" over "Spending by category and by person"),
+        "pt" to ("Veja para onde foi o dinheiro" over "Gastos por categoria e por pessoa"),
+        "es" to ("Mira en qué se fue el dinero" over "Gastos por categoría y por persona"),
+        "fr" to ("Voyez où est passé l'argent" over "Dépenses par catégorie et par personne"),
+        "de" to ("Sieh, wohin das Geld ging" over "Ausgaben nach Kategorie und Person"),
+        "it" to ("Scopri dove sono finiti i soldi" over "Spese per categoria e per persona"),
+        "pl" to ("Zobacz, na co poszły pieniądze" over "Wydatki według kategorii i osób"),
+        "nl" to ("Zie waar het geld heen ging" over "Uitgaven per categorie en per persoon"),
+        "tr" to ("Paranın nereye gittiğini gör" over "Kategoriye ve kişiye göre harcamalar"),
+        "id" to ("Lihat ke mana uangnya pergi" over "Pengeluaran per kategori dan per orang"),
+        "ja" to ("お金の行き先がわかる" over "カテゴリ別・人別の支出"),
+    ),
+    StoreScreen.HOME to mapOf(
+        "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
+        "pt" to ("Seus grupos sempre à mão" over "Fixe os que você mais usa e veja seu saldo em cada um"),
+        "es" to ("Tus grupos, siempre a mano" over "Fija los que más usas y mira tu saldo en cada uno"),
+        "fr" to ("Vos groupes, toujours sous la main" over "Épinglez vos favoris et voyez votre solde dans chacun"),
+        "de" to ("Deine Gruppen immer griffbereit" over "Pinne die wichtigsten an und sieh deinen Saldo in jeder"),
+        "it" to
+            ("I tuoi gruppi sempre a portata di mano" over "Fissa quelli che usi di più e vedi il tuo saldo in ognuno"),
+        "pl" to ("Twoje grupy zawsze pod ręką" over "Przypnij najczęstsze i sprawdzaj saldo w każdej"),
+        "nl" to ("Je groepen altijd bij de hand" over "Zet je favorieten vast en zie je saldo per groep"),
+        "tr" to ("Grupların hep el altında" over "En çok kullandıklarını sabitle, her birinde bakiyeni gör"),
+        "id" to ("Grupmu selalu di depan" over "Sematkan yang sering dipakai dan lihat saldomu di tiap grup"),
+        "ja" to ("よく使うグループをすぐ開ける" over "ピン留めして、グループごとの残高を確認"),
+    ),
+    StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
+        "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
+        "pt" to ("Vários pagantes, qualquer moeda" over "Divida contas pagas por mais de uma pessoa, até em cripto"),
+        "es" to
+            ("Varios pagadores, cualquier moneda" over "Divide gastos que pagaron varias personas, incluso en cripto"),
+        "fr" to ("Plusieurs payeurs, toutes les devises" over "Partagez une note réglée à plusieurs, même en crypto"),
+        "de" to ("Mehrere Zahler, jede Währung" over "Teile Rechnungen, die mehrere bezahlt haben, sogar in Krypto"),
+        "it" to ("Più paganti, qualsiasi valuta" over "Dividi spese pagate da più persone, anche in cripto"),
+        "pl" to
+            ("Kilku płacących, dowolna waluta" over "Dziel rachunki opłacone przez kilka osób, nawet w kryptowalucie"),
+        "nl" to
+            ("Meerdere betalers, elke valuta" over "Verdeel rekeningen die meerdere mensen betaalden, zelfs in crypto"),
+        "tr" to ("Birden çok ödeyen, her para birimi" over "Birkaç kişinin ödediği hesapları böl, kriptoda bile"),
+        "id" to
+            ("Banyak pembayar, mata uang apa pun" over "Bagi tagihan yang dibayar beberapa orang, bahkan dalam kripto"),
+        "ja" to ("複数人の支払いも、どの通貨でも" over "何人かで払った会計も分けられる。暗号資産にも対応"),
+    ),
+    StoreScreen.ACTIVITY to mapOf(
+        "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
+        "pt" to ("Não perca nenhuma novidade" over "Cada conta e pagamento novo dos seus grupos, na hora"),
+        "es" to ("No te pierdas ningún cambio" over "Cada gasto y pago nuevo de tus grupos, al instante"),
+        "fr" to ("Ne manquez aucun changement" over "Chaque dépense et paiement de vos groupes, en direct"),
+        "de" to ("Keine Änderung verpassen" over "Jede neue Ausgabe und Zahlung deiner Gruppen, sofort"),
+        "it" to ("Non perderti nessuna modifica" over "Ogni nuova spesa e pagamento dei tuoi gruppi, in tempo reale"),
+        "pl" to ("Nie przegap żadnej zmiany" over "Każdy nowy wydatek i płatność w Twoich grupach, na bieżąco"),
+        "nl" to ("Mis geen enkele wijziging" over "Elke nieuwe uitgave en betaling in je groepen, meteen"),
+        "tr" to ("Hiçbir değişikliği kaçırma" over "Gruplarındaki her yeni harcama ve ödeme, anında"),
+        "id" to ("Jangan lewatkan perubahan" over "Setiap tagihan dan pembayaran baru di grupmu, langsung"),
+        "ja" to ("変更を見逃さない" over "グループの新しい支払いや精算をすぐにお知らせ"),
+    ),
+    StoreScreen.LIGHT_THEME to mapOf(
+        "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
+        "pt" to ("Claro ou escuro, do seu jeito" over "Funciona offline, com ou sem conta"),
+        "es" to ("Claro u oscuro, a tu gusto" over "Funciona sin conexión, con o sin cuenta"),
+        "fr" to ("Clair ou sombre, à votre goût" over "Fonctionne hors ligne, avec ou sans compte"),
+        "de" to ("Hell oder dunkel, wie du willst" over "Funktioniert offline, mit oder ohne Konto"),
+        "it" to ("Chiaro o scuro, come preferisci" over "Funziona offline, con o senza account"),
+        "pl" to ("Jasny lub ciemny, jak wolisz" over "Działa offline, z kontem lub bez"),
+        "nl" to ("Licht of donker, zoals jij wilt" over "Werkt offline, met of zonder account"),
+        "tr" to ("Açık ya da koyu, sana göre" over "Çevrimdışı çalışır, hesaplı ya da hesapsız"),
+        "id" to ("Terang atau gelap, sesukamu" over "Bisa offline, dengan atau tanpa akun"),
+        "ja" to ("ライトもダークも、お好みで" over "オフラインでも、アカウントなしでも使えます"),
+    ),
+)
+
+internal fun bannerCopyOf(
+    screen: StoreScreen,
+    language: String,
+): BannerCopy {
+    val copies = bannerCopies.getValue(screen)
+    return copies[language] ?: copies.getValue("en")
+}
+
+private infix fun String.over(description: String): BannerCopy = BannerCopy(
+    title = this,
+    description = description,
+)

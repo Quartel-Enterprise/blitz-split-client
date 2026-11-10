@@ -19,11 +19,15 @@ private const val FACES_DIRECTORY_PROPERTY = "storeScreenshots.facesDir"
  */
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-internal fun FaceImages(content: @Composable () -> Unit) {
-    val directory = checkNotNull(System.getProperty(FACES_DIRECTORY_PROPERTY)) { "$FACES_DIRECTORY_PROPERTY is not set" }
+internal fun SampleFacesComponent(content: @Composable () -> Unit) {
+    val directory =
+        checkNotNull(System.getProperty(FACES_DIRECTORY_PROPERTY)) { "$FACES_DIRECTORY_PROPERTY is not set" }
     val handler = AsyncImagePreviewHandler { request ->
         val data = request.data as? String
-        val file = data?.takeIf { it.startsWith(FACE_SCHEME) }?.let { File(directory, "person${it.removePrefix(FACE_SCHEME)}.jpg") }
+        val file = data
+            ?.takeIf {
+                it.startsWith(FACE_SCHEME)
+            }?.let { File(directory, "person${it.removePrefix(FACE_SCHEME)}.jpg") }
         file?.takeIf(File::isFile)?.let { BitmapFactory.decodeFile(it.path).asImage() } ?: ColorImage()
     }
     CompositionLocalProvider(

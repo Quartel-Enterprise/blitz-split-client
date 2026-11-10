@@ -45,7 +45,9 @@ internal fun ReceiptScreenshotContent(trip: SampleTrip) {
         trip.dinner,
         receipt = BillReceipt(
             status = ReceiptStatus.READ,
-            itemCount = trip.dinner.items?.items?.size ?: 0,
+            itemCount = trip.dinner.items
+                ?.items
+                ?.size ?: 0,
             hasPhoto = true,
             error = null,
         ),

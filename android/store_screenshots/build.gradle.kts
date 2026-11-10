@@ -1,3 +1,5 @@
+import com.quare.blitzsplit.buildlogic.configureStoreScreenshots
+
 plugins {
     alias(libs.plugins.blitzsplit.android.compose)
 }
@@ -48,15 +50,4 @@ dependencies {
     testImplementation(libs.compose.ui.testManifest)
 }
 
-// The Play shots render anywhere; the App Store ones frame the iOS captures, so only a build that asked for them
-// runs the iPhone and iPad classes (see storeScreenshots in the root build.gradle.kts).
-tasks.withType<Test>().configureEach {
-    val outputDir = rootProject.layout.buildDirectory.dir("outputs/store-screenshots").get().asFile
-    val capturesDir = rootProject.layout.buildDirectory.dir("outputs/apple-screenshot-captures").get().asFile
-    systemProperty("storeScreenshots.outputRoot", outputDir.absolutePath)
-    systemProperty("appleScreenshots.capturesDir", capturesDir.absolutePath)
-    systemProperty("storeScreenshots.facesDir", rootProject.file("scripts/store-screenshots/faces").absolutePath)
-    systemProperty("roborazzi.test.record", "true")
-    outputs.dir(outputDir)
-    maxHeapSize = "4g"
-}
+configureStoreScreenshots()

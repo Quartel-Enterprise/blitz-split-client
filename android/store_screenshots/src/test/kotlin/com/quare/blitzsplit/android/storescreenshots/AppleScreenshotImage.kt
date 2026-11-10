@@ -36,3 +36,7 @@ internal fun AppleScreenshotImage(
         filterQuality = FilterQuality.High,
     )
 }
+
+internal fun hasAppleCaptures(slot: AppleScreenshotSlot): Boolean = System
+    .getProperty(CAPTURES_DIRECTORY_PROPERTY)
+    ?.let { File(it, slot.directoryName).isDirectory } == true

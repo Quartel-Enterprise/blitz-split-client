@@ -22,12 +22,20 @@ import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
 import software.quare.loadable.toLoaded
 import kotlin.math.abs
 
+private const val FACES = 3
+private const val UNREAD_ACTIVITY = 3
+private const val MINUTES_PER_DAY = 1_440
+private const val MINUTES_NOW = 13 * 60
+private const val MINUTES_SINCE_PAYMENT = 3 * 60
 private val sideGroupColors = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
 
 /** Início with the trip and the two other groups pinned, the people who owe or are owed, and yesterday's bills. */
 @Composable
 internal fun HomeScreenshotContent(trip: SampleTrip) {
-    HomeContent(state = trip.homeState(), onEvent = {})
+    HomeContent(
+        state = trip.homeState(),
+        onEvent = {},
+    )
 }
 
 private fun SampleTrip.homeState(): HomeUiState {
@@ -94,7 +102,12 @@ private fun SampleTrip.homeState(): HomeUiState {
                 ),
             ),
         ).toLoaded(),
-        groups = groups.map { HomeGroup(row = it, isPinned = true) },
+        groups = groups.map {
+            HomeGroup(
+                row = it,
+                isPinned = true,
+            )
+        },
         billDays = listOf(
             HomeBillDay(
                 dayStartMillis = startOfDayOf(1),
@@ -176,7 +189,10 @@ private fun SampleTrip.myNetOf(group: SampleSideGroup): Long {
 
 /** Each other person's net with me across the trip's debts and the side groups: positive when they owe me. */
 private fun SampleTrip.peopleNets(): Map<Int, Long> {
-    val nets = people.indices.filter { it != me }.associateWith { 0L }.toMutableMap()
+    val nets = people.indices
+        .filter { it != me }
+        .associateWith { 0L }
+        .toMutableMap()
     debts.forEach { debt ->
         val from = debt.fromMemberId.toInt()
         val to = debt.toMemberId.toInt()
@@ -193,9 +209,3 @@ private fun SampleTrip.peopleNets(): Map<Int, Long> {
     }
     return nets
 }
-
-private const val FACES = 3
-private const val UNREAD_ACTIVITY = 3
-private const val MINUTES_PER_DAY = 24 * 60
-private const val MINUTES_NOW = 13 * 60
-private const val MINUTES_SINCE_PAYMENT = 3 * 60

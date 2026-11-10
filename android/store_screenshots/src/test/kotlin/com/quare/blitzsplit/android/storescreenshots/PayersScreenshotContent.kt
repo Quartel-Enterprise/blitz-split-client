@@ -25,7 +25,10 @@ internal fun PayersScreenshotContent(trip: SampleTrip) {
         state = trip.billDetailState(trip.boatTour),
         isDialog = false,
         snackbarHostState = remember { SnackbarHostState() },
-        pickers = PhotoPickers(onTakePhotoClick = null, onChoosePhotoClick = {}),
+        pickers = PhotoPickers(
+            onTakePhotoClick = null,
+            onChoosePhotoClick = {},
+        ),
         onEvent = {},
     )
 }

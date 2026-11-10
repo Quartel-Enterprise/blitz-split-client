@@ -11,15 +11,48 @@ internal data class StoreLocale(
 )
 
 internal val storeLocales = listOf(
-    StoreLocale(tag = "en-US", language = "en"),
-    StoreLocale(tag = "pt-BR", language = "pt"),
-    StoreLocale(tag = "es", language = "es"),
-    StoreLocale(tag = "fr", language = "fr"),
-    StoreLocale(tag = "de", language = "de"),
-    StoreLocale(tag = "it", language = "it"),
-    StoreLocale(tag = "pl", language = "pl"),
-    StoreLocale(tag = "nl", language = "nl"),
-    StoreLocale(tag = "tr", language = "tr"),
-    StoreLocale(tag = "id", language = "id"),
-    StoreLocale(tag = "ja", language = "ja"),
+    StoreLocale(
+        tag = "en-US",
+        language = "en",
+    ),
+    StoreLocale(
+        tag = "pt-BR",
+        language = "pt",
+    ),
+    StoreLocale(
+        tag = "es",
+        language = "es",
+    ),
+    StoreLocale(
+        tag = "fr",
+        language = "fr",
+    ),
+    StoreLocale(
+        tag = "de",
+        language = "de",
+    ),
+    StoreLocale(
+        tag = "it",
+        language = "it",
+    ),
+    StoreLocale(
+        tag = "pl",
+        language = "pl",
+    ),
+    StoreLocale(
+        tag = "nl",
+        language = "nl",
+    ),
+    StoreLocale(
+        tag = "tr",
+        language = "tr",
+    ),
+    StoreLocale(
+        tag = "id",
+        language = "id",
+    ),
+    StoreLocale(
+        tag = "ja",
+        language = "ja",
+    ),
 )
