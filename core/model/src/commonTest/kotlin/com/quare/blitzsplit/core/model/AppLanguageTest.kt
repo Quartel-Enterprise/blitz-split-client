@@ -31,7 +31,7 @@ class AppLanguageTest {
     @Test
     fun `GIVEN no tag or a language the app does not have WHEN reading it THEN follows the device`() {
         // Given
-        val tags = listOf(null, "", "nl", "sv-SE")
+        val tags = listOf(null, "", "sv", "sv-SE")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
@@ -113,15 +113,27 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN a device in any region WHEN German Italian or Polish is picked THEN is the bare language`() {
+    fun `GIVEN any Dutch tag WHEN reading it THEN is Dutch`() {
         // Given
-        val languages = listOf(AppLanguage.GERMAN, AppLanguage.ITALIAN, AppLanguage.POLISH)
+        val tags = listOf("nl", "nl-NL", "nl-BE", "nl_SR", "NL-be")
 
         // When
-        val tags = languages.map { it.toTag("CH") }
+        val languages = tags.map(AppLanguage::fromTag)
 
         // Then
-        assertEquals(listOf("de", "it", "pl"), tags)
+        assertEquals(List(tags.size) { AppLanguage.DUTCH }, languages)
+    }
+
+    @Test
+    fun `GIVEN a device in any region WHEN German Italian Polish or Dutch is picked THEN is the bare language`() {
+        // Given
+        val languages = listOf(AppLanguage.GERMAN, AppLanguage.ITALIAN, AppLanguage.POLISH, AppLanguage.DUTCH)
+
+        // When
+        val tags = languages.map { it.toTag("BE") }
+
+        // Then
+        assertEquals(listOf("de", "it", "pl", "nl"), tags)
     }
 
     @Test

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Sluiten</string>
+    <string name="invite_group_created">Groep gemaakt</string>
+    <string name="invite_title">Nodig iedereen uit voor %s</string>
+    <string name="invite_qr_description">QR-code van de uitnodigingslink van de groep</string>
+    <string name="invite_copy">Kopiëren</string>
+    <string name="invite_copied">Gekopieerd</string>
+    <string name="invite_who_picks">Wie de link opent, kiest wie die is in de lijst: %s. Geen account nodig.</string>
+    <string name="invite_names_or">%1$s of %2$s</string>
+    <string name="invite_anyone_joins">Wie de link opent, wordt lid van de groep. Geen account nodig.</string>
+    <string name="invite_pending_title">Link in afwachting</string>
+    <string name="invite_pending_offline">Hij wordt gemaakt zodra je online bent.</string>
+    <string name="invite_pending_online">Link maken…</string>
+    <string name="invite_failed_title">Kan de link niet maken</string>
+    <string name="invite_failed_body">Er ging iets mis bij het synchroniseren van de groep.</string>
+    <string name="invite_retry">Opnieuw proberen</string>
+    <string name="invite_share">Link delen</string>
+    <string name="invite_see_who_joined">Bekijk wie lid is</string>
+    <string name="invite_add_person">Iemand zonder de app toevoegen</string>
+    <string name="invite_go_to_group">Naar de groep</string>
+    <string name="invite_change_link">Link wijzigen</string>
+    <string name="invite_change_link_title">De uitnodigingslink wijzigen?</string>
+    <string name="invite_change_link_message">De huidige link en QR-code werken niet meer, ongebruikte persoonlijke uitnodigingen ook niet. Wie al lid is, blijft in de groep.</string>
+    <string name="invite_change_link_failed">Kan de link niet wijzigen. Probeer het opnieuw.</string>
+    <string name="invite_share_message">Laten we de uitgaven van %1$s verdelen op Blitz Split. Doe mee met deze link: %2$s</string>
+</resources>

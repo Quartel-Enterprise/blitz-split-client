@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Nieuwe Pix-sleutel</string>
+    <string name="payment_key_title_pix_edit">Pix-sleutel bewerken</string>
+    <string name="payment_key_title_bitcoin_new">Nieuwe Bitcoin-sleutel</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin-sleutel bewerken</string>
+    <string name="payment_key_save">Opslaan</string>
+
+    <string name="payment_key_pix_intro">Wie jou betaalt, ziet deze sleutel bij het verrekenen. Welk type sleutel?</string>
+    <string name="payment_key_pix_question">Welk type sleutel?</string>
+    <string name="payment_key_pix_explanation">Wie jou betaalt, ziet deze sleutel bij het verrekenen.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefoon</string>
+    <string name="payment_key_type_email">E-mail</string>
+    <string name="payment_key_type_random">Willekeurig</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobiel nummer met netnummer</string>
+    <string name="payment_key_label_email">E-mail</string>
+    <string name="payment_key_label_random">Willekeurige sleutel</string>
+
+    <string name="payment_key_bitcoin_intro">Hoe wil je ontvangen?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">snel, lage kosten</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">op de blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address of LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin-adres</string>
+
+    <string name="payment_key_paste">Plakken</string>
+
+    <string name="payment_key_hint_cpf">Formaat 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Formaat +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Formaat naam@domein.com</string>
+    <string name="payment_key_hint_random">32 letters en cijfers, zoals je bank hem toont</string>
+    <string name="payment_key_hint_lightning">Zoals naam@wallet.com of LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet-adres dat begint met bc1q of bc1p</string>
+
+    <string name="payment_key_valid_cpf">Formaat 000.000.000-00 · controlecijfers kloppen</string>
+    <string name="payment_key_valid_phone">Formaat +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Formaat naam@domein.com</string>
+    <string name="payment_key_valid_random">Willekeurige sleutel herkend (32 tekens)</string>
+    <string name="payment_key_valid_lightning_address">Geldig Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Geldige LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Ongeldige CPF: de controlecijfers kloppen niet.</string>
+    <string name="payment_key_error_invalid_phone">Onvolledig mobiel nummer: gebruik het netnummer en 9 cijfers, beginnend met 9.</string>
+    <string name="payment_key_error_invalid_email">Onvolledig e-mailadres: het domein ontbreekt, zoals .com of .com.br.</string>
+    <string name="payment_key_error_invalid_random">Onvolledige willekeurige sleutel: die heeft 32 letters en cijfers.</string>
+    <string name="payment_key_error_invalid_lightning">Dit is geen Lightning Address (naam@wallet) of LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Dit is een Lightning-factuur (lnbc…): die betaalt één keer en verloopt. Plak een Lightning Address of een LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Ongeldig adres. Gebruik een mainnet-adres met bc1q of bc1p.</string>
+    <string name="payment_key_error_testnet_address">Dit is een testnet-adres (tb1…). Hier werkt alleen Bitcoin-mainnet, met bc1…-adressen.</string>
+    <string name="payment_key_error_already_saved">Je hebt deze sleutel al.</string>
+
+    <string name="payment_key_switched_to_onchain">Dit is een on-chain adres, dus we zijn overgeschakeld naar On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Dit is een Lightning Address, dus we zijn overgeschakeld naar Lightning.</string>
+    <string name="payment_key_cpf_notice">Wie jou betaalt, ziet je volledige CPF. Wil je die liever niet delen, gebruik dan een telefoon, e-mail of willekeurige sleutel.</string>
+
+    <string name="payment_key_accepted_title">We accepteren</string>
+    <string name="payment_key_accepted_lightning_address_sample">naam@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Standaard-Pix-sleutel</string>
+    <string name="payment_key_default_bitcoin_title">Standaard-Bitcoin-sleutel</string>
+    <string name="payment_key_default_pix_detail">Wordt als eerste getoond bij het verrekenen.</string>
+    <string name="payment_key_default_bitcoin_detail">Wordt als eerste getoond als iemand in BTC betaalt.</string>
+    <string name="payment_key_default_now">Nu: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Maak een andere sleutel de standaard om dit te wijzigen.</string>
+    <string name="payment_key_default_locked_new">Je eerste sleutel van dit soort is de standaard.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefoon</string>
+    <string name="payment_key_default_type_email">e-mail</string>
+    <string name="payment_key_default_type_random">willekeurige sleutel</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split verplaatst geen geld: de betaler betaalt in de app van de bank. Controleer of de sleutel op jouw naam staat.</string>
+    <string name="payment_key_footer_bitcoin">Bij het verrekenen tonen we het bedrag in sats tegen de huidige koers. Het is maar een schatting: de betaler bevestigt het in de eigen wallet.</string>
+
+    <string name="payment_key_delete">Sleutel verwijderen</string>
+    <string name="payment_key_delete_title">Deze sleutel verwijderen?</string>
+    <string name="payment_key_delete_body">Mensen die je iets schuldig zijn, zien hem niet meer bij het verrekenen.</string>
+    <string name="payment_key_delete_confirm">Verwijderen</string>
+</resources>

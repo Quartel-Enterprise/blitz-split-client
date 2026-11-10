@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">De rekening verdelen, zonder gedoe</string>
+    <string name="welcome_offline_title">Werkt offline</string>
+    <string name="welcome_offline_body">Alles blijft op je apparaat en synchroniseert later.</string>
+    <string name="welcome_optional_title">Een account is optioneel</string>
+    <string name="welcome_optional_body">Google of Apple zorgen er alleen voor dat je niets kwijtraakt als je van apparaat wisselt.</string>
+    <string name="welcome_invite_title">Uitnodigen met een link of QR-code</string>
+    <string name="welcome_invite_body">Vrienden worden lid van de groep zonder een account te maken.</string>
+    <string name="welcome_no_connection_title">Geen verbinding.</string>
+    <string name="welcome_no_connection_body">Voor inloggen met een account is internet nodig. Gebruik de app nu zonder account en koppel later in Profiel.</string>
+    <string name="welcome_or">of</string>
+    <string name="welcome_use_without_account">Gebruiken zonder account</string>
+    <string name="welcome_used_on_another_device">Ik heb het op een ander apparaat gebruikt</string>
+    <string name="welcome_sign_in_failed">Kan nu niet inloggen. Probeer het opnieuw.</string>
+</resources>

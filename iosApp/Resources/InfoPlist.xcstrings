@@ -35,6 +35,12 @@
             "value" : "Blitz Split"
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -78,6 +84,12 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -131,6 +143,12 @@
             "value" : "Per scansionare il codice QR di un invito o del tuo vecchio dispositivo, e per scattare la tua foto profilo e le foto delle spese."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om de QR-code van een uitnodiging of van je oude apparaat te scannen, en om je profielfoto en foto’s van uitgaven te maken."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -179,6 +197,12 @@
             "value" : "Per invitare persone dai tuoi contatti con il link di un gruppo. I loro numeri restano su questo dispositivo."
           }
         },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om mensen uit je contacten uit te nodigen met de link van een groep. Hun nummers blijven op dit apparaat."
+          }
+        },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -225,6 +249,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Per salvare le foto di una spesa nella tua libreria."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om de foto’s van een uitgave in je bibliotheek te bewaren."
           }
         },
         "pl" : {

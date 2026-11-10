@@ -5,23 +5,24 @@ import { esES } from './esES'
 import { de } from './de'
 import { fr } from './fr'
 import { it } from './it'
+import { nl } from './nl'
 import { pl } from './pl'
 import { pt } from './pt'
 
 export type { MessageKey }
 /** `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently. */
-export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl'
+export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl']
+const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl', 'nl']
 
 /**
  * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
  * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
- * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it` or `pl` tag (de-AT, it-CH, pl-PL…)
- * is German, Italian or Polish, any `en` tag is English, and English when none matches.
+ * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`, `pl` or `nl` tag (de-AT, it-CH,
+ * pl-PL, nl-BE…) is German, Italian, Polish or Dutch, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
@@ -61,6 +62,7 @@ const documentLanguages: Record<Locale, string> = {
   de: 'de',
   it: 'it',
   pl: 'pl',
+  nl: 'nl',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -104,15 +106,16 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
   fr: { a: 'as' },
   de: { hat: 'hast', ist: 'bist' },
   it: { ha: 'hai' },
+  nl: { heeft: 'hebt', is: 'bent' },
 }
 
 /**
  * An activity verb ("dividió", "se unió a", "cambió la división de") said to the user, who is "Tú" in Spanish:
- * "dividiste", "te uniste a". French, German and Italian verb phrases all start with their perfect's auxiliary ("a
- * divisé", "hat geteilt", "ist beigetreten", "ha diviso"), which becomes the user's ("as divisé", "hast geteilt", "bist
- * beigetreten", "hai diviso"). Polish ones start with a past in "ł(a)", the app not knowing the gender: "podzielił(a)"
- * becomes "podzieliłeś(-aś)". Other languages keep the verb as it is. Same rules as Android's `toSecondPerson` and the
- * Apple app's `SecondPerson`.
+ * "dividiste", "te uniste a". French, German, Italian and Dutch verb phrases all start with their perfect's auxiliary
+ * ("a divisé", "hat geteilt", "ist beigetreten", "ha diviso", "heeft verdeeld", "is lid geworden"), which becomes the
+ * user's ("as divisé", "hast geteilt", "bist beigetreten", "hai diviso", "hebt verdeeld", "bent lid geworden"). Polish
+ * ones start with a past in "ł(a)", the app not knowing the gender: "podzielił(a)" becomes "podzieliłeś(-aś)". Other
+ * languages keep the verb as it is. Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
 export function verbForYou(verb: string): string {
   const auxiliary = secondPersonAuxiliaries[locale]

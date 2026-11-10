@@ -1,9 +1,10 @@
 import SwiftUI
 
 /// Spanish says "Ana dividió" but "Tú dividiste", French "Ana a divisé" but "Tu as divisé", German "Ana hat geteilt"
-/// but "Du hast geteilt", Italian "Ana ha diviso" but "Tu hai diviso" and Polish "Ana podzielił(a)" but "Ty
-/// podzieliłeś(-aś)": one localized sentence serves every actor, so when the actor is this device's user the verb after
-/// the "Tú", "Tu", "Du" or "Ty" is conjugated to the second person. Other languages are left as they are.
+/// but "Du hast geteilt", Italian "Ana ha diviso" but "Tu hai diviso", Dutch "Ana heeft verdeeld" but "Jij hebt
+/// verdeeld" and Polish "Ana podzielił(a)" but "Ty podzieliłeś(-aś)": one localized sentence serves every actor, so
+/// when the actor is this device's user the verb after the "Tú", "Tu", "Du", "Jij" or "Ty" is conjugated to the second
+/// person. Other languages are left as they are.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -23,6 +24,7 @@ enum SecondPerson {
         "fr": ["a": "as"],
         "de": ["hat": "hast", "ist": "bist"],
         "it": ["ha": "hai"],
+        "nl": ["heeft": "hebt", "is": "bent"],
     ]
 
     /// The two-letter code of the language the sentences are localized in ("es", "fr"…): the `.lproj` Profile › Language
@@ -36,8 +38,9 @@ enum SecondPerson {
     }
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French, German and Italian: every verb phrase is a perfect that starts with its auxiliary, so "a divisé" → "as
-    /// divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" → "hai diviso".
+    /// French, German, Italian and Dutch: every verb phrase is a perfect that starts with its auxiliary, so "a divisé" →
+    /// "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" → "hai diviso",
+    /// "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = SecondPerson.language) -> String {

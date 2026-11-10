@@ -187,4 +187,5 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.GERMAN -> stringResource(R.string.profile_language_german)
     AppLanguage.ITALIAN -> stringResource(R.string.profile_language_italian)
     AppLanguage.POLISH -> stringResource(R.string.profile_language_polish)
+    AppLanguage.DUTCH -> stringResource(R.string.profile_language_dutch)
 }

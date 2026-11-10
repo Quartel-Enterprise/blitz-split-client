@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Haal je groepen terug</string>
+    <string name="restore_subtitle">Eerder ingelogd met een account? Log gewoon opnieuw in. Zo niet, gebruik dan de herstelcode of de QR-code van je oude apparaat.</string>
+    <string name="restore_no_connection_title">Geen verbinding</string>
+    <string name="restore_no_connection_body">Voor inloggen met een account of een code is internet nodig om je groepen te downloaden. Wat je hebt getypt, blijft bewaard.</string>
+    <string name="restore_code_label">Of gebruik de herstelcode</string>
+    <string name="restore_code_hint">12 letters en cijfers. Streepjes zijn optioneel.</string>
+    <string name="restore_scan_qr_title">Scan de QR-code van je oude apparaat</string>
+    <string name="restore_scan_qr_body">Daar: Profiel › Herstelcode › QR-code tonen</string>
+    <string name="restore_recover">Herstellen</string>
+    <string name="restore_try_again">Opnieuw proberen</string>
+    <string name="restore_start_fresh">Opnieuw beginnen op dit apparaat</string>
+    <string name="restore_error_invalid_code">Code niet gevonden. Controleer de letters en probeer het opnieuw.</string>
+    <string name="restore_error_too_many_attempts">Te veel pogingen. Wacht een paar minuten en probeer het opnieuw.</string>
+    <string name="restore_error_sign_in_failed">Kan nu niet inloggen. Probeer het opnieuw.</string>
+    <string name="restore_error_unknown">Er ging iets mis. Probeer het opnieuw.</string>
+</resources>

@@ -285,7 +285,7 @@ No linter runs on Swift yet; follow what the app already does.
 - `///` doc comments explain a type's role and the why, as the Kotlin `// Why:` does; inline `//` comments only
   for a reason.
 - User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR,
-  es, (where Spain differs) es-ES, fr, de, it and pl translations in `Localizable.xcstrings` (the development language is English).
+  es, (where Spain differs) es-ES, fr, de, it, pl and nl translations in `Localizable.xcstrings` (the development language is English).
   Never copy an es word into es-ES: Xcode compiles `es-ES.lproj` with only Spain's words, and the build's "Fill the
   regional tables with their language's" phase (`iosApp/merge-regional-strings.py`) fills it with the rest of `es`,
   since an es-ES app reads its tables from `es-ES.lproj` alone and would show English for the missing keys.

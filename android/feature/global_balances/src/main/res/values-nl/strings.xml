@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldi</string>
+    <string name="global_balances_profile">Profiel</string>
+    <string name="global_balances_offline">Offline · saldi van dit apparaat</string>
+    <string name="global_balances_filter">Tonen</string>
+    <string name="global_balances_filter_all">Alle</string>
+    <string name="global_balances_filter_you_owe">Jij bent schuldig</string>
+    <string name="global_balances_filter_owes_you">Jou schuldig</string>
+    <string name="global_balances_hint">Al verrekend over groepen: elke persoon staat er één keer.</string>
+    <string name="global_balances_hint_empty">Alle groepen op dit apparaat worden opgeteld.</string>
+    <string name="global_balances_section_you_owe">Jij bent schuldig · %d</string>
+    <string name="global_balances_section_owes_you">Jou schuldig · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d groep</item>
+        <item quantity="other">%d groepen</item>
+    </plurals>
+    <string name="global_balances_guest">%s · gast</string>
+    <string name="global_balances_you_owe">je bent schuldig</string>
+    <string name="global_balances_owes_you">is je schuldig</string>
+    <string name="global_balances_by_group_show">%s per groep tonen</string>
+    <string name="global_balances_by_group_hide">%s per groep verbergen</string>
+    <string name="global_balances_received">Ontvangen</string>
+    <string name="global_balances_received_from">Ontvangen van %s</string>
+    <string name="global_balances_settle">Verrekenen</string>
+    <string name="global_balances_settle_with">Verrekenen met %s</string>
+    <string name="global_balances_charge">Vragen</string>
+    <string name="global_balances_charge_person">Vragen aan %s</string>
+    <string name="global_balances_detail_pane">Saldo met %s</string>
+    <string name="global_balances_detail_owes_you">%s is je schuldig</string>
+    <string name="global_balances_detail_you_owe">Je bent %s schuldig</string>
+    <string name="global_balances_detail_guest">%s · gast zonder de app</string>
+    <string name="global_balances_detail_note_owed">Het netto saldo verrekent de groepen al: Vragen en Ontvangen gebruiken %s. De app registreert een betaling in elke groep.</string>
+    <string name="global_balances_detail_note_settle">Het netto saldo verrekent de groepen al: Verrekenen gebruikt %s. De app registreert een betaling in elke groep.</string>
+    <string name="global_balances_detail_note_single">Maar één groep open met %s.</string>
+    <string name="global_balances_settled_title">Alles verrekend</string>
+    <string name="global_balances_settled_body">Niemand is je iets schuldig en jij bent niemand iets schuldig. Als iemand een uitgave toevoegt, zie je het saldo hier.</string>
+    <string name="global_balances_settled_action">Groepen bekijken</string>
+    <string name="global_balances_nothing_to_pay_title">Je bent niets schuldig</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Je hebt met iedereen verrekend. Je krijgt nog %2$s terug van %1$d persoon.</item>
+        <item quantity="other">Je hebt met iedereen verrekend. Je krijgt nog %2$s terug van %1$d mensen.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Bekijk wie je iets schuldig is</string>
+    <string name="global_balances_nothing_to_receive_title">Niemand is je iets schuldig</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Je bent nog %2$s schuldig aan %1$d persoon.</item>
+        <item quantity="other">Je bent nog %2$s schuldig aan %1$d mensen.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Bekijk aan wie je iets schuldig bent</string>
+    <string name="global_balances_coming_soon">Binnenkort</string>
+    <string name="global_balances_change_error">Kan de wijziging niet opslaan. Probeer het opnieuw.</string>
+    <string name="global_balances_copied">Gekopieerd</string>
+    <string name="global_balances_charge_title">Vragen aan %s</string>
+    <string name="global_balances_charge_owes">Is je %1$s schuldig · %2$s</string>
+    <string name="global_balances_charge_close">Sluiten</string>
+    <string name="global_balances_charge_guest">%s is een gast zonder de app. Die hoort het alleen via dit bericht, dus er staat al in wat er in de uitgave zat.</string>
+    <string name="global_balances_charge_message">Bericht</string>
+    <string name="global_balances_charge_pix">Mijn Pix-sleutel toevoegen</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Bericht kopiëren</string>
+    <string name="global_balances_charge_send">Versturen</string>
+    <string name="global_balances_message">Hoi %1$s! Volgens de berekening van Blitz Split ben je me %2$s schuldig van %3$s.</string>
+    <string name="global_balances_message_guest">Hoi %1$s! Je bent me %2$s schuldig van %3$s: jouw deel van %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hoi %1$s! Je bent me %2$s schuldig van %3$s: jouw deel van %4$s, min de %5$s die je al hebt betaald.</string>
+    <string name="global_balances_message_group">de groep %s</string>
+    <string name="global_balances_message_groups">de groepen %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefoon</string>
+    <string name="global_balances_key_email">E-mail</string>
+    <string name="global_balances_key_random">Willekeurige sleutel</string>
+    <string name="global_balances_message_reroute">In %1$s zijn de schulden vereenvoudigd, dus in plaats van %2$s te betalen, betaal je mij rechtstreeks; je totaal is niet veranderd.</string>
+</resources>

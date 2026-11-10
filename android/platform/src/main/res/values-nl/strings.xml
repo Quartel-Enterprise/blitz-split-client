@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · herstelcode</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Sta de camera toe in Instellingen om een foto te maken.</string>
+    <string name="platform_camera_settings">Instellingen</string>
+    <string name="platform_receipt_source_camera">Foto maken</string>
+    <string name="platform_receipt_source_gallery">Kiezen uit galerij</string>
+    <string name="platform_receipt_source_file">Bestand kiezen</string>
+    <string name="platform_receipt_camera_title">Bonnetje scannen</string>
+    <string name="platform_receipt_camera_close">Sluiten</string>
+    <string name="platform_receipt_camera_flash_on">Flitser aanzetten</string>
+    <string name="platform_receipt_camera_flash_off">Flitser uitzetten</string>
+    <string name="platform_receipt_camera_hint">Zorg dat het hele bonnetje in beeld is. Wij vullen het bedrag, de datum en de omschrijving in; jij controleert het voor het opslaan.</string>
+    <string name="platform_receipt_camera_gallery">Kiezen uit galerij</string>
+    <string name="platform_receipt_camera_shutter">Foto maken</string>
+    <string name="platform_receipt_camera_unavailable">De camera is niet beschikbaar. Kies een foto van het bonnetje uit de galerij.</string>
+    <string name="platform_receipt_camera_permission">Sta de camera toe om het bonnetje te scannen, of kies een foto uit de galerij.</string>
+    <string name="platform_receipt_camera_allow">Camera toestaan</string>
+    <string name="platform_receipt_camera_settings">Instellingen openen</string>
+</resources>

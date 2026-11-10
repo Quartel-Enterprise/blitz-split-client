@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Account verwijderen</string>
+    <string name="delete_account_offline_title">Geen internet.</string>
+    <string name="delete_account_offline_body">Voor het verwijderen van je account is een internetverbinding nodig. Maak verbinding en probeer het opnieuw.</string>
+    <string name="delete_account_heading">Je account en je gegevens verwijderen?</string>
+    <string name="delete_account_deleted_title">Wat wordt verwijderd</string>
+    <string name="delete_account_deleted_profile">Je profiel (naam, foto en kleur)</string>
+    <string name="delete_account_deleted_keys">Je Pix- en Bitcoin-sleutels</string>
+    <string name="delete_account_deleted_provider">De koppeling met je %1$s-account</string>
+    <string name="delete_account_deleted_recovery_code">Je herstelcode</string>
+    <string name="delete_account_deleted_device">De kopie van je gegevens op dit apparaat</string>
+    <string name="delete_account_export">Eerst mijn gegevens exporteren</string>
+    <string name="delete_account_confirm">Ik begrijp dat dit niet ongedaan kan worden gemaakt</string>
+    <string name="delete_account_delete">Account verwijderen</string>
+    <string name="delete_account_cancel">Annuleren</string>
+    <string name="delete_account_failed">Kan je account niet verwijderen. Probeer het opnieuw.</string>
+</resources>

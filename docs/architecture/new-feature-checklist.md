@@ -37,8 +37,9 @@ each platform.
       feature (as `GroupsScreen(recoveryCodeSheet = …)`)
 - [ ] Strings in English in the module's `res/values/strings.xml`, in Portuguese in `res/values-pt/strings.xml`, in
       Spanish in `res/values-es/strings.xml` (`values-es-rES` only for what Spain says differently), in French in
-      `res/values-fr/strings.xml`, in German in `res/values-de/strings.xml`, in Italian in `res/values-it/strings.xml`
-      and in Polish in `res/values-pl/strings.xml` (with Polish's few and many plurals)
+      `res/values-fr/strings.xml`, in German in `res/values-de/strings.xml`, in Italian in `res/values-it/strings.xml`,
+      in Polish in `res/values-pl/strings.xml` (with Polish's few and many plurals) and in Dutch in
+      `res/values-nl/strings.xml`
 
 ### Apple
 
@@ -49,7 +50,7 @@ each platform.
       differs by platform goes behind `#if os(macOS)` or into `Sources/iOS` / `Sources/macOS`; layout follows the
       window's size (`ScreenLayout`), never the idiom (see [responsive-layouts.md](responsive-layouts.md))
 - [ ] The route in `AppRoute` and `RootView`, or the sheet where its host presents it
-- [ ] Strings as English SwiftUI literals with their pt-BR, es, (where Spain differs) es-ES, fr, de, it and pl translations in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
+- [ ] Strings as English SwiftUI literals with their pt-BR, es, (where Spain differs) es-ES, fr, de, it, pl and nl translations in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
       both `BoraRachar-iOS` and `BoraRachar-macOS`
 
 ### Web
@@ -61,7 +62,7 @@ each platform.
 - [ ] `webApp/src/features/<name>/XScreen.tsx` with `usePresenter`, `useWatch`, `useActions` (and `useDraft` for
       text inputs), shadcn/ui components and Tailwind
 - [ ] Strings through `t()` with the key in `src/i18n/en.ts` and every other dictionary (`pt`, `es`, `fr`, `de`, `it`,
-      `pl`, a Polish `…Other` with a `{count}` holding its few and many forms as "few|many"); `npm --prefix webApp run
+      `pl`, `nl`, a Polish `…Other` with a `{count}` holding its few and many forms as "few|many"); `npm --prefix webApp run
       build` passes (it type-checks against the generated `.d.ts`)
 
 ### Before the PR

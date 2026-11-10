@@ -802,6 +802,7 @@ export const es: Record<MessageKey, string> = {
   profile_languageGerman: 'Alemán',
   profile_languageItalian: 'Italiano',
   profile_languagePolish: 'Polaco',
+  profile_languageDutch: 'Neerlandés',
   profile_bitcoinInSats: 'Bitcoin en satoshis',
   profile_bitcoinInSatsDetail: 'Muestra y escribe los montos de bitcoin en sats (1 ₿ = 100,000,000 sats).',
   money_sats: '{amount} sats',

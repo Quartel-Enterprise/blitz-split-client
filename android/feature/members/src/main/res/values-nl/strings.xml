@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Uitnodigingslink</string>
+    <string name="members_link_pending">Nog niet gemaakt</string>
+    <string name="members_share">Delen</string>
+    <string name="members_me">%s (jij)</string>
+    <string name="members_status_this_device">Dit apparaat</string>
+    <string name="members_status_joined">Lid</string>
+    <string name="members_status_not_joined">Nog niet lid</string>
+    <string name="members_options">Opties voor %s</string>
+    <string name="members_rename">Naam wijzigen</string>
+    <string name="members_personal_invite">Persoonlijke uitnodiging voor %s</string>
+    <string name="members_personal_message">Wie deze link opent, doet meteen mee als %s, zonder uit de lijst te kiezen. Hij werkt één keer.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Wie deze link opent, doet meteen mee als %1$s, zonder uit de lijst te kiezen, en ziet al hun deel van %2$s in de uitgave die tot nu toe is toegevoegd. Hij werkt één keer.</item>
+        <item quantity="other">Wie deze link opent, doet meteen mee als %1$s, zonder uit de lijst te kiezen, en ziet al hun deel van %2$s in de %3$d uitgaven die tot nu toe zijn toegevoegd. Hij werkt één keer.</item>
+    </plurals>
+    <string name="members_personal_copy">Link kopiëren</string>
+    <string name="members_personal_copied">Gekopieerd</string>
+    <string name="members_personal_share">Delen met %s</string>
+    <string name="members_personal_share_message">Doe mee met %1$s als %2$s op Blitz Split: %3$s</string>
+    <string name="members_remove">Uit groep verwijderen</string>
+    <string name="members_remove_joined">%s is al lid van de groep</string>
+    <string name="members_remove_title">%s uit de groep verwijderen?</string>
+    <string name="members_remove_message">%s is nog geen lid. Je kunt diegene later weer toevoegen.</string>
+    <string name="members_remove_confirm">Verwijderen</string>
+    <string name="members_release">Naam vrijgeven</string>
+    <string name="members_release_title">De naam van %s vrijgeven?</string>
+    <string name="members_release_message">Wie lid is geworden als %1$s, verlaat de groep. De naam, kleur en uitgaven van %1$s blijven, en %1$s kan opnieuw worden gekozen via de link van de groep.</string>
+    <string name="members_release_confirm">Vrijgeven</string>
+    <string name="members_release_error">Kan de naam niet vrijgeven. Controleer je verbinding en probeer het opnieuw.</string>
+    <string name="members_add">Persoon toevoegen</string>
+    <string name="members_invite_instead">Heeft diegene de app? Nodig uit met de link</string>
+    <string name="members_name_label">Naam</string>
+    <string name="members_save">Opslaan</string>
+    <string name="members_cancel">Annuleren</string>
+    <string name="members_change_error">Kan de wijziging niet opslaan. Probeer het opnieuw.</string>
+    <string name="members_remove_open_balance">%s heeft een openstaand saldo</string>
+    <string name="members_balance_to_get_back">%s terug te krijgen</string>
+    <string name="members_balance_owes">%s schuldig</string>
+    <string name="members_balance_settled">Verrekend</string>
+</resources>

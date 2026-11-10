@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Bewaar je herstelcode</string>
+    <string name="recovery_code_body">Je gebruikt de app zonder account. Deze code brengt je groepen terug als je van apparaat wisselt of het kwijtraakt.</string>
+    <string name="recovery_code_copy">Code kopiëren</string>
+    <string name="recovery_code_save_to_password_manager">Opslaan in wachtwoordbeheer</string>
+    <string name="recovery_code_connect_instead">Koppel liever Google of Apple</string>
+    <string name="recovery_code_connect_instead_body">Geen code nodig</string>
+    <string name="recovery_code_sign_in_failed">Kan nu geen verbinding maken. Probeer het opnieuw.</string>
+    <string name="recovery_code_also_in_profile">Hij staat ook in Profiel › Herstelcode.</string>
+    <string name="recovery_code_remind_later">Herinner me later</string>
+    <string name="recovery_code_saved">Ik heb hem bewaard</string>
+</resources>

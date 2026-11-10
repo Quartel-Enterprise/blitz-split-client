@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Herinnering om te verrekenen</string>
+    <string name="push_bill_created">%1$s heeft “%2$s” met je toegevoegd</string>
+    <string name="push_bill_edited">%1$s heeft “%2$s” bewerkt</string>
+    <string name="push_bill_deleted">%1$s heeft “%2$s” verwijderd</string>
+    <string name="push_comment_added">%1$s heeft gereageerd op “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s heeft aangegeven dat die jou heeft betaald</string>
+    <string name="push_payment_to_you">%1$s heeft aangegeven dat %2$s jou heeft betaald</string>
+    <string name="push_payment_received_yours">%1$s heeft je betaling als ontvangen gemarkeerd</string>
+    <string name="push_payment_from_you">%1$s heeft aangegeven dat jij %2$s hebt betaald</string>
+    <string name="push_payment_undone">%1$s heeft een betaling met jou ongedaan gemaakt</string>
+    <string name="push_charge_sent">%1$s heeft je een herinnering gestuurd om te verrekenen</string>
+    <string name="push_settle_reminder">Je hebt een open saldo in %1$s</string>
+    <string name="push_settle_reminders">Je hebt open saldi in %1$s groepen</string>
+    <string name="push_added_to_group">%1$s heeft je aan de groep toegevoegd</string>
+    <string name="push_member_joined">%1$s is lid geworden van de groep</string>
+    <string name="push_debts_simplified_to_you">%1$s heeft de schulden vereenvoudigd. Nu betaalt %2$s jou %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s heeft de schulden vereenvoudigd. Nu betaal jij %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s heeft de schulden vereenvoudigd. Bekijk wat dat voor jou betekent.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s heeft Schulden vereenvoudigen uitgezet. Nu betaalt %2$s jou %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s heeft Schulden vereenvoudigen uitgezet. Nu betaal jij %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s heeft Schulden vereenvoudigen uitgezet. Bekijk wat dat voor jou betekent.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Je zit niet in deze groep</string>
+    <string name="bill_link_not_in_group_message">Deze reactie staat in een groep waar je niet in zit. Vraag degene die je de link stuurde om de uitnodiging.</string>
+    <string name="bill_link_offline_title">Geen internet</string>
+    <string name="bill_link_offline_message">Open de link opnieuw zodra je weer online bent.</string>
+    <string name="bill_link_go_home">Naar Start</string>
+</resources>
