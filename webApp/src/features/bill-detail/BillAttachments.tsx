@@ -6,7 +6,7 @@ import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
-import { t } from '@/i18n'
+import { t, wordGap } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
@@ -268,7 +268,7 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
     presenter.showAttachment(target.id)
   }
   const removeAttachment = attachment?.canRemove ? presenter.removeAttachment?.bind(presenter) : undefined
-  const hints = [removeAttachment && t('billDetail_attachmentRemoveHint'), pages > 1 && t('billDetail_attachmentPagingHint')].filter(Boolean).join(' ')
+  const hints = [removeAttachment && t('billDetail_attachmentRemoveHint'), pages > 1 && t('billDetail_attachmentPagingHint')].filter(Boolean).join(wordGap)
   return (
     <Dialog open={attachment != null} onOpenChange={(open) => !open && presenter.closeViewer()}>
       {/* Why: the dialog's own overlay is black at 50%; this layer over it hides the panel under the photo, as a lightbox does. */}

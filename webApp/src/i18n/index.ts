@@ -5,24 +5,26 @@ import { esES } from './esES'
 import { de } from './de'
 import { fr } from './fr'
 import { it } from './it'
+import { ja } from './ja'
 import { nl } from './nl'
 import { pl } from './pl'
 import { pt } from './pt'
 
 export type { MessageKey }
 /** `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently. */
-export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl'
+export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl', 'nl']
+const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl', 'nl', 'ja']
 
 /**
  * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
  * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
- * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`, `pl` or `nl` tag (de-AT, it-CH,
- * pl-PL, nl-BE…) is German, Italian, Polish or Dutch, any `en` tag is English, and English when none matches.
+ * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`, `pl`, `nl` or `ja` tag (de-AT,
+ * it-CH, pl-PL, nl-BE, ja-JP…) is German, Italian, Polish, Dutch or Japanese, any `en` tag is English, and English when
+ * none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
@@ -53,6 +55,22 @@ export const locale: Locale = pickLocale([storedLanguage(), ...browserLanguages(
 /** Both Spanishes, for the few places where the language rather than the wording decides the grammar. */
 export const isSpanish = locale === 'es' || locale === 'es-ES'
 
+/**
+ * What goes between the pieces of a sentence the code joins ("Ana" and "changed the category", two sentences of a
+ * detail): a space, but nothing in Japanese, which writes "Anaがカテゴリを変更しました". Same rule as Android's
+ * `wordGapUi`.
+ */
+export const wordGap = locale === 'ja' ? '' : ' '
+
+/** The end of a sentence the code finishes: Japanese's "。", the others' ".". Same rule as Android's `fullStopUi`. */
+export const fullStop = locale === 'ja' ? '。' : '.'
+
+/**
+ * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
+ * first sentence instead ("…払います。…なくなりました").
+ */
+export const clauseBreak = locale === 'ja' ? '。' : ', '
+
 const documentLanguages: Record<Locale, string> = {
   en: 'en',
   pt: 'pt-BR',
@@ -63,6 +81,7 @@ const documentLanguages: Record<Locale, string> = {
   it: 'it',
   pl: 'pl',
   nl: 'nl',
+  ja: 'ja',
 }
 
 const documentLanguage = documentLanguages[locale]

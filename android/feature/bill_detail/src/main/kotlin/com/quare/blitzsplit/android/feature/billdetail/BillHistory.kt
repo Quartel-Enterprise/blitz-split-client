@@ -57,6 +57,7 @@ import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.verbForActorOf
+import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillHistoryChange
@@ -226,6 +227,7 @@ private fun EntryHeadlineRow(
         personNameOf(entry.actorName, entry.actorIsMe)
     }
     val what = verbForActorOf(historyVerbOf(entry), entry.actorIsMe)
+    val gap = wordGapUi()
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
@@ -233,7 +235,7 @@ private fun EntryHeadlineRow(
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) { append(who) }
-                append(" ")
+                append(gap)
                 append(what)
             },
             modifier = Modifier.weight(1f),

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">復元コードを保存</string>
+    <string name="recovery_code_body">アカウントなしで使っています。デバイスを替えたりなくしたりしたときは、このコードでグループを復元できます。</string>
+    <string name="recovery_code_copy">コードをコピー</string>
+    <string name="recovery_code_save_to_password_manager">パスワードマネージャーに保存</string>
+    <string name="recovery_code_connect_instead">代わりにGoogleまたはAppleと連携</string>
+    <string name="recovery_code_connect_instead_body">コードは不要です</string>
+    <string name="recovery_code_sign_in_failed">今は連携できませんでした。もう一度お試しください。</string>
+    <string name="recovery_code_also_in_profile">プロフィール › 復元 からも確認できます。</string>
+    <string name="recovery_code_remind_later">後で通知</string>
+    <string name="recovery_code_saved">保存しました</string>
+</resources>

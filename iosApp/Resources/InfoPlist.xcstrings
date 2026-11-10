@@ -35,6 +35,12 @@
             "value" : "Blitz Split"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -84,6 +90,12 @@
           }
         },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -143,6 +155,12 @@
             "value" : "Per scansionare il codice QR di un invito o del tuo vecchio dispositivo, e per scattare la tua foto profilo e le foto delle spese."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "招待や古いデバイスのQRコードのスキャン、プロフィール写真や支出の写真の撮影に使用します。"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -197,6 +215,12 @@
             "value" : "Per invitare persone dai tuoi contatti con il link di un gruppo. I loro numeri restano su questo dispositivo."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループのリンクで連絡先から招待するために使用します。電話番号はこのデバイスから出ません。"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -249,6 +273,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Per salvare le foto di una spesa nella tua libreria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支出の写真をライブラリに保存するために使用します。"
           }
         },
         "nl" : {

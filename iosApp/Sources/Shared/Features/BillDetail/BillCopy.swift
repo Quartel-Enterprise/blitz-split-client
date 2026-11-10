@@ -116,7 +116,7 @@ enum BillCopy {
         if let change = deletion.settledPair {
             sentences.append(settledPair(change))
         }
-        return sentences.joined(separator: " ")
+        return sentences.joined(separator: WordGap.gap)
     }
 
     /// "Elisa already settled up with Bruno after this bill. The payment still counts …", in one go.

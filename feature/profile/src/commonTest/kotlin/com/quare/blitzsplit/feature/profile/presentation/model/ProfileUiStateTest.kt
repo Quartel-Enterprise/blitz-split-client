@@ -659,6 +659,7 @@ class ProfileUiStateTest {
                 AppLanguage.ITALIAN,
                 AppLanguage.POLISH,
                 AppLanguage.DUTCH,
+                AppLanguage.JAPANESE,
             ),
             options,
         )
@@ -684,6 +685,7 @@ class ProfileUiStateTest {
                 AppLanguage.ITALIAN,
                 AppLanguage.POLISH,
                 AppLanguage.DUTCH,
+                AppLanguage.JAPANESE,
             ),
             options,
         )

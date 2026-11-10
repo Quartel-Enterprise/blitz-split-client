@@ -125,15 +125,33 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN a device in any region WHEN German Italian Polish or Dutch is picked THEN is the bare language`() {
+    fun `GIVEN any Japanese tag WHEN reading it THEN is Japanese`() {
         // Given
-        val languages = listOf(AppLanguage.GERMAN, AppLanguage.ITALIAN, AppLanguage.POLISH, AppLanguage.DUTCH)
+        val tags = listOf("ja", "ja-JP", "ja_JP", "JA-jp")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.JAPANESE }, languages)
+    }
+
+    @Test
+    fun `GIVEN a device in any region WHEN a language with one variant is picked THEN is the bare language`() {
+        // Given
+        val languages = listOf(
+            AppLanguage.GERMAN,
+            AppLanguage.ITALIAN,
+            AppLanguage.POLISH,
+            AppLanguage.DUTCH,
+            AppLanguage.JAPANESE,
+        )
 
         // When
         val tags = languages.map { it.toTag("BE") }
 
         // Then
-        assertEquals(listOf("de", "it", "pl", "nl"), tags)
+        assertEquals(listOf("de", "it", "pl", "nl", "ja"), tags)
     }
 
     @Test

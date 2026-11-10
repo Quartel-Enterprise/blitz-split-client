@@ -1,5 +1,5 @@
 import type { JsItemEditor, JsItemStatus, JsItemsRow, JsItemsStatus, JsItemDeletion, JsItemsPersonRow } from 'blitzsplit-shared'
-import { t, type MessageKey } from '@/i18n'
+import { t, wordGap, type MessageKey } from '@/i18n'
 import { formatNames, formatPercent } from '@/lib/money'
 import type { Money } from './splitText'
 
@@ -119,7 +119,7 @@ export function itemStatusText(status: JsItemStatus, money: Money): { title: str
       )
       return {
         title: t(one ? 'split_sharesOne' : 'split_sharesOther', { count: status.count, amount: money(status.amountMinor) }),
-        body: several.length > 0 ? several.join(' ') : among(status.totalMinor, status.people, money),
+        body: several.length > 0 ? several.join(wordGap) : among(status.totalMinor, status.people, money),
       }
     }
     case 'amount-add-up':

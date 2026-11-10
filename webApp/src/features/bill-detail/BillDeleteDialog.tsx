@@ -1,6 +1,6 @@
 import type { JsBillDeletion } from 'blitzsplit-shared'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
-import { t } from '@/i18n'
+import { t, wordGap } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 import { settledPairSentence } from './settledPairText'
 
@@ -34,7 +34,7 @@ export function BillDeleteDialog({
       title={t('billDelete_title')}
       description={[t('billDelete_body', { description: deletion.description }), balanceNote, settledNote]
         .filter(Boolean)
-        .join(' ')}
+        .join(wordGap)}
       confirmLabel={t('billDelete_confirm')}
       isBusy={isDeleting}
       onConfirm={onConfirm}

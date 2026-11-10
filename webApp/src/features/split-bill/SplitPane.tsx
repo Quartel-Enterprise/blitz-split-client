@@ -4,7 +4,7 @@ import { Avatar, segmentClass } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useDraft } from '@/hooks/useDraft'
-import { t, type MessageKey } from '@/i18n'
+import { t, wordGap, type MessageKey } from '@/i18n'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { categoryName } from '@/lib/categories'
@@ -187,7 +187,7 @@ function DefaultSplitNotice({ presenter, state, editor }: { presenter: SplitBill
   const body = isOff
     ? [t('split_defaultOffBody', { group: state.groupName, split: description }), editor.mode === split.editorMode ? null : t(nowKeys[editor.mode] ?? 'split_defaultNowEqual')]
         .filter(Boolean)
-        .join(' ')
+        .join(wordGap)
     : t('split_defaultBody')
   return (
     <div

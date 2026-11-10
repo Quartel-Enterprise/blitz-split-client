@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">新しいグループ</string>
+    <string name="create_group_close">閉じる</string>
+    <string name="create_group_create">作成</string>
+    <string name="create_group_change_color">グループの色を変更</string>
+    <string name="create_group_name_label">グループ名</string>
+    <string name="create_group_type_label">グループの種類</string>
+    <string name="create_group_members_title">参加メンバー</string>
+    <plurals name="create_group_member_count">
+        <item quantity="other">%d人</item>
+    </plurals>
+    <string name="create_group_me">あなた</string>
+    <string name="create_group_remove_member">%sを外す</string>
+    <string name="create_group_add_placeholder">名前で追加</string>
+    <string name="create_group_add">追加</string>
+    <string name="create_group_no_app_notice">今は誰もアプリを入れる必要はありません。全員分の支出をすぐに追加でき、リンクは後で送れます。</string>
+    <string name="create_group_currency">デフォルトの通貨</string>
+    <string name="create_group_currency_caption">新しい支出はこの通貨で始まります。支出ごとに別の通貨も使えます。</string>
+    <string name="create_group_save_error">グループを保存できませんでした。もう一度お試しください。</string>
+    <string name="create_group_photo">グループの写真</string>
+    <string name="create_group_take_photo">写真を撮る</string>
+    <string name="create_group_choose_photo">写真を選ぶ</string>
+    <string name="create_group_remove_photo">写真を削除</string>
+    <string name="create_group_photo_error">この写真は使用できません。別の写真をお試しください。</string>
+</resources>

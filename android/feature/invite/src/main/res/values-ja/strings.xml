@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">閉じる</string>
+    <string name="invite_group_created">グループを作成しました</string>
+    <string name="invite_title">%sに全員を招待</string>
+    <string name="invite_qr_description">グループの招待リンクのQRコード</string>
+    <string name="invite_copy">コピー</string>
+    <string name="invite_copied">コピーしました</string>
+    <string name="invite_who_picks">リンクを開いた人は、リストから自分を選びます：%s。アカウントは不要です。</string>
+    <string name="invite_names_or">%1$sまたは%2$s</string>
+    <string name="invite_anyone_joins">リンクを開いた人はグループに参加します。アカウントは不要です。</string>
+    <string name="invite_pending_title">リンクは準備中</string>
+    <string name="invite_pending_offline">オンラインになるとすぐに作成されます。</string>
+    <string name="invite_pending_online">リンクを作成中…</string>
+    <string name="invite_failed_title">リンクを作成できませんでした</string>
+    <string name="invite_failed_body">グループの同期中に問題が発生しました。</string>
+    <string name="invite_retry">再試行</string>
+    <string name="invite_share">リンクを共有</string>
+    <string name="invite_see_who_joined">参加した人を見る</string>
+    <string name="invite_add_person">アプリを使っていない人を追加</string>
+    <string name="invite_go_to_group">グループへ移動</string>
+    <string name="invite_change_link">リンクを変更</string>
+    <string name="invite_change_link_title">招待リンクを変更しますか？</string>
+    <string name="invite_change_link_message">現在のリンクとQRコードは、未使用の個別の招待も含めて使えなくなります。すでに参加した人はグループに残ります。</string>
+    <string name="invite_change_link_failed">リンクを変更できませんでした。もう一度お試しください。</string>
+    <string name="invite_share_message">Blitz Splitで%1$sの支出を割り勘しましょう。このリンクから参加してください：%2$s</string>
+</resources>

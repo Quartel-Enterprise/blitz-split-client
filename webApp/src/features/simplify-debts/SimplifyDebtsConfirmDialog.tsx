@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
-import { t, type MessageKey } from '@/i18n'
+import { t, wordGap, type MessageKey } from '@/i18n'
 import { formatMoney, formatNames } from '@/lib/money'
 import { paymentCount, simplifyName } from './simplify'
 import { cn } from '@/lib/utils'
@@ -184,7 +184,7 @@ function changeText(person: JsSimplifyPersonChange): string {
   }
   if (person.receivesFrom.length > 0) sentences.push(t(isMe ? 'simplifyConfirm_receivesMe' : 'simplifyConfirm_receives', { names: names(person.receivesFrom) }))
   if (person.isGuest) sentences.push(t('simplifyConfirm_guestNote'))
-  return sentences.join(' ')
+  return sentences.join(wordGap)
 }
 
 /** "Você tem 1 pagamento na fila: Elisa te pagou R$ 50. A simplificação conta com ele…" (13.3d) */

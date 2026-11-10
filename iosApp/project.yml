@@ -5,7 +5,7 @@ name: BoraRachar
 options:
   bundleIdPrefix: com.quare
   # English is the source language and the fallback of every language but Portuguese (pt-BR), Spanish (es, es-ES), French (fr),
-  # German (de), Italian (it), Polish (pl) and Dutch (nl)
+  # German (de), Italian (it), Polish (pl), Dutch (nl) and Japanese (ja)
   developmentLanguage: en
   createIntermediateGroups: true
   deploymentTarget:
@@ -42,7 +42,7 @@ settings:
     # Firebase's Objective-C categories, as its setup asks.
     FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
     OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
-    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, es, es-ES, fr, de, it, pl and nl)
+    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, es, es-ES, fr, de, it, pl, nl and ja)
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
     GENERATE_INFOPLIST_FILE: YES

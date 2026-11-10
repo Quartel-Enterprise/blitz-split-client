@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">アカウントを削除</string>
+    <string name="delete_account_offline_title">インターネットに接続されていません。</string>
+    <string name="delete_account_offline_body">アカウントの削除にはインターネット接続が必要です。接続してもう一度お試しください。</string>
+    <string name="delete_account_heading">アカウントとデータを削除しますか？</string>
+    <string name="delete_account_deleted_title">削除されるもの</string>
+    <string name="delete_account_deleted_profile">プロフィール（名前、写真、色）</string>
+    <string name="delete_account_deleted_keys">PixとBitcoinのキー</string>
+    <string name="delete_account_deleted_provider">%1$sアカウントとの連携</string>
+    <string name="delete_account_deleted_recovery_code">復元コード</string>
+    <string name="delete_account_deleted_device">このデバイス上のデータのコピー</string>
+    <string name="delete_account_export">先にデータをエクスポート</string>
+    <string name="delete_account_confirm">この操作は元に戻せないことを理解しました</string>
+    <string name="delete_account_delete">アカウントを削除</string>
+    <string name="delete_account_cancel">キャンセル</string>
+    <string name="delete_account_failed">アカウントを削除できませんでした。もう一度お試しください。</string>
+</resources>

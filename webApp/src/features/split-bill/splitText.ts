@@ -1,5 +1,5 @@
 import type { JsBillDefaultSplit, JsBillPerson, JsSplitEditor, JsSplitFact } from 'blitzsplit-shared'
-import { t, type MessageKey } from '@/i18n'
+import { fullStop, t, wordGap, type MessageKey } from '@/i18n'
 import { formatNames, formatPercent } from '@/lib/money'
 
 /** An amount in the bill's currency, from its minor unit. */
@@ -25,8 +25,8 @@ function withoutValue(people: JsBillPerson[]): string {
 function sentences(...parts: (string | null)[]): string {
   return parts
     .filter((part): part is string => !!part)
-    .map((part) => (part.endsWith('.') ? part : `${part}.`))
-    .join(' ')
+    .map((part) => (part.endsWith('.') || part.endsWith('。') ? part : `${part}${fullStop}`))
+    .join(wordGap)
 }
 
 /**

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">通知</string>
+    <string name="notification_settings_denied_title">AndroidでBlitz Splitの通知がオフになっています。</string>
+    <string name="notification_settings_denied_body">下のプッシュ通知を受け取るには、システム設定でオンにしてください。ベルはそのまま使えます。</string>
+    <string name="notification_settings_open_settings">設定を開く</string>
+    <string name="notification_settings_refused_body">Androidでもう一度だけ許可して、下のプッシュ通知を受け取れます。ベルはそのまま使えます。</string>
+    <string name="notification_settings_turn_on">オンにする</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Androidでブロック中</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">%1$sのAndroid設定を開く</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">プッシュ通知</string>
+    <string name="notification_settings_push_switch_detail">このデバイスのみ</string>
+    <string name="notification_settings_section">通知する内容</string>
+    <string name="notification_settings_push">プッシュ</string>
+    <string name="notification_settings_in_app">アプリ内</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s、%2$s</string>
+    <string name="notification_settings_legend">プッシュは、このデバイスに通知を送ります。アプリ内は、ベルとアクティビティで新着として表示します。オフにしても、既読としてアクティビティには表示されます。</string>
+    <string name="notification_settings_bills">支出</string>
+    <string name="notification_settings_bills_detail">自分が含まれる支出の追加、編集、削除</string>
+    <string name="notification_settings_payments">支払いと精算</string>
+    <string name="notification_settings_payments_detail">自分への支払いや自分からの支払い、精算のシンプル化</string>
+    <string name="notification_settings_comments">コメント</string>
+    <string name="notification_settings_comments_detail">自分が含まれる支出や、自分が書き込んだスレッドへのコメント</string>
+    <string name="notification_settings_people_and_groups">メンバーとグループ</string>
+    <string name="notification_settings_people_and_groups_detail">グループへの参加や退出、グループ内の変更</string>
+    <string name="notification_settings_payment_requests">支払いの依頼</string>
+    <string name="notification_settings_payment_requests_detail">誰かから支払いを依頼されたとき</string>
+    <string name="notification_settings_balance_reminder">未精算の残高のリマインダー</string>
+    <string name="notification_settings_balance_reminder_detail">未精算の残高がある場合、週に1回</string>
+    <string name="notification_settings_footer">通知はインターネットに接続しているときに届きます。グループをミュートするには、グループ内のメニューを使ってください。</string>
+</resources>

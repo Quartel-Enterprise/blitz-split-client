@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">残高</string>
+    <string name="global_balances_profile">プロフィール</string>
+    <string name="global_balances_offline">オフライン · このデバイスの残高</string>
+    <string name="global_balances_filter">表示</string>
+    <string name="global_balances_filter_all">すべて</string>
+    <string name="global_balances_filter_you_owe">支払う</string>
+    <string name="global_balances_filter_owes_you">受け取る</string>
+    <string name="global_balances_hint">グループ間で相殺済みのため、各メンバーは1回だけ表示されます。</string>
+    <string name="global_balances_hint_empty">このデバイスのすべてのグループを集計しています。</string>
+    <string name="global_balances_section_you_owe">支払う · %d</string>
+    <string name="global_balances_section_owes_you">受け取る · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">%d件のグループ</item>
+    </plurals>
+    <string name="global_balances_guest">%s · ゲスト</string>
+    <string name="global_balances_you_owe">支払う</string>
+    <string name="global_balances_owes_you">受け取る</string>
+    <string name="global_balances_by_group_show">%sのグループ別を表示</string>
+    <string name="global_balances_by_group_hide">%sのグループ別を隠す</string>
+    <string name="global_balances_received">受け取った</string>
+    <string name="global_balances_received_from">%sから受け取った</string>
+    <string name="global_balances_settle">精算する</string>
+    <string name="global_balances_settle_with">%sと精算する</string>
+    <string name="global_balances_charge">請求</string>
+    <string name="global_balances_charge_person">%sに請求</string>
+    <string name="global_balances_detail_pane">%sとの残高</string>
+    <string name="global_balances_detail_owes_you">%sから受け取る</string>
+    <string name="global_balances_detail_you_owe">%sに支払う</string>
+    <string name="global_balances_detail_guest">%s · アプリを使っていないゲスト</string>
+    <string name="global_balances_detail_note_owed">差引額はすでにグループ間で相殺済みです。「請求」と「受け取った」は%sを使います。アプリが各グループに支払いを記録します。</string>
+    <string name="global_balances_detail_note_settle">差引額はすでにグループ間で相殺済みです。「精算する」は%sを使います。アプリが各グループに支払いを記録します。</string>
+    <string name="global_balances_detail_note_single">%sとの未精算のグループは1件だけです。</string>
+    <string name="global_balances_settled_title">すべて精算済み</string>
+    <string name="global_balances_settled_body">貸し借りはありません。誰かが支出を追加すると、ここに残高が表示されます。</string>
+    <string name="global_balances_settled_action">グループを見る</string>
+    <string name="global_balances_nothing_to_pay_title">支払うものはありません</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">全員との精算が済んでいます。まだ%1$d人から%2$sを受け取る予定です。</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">受け取る相手を見る</string>
+    <string name="global_balances_nothing_to_receive_title">受け取るものはありません</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">まだ%1$d人に%2$sを支払う必要があります。</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">支払う相手を見る</string>
+    <string name="global_balances_coming_soon">近日公開</string>
+    <string name="global_balances_change_error">変更を保存できませんでした。もう一度お試しください。</string>
+    <string name="global_balances_copied">コピーしました</string>
+    <string name="global_balances_charge_title">%sに請求</string>
+    <string name="global_balances_charge_owes">受け取る額 %1$s · %2$s</string>
+    <string name="global_balances_charge_close">閉じる</string>
+    <string name="global_balances_charge_guest">%sはアプリを使っていないゲストです。このメッセージでしか知らせが届かないため、支出の内訳もあらかじめ書かれています。</string>
+    <string name="global_balances_charge_message">メッセージ</string>
+    <string name="global_balances_charge_pix">Pixキーを含める</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">メッセージをコピー</string>
+    <string name="global_balances_charge_send">送信</string>
+    <string name="global_balances_message">%1$s、こんにちは！Blitz Splitの計算では、%3$sの分で私に%2$sの支払いがあります。</string>
+    <string name="global_balances_message_guest">%1$s、こんにちは！%3$sの分で私に%2$sの支払いがあります。%4$sのあなたの負担分です。</string>
+    <string name="global_balances_message_guest_paid">%1$s、こんにちは！%3$sの分で私に%2$sの支払いがあります。%4$sのあなたの負担分から、支払い済みの%5$sを引いた額です。</string>
+    <string name="global_balances_message_group">グループ%s</string>
+    <string name="global_balances_message_groups">グループ%s</string>
+    <string name="global_balances_message_pix">Pix（%1$s）：%2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">電話番号</string>
+    <string name="global_balances_key_email">メール</string>
+    <string name="global_balances_key_random">ランダムキー</string>
+    <string name="global_balances_message_reroute">%1$sが精算をシンプルにしたため、%2$sに支払う代わりに私に直接支払ってください。合計額は変わっていません。</string>
+</resources>
