@@ -14,8 +14,8 @@ import androidx.compose.ui.semantics.semantics
 
 /*
  * Why: on Android a shadow means "tap me" (docs/product/general.md): a card that opens something as one touch target
- * is Material's elevated card, with its ripple and its hovered and pressed elevation, in its screen's container color
- * rather than the elevated card's own, so it matches the rows beside it.
+ * is Material's elevated card, with its ripple and its hovered elevation (pressed stays at rest, as Material's tokens
+ * say), in its screen's container color rather than the elevated card's own, so it matches the rows beside it.
  */
 @Composable
 fun TappableCard(

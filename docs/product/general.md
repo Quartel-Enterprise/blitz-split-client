@@ -150,10 +150,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     ViewModels take JetBrains' multiplatform lifecycle.
   - On Android a shadow means "tap me" (Pierre's call, beta feedback, after Material 3's card guidelines): a card that
     stands on its own and opens something as one touch target is `:android:designsystem`'s `TappableCard`, Material's
-    `ElevatedCard` with its `onClick`, so the ripple, the hovered/pressed elevation and TalkBack's "button" come with
-    it: a group's card on Home and in Groups' grid (the cards of one collection share their resting elevation; the
-    grid's is a plain `ElevatedCard` whose content keeps the click, since its long press holds the group's actions),
-    the balances summary on Contacts, the identity card on Profile, Statistics' "Biggest expense", Split a bill's
+    `ElevatedCard` with its `onClick`, so the ripple, the hovered elevation and TalkBack's "button" come with it
+    (pressed keeps the resting elevation, as Material's tokens say): a group's card on Home and in Groups' grid (the
+    cards of one collection share their resting elevation; the grid's is a plain `ElevatedCard` whose content keeps
+    the click, since its long press holds the group's actions), the balances summary on Contacts, the identity card on Profile, Statistics' "Biggest expense", Split a bill's
     "Category map", Groups' search "Did you mean …?", the joined banner's "Protect your access" and Restore's "Scan
     the QR code from your old device". The card keeps its screen's container color (Material's elevated card is
     `surfaceContainerLow`, beside rows of `surfaceContainerLowest`). A card that only informs (balances, notices,
