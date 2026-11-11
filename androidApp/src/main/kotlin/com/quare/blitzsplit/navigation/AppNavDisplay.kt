@@ -257,7 +257,9 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
             // Why: a sheet over the profile on a phone, a dialog wider (a book's right half), full screen on a tabletop.
             entry<Route.EditProfile>(metadata = formPresentationMetadata) {
-                EditProfileScreen(presentation = formPresentation)
+                // Why: an open scene keeps the way it opened when the fold changes under it, so its content does too.
+                val presentation = remember { formPresentation }
+                EditProfileScreen(presentation = presentation)
             }
             // Why: the photo big over the profile, the whole window dimmed behind it (a book's end half, as any dialog).
             entry<Route.ProfilePhoto>(

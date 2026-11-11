@@ -377,7 +377,6 @@ private struct PreferencesSection: View {
                 Text("Dark").tag(ThemePreference.dark)
             }
             Picker(
-                "Language",
                 selection: Binding(
                     get: { model.state.language },
                     set: { model.send(ProfileUiEventOnLanguageSelected(language: $0)) },
@@ -386,6 +385,11 @@ private struct PreferencesSection: View {
                 ForEach(model.state.languageOptions, id: \.self) { language in
                     LanguageName(language: language).tag(language)
                 }
+            } label: {
+                Text("Language")
+            } currentValueLabel: {
+                // The row shows the pick by its own name alone, the menu's subtitle being for choosing
+                LanguageName(language: model.state.language, showsTranslation: false)
             }
             Toggle(
                 isOn: Binding(
@@ -428,15 +432,19 @@ private struct PreferencesSection: View {
 /// unless both read the same ("Italiano"). A menu draws the second line as the item's subtitle.
 private struct LanguageName: View {
     let language: AppLanguage
+    var showsTranslation = true
 
     var body: some View {
-        if let native = nativeName, let tag = language.tag {
-            Text(Self.spoken(native, in: tag))
-            if translatedName != native {
-                Text(verbatim: translatedName)
+        // One view, so the Picker takes it as one option, its second line as the menu item's subtitle
+        VStack(alignment: .leading) {
+            if let native = nativeName, let tag = language.tag {
+                Text(Self.spoken(native, in: tag))
+                if showsTranslation, translatedName != native {
+                    Text(verbatim: translatedName)
+                }
+            } else {
+                Text("System")
             }
-        } else {
-            Text("System")
         }
     }
 
