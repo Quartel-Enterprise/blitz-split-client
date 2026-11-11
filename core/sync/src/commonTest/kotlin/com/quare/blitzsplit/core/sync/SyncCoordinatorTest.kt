@@ -2821,6 +2821,27 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN the group still waits to go up WHEN changing the link THEN uploads it before rotating the code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedGroups = listOf(dinner.copy(inviteCode = "AbCd1234", isPending = true)),
+            )
+            groups.hasPendingChanges.value = true
+
+            // When
+            val result = coordinator.rotateInviteCode("dinner")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val upload = calls.indexOf("groups upload ${FakeAccountRepository.ANONYMOUS_USER_ID}")
+            assertTrue(upload >= 0)
+            assertTrue(calls.indexOf("groups rotate invite code dinner") > upload)
+        }
+
+    @Test
     fun `GIVEN the server changes the link WHEN changing it THEN succeeds without another sync`() = runTest {
         // Given
         prepareScenario(

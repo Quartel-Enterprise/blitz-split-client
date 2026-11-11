@@ -214,6 +214,20 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun markGroupsOnServer(ids: List<String>) {
+        dao.markGroupsOnServer(ids)
+    }
+
+    override suspend fun replaceInviteCodeBeforeUpload(
+        id: String,
+        inviteCode: String,
+    ) {
+        dao.replaceInviteCodeBeforeUpload(
+            id = id,
+            inviteCode = inviteCode,
+        )
+    }
+
     override suspend fun updateMemberInviteCodes(codesById: Map<String, String>) {
         dao.updateMemberInviteCodes(codesById)
     }

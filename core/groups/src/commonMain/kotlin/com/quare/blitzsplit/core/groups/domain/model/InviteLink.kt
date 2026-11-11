@@ -6,6 +6,9 @@ package com.quare.blitzsplit.core.groups.domain.model
  * ?from=<member code> of whoever shared it, so the invite says who sent it.
  */
 object InviteLink {
+    // Why: as long as the site's /g/<code> route and the server's codes; this device makes a new group's (CreateGroup).
+    const val CODE_LENGTH = 8
+
     private const val BASE_URL = "https://blitzsplit.com/g/"
     private const val FROM = "from"
 

@@ -1107,6 +1107,7 @@ class GroupDaoTest {
         updatedAt: Long,
         pendingSync: Boolean = false,
         inviteCode: String? = null,
+        isOnServer: Boolean = inviteCode != null || !pendingSync,
         ownerUserId: String = "user-1",
     ): GroupEntity = GroupEntity(
         id = id,
@@ -1131,6 +1132,7 @@ class GroupDaoTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = isOnServer,
     )
 
     private fun member(

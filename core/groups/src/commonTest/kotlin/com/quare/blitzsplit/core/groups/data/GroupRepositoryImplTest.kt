@@ -6204,6 +6204,7 @@ class GroupRepositoryImplTest {
         pendingSync: Boolean = false,
         ownerUserId: String? = "user-1",
         inviteCode: String? = null,
+        isOnServer: Boolean = inviteCode != null || !pendingSync,
         shape: String? = null,
         photoUrl: String? = null,
         pendingPhoto: ByteArray? = null,
@@ -6230,6 +6231,7 @@ class GroupRepositoryImplTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = isOnServer,
     )
 
     private fun member(
@@ -6383,6 +6385,7 @@ class GroupRepositoryImplTest {
             profileMapper = ProfileMapperImpl(),
             mapper = GroupMapperImpl(),
             deletions = deletions,
+            randomCode = { length -> "N".repeat(length) },
         )
     }
 }
@@ -6667,6 +6670,7 @@ private class FakeGroupLocalDataSource(
                 inviteCode = it,
             )
         }
+        markGroupsOnServer(listOf(entity.id))
         val now = group(entity.id)
         if (current != null && now != null && now.ownerUserId == entity.ownerUserId &&
             now.simplifyDebtsAt <= entity.simplifyDebtsAt
@@ -6742,6 +6746,17 @@ private class FakeGroupLocalDataSource(
         groups.value = groups.value.map { if (it.id == id) it.copy(inviteCode = inviteCode) else it }
     }
 
+    override suspend fun markGroupsOnServer(ids: List<String>) {
+        groups.value = groups.value.map { if (it.id in ids) it.copy(isOnServer = true) else it }
+    }
+
+    override suspend fun replaceInviteCodeBeforeUpload(
+        id: String,
+        inviteCode: String,
+    ) {
+        groups.value = groups.value.map { if (it.id == id && !it.isOnServer) it.copy(inviteCode = inviteCode) else it }
+    }
+
     override suspend fun applyRemoteMember(entity: GroupMemberEntity) {
         val current = member(entity.id)
         when {
@@ -6810,7 +6825,7 @@ private class FakeGroupLocalDataSource(
     }
 
     override suspend fun getUploadedGroupIds(ownerUserId: String): List<String> = groups.value
-        .filter { it.ownerUserId == ownerUserId && (!it.pendingSync || it.inviteCode != null) }
+        .filter { it.ownerUserId == ownerUserId && it.isOnServer }
         .map { it.id }
 
     override suspend fun deleteGroups(ids: List<String>) {

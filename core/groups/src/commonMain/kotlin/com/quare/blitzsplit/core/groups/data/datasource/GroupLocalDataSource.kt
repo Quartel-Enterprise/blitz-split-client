@@ -129,6 +129,15 @@ interface GroupLocalDataSource {
         inviteCode: String,
     )
 
+    // Why: the groups an upload took up, so a later download that misses them reads as removed there.
+    suspend fun markGroupsOnServer(ids: List<String>)
+
+    // Why: another group took the code this device made, so the group goes up again with a new one.
+    suspend fun replaceInviteCodeBeforeUpload(
+        id: String,
+        inviteCode: String,
+    )
+
     suspend fun updateMemberInviteCodes(codesById: Map<String, String>)
 
     suspend fun applyRemoteMember(entity: GroupMemberEntity)
@@ -144,7 +153,7 @@ interface GroupLocalDataSource {
         serverMemberIds: Set<String>,
     )
 
-    // Why: the user's groups the server had at some point: synced, or pending with the invite code it made.
+    // Why: the user's groups the server had at some point, whatever changed here since.
     suspend fun getUploadedGroupIds(ownerUserId: String): List<String>
 
     // Why: with their members, bills and payments, even what is still to push: the server no longer has them here.

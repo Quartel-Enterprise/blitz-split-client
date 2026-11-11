@@ -565,6 +565,7 @@ class RoomExpenseLocalDataSourceTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = true,
     )
 
     private fun member(

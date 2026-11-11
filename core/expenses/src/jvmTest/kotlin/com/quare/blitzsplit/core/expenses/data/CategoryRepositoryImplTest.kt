@@ -389,6 +389,7 @@ class CategoryRepositoryImplTest {
                     simplifyDebtsChange = null,
                     simplifyDebtsPending = false,
                     simplifyDebtsConflictBy = null,
+                    isOnServer = true,
                 ),
             )
         }

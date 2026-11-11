@@ -116,6 +116,7 @@ class GroupMapperImpl : GroupMapper {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = false,
     )
 
     // Why: one write can't tell the members apart by the clock, so each one's millisecond keeps the order given.
@@ -173,7 +174,8 @@ class GroupMapperImpl : GroupMapper {
         currency = entity.currency,
         addedAt = entity.addedAt,
         updatedAt = entity.updatedAt,
-        inviteCode = null,
+        // Why: only a group the server doesn't have yet takes this device's code; one already up keeps the server's.
+        inviteCode = entity.inviteCode.takeUnless { entity.isOnServer },
         defaultSplit = objectOrNull(entity.defaultSplit),
         simplifyDebts = entity.simplifyDebts,
         simplifyDebtsAt = entity.simplifyDebtsAt,
@@ -224,6 +226,7 @@ class GroupMapperImpl : GroupMapper {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = true,
     )
 
     override fun toEntity(

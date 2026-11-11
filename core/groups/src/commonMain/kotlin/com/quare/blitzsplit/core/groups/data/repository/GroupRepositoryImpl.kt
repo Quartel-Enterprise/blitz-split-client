@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.data.repository
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupPhotoRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
+import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
@@ -11,6 +12,8 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
+import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.repository.GroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
@@ -23,6 +26,7 @@ import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
+import com.quare.blitzsplit.core.utils.RandomCode
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -43,6 +47,7 @@ class GroupRepositoryImpl(
     private val profileMapper: ProfileMapper,
     private val mapper: GroupMapper,
     private val deletions: GroupDeletionRepository,
+    private val randomCode: RandomCode,
 ) : GroupRepository {
     // Why: the groups this device is deleting, off every screen while the server is asked.
     private val hiddenGroupIds = MutableStateFlow(emptySet<String>())
@@ -280,10 +285,11 @@ class GroupRepositoryImpl(
     /*
      * Why: the groups before their members, which the server only accepts in a group it already has. The members
      * are read first, so a group created between the two reads goes up without them (they wait for the next round)
-     * instead of its members going up without it. A new group's invite code comes back with it, and a new member's
-     * with it: the sync downloads before it uploads, so waiting for the next download would keep "Convidar" and the
-     * personal invite without a link until then. The members removed here go last, and leave the device once the
-     * server deleted them.
+     * instead of its members going up without it. A new group goes up with the invite code this device made, and comes
+     * back with the one the server kept (the same, or the server's own from an older server), and a new member with
+     * its own code: the sync downloads before it uploads, so waiting for the next download would keep the personal
+     * invite without a link until then. The members removed here go last, and leave the device once the server deleted
+     * them.
      *
      * A photo picked here goes up before the row that names it, so no device fetches its URL while the object still
      * holds the photo it replaces and caches that one under it. Only a group's members may upload its photo, so a new
@@ -299,7 +305,7 @@ class GroupRepositoryImpl(
         val photoErrors = mutableListOf<Throwable>()
         val refusedPhotoGroupIds = mutableSetOf<String>()
         val pendingGroups = local.getPendingGroups(userId)
-        pendingGroups.filter { it.isOnServer() }.forEach { group ->
+        pendingGroups.filter { it.isOnServer }.forEach { group ->
             uploadPhotoOf(group)
                 ?.onSuccess { if (it == PhotoUpload.REFUSED) refusedPhotoGroupIds += group.id }
                 ?.onFailure {
@@ -309,34 +315,30 @@ class GroupRepositoryImpl(
         }
         val groupsToPush = pendingGroups.filterNot { it.id in heldGroupIds }
         if (groupsToPush.isNotEmpty()) {
-            remote
-                .upsertGroups(
-                    groupsToPush.map {
-                        mapper.toDto(
-                            entity = it,
-                            userId = userId,
-                            // Why: the snapshot read above, so an uploaded photo's URL is the one it went up under.
-                            photoUrl = if (it.id in refusedPhotoGroupIds) it.photoUrl else photoUrlOf(it),
-                        )
-                    },
-                ).forEach { dto ->
-                    dto.inviteCode?.let {
-                        local.updateInviteCode(
-                            id = dto.id,
-                            inviteCode = it,
-                        )
-                    }
-                    /*
-                     * Why: the row comes back with the server's switch, this device's change when it took it; a
-                     * later one from someone else waits for the download, which tells the conflict (13.1e).
-                     */
-                    dto.simplifyDebtsAt?.let {
-                        local.markSimplifyDebtsSynced(
-                            id = dto.id,
-                            syncedAt = it,
-                        )
-                    }
+            upsertWithFreeInviteCodes(
+                groups = groupsToPush,
+                userId = userId,
+                refusedPhotoGroupIds = refusedPhotoGroupIds,
+            ).forEach { dto ->
+                dto.inviteCode?.let {
+                    local.updateInviteCode(
+                        id = dto.id,
+                        inviteCode = it,
+                    )
                 }
+                /*
+                 * Why: the row comes back with the server's switch, this device's change when it took it; a
+                 * later one from someone else waits for the download, which tells the conflict (13.1e).
+                 */
+                dto.simplifyDebtsAt?.let {
+                    local.markSimplifyDebtsSynced(
+                        id = dto.id,
+                        syncedAt = it,
+                    )
+                }
+            }
+            // Why: every one of them, also a row Last-Write-Wins skipped, which the server leaves out of its answer.
+            local.markGroupsOnServer(groupsToPush.map { it.id })
         }
         if (pendingMembers.isNotEmpty()) {
             val codesById = remote
@@ -345,7 +347,7 @@ class GroupRepositoryImpl(
                 .toMap()
             if (codesById.isNotEmpty()) local.updateMemberInviteCodes(codesById)
         }
-        groupsToPush.filterNot { it.isOnServer() }.forEach { group ->
+        groupsToPush.filterNot { it.isOnServer }.forEach { group ->
             uploadPhotoOf(group)
                 // Why: its row named the refused photo, so the next round pushes it again without one.
                 ?.onSuccess { if (it == PhotoUpload.REFUSED) heldGroupIds += group.id }
@@ -375,8 +377,46 @@ class GroupRepositoryImpl(
         photoErrors.firstOrNull()?.let { throw it }
     }
 
-    // Why: a group with an invite code went up once, as GroupDao.getGroupIdsOnServer counts it.
-    private fun GroupEntity.isOnServer(): Boolean = inviteCode != null
+    /*
+     * Why: another group may have the code this device made, which the server refuses with the whole upload. It
+     * doesn't say whose, so every group not up yet gets a new code and they go again; a clash is so rare (about one in
+     * 10^14 per group) that a link shared offline almost never changes, and a few tries always find free codes.
+     */
+    private suspend fun upsertWithFreeInviteCodes(
+        groups: List<GroupEntity>,
+        userId: String,
+        refusedPhotoGroupIds: Set<String>,
+    ): List<GroupDto> {
+        var toPush = groups
+        repeat(INVITE_CODE_ATTEMPTS - 1) {
+            try {
+                return remote.upsertGroups(toPush.map { it.toDto(userId, refusedPhotoGroupIds) })
+            } catch (_: InviteCodeTakenException) {
+                toPush = toPush.map { it.withNewInviteCodeUnlessOnServer() }
+            }
+        }
+        return remote.upsertGroups(toPush.map { it.toDto(userId, refusedPhotoGroupIds) })
+    }
+
+    // Why: the snapshot read before the photos went up, so an uploaded photo's URL is the one it went up under.
+    private fun GroupEntity.toDto(
+        userId: String,
+        refusedPhotoGroupIds: Set<String>,
+    ): GroupDto = mapper.toDto(
+        entity = this,
+        userId = userId,
+        photoUrl = if (id in refusedPhotoGroupIds) photoUrl else photoUrlOf(this),
+    )
+
+    private suspend fun GroupEntity.withNewInviteCodeUnlessOnServer(): GroupEntity {
+        if (isOnServer) return this
+        val newCode = randomCode(InviteLink.CODE_LENGTH)
+        local.replaceInviteCodeBeforeUpload(
+            id = id,
+            inviteCode = newCode,
+        )
+        return copy(inviteCode = newCode)
+    }
 
     // Why: null for a group with no photo waiting; once it is up, the device keeps the URL its row goes up with.
     private suspend fun uploadPhotoOf(group: GroupEntity): Result<PhotoUpload>? {
@@ -513,5 +553,6 @@ class GroupRepositoryImpl(
         const val STATUS_HAS_BALANCE = "has_balance"
         const val STATUS_NOT_MEMBER = "not_member"
         const val REASON_DELETED = "deleted"
+        const val INVITE_CODE_ATTEMPTS = 3
     }
 }

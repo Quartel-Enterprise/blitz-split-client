@@ -445,6 +445,7 @@ class GroupMapperImplTest {
                 simplifyDebtsChange = null,
                 simplifyDebtsPending = false,
                 simplifyDebtsConflictBy = null,
+                isOnServer = false,
             ),
             entity,
         )
@@ -672,6 +673,7 @@ class GroupMapperImplTest {
                 simplifyDebtsChange = null,
                 simplifyDebtsPending = false,
                 simplifyDebtsConflictBy = null,
+                isOnServer = true,
             ),
             entity,
         )
@@ -2181,6 +2183,7 @@ class GroupMapperImplTest {
         pendingSync: Boolean = false,
         ownerUserId: String? = "user-1",
         inviteCode: String? = null,
+        isOnServer: Boolean = inviteCode != null || !pendingSync,
         shape: String? = null,
         photoUrl: String? = null,
         pendingPhoto: ByteArray? = null,
@@ -2207,6 +2210,7 @@ class GroupMapperImplTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = isOnServer,
     )
 
     private fun memberEntity(

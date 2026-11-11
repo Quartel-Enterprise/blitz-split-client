@@ -720,6 +720,7 @@ class RoomBillAttachmentLocalDataSourceTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = true,
     )
 
     private fun expense(

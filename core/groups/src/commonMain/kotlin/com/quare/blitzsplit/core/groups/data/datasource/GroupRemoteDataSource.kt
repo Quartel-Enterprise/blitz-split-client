@@ -12,7 +12,11 @@ import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 
 interface GroupRemoteDataSource {
-    // Why: the rows as the server kept them, with the invite code it made for a new group.
+    /*
+     * Why: the rows as the server kept them, with each one's invite code: this device's for a new group, or the
+     * server's when it didn't take it (an older server). InviteCodeTakenException when another group has a new
+     * group's code, and then none of them went in.
+     */
     suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto>
 
     // Why: the rows as the server kept them, with the invite code it made for a new member.

@@ -18,7 +18,10 @@ data class GroupDto(
     @SerialName("currency") val currency: String,
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,
-    // Why: the server makes it and keeps it whatever a push sends, which is always null.
+    /*
+     * Why: this device's code, sent with a group the server doesn't have yet, which keeps it unless another group has it
+     * (InviteCodeTakenException); null afterwards, since the server keeps a group's code whatever a push sends.
+     */
     @SerialName("invite_code") val inviteCode: String?,
     /*
      * Why: null while the group splits equally among everyone, sent as null so going back to it reaches the server.
