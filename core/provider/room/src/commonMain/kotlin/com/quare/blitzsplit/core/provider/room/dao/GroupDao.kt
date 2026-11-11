@@ -343,6 +343,9 @@ interface GroupDao {
         inviteCode: String,
     )
 
+    @Query("SELECT EXISTS(SELECT 1 FROM split_group WHERE id = :id AND isOnServer = 1)")
+    suspend fun isOnServer(id: String): Boolean
+
     // Why: the server took them, so they leave the device once it no longer gives them (deleteGoneFromServer).
     @Transaction
     suspend fun markGroupsOnServer(ids: List<String>) {
@@ -373,7 +376,7 @@ interface GroupDao {
         }
     }
 
-    // Why: like the group's, the server makes the member's code and no client changes it.
+    // Why: the server makes the member's code and no client changes it.
     @Query("UPDATE group_member SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
     suspend fun updateMemberInviteCode(
         id: String,

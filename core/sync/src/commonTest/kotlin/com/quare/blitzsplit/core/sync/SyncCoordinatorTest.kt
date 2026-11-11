@@ -2834,6 +2834,7 @@ class SyncCoordinatorTest {
                 ),
             )
             groups.hasPendingChanges.value = true
+            groups.groupIdsNotOnServer += "dinner"
 
             // When
             val result = coordinator.rotateInviteCode("dinner")
@@ -2844,6 +2845,32 @@ class SyncCoordinatorTest {
             val upload = calls.indexOf("groups upload ${FakeAccountRepository.ANONYMOUS_USER_ID}")
             assertTrue(upload >= 0)
             assertTrue(calls.indexOf("groups rotate invite code dinner") > upload)
+        }
+
+    @Test
+    fun `GIVEN a group on the server and other changes waiting WHEN changing the link THEN rotates without a sync`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedGroups = listOf(dinner.copy(inviteCode = "oldCode1")),
+            )
+            groups.hasPendingChanges.value = true
+            groups.pushError = IllegalStateException("a bill the server refuses")
+
+            // When
+            val result = coordinator.rotateInviteCode("dinner")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(groups.uploadedUserIds.isEmpty())
+            assertEquals(
+                "newCode1",
+                groups.groups.value
+                    .single()
+                    .inviteCode,
+            )
         }
 
     @Test

@@ -304,7 +304,7 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     once the group went up. The push sends it only while the group is not on the server (`GroupMapper.toDto`), and
     the server keeps it (`set_group_invite_code`). One another group already has is refused with the whole upsert
     (`invite_code_taken`, `InviteCodeTakenException`): every group not up yet gets a new code
-    (`GroupDao.replaceInviteCodeBeforeUpload`) and the upsert goes again, up to three times. From then on the server's
+    (`GroupDao.replaceInviteCodeBeforeUpload`) and the upsert goes again, up to three attempts in all. From then on the server's
     code wins: the push reads it back from the upsert's answer (an older server that ignores the device's code
     answers with its own, which takes its place), and both the push and the download store it with
     `GroupDao.updateInviteCode`, outside Last-Write-Wins: a group this device created comes back with the same

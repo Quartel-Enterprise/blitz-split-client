@@ -129,6 +129,8 @@ interface GroupLocalDataSource {
         inviteCode: String,
     )
 
+    suspend fun isOnServer(id: String): Boolean
+
     // Why: the groups an upload took up, so a later download that misses them reads as removed there.
     suspend fun markGroupsOnServer(ids: List<String>)
 

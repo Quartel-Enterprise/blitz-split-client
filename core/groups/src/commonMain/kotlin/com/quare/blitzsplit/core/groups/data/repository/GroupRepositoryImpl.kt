@@ -239,6 +239,8 @@ class GroupRepositoryImpl(
         )
     }
 
+    override suspend fun isOnServer(groupId: String): Boolean = local.isOnServer(groupId)
+
     override suspend fun requestLeaveGroup(groupId: String): Result<GroupExitOutcome> = suspendRunCatching {
         exitOutcomeOf(groupId, remote.requestLeaveGroup(groupId))
     }

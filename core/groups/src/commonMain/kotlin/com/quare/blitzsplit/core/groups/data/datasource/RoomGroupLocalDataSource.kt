@@ -214,6 +214,8 @@ class RoomGroupLocalDataSource(
         )
     }
 
+    override suspend fun isOnServer(id: String): Boolean = dao.isOnServer(id)
+
     override suspend fun markGroupsOnServer(ids: List<String>) {
         dao.markGroupsOnServer(ids)
     }

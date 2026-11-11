@@ -7401,6 +7401,8 @@ private class FakeGroupLocalDataSource(
         groups.value = groups.value.map { if (it.id == id) it.copy(inviteCode = inviteCode) else it }
     }
 
+    override suspend fun isOnServer(id: String): Boolean = group(id)?.isOnServer == true
+
     override suspend fun markGroupsOnServer(ids: List<String>) {
         groups.value = groups.value.map { if (it.id in ids) it.copy(isOnServer = true) else it }
     }

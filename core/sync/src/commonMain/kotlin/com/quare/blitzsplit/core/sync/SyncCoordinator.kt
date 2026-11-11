@@ -348,16 +348,18 @@ class SyncCoordinator(
         .await()
 
     /*
-     * Why: "Trocar link". After the changes waiting here go up (syncThen), so a group created here, which has its code
-     * before the server has it, is up before its code changes. Under the sync lock, so a download that read the group
-     * before can't write the old code back over the new one, and in the app's scope, so leaving Convidar mid-call can't
-     * lose the new code. A failure may hide a change the server made anyway (an answer lost on the way), so a sync
-     * brings the code it holds, also once Convidar is gone; a refusal changed nothing, so it needs none.
+     * Why: "Trocar link". A group created here has its code before the server has the group, so one not up yet goes up
+     * first (syncThen); one already up changes at once, whatever else waits to go up. Under the sync lock, so a
+     * download that read the group before can't write the old code back over the new one, and in the app's scope, so
+     * leaving Convidar mid-call can't lose the new code. A failure may hide a change the server made anyway (an answer
+     * lost on the way), so a sync brings the code it holds, also once Convidar is gone; a refusal changed nothing, so
+     * it needs none.
      */
     suspend fun rotateInviteCode(groupId: String): Result<Unit> = scope
         .async {
-            syncThen { groupRepository.rotateInviteCode(groupId) }
-                .onFailure { if (it !is NotGroupCreatorException) retry() }
+            val rotate = suspend { groupRepository.rotateInviteCode(groupId) }
+            val result = if (groupRepository.isOnServer(groupId)) syncLock.withLock { rotate() } else syncThen(rotate)
+            result.onFailure { if (it !is NotGroupCreatorException) retry() }
         }.await()
 
     /*
