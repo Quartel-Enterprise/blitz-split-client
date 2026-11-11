@@ -74,11 +74,6 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
 
     SplitBillUiEvent.OnSpentTimeOpened -> EventAnalytics.Automatic("split_bill_time_clicked")
 
-    SplitBillUiEvent.OnSpentTimeAdded -> EventAnalytics.Automatic("split_bill_time_added")
-
-    // Why: only a time the bill had, never a late tap once it has none.
-    SplitBillUiEvent.OnSpentTimeCleared -> EventAnalytics.Manual("split_bill_time_cleared")
-
     SplitBillUiEvent.OnSplitClicked -> EventAnalytics.Automatic("split_bill_split_clicked")
 
     // Why: only while the receipt's items are there to open, in the bill's currency.

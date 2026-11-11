@@ -531,7 +531,6 @@ class ActivityUiStateTest {
                 currency = null,
                 text = null,
                 millis = null,
-                hasTime = false,
                 code = null,
                 names = emptyList(),
                 hasFormerMember = false,

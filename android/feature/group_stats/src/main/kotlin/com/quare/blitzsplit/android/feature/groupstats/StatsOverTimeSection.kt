@@ -334,11 +334,7 @@ internal fun StatsBiggestSection(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    val whenText = if (expense.hasSpentTime) {
-                        "${times.toDateText(expense.spentAt)}, ${times.toTimeText(expense.spentAt)}"
-                    } else {
-                        times.toWeekdayDateText(expense.spentAt)
-                    }
+                    val whenText = "${times.toDateText(expense.spentAt)}, ${times.toTimeText(expense.spentAt)}"
                     val paid = paidTextOrNull(
                         expense.payers,
                         isMe = { it.isMe },

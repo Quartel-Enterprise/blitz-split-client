@@ -20,14 +20,9 @@ data class BillDetailUiState(
     val currency: GroupCurrency,
     val description: String,
     val totalMinor: Long,
-    /*
-     * Why: "ontem, 27 de out."; each UI writes the date, after "Hoje" or "Ontem" when it is one of them, and the time
-     * only while hasSpentTime.
-     */
+    // Why: "ontem, 27 de out."; each UI writes the date and the time, after "Hoje" or "Ontem" when it is one of them.
     val spentAt: Long,
     val spentDay: RelativeDay,
-    // Why: a bill saved without a time (`SpentDay.hasTime`) shows its date alone.
-    val hasSpentTime: Boolean,
     // Why: who paid, this device's user first, then in the order they were added to the group, then who left it.
     val payers: List<BillPayer>,
     // Why: the bill's category (7.7), resolved in the group's categories; null for none.

@@ -133,6 +133,51 @@ private struct TabTitleDisplayMode: ViewModifier {
     }
 }
 
+extension View {
+    /// On an iPhone upright, the tab bar shrinks to a compact floating control on a scroll down and opens on a scroll
+    /// up, as Apple's guideline has it. Never on an iPad nor on a phone lying down, whose bars stay put.
+    func phoneMinimizesTabBar() -> some View {
+        modifier(PhoneBarMinimization(bar: .tabBar))
+    }
+
+    /// The same for the navigation bar of a long list that holds no main action (iOS 27; before it the bar keeps its
+    /// standard behavior): Balances, Contacts and Activity. Home and Groups keep theirs, since "Split a bill" lives
+    /// there, and so does a group's screen, whose inline title only shows once the header scrolls away.
+    func phoneMinimizesNavigationBar() -> some View {
+        modifier(PhoneBarMinimization(bar: .navigationBar))
+    }
+}
+
+private struct PhoneBarMinimization: ViewModifier {
+    enum Bar {
+        case tabBar
+        case navigationBar
+    }
+
+    let bar: Bar
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    /// An iPhone upright: the idiom (Apple supports minimizing on iPhone only) and a regular height, as an Android
+    /// phone and the web keep their bars lying down.
+    private var isPhoneUpright: Bool {
+        UIDevice.current.userInterfaceIdiom == .phone && verticalSizeClass != .compact
+    }
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        switch bar {
+        case .tabBar:
+            content.tabBarMinimizeBehavior(isPhoneUpright ? .onScrollDown : .automatic)
+        case .navigationBar:
+            if #available(iOS 27, *) {
+                content.toolbarMinimizationBehavior(isPhoneUpright ? .onScrollDown : .automatic, for: .navigationBar)
+            } else {
+                content
+            }
+        }
+    }
+}
+
 /// An iPad's room, by the root's measure of the window; until that first measure lands (a size of zero), the size
 /// class stands in, so an iPad's tab never draws a first frame with the iPhone's title and then jumps.
 private func isWideWindow(_ window: ScreenLayout, _ sizeClass: UserInterfaceSizeClass?) -> Bool {

@@ -15,12 +15,10 @@ sealed interface BillHistoryChange {
         val after: String?,
     ) : BillHistoryChange
 
-    // Why: "Quando"; a side without a time (`SpentDay.hasTime`) shows its date alone.
+    // Why: "Quando".
     data class SpentAt(
         val beforeMillis: Long?,
         val afterMillis: Long?,
-        val beforeHasTime: Boolean,
-        val afterHasTime: Boolean,
     ) : BillHistoryChange
 
     // Why: "Bar → Restaurante", resolved in the state's categories; null for none ("Outros").

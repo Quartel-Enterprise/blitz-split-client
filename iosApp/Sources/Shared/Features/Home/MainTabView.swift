@@ -98,6 +98,9 @@ struct MainTabView: View {
         .tabViewStyle(.sidebarAdaptable)
         #if os(iOS)
         .searchTabApart()
+        // Apple's guideline: the bar shrinks to a compact floating control on a scroll down and opens on a scroll up.
+        // iPhone only (an iPad's top bar or sidebar never minimizes). The app has no bottom accessory to move.
+        .phoneMinimizesTabBar()
         #endif
         #if os(macOS)
         // The sidebar's button at the detail's leading edge instead of the sidebar's header, as in Ajustes (the system's

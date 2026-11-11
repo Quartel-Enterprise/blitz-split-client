@@ -17,7 +17,7 @@
     <string name="split_bill_payer">Kim ödedi</string>
     <string name="split_bill_you">Sen</string>
     <string name="split_bill_when">Ne zaman</string>
-    <string name="split_bill_add_time">Saat ekle</string>
+    <string name="split_bill_change_time">Saati değiştir</string>
     <string name="split_bill_split">Bölüşüm</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="one">%d kişi arasında eşit</item>

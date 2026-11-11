@@ -147,7 +147,6 @@ private fun SampleTrip.splitBillState(
         payerAmounts = null,
         spentAt = spentAt,
         spentDay = relativeDayOf(bill.daysAgo),
-        hasSpentTime = true,
         latestSpentAt = spentAt,
         split = split,
         splitEditor = null,

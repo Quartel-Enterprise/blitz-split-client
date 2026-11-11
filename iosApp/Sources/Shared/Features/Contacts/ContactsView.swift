@@ -185,6 +185,7 @@ struct ContactsView: View {
         .navigationTitle("Contacts")
         #if os(iOS)
         .tabTitleDisplayMode()
+        .phoneMinimizesNavigationBar()
         #endif
         .toolbar {
             #if os(iOS)

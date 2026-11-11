@@ -135,8 +135,6 @@ class JsSplitBillState(
     val spentAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the date.
     val spentDay: String,
-    // Why: the time is written, and offered to remove, only while the bill has one.
-    val hasSpentTime: Boolean,
     val latestSpentAt: Double,
     val split: JsSplitEditor,
     val splitEditor: JsSplitEditor?,
@@ -245,7 +243,6 @@ class SplitBillPresenter(
                 payerAmounts = state.payerAmounts?.let(::toJsPayerAmounts),
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
-                hasSpentTime = state.hasSpentTime,
                 latestSpentAt = state.latestSpentAt.toDouble(),
                 split = toJsSplitEditor(state.split),
                 splitEditor = state.splitEditor?.let(::toJsSplitEditor),
@@ -477,14 +474,6 @@ class SplitBillPresenter(
         minute: Int,
     ) {
         viewModel.onEvent(SplitBillUiEvent.OnSpentTimePicked(hour, minute))
-    }
-
-    fun addSpentTime() {
-        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeAdded)
-    }
-
-    fun clearSpentTime() {
-        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
     }
 
     fun openSplit() {

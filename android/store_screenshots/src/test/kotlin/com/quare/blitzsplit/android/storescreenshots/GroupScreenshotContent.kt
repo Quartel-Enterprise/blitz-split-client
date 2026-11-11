@@ -120,7 +120,6 @@ private fun SampleTrip.expenseDays(): List<ExpenseDay> {
             id = "bill-$index",
             description = bill.description,
             spentAt = momentOf(bill.daysAgo, bill.minuteOfDay),
-            hasSpentTime = true,
             payers = bill.payers.map {
                 ExpenseRowPayer(
                     name = people[it.person],

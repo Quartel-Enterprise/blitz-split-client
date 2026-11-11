@@ -40,12 +40,9 @@
     <string name="designsystem_when_today">Bugün, %1$s · %2$s</string>
     <string name="designsystem_when_yesterday">Dün, %1$s · %2$s</string>
     <string name="designsystem_when_other">%1$s · %2$s</string>
-    <string name="designsystem_day_today">Bugün, %s</string>
-    <string name="designsystem_day_yesterday">Dün, %s</string>
     <string name="designsystem_picker_next">İleri</string>
     <string name="designsystem_picker_done">Bitti</string>
     <string name="designsystem_picker_cancel">İptal</string>
-    <string name="designsystem_picker_remove_time">Saati kaldır</string>
     <string name="designsystem_method_pix">Pix</string>
     <string name="designsystem_method_cash">Nakit</string>
     <string name="designsystem_method_transfer">Havale</string>

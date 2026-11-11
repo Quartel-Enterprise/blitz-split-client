@@ -398,7 +398,7 @@ private fun CategoryExpenseLine(
             EntryMetaLine(
                 isPending = expense.isPending,
                 parts = listOfNotNull(
-                    times.toTimeText(expense.spentAt).takeIf { expense.hasSpentTime },
+                    times.toTimeText(expense.spentAt),
                     stringResource(R.string.category_expenses_queued).takeIf { expense.isPending },
                     paidTextOrNull(
                         expense.payers,

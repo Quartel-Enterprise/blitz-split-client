@@ -105,7 +105,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
         attachments={attachments}
         onPerson={openPerson}
         title={<SheetTitle className={titleClass}>{state.description}</SheetTitle>}
-        description={<SheetDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay, state.hasSpentTime)}</SheetDescription>}
+        description={<SheetDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</SheetDescription>}
       />
     )
     return (
@@ -165,7 +165,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
                 attachments={attachments}
                 onPerson={openPerson}
                 title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
-                description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay, state.hasSpentTime)}</DrawerDescription>}
+                description={<DrawerDescription className={descriptionClass}>{formatDayTime(state.spentAt, state.spentDay)}</DrawerDescription>}
               />
             ) : (
               <BillBodySkeleton title={<DrawerTitle className="sr-only">{t('common_loading')}</DrawerTitle>} />

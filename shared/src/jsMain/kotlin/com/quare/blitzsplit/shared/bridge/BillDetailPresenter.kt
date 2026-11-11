@@ -167,8 +167,6 @@ class JsBillDetailState(
     val spentAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the date.
     val spentDay: String,
-    // Why: a bill without a time shows its date alone.
-    val hasSpentTime: Boolean,
     // Why: this device's user first, then the group's order, then whoever left it.
     val payers: Array<JsBillPayer>,
     // Why: the lone payer whose line opens their profile; null for several payers, who open from their rows.
@@ -243,7 +241,6 @@ class BillDetailPresenter(
                 totalMinor = state.totalMinor.toDouble(),
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
-                hasSpentTime = state.hasSpentTime,
                 payers = state.payers.map(::toJsBillPayer).toTypedArray(),
                 lonePayerId = state.lonePayer?.memberId,
                 isPending = state.isPending,

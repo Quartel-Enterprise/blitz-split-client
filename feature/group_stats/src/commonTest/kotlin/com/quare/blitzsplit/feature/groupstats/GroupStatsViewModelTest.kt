@@ -484,31 +484,7 @@ class GroupStatsViewModelTest {
         assertEquals("boat", biggest?.expenseId)
         assertEquals(60_000L, biggest?.amountMinor)
         assertEquals(listOf(StatsPayer("Pierre", isMe = true)), biggest?.payers)
-        assertEquals(true, biggest?.hasSpentTime)
     }
-
-    @Test
-    fun `GIVEN the biggest bill saved without a time WHEN the statistics open THEN it shows no time`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                stored = tripBills.map {
-                    if (it.id ==
-                        "boat"
-                    ) {
-                        it.copy(spentAt = millisOf("2026-10-28T00:00:00Z"))
-                    } else {
-                        it
-                    }
-                },
-            )
-
-            // When
-            val biggest = viewModel.uiState.value.biggestExpense
-
-            // Then
-            assertEquals(false, biggest?.hasSpentTime)
-        }
 
     @Test
     fun `GIVEN the statistics WHEN tapping the biggest bill THEN opens it`() = runTest(testDispatcher) {

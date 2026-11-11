@@ -43,6 +43,15 @@ The home's four tabs and the web's and the Mac's shell.
     longer scrolls. On Android, once gone, any drag down brings them back, even over content that stopped scrolling: a
     list that fits only because the bars left would otherwise bounce them back in. Anywhere wider (a rail, a phone
     lying down, a tablet, an unfolded foldable or a tabletop, the web from the tablet up) the bars stay put.
+    iPhone upright follows Apple's guideline instead of hiding: it minimizes. The main `TabView` has
+    `.tabBarMinimizeBehavior(.onScrollDown)`, so the tab bar shrinks to a compact floating control on a scroll down and
+    opens on a scroll up, and Balances, Contacts and Activity add `.toolbarMinimizationBehavior(.onScrollDown, for:
+    .navigationBar)` (iOS 27; on iOS 26 the bar keeps its standard behavior). Home's and Groups' navigation bars stay
+    whole, since "Split a bill", the sync status and the profile live there and iOS has no floating button; so does a
+    group's screen (its bottom bar is already replaced, and its name only shows in the bar once the header scrolls
+    away), Search (the field lives in the bar), the profile and every form or short screen. The app has no bottom
+    accessory to move. Lying down, on an iPad and on the Mac the bars stay put, as everywhere else (Apple supports
+    minimizing on iPhone only), and an iPhone Duo's vertical bar is never minimized.
   - What a tab keeps once shown. Apple's tabs keep their content: back on Balances or Contacts, the screen is already
     read, never blank nor shimmering again, and keeps the person picked beside the list and the rows opened
     (`MainTabView`). Android keeps Groups, Balances and Contacts the same way (their list, its scroll, the person picked,

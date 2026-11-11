@@ -120,6 +120,7 @@ struct GlobalBalancesView: View {
         .navigationTitle("Balances")
         #if os(iOS)
         .tabTitleDisplayMode()
+        .phoneMinimizesNavigationBar()
         #else
         .navigationSubtitle(model.map { GlobalBalancesCopy.macSubtitle($0.state) } ?? "")
         #endif

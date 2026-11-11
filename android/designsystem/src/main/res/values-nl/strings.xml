@@ -40,12 +40,9 @@
     <string name="designsystem_when_today">Vandaag, %1$s · %2$s</string>
     <string name="designsystem_when_yesterday">Gisteren, %1$s · %2$s</string>
     <string name="designsystem_when_other">%1$s · %2$s</string>
-    <string name="designsystem_day_today">Vandaag, %s</string>
-    <string name="designsystem_day_yesterday">Gisteren, %s</string>
     <string name="designsystem_picker_next">Volgende</string>
     <string name="designsystem_picker_done">Klaar</string>
     <string name="designsystem_picker_cancel">Annuleren</string>
-    <string name="designsystem_picker_remove_time">Tijd verwijderen</string>
     <string name="designsystem_method_pix">Pix</string>
     <string name="designsystem_method_cash">Contant</string>
     <string name="designsystem_method_transfer">Overboeking</string>

@@ -201,3 +201,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     saved or a member's Pix key turns the rule on), and Settle up's "Pix copy and paste" and Charge's "Include my Pix
     key" only exist with a BRL group or a Pix key, which turn it on too. Adding a key or joining a group in reais
     re-evaluates it at once (the device's own language and region are read each time something else changes, not watched). The website and the store screenshots follow their own rule.
+    ⌘R) and the web; the Mac's and the web's Home and Groups have no refresh of their own. The first download's chip
+    stays: it is the only place that says "Syncing… 3 of 7 groups", the bar under it has no text. Profile's "Account
+    and sync" row follows the same rule (`ProfileSyncStatus`): "Syncing…" only during the first full sync and the
+    retry, the row at rest otherwise, "Offline" and "No response from the server" as they were.
+    Activity's "Syncing…" only shows while a new device waits for the feed's first page.

@@ -1026,7 +1026,6 @@ class SplitBillUiStateTest {
         payerAmounts = null,
         spentAt = 0L,
         spentDay = RelativeDay.TODAY,
-        hasSpentTime = true,
         latestSpentAt = 0L,
         split = SplitEditor(
             mode = splitMode,

@@ -472,7 +472,6 @@ class GroupDetailUiStateTest {
                 id = "dinner",
                 description = "Jantar",
                 spentAt = 0L,
-                hasSpentTime = true,
                 payers = listOf(
                     ExpenseRowPayer(
                         name = "Ana",

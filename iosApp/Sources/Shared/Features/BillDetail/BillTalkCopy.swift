@@ -307,12 +307,8 @@ extension BillCopy {
         case let spentAt as BillHistoryChangeSpentAt:
             return line(
                 String(localized: "When", bundle: .appLanguage),
-                spentAt.beforeMillis.map {
-                    ExpenseFormat.changedDayTime($0.int64Value, hasTime: spentAt.beforeHasTime)
-                },
-                spentAt.afterMillis.map {
-                    ExpenseFormat.changedDayTime($0.int64Value, hasTime: spentAt.afterHasTime)
-                },
+                spentAt.beforeMillis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other) },
+                spentAt.afterMillis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other) },
             )
         case let change as BillHistoryChangeCurrency:
             // The currencies by their codes, "BRL → USD"

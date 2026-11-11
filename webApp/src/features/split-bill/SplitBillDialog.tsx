@@ -342,14 +342,11 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               label={t('splitBill_when')}
               millis={state.spentAt}
               relativeDay={state.spentDay}
-              hasTime={state.hasSpentTime}
               latestMillis={state.latestSpentAt}
               actions={{
                 onOpen: () => presenter.openSpentAt(),
                 onDayPick: (year, month, day) => presenter.pickSpentDay(year, month, day),
-                onTimeAdd: () => presenter.addSpentTime(),
                 onTimePick: (hour, minute) => presenter.pickSpentTime(hour, minute),
-                onTimeClear: () => presenter.clearSpentTime(),
               }}
               disabled={state.isFormLocked}
             />

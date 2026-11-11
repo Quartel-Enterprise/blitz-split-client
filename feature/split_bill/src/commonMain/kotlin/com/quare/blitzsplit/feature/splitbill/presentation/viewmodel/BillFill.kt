@@ -48,7 +48,6 @@ internal fun SplitBillUiState.toFilledWith(
         severalPayers = severalPayers,
         spentAt = expense.spentAt,
         spentDay = SpentDay.relativeDayOf(expense.spentAt, now, timeZone),
-        hasSpentTime = SpentDay.hasTime(expense.spentAt, timeZone),
         split = splitEditorOf(
             expense = expense,
             people = people,

@@ -8,8 +8,6 @@ import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.asTimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class SpentDayTest {
@@ -162,41 +160,5 @@ class SpentDayTest {
 
         // Then
         assertEquals(RelativeDay.TODAY, relativeDay)
-    }
-
-    @Test
-    fun `GIVEN local midnight in Sao Paulo WHEN asking whether the bill has a time THEN it has none`() {
-        // Given
-        val midnight = Instant.parse("2026-10-29T03:00:00Z").toEpochMilliseconds()
-
-        // When
-        val hasTime = SpentDay.hasTime(midnight, saoPaulo)
-
-        // Then
-        assertFalse(hasTime)
-    }
-
-    @Test
-    fun `GIVEN UTC midnight read in Sao Paulo WHEN asking whether the bill has a time THEN it has one`() {
-        // Given
-        val utcMidnight = Instant.parse("2026-10-29T00:00:00Z").toEpochMilliseconds()
-
-        // When
-        val hasTime = SpentDay.hasTime(utcMidnight, saoPaulo)
-
-        // Then
-        assertTrue(hasTime)
-    }
-
-    @Test
-    fun `GIVEN a minute after local midnight WHEN asking whether the bill has a time THEN it has one`() {
-        // Given
-        val oneMinuteIn = Instant.parse("2026-10-29T03:01:00Z").toEpochMilliseconds()
-
-        // When
-        val hasTime = SpentDay.hasTime(oneMinuteIn, saoPaulo)
-
-        // Then
-        assertTrue(hasTime)
     }
 }

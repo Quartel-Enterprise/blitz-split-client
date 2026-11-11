@@ -175,7 +175,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                     <span className="truncate font-medium">{state.biggestExpense.description}</span>
                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       {state.biggestExpense.isPending && <PendingDot />}
-                      {paidByText(formatDayTime(state.biggestExpense.spentAt, 'other', state.biggestExpense.hasSpentTime), state.biggestExpense.payers)}
+                      {paidByText(formatDayTime(state.biggestExpense.spentAt, 'other'), state.biggestExpense.payers)}
                     </span>
                   </span>
                   <span className="font-semibold tabular-nums">{money(state.biggestExpense.amountMinor)}</span>

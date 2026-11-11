@@ -47,8 +47,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     account whose code isn't made yet keeps it.
   - "Account and sync"'s Google or Apple row only says which account it is ("Connected", and the masked email): it
     opens nothing and nothing disconnects the Google or Apple account from the user (Pierre's call, beta feedback).
-    Who wants it gone signs out or deletes the account. The server's `unlink-identity` function stays for the
-    installs that still offer it, until the API drops it.
+    Who wants it gone signs out or deletes the account. The server has no `unlink-identity` function any more.
   - The profile ends in a discreet, centered legal footer, as Bible Planner's (Pierre's call, beta feedback 18):
     "Privacy Policy • Terms of Service", two links to the legal texts (below), and "Version X" under them
     in small, secondary text. It closes the column that ends with Delete account: Android's single column and the
