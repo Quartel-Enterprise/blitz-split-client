@@ -158,7 +158,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_clicked` | none | Delete account's "Delete account" | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Delete account's Cancel, its back arrow, or a native dismiss | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`, `profile`) | "Export my data" | `:feature:delete_account`, `:feature:profile` |
-| `invite_link_copy_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
+| `invite_link_copy_clicked` | `source` (`invite`, `members`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, on Members' "Invite link" card, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Invite's "Share link", "Share with Carla", or the share of "Invite with link or QR" and "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Invite's "See who joined" | `:feature:invite` |
 | `invite_go_to_group_clicked` | none | Invite's "Go to the group" | `:feature:invite` |

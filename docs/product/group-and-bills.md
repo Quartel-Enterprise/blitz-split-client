@@ -8,7 +8,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     the header, "Your balance in this group" and the tabs stay, only what is under them changes, with no transition nor
     check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
     group. Invite's "Go to the group" and "See who joined" open it in Invite's place (`openGroup`), so the
-    group never stacks over itself.
+    group never stacks over itself. On Android the top bar's subtitle ("2 members · R$ 3,418.31 in total") ellipsizes
+    16 dp short of the bar's actions, so the Statistics button keeps room around it (beta bugs of 2026-11-10).
   - The group's avatar in the header (its rounded square, the photo or the initials on the color; the web's page header, the top bar on Android, the header on iOS and the Mac) opens the photo big (Pierre's call, `Route.GroupPhoto`,
     `GroupPhotoViewModel`), as the profile's avatar does ([the profile's viewer](profile.md)): the group's square, 200 pt/dp/px (260 once both sides have 600) over the
     dimmed, blurred group, with "Camera" where there is one, "Gallery" and "Remove" (with a photo) under it. Each saves

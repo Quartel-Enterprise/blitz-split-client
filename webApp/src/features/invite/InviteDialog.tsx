@@ -1,4 +1,4 @@
-import { AlertCircle, Check, Copy, Loader2, Share2, UserPlus, WifiOff } from 'lucide-react'
+import { AlertCircle, ArrowRight, Check, Copy, Loader2, Share2, UserPlus, Users, WifiOff } from 'lucide-react'
 import { InvitePresenter, type JsInviteAction, type JsInviteState, type JsRoute } from 'blitzsplit-shared'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -56,9 +56,9 @@ export function InviteDialog({ route }: { route: JsRoute }) {
   const title = t('invite_title', { group: state.groupName })
   const description = <WhoPicks names={state.notJoinedNames} />
   const body = <InviteBody presenter={presenter} state={state} />
-  // Why: someone without the app goes in by name, as in "Novo grupo", from the group's Members.
+  // Why: someone without the app goes in by name, as in "Novo grupo", from the group's Members: the other way in, beside "Compartilhar link".
   const addPerson = (
-    <Button variant="link" onClick={() => presenter.addPerson()} className="self-center justify-self-center">
+    <Button variant="outline" onClick={() => presenter.addPerson()} className={cn(!isDesktop && 'h-11')}>
       <UserPlus />
       {t('invite_addPerson')}
     </Button>
@@ -68,13 +68,14 @@ export function InviteDialog({ route }: { route: JsRoute }) {
       {t('invite_close')}
     </Button>
   )
-  // Why: "Ir para o grupo" while the link is pending, "Ver quem já entrou" once it exists; both open "Membros".
+  // Why: "Ir para o grupo" while the link is pending, "Ver quem já entrou" once it exists, as a link; both open "Membros".
   const next = (
     <Button
-      variant="outline"
+      variant="link"
       onClick={() => (state.isLinkPending ? presenter.goToGroup() : presenter.seeWhoJoined())}
-      className={cn(!isDesktop && 'h-11')}
+      className="self-center justify-self-center"
     >
+      {state.isLinkPending ? <ArrowRight /> : <Users />}
       {state.isLinkPending ? t('invite_goToGroup') : t('invite_seeWhoJoined')}
     </Button>
   )
@@ -103,10 +104,11 @@ export function InviteDialog({ route }: { route: JsRoute }) {
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {body}
-        {addPerson}
-        <DialogFooter>
+        {next}
+        {/* Why: a long "Adicionar quem não tem o app" (German, Italian) takes a line of its own instead of overflowing the dialog. */}
+        <DialogFooter className="sm:flex-wrap">
           {close}
-          {next}
+          {addPerson}
           {share}
         </DialogFooter>
       </DialogContent>
@@ -121,10 +123,10 @@ export function InviteDialog({ route }: { route: JsRoute }) {
         </DrawerHeader>
         <div className="flex flex-col overflow-y-auto px-4">
           {body}
-          {addPerson}
         </div>
         <DrawerFooter>
           {share}
+          {addPerson}
           {next}
           {close}
         </DrawerFooter>

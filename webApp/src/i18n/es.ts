@@ -306,11 +306,11 @@ export const es: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'Quien abra este enlace entra directamente como {name}, sin elegir de la lista, y ya ve su parte de {amount} en los {count} gastos agregados hasta ahora. Funciona una sola vez.',
   members_personalLinkLabel: 'Enlace personal',
   members_copy: 'Copiar',
+  members_copyLink: 'Copiar enlace',
   members_copied: 'Copiado',
   members_close: 'Cerrar',
   members_personalShare: 'Compartir con {name}',
   members_personalShareMessage: 'Únete a {group} como {name} en Blitz Split: {link}',
-  members_linkCopied: 'Enlace copiado',
   members_copyFailed: 'No se pudo copiar el enlace',
 
   date_today: 'Hoy',

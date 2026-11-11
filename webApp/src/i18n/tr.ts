@@ -306,11 +306,11 @@ export const tr: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'Bu bağlantıyı açan kişi listeden seçim yapmadan doğrudan {name} olarak katılır ve şimdiye kadar eklenen {count} harcamadaki {amount} payını hemen görür. Bir kez çalışır.',
   members_personalLinkLabel: 'Kişisel bağlantı',
   members_copy: 'Kopyala',
+  members_copyLink: 'Bağlantıyı kopyala',
   members_copied: 'Kopyalandı',
   members_close: 'Kapat',
   members_personalShare: 'Paylaş: {name}',
   members_personalShareMessage: "Blitz Split'te {group} grubuna {name} olarak katıl: {link}",
-  members_linkCopied: 'Bağlantı kopyalandı',
   members_copyFailed: 'Bağlantı kopyalanamadı',
 
   date_today: 'Bugün',

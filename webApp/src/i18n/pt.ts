@@ -305,11 +305,11 @@ export const pt: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'Quem abrir este link entra direto como {name}, sem escolher na lista, e já vê a parte de {amount} nas {count} despesas lançadas. Ele vale uma vez.',
   members_personalLinkLabel: 'Link pessoal',
   members_copy: 'Copiar',
+  members_copyLink: 'Copiar link',
   members_copied: 'Copiado',
   members_close: 'Fechar',
   members_personalShare: 'Compartilhar com {name}',
   members_personalShareMessage: 'Entra no grupo {group} como {name} no Bora Rachar: {link}',
-  members_linkCopied: 'Link copiado',
   members_copyFailed: 'Não deu para copiar o link',
 
   date_today: 'Hoje',
