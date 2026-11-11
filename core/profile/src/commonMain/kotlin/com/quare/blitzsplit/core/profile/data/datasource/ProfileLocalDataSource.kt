@@ -8,6 +8,7 @@ interface ProfileLocalDataSource {
 
     suspend fun get(): ProfileEntity?
 
+    // Why: the profile's own fields; the stored link's code stays whatever the entity carries.
     suspend fun upsert(entity: ProfileEntity)
 
     suspend fun markSynced(

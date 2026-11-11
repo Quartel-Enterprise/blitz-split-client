@@ -38,17 +38,15 @@ class ProfileRepositoryImpl(
         .map { entity -> entity?.takeIf { it.ownerUserId != null }?.shareCode }
         .distinctUntilChanged()
 
-    // Why: an edit keeps the copy its owner's, and its link, so one made to another user's copy still gives way.
+    // Why: an edit keeps the copy its owner's, so one made to another user's copy still gives way to the account.
     override suspend fun saveProfile(profile: UserProfile) {
-        val stored = local.get()
         local.upsert(
-            mapper
-                .toEntity(
-                    profile = profile,
-                    updatedAt = currentTimeMillis(),
-                    pendingSync = true,
-                    ownerUserId = stored?.ownerUserId,
-                ).copy(shareCode = stored?.shareCode),
+            mapper.toEntity(
+                profile = profile,
+                updatedAt = currentTimeMillis(),
+                pendingSync = true,
+                ownerUserId = local.get()?.ownerUserId,
+            ),
         )
     }
 

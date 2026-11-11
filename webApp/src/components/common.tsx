@@ -253,3 +253,17 @@ export function PendingDot({ className }: { className?: string }) {
 
 /** A badge or a notice of what is queued: the amber container and its text, with a faint amber edge. */
 export const pendingSurfaceClass = 'border-pending/30 bg-pending-container text-pending-container-foreground'
+
+/** A page's whole-screen problem (a link that opens nothing, no connection): its icon, title, message and actions. */
+export function PageProblem({ icon, title, message, children }: { icon: ReactNode; title: string; message?: string; children?: ReactNode }) {
+  return (
+    <section className="mx-auto flex w-full max-w-md flex-col items-center gap-3 pt-16 text-center">
+      <span aria-hidden className="mb-1 text-muted-foreground">
+        {icon}
+      </span>
+      <h1 className="text-xl font-semibold">{title}</h1>
+      {message && <p className="text-muted-foreground">{message}</p>}
+      {children && <div className="mt-3 flex w-full flex-col gap-2 sm:w-auto">{children}</div>}
+    </section>
+  )
+}

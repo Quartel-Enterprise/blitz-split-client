@@ -1,9 +1,12 @@
 import { toast } from 'sonner'
 import { t } from '@/i18n'
 
-/** The link to the clipboard, saying so only when it fails. */
-export function copyLink(link: string) {
-  navigator.clipboard.writeText(link).catch(() => toast(t('invite_copyFailed')))
+/** The link to the clipboard, saying so when it fails, and `copied` once it is there when given. */
+export function copyLink(link: string, copied?: string) {
+  navigator.clipboard
+    .writeText(link)
+    .then(() => copied && toast(copied))
+    .catch(() => toast(t('invite_copyFailed')))
 }
 
 /** The browser's share sheet with `text` where there is one (phones, Safari); otherwise `link` goes to the clipboard. */

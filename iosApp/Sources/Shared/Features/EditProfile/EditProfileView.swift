@@ -227,7 +227,7 @@ private struct EditProfileNameSections: View {
                 }
             }
         } footer: {
-            Text("Only people in your groups see your name and photo.")
+            Text("Your groups and anyone with your profile link see your name and photo.")
         }
     }
 

@@ -59,7 +59,7 @@ export const id: Record<MessageKey, string> = {
   welcome_usedOnAnotherDevice: 'Saya sudah pernah pakai di perangkat lain',
 
   profileSetup_title: 'Teman-temanmu memanggilmu apa?',
-  profileSetup_subtitle: 'Hanya orang di grupmu yang melihat namamu.',
+  profileSetup_subtitle: 'Grupmu dan siapa pun yang punya tautan profilmu melihat namamu.',
   profileSetup_avatarColor: 'Warna avatar',
   profileSetup_addPhoto: 'Tambah foto',
   profileSetup_takePhoto: 'Ambil foto',
@@ -777,7 +777,7 @@ export const id: Record<MessageKey, string> = {
   profileLink_notFoundBody: 'Tautan ini tidak membuka profil apa pun. Minta tautannya lagi.',
   profileLink_noGroups: 'Kamu belum punya grup dengan {name}.',
   profileLink_invite: 'Undang ke grup',
-  profile_subtitle: 'Nama dan kuncimu hanya tampil untuk orang di grupmu.',
+  profile_subtitle: 'Kuncimu hanya tampil untuk grupmu; nama dan fotomu juga untuk siapa pun yang punya tautan profilmu.',
   profile_offlineTitle: 'Tidak ada internet.',
   profile_offlineBody: 'Edit sesukamu: tetap tersimpan di browser ini dan diunggah saat koneksi kembali.',
   profile_yourProfile: 'Profilmu',
@@ -895,7 +895,7 @@ export const id: Record<MessageKey, string> = {
   editProfile_nameTooShort: 'Ketik minimal {min} huruf.',
   editProfile_nameTooLong: 'Gunakan maksimal {max} karakter.',
   editProfile_accountNotice: 'Nama dan foto berasal dari akun {provider} kamu. Mengubahnya di sini hanya berlaku di Blitz Split dan tidak mengubah akun {provider} kamu.',
-  editProfile_footer: 'Hanya orang di grupmu yang melihat nama dan fotomu.',
+  editProfile_footer: 'Grupmu dan siapa pun yang punya tautan profilmu melihat nama dan fotomu.',
   editProfile_save: 'Simpan',
 
   profile_keysTitle: 'Kunci untuk menerima pembayaran',

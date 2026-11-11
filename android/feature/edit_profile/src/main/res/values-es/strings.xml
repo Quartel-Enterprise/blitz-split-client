@@ -15,7 +15,7 @@
     <string name="edit_profile_name_too_short">Escribe al menos %d letras.</string>
     <string name="edit_profile_name_too_long">Usa hasta %d caracteres.</string>
     <string name="edit_profile_account_notice">El nombre y la foto vinieron de tu cuenta de %1$s. Cambiarlos aquí solo se aplica a Blitz Split y no modifica tu cuenta de %1$s.</string>
-    <string name="edit_profile_footer">Solo las personas de tus grupos ven tu nombre y tu foto.</string>
+    <string name="edit_profile_footer">Tus grupos y quien tenga el enlace de tu perfil ven tu nombre y tu foto.</string>
     <string name="profile_photo_close">Cerrar</string>
     <string name="profile_photo_camera">Cámara</string>
     <string name="profile_photo_gallery">Galería</string>

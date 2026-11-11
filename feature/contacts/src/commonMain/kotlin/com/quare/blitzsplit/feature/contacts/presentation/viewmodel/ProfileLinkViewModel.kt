@@ -138,9 +138,15 @@ class ProfileLinkViewModel(
         )
     }
 
-    // Why: only while the page is still on top, so an answer that comes late never replaces where the person went.
+    /*
+     * Why: only while the page is still on top, so an answer that comes late never replaces where the person went. A
+     * destination already open under it (the same link tapped again, the own link opened from Profile) comes back to
+     * the top instead, since Navigation 3 can't hold one route twice.
+     */
     private fun openInstead(destination: Route) {
-        if (isOnTop()) navigator.replaceTop(destination)
+        if (!isOnTop()) return
+        val openIndex = navigator.backStack.value.indexOf(destination)
+        if (openIndex < 0) navigator.replaceTop(destination) else navigator.popTo(openIndex + 1)
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route

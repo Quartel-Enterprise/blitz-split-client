@@ -63,7 +63,7 @@ export const pl: Record<MessageKey, string> = {
   welcome_usedOnAnotherDevice: 'Korzystam już na innym urządzeniu',
 
   profileSetup_title: 'Jak mówią na ciebie znajomi?',
-  profileSetup_subtitle: 'Twoje imię widzą tylko osoby z twoich grup.',
+  profileSetup_subtitle: 'Twoje grupy i każdy, kto ma link do twojego profilu, widzą twoje imię.',
   profileSetup_avatarColor: 'Kolor awatara',
   profileSetup_addPhoto: 'Dodaj zdjęcie',
   profileSetup_takePhoto: 'Zrób zdjęcie',
@@ -781,7 +781,7 @@ export const pl: Record<MessageKey, string> = {
   profileLink_notFoundBody: 'Ten link nie otwiera żadnego profilu. Poproś o niego ponownie.',
   profileLink_noGroups: '{name} nie jest jeszcze w żadnej twojej grupie.',
   profileLink_invite: 'Zaproś do grupy',
-  profile_subtitle: 'Twoje imię i klucze widzą tylko osoby z twoich grup.',
+  profile_subtitle: 'Twoje klucze widzą tylko twoje grupy; imię i zdjęcie także każdy, kto ma link do twojego profilu.',
   profile_offlineTitle: 'Brak internetu.',
   profile_offlineBody: 'Edytuj śmiało: zmiany zostają zapisane w tej przeglądarce i zostaną wysłane, gdy wróci połączenie.',
   profile_yourProfile: 'Twój profil',
@@ -899,7 +899,7 @@ export const pl: Record<MessageKey, string> = {
   editProfile_nameTooShort: 'Minimalna liczba liter: {min}.',
   editProfile_nameTooLong: 'Maksymalna liczba znaków: {max}.',
   editProfile_accountNotice: 'Imię i zdjęcie pochodzą z twojego konta {provider}. Zmiana tutaj dotyczy tylko aplikacji Blitz Split i nie zmienia twojego konta {provider}.',
-  editProfile_footer: 'Twoje imię i zdjęcie widzą tylko osoby z twoich grup.',
+  editProfile_footer: 'Twoje grupy i każdy, kto ma link do twojego profilu, widzą twoje imię i zdjęcie.',
   editProfile_save: 'Zapisz',
 
   profile_keysTitle: 'Klucze do otrzymywania płatności',

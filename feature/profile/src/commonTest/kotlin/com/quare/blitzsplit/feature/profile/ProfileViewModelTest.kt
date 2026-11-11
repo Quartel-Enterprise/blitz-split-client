@@ -7080,28 +7080,8 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
             assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
-        }
-
-    @Test
-    fun `GIVEN the name just edited WHEN tapping Share profile THEN shares the link with the new name`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                status = anonymous,
-                shareCode = shareCode,
-            )
-            profiles.profile.value = pierre.copy(displayName = "  Pierre Vieira  ")
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
-
-            // Then
-            assertEquals(
-                listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre Vieira")),
-                actions,
-            )
         }
 
     @Test
@@ -7187,7 +7167,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
             assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
@@ -7227,7 +7207,7 @@ class ProfileViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isSigningOut)
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
         assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
@@ -7268,7 +7248,7 @@ class ProfileViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isSignOutScheduled)
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
         }
 
     // Why: the account's profile code as this device made it, and the link "Share profile" hands out.

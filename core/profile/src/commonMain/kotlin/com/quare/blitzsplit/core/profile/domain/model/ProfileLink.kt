@@ -19,9 +19,6 @@ object ProfileLink {
 
     fun of(code: String): String = BASE_URL + code
 
-    // Why: "blitzsplit.com/u/7Hk2pQ8xZa", the link as the screens show it.
-    fun displayOf(link: String): String = link.substringAfter("://")
-
     // Why: the code a link opens, null for any other URL.
     fun codeOf(url: String): String? = linkPattern.matchEntire(url.trim())?.groupValues?.get(1)
 

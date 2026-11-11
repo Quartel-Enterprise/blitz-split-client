@@ -59,7 +59,7 @@ export const pt: Record<MessageKey, string> = {
   welcome_usedOnAnotherDevice: 'Já usei em outro aparelho',
 
   profileSetup_title: 'Como seus amigos te chamam?',
-  profileSetup_subtitle: 'Seu nome aparece só para quem estiver nos seus grupos.',
+  profileSetup_subtitle: 'Seus grupos e quem tiver o link do seu perfil veem seu nome.',
   profileSetup_avatarColor: 'Cor do avatar',
   profileSetup_addPhoto: 'Adicionar foto',
   profileSetup_takePhoto: 'Tirar foto',
@@ -777,7 +777,7 @@ export const pt: Record<MessageKey, string> = {
   profileLink_notFoundBody: 'Este link não abre nenhum perfil. Peça o link de novo.',
   profileLink_noGroups: 'Você ainda não tem grupos com {name}.',
   profileLink_invite: 'Convidar para um grupo',
-  profile_subtitle: 'Seu nome e suas chaves aparecem só para quem está nos seus grupos.',
+  profile_subtitle: 'Suas chaves aparecem só para seus grupos; seu nome e sua foto, também para quem tiver o link do seu perfil.',
   profile_offlineTitle: 'Sem internet.',
   profile_offlineBody: 'Pode editar à vontade: fica salvo neste navegador e sobe quando a conexão voltar.',
   profile_yourProfile: 'Seu perfil',
@@ -895,7 +895,7 @@ export const pt: Record<MessageKey, string> = {
   editProfile_nameTooShort: 'Digite pelo menos {min} letras.',
   editProfile_nameTooLong: 'Use até {max} caracteres.',
   editProfile_accountNotice: 'Nome e foto vieram da sua conta {provider}. Mudar aqui vale só no Bora Rachar e não altera sua conta {provider}.',
-  editProfile_footer: 'Só quem está nos seus grupos vê seu nome e foto.',
+  editProfile_footer: 'Seus grupos e quem tiver o link do seu perfil veem seu nome e sua foto.',
   editProfile_save: 'Salvar',
 
   profile_keysTitle: 'Chaves para receber',

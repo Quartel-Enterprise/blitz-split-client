@@ -217,6 +217,43 @@ class ProfileLinkViewModelTest {
         }
 
     @Test
+    fun `GIVEN Carla profile open under the link WHEN the page opens THEN goes back to it`() = runTest(testDispatcher) {
+        // Given
+        val answer: Result<SharedProfile?> = Result.success(
+            sharedProfile(
+                name = "Carla",
+                userId = "carla",
+            ),
+        )
+        prepareScenario(
+            serverAnswer = answer,
+            under = listOf(Route.ContactProfile(CARLA_KEY), Route.Groups),
+        )
+
+        // When
+        val backStack = navigator.backStack.value
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.ContactProfile(CARLA_KEY)), backStack)
+    }
+
+    @Test
+    fun `GIVEN Profile open under the own link WHEN the page opens THEN goes back to it`() = runTest(testDispatcher) {
+        // Given
+        val ownCode = LINK_CODE
+        prepareScenario(
+            ownShareCode = ownCode,
+            under = listOf(Route.Profile),
+        )
+
+        // When
+        val backStack = navigator.backStack.value
+
+        // Then
+        assertEquals(listOf(Route.Home, Route.Profile), backStack)
+    }
+
+    @Test
     fun `GIVEN the server does not name the account WHEN the page opens THEN shows the stranger with the invite`() =
         runTest(testDispatcher) {
             // Given
@@ -585,6 +622,8 @@ class ProfileLinkViewModelTest {
         status: AccountStatus = AccountStatus.Connected(MY_USER_ID, AccountProvider.GOOGLE),
         ownShareCode: String? = OTHER_CODE,
         openedOver: Route = Route.Home,
+        // Why: the screens already open between the start route and the link's page.
+        under: List<Route> = emptyList(),
         online: Boolean = true,
         serverAnswer: Result<SharedProfile?> = Result.success(null),
         answered: Boolean = true,
@@ -594,7 +633,10 @@ class ProfileLinkViewModelTest {
         profiles = FakeProfileRepository(initialProfile = storedProfile).also { it.shareCode.value = ownShareCode }
         account = FakeAccountRepository(initialStatus = status)
         isOnline = MutableStateFlow(online)
-        navigator = BackStackNavigator(startRoute = openedOver).also { it.navigate(linkRoute) }
+        navigator = BackStackNavigator(startRoute = openedOver).also { navigator ->
+            under.forEach(navigator::navigate)
+            navigator.navigate(linkRoute)
+        }
         val groups = FakeGroupRepository(initialGroups = defaultGroups())
         val expenses = FakeExpenseRepository(initialExpenses = defaultBills())
         viewModel = ProfileLinkViewModel(

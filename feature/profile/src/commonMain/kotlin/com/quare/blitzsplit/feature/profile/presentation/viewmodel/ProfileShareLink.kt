@@ -15,15 +15,9 @@ internal class ProfileShareLink(
     private val emit: (ProfileUiAction) -> Unit,
 ) {
     fun share() {
-        val state = uiState.value
-        val link = state.shareLink ?: return
+        val link = uiState.value.shareLink ?: return
         trackEvent("profile_share_clicked", emptyMap())
-        emit(
-            ProfileUiAction.ShareProfileLink(
-                link = link,
-                name = state.displayName,
-            ),
-        )
+        emit(ProfileUiAction.ShareProfileLink(link))
     }
 
     fun copy() {

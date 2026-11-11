@@ -3,7 +3,7 @@ import { SharedBillPresenter, type JsRoute, type JsSharedBillAction, type JsShar
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { BrandMark } from '@/components/common'
+import { BrandMark, PageProblem } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { AttachmentViewer, BillAttachments, useLocalPhotoUrls } from '@/features/bill-detail/BillAttachments'
@@ -152,18 +152,11 @@ function OpenBill({ presenter, state }: { presenter: SharedBillPresenter; state:
 /** Why it doesn't open, what may help, and "Ir para o Bora Rachar". */
 function Problem({ icon, title, message, onLeave, children }: { icon: ReactNode; title: string; message?: string; onLeave: () => void; children?: ReactNode }) {
   return (
-    <section className="mx-auto flex w-full max-w-md flex-col items-center gap-3 pt-16 text-center">
-      <span aria-hidden className="mb-1 text-muted-foreground">
-        {icon}
-      </span>
-      <h1 className="text-xl font-semibold">{title}</h1>
-      {message && <p className="text-muted-foreground">{message}</p>}
-      <div className="mt-3 flex w-full flex-col gap-2 sm:w-auto">
-        {children}
-        <Button variant="link" onClick={onLeave}>
-          {t('sharedBill_goToApp')}
-        </Button>
-      </div>
-    </section>
+    <PageProblem icon={icon} title={title} message={message}>
+      {children}
+      <Button variant="link" onClick={onLeave}>
+        {t('sharedBill_goToApp')}
+      </Button>
+    </PageProblem>
   )
 }

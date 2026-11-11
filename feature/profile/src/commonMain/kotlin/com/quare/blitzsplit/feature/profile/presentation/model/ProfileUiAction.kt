@@ -6,7 +6,6 @@ sealed interface ProfileUiAction {
     // Why: the system share sheet with the profile link (the Mac's sharing picker, navigator.share or a copy on the web).
     data class ShareProfileLink(
         val link: String,
-        val name: String,
     ) : ProfileUiAction
 
     // Why: "Link copied".

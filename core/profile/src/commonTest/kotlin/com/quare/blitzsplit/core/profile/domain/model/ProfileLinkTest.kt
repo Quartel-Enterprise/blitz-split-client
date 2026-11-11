@@ -176,18 +176,6 @@ class ProfileLinkTest {
     }
 
     @Test
-    fun `GIVEN a link WHEN showing it THEN drops the scheme`() {
-        // Given
-        val link = ProfileLink.of(CODE)
-
-        // When
-        val shown = ProfileLink.displayOf(link)
-
-        // Then
-        assertEquals("blitzsplit.com/u/$CODE", shown)
-    }
-
-    @Test
     fun `GIVEN ten letters and digits WHEN checking the code THEN it is a code`() {
         // Given
         val code = CODE

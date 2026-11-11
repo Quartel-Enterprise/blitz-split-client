@@ -4,6 +4,7 @@ import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
+import androidx.room3.Transaction
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import com.quare.blitzsplit.core.provider.room.entity.SINGLE_ROW_ID
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,15 @@ interface ProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: ProfileEntity)
+
+    /*
+     * Why: an edit of the name, color or photo, in one write with the read of the link's code, so a code a sync writes
+     * meanwhile (made here, or the server's) is never put back to the one read before it.
+     */
+    @Transaction
+    suspend fun upsertKeepingShareCode(entity: ProfileEntity) {
+        upsert(entity.copy(shareCode = get()?.shareCode))
+    }
 
     // Why: a change made while the push was in flight keeps the row pending, and its photo with it.
     @Query(

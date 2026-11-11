@@ -1,8 +1,7 @@
 import { ArrowLeft, CloudOff, Link2Off, Loader2, UserPlus } from 'lucide-react'
 import { ProfileLinkPresenter, type JsProfileLinkState, type JsRoute } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { Avatar, PageProblem } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { t } from '@/i18n'
 
@@ -24,18 +23,22 @@ export function ProfileLinkScreen({ route }: { route: JsRoute }) {
           </Button>
         </div>
       </header>
-      <main className="mx-auto flex w-full max-w-md flex-col items-center gap-3 px-4 pt-16 pb-12 text-center">
-        {state.stage === 'loading' && <Loader2 aria-label={t('profileLink_loading')} className="size-8 animate-spin text-muted-foreground" />}
+      <main className="mx-auto w-full max-w-md px-4 pb-12">
+        {state.stage === 'loading' && (
+          <div className="flex justify-center pt-16">
+            <Loader2 aria-label={t('profileLink_loading')} className="size-8 animate-spin text-muted-foreground" />
+          </div>
+        )}
         {state.stage === 'stranger' && <Stranger presenter={presenter} state={state} />}
         {state.stage === 'unreachable' && (
-          <Problem icon={<CloudOff className="size-10" />} title={t('profileLink_unreachableTitle')} message={t('profileLink_unreachableBody')}>
+          <PageProblem icon={<CloudOff className="size-10" />} title={t('profileLink_unreachableTitle')} message={t('profileLink_unreachableBody')}>
             <Button size="lg" onClick={() => presenter.retry()}>
               {t('profileLink_retry')}
             </Button>
-          </Problem>
+          </PageProblem>
         )}
         {state.stage === 'not-found' && (
-          <Problem icon={<Link2Off className="size-10" />} title={t('profileLink_notFoundTitle')} message={t('profileLink_notFoundBody')} />
+          <PageProblem icon={<Link2Off className="size-10" />} title={t('profileLink_notFoundTitle')} message={t('profileLink_notFoundBody')} />
         )}
       </main>
     </div>
@@ -45,7 +48,7 @@ export function ProfileLinkScreen({ route }: { route: JsRoute }) {
 function Stranger({ presenter, state }: { presenter: ProfileLinkPresenter; state: JsProfileLinkState }) {
   const name = state.name ?? ''
   return (
-    <>
+    <section className="flex flex-col items-center gap-3 pt-16 text-center">
       <Avatar initial={state.initials ?? ''} color={state.avatarColor ?? 'blue'} photoUrl={state.photoUrl} className="size-28 text-4xl" />
       <h1 className="mt-2 text-2xl font-semibold">{name}</h1>
       <p className="text-muted-foreground">{t('profileLink_noGroups', { name })}</p>
@@ -54,19 +57,6 @@ function Stranger({ presenter, state }: { presenter: ProfileLinkPresenter; state
           <UserPlus /> {t('profileLink_invite')}
         </Button>
       )}
-    </>
-  )
-}
-
-function Problem({ icon, title, message, children }: { icon: ReactNode; title: string; message: string; children?: ReactNode }) {
-  return (
-    <>
-      <span aria-hidden className="mb-1 text-muted-foreground">
-        {icon}
-      </span>
-      <h1 className="text-xl font-semibold">{title}</h1>
-      <p className="text-muted-foreground">{message}</p>
-      {children && <div className="mt-3 flex w-full flex-col gap-2 sm:w-auto">{children}</div>}
-    </>
+    </section>
   )
 }

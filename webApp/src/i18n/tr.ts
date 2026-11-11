@@ -60,7 +60,7 @@ export const tr: Record<MessageKey, string> = {
   welcome_usedOnAnotherDevice: 'Başka bir cihazda kullandım',
 
   profileSetup_title: 'Arkadaşların sana ne diyor?',
-  profileSetup_subtitle: 'Adını sadece gruplarındaki kişiler görür.',
+  profileSetup_subtitle: 'Grupların ve profil bağlantına sahip olan herkes adını görür.',
   profileSetup_avatarColor: 'Avatar rengi',
   profileSetup_addPhoto: 'Fotoğraf ekle',
   profileSetup_takePhoto: 'Fotoğraf çek',
@@ -778,7 +778,7 @@ export const tr: Record<MessageKey, string> = {
   profileLink_notFoundBody: 'Bu bağlantı hiçbir profili açmıyor. Bağlantıyı yeniden iste.',
   profileLink_noGroups: '{name} ile henüz ortak grubun yok.',
   profileLink_invite: 'Bir gruba davet et',
-  profile_subtitle: 'Adın ve anahtarların sadece gruplarındaki kişilere görünür.',
+  profile_subtitle: 'Anahtarlarını yalnızca grupların görür; adını ve fotoğrafını profil bağlantına sahip olan herkes de görür.',
   profile_offlineTitle: 'İnternet yok.',
   profile_offlineBody: 'Rahatça düzenle: bu tarayıcıda kayıtlı kalır ve bağlantı gelince yüklenir.',
   profile_yourProfile: 'Profilin',
@@ -896,7 +896,7 @@ export const tr: Record<MessageKey, string> = {
   editProfile_nameTooShort: 'En az {min} harf yaz.',
   editProfile_nameTooLong: 'En fazla {max} karakter kullan.',
   editProfile_accountNotice: 'Ad ve fotoğraf {provider} hesabından geldi. Bunları burada değiştirmek sadece Blitz Split için geçerlidir, {provider} hesabını değiştirmez.',
-  editProfile_footer: 'Adını ve fotoğrafını sadece gruplarındaki kişiler görür.',
+  editProfile_footer: 'Grupların ve profil bağlantına sahip olan herkes adını ve fotoğrafını görür.',
   editProfile_save: 'Kaydet',
 
   profile_keysTitle: 'Ödeme almak için anahtarlar',

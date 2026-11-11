@@ -15,7 +15,7 @@
     <string name="edit_profile_name_too_short">Minimalna liczba liter: %d.</string>
     <string name="edit_profile_name_too_long">Maksymalna liczba znaków: %d.</string>
     <string name="edit_profile_account_notice">Imię i zdjęcie pochodzą z twojego konta %1$s. Zmiana tutaj dotyczy tylko aplikacji Blitz Split i nie zmienia twojego konta %1$s.</string>
-    <string name="edit_profile_footer">Twoje imię i zdjęcie widzą tylko osoby z twoich grup.</string>
+    <string name="edit_profile_footer">Twoje grupy i każdy, kto ma link do twojego profilu, widzą twoje imię i zdjęcie.</string>
     <string name="profile_photo_close">Zamknij</string>
     <string name="profile_photo_camera">Aparat</string>
     <string name="profile_photo_gallery">Galeria</string>

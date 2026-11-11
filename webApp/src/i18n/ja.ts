@@ -60,7 +60,7 @@ export const ja: Record<MessageKey, string> = {
   welcome_usedOnAnotherDevice: '別のデバイスで使っていました',
 
   profileSetup_title: '友だちからは何と呼ばれていますか？',
-  profileSetup_subtitle: '名前はグループのメンバーにだけ表示されます。',
+  profileSetup_subtitle: 'グループのメンバーと、プロフィールのリンクを持っている人には、名前が表示されます。',
   profileSetup_avatarColor: 'アバターの色',
   profileSetup_addPhoto: '写真を追加',
   profileSetup_takePhoto: '写真を撮影',
@@ -778,7 +778,7 @@ export const ja: Record<MessageKey, string> = {
   profileLink_notFoundBody: 'このリンクではプロフィールを開けません。もう一度リンクをもらってください。',
   profileLink_noGroups: '{name}さんとの共通のグループはまだありません。',
   profileLink_invite: 'グループに招待',
-  profile_subtitle: '名前と受取用のキーは、グループのメンバーにだけ表示されます。',
+  profile_subtitle: '受取用のキーはグループのメンバーにだけ表示されます。名前と写真は、プロフィールのリンクを持っている人にも表示されます。',
   profile_offlineTitle: 'インターネットに接続されていません。',
   profile_offlineBody: '自由に編集できます：このブラウザに保存され、接続が戻るとアップロードされます。',
   profile_yourProfile: 'あなたのプロフィール',
@@ -896,7 +896,7 @@ export const ja: Record<MessageKey, string> = {
   editProfile_nameTooShort: '{min}文字以上入力してください。',
   editProfile_nameTooLong: '{max}文字以内で入力してください。',
   editProfile_accountNotice: '名前と写真は{provider}アカウントから取得しました。ここでの変更はBlitz Splitにのみ反映され、{provider}アカウントは変更されません。',
-  editProfile_footer: '名前と写真は、グループのメンバーにだけ表示されます。',
+  editProfile_footer: 'グループのメンバーと、プロフィールのリンクを持っている人には、名前と写真が表示されます。',
   editProfile_save: '保存',
 
   profile_keysTitle: '受取用のキー',

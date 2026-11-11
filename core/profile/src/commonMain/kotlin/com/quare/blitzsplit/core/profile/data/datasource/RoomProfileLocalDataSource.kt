@@ -12,7 +12,7 @@ class RoomProfileLocalDataSource(
     override suspend fun get(): ProfileEntity? = dao.get()
 
     override suspend fun upsert(entity: ProfileEntity) {
-        dao.upsert(entity)
+        dao.upsertKeepingShareCode(entity)
     }
 
     override suspend fun markSynced(

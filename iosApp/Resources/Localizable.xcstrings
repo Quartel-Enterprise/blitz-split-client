@@ -72167,134 +72167,6 @@
         }
       }
     },
-    "Only people in your groups see your name and photo." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nur Personen in deinen Gruppen sehen deinen Namen und dein Foto."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo quienes están en tus grupos ven tu nombre y tu foto."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seules les personnes de tes groupes voient ton nom et ta photo."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hanya orang di grupmu yang melihat nama dan fotomu."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo le persone dei tuoi gruppi vedono il tuo nome e la tua foto."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "あなたの名前と写真が見えるのは、グループのメンバーだけです。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alleen mensen in je groepen zien je naam en foto."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Twoje imię i zdjęcie widzą tylko osoby z twoich grup."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Só quem está nos seus grupos vê seu nome e foto."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adını ve fotoğrafını yalnızca gruplarındaki kişiler görür."
-          }
-        }
-      }
-    },
-    "Only people in your groups see your name." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nur Personen in deinen Gruppen sehen deinen Namen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu nombre solo lo ven quienes están en tus grupos."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seules les personnes de tes groupes voient ton nom."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hanya orang di grupmu yang melihat namamu."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo le persone dei tuoi gruppi vedono il tuo nome."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "あなたの名前が見えるのは、グループのメンバーだけです。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alleen mensen in je groepen zien je naam."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Twoje imię widzą tylko osoby z twoich grup."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seu nome aparece só para quem estiver nos seus grupos."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adını yalnızca gruplarındaki kişiler görür."
-          }
-        }
-      }
-    },
     "Open" : {
       "comment" : "Header of the home's group list: the groups not settled yet",
       "localizations" : {
@@ -124768,6 +124640,134 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Profil açılıyor"
+          }
+        }
+      }
+    },
+    "Your groups and anyone with your profile link see your name and photo." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Gruppen und alle mit dem Link zu deinem Profil sehen deinen Namen und dein Foto."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus grupos y quien tenga el enlace de tu perfil ven tu nombre y tu foto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tes groupes et toute personne ayant le lien de ton profil voient ton nom et ta photo."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupmu dan siapa pun yang punya tautan profilmu melihat nama dan fotomu."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi gruppi e chiunque abbia il link del tuo profilo vedono il tuo nome e la tua foto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループのメンバーと、プロフィールのリンクを持っている人には、名前と写真が表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je groepen en iedereen met de link naar je profiel zien je naam en foto."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twoje grupy i każdy, kto ma link do twojego profilu, widzą twoje imię i zdjęcie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus grupos e quem tiver o link do seu perfil veem seu nome e sua foto."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupların ve profil bağlantına sahip olan herkes adını ve fotoğrafını görür."
+          }
+        }
+      }
+    },
+    "Your groups and anyone with your profile link see your name." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Gruppen und alle mit dem Link zu deinem Profil sehen deinen Namen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus grupos y quien tenga el enlace de tu perfil ven tu nombre."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tes groupes et toute personne ayant le lien de ton profil voient ton nom."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupmu dan siapa pun yang punya tautan profilmu melihat namamu."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi gruppi e chiunque abbia il link del tuo profilo vedono il tuo nome."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループのメンバーと、プロフィールのリンクを持っている人には、名前が表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je groepen en iedereen met de link naar je profiel zien je naam."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twoje grupy i każdy, kto ma link do twojego profilu, widzą twoje imię."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus grupos e quem tiver o link do seu perfil veem seu nome."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grupların ve profil bağlantına sahip olan herkes adını görür."
           }
         }
       }

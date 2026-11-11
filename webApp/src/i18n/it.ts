@@ -60,7 +60,7 @@ export const it: Record<MessageKey, string> = {
   welcome_usedOnAnotherDevice: 'L’ho già usata su un altro dispositivo',
 
   profileSetup_title: 'Come ti chiamano i tuoi amici?',
-  profileSetup_subtitle: 'Solo le persone dei tuoi gruppi vedono il tuo nome.',
+  profileSetup_subtitle: 'I tuoi gruppi e chiunque abbia il link del tuo profilo vedono il tuo nome.',
   profileSetup_avatarColor: 'Colore dell’avatar',
   profileSetup_addPhoto: 'Aggiungi foto',
   profileSetup_takePhoto: 'Scatta una foto',
@@ -778,7 +778,7 @@ export const it: Record<MessageKey, string> = {
   profileLink_notFoundBody: 'Questo link non apre nessun profilo. Richiedilo di nuovo.',
   profileLink_noGroups: 'Non hai ancora gruppi con {name}.',
   profileLink_invite: 'Invita in un gruppo',
-  profile_subtitle: 'Il tuo nome e le tue chiavi si vedono solo dalle persone dei tuoi gruppi.',
+  profile_subtitle: 'Le tue chiavi le vedono solo i tuoi gruppi; il tuo nome e la tua foto, anche chi ha il link del tuo profilo.',
   profile_offlineTitle: 'Niente internet.',
   profile_offlineBody: 'Modifica pure: resta salvato in questo browser e viene caricato quando torna la connessione.',
   profile_yourProfile: 'Il tuo profilo',
@@ -896,7 +896,7 @@ export const it: Record<MessageKey, string> = {
   editProfile_nameTooShort: 'Scrivi almeno {min} lettere.',
   editProfile_nameTooLong: 'Usa al massimo {max} caratteri.',
   editProfile_accountNotice: 'Nome e foto vengono dal tuo account {provider}. Se li cambi qui, valgono solo per Blitz Split e il tuo account {provider} non cambia.',
-  editProfile_footer: 'Solo le persone dei tuoi gruppi vedono il tuo nome e la tua foto.',
+  editProfile_footer: 'I tuoi gruppi e chiunque abbia il link del tuo profilo vedono il tuo nome e la tua foto.',
   editProfile_save: 'Salva',
 
   profile_keysTitle: 'Chiavi per ricevere pagamenti',

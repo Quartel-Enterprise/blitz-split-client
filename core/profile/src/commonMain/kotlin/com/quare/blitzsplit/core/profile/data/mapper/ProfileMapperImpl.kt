@@ -28,7 +28,7 @@ class ProfileMapperImpl : ProfileMapper {
         pendingSync = pendingSync,
         pendingPhoto = (profile.photo as? ProfilePhoto.Pending)?.jpeg,
         ownerUserId = ownerUserId,
-        // Why: the profile's own fields only; ProfileRepository keeps the link the stored copy has.
+        // Why: the profile's own fields only; the local data source keeps the link the stored copy has.
         shareCode = null,
     )
 

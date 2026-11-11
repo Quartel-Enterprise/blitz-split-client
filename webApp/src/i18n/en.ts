@@ -58,7 +58,7 @@ export const en = {
   welcome_usedOnAnotherDevice: "I've used it on another device",
 
   profileSetup_title: 'What do your friends call you?',
-  profileSetup_subtitle: 'Only people in your groups see your name.',
+  profileSetup_subtitle: 'Your groups and anyone with your profile link see your name.',
   profileSetup_avatarColor: 'Avatar color',
   profileSetup_addPhoto: 'Add photo',
   profileSetup_takePhoto: 'Take photo',
@@ -776,7 +776,7 @@ export const en = {
   profileLink_notFoundBody: "This link doesn't open any profile. Ask for it again.",
   profileLink_noGroups: "You don't have any groups with {name} yet.",
   profileLink_invite: 'Invite to a group',
-  profile_subtitle: 'Your name and keys only show to the people in your groups.',
+  profile_subtitle: 'Your keys only show to your groups; your name and photo, also to anyone with your profile link.',
   profile_offlineTitle: 'No internet.',
   profile_offlineBody: 'Edit freely: it stays saved in this browser and goes up when the connection is back.',
   profile_yourProfile: 'Your profile',
@@ -894,7 +894,7 @@ export const en = {
   editProfile_nameTooShort: 'Type at least {min} letters.',
   editProfile_nameTooLong: 'Use up to {max} characters.',
   editProfile_accountNotice: "Name and photo came from your {provider} account. Changing them here only applies to Blitz Split and doesn't change your {provider} account.",
-  editProfile_footer: 'Only people in your groups see your name and photo.',
+  editProfile_footer: 'Your groups and anyone with your profile link see your name and photo.',
   editProfile_save: 'Save',
 
   profile_keysTitle: 'Keys to receive payments',

@@ -61,7 +61,7 @@ export const nl: Record<MessageKey, string> = {
   welcome_usedOnAnotherDevice: 'Ik heb het op een ander apparaat gebruikt',
 
   profileSetup_title: 'Hoe noemen je vrienden je?',
-  profileSetup_subtitle: 'Alleen mensen in je groepen zien je naam.',
+  profileSetup_subtitle: 'Je groepen en iedereen met de link naar je profiel zien je naam.',
   profileSetup_avatarColor: 'Avatarkleur',
   profileSetup_addPhoto: 'Foto toevoegen',
   profileSetup_takePhoto: 'Foto maken',
@@ -779,7 +779,7 @@ export const nl: Record<MessageKey, string> = {
   profileLink_notFoundBody: 'Deze link opent geen profiel. Vraag er opnieuw om.',
   profileLink_noGroups: 'Je hebt nog geen groepen met {name}.',
   profileLink_invite: 'Uitnodigen voor een groep',
-  profile_subtitle: 'Je naam en sleutels zijn alleen zichtbaar voor de mensen in je groepen.',
+  profile_subtitle: 'Je sleutels zien alleen je groepen; je naam en foto ook iedereen met de link naar je profiel.',
   profile_offlineTitle: 'Geen internet.',
   profile_offlineBody: 'Bewerk gerust: het blijft opgeslagen in deze browser en wordt geüpload zodra de verbinding terug is.',
   profile_yourProfile: 'Jouw profiel',
@@ -897,7 +897,7 @@ export const nl: Record<MessageKey, string> = {
   editProfile_nameTooShort: 'Typ minstens {min} letters.',
   editProfile_nameTooLong: 'Gebruik maximaal {max} tekens.',
   editProfile_accountNotice: 'Naam en foto komen van je {provider}-account. Als je ze hier wijzigt, geldt dat alleen voor Blitz Split en verandert je {provider}-account niet.',
-  editProfile_footer: 'Alleen mensen in je groepen zien je naam en foto.',
+  editProfile_footer: 'Je groepen en iedereen met de link naar je profiel zien je naam en foto.',
   editProfile_save: 'Opslaan',
 
   profile_keysTitle: 'Sleutels om betalingen te ontvangen',

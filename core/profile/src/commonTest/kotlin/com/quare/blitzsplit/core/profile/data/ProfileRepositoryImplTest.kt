@@ -1045,8 +1045,9 @@ private class FakeProfileLocalDataSource(
 
     override suspend fun get(): ProfileEntity? = row.value
 
+    // Why: like the Room data source, the stored link's code stays.
     override suspend fun upsert(entity: ProfileEntity) {
-        row.value = entity
+        row.value = entity.copy(shareCode = row.value?.shareCode)
     }
 
     override suspend fun markSynced(
