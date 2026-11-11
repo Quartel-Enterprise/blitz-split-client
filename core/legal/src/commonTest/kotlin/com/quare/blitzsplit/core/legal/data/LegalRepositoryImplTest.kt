@@ -249,6 +249,28 @@ class LegalRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN the site answers French with a page that is not a legal text WHEN refreshing THEN saves the English`() =
+        runTest {
+            // Given
+            prepareScenario(
+                site = mapOf(
+                    "fr" to "<!doctype html><html><body>Blitz Split</body></html>",
+                    "en" to markdown(title = "Terms of Service"),
+                ),
+            )
+
+            // When
+            val result = repository.refreshDocument(LegalPage.TERMS_OF_USE, "fr")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                mapOf((LegalPage.TERMS_OF_USE to "fr") to markdown(title = "Terms of Service")),
+                local.saved.value,
+            )
+        }
+
+    @Test
     fun `GIVEN no internet WHEN refreshing THEN fails with the error and keeps the saved text`() = runTest {
         // Given
         val saved = mapOf((LegalPage.TERMS_OF_USE to "pt") to markdown(title = "Termos"))

@@ -86,6 +86,19 @@ class LegalDocumentParserImplTest {
     }
 
     @Test
+    fun `GIVEN a quoted title and a quoted date WHEN parsing THEN reads them without the quotes`() {
+        // Given
+        val markdown = "---\ntitle: \"Privacy: ours\"\nupdated: '2026-11-05'\n---\n"
+
+        // When
+        val document = parser.parse(markdown)
+
+        // Then
+        assertEquals("Privacy: ours", document?.title)
+        assertEquals(LegalDate(2026, 11, 5), document?.updated)
+    }
+
+    @Test
     fun `GIVEN no front matter WHEN parsing THEN there is no document`() {
         // Given
         val markdown = "## Who we are {#who}\n\nWe are Blitz Split."

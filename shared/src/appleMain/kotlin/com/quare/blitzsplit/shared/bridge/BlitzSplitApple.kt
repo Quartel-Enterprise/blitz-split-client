@@ -128,10 +128,10 @@ object BlitzSplitApple : KoinComponent {
 
     fun createProfileViewModel(): ViewModelHolder<ProfileViewModel> = ViewModelHolder(ProfileViewModel::class) { get() }
 
-    // Why: "Atualização disponível" over wherever the app is, the App Store's newer version.
     fun createLegalDocumentViewModel(route: Route.LegalDocument): ViewModelHolder<LegalDocumentViewModel> =
         ViewModelHolder(LegalDocumentViewModel::class) { get { parametersOf(route) } }
 
+    // Why: "Atualização disponível" over wherever the app is, the App Store's newer version.
     fun createInAppUpdateViewModel(route: Route.InAppUpdate): ViewModelHolder<InAppUpdateViewModel> =
         ViewModelHolder(InAppUpdateViewModel::class) { get { parametersOf(route) } }
 

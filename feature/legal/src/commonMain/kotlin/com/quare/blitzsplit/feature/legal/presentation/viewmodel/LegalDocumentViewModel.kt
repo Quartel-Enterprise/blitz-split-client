@@ -123,11 +123,18 @@ class LegalDocumentViewModel(
 
     /*
      * Why: the two texts link to each other, and the stack never holds the same route twice (each entry is keyed by
-     * its route): a link to a text already open under this one goes back to it.
+     * its route): a link to a text already open under this one goes back to it, taking its place when the link asks
+     * for another section, so the two never pile up. A section of this very text opens over it.
      */
     private fun openPage(target: Route.LegalDocument) {
-        val index = navigator.backStack.value.indexOf(target)
-        if (index >= 0) navigator.popTo(index + 1) else navigator.navigate(target)
+        val stack = navigator.backStack.value
+        val sameRoute = stack.indexOf(target)
+        val samePage = stack.indexOfFirst { it is Route.LegalDocument && it.page == target.page }
+        when {
+            sameRoute >= 0 -> navigator.popTo(sameRoute + 1)
+            target.page == route.page || samePage < 0 -> navigator.navigate(target)
+            else -> navigator.replaceAbove(samePage, target)
+        }
     }
 
     private fun LegalDocument.findSectionIndex(anchor: String?): Int? = blocks

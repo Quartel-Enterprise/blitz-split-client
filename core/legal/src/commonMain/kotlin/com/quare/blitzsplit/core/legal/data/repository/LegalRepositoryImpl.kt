@@ -30,15 +30,14 @@ class LegalRepositoryImpl(
         page: LegalPage,
         language: String,
     ): Result<Unit> = suspendRunCatching {
-        val markdown = remote.fetchMarkdown(
+        val markdown = fetchReadable(
             page = page,
             language = language,
         ) ?: fetchFallback(
             page = page,
             language = language,
         )
-        // Why: only a text the app can read replaces the saved one, never an error page a proxy answered with.
-        checkNotNull(markdown?.takeIf { parser.parse(it) != null }) { "The site has no ${page.slug} to read" }
+        checkNotNull(markdown) { "The site has no ${page.slug} to read" }
         local.saveMarkdown(
             page = page,
             language = language,
@@ -46,13 +45,26 @@ class LegalRepositoryImpl(
         )
     }
 
+    /*
+     * Why: only a text the app can read replaces the saved one, never an error page a proxy answered with; a language
+     * answered with anything else (a host's 200 for a missing file) still tries the English one.
+     */
+    private suspend fun fetchReadable(
+        page: LegalPage,
+        language: String,
+    ): String? = remote
+        .fetchMarkdown(
+            page = page,
+            language = language,
+        )?.takeIf { parser.parse(it) != null }
+
     private suspend fun fetchFallback(
         page: LegalPage,
         language: String,
     ): String? = if (language == FALLBACK_LANGUAGE) {
         null
     } else {
-        remote.fetchMarkdown(
+        fetchReadable(
             page = page,
             language = FALLBACK_LANGUAGE,
         )

@@ -485,6 +485,40 @@ class LegalDocumentViewModelTest {
         }
 
     @Test
+    fun `GIVEN the terms opened over the privacy policy WHEN a link to a policy section is clicked THEN swaps it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                page = LegalPage.TERMS_OF_USE,
+                saved = mapOf(LegalPage.TERMS_OF_USE to terms),
+            )
+            val termsRoute = navigator.backStack.value.last()
+            navigator.replaceAbove(
+                size = 1,
+                routes = listOf(privacyRoute, termsRoute),
+            )
+            val link = LegalLink.Page(
+                page = LegalPage.PRIVACY_POLICY,
+                anchor = "keep",
+            )
+
+            // When
+            viewModel.onEvent(LegalDocumentUiEvent.OnLinkClicked(link))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Profile,
+                    Route.LegalDocument(
+                        page = LegalPage.PRIVACY_POLICY,
+                        anchor = "keep",
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN a saved text still being read and no internet WHEN the read ends THEN load failed never showed`() =
         runTest(testDispatcher) {
             // Given

@@ -23,7 +23,8 @@ class LegalDocumentParserImpl : LegalDocumentParser {
         val frontMatter = lines
             .subList(1, frontMatterEnd)
             .mapNotNull { line -> frontMatterLine.matchEntire(line)?.destructured }
-            .associate { (key, value) -> key to value.trim() }
+            // Why: YAML may quote a value ("title: \"Privacy: ours\""), which is still the same title and day.
+            .associate { (key, value) -> key to value.trim().unquoted() }
         val title = frontMatter["title"]?.takeIf { it.isNotEmpty() } ?: return null
         val updated = frontMatter["updated"]?.let(::parseDate) ?: return null
         return LegalDocument(
@@ -32,6 +33,8 @@ class LegalDocumentParserImpl : LegalDocumentParser {
             blocks = BlockReader(lines.drop(frontMatterEnd + 1)).read(),
         )
     }
+
+    private fun String.unquoted(): String = removeSurrounding("\"").takeIf { it != this } ?: removeSurrounding("'")
 
     private fun parseDate(value: String): LegalDate? {
         val (year, month, day) = datePattern.matchEntire(value)?.destructured ?: return null
