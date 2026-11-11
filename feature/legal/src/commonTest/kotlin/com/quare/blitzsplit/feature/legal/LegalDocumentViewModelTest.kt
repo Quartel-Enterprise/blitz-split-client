@@ -42,6 +42,7 @@ class LegalDocumentViewModelTest {
     private lateinit var repository: FakeLegalRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: LegalDocumentViewModel
+    private var language = LANGUAGE
     private val actions = mutableListOf<LegalDocumentUiAction>()
 
     @BeforeTest
@@ -377,7 +378,7 @@ class LegalDocumentViewModelTest {
         }
 
     @Test
-    fun `GIVEN a section focused on the saved text WHEN a newer text moves that section THEN the focus stays put`() =
+    fun `GIVEN a section focused on the saved text WHEN a newer text moves that section THEN the focus follows it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -391,7 +392,68 @@ class LegalDocumentViewModelTest {
 
             // Then
             assertEquals(privacy, viewModel.uiState.value.document)
-            assertEquals(SAVED_KEEP_SECTION_INDEX, viewModel.uiState.value.focusedBlockIndex)
+            assertEquals(KEEP_SECTION_INDEX, viewModel.uiState.value.focusedBlockIndex)
+        }
+
+    @Test
+    fun `GIVEN the policy opened at its keep section WHEN a link to that section is clicked THEN scrolls back to it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                anchor = "keep",
+                saved = mapOf(LegalPage.PRIVACY_POLICY to privacy),
+            )
+            val stack = navigator.backStack.value
+            val link = LegalLink.Page(
+                page = LegalPage.PRIVACY_POLICY,
+                anchor = "keep",
+            )
+
+            // When
+            viewModel.onEvent(LegalDocumentUiEvent.OnLinkClicked(link))
+
+            // Then
+            assertEquals<List<LegalDocumentUiAction>>(
+                listOf(LegalDocumentUiAction.ScrollToSection(KEEP_SECTION_INDEX)),
+                actions,
+            )
+            assertEquals(stack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the policy opened at its top WHEN a link to the policy is clicked THEN scrolls back to the top`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(saved = mapOf(LegalPage.PRIVACY_POLICY to privacy))
+            val stack = navigator.backStack.value
+            val link = LegalLink.Page(
+                page = LegalPage.PRIVACY_POLICY,
+                anchor = null,
+            )
+
+            // When
+            viewModel.onEvent(LegalDocumentUiEvent.OnLinkClicked(link))
+
+            // Then
+            assertEquals<List<LegalDocumentUiAction>>(listOf(LegalDocumentUiAction.ScrollToSection(null)), actions)
+            assertEquals(stack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the load failed state WHEN the language changes and trying again THEN downloads the first language`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloadError = IllegalStateException("offline"))
+            language = "pt"
+            repository.downloadError = null
+
+            // When
+            viewModel.onEvent(LegalDocumentUiEvent.OnRetryClicked)
+
+            // Then
+            assertEquals(listOf(LANGUAGE, LANGUAGE), repository.refreshedLanguages)
+            assertEquals(listOf(LANGUAGE), repository.observedLanguages)
+            assertEquals(privacy, viewModel.uiState.value.document)
         }
 
     @Test
@@ -793,14 +855,9 @@ class LegalDocumentViewModelTest {
         viewModel = LegalDocumentViewModel(
             route = route,
             navigator = navigator,
-            refreshLegalDocument = RefreshLegalDocumentUseCase(
-                repository = repository,
-                getLegalLanguage = { LANGUAGE },
-            ),
-            observeLegalDocument = ObserveLegalDocumentUseCase(
-                repository = repository,
-                getLegalLanguage = { LANGUAGE },
-            ),
+            refreshLegalDocument = RefreshLegalDocumentUseCase(repository),
+            getLegalLanguage = { language },
+            observeLegalDocument = ObserveLegalDocumentUseCase(repository),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
@@ -809,7 +866,6 @@ class LegalDocumentViewModelTest {
     private companion object {
         const val LANGUAGE = "en"
         const val KEEP_SECTION_INDEX = 3
-        const val SAVED_KEEP_SECTION_INDEX = 1
     }
 }
 
@@ -820,6 +876,8 @@ private class FakeLegalRepository(
     val documents = MutableStateFlow(saved)
     val observedPages = mutableListOf<LegalPage>()
     val refreshedPages = mutableListOf<LegalPage>()
+    val observedLanguages = mutableListOf<String>()
+    val refreshedLanguages = mutableListOf<String>()
     var downloadError: Throwable? = null
     var downloadGate: CompletableDeferred<Unit>? = null
     var readGate: CompletableDeferred<Unit>? = null
@@ -829,6 +887,7 @@ private class FakeLegalRepository(
         language: String,
     ): Flow<LegalDocument?> {
         observedPages += page
+        observedLanguages += language
         return documents.map { it[page] }.onStart { readGate?.await() }
     }
 
@@ -837,6 +896,7 @@ private class FakeLegalRepository(
         language: String,
     ): Result<Unit> {
         refreshedPages += page
+        refreshedLanguages += language
         downloadGate?.await()
         downloadError?.let { return Result.failure(it) }
         documents.update { it + (page to site.getValue(page)) }

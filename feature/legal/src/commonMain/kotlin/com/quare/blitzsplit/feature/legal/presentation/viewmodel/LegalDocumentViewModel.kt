@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.legal.domain.model.LegalBlock
 import com.quare.blitzsplit.core.legal.domain.model.LegalDocument
 import com.quare.blitzsplit.core.legal.domain.model.LegalLink
+import com.quare.blitzsplit.core.legal.domain.usecase.GetLegalLanguage
 import com.quare.blitzsplit.core.legal.domain.usecase.ObserveLegalDocument
 import com.quare.blitzsplit.core.legal.domain.usecase.RefreshLegalDocument
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -15,6 +16,8 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.legal.presentation.model.LegalDocumentUiAction
 import com.quare.blitzsplit.feature.legal.presentation.model.LegalDocumentUiEvent
 import com.quare.blitzsplit.feature.legal.presentation.model.LegalDocumentUiState
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -32,6 +35,7 @@ class LegalDocumentViewModel(
     private val route: Route.LegalDocument,
     private val navigator: Navigator,
     private val refreshLegalDocument: RefreshLegalDocument,
+    getLegalLanguage: GetLegalLanguage,
     observeLegalDocument: ObserveLegalDocument,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LegalDocumentUiEvent>(trackEvent) {
@@ -51,9 +55,18 @@ class LegalDocumentViewModel(
     val stateWatcher: FlowWatcher<LegalDocumentUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<LegalDocumentUiAction> = FlowWatcher(uiAction)
 
+    /*
+     * Why: worked out once for as long as the screen lives, so the text it watches is the one every download saves,
+     * even when Profile › Language or the device's changes under it.
+     */
+    private val language = viewModelScope.async(start = CoroutineStart.LAZY) { getLegalLanguage() }
+
     init {
         viewModelScope.launch {
-            observeLegalDocument(route.page).collectIndexed { index, document ->
+            observeLegalDocument(
+                page = route.page,
+                language = language.await(),
+            ).collectIndexed { index, document ->
                 showDocument(document)
                 /*
                  * Why: the download starts once the saved text was read, so one that fails at once never shows
@@ -80,12 +93,10 @@ class LegalDocumentViewModel(
 
     private fun showDocument(document: LegalDocument?) {
         uiState.update { state ->
-            // Why: only the first text scrolls to the link's section; the current one taking its place stays put.
-            val isFirstText = state.document == null
-            val focusedBlockIndex = if (isFirstText) document?.findSectionIndex(route.anchor) else null
             state.copy(
                 document = document,
-                focusedBlockIndex = focusedBlockIndex ?: state.focusedBlockIndex,
+                // Why: an index into this very text's blocks, where the current one may hold the section elsewhere.
+                focusedBlockIndex = document?.findSectionIndex(route.anchor),
             )
         }
     }
@@ -98,7 +109,10 @@ class LegalDocumentViewModel(
     private fun refresh() {
         viewModelScope.launch {
             // Why: a download that worked shows through the saved text; one that failed only matters without any.
-            refreshLegalDocument(route.page).onFailure { uiState.update { it.copy(hasLoadFailed = true) } }
+            refreshLegalDocument(
+                page = route.page,
+                language = language.await(),
+            ).onFailure { uiState.update { it.copy(hasLoadFailed = true) } }
         }
     }
 
@@ -124,17 +138,24 @@ class LegalDocumentViewModel(
     /*
      * Why: the two texts link to each other, and the stack never holds the same route twice (each entry is keyed by
      * its route): a link to a text already open under this one goes back to it, taking its place when the link asks
-     * for another section, so the two never pile up. A section of this very text opens over it.
+     * for another section, so the two never pile up. A section of this very text opens over it, and the one this
+     * screen itself opened at, which is this same entry, scrolls back to it.
      */
     private fun openPage(target: Route.LegalDocument) {
         val stack = navigator.backStack.value
         val sameRoute = stack.indexOf(target)
         val samePage = stack.indexOfFirst { it is Route.LegalDocument && it.page == target.page }
         when {
+            target == route -> scrollToOwnSection()
             sameRoute >= 0 -> navigator.popTo(sameRoute + 1)
             target.page == route.page || samePage < 0 -> navigator.navigate(target)
             else -> navigator.replaceAbove(samePage, target)
         }
+    }
+
+    private fun scrollToOwnSection() {
+        val blockIndex = uiState.value.document?.findSectionIndex(route.anchor)
+        viewModelScope.launch { uiAction.emit(LegalDocumentUiAction.ScrollToSection(blockIndex)) }
     }
 
     private fun LegalDocument.findSectionIndex(anchor: String?): Int? = blocks

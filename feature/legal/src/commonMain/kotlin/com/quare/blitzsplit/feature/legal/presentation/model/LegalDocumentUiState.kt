@@ -12,7 +12,8 @@ data class LegalDocumentUiState(
     val hasLoadFailed: Boolean,
     /*
      * Why: the index in document.blocks of the section a link asked for (/privacy#keep), which the text opens scrolled
-     * to; null for the top, and while the text isn't there or has no such section.
+     * to; null for the top, and while the text isn't there or has no such section. The UIs scroll to it once, when the
+     * text first shows: a newer text taking its place keeps the reader where they are.
      */
     val focusedBlockIndex: Int?,
 ) {

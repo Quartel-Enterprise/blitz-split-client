@@ -231,6 +231,61 @@ class LegalDocumentParserImplTest {
     }
 
     @Test
+    fun `GIVEN an updated date on February 30 WHEN parsing THEN there is no document`() {
+        // Given
+        val markdown = "---\ntitle: Privacy Policy\nupdated: 2026-02-30\n---\n"
+
+        // When
+        val document = parser.parse(markdown)
+
+        // Then
+        assertNull(document)
+    }
+
+    @Test
+    fun `GIVEN an updated date on February 29 of a common year WHEN parsing THEN there is no document`() {
+        // Given
+        val markdown = "---\ntitle: Privacy Policy\nupdated: 2026-02-29\n---\n"
+
+        // When
+        val document = parser.parse(markdown)
+
+        // Then
+        assertNull(document)
+    }
+
+    @Test
+    fun `GIVEN an updated date on February 29 of a leap year WHEN parsing THEN the document has that day`() {
+        // Given
+        val markdown = "---\ntitle: Privacy Policy\nupdated: 2028-02-29\n---\n"
+
+        // When
+        val document = parser.parse(markdown)
+
+        // Then
+        assertEquals(
+            LegalDate(
+                year = 2028,
+                month = 2,
+                day = 29,
+            ),
+            document?.updated,
+        )
+    }
+
+    @Test
+    fun `GIVEN an updated date on day 31 of a 30 day month WHEN parsing THEN there is no document`() {
+        // Given
+        val markdown = "---\ntitle: Privacy Policy\nupdated: 2026-11-31\n---\n"
+
+        // When
+        val document = parser.parse(markdown)
+
+        // Then
+        assertNull(document)
+    }
+
+    @Test
     fun `GIVEN an updated date on day zero WHEN parsing THEN there is no document`() {
         // Given
         val markdown = "---\ntitle: Privacy Policy\nupdated: 2026-11-00\n---\n"

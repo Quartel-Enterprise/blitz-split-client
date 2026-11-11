@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.legal.domain.model.LegalText
 class LegalDocumentParserImpl : LegalDocumentParser {
     private val frontMatterLine = Regex("([a-z_]+):(.*)")
     private val datePattern = Regex("""(\d{4})-(\d{2})-(\d{2})""")
+    private val shortMonths = setOf(4, 6, 9, 11)
 
     override fun parse(markdown: String): LegalDocument? {
         // Why: an editor's byte order mark or a blank first line is no reason to lose the whole text.
@@ -24,7 +25,7 @@ class LegalDocumentParserImpl : LegalDocumentParser {
             .subList(1, frontMatterEnd)
             .mapNotNull { line -> frontMatterLine.matchEntire(line)?.destructured }
             // Why: YAML may quote a value ("title: \"Privacy: ours\""), which is still the same title and day.
-            .associate { (key, value) -> key to value.trim().unquoted() }
+            .associate { (key, value) -> key to value.trim().toUnquoted() }
         val title = frontMatter["title"]?.takeIf { it.isNotEmpty() } ?: return null
         val updated = frontMatter["updated"]?.let(::parseDate) ?: return null
         return LegalDocument(
@@ -34,7 +35,7 @@ class LegalDocumentParserImpl : LegalDocumentParser {
         )
     }
 
-    private fun String.unquoted(): String = removeSurrounding("\"").takeIf { it != this } ?: removeSurrounding("'")
+    private fun String.toUnquoted(): String = removeSurrounding("\"").takeIf { it != this } ?: removeSurrounding("'")
 
     private fun parseDate(value: String): LegalDate? {
         val (year, month, day) = datePattern.matchEntire(value)?.destructured ?: return null
@@ -42,8 +43,20 @@ class LegalDocumentParserImpl : LegalDocumentParser {
             year = year.toInt(),
             month = month.toInt(),
             day = day.toInt(),
-        ).takeIf { it.month in 1..MONTHS && it.day in 1..MAX_DAYS }
+        ).takeIf { it.month in 1..MONTHS && it.day in 1..getDaysIn(it.month, it.year) }
     }
+
+    // Why: a day its month doesn't have (February 31) is a typo each platform's calendar would read its own way.
+    private fun getDaysIn(
+        month: Int,
+        year: Int,
+    ): Int = when (month) {
+        FEBRUARY -> if (isLeap(year)) LEAP_FEBRUARY_DAYS else FEBRUARY_DAYS
+        in shortMonths -> SHORT_MONTH_DAYS
+        else -> MAX_DAYS
+    }
+
+    private fun isLeap(year: Int): Boolean = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
 
     // Why: one pass over the text's lines, a blank one closing whatever block was open.
     private class BlockReader(
@@ -160,5 +173,9 @@ class LegalDocumentParserImpl : LegalDocumentParser {
         const val BOLD_MARK = "**"
         const val MONTHS = 12
         const val MAX_DAYS = 31
+        const val SHORT_MONTH_DAYS = 30
+        const val FEBRUARY = 2
+        const val FEBRUARY_DAYS = 28
+        const val LEAP_FEBRUARY_DAYS = 29
     }
 }

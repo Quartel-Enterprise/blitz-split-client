@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +43,11 @@ import com.quare.blitzsplit.core.legal.domain.model.LegalSpan
 import com.quare.blitzsplit.core.legal.domain.model.LegalTableRow
 import com.quare.blitzsplit.core.legal.domain.model.LegalText
 import com.quare.blitzsplit.core.model.LegalPage
+import com.quare.blitzsplit.feature.legal.presentation.model.LegalDocumentUiAction
 import com.quare.blitzsplit.feature.legal.presentation.model.LegalDocumentUiEvent
 import com.quare.blitzsplit.feature.legal.presentation.model.LegalDocumentUiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -65,6 +69,8 @@ fun LegalDocumentContent(
     state: LegalDocumentUiState,
     onEvent: (LegalDocumentUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    // Why: a link to the section this screen opened at, which scrolls the text back to it.
+    sectionScrolls: Flow<LegalDocumentUiAction.ScrollToSection> = emptyFlow(),
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -91,6 +97,7 @@ fun LegalDocumentContent(
                     page = state.page,
                     document = document,
                     focusedBlockIndex = state.focusedBlockIndex,
+                    sectionScrolls = sectionScrolls,
                     onLinkClick = { link -> onEvent(LegalDocumentUiEvent.OnLinkClicked(link)) },
                 )
 
@@ -115,6 +122,7 @@ private fun DocumentList(
     page: LegalPage,
     document: LegalDocument,
     focusedBlockIndex: Int?,
+    sectionScrolls: Flow<LegalDocumentUiAction.ScrollToSection>,
     onLinkClick: (LegalLink) -> Unit,
 ) {
     /*
@@ -124,6 +132,9 @@ private fun DocumentList(
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = focusedBlockIndex?.plus(HEADER_ITEMS) ?: 0,
     )
+    LaunchedEffect(sectionScrolls, listState) {
+        sectionScrolls.collect { scroll -> listState.animateScrollToItem(scroll.blockIndex?.plus(HEADER_ITEMS) ?: 0) }
+    }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,

@@ -13,13 +13,16 @@ class RefreshLegalDocumentUseCaseTest {
     private lateinit var refreshLegalDocument: RefreshLegalDocumentUseCase
 
     @Test
-    fun `GIVEN Portuguese as the language WHEN refreshing the privacy policy THEN downloads that page in Portuguese`() =
+    fun `GIVEN the site up WHEN refreshing the privacy policy in Portuguese THEN downloads that page in Portuguese`() =
         runTest {
             // Given
-            prepareScenario(language = "pt")
+            prepareScenario()
 
             // When
-            val result = refreshLegalDocument(LegalPage.PRIVACY_POLICY)
+            val result = refreshLegalDocument(
+                page = LegalPage.PRIVACY_POLICY,
+                language = "pt",
+            )
 
             // Then
             assertTrue(result.isSuccess)
@@ -27,12 +30,15 @@ class RefreshLegalDocumentUseCaseTest {
         }
 
     @Test
-    fun `GIVEN Turkish as the language WHEN refreshing the terms THEN downloads the terms in Turkish`() = runTest {
+    fun `GIVEN the site up WHEN refreshing the terms in Turkish THEN downloads the terms in Turkish`() = runTest {
         // Given
-        prepareScenario(language = "tr")
+        prepareScenario()
 
         // When
-        val result = refreshLegalDocument(LegalPage.TERMS_OF_USE)
+        val result = refreshLegalDocument(
+            page = LegalPage.TERMS_OF_USE,
+            language = "tr",
+        )
 
         // Then
         assertTrue(result.isSuccess)
@@ -42,26 +48,20 @@ class RefreshLegalDocumentUseCaseTest {
     @Test
     fun `GIVEN the download fails WHEN refreshing THEN gives the failure`() = runTest {
         // Given
-        prepareScenario(
-            language = "pt",
-            refreshResult = Result.failure(IllegalStateException("offline")),
-        )
+        prepareScenario(refreshResult = Result.failure(IllegalStateException("offline")))
 
         // When
-        val result = refreshLegalDocument(LegalPage.TERMS_OF_USE)
+        val result = refreshLegalDocument(
+            page = LegalPage.TERMS_OF_USE,
+            language = "pt",
+        )
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
     }
 
-    private fun prepareScenario(
-        language: String,
-        refreshResult: Result<Unit> = Result.success(Unit),
-    ) {
+    private fun prepareScenario(refreshResult: Result<Unit> = Result.success(Unit)) {
         repository = FakeLegalRepository().also { it.refreshResult = refreshResult }
-        refreshLegalDocument = RefreshLegalDocumentUseCase(
-            repository = repository,
-            getLegalLanguage = { language },
-        )
+        refreshLegalDocument = RefreshLegalDocumentUseCase(repository)
     }
 }

@@ -55,8 +55,9 @@ The profile, its photo, appearance, in-app update and Adjust photo.
       layout.
     - A link to the other text, or to a section of it, opens that text over this one, scrolled to the section; a
       link to a text already open under this one goes back to it (in its place, scrolled to the section, when the link
-      names another one), so the two never pile up. A web or mail address
-      opens outside the app.
+      names another one), so the two never pile up, and a link to the section this very screen opened at scrolls
+      back to it. A legal page's full address (`https://blitzsplit.com/privacy`) opens in the app like its short one.
+      Any other web address, or a mail one, opens outside the app.
   - On the web and the Mac, "App on your phone" (Settings › iPhone on the Mac) sits right under the profile once a
     store lists the app, highlighted while the invite to the phone app stands ([get-the-app.md](get-the-app.md)).
   - The profile's avatar (Profile's on Android and iOS, the inline form's on the web and the Mac, never Edit profile's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,

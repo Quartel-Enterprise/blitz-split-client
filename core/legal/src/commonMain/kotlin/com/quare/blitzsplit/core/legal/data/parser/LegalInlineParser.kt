@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.LegalPage
 internal object LegalInlineParser {
     private val TOKEN = Regex("""\*\*(.+?)\*\*|\[([^\]]+)]\(([^)\s]+)\)|<mark>(.+?)</mark>""")
     private val PAGE_ADDRESS = Regex("""/([a-z]+)(?:#([a-z0-9-]+))?""")
+    private const val SITE = "https://blitzsplit.com"
     private const val BOLD_GROUP = 1
     private const val LINK_TEXT_GROUP = 2
     private const val LINK_ADDRESS_GROUP = 3
@@ -82,8 +83,11 @@ internal object LegalInlineParser {
         }
     }
 
-    private fun toLink(address: String): LegalLink? {
-        if (address.startsWith("https://") || address.startsWith("mailto:")) return LegalLink.External(address)
+    // Why: a legal page written by its full address (https://blitzsplit.com/privacy) is still the text the app draws.
+    private fun toLink(address: String): LegalLink? = toPageLink(address.removePrefix(SITE))
+        ?: address.takeIf { it.startsWith("https://") || it.startsWith("mailto:") }?.let(LegalLink::External)
+
+    private fun toPageLink(address: String): LegalLink.Page? {
         val (slug, anchor) = PAGE_ADDRESS.matchEntire(address)?.destructured ?: return null
         val page = LegalPage.fromSlug(slug) ?: return null
         return LegalLink.Page(

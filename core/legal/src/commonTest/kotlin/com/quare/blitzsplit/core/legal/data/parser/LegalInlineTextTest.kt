@@ -116,6 +116,44 @@ class LegalInlineTextTest {
     }
 
     @Test
+    fun `GIVEN a link to a legal page by its full address WHEN parsing THEN it is that page and section`() {
+        // Given
+        val line = "See [what we keep](https://blitzsplit.com/privacy#keep)."
+
+        // When
+        val spans = paragraphSpans(line)
+
+        // Then
+        val link = LegalLink.Page(
+            page = LegalPage.PRIVACY_POLICY,
+            anchor = "keep",
+        )
+        assertEquals(
+            listOf(
+                span("See "),
+                span("what we keep", link = link),
+                span("."),
+            ),
+            spans,
+        )
+    }
+
+    @Test
+    fun `GIVEN a link to another page of the site WHEN parsing THEN it is an external link`() {
+        // Given
+        val line = "[Get the app](https://blitzsplit.com/download)"
+
+        // When
+        val spans = paragraphSpans(line)
+
+        // Then
+        assertEquals(
+            listOf(span("Get the app", link = LegalLink.External("https://blitzsplit.com/download"))),
+            spans,
+        )
+    }
+
+    @Test
     fun `GIVEN a mailto link WHEN parsing THEN it is an external link`() {
         // Given
         val line = "Write to [privacy@blitzsplit.com](mailto:privacy@blitzsplit.com)"

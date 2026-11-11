@@ -7,6 +7,8 @@ final class LegalDocumentModel {
     private(set) var state: LegalDocumentUiState
     /// Whether the text already opened scrolled to the section a link asked for, so coming back to it stays put.
     @ObservationIgnored var didFocus = false
+    /// A link to the section this very screen opened at: the text scrolls back to it, each tap a new request.
+    private(set) var sectionScroll: LegalSectionScroll?
 
     @ObservationIgnored private let holder: ViewModelHolder<LegalDocumentViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -18,7 +20,11 @@ final class LegalDocumentModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
-        watches.add(viewModel.actionWatcher.observe { action in
+        watches.add(viewModel.actionWatcher.observe { [weak self] action in
+            if let scroll = action as? LegalDocumentUiActionScrollToSection {
+                self?.sectionScroll = LegalSectionScroll(blockIndex: scroll.blockIndex?.intValue)
+                return
+            }
             guard let open = action as? LegalDocumentUiActionOpenUrl, let url = URL(string: open.url) else { return }
             #if os(iOS)
             UIApplication.shared.open(url)
@@ -35,6 +41,12 @@ final class LegalDocumentModel {
     isolated deinit {
         holder.clear()
     }
+}
+
+/// One request to scroll the text to a section's block, or to its top.
+struct LegalSectionScroll: Equatable {
+    let id = UUID()
+    let blockIndex: Int?
 }
 
 /// "Privacy Policy" and "Terms of Service", drawn from the blocks the shared code reads the site's Markdown into:
@@ -120,6 +132,9 @@ private struct LegalDocumentText: View {
     let document: LegalDocument
     let title: LocalizedStringKey
 
+    /// The first line's id, for a scroll back to the top; the blocks' ids are their indexes.
+    static let topId = "top"
+
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -133,6 +148,7 @@ private struct LegalDocumentText: View {
                     Text(isPrivacyPolicy ? "Updated \(updated) (privacy policy)" : "Updated \(updated) (terms)")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .id(Self.topId)
                     ForEach(Array(document.blocks.enumerated()), id: \.offset) { index, block in
                         LegalBlockView(block: block)
                             .id(index)
@@ -147,6 +163,16 @@ private struct LegalDocumentText: View {
                 guard let index, !model.didFocus else { return }
                 model.didFocus = true
                 proxy.scrollTo(Int(truncating: index), anchor: .top)
+            }
+            .onChange(of: model.sectionScroll) { _, scroll in
+                guard let scroll else { return }
+                withAnimation {
+                    if let blockIndex = scroll.blockIndex {
+                        proxy.scrollTo(blockIndex, anchor: .top)
+                    } else {
+                        proxy.scrollTo(LegalDocumentText.topId, anchor: .top)
+                    }
+                }
             }
         }
         .environment(\.openURL, OpenURLAction { url in

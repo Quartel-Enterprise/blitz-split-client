@@ -40,12 +40,15 @@ enum class AppLanguage(
          * none or any other.
          */
         fun fromTag(tag: String?): AppLanguage {
-            val language = tag
-                ?.substringBefore('-')
-                ?.substringBefore('_')
-                ?.lowercase()
-                ?.let { if (it == LEGACY_INDONESIAN) INDONESIAN.tag else it }
+            val language = languageOf(tag)
             return entries.firstOrNull { it.tag?.substringBefore('-') == language } ?: SYSTEM
         }
+
+        // Why: a tag's language alone, lower case ("pt" of pt-BR or PT_br), whether the app speaks it or not.
+        fun languageOf(tag: String?): String? = tag
+            ?.substringBefore('-')
+            ?.substringBefore('_')
+            ?.lowercase()
+            ?.let { if (it == LEGACY_INDONESIAN) INDONESIAN.tag else it }
     }
 }
