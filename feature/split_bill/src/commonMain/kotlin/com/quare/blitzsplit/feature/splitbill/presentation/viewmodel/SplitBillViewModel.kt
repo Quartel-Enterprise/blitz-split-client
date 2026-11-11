@@ -278,13 +278,7 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.Payers -> payerPicking.onEvent(event)
 
-            SplitBillUiEvent.OnSpentAtOpened,
-            is SplitBillUiEvent.OnSpentDayPicked,
-            SplitBillUiEvent.OnSpentTimeOpened,
-            is SplitBillUiEvent.OnSpentTimePicked,
-            SplitBillUiEvent.OnSpentTimeAdded,
-            SplitBillUiEvent.OnSpentTimeCleared,
-            -> spentAtPicking.onEvent(event)
+            is SplitBillUiEvent.SpentAt -> spentAtPicking.onEvent(event)
 
             SplitBillUiEvent.OnSplitClicked -> openSplit()
 

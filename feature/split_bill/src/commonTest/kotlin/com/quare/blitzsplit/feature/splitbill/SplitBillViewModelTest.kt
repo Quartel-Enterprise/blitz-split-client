@@ -204,7 +204,7 @@ class SplitBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnSpentTimeAdded)
 
             // Then
-            assertEquals(firstMinute, viewModel.uiState.value.spentAt)
+            assertEquals(Instant.parse("2026-10-30T00:01:00Z").toEpochMilliseconds(), viewModel.uiState.value.spentAt)
             assertTrue(viewModel.uiState.value.hasSpentTime)
         }
 

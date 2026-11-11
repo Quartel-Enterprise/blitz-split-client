@@ -210,11 +210,11 @@ export function ExpenseLine({
           ? t('groupDetail_metaPaidBy', { time, name: payer.name })
           : time
     : payers.length > 1
-      ? t('groups_searchPaidBySeveral', { names })
+      ? t('groupDetail_metaPaidBySeveralNoTime', { names })
       : payer?.isMe
-        ? t('groups_searchYouPaid')
+        ? t('groupDetail_metaPaidByMeNoTime')
         : payer?.name != null
-          ? t('groups_searchPaidBy', { name: payer.name })
+          ? t('groupDetail_metaPaidByNoTime', { name: payer.name })
           : ''
   const balance = expense.myBalanceMinor
   return (

@@ -32,10 +32,12 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     switch, the checkbox and the web's "Add time" give the bill the time it is now by the shared clock
     (`OnSpentTimeAdded`). A bill saved with a time keeps showing and editing it. Never after now: a later time today
     becomes now. Counting as 00:00, a bill without a time sorts after the day's timed bills and payments in Expenses
-    (the most recent on top), and a payment made later that day counts as after it. Wherever a bill's
+    (the most recent on top), and a payment made later that day counts as after it. Known limit: "no time" is read from the instant in the reader's time zone, so a member in another
+    time zone sees the creator's midnight as a time (and, west of it, on the day before) until the bill stores whether
+    it has a time (a `has_time` column of `expenses` in `blitz-split-api`, not done yet). Wherever a bill's
     time shows, one without a time shows its date alone, never 00:00 (`hasSpentTime`, `hasTime`): Expenses' rows, a
     category's bills, Bill (and the web's bill page), Bill's history ("When"), Activity's changes and Statistics'
-    "Biggest expense" ("Bruno paid", "Today", "Oct 27"). The form asks what it was before how much (Pierre's call, beta feedback
+    "Biggest expense" ("Bruno paid", "Today", "Tue, Oct 27"). The form asks what it was before how much (Pierre's call, beta feedback
     10): "Description" with its category's icon and the line saying why, then "Amount", in every layout, a new bill
     opening on the description. A bill is 0.01 to 100 million in its own currency (but the bitcoin, ether and rupiah
     caps of `ExpenseRules.maxAmountMinorFor`; a new bill starts in the group's default currency, and "Edit bill" keeps

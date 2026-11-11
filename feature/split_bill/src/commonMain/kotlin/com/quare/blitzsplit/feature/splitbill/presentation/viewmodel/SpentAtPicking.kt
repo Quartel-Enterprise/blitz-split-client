@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
+import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -8,7 +9,9 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
@@ -22,7 +25,7 @@ internal class SpentAtPicking(
     private val currentTimeZone: CurrentTimeZone,
     private val trackEvent: TrackEvent,
 ) {
-    fun onEvent(event: SplitBillUiEvent) {
+    fun onEvent(event: SplitBillUiEvent.SpentAt) {
         when (event) {
             SplitBillUiEvent.OnSpentAtOpened,
             SplitBillUiEvent.OnSpentTimeOpened,
@@ -35,8 +38,6 @@ internal class SpentAtPicking(
             SplitBillUiEvent.OnSpentTimeAdded -> addTime()
 
             SplitBillUiEvent.OnSpentTimeCleared -> clearTime()
-
-            else -> Unit
         }
     }
 
@@ -51,15 +52,18 @@ internal class SpentAtPicking(
     }
 
     /*
-     * Why: the time it is now (by this ViewModel's clock), to the minute, on the bill's day; in the first minute of
-     * the day that is 00:00, which reads as no time, so it takes 00:01 instead.
+     * Why: the time it is now (by this ViewModel's clock), to the minute, on the bill's day. In the first minute of
+     * the day that is 00:00, which reads as no time, so it takes 00:01, a few seconds ahead of now, rather than now,
+     * which would still show as 00:00.
      */
     private fun addTime() {
         val now = currentTimeMillis()
         val timeZone = currentTimeZone()
         val clock = Instant.fromEpochMilliseconds(now).toLocalDateTime(timeZone).time
         val time = if (clock.hour == 0 && clock.minute == 0) LocalTime(0, 1) else LocalTime(clock.hour, clock.minute)
-        uiState.update { it.withSpentTimePicked(time, now, timeZone) }
+        val date = SpentDay.dateOf(uiState.value.spentAt, timeZone)
+        val latest = maxOf(now, LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds())
+        uiState.update { it.withSpentTimePicked(time, latest, timeZone) }
     }
 
     private fun clearTime() {

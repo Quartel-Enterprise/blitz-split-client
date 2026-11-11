@@ -71,30 +71,33 @@ sealed interface SplitBillUiEvent : UiEvent {
     // Why: "Várias pessoas pagaram" closed without "Pronto", which leaves who paid as it was.
     data object OnSeveralPayersDismissed : Payers
 
+    // Why: what "Quando" sends, its date and its optional time, which SpentAtPicking handles.
+    sealed interface SpentAt : SplitBillUiEvent
+
     // Why: "Quando" opening its picker, which then stops at the day it is now, also once midnight passed meanwhile.
-    data object OnSpentAtOpened : SplitBillUiEvent
+    data object OnSpentAtOpened : SpentAt
 
     // Why: the day picked in "Quando"'s calendar, its month 1 to 12; the bill keeps its time, or still has none.
     data class OnSpentDayPicked(
         val year: Int,
         val month: Int,
         val day: Int,
-    ) : SplitBillUiEvent
+    ) : SpentAt
 
     // Why: "Adicionar horário" (or the time there) opening its picker, which then stops at now, as OnSpentAtOpened.
-    data object OnSpentTimeOpened : SplitBillUiEvent
+    data object OnSpentTimeOpened : SpentAt
 
     // Why: the time of day picked for the bill, on its day; 00:00 is the same as no time.
     data class OnSpentTimePicked(
         val hour: Int,
         val minute: Int,
-    ) : SplitBillUiEvent
+    ) : SpentAt
 
     // Why: Apple's "Horário" switched on and the web's "Adicionar horário": the bill takes the time it is now, on its day.
-    data object OnSpentTimeAdded : SplitBillUiEvent
+    data object OnSpentTimeAdded : SpentAt
 
     // Why: "Remover horário": the bill goes back to its date alone, the first instant of its day.
-    data object OnSpentTimeCleared : SplitBillUiEvent
+    data object OnSpentTimeCleared : SpentAt
 
     // Why: "Divisão", which opens "Dividir".
     data object OnSplitClicked : SplitBillUiEvent
