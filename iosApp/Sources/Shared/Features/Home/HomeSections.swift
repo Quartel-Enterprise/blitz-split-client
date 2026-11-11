@@ -612,7 +612,7 @@ private struct GroupBalanceLines: View {
 }
 
 /// "Latest expenses": the five latest bills you paid or take part in, by day, the most recent first. A bill opens its
-/// Bill over its group; "See everything" is Activity, not built yet. While the first download fills the device, rows
+/// Bill over its group; "See everything" opens Activity on its bills. While the first download fills the device, rows
 /// shimmer in their place.
 struct HomeBillsSection: View {
     let days: [HomeBillDay]

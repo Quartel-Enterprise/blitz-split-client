@@ -25,7 +25,8 @@ class ObserveContactBookUseCase(
     override fun invoke(): Flow<ContactBookSnapshot> = combine(
         observeGroups(),
         observeGroupsMoney(),
-        observeMapCategories(),
+        // Why: Room reads the same categories anew on each write, which needs no new contact book.
+        observeMapCategories().distinctUntilChanged(),
         hiddenContacts.observeHidden(),
     ) { groups, money, categories, hidden ->
         val byActivity = GroupActivity.sortMostRecentFirst(groups, money)
