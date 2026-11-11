@@ -2848,6 +2848,57 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN a new group whose sync fails after it went up WHEN changing the link THEN still rotates the code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedGroups = listOf(
+                    dinner.copy(
+                        inviteCode = "AbCd1234",
+                        isPending = true,
+                    ),
+                ),
+            )
+            groups.hasPendingChanges.value = true
+            groups.groupIdsNotOnServer += "dinner"
+            expenses.pushError = IllegalStateException("a bill the server refuses")
+
+            // When
+            val result = coordinator.rotateInviteCode("dinner")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("dinner"), groups.rotatedInviteCodeGroupIds)
+        }
+
+    @Test
+    fun `GIVEN a new group whose upload fails WHEN changing the link THEN fails without rotating`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedGroups = listOf(
+                dinner.copy(
+                    inviteCode = "AbCd1234",
+                    isPending = true,
+                ),
+            ),
+        )
+        groups.hasPendingChanges.value = true
+        groups.groupIdsNotOnServer += "dinner"
+        groups.pushError = IllegalStateException("network")
+
+        // When
+        val result = coordinator.rotateInviteCode("dinner")
+        runCurrent()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(groups.rotatedInviteCodeGroupIds.isEmpty())
+    }
+
+    @Test
     fun `GIVEN a group on the server and other changes waiting WHEN changing the link THEN rotates without a sync`() =
         runTest {
             // Given

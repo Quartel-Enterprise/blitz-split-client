@@ -317,11 +317,12 @@ class GroupRepositoryImpl(
         }
         val groupsToPush = pendingGroups.filterNot { it.id in heldGroupIds }
         if (groupsToPush.isNotEmpty()) {
-            upsertWithFreeInviteCodes(
+            val keptRows = upsertWithFreeInviteCodes(
                 groups = groupsToPush,
                 userId = userId,
                 refusedPhotoGroupIds = refusedPhotoGroupIds,
-            ).forEach { dto ->
+            )
+            keptRows.forEach { dto ->
                 dto.inviteCode?.let {
                     local.updateInviteCode(
                         id = dto.id,
@@ -339,8 +340,12 @@ class GroupRepositoryImpl(
                     )
                 }
             }
-            // Why: every one of them, also a row Last-Write-Wins skipped, which the server leaves out of its answer.
-            local.markGroupsOnServer(groupsToPush.map { it.id })
+            /*
+             * Why: the rows the server answered with, and the ones already up whose push Last-Write-Wins skipped, which
+             * it leaves out of its answer. A new group missing from the answer waits for a download that lists it, so
+             * one the server never took can't read as removed there and leave the device.
+             */
+            local.markGroupsOnServer(keptRows.map { it.id } + groupsToPush.filter { it.isOnServer }.map { it.id })
         }
         if (pendingMembers.isNotEmpty()) {
             val codesById = remote
@@ -381,8 +386,9 @@ class GroupRepositoryImpl(
 
     /*
      * Why: another group may have the code this device made, which the server refuses with the whole upload. It
-     * doesn't say whose, so every group not up yet gets a new code and they go again; a clash is so rare (about one in
-     * 10^14 per group) that a link shared offline almost never changes, and a few tries always find free codes.
+     * doesn't say whose, so every group with a code of this device's gets a new one and they go again; a clash is so
+     * rare (about one in 10^14 per group) that a link shared offline almost never changes, and a few tries always find
+     * free codes. After the last refusal the codes change too, so the next sync doesn't start with a taken one.
      */
     private suspend fun upsertWithFreeInviteCodes(
         groups: List<GroupEntity>,
@@ -390,14 +396,16 @@ class GroupRepositoryImpl(
         refusedPhotoGroupIds: Set<String>,
     ): List<GroupDto> {
         var toPush = groups
-        repeat(INVITE_CODE_ATTEMPTS - 1) {
+        var attempt = 1
+        while (true) {
             try {
                 return remote.upsertGroups(toPush.map { it.toDto(userId, refusedPhotoGroupIds) })
-            } catch (_: InviteCodeTakenException) {
-                toPush = toPush.map { it.withNewInviteCodeUnlessOnServer() }
+            } catch (taken: InviteCodeTakenException) {
+                toPush = toPush.map { it.withNewInviteCode() }
+                if (attempt == INVITE_CODE_ATTEMPTS) throw taken
+                attempt++
             }
         }
-        return remote.upsertGroups(toPush.map { it.toDto(userId, refusedPhotoGroupIds) })
     }
 
     // Why: the snapshot read before the photos went up, so an uploaded photo's URL is the one it went up under.
@@ -410,8 +418,12 @@ class GroupRepositoryImpl(
         photoUrl = if (id in refusedPhotoGroupIds) photoUrl else photoUrlOf(this),
     )
 
-    private suspend fun GroupEntity.withNewInviteCodeUnlessOnServer(): GroupEntity {
-        if (isOnServer) return this
+    /*
+     * Why: only a code this device made can clash: a group already up keeps the server's, and one an older version
+     * made without a code goes up without one and takes the server's.
+     */
+    private suspend fun GroupEntity.withNewInviteCode(): GroupEntity {
+        if (isOnServer || inviteCode == null) return this
         val newCode = randomCode(InviteLink.CODE_LENGTH)
         local.replaceInviteCodeBeforeUpload(
             id = id,

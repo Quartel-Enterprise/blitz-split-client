@@ -36,11 +36,11 @@ class SupabaseGroupRemoteDataSource(
     }
 
     /*
-     * Why: set_group_invite_code refuses a taken code by name; two groups going up at once with the same code meet the
-     * unique constraint instead.
+     * Why: set_group_invite_code refuses a taken code by name, whatever its SQLSTATE; two groups going up at once with
+     * the same code meet the unique constraint instead.
      */
-    private fun PostgrestRestException.isInviteCodeTaken(): Boolean = code == UNIQUE_VIOLATION &&
-        (INVITE_CODE_TAKEN in error || INVITE_CODE_UNIQUE in error)
+    private fun PostgrestRestException.isInviteCodeTaken(): Boolean = INVITE_CODE_TAKEN in error ||
+        (code == UNIQUE_VIOLATION && INVITE_CODE_UNIQUE in error)
 
     override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> = postgrest
         .from(MEMBERS)

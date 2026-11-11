@@ -346,6 +346,8 @@ class FakeGroupRepository(
         uploadedUserIds += userId
         pushError?.let { return Result.failure(it) }
         hasPendingChanges.value = false
+        // Why: an upload takes up every group created here.
+        groupIdsNotOnServer.clear()
         return Result.success(Unit)
     }
 

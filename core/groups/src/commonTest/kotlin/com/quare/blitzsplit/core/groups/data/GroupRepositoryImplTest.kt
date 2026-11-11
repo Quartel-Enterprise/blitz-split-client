@@ -50,7 +50,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -2383,7 +2382,7 @@ class GroupRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN the server skips a new group in its answer WHEN uploading THEN it is on the server with its code`() =
+    fun `GIVEN the server leaves a new group out of its answer WHEN uploading THEN it waits for a download`() =
         runTest {
             // Given
             prepareScenario(
@@ -2404,7 +2403,7 @@ class GroupRepositoryImplTest {
 
             // Then
             assertTrue(result.isSuccess)
-            assertEquals(true, local.group("group-1")?.isOnServer)
+            assertEquals(false, local.group("group-1")?.isOnServer)
             assertEquals("DevCode1", local.group("group-1")?.inviteCode)
         }
 
@@ -2559,7 +2558,7 @@ class GroupRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN every code made here is taken WHEN uploading THEN fails after three tries and nothing went up`() =
+    fun `GIVEN every code made here is taken WHEN uploading THEN fails after three tries with a fresh code kept`() =
         runTest {
             // Given
             prepareScenario(
@@ -2588,7 +2587,7 @@ class GroupRepositoryImplTest {
             // Then
             assertIs<InviteCodeTakenException>(result.exceptionOrNull())
             assertEquals(3, remote.upsertGroupsAttempts.size)
-            assertEquals("FreeCod2", local.group("group-1")?.inviteCode)
+            assertEquals("FreeCod3", local.group("group-1")?.inviteCode)
             assertEquals(false, local.group("group-1")?.isOnServer)
             assertEquals(true, local.group("group-1")?.pendingSync)
             assertTrue(remote.upsertedMembers.isEmpty())
@@ -2596,7 +2595,7 @@ class GroupRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN an older version group without a code beside a taken one WHEN uploading THEN it goes up with one`() =
+    fun `GIVEN an old group without a code beside a taken one WHEN uploading THEN it takes the server code`() =
         runTest {
             // Given
             prepareScenario(
@@ -2625,13 +2624,12 @@ class GroupRepositoryImplTest {
 
             // Then
             assertTrue(result.isSuccess)
-            assertNull(
-                remote.upsertGroupsAttempts
-                    .first()
-                    .single { it.id == "group-old" }
-                    .inviteCode,
+            assertTrue(
+                remote.upsertGroupsAttempts.all { attempt ->
+                    attempt.single { it.id == "group-old" }.inviteCode == null
+                },
             )
-            assertNotNull(local.group("group-old")?.inviteCode)
+            assertEquals("SrvCode7", local.group("group-old")?.inviteCode)
             assertEquals(true, local.group("group-old")?.isOnServer)
         }
 
