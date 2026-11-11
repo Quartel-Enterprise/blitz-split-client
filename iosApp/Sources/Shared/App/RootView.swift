@@ -166,6 +166,7 @@ struct RootView: View {
         // Contacts is never the root nor a sheet: the tabs draw it
         case .contacts: MainTabView(path: $app.path)
         case let .contactProfile(route): ContactProfileView(route: route)
+        case let .profileLink(route): ProfileLinkView(route: route)
         case .contactsAgenda: AgendaView()
         case let .contactInvite(route): ContactInviteView(route: route)
         case .profile:

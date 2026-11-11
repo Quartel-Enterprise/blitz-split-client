@@ -126,7 +126,7 @@ private struct ProfileTitle: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("What do your friends call you?")
                 .font(isLarge ? .largeTitle.bold() : .title.bold())
-            Text("Only people in your groups see your name.")
+            Text("Your groups and anyone with your profile link see your name.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">Arkadaşların sana ne der?</string>
-    <string name="profile_setup_subtitle">Adını yalnızca gruplarındaki kişiler görür.</string>
+    <string name="profile_setup_subtitle">Grupların ve profil bağlantına sahip olan herkes adını görür.</string>
     <string name="profile_setup_avatar_color">Avatar rengi</string>
     <string name="profile_setup_add_photo">Fotoğraf ekle</string>
     <string name="profile_setup_photo_error">Bu fotoğraf kullanılamadı. Başka birini dene.</string>

@@ -4,9 +4,6 @@
     <string name="profile_edit_subtitle">Ad, fotoğraf ve avatar rengi</string>
     <string name="profile_edit">Profili düzenle</string>
     <string name="profile_pending">Değişti · yüklenmeyi bekliyor</string>
-    <string name="profile_visibility">Profilini kimler görür</string>
-    <string name="profile_visibility_body">Adın, fotoğrafın ve ödeme anahtarların yalnızca gruplarındaki kişilere görünür. Seninle grup paylaşmayan kimse hiçbir şey görmez.</string>
-    <string name="profile_visibility_ok">Anladım</string>
     <string name="profile_offline_title">İnternet yok.</string>
     <string name="profile_offline_body">Rahatça düzenle: değişiklikler bu cihazda kayıtlı kalır ve bağlantı gelince yüklenir.</string>
     <string name="profile_section_account">Hesap ve eşitleme</string>
@@ -118,4 +115,7 @@
     <string name="profile_category_map">Kategori haritası</string>
     <string name="profile_category_map_detail">Bir harcamanın kategorisini seçen kelimeler</string>
     <string name="profile_photo_open">Fotoğrafı gör</string>
+    <string name="profile_share">Profili paylaş</string>
+    <string name="profile_share_message">Blitz Split\'teki profilim: %1$s</string>
+    <string name="profile_link_copied">Bağlantı kopyalandı</string>
 </resources>

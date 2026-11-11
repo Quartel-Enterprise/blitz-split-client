@@ -15,7 +15,7 @@
     <string name="edit_profile_name_too_short">En az %d harf yaz.</string>
     <string name="edit_profile_name_too_long">En fazla %d karakter kullan.</string>
     <string name="edit_profile_account_notice">Ad ve fotoğraf %1$s hesabından geldi. Burada değiştirmek yalnızca Blitz Split\'te geçerli olur, %1$s hesabını değiştirmez.</string>
-    <string name="edit_profile_footer">Adını ve fotoğrafını yalnızca gruplarındaki kişiler görür.</string>
+    <string name="edit_profile_footer">Grupların ve profil bağlantına sahip olan herkes adını ve fotoğrafını görür.</string>
     <string name="profile_photo_close">Kapat</string>
     <string name="profile_photo_camera">Kamera</string>
     <string name="profile_photo_gallery">Galeri</string>

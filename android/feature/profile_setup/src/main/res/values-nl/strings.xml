@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">Hoe noemen je vrienden je?</string>
-    <string name="profile_setup_subtitle">Alleen mensen in je groepen zien je naam.</string>
+    <string name="profile_setup_subtitle">Je groepen en iedereen met de link naar je profiel zien je naam.</string>
     <string name="profile_setup_avatar_color">Avatarkleur</string>
     <string name="profile_setup_add_photo">Foto toevoegen</string>
     <string name="profile_setup_photo_error">Kan deze foto niet gebruiken. Probeer een andere.</string>

@@ -19,7 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -94,11 +94,14 @@ fun ProfileContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onEvent(ProfileUiEvent.OnVisibilityInfoClicked) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = stringResource(R.string.profile_visibility),
-                        )
+                    // Why: only an account has a link; the system share has Copy, so Android needs no menu.
+                    if (state.shareLink != null) {
+                        IconButton(onClick = { onEvent(ProfileUiEvent.OnShareProfileClicked) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Share,
+                                contentDescription = stringResource(R.string.profile_share),
+                            )
+                        }
                     }
                 },
             )

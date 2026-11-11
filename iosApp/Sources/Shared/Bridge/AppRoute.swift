@@ -63,6 +63,9 @@ enum AppRoute: Hashable, Identifiable {
     case contacts
     /// A person's profile; holds the Kotlin route itself, which its ViewModel reads the person from.
     case contactProfile(RouteContactProfile)
+    /// A profile link opened, while it asks the server or has no contact to open; holds the Kotlin route itself, which
+    /// its ViewModel reads the code from.
+    case profileLink(RouteProfileLink)
     /// Inviting from the device's contacts.
     case contactsAgenda
     /// A group's invite link for someone or anyone; holds the Kotlin route itself, which its ViewModel reads whom it
@@ -116,6 +119,7 @@ enum AppRoute: Hashable, Identifiable {
         case let joinWithLink as RouteJoinWithLink: self = .joinWithLink(joinWithLink)
         case is RouteContacts: self = .contacts
         case let contactProfile as RouteContactProfile: self = .contactProfile(contactProfile)
+        case let profileLink as RouteProfileLink: self = .profileLink(profileLink)
         case is RouteContactsAgenda: self = .contactsAgenda
         case let contactInvite as RouteContactInvite: self = .contactInvite(contactInvite)
         case is RouteProfile: self = .profile

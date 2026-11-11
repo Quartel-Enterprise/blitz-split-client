@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">Como seus amigos te chamam?</string>
-    <string name="profile_setup_subtitle">Seu nome aparece só para quem estiver nos seus grupos.</string>
+    <string name="profile_setup_subtitle">Seus grupos e quem tiver o link do seu perfil veem seu nome.</string>
     <string name="profile_setup_avatar_color">Cor do avatar</string>
     <string name="profile_setup_add_photo">Adicionar foto</string>
     <string name="profile_setup_photo_error">Não deu para usar essa foto. Tente outra.</string>

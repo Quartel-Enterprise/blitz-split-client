@@ -24,6 +24,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewMo
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
+import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ProfileLinkViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
@@ -244,6 +245,10 @@ object BlitzSplitApple : KoinComponent {
     // Why: each person opens their own profile, which reads them from its route (beside Contatos too).
     fun createContactProfileViewModel(route: Route.ContactProfile): ViewModelHolder<ContactProfileViewModel> =
         ViewModelHolder(ContactProfileViewModel::class) { get { parametersOf(route) } }
+
+    // Why: a profile link's page reads its code from its route.
+    fun createProfileLinkViewModel(route: Route.ProfileLink): ViewModelHolder<ProfileLinkViewModel> =
+        ViewModelHolder(ProfileLinkViewModel::class) { get { parametersOf(route) } }
 
     fun createAgendaViewModel(): ViewModelHolder<AgendaViewModel> = ViewModelHolder(AgendaViewModel::class) { get() }
 

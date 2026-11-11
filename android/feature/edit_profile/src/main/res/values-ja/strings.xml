@@ -15,7 +15,7 @@
     <string name="edit_profile_name_too_short">%d文字以上で入力してください。</string>
     <string name="edit_profile_name_too_long">%d文字以内で入力してください。</string>
     <string name="edit_profile_account_notice">名前と写真は%1$sアカウントから取得しました。ここでの変更はBlitz Splitにだけ反映され、%1$sアカウントは変更されません。</string>
-    <string name="edit_profile_footer">あなたの名前と写真は、グループのメンバーにだけ表示されます。</string>
+    <string name="edit_profile_footer">グループのメンバーと、プロフィールのリンクを持っている人には、名前と写真が表示されます。</string>
     <string name="profile_photo_close">閉じる</string>
     <string name="profile_photo_camera">カメラ</string>
     <string name="profile_photo_gallery">ギャラリー</string>

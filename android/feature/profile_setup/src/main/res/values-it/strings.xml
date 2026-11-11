@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">Come ti chiamano i tuoi amici?</string>
-    <string name="profile_setup_subtitle">Solo le persone dei tuoi gruppi vedono il tuo nome.</string>
+    <string name="profile_setup_subtitle">I tuoi gruppi e chiunque abbia il link del tuo profilo vedono il tuo nome.</string>
     <string name="profile_setup_avatar_color">Colore dell’avatar</string>
     <string name="profile_setup_add_photo">Aggiungi foto</string>
     <string name="profile_setup_photo_error">Impossibile usare questa foto. Provane un’altra.</string>

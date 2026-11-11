@@ -27,4 +27,11 @@ data class ProfileEntity(
      */
     @ColumnInfo(defaultValue = "NULL")
     val ownerUserId: String?,
+    /*
+     * Why: the code of the account's profile link, blitzsplit.com/u/<code>, made here as soon as a sync names the
+     * account so Profile shares it offline, and replaced by the server's once one comes down. Null for a profile no
+     * account owns yet, which has no link.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val shareCode: String?,
 )

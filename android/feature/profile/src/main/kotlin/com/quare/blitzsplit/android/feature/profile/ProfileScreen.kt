@@ -16,8 +16,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
+import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.rememberExportFileSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
+import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
@@ -64,6 +66,18 @@ fun ProfileScreen(
         viewModel.uiAction.collect { action ->
             when (action) {
                 is ProfileUiAction.CopyToClipboard -> saver.copyToClipboard(action.formattedCode)
+
+                is ProfileUiAction.ShareProfileLink -> context.shareText(
+                    resources.getString(R.string.profile_share_message, action.link),
+                )
+
+                is ProfileUiAction.CopyProfileLink -> {
+                    context.copyLink(action.link)
+                    showReplacingSnackbar(
+                        snackbarHostState = snackbarHostState,
+                        message = resources.getString(R.string.profile_link_copied),
+                    )
+                }
 
                 is ProfileUiAction.LaunchNativeSignIn -> launchGoogleSignIn()
 

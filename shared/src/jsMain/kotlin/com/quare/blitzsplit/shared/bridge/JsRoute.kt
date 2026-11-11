@@ -85,6 +85,9 @@ class JsRoute internal constructor(
     // Why: the code of "shared-bill", a bill's link, which keys its page; null for every other route.
     val sharedBillCode: String? = (route as? Route.SharedBill)?.code
 
+    // Why: the code of "profile-link", a profile's link, which keys its page; null for every other route.
+    val profileLinkCode: String? = (route as? Route.ProfileLink)?.code
+
     // Why: the invite code of "join-invite" and "join-pick", null for every other route.
     val inviteCode: String? = when (route) {
         is Route.JoinInvite -> route.code

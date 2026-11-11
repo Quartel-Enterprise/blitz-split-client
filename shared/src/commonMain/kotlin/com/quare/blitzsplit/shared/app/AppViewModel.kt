@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.model.ProfileLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.StartScreenViews
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
@@ -216,6 +217,7 @@ class AppViewModel(
                     return@onEach openSharedBill(code, SharedBillLink.commentIdOf(url))
                 }
                 BillCommentLink.targetOf(url)?.let { target -> return@onEach openBillCommentLink(target) }
+                ProfileLink.codeOf(url)?.let { code -> return@onEach openProfileLink(code) }
                 val target = InviteLink.targetOf(url) ?: return@onEach
                 val invite = Route.JoinInvite(
                     code = target.code,
@@ -228,6 +230,12 @@ class AppViewModel(
                 }
                 if (openIndex < 0) navigator.navigate(invite) else navigator.popTo(openIndex + 1)
             }.launchIn(viewModelScope)
+    }
+
+    // Why: a profile link opens its page as an invite does, the same one coming back to the top.
+    private fun openProfileLink(code: String) {
+        val openIndex = navigator.backStack.value.indexOfFirst { it is Route.ProfileLink && it.code == code }
+        if (openIndex < 0) navigator.navigate(Route.ProfileLink(code)) else navigator.popTo(openIndex + 1)
     }
 
     // Why: a bill's link (7.3h) opens its page as an invite does, the same one coming back to the top.

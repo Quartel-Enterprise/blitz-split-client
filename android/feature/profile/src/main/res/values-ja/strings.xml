@@ -4,9 +4,6 @@
     <string name="profile_edit_subtitle">名前、写真、アバターの色</string>
     <string name="profile_edit">プロフィールを編集</string>
     <string name="profile_pending">変更済み · アップロード待ち</string>
-    <string name="profile_visibility">プロフィールを見られる人</string>
-    <string name="profile_visibility_body">名前、写真、支払いキーは、グループのメンバーにだけ表示されます。グループを共有していない人には何も表示されません。</string>
-    <string name="profile_visibility_ok">OK</string>
     <string name="profile_offline_title">インターネットに接続されていません。</string>
     <string name="profile_offline_body">自由に編集できます。このデバイスに保存され、接続が戻るとアップロードされます。</string>
     <string name="profile_section_account">アカウントと同期</string>
@@ -114,4 +111,7 @@
     <string name="profile_category_map">カテゴリマップ</string>
     <string name="profile_category_map_detail">支出のカテゴリを決める言葉</string>
     <string name="profile_photo_open">写真を表示</string>
+    <string name="profile_share">プロフィールを共有</string>
+    <string name="profile_share_message">Blitz Splitの私のプロフィールです：%1$s</string>
+    <string name="profile_link_copied">リンクをコピーしました</string>
 </resources>

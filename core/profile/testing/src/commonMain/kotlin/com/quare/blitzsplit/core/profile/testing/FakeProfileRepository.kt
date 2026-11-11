@@ -12,6 +12,7 @@ class FakeProfileRepository(
 ) : ProfileRepository {
     val profile = MutableStateFlow(initialProfile)
     val hasPendingChanges = MutableStateFlow(false)
+    val shareCode = MutableStateFlow<String?>(null)
     val savedProfiles = mutableListOf<UserProfile>()
     val uploadedUserIds = mutableListOf<String>()
     val downloadedUserIds = mutableListOf<String>()
@@ -25,6 +26,8 @@ class FakeProfileRepository(
     override fun observeProfile(): Flow<UserProfile?> = profile
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
+
+    override fun observeShareCode(): Flow<String?> = shareCode
 
     override suspend fun saveProfile(profile: UserProfile) {
         savedProfiles += profile

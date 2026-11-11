@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferences
 import com.quare.blitzsplit.core.profile.data.datasource.NotificationPreferencesRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PaymentKeyRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.ProfileLinkRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileRemoteDataSource
@@ -21,6 +22,7 @@ import com.quare.blitzsplit.core.profile.data.datasource.RoomPushSettingsLocalDa
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseAppInviteRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseNotificationPreferencesRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabasePaymentKeyRemoteDataSource
+import com.quare.blitzsplit.core.profile.data.datasource.SupabaseProfileLinkRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseProfilePhotoRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabaseProfileRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.SupabasePushDeviceRemoteDataSource
@@ -35,6 +37,7 @@ import com.quare.blitzsplit.core.profile.data.mapper.PushDeviceMapperImpl
 import com.quare.blitzsplit.core.profile.data.repository.AppInviteRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.NotificationPreferencesRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.PaymentKeyRepositoryImpl
+import com.quare.blitzsplit.core.profile.data.repository.ProfileLinkRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.ProfileRepositoryImpl
 import com.quare.blitzsplit.core.profile.data.repository.PushDeviceRepositoryImpl
 import com.quare.blitzsplit.core.profile.domain.model.AppStores
@@ -43,6 +46,7 @@ import com.quare.blitzsplit.core.profile.domain.model.currentClientPlatform
 import com.quare.blitzsplit.core.profile.domain.repository.AppInviteRepository
 import com.quare.blitzsplit.core.profile.domain.repository.NotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
+import com.quare.blitzsplit.core.profile.domain.repository.ProfileLinkRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.profile.domain.usecase.DeletePaymentKey
@@ -59,8 +63,10 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificati
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKeyChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfileShareLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
+import com.quare.blitzsplit.core.profile.domain.usecase.ResolveProfileLink
 import com.quare.blitzsplit.core.profile.domain.usecase.SavePaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.SaveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
@@ -81,9 +87,11 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysU
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingNotificationPreferenceChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingPaymentKeyChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileShareLinkUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePushEnabledUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ResolveProfileLinkUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SavePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SaveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SetPushDeviceUseCase
@@ -104,6 +112,10 @@ val profileModule = module {
     singleOf(::ProfileMapperImpl).bind<ProfileMapper>()
     singleOf(::ProfileRepositoryImpl).bind<ProfileRepository>()
     factoryOf(::ObserveProfileUseCase).bind<ObserveProfile>()
+    factoryOf(::ObserveProfileShareLinkUseCase).bind<ObserveProfileShareLink>()
+    singleOf(::SupabaseProfileLinkRemoteDataSource).bind<ProfileLinkRemoteDataSource>()
+    singleOf(::ProfileLinkRepositoryImpl).bind<ProfileLinkRepository>()
+    factoryOf(::ResolveProfileLinkUseCase).bind<ResolveProfileLink>()
     factoryOf(::ObservePendingProfileChangesUseCase).bind<ObservePendingProfileChanges>()
     factoryOf(::SaveProfileUseCase).bind<SaveProfile>()
     factoryOf(::LoadCropPhotoUseCase).bind<LoadCropPhoto>()

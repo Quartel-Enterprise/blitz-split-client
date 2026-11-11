@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.core.profile.domain.model.ProfileLink
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -86,7 +87,8 @@ private fun decimalSeparatorOf(languageTag: String): Char = try {
 
 /*
  * Why: the page of a group's invite, blitzsplit.com/g/<code>, of a member's, blitzsplit.com/g/<code>/<member>, of a
- * bill's link, blitzsplit.com/c/<code>, of a comment's, blitzsplit.com/b/<bill>?comentario=<id>, or of a notification
+ * bill's link, blitzsplit.com/c/<code>, of a comment's, blitzsplit.com/b/<bill>?comentario=<id>, of a profile's,
+ * blitzsplit.com/u/<code>, or of a notification
  * tapped with no tab open, blitzsplit.com/n?…, opens it once; the address goes back to the app's own. A bill's link
  * left to sign in (its "Entrar") opens again once the browser comes back.
  */
@@ -96,6 +98,7 @@ private fun openInviteLink(launchUrl: String) {
     val isLink = InviteLink.targetOf(launchUrl) != null ||
         SharedBillLink.codeOf(launchUrl) != null ||
         BillCommentLink.targetOf(launchUrl) != null ||
+        ProfileLink.codeOf(launchUrl) != null ||
         PushLink.of(launchUrl) != null
     if (isLink) {
         inbox.receive(launchUrl)

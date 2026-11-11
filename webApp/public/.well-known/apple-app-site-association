@@ -11,6 +11,10 @@
           {
             "/": "/b/*",
             "comment": "A bill's comment link"
+          },
+          {
+            "/": "/u/*",
+            "comment": "A profile's link"
           }
         ]
       }

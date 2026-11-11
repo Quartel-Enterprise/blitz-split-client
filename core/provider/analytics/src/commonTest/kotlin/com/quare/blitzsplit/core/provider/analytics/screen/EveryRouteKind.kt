@@ -69,6 +69,7 @@ internal val everyRouteKind: List<Route> = listOf(
         groupId = "secret-group",
         expenseId = "secret-expense",
     ),
+    Route.ProfileLink(code = "secret-code"),
     Route.SharedBill(
         code = "secret-code",
         commentId = "secret-comment",

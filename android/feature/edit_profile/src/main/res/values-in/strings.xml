@@ -15,7 +15,7 @@
     <string name="edit_profile_name_too_short">Ketik minimal %d huruf.</string>
     <string name="edit_profile_name_too_long">Gunakan maksimal %d karakter.</string>
     <string name="edit_profile_account_notice">Nama dan foto diambil dari akun %1$s kamu. Mengubahnya di sini hanya berlaku di Blitz Split dan tidak mengubah akun %1$s kamu.</string>
-    <string name="edit_profile_footer">Hanya orang di grupmu yang melihat nama dan fotomu.</string>
+    <string name="edit_profile_footer">Grupmu dan siapa pun yang punya tautan profilmu melihat nama dan fotomu.</string>
     <string name="profile_photo_close">Tutup</string>
     <string name="profile_photo_camera">Kamera</string>
     <string name="profile_photo_gallery">Galeri</string>
