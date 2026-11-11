@@ -26,25 +26,25 @@ class PixSignalsTest {
     @Test
     fun `GIVEN the app following a Brazilian Portuguese device WHEN reading whether it shows Pix THEN it does`() {
         // Given
-        val tags = listOf("pt-BR", "pt_BR", "pt-br", "pt")
+        val tags = listOf("pt-BR", "pt_BR", "pt-br", "pt", "pt-u-fw-mon", "pt-BR-u-mu-celsius")
 
         // When
         val results = tags.map { signals(deviceLanguage = it).showsPix }
 
         // Then
-        assertEquals(listOf(true, true, true, true), results)
+        assertEquals(listOf(true, true, true, true, true, true), results)
     }
 
     @Test
     fun `GIVEN the app following a Portuguese of Portugal device WHEN reading whether it shows Pix THEN it does not`() {
         // Given
-        val tags = listOf("pt-PT", "pt_PT")
+        val tags = listOf("pt-PT", "pt_PT", "pt-PT-u-fw-mon")
 
         // When
         val results = tags.map { signals(deviceLanguage = it).showsPix }
 
         // Then
-        assertEquals(listOf(false, false), results)
+        assertEquals(listOf(false, false, false), results)
     }
 
     @Test

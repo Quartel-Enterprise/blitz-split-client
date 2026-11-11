@@ -41,8 +41,8 @@ data class ProfileUiState(
      */
     val paymentKeys: Loadable<List<PaymentKeyItem>>,
     /*
-     * Why: the Pix rule (docs/product/general.md). False means the Pix section collapses to one "Add a Pix key" row,
-     * so nobody is locked out; it is never false while a Pix key is saved.
+     * Why: the Pix rule (docs/product/general.md). False means the "Add a Pix or Bitcoin key" menu becomes two rows,
+     * "Add a Bitcoin key" and "Add a Pix key", so nobody is locked out; it is never false while a Pix key is saved.
      */
     val showsPix: Boolean,
     val isSignOutScheduled: Boolean,

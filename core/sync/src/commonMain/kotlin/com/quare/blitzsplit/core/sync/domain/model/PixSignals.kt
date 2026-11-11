@@ -34,8 +34,15 @@ data class PixSignals(
 
     private fun String?.isBrazilianPortuguese(): Boolean {
         if (AppLanguage.languageOf(this) != PORTUGUESE) return false
-        // Why: pt-PT (Portugal's) is not Brazil's; a bare "pt" or "pt-BR" is.
-        val region = this?.split('-', '_')?.drop(1)?.firstOrNull { it.length == 2 }
+        /*
+         * Why: pt-PT (Portugal's) is not Brazil's; a bare "pt" or "pt-BR" is. The region comes before any extension
+         * ("-u-fw-mon", Android 14's regional preferences), whose two-letter keys are no region.
+         */
+        val region = this
+            ?.split('-', '_')
+            ?.drop(1)
+            ?.takeWhile { it.length > 1 }
+            ?.firstOrNull { it.length == 2 }
         return region == null || region.equals(BRAZIL, ignoreCase = true)
     }
 

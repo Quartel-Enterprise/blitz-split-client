@@ -760,7 +760,8 @@ private struct ConnectedAccountRow: View {
 }
 
 /// "Keys to receive payments": each key masked, its default marked, and a menu that asks Pix or Bitcoin
-/// first. The Mac adds a key with the + under the list, as its settings lists do.
+/// first, or one row for each where the Pix rule is off. The Mac adds a key with the + under the list, as its
+/// settings lists do.
 private struct PaymentKeysSection: View {
     let model: ProfileModel
 

@@ -6498,9 +6498,8 @@ class ProfileViewModelTest {
             assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
         }
 
-    // Why: the account's profile code as this device made it, and the link "Share profile" hands out.
     @Test
-    fun `GIVEN the Pix rule has not answered WHEN the profile opens THEN shows Pix`() = runTest(testDispatcher) {
+    fun `GIVEN the Pix rule on WHEN the profile opens THEN shows Pix`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -6549,6 +6548,7 @@ class ProfileViewModelTest {
             assertFalse(viewModel.uiState.value.showsPix)
         }
 
+    // Why: the account's profile code as this device made it, and the link "Share profile" hands out.
     private val shareCode = "7Hk2pQ8xZa"
 
     private val shareLink = "https://blitzsplit.com/u/7Hk2pQ8xZa"

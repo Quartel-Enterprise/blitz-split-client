@@ -2490,8 +2490,6 @@ class RegisterPaymentViewModelTest {
             assertEquals(2_000L, state.debtMinor)
         }
 
-    // Why: Ana owes Pierre 20,00 in dollars, on top of the 162,30 in reais she owes him.
-    // Why: a getter, since bill() reads properties declared below, which the JS target has not set yet here.
     @Test
     fun `GIVEN the Pix rule on WHEN the form opens THEN the method is Pix and Pix is offered`() =
         runTest(testDispatcher) {
@@ -2577,6 +2575,8 @@ class RegisterPaymentViewModelTest {
             assertTrue(SettlementMethod.PIX in viewModel.uiState.value.methods)
         }
 
+    // Why: Ana owes Pierre 20,00 in dollars, on top of the 162,30 in reais she owes him.
+    // Why: a getter, since bill() reads properties declared below, which the JS target has not set yet here.
     private val dollarDinner: Expense
         get() = bill(
             "dollar-dinner",
