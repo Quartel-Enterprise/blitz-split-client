@@ -850,6 +850,102 @@ class GroupMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a new group with its code WHEN mapping it to an entity THEN keeps it and is not on the server`() {
+        // Given
+        val group = newGroup.copy(inviteCode = "DevCode1")
+
+        // When
+        val entity = mapper.toEntity(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = null,
+        )
+
+        // Then
+        assertEquals("DevCode1", entity.inviteCode)
+        assertFalse(entity.isOnServer)
+    }
+
+    @Test
+    fun `GIVEN a group not on the server yet with its code WHEN mapping it to a DTO THEN sends that code`() {
+        // Given
+        val entity = groupEntity(
+            id = "group-1",
+            pendingSync = true,
+            inviteCode = "DevCode1",
+            isOnServer = false,
+        )
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertEquals("DevCode1", dto.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN an older version group without a code not on the server WHEN mapping it to a DTO THEN sends none`() {
+        // Given
+        val entity = groupEntity(
+            id = "group-1",
+            pendingSync = true,
+            inviteCode = null,
+            isOnServer = false,
+        )
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertNull(dto.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a group on the server edited here WHEN mapping it to a DTO THEN sends no code`() {
+        // Given
+        val entity = groupEntity(
+            id = "group-1",
+            pendingSync = true,
+            inviteCode = "SrvCode1",
+            isOnServer = true,
+        )
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertNull(dto.inviteCode)
+    }
+
+    @Test
+    fun `GIVEN a group from the server without a code WHEN mapping it to an entity THEN it is on the server`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+            inviteCode = null,
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertTrue(entity.isOnServer)
+    }
+
+    @Test
     fun `GIVEN a member removed here WHEN mapping to the domain THEN the group no longer shows them`() {
         // Given
         val groups = listOf(groupEntity(id = "group-1"))

@@ -2826,7 +2826,12 @@ class SyncCoordinatorTest {
             // Given
             prepareScenario(
                 storedProfile = pierre,
-                storedGroups = listOf(dinner.copy(inviteCode = "AbCd1234", isPending = true)),
+                storedGroups = listOf(
+                    dinner.copy(
+                        inviteCode = "AbCd1234",
+                        isPending = true,
+                    ),
+                ),
             )
             groups.hasPendingChanges.value = true
 

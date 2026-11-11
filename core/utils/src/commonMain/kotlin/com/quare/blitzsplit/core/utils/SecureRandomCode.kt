@@ -2,13 +2,17 @@ package com.quare.blitzsplit.core.utils
 
 import kotlin.uuid.Uuid
 
+// Why: a version 4 UUID's bytes that carry its version and variant, the only ones not wholly random.
+private const val VERSION_BYTE = 6
+private const val VARIANT_BYTE = 8
+
 /*
  * Why: whoever has the link sees the group, so its code must be impossible to guess: each character comes from the
  * platform's secure random source, which Uuid.random() reads on every target (SecureRandom, crypto.getRandomValues,
  * the Apple platforms' own), and every character of [A-Za-z0-9] is as likely as the others.
  */
 class SecureRandomCode(
-    private val randomBytes: () -> ByteArray = ::secureRandomBytes,
+    private val randomBytes: () -> ByteArray = ::createSecureRandomBytes,
 ) : RandomCode {
     override fun invoke(length: Int): String {
         require(length >= 0) { "A code can't have $length characters" }
@@ -33,15 +37,9 @@ class SecureRandomCode(
     }
 }
 
-/*
- * Why: a version 4 UUID is 122 random bits; bytes 6 and 8 carry its version and variant, so only the other 14 are
- * whole random bytes.
- */
-private fun secureRandomBytes(): ByteArray = Uuid
+// Why: a version 4 UUID is 122 random bits, so its 14 other bytes are whole random bytes.
+private fun createSecureRandomBytes(): ByteArray = Uuid
     .random()
     .toByteArray()
     .filterIndexed { index, _ -> index != VERSION_BYTE && index != VARIANT_BYTE }
     .toByteArray()
-
-private const val VERSION_BYTE = 6
-private const val VARIANT_BYTE = 8

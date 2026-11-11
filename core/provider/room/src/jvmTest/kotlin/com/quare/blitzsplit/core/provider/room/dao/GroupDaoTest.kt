@@ -52,6 +52,103 @@ class GroupDaoTest {
     }
 
     @Test
+    fun `GIVEN a new group with its own code WHEN the server does not give it yet THEN it stays`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                updatedAt = 9L,
+                pendingSync = true,
+                inviteCode = "AbCd1234",
+                isOnServer = false,
+            ),
+        )
+
+        // When
+        dao.deleteGoneFromServer(
+            ownerUserId = "user-1",
+            serverGroupIds = emptySet(),
+            serverMemberIds = emptySet(),
+        )
+
+        // Then
+        assertEquals(
+            "AbCd1234",
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .inviteCode,
+        )
+    }
+
+    @Test
+    fun `GIVEN a group not up yet WHEN the server row comes THEN it is on the server`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                updatedAt = 9L,
+                pendingSync = true,
+                inviteCode = "AbCd1234",
+                isOnServer = false,
+            ),
+        )
+
+        // When
+        dao.applyRemoteGroup(
+            entity(
+                updatedAt = 9L,
+                inviteCode = "AbCd1234",
+                isOnServer = true,
+            ),
+        )
+
+        // Then
+        assertEquals(listOf("group-1"), dao.getGroupIdsOnServer("user-1"))
+    }
+
+    @Test
+    fun `GIVEN groups on the server and not WHEN replacing a code before upload THEN only the one not up changes`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = entity(
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    inviteCode = "AbCd1234",
+                    isOnServer = true,
+                ),
+            )
+            dao.upsertGroup(
+                entity(
+                    id = "group-2",
+                    updatedAt = 9L,
+                    pendingSync = true,
+                    inviteCode = "EfGh5678",
+                    isOnServer = false,
+                ),
+            )
+
+            // When
+            dao.replaceInviteCodeBeforeUpload(
+                id = "group-1",
+                inviteCode = "Zzzz0000",
+            )
+            dao.replaceInviteCodeBeforeUpload(
+                id = "group-2",
+                inviteCode = "Yyyy1111",
+            )
+
+            // Then
+            assertEquals(
+                mapOf("group-1" to "AbCd1234", "group-2" to "Yyyy1111"),
+                dao
+                    .observeGroups()
+                    .first()
+                    .associate { it.id to it.inviteCode },
+            )
+        }
+
+    @Test
     fun `GIVEN a pushed group WHEN the server row has the same updatedAt THEN takes its invite code`() = runTest {
         // Given
         prepareScenario(stored = entity(updatedAt = 5L))

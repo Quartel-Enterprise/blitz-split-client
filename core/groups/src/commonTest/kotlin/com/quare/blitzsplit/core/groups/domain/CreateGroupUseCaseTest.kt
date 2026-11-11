@@ -262,17 +262,16 @@ class CreateGroupUseCaseTest {
         }
 
     @Test
-    fun `GIVEN a new group WHEN creating it on the device THEN it has its 8 character invite code at once`() =
-        runTest {
-            // Given
-            prepareScenario()
+    fun `GIVEN a new group WHEN creating it on the device THEN it has its 8 character invite code at once`() = runTest {
+        // Given
+        prepareScenario()
 
-            // When
-            createGroup()
+        // When
+        createGroup()
 
-            // Then
-            assertEquals("AbCd1234", repository.createdGroups.single().inviteCode)
-        }
+        // Then
+        assertEquals("AbCd1234", repository.createdGroups.single().inviteCode)
+    }
 
     @Test
     fun `GIVEN a new group WHEN creating it on the device THEN it is created by me`() = runTest {
