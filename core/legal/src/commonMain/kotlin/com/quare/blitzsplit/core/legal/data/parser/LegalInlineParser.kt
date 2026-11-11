@@ -11,7 +11,8 @@ import com.quare.blitzsplit.core.model.LegalPage
  * without the link.
  */
 internal object LegalInlineParser {
-    private val TOKEN = Regex("""\*\*(.+?)\*\*|\[([^\]]+)]\(([^)\s]+)\)|<mark>(.+?)</mark>""")
+    // Why: every bracket escaped, since the web's regular expressions refuse a lone one the others accept.
+    private val TOKEN = Regex("""\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)|<mark>(.+?)</mark>""")
     private val PAGE_ADDRESS = Regex("""/([a-z]+)(?:#([a-z0-9-]+))?""")
     private const val SITE = "https://blitzsplit.com"
     private const val BOLD_GROUP = 1
