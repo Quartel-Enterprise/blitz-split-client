@@ -15,6 +15,7 @@ internal fun createInitialProfileUiState(
     displayName = "",
     avatarColor = AvatarColor.default,
     photoUrl = null,
+    shareLink = null,
     accountProvider = null,
     hasAnonymousId = false,
     maskedEmail = null,

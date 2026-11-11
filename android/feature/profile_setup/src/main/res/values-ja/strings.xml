@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">友だちからは何と呼ばれていますか？</string>
-    <string name="profile_setup_subtitle">あなたの名前は、グループのメンバーにだけ表示されます。</string>
+    <string name="profile_setup_subtitle">グループのメンバーと、プロフィールのリンクを持っている人には、名前が表示されます。</string>
     <string name="profile_setup_avatar_color">アバターの色</string>
     <string name="profile_setup_add_photo">写真を追加</string>
     <string name="profile_setup_photo_error">この写真は使用できません。別の写真をお試しください。</string>

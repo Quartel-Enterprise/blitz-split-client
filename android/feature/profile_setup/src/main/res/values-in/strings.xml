@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">Teman-temanmu memanggilmu apa?</string>
-    <string name="profile_setup_subtitle">Hanya orang di grupmu yang melihat namamu.</string>
+    <string name="profile_setup_subtitle">Grupmu dan siapa pun yang punya tautan profilmu melihat namamu.</string>
     <string name="profile_setup_avatar_color">Warna avatar</string>
     <string name="profile_setup_add_photo">Tambah foto</string>
     <string name="profile_setup_photo_error">Tidak dapat memakai foto ini. Coba foto lain.</string>

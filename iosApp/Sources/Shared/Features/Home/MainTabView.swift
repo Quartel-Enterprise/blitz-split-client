@@ -359,6 +359,8 @@ struct MainTabView: View {
         case let .joinPick(route): JoinPickView(route: route)
         case let .invite(route): InviteView(route: route)
         case let .contactProfile(route): ContactProfileView(route: route)
+        // A profile link opened over a tab, until the contact's profile or the profile takes its place
+        case let .profileLink(route): ProfileLinkView(route: route)
         case .contactsAgenda: AgendaView()
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         // Home's bell, or a contact's "See all", pushes Activity

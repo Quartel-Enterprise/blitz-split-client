@@ -145,7 +145,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `photo_crop_confirmed` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`, `group_photo`) | "Adjust photo"'s Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
 | `photo_crop_dismissed` | `source` (`profile_setup`, `create_group`, `edit_group`, `edit_profile`, `profile_photo`, `group_photo`) | "Adjust photo" closed without Done | `:core:presentation`, from `:feature:profile_setup`, `:feature:create_group`, `:feature:edit_group` and `:feature:edit_profile` |
 | `profile_setup_continue_clicked` | none | Your profile's Continue | `:feature:profile_setup` |
-| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`, `share_bill`, `shared_bill`, `contact_merge`) | "Try again" after a failure, and Restore's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:contacts` |
+| `retry_clicked` | `source` (`restore`, `invite`, `join_invite`, `receipt`, `share_bill`, `shared_bill`, `contact_merge`, `profile_link`) | "Try again" after a failure, and Restore's button while offline | `:feature:restore`, `:feature:invite`, `:feature:join`, `:feature:split_bill`, `:feature:bill_detail`, `:feature:contacts` |
 | `restore_code_submitted` | none | Restore's "Recover" or the keyboard's Done, online; a code read from a QR restores without it, counted by `restore_scan_qr_clicked` | `:feature:restore` |
 | `restore_scan_qr_clicked` | none | Restore's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Restore's "Start fresh on this device" | `:feature:restore` |
@@ -464,6 +464,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `contact_view_balances_clicked` | none | "See in Balances" | `:feature:contacts` |
 | `contact_history_see_all_clicked` | none | "See all" over "History with Carla" | `:feature:contacts` |
 | `contact_invite_guest_clicked` | none | "Invite Diego" on a guest | `:feature:contacts` |
+| `profile_link_invite_clicked` | none | "Invite to a group" on a profile link of someone the person shares no group with, while the device has a profile | `:feature:contacts` |
 | `contact_merge_clicked` | none | "Merge with an account" on a guest | `:feature:contacts` |
 | `contact_merge_cancel_clicked` | none | "Cancel" on "Waiting for Diego to accept" | `:feature:contacts` |
 | `contact_claim_clicked` | none | "I am Diego" on the merge sheet | `:feature:contacts` |
@@ -478,7 +479,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `terms_clicked` | none | "Terms of Service", in Profile's footer | `:feature:profile` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
-| `profile_visibility_info_clicked` | none | "Who sees your profile", when it opens | `:feature:profile` |
+| `profile_share_clicked` | none | The top bar's "Share profile", while the account has a link (it opens the system share) | `:feature:profile` |
+| `profile_link_copied` | none | "Copy link" of the Mac's and the web's "Share profile" menu, while the account has a link | `:feature:profile` |
 | `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | A confirmation of Profile (sign out, erase) closed without its main button, while nothing signs out | `:feature:profile` |
 | `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
 | `payment_key_add_clicked` | `method` (`pix`, `bitcoin`) | "Add a Pix or Bitcoin key", while a key can be added | `:feature:profile` |

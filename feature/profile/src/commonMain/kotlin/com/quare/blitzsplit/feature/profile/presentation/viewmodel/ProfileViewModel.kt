@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificati
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingPaymentKeyChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileChanges
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfileShareLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
@@ -98,6 +99,7 @@ class ProfileViewModel(
     updateMechanism: UpdateMechanism,
     observeAccount: ObserveAccount,
     observeProfile: ObserveProfile,
+    observeProfileShareLink: ObserveProfileShareLink,
     observePendingProfileChanges: ObservePendingProfileChanges,
     observePaymentKeys: ObservePaymentKeys,
     observePendingPaymentKeyChanges: ObservePendingPaymentKeyChanges,
@@ -129,6 +131,8 @@ class ProfileViewModel(
     private val dialogs = ProfileDialogs(uiState, trackEvent)
 
     private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
+
+    private val shareLink = ProfileShareLink(uiState, trackEvent, ::emit)
 
     // Why: the theme a tap asked for, which the stored theme reaches only once written.
     private var requestedTheme: ThemePreference? = null
@@ -181,6 +185,9 @@ class ProfileViewModel(
             if (download != null) Loadable.Loading else (if (isPushEnabled) preferences.push.size else 0).toLoaded()
         }.onEach { count -> uiState.update { it.copy(activeNotificationCount = count) } }
             .launchIn(viewModelScope)
+        observeProfileShareLink()
+            .onEach { link -> uiState.update { it.copy(shareLink = link) } }
+            .launchIn(viewModelScope)
         observeAppInvite()
             .onEach { invite ->
                 val row = invite?.let(::toProfileAppInvite)
@@ -217,7 +224,9 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
 
-            ProfileUiEvent.OnVisibilityInfoClicked -> dialogs.openVisibilityInfo()
+            ProfileUiEvent.OnShareProfileClicked -> shareLink.share()
+
+            ProfileUiEvent.OnCopyProfileLinkClicked -> shareLink.copy()
 
             ProfileUiEvent.OnDialogDismissed -> dialogs.close()
 

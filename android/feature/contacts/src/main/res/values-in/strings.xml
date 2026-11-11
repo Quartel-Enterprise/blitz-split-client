@@ -137,4 +137,11 @@
     <string name="contacts_invite_qr">Kode QR tautan undangan</string>
     <string name="contacts_invite_share_message">Yuk bagi tagihan %1$s di Blitz Split. Gabung lewat tautan ini: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, yuk bagi tagihan %2$s di Blitz Split. Gabung lewat tautan ini: %3$s</string>
+    <string name="profile_link_unreachable_title">Profil ini tidak bisa dibuka</string>
+    <string name="profile_link_unreachable_body">Periksa koneksimu. Profil ini terbuka sendiri saat kamu kembali online.</string>
+    <string name="profile_link_retry">Coba lagi</string>
+    <string name="profile_link_not_found_title">Profil tidak ditemukan</string>
+    <string name="profile_link_not_found_body">Tautan ini tidak membuka profil apa pun. Minta tautannya lagi.</string>
+    <string name="profile_link_no_groups">Kamu belum punya grup dengan %1$s.</string>
+    <string name="profile_link_invite">Undang ke grup</string>
 </resources>

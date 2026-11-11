@@ -2,7 +2,7 @@
 
 Invite links, joining, cameras, foldables and the iPhone Duo.
 
-  - Where a link opens: a device with the app (Android, iPhone, iPad or Mac) opens a group's link (`/g/`) and a comment's (`/b/`) in the app,
+  - Where a link opens: a device with the app (Android, iPhone, iPad or Mac) opens a group's link (`/g/`), a comment's (`/b/`) and a profile's (`/u/`) in the app,
     through Android App Links and Apple Universal Links, before any browser asks for them. Anywhere else the browser
     asks blitzsplit.com, which is meant to answer `/g/…`, `/b/…` and `/c/…` (a bill's link, which the apps leave to the
     browser) with a 302 to the same path and query of the web app, which opens the invite, the comment or the bill
@@ -25,6 +25,10 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, any other English. No currency picks French, since the euro,
     the Swiss franc and the Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish
     speakers gets English too: an accepted trade-off.
+  - A profile's link, `https://blitzsplit.com/u/<code>` (Profile's "Share profile"), opens over wherever the app is
+    (the welcome without a profile), as an invite does, and the web serves it as its own page; blitzsplit.com answers
+    it with the landing whose link preview is the person's name and photo (`blitz-split-site`). What it shows is in
+    [balances-and-contacts.md](balances-and-contacts.md).
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on the group's Expenses (3.3, `Route.GroupDetail` with `joinedAs`) with "You joined as
     <name>" over the bills and, while the account has no Google or Apple, "Protect your access", which opens the

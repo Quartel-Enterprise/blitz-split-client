@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 /*
- * Why: Profile's dialogs and sheets (who sees the profile, Appearance, Language, Sign out or Erase profile and sign
+ * Why: Profile's dialogs and sheets (Appearance, Language, Sign out or Erase profile and sign
  * out). A sign out under way keeps its dialog, which shows how it ends, so none opens or closes then; each tap that
  * opens one counts only once it opened.
  */
@@ -21,10 +21,6 @@ internal class ProfileDialogs(
         ProfileDialog.SIGN_OUT_PENDING,
         ProfileDialog.ERASE_PROFILE,
     )
-
-    fun openVisibilityInfo() {
-        if (show(ProfileDialog.VISIBILITY_INFO)) trackEvent("profile_visibility_info_clicked", emptyMap())
-    }
 
     // Why: the theme picked shows only once it was read, never the default guessed.
     fun openAppearance() {

@@ -18,6 +18,11 @@ data class ProfileUiState(
     val avatarColor: AvatarColor,
     // Why: a photo picked offline is a data URI until its upload.
     val photoUrl: String?,
+    /*
+     * Why: "Share profile"'s link, blitzsplit.com/u/<code>, made on the device as soon as the account exists, so it is
+     * there offline; null for a profile no account owns yet (local only), which hides the action.
+     */
+    val shareLink: String?,
     // Why: null without Google or Apple, both before the first sync and while anonymous.
     val accountProvider: AccountProvider?,
     // Why: a local only user has no ID on the server yet, so the account row can't call it anonymous.

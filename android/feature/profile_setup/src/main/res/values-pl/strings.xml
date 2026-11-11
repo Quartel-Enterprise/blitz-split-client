@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">Jak mówią na ciebie znajomi?</string>
-    <string name="profile_setup_subtitle">Twoje imię widzą tylko osoby z twoich grup.</string>
+    <string name="profile_setup_subtitle">Twoje grupy i każdy, kto ma link do twojego profilu, widzą twoje imię.</string>
     <string name="profile_setup_avatar_color">Kolor awatara</string>
     <string name="profile_setup_add_photo">Dodaj zdjęcie</string>
     <string name="profile_setup_photo_error">Nie udało się użyć tego zdjęcia. Wybierz inne.</string>

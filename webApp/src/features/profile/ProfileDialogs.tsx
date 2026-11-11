@@ -13,12 +13,6 @@ import type { AccountProvider } from '@/lib/platform'
 export function ProfileDialogs({ presenter, state }: { presenter: ProfilePresenter; state: JsProfileState }) {
   const onClose = () => presenter.dismissDialog()
   switch (state.dialog) {
-    case 'VISIBILITY_INFO':
-      return (
-        <ResponsiveDialog title={t('profile_visibility')} description={t('profile_visibilityBody')} onClose={onClose}>
-          <Button onClick={onClose}>{t('profile_visibilityOk')}</Button>
-        </ResponsiveDialog>
-      )
     case 'SIGN_OUT':
       return (
         <ResponsiveDialog

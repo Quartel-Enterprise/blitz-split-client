@@ -141,4 +141,11 @@
     <string name="contacts_invite_qr">QR-code van de uitnodigingslink</string>
     <string name="contacts_invite_share_message">Laten we de uitgaven van %1$s verdelen op Blitz Split. Doe mee met deze link: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, laten we de uitgaven van %2$s verdelen op Blitz Split. Doe mee met deze link: %3$s</string>
+    <string name="profile_link_unreachable_title">Dit profiel kon niet worden geopend</string>
+    <string name="profile_link_unreachable_body">Controleer je verbinding. Het opent vanzelf zodra je weer online bent.</string>
+    <string name="profile_link_retry">Opnieuw proberen</string>
+    <string name="profile_link_not_found_title">Profiel niet gevonden</string>
+    <string name="profile_link_not_found_body">Deze link opent geen profiel. Vraag er opnieuw om.</string>
+    <string name="profile_link_no_groups">Je hebt nog geen groepen met %1$s.</string>
+    <string name="profile_link_invite">Uitnodigen voor een groep</string>
 </resources>

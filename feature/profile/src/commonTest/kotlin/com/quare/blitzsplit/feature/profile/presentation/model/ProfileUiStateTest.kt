@@ -631,6 +631,7 @@ class ProfileUiStateTest {
         displayName = displayName,
         avatarColor = AvatarColor.GREEN,
         photoUrl = null,
+        shareLink = null,
         accountProvider = accountProvider,
         hasAnonymousId = hasAnonymousId,
         maskedEmail = null,

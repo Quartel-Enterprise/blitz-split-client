@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_setup_title">What do your friends call you?</string>
-    <string name="profile_setup_subtitle">Only people in your groups see your name.</string>
+    <string name="profile_setup_subtitle">Your groups and anyone with your profile link see your name.</string>
     <string name="profile_setup_avatar_color">Avatar color</string>
     <string name="profile_setup_add_photo">Add photo</string>
     <string name="profile_setup_photo_error">Couldn\'t use this photo. Try another one.</string>

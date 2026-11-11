@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, CloudOff, Download, Info, KeyRound, Loader2, LogOut, Plus, RotateCw, Tag } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, KeyRound, Loader2, LogOut, Plus, RotateCw, Share2, Tag } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -16,6 +16,7 @@ import { NotificationSettingsCard } from '@/features/notification-settings/Notif
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import { downloadExport } from '@/lib/export'
+import { copyLink, shareOrCopy } from '@/lib/share'
 import type { PaymentKeyFormat, PaymentKeyType } from '@/lib/paymentKey'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -78,6 +79,10 @@ export function ProfileScreen() {
       window.open(action.value, '_blank', 'noopener,noreferrer')
     } else if (action.type === 'export') {
       downloadExport(action.value)
+    } else if (action.type === 'shareProfile') {
+      shareOrCopy(t('profile_shareMessage', { link: action.value }), action.value)
+    } else if (action.type === 'copyProfileLink') {
+      copyLink(action.value, t('profile_linkCopied'))
     } else if (action.type === 'reload') {
       // The page reads its language once, before it draws (src/i18n)
       window.location.reload()
@@ -85,10 +90,23 @@ export function ProfileScreen() {
   })
   if (!presenter || !state) return null
 
-  const visibility = (
-    <Button variant="ghost" size="icon" aria-label={t('profile_visibility')} onClick={() => presenter.visibilityInfo()}>
-      <Info />
-    </Button>
+  // Why: only an account has a link. The menu offers the copy beside the browser's share, which a desktop may lack.
+  const share = state.shareLink && (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label={t('profile_share')}>
+          <Share2 />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onSelect={() => presenter.shareProfile()}>
+          <Share2 /> {t('profile_share')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => presenter.copyProfileLink()}>
+          <Copy /> {t('profile_copyLink')}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
   return (
     <PageShell phoneBars="nav">
@@ -98,7 +116,7 @@ export function ProfileScreen() {
             <ArrowLeft />
           </Button>
           <h1 className="mr-auto text-lg font-semibold">{t('profile_title')}</h1>
-          {visibility}
+          {share}
         </header>
         <main className={cn(pageContentClass, 'gap-4')}>
           {/* Why: the sidebar's selected footer already says where this is; the heading says what it is for. */}
@@ -107,7 +125,7 @@ export function ProfileScreen() {
               <h1 className="text-2xl leading-[30px] font-semibold tracking-tight">{t('profile_title')}</h1>
               <p className="text-sm text-muted-foreground">{t('profile_subtitle')}</p>
             </div>
-            {visibility}
+            {share}
           </div>
           {state.showsOfflineNotice && (
             <div role="status" className="flex items-start gap-3 rounded-lg border bg-card p-3 text-sm">
@@ -435,12 +453,6 @@ function AboutCard({ presenter, className }: { presenter: ProfilePresenter; clas
             <Download /> {t('profile_exportButton')}
           </Button>
         </Row>
-        <button
-          onClick={() => presenter.visibilityInfo()}
-          className="flex min-h-12 items-center justify-between gap-3 text-left text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
-        >
-          {t('profile_visibility')}
-        </button>
       </CardContent>
     </Card>
   )

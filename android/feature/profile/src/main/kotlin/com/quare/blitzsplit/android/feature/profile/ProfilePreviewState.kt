@@ -21,6 +21,7 @@ internal fun createPreviewProfileState(
     displayName = "Pierre Vieira",
     avatarColor = AvatarColor.BLUE,
     photoUrl = null,
+    shareLink = "https://blitzsplit.com/u/7Hk2pQ8xZa",
     accountProvider = accountProvider,
     hasAnonymousId = true,
     maskedEmail = accountProvider?.let { "p•••@gmail.com" },

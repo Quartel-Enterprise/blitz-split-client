@@ -1,9 +1,6 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
 enum class ProfileDialog {
-    // Why: "Quem vê seu perfil", behind the info button next to the name.
-    VISIBILITY_INFO,
-
     // Why: with Google or Apple and nothing queued, signing out only drops this device's copy.
     SIGN_OUT,
 

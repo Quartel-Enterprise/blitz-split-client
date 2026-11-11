@@ -194,6 +194,107 @@ class ProfileDaoTest {
 
     private val jpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 1)
 
+    @Test
+    fun `GIVEN a stored link code WHEN an edit is saved THEN keeps the code`() = runTest {
+        // Given
+        prepareScenario(stored = entity(shareCode = "Code000001"))
+
+        // When
+        dao.upsertKeepingShareCode(
+            entity(
+                displayName = "Larissa",
+                pendingSync = true,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            entity(
+                displayName = "Larissa",
+                pendingSync = true,
+                shareCode = "Code000001",
+            ),
+            dao.get(),
+        )
+    }
+
+    @Test
+    fun `GIVEN this user copy without a code WHEN making one THEN stores it pending`() = runTest {
+        // Given
+        prepareScenario(stored = entity())
+
+        // When
+        dao.createShareCode(
+            ownerUserId = "user-1",
+            shareCode = "Code000001",
+        )
+
+        // Then
+        assertEquals(
+            entity(
+                pendingSync = true,
+                shareCode = "Code000001",
+            ),
+            dao.get(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a copy with a code WHEN making one THEN keeps the first`() = runTest {
+        // Given
+        prepareScenario(stored = entity(shareCode = "Code000001"))
+
+        // When
+        dao.createShareCode(
+            ownerUserId = "user-1",
+            shareCode = "Code000002",
+        )
+
+        // Then
+        assertEquals(entity(shareCode = "Code000001"), dao.get())
+    }
+
+    @Test
+    fun `GIVEN another user copy WHEN making a code for this user THEN leaves it`() = runTest {
+        // Given
+        prepareScenario(stored = entity(ownerUserId = "user-2"))
+
+        // When
+        dao.createShareCode(
+            ownerUserId = "user-1",
+            shareCode = "Code000001",
+        )
+
+        // Then
+        assertEquals(entity(ownerUserId = "user-2"), dao.get())
+    }
+
+    @Test
+    fun `GIVEN a code made here WHEN the server code comes down THEN the server code wins`() = runTest {
+        // Given
+        prepareScenario(
+            stored = entity(
+                pendingSync = true,
+                shareCode = "Code000001",
+            ),
+        )
+
+        // When
+        dao.applyRemoteShareCode(
+            ownerUserId = "user-1",
+            shareCode = "Server0001",
+        )
+
+        // Then
+        assertEquals(
+            entity(
+                pendingSync = true,
+                shareCode = "Server0001",
+            ),
+            dao.get(),
+        )
+    }
+
     private fun entity(
         displayName: String = "Pierre",
         avatarColor: String = "lilac",
@@ -202,6 +303,7 @@ class ProfileDaoTest {
         pendingSync: Boolean = false,
         pendingPhoto: ByteArray? = null,
         ownerUserId: String? = "user-1",
+        shareCode: String? = null,
     ): ProfileEntity = ProfileEntity(
         id = SINGLE_ROW_ID,
         displayName = displayName,
@@ -211,6 +313,7 @@ class ProfileDaoTest {
         pendingSync = pendingSync,
         pendingPhoto = pendingPhoto,
         ownerUserId = ownerUserId,
+        shareCode = shareCode,
     )
 
     private suspend fun prepareScenario(stored: ProfileEntity) {

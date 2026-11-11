@@ -4,9 +4,6 @@
     <string name="profile_edit_subtitle">Nama, foto, dan warna avatar</string>
     <string name="profile_edit">Edit profil</string>
     <string name="profile_pending">Diubah · menunggu diunggah</string>
-    <string name="profile_visibility">Siapa yang melihat profilmu</string>
-    <string name="profile_visibility_body">Nama, foto, dan kunci pembayaranmu hanya terlihat oleh orang di grupmu. Siapa pun yang tidak satu grup denganmu tidak melihat apa-apa.</string>
-    <string name="profile_visibility_ok">Mengerti</string>
     <string name="profile_offline_title">Tidak ada internet.</string>
     <string name="profile_offline_body">Edit dengan bebas: tetap tersimpan di perangkat ini dan diunggah saat koneksi kembali.</string>
     <string name="profile_section_account">Akun dan sinkronisasi</string>
@@ -114,4 +111,7 @@
     <string name="profile_category_map">Peta kategori</string>
     <string name="profile_category_map_detail">Kata-kata yang memilih kategori tagihan</string>
     <string name="profile_photo_open">Lihat foto</string>
+    <string name="profile_share">Bagikan profil</string>
+    <string name="profile_share_message">Ini profilku di Blitz Split: %1$s</string>
+    <string name="profile_link_copied">Tautan disalin</string>
 </resources>

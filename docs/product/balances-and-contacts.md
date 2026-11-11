@@ -50,6 +50,18 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     Record payment mounted under the profile, whose back says "Back" (the tab's name only right above a tab).
     A profile opened from settling up goes back to that form on its Settle up or Received rather than opening another;
     opened from one group's Record payment, they open settling up for the net over it (Pierre's call).
+  - A profile link opened (`Route.ProfileLink`, `https://blitzsplit.com/u/<code>`, Profile's "Share profile") shows
+    what this device already has of its owner, so nothing is drawn twice (Pierre's call: it opens a profile page): the
+    person's own link opens Profile (the Mac's Settings) at once, offline too; a contact's, someone the person shares
+    a group with, opens their contact profile in its place (groups in common, the balance, Request and Settle up),
+    whatever the device's copy shows. Anyone else gets a page of their name and photo, "You don't have any groups
+    with Ana yet." and "Invite to a group", which opens Contacts' invite with a group's link ("Invite with link or QR"
+    for that name); without a profile on the device (signed out, the welcome) it has no invite. Only the person's own
+    link opens offline; any other asks the server (`get_profile_by_share_code`), which answers anyone the name, the
+    color and the photo, and names the account only to the person and to whoever already shares a group with them,
+    so a stranger learns nothing more of who they are. Offline it says "Couldn't open this profile" with "Try again"
+    and opens by itself once back online; a code no profile has says "Profile not found". One centered column on
+    every platform and size (a pushed screen on Android and Apple, a page of its own on the web).
   - "Contacts" (flow 11, `Route.Contacts`) is the home's third tab: everyone the user shares a group with, guests
     included, once (Balances' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 owes you", "R$ 0 · settled") and "3 groups" or the group's

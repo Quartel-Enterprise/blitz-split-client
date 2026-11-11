@@ -3,6 +3,16 @@ package com.quare.blitzsplit.feature.profile.presentation.model
 import com.quare.blitzsplit.core.model.AccountProvider
 
 sealed interface ProfileUiAction {
+    // Why: the system share sheet with the profile link (the Mac's sharing picker, navigator.share or a copy on the web).
+    data class ShareProfileLink(
+        val link: String,
+    ) : ProfileUiAction
+
+    // Why: "Link copied".
+    data class CopyProfileLink(
+        val link: String,
+    ) : ProfileUiAction
+
     data class CopyToClipboard(
         val formattedCode: String,
     ) : ProfileUiAction
