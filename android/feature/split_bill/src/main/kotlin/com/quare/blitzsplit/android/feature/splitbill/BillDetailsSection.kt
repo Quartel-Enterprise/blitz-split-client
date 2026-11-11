@@ -15,10 +15,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +39,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.payerNamesTextOf
-import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
+import com.quare.blitzsplit.android.designsystem.format.relativeDateTextOf
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -54,6 +56,7 @@ internal fun BillDetailsSection(
     money: MoneyFormatter,
     dates: DateTimeTextFormatter,
     onWhenClick: () -> Unit,
+    onTimeClick: () -> Unit,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -87,9 +90,10 @@ internal fun BillDetailsSection(
                 )
             }
         }
+        // Why: the row picks the date alone; its time, optional, is the button at its end (beta feedback).
         BillOptionRow(
             label = stringResource(R.string.split_bill_when),
-            value = relativeDateTimeTextOf(
+            value = relativeDateTextOf(
                 epochMillis = state.spentAt,
                 day = state.spentDay,
                 dates = dates,
@@ -98,6 +102,13 @@ internal fun BillDetailsSection(
             shape = rowShapeOf(index = 1),
             onClick = onWhenClick,
             enabled = !state.isFormLocked,
+            trailing = {
+                SpentTimeButton(
+                    state = state,
+                    dates = dates,
+                    onClick = onTimeClick,
+                )
+            },
         ) {
             LeadingIcon { Icon(Icons.Outlined.Event, contentDescription = null) }
         }
@@ -146,6 +157,33 @@ private fun StackedFacesRow(people: List<BillPerson>) {
     }
 }
 
+// Why: "Adicionar horário" while the bill has no time, else its time ("20:40"), both opening the clock.
+@Composable
+private fun SpentTimeButton(
+    state: SplitBillUiState,
+    dates: DateTimeTextFormatter,
+    onClick: () -> Unit,
+) {
+    TextButton(
+        onClick = onClick,
+        enabled = !state.isFormLocked,
+    ) {
+        if (state.hasSpentTime) {
+            Text(dates.toTimeText(state.spentAt))
+        } else {
+            Icon(
+                imageVector = Icons.Outlined.Schedule,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                text = stringResource(R.string.split_bill_add_time),
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
+    }
+}
+
 // Why: Quem pagou, Quando and Dividir, read as one card.
 private fun rowShapeOf(index: Int): Shape = groupedRowShapeOf(
     index = index,
@@ -162,6 +200,8 @@ private fun BillOptionRow(
     // Why: off while a receipt is read, drawn faded as a disabled field is.
     enabled: Boolean,
     isSubtitleError: Boolean = false,
+    // Why: a control at the row's end in the chevron's place, Quando's time.
+    trailing: (@Composable () -> Unit)? = null,
     leading: @Composable () -> Unit,
 ) {
     Surface(
@@ -211,11 +251,15 @@ private fun BillOptionRow(
                     )
                 }
             }
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (trailing == null) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                trailing()
+            }
         }
     }
 }

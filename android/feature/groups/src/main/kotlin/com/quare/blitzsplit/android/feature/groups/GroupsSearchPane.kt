@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
@@ -251,13 +252,12 @@ private fun SearchSuggestionRow(
             ),
         ) { append(suggestion) }
     }
-    Surface(
+    TappableCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 12.dp),
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Row(
             modifier = Modifier.padding(

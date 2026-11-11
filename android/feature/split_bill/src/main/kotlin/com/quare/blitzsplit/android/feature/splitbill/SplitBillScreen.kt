@@ -16,7 +16,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.CategoryFormActions
 import com.quare.blitzsplit.android.designsystem.component.CategoryFormContent
-import com.quare.blitzsplit.android.designsystem.component.DateTimePickerDialog
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.DeleteCategoryDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
@@ -60,7 +59,7 @@ fun SplitBillScreen(
             SplitBillUiAction.ShowCategoryDeleteError -> DesignR.string.designsystem_category_delete_error
         }
     }
-    var isPickingSpentAt by rememberSaveable { mutableStateOf(false) }
+    var spentAtPicker by rememberSaveable { mutableStateOf<SpentAtPicker?>(null) }
     BackHandler { viewModel.onEvent(state.toBackEvent()) }
     /*
      * Why: a new bill on a tabletop splits on the hinge, but Item, Categoria and Nova categoria have no tabletop board
@@ -143,7 +142,11 @@ fun SplitBillScreen(
                 snackbarHostState = pagesSnackbarHostState,
                 onWhenClick = {
                     viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
-                    isPickingSpentAt = true
+                    spentAtPicker = SpentAtPicker.DAY
+                },
+                onTimeClick = {
+                    viewModel.onEvent(SplitBillUiEvent.OnSpentTimeOpened)
+                    spentAtPicker = SpentAtPicker.TIME
                 },
                 onEvent = viewModel::onEvent,
             )
@@ -233,17 +236,12 @@ fun SplitBillScreen(
         snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
-    if (isPickingSpentAt) {
-        DateTimePickerDialog(
-            epochMillis = state.spentAt,
-            latestMillis = state.latestSpentAt,
-            onPicked = { millis ->
-                isPickingSpentAt = false
-                viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(millis))
-            },
-            onDismiss = { isPickingSpentAt = false },
-        )
-    }
+    SpentAtPickerDialog(
+        picker = spentAtPicker,
+        state = state,
+        onClose = { spentAtPicker = null },
+        onEvent = viewModel::onEvent,
+    )
 }
 
 // Why: back closes the deepest page over the bill, then the bill; a tabletop's half page closes the same way.

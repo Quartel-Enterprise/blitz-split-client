@@ -3,8 +3,8 @@ package com.quare.blitzsplit.android.designsystem.layout
 import androidx.compose.runtime.Composable
 
 /*
- * Why: how a short form over the app opens, which the app turns into its scene: Registrar pagamento (6.5) and Convidar
- * of Contatos (11.4) follow the same postures, so they never open differently on the same device.
+ * Why: how a short form over the app opens, which the app turns into its scene: Registrar pagamento (6.5), Convidar of
+ * Contatos (11.4) and Edit profile follow the same postures, so they never open differently on the same device.
  */
 enum class FormPresentation {
     // Why: a phone, upright or lying down, where the sheet is at most 640dp wide.

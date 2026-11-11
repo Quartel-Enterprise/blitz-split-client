@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
@@ -52,6 +53,11 @@ class HomeBars(
     // Why: beside a screen the selected tab opened (a group's), that tab goes back to it.
     val reselects: Boolean = false,
     val railHeader: @Composable (isShort: Boolean) -> Unit = {},
+    /*
+     * Why: how far the bottom bar has left, 0 to 1, following the screen's top bar on a phone upright
+     * (rememberCollapsingTopBarScrollBehavior); read while drawing and measuring, so a scroll never recomposes.
+     */
+    val collapsedFraction: () -> Float = { 0f },
 )
 
 // Why: one HomeBarsScaffold's bars, under the back stack entry it draws in.
@@ -137,7 +143,11 @@ fun HomeBarsLayout(
                     selected = bars.selected,
                     onTabClick = bars.onTabClick,
                     onSearchClick = bars.onSearchClick,
-                    modifier = Modifier.align(Alignment.BottomCenter).then(measureExtent),
+                    // Why: slides down as the screen's bottom padding shrinks by as much, so no gap opens between them.
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .then(measureExtent)
+                        .graphicsLayer { translationY = size.height * bars.collapsedFraction() },
                 )
 
                 HomeBarsKind.RAIL -> HomeNavigationRail(
@@ -192,8 +202,18 @@ fun HomeBarsScaffold(
             null -> 0.dp
         },
     )
+    val collapsedFraction by rememberUpdatedState(bars?.collapsedFraction ?: { 0f })
     val padding = remember(host, kind) {
-        if (host != null && kind != null) HomeBarsPadding(host, kind) { estimate } else PaddingValues()
+        if (host != null && kind != null) {
+            HomeBarsPadding(
+                host,
+                kind,
+                estimate = { estimate },
+                collapsedFraction = { collapsedFraction() },
+            )
+        } else {
+            PaddingValues()
+        }
     }
     // Why: one call site whether the bars show or not, so a rail coming or going keeps the screen's state.
     Box(
@@ -210,6 +230,7 @@ private class HomeBarsPadding(
     private val host: HomeBarsHost,
     private val kind: HomeBarsKind,
     private val estimate: () -> Dp,
+    private val collapsedFraction: () -> Float,
 ) : PaddingValues {
     private val extent: Dp
         get() = host.extentOf(kind) ?: estimate()
@@ -222,7 +243,9 @@ private class HomeBarsPadding(
     override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp =
         if (kind == HomeBarsKind.RAIL && layoutDirection == LayoutDirection.Rtl) extent else 0.dp
 
-    override fun calculateBottomPadding(): Dp = if (kind == HomeBarsKind.BOTTOM_BAR) extent else 0.dp
+    // Why: the bottom bar's part still on screen, so the FAB and the snackbar ride on it as it leaves and comes back.
+    override fun calculateBottomPadding(): Dp =
+        if (kind == HomeBarsKind.BOTTOM_BAR) extent * (1f - collapsedFraction().coerceIn(0f, 1f)) else 0.dp
 }
 
 // Why: a preview draws the screen alone, so its bars come with it, as the canvas draws them.

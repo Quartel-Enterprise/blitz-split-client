@@ -7,8 +7,10 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 data class ExpenseRow(
     override val id: String,
     val description: String,
-    // Why: each UI writes the time of day.
+    // Why: each UI writes the time of day, only while hasSpentTime.
     val spentAt: Long,
+    // Why: a bill saved without a time (`SpentDay.hasTime`) shows none: "Bruno pagou", not "00:00 · Bruno pagou".
+    val hasSpentTime: Boolean,
     /*
      * Why: "Bruno pagou", "Você e Ana pagaram" or "3 pessoas pagaram": who paid, this device's user first, then in the
      * order they were added to the group, then who left it.

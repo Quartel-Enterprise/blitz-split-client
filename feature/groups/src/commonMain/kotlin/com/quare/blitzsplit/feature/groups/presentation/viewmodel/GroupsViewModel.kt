@@ -213,6 +213,8 @@ class GroupsViewModel(
                     syncBadge = SyncBadge.ofOrNull(
                         syncState = syncState,
                         isOnline = isOnline,
+                        awaitsFullSync = account.awaitsFullSync,
+                        previous = state.syncBadge,
                     ),
                     showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 )

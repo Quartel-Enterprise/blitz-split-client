@@ -2,17 +2,19 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
-import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
+import kotlinx.datetime.TimeZone
 
 // Why: "Editar conta" opens filled in with the bill as it was saved, its split as it was typed.
 internal fun SplitBillUiState.toFilledWith(
     group: Group,
     expense: Expense,
     decimalSeparator: Char,
-    spentDay: RelativeDay,
+    now: Long,
+    timeZone: TimeZone,
 ): SplitBillUiState {
     // Why: the bill's own currency, never the group's, which is only the default of a new bill.
     val currency = expense.currency
@@ -45,7 +47,8 @@ internal fun SplitBillUiState.toFilledWith(
         payerId = payerId,
         severalPayers = severalPayers,
         spentAt = expense.spentAt,
-        spentDay = spentDay,
+        spentDay = SpentDay.relativeDayOf(expense.spentAt, now, timeZone),
+        hasSpentTime = SpentDay.hasTime(expense.spentAt, timeZone),
         split = splitEditorOf(
             expense = expense,
             people = people,

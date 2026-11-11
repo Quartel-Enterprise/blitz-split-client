@@ -101,7 +101,6 @@ internal fun SplitEditorContent(
                 itemRole = Role.RadioButton,
                 height = 44.dp,
                 innerRadius = innerRadius,
-                showsCheck = false,
             )
             SplitStatusCard(
                 editor = editor,

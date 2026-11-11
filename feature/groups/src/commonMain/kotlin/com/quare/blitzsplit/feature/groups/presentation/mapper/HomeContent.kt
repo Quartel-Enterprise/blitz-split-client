@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBill
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBillDay
@@ -88,16 +89,23 @@ internal fun homeBillsOf(
     latest: List<LatestExpense>,
     categories: CategoryTree,
 ): List<DatedHomeBill> = latest.map { (group, expense, myBalanceMinor) ->
+    val payersOf = PayersOfGroup(group)
+    val payerIds = payersOf.sortedIdsOf(expense)
     DatedHomeBill(
         spentAt = expense.spentAt,
         bill = HomeBill(
             id = expense.id,
             groupId = group.id,
             groupName = group.name,
+            groupInitials = Initials.of(group.name),
+            groupColor = group.color,
+            groupPhotoUrl = group.photo?.toImageUrl(),
             description = expense.description,
             totalMinor = expense.amountMinor,
             currency = expense.currency,
-            payers = PayersOfGroup(group).of(expense),
+            payers = payersOf.namesOf(payerIds),
+            payerFaces = payersOf.facesOf(payerIds.take(MAX_FACES)),
+            extraPayerCount = extraFacesOf(payerIds.size),
             myBalanceMinor = myBalanceMinor,
             category = categories.resolve(expense.categoryId),
             isPending = expense.isPending,

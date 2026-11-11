@@ -9,6 +9,8 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.RequestGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -55,6 +58,7 @@ class ContactProfileViewModel(
     private val cancelGuestMerge: CancelGuestMerge,
     private val claimGuestAsMe: ClaimGuestAsMe,
     observeContactBook: ObserveContactBook,
+    observeMapCategories: ObserveMapCategories,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactProfileUiEvent>(trackEvent) {
@@ -96,11 +100,11 @@ class ContactProfileViewModel(
     private var isKnownOnline: Boolean? = null
 
     init {
-        observeContactBook()
-            .onEach { snapshot ->
-                book = snapshot
-                show(snapshot)
-            }.launchIn(viewModelScope)
+        // Why: the history's bills draw their category, every group's merged, as Início reads them.
+        combine(observeContactBook(), observeMapCategories().distinctUntilChanged()) { snapshot, categories ->
+            book = snapshot
+            show(snapshot, categories)
+        }.launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .distinctUntilChanged()
@@ -185,7 +189,10 @@ class ContactProfileViewModel(
              */
             ContactProfileUiEvent.OnSeeAllHistoryClicked -> if (isShown()) {
                 trackEvent("contact_history_see_all_clicked", emptyMap())
-                val history = Route.Activity(personKey = route.personKey)
+                val history = Route.Activity(
+                    personKey = route.personKey,
+                    showsBillsOnly = false,
+                )
                 val index = navigator.backStack.value.lastIndexOf(history)
                 if (index >= 0) navigator.popTo(index + 1) else navigator.navigate(history)
             }
@@ -245,9 +252,12 @@ class ContactProfileViewModel(
         }
     }
 
-    private fun show(snapshot: ContactBookSnapshot) {
+    private fun show(
+        snapshot: ContactBookSnapshot,
+        categories: CategoryTree,
+    ) {
         val contact = snapshot.findOrNull(route.personKey)
-        val history = contact?.let(snapshot::historyOf).orEmpty()
+        val history = contact?.let { snapshot.historyOf(it, categories) }.orEmpty()
         val wasLoaded = uiState.value.isLoaded
         uiState.update { state ->
             state.copy(

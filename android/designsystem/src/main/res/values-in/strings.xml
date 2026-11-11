@@ -40,9 +40,12 @@
     <string name="designsystem_when_today">Hari ini, %1$s · %2$s</string>
     <string name="designsystem_when_yesterday">Kemarin, %1$s · %2$s</string>
     <string name="designsystem_when_other">%1$s · %2$s</string>
+    <string name="designsystem_day_today">Hari ini, %s</string>
+    <string name="designsystem_day_yesterday">Kemarin, %s</string>
     <string name="designsystem_picker_next">Berikutnya</string>
     <string name="designsystem_picker_done">Selesai</string>
     <string name="designsystem_picker_cancel">Batal</string>
+    <string name="designsystem_picker_remove_time">Hapus waktu</string>
     <string name="designsystem_method_pix">Pix</string>
     <string name="designsystem_method_cash">Tunai</string>
     <string name="designsystem_method_transfer">Transfer</string>

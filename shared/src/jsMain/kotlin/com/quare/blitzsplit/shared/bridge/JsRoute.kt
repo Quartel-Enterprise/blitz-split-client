@@ -71,6 +71,9 @@ class JsRoute internal constructor(
         else -> null
     }
 
+    // Why: "activity" opened on its bills (Início's "Ver tudo"), which keys its page with personKey; false for every other.
+    val showsBillsOnly: Boolean = (route as? Route.Activity)?.showsBillsOnly == true
+
     // Why: also the currency of "simplify-debts-info", whose example's amounts it formats.
     val currency: String? = when (route) {
         is Route.SettleUp -> route.currency.code

@@ -68,7 +68,7 @@ internal enum class StoreScreenshotsScreen(
                 ),
             )
 
-            ACTIVITY -> listOf(Route.Activity(personKey = null))
+            ACTIVITY -> listOf(Route.Activity.all)
         }
     }
 

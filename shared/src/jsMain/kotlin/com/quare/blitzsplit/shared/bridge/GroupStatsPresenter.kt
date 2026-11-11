@@ -93,6 +93,8 @@ class JsStatsBiggestExpense(
     val expenseId: String,
     val description: String,
     val spentAt: Double,
+    // Why: a bill without a time shows its date alone.
+    val hasSpentTime: Boolean,
     val payers: Array<JsStatsPayer>,
     val amountMinor: Double,
     val isPending: Boolean,
@@ -300,6 +302,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
             expenseId = expense.expenseId,
             description = expense.description,
             spentAt = expense.spentAt.toDouble(),
+            hasSpentTime = expense.hasSpentTime,
             payers = expense.payers.map { JsStatsPayer(it.name, it.isMe) }.toTypedArray(),
             amountMinor = expense.amountMinor.toDouble(),
             isPending = expense.isPending,

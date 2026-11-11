@@ -32,3 +32,15 @@ fun relativeDateTimeTextOf(
         )
     }
 }
+
+// Why: "Hoje, 28 de out.", "Ontem, 27 de out." or "Sex., 24 de out.", a bill's "Quando" without a time (beta feedback).
+@Composable
+fun relativeDateTextOf(
+    epochMillis: Long,
+    day: RelativeDay,
+    dates: DateTimeTextFormatter,
+): String = when (day) {
+    RelativeDay.TODAY -> stringResource(R.string.designsystem_day_today, dates.toDateText(epochMillis))
+    RelativeDay.YESTERDAY -> stringResource(R.string.designsystem_day_yesterday, dates.toDateText(epochMillis))
+    RelativeDay.OTHER -> dates.toWeekdayDateText(epochMillis)
+}

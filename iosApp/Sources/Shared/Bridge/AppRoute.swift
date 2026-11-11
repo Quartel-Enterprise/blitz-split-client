@@ -134,10 +134,10 @@ enum AppRoute: Hashable, Identifiable {
 
     var id: Self { self }
 
-    /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key,
-    /// a bill and Edit profile open as a form sheet and on the Mac a key as a sheet (on Ajustes' window,
-    /// `opensInSettings`; the Mac edits the profile inline, so never Edit profile, and shows a bill in the window's
-    /// inspector), as the canvas draws them; an iPhone, lying down too, pushes them. Deleting the account, a new group, editing a group, a new or edited bill,
+    /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
+    /// and a bill open as a form sheet and on the Mac a key as a sheet (on Ajustes' window, `opensInSettings`; the Mac
+    /// shows a bill in the window's inspector), as the canvas draws them; an iPhone, lying down too, pushes them. Edit
+    /// profile (too little for a screen, Pierre's call; the Mac edits the profile inline, so never opens it), deleting the account, a new group, editing a group, a new or edited bill,
     /// recording a payment (settling up across groups and Início's "Who paid whom?" included), Request, Contacts' invite and
     /// sharing a bill are sheets everywhere (sharing stacks over the bill's own sheet with an iPad's room, and over the
     /// Mac's inspector). The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
@@ -162,7 +162,7 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return false
             #endif
-        case .paymentKey, .editProfile:
+        case .paymentKey:
             #if os(macOS)
             return true
             #else
@@ -184,7 +184,7 @@ enum AppRoute: Hashable, Identifiable {
     private var isSheetEverywhere: Bool {
         switch self {
         case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
-             .contactInvite, .shareBill, .inAppUpdate, .appDownload: true
+             .contactInvite, .shareBill, .inAppUpdate, .appDownload, .editProfile: true
         default: false
         }
     }

@@ -46,6 +46,7 @@ private fun SampleTrip.billDetailState(bill: SampleBill): BillDetailUiState {
         totalMinor = bill.totalMinor,
         spentAt = momentOf(bill.daysAgo, bill.minuteOfDay),
         spentDay = relativeDayOf(bill.daysAgo),
+        hasSpentTime = true,
         payers = payerIndexes.map { person ->
             BillPayer(
                 memberId = memberIdOf(person),

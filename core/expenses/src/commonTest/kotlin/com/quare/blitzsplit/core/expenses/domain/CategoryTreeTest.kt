@@ -16,6 +16,46 @@ import kotlin.test.assertTrue
 
 class CategoryTreeTest {
     @Test
+    fun `GIVEN the same categories read twice WHEN comparing the trees THEN they are equal`() {
+        // Given
+        val first = CategoryTree.of(listOf(praia, churrasco))
+
+        // When
+        val second = CategoryTree.of(listOf(praia, churrasco))
+
+        // Then
+        assertEquals(first, second)
+        assertEquals(first.hashCode(), second.hashCode())
+    }
+
+    @Test
+    fun `GIVEN an app category recolored WHEN comparing the trees THEN they differ`() {
+        // Given
+        val first = CategoryTree.of(listOf(praia, churrasco))
+
+        // When
+        val second = CategoryTree.of(
+            groupCategories = listOf(praia, churrasco),
+            appColors = mapOf(AppCategory.FOOD.key to CategoryColor.BLUE),
+        )
+
+        // Then
+        assertFalse(first == second)
+    }
+
+    @Test
+    fun `GIVEN a category renamed WHEN comparing the trees THEN they differ`() {
+        // Given
+        val first = CategoryTree.of(listOf(praia, churrasco))
+
+        // When
+        val second = CategoryTree.of(listOf(praia.copy(name = "Praia e sol"), churrasco))
+
+        // Then
+        assertFalse(first == second)
+    }
+
+    @Test
     fun `GIVEN group categories WHEN building the tree THEN group mains come before Outros and subs last`() {
         // Given
         val tree = CategoryTree.of(listOf(praia, churrasco))

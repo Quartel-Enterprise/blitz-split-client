@@ -339,11 +339,27 @@ sealed interface Route {
     /*
      * Why: "Atividade" (page 12), the feed and notification center of every group, which Início's bell opens over it
      * (no tab since iOS's search tab took its place in the bar, Pierre's call). personKey (PeopleBalances.keyOf) opens
-     * it on one person, over a contact's profile, from their history, as a removable chip.
+     * it on one person, over a contact's profile, from their history, as a removable chip. showsBillsOnly opens it with
+     * the Bills type already picked, as Início's "Ver tudo" over "Últimas despesas" does, a removable chip too.
      */
     data class Activity(
         val personKey: String?,
-    ) : Route
+        val showsBillsOnly: Boolean,
+    ) : Route {
+        companion object {
+            // Why: everyone's feed with nothing picked, as the bell and a push notification open it.
+            val all: Activity = Activity(
+                personKey = null,
+                showsBillsOnly = false,
+            )
+
+            // Why: Início's "Ver tudo" over "Últimas despesas".
+            val billsOnly: Activity = Activity(
+                personKey = null,
+                showsBillsOnly = true,
+            )
+        }
+    }
 
     /*
      * Why: "Acertar" or "Recebi" of someone in the global Saldos: Registrar pagamento for the whole net with them in

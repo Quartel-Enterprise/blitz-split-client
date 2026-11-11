@@ -120,6 +120,7 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
             expenseId = "biggest",
             description = biggest.description,
             spentAt = momentOf(biggest.daysAgo, biggest.minuteOfDay),
+            hasSpentTime = true,
             payers = biggest.payers.map { StatsPayer(people[it.person], isMe = it.person == me) },
             amountMinor = biggest.totalMinor,
             isPending = false,

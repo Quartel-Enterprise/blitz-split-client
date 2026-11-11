@@ -74,6 +74,7 @@ internal fun PreferencesSection(
             headline = stringResource(R.string.profile_language),
             modifier = Modifier.clickable(enabled = state.isLoaded) { onEvent(ProfileUiEvent.OnLanguageClicked) },
             supporting = languageName(state.language),
+            supportingLanguageTag = state.language.tag,
             trailing = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,

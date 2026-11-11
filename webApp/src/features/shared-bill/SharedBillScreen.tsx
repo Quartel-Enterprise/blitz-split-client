@@ -122,7 +122,7 @@ function OpenBill({ presenter, state }: { presenter: SharedBillPresenter; state:
         money={money}
         attachments={state.attachments.length > 0 && <BillAttachments presenter={presenter} state={state} localUrls={localUrls} />}
         title={<h1 className="truncate text-lg leading-6 font-semibold">{state.description}</h1>}
-        description={<p className="text-[13px] text-muted-foreground">{formatDayTime(state.spentAt, state.spentDay)}</p>}
+        description={<p className="text-[13px] text-muted-foreground">{formatDayTime(state.spentAt, state.spentDay, state.hasSpentTime)}</p>}
       />
       <div className="flex flex-col gap-3">
         {/* Why: the heart, Editar and Apagar go straight to the server, so they wait while it can't be reached. */}

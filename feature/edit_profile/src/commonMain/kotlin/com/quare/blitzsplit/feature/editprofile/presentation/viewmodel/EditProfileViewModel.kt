@@ -228,8 +228,8 @@ class EditProfileViewModel(
     }
 
     /*
-     * Why: the phones push the editor and leave it once saved; the web and the Mac draw it inside the
-     * profile, where it stays with the saved values.
+     * Why: Android and iOS open the editor over the profile (a sheet, a dialog) and leave it once saved; the web and
+     * the Mac draw it inside the profile, where it stays with the saved values.
      */
     private fun save() {
         if (!uiState.value.canSave) return

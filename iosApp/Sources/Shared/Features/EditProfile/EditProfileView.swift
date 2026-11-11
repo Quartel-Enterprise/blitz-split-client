@@ -44,23 +44,20 @@ final class EditProfileModel {
     }
 }
 
-/// The editor, left once saved. An iPhone pushes it, Save in the bar, the avatar and its color beside the name lying
-/// down; with an iPad's room (an iPad, an iPhone Duo open) it is a 540 pt form sheet over the profile, one column, with
-/// Cancel and Save (✓), as the canvas draws it. The Mac edits the profile inline (`EditProfileSections`).
+/// The editor, left once saved: a sheet over the profile with Cancel (✕) and Save (✓), since a photo, a name and a
+/// notice are too little for a screen (Pierre's call, beta feedback). On an iPhone it opens at half height and grows to
+/// the whole screen, the avatar and its color beside the name lying down; with an iPad's room (an iPad, an iPhone Duo
+/// open) it is a 540 pt form sheet, one column. The Mac edits the profile inline (`EditProfileSections`).
 struct EditProfileView: View {
     @State private var model = EditProfileModel()
-    /// The screen's own size, which decides the columns.
+    /// The sheet's own size, which decides the columns.
     @State private var layout = ScreenLayout()
-    /// The window under the sheet, not the sheet: whether the editor is a sheet or a pushed screen.
+    /// The window under the sheet, not the sheet: whether it has an iPad's room.
     @Environment(\.windowLayout) private var windowLayout
-
-    private var isSheet: Bool {
-        AppRoute.editProfile.presentsAsSheet(isLargeWindow: windowLayout.isLarge)
-    }
 
     var body: some View {
         Group {
-            if layout.usesTwoColumns, !isSheet {
+            if layout.usesTwoColumns, !windowLayout.isLarge {
                 TwoColumnsLayout(firstWidth: 300, spacing: 32) {
                     Form { EditProfileAvatarSections(model: model) }
                         .formStyle(.grouped)
@@ -83,32 +80,27 @@ struct EditProfileView: View {
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
-            if isSheet {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", systemImage: "xmark", role: .cancel) {
-                        model.send(EditProfileUiEventOnBackClicked.shared)
-                    }
-                    .disabled(model.state.isSaving)
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", systemImage: "xmark", role: .cancel) {
+                    model.send(EditProfileUiEventOnBackClicked.shared)
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", systemImage: "checkmark") {
-                        model.send(EditProfileUiEventOnSaveClicked.shared)
-                    }
-                    .buttonStyle(.glassProminent)
-                    .prominentLabel()
-                    .disabled(!model.state.canSave)
+                .disabled(model.state.isSaving)
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save", systemImage: "checkmark") {
+                    model.send(EditProfileUiEventOnSaveClicked.shared)
                 }
-            } else {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { model.send(EditProfileUiEventOnSaveClicked.shared) }
-                        .disabled(!model.state.canSave)
-                }
+                .buttonStyle(.glassProminent)
+                .prominentLabel()
+                .disabled(!model.state.canSave)
             }
         }
         .interactiveDismissDisabled(model.state.isSaving)
         .photoCrop(model.state.photoCrop, frame: .circle) { model.send(EditProfileUiEventOnPhotoCrop(event: $0)) }
         #if os(iOS)
-        // The canvas' 540 pt form sheet with an iPad's room; pushed on an iPhone, where it changes nothing
+        // Half height on an iPhone, where the keyboard lifts it with the name field; lying down the sheet takes the
+        // whole screen whatever the detents. The canvas' 540 pt form sheet with an iPad's room
+        .presentationDetents(windowLayout.isLarge ? [.large] : [.medium, .large])
         .formSheetSizing()
         #endif
     }

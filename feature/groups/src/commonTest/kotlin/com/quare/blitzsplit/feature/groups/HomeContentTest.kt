@@ -29,6 +29,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBill
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
+import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test
@@ -427,6 +428,9 @@ class HomeContentTest {
                 id = "dinner",
                 groupId = "trip",
                 groupName = "Viagem Floripa",
+                groupInitials = "VF",
+                groupColor = AvatarColor.BLUE,
+                groupPhotoUrl = null,
                 description = "Jantar",
                 totalMinor = 9000L,
                 currency = GroupCurrency.BRL,
@@ -440,11 +444,87 @@ class HomeContentTest {
                         isMe = false,
                     ),
                 ),
+                payerFaces = listOf(
+                    MemberFace(
+                        initial = "P",
+                        color = AvatarColor.BLUE,
+                        photoUrl = null,
+                    ),
+                    MemberFace(
+                        initial = "A",
+                        color = AvatarColor.BLUE,
+                        photoUrl = null,
+                    ),
+                ),
+                extraPayerCount = 0,
                 myBalanceMinor = 3000L,
                 category = CategoryTree.appOnly.resolve(null),
                 isPending = true,
             ),
             bill,
+        )
+    }
+
+    @Test
+    fun `GIVEN a bill four people paid WHEN listing the latest bills THEN shows three faces and one more`() {
+        // Given
+        val group = group(
+            id = "trip",
+            members = listOf("Pierre", "Ana", "Bruno", "Carla").map { member(it, isMe = it == "Pierre") },
+        )
+        val paidByAll = bill(
+            "dinner",
+            groupId = "trip",
+            spentAt = hoursAgo(1),
+        ).copy(
+            payers = listOf("Pierre", "Ana", "Bruno", "Carla").map { ExpensePayer("member-$it", 2250L) },
+        )
+
+        // When
+        val bill = homeBillDaysOf(listOf(withMoney(group, paidByAll)), CategoryTree.appOnly, clock)
+            .single()
+            .bills
+            .single()
+
+        // Then
+        assertEquals(listOf("P", "A", "B"), bill.payerFaces.map { it.initial })
+        assertEquals(1, bill.extraPayerCount)
+    }
+
+    @Test
+    fun `GIVEN a bill paid by someone no longer in the group WHEN listing the latest bills THEN their face is blank`() {
+        // Given
+        val gone = bill(
+            "gas",
+            paidBy = "Diego",
+            spentAt = hoursAgo(1),
+        )
+
+        // When
+        val bill = homeBillDaysOf(listOf(withMoney(trio(), gone)), CategoryTree.appOnly, clock)
+            .single()
+            .bills
+            .single()
+
+        // Then
+        assertEquals(
+            listOf(
+                MemberFace(
+                    initial = "",
+                    color = AvatarColor.entries.first(),
+                    photoUrl = null,
+                ),
+            ),
+            bill.payerFaces,
+        )
+        assertEquals(
+            listOf(
+                SearchBillPayer(
+                    name = null,
+                    isMe = false,
+                ),
+            ),
+            bill.payers,
         )
     }
 

@@ -356,19 +356,30 @@ private struct JoinedNotice: View {
 /// The bill's line on the list: "21:30 · Bruno paid", "17:40 · queued · You paid", "21:30 · You and Ana paid", or
 /// just the time once whoever paid alone left the group.
 private func expenseMeta(_ row: ExpenseRow) -> String {
-    billMeta(spentAt: row.spentAt, isPending: row.isPending, payers: row.payers.map { (name: $0.name, isMe: $0.isMe) })
+    billMeta(
+        spentAt: row.spentAt,
+        hasTime: row.hasSpentTime,
+        isPending: row.isPending,
+        payers: row.payers.map { (name: $0.name, isMe: $0.isMe) },
+    )
 }
 
 private func payerText(_ row: ExpenseRow) -> String? {
     ExpenseFormat.paid(row.payers.map { (name: $0.name, isMe: $0.isMe) }, loneFormer: nil)
 }
 
-/// A bill's meta on a list of bills by day (the group's Expenses, a category's from the statistics).
-func billMeta(spentAt: Int64, isPending: Bool, payers: [(name: String?, isMe: Bool)]) -> String {
+/// A bill's meta on a list of bills by day (the group's Expenses, a category's from the statistics); a bill without a
+/// time leaves it out ("queued · You paid", "Bruno paid").
+func billMeta(spentAt: Int64, hasTime: Bool, isPending: Bool, payers: [(name: String?, isMe: Bool)]) -> String {
     let time = ExpenseFormat.time(spentAt)
-    let when = isPending ? String(localized: "\(time) · queued", bundle: .appLanguage) : time
-    guard let paid = ExpenseFormat.paid(payers, loneFormer: nil) else { return when }
-    return "\(when) · \(paid)"
+    let when: String? = switch (hasTime, isPending) {
+    case (true, true): String(localized: "\(time) · queued", bundle: .appLanguage)
+    case (true, false): time
+    case (false, true): String(localized: "queued", bundle: .appLanguage)
+    case (false, false): nil
+    }
+    let paid = ExpenseFormat.paid(payers, loneFormer: nil)
+    return [when, paid].compactMap { $0 }.joined(separator: " · ")
 }
 
 /// A payment's banknote (a bill draws its category's badge instead).
@@ -699,7 +710,8 @@ private struct MacGroupExpenses: View {
                 }
             }
             TableColumn("Time") { item in
-                Text(verbatim: ExpenseFormat.time(item.time))
+                // A bill without a time leaves its cell empty, never "00:00"
+                Text(verbatim: item.expense?.hasSpentTime == false ? "" : ExpenseFormat.time(item.time))
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
             }

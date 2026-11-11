@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.contacts.member
 import com.quare.blitzsplit.core.contacts.owes
 import com.quare.blitzsplit.core.contacts.payment
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
@@ -203,7 +204,7 @@ class ObserveContactBookUseCaseTest {
         val carla = snapshot.contacts.single()
 
         // When
-        val history = snapshot.historyOf(carla)
+        val history = snapshot.historyOf(carla, CategoryTree.appOnly)
 
         // Then
         assertEquals(listOf("dinner"), history.map { it.id })

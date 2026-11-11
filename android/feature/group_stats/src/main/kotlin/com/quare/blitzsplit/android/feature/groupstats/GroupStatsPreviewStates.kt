@@ -106,6 +106,7 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
             expenseId = "boat",
             description = "Passeio de barco",
             spentAt = PREVIEW_START + previewDay * 4 + previewDay / 2,
+            hasSpentTime = true,
             payers = listOf(StatsPayer("Pierre", isMe = true)),
             amountMinor = 72_000L,
             isPending = false,

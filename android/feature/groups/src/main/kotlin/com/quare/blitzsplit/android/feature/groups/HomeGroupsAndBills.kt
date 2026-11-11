@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
@@ -45,7 +46,9 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeGroup
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 
+// Why: the cards of "Seus grupos"; the group's square and the payers' faces under a bill, a line of text tall.
 private val groupCardShape = RoundedCornerShape(24.dp)
+private val billOriginSize = 20.dp
 
 // Why: "Seus grupos", up to three cards in a row: the pinned first, then the latest activity.
 @Composable
@@ -104,7 +107,7 @@ private fun HomeGroupCard(
         amount,
         word,
     )
-    Surface(
+    TappableCard(
         onClick = onClick,
         modifier = Modifier
             .size(
@@ -112,7 +115,6 @@ private fun HomeGroupCard(
                 height = metrics.groupCardHeight,
             ).semantics { contentDescription = description },
         shape = groupCardShape,
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
             modifier = Modifier
@@ -259,8 +261,9 @@ private fun BillDayColumn(
 }
 
 /*
- * Why: a bill: its category's badge, "Mercado", "Viagem Floripa · Você pagou" ("na fila · " while it waits to go up),
- * its total and what it does to your balance.
+ * Why: a bill: its category's badge, "Mercado", the group's square and the faces of who paid (beta feedback, as the
+ * legacy app drew them: the line "Viagem Floripa · Você pagou" cut off on a phone; TalkBack still reads it), the amber
+ * dot and "na fila" while it waits to go up, its total and what it does to your balance.
  */
 @Composable
 internal fun HomeBillRow(
@@ -299,19 +302,10 @@ internal fun HomeBillRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    if (bill.isPending) PendingIndicator()
-                    Text(
-                        text = meta,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                BillOriginRow(
+                    bill = bill,
+                    description = meta,
+                )
             }
             Column(
                 horizontalAlignment = Alignment.End,
@@ -362,5 +356,40 @@ internal fun HomeBillRow(
             color = color,
             content = content,
         )
+    }
+}
+
+// Why: the group's square, then who paid as overlapping faces and "+N"; nothing here to cut off on a narrow phone.
+@Composable
+private fun BillOriginRow(
+    bill: HomeBill,
+    description: String,
+) {
+    Row(
+        modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        GroupBadge(
+            initials = bill.groupInitials,
+            color = bill.groupColor,
+            photoUrl = bill.groupPhotoUrl,
+            size = billOriginSize,
+        )
+        FacesRow(
+            faces = bill.payerFaces,
+            extraCount = bill.extraPayerCount,
+            size = billOriginSize,
+        )
+        if (bill.isPending) {
+            PendingIndicator()
+            Text(
+                text = stringResource(R.string.groups_meta_queued),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }

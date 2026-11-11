@@ -58,6 +58,7 @@ internal fun createPreviewBillDetailState(
         totalMinor = PREVIEW_TOTAL_MINOR,
         spentAt = PREVIEW_SPENT_AT,
         spentDay = RelativeDay.YESTERDAY,
+        hasSpentTime = true,
         payers = listOf(
             BillPayer(
                 memberId = if (isMePayer) "pierre" else "bruno",

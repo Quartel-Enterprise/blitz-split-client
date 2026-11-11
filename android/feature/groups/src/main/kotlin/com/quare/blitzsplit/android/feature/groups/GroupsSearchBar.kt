@@ -128,7 +128,6 @@ internal fun GroupsSearchHeader(
             groupLabel = stringResource(R.string.groups_search_scopes),
             onClick = { index -> onEvent(SearchUiEvent.OnScopeChanged(SearchScope.entries[index])) },
             height = 40.dp,
-            showsCheck = false,
         )
     }
 }

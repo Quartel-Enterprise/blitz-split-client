@@ -98,6 +98,17 @@ class CategoryTree private constructor(
         .groupingBy { resolve(it.categoryId).id }
         .eachCount()
 
+    /*
+     * Why: two trees of the same categories and colors are the same tree, so a snapshot holding one (Contatos') isn't
+     * sent again each time Room reads the same categories anew.
+     */
+    override fun equals(other: Any?): Boolean = other is CategoryTree &&
+        branches == other.branches &&
+        groupCategories == other.groupCategories &&
+        appColors == other.appColors
+
+    override fun hashCode(): Int = 31 * (31 * branches.hashCode() + groupCategories.hashCode()) + appColors.hashCode()
+
     companion object {
         // Why: two levels, so a deleted subcategory reaches a live category in at most two steps.
         private const val MAX_DEPTH = 3
