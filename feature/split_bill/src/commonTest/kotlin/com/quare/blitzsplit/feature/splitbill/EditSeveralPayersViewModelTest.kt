@@ -462,6 +462,7 @@ class EditSeveralPayersViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null))

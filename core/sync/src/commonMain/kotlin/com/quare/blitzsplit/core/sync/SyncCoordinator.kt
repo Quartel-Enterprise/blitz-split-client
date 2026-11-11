@@ -340,14 +340,6 @@ class SyncCoordinator(
         }.await()
 
     /*
-     * Why: in the app's scope, so leaving the screen once the server has unlinked can't lose the new code, and
-     * under the sync lock, so a sync that read the user before can't mirror the Google or Apple account back.
-     */
-    suspend fun removeSocialIdentity(): Result<Unit> = scope
-        .async { syncLock.withLock { accountRepository.removeSocialIdentity() } }
-        .await()
-
-    /*
      * Why: "Trocar link", under the sync lock so a download that read the group before can't write the old code back,
      * in the app's scope so leaving Convidar keeps it. A failure may hide a change the server made anyway, so a sync
      * brings the code it holds; a refusal changed nothing, so it needs none.

@@ -29,7 +29,7 @@ Inject `Navigator` into the ViewModel and call it from `onEvent` or after a resu
 
 | Call | Does | Example |
 | --- | --- | --- |
-| `navigate(route)` | Pushes `route` | `OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)` |
+| `navigate(route)` | Pushes `route`; one already on the stack is never pushed twice: the stack goes back to it, closing what is above it | `OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)` |
 | `navigateBack()` | Pops the top entry, never the last one | `OnBackClicked -> navigator.navigateBack()` |
 | `navigateBackFrom(route)` | Pops only while `route` is on top, so a second tap during the exit, or a dismissal sent twice, closes nothing under it | `OnBackClicked -> navigator.navigateBackFrom(Route.Profile)` |
 | `replaceTop(route)` | Puts `route` in the top entry's place, so back skips the screen it replaced | `navigator.replaceTop(Route.Invite(groupId, isNewGroup = true))` once "Novo grupo" saved the group; Convidar's "Ver quem já entrou" and "Ir para o grupo" go through `openGroup(from, groupId, tab)`, which opens the group's one screen on a tab: it goes back to the group right below when it already opened on that tab, and otherwise puts the group in that place, so the group never stacks over itself |

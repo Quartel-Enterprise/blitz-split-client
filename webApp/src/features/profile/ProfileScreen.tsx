@@ -265,9 +265,6 @@ function AccountCard({ presenter, state, className }: CardProps) {
         ) : provider ? (
           <Row title={providerLabel(provider, true)} detail={state.maskedEmail && t('profile_accountConnectedDetail', { email: state.maskedEmail })}>
             <Badge variant="secondary">{t('profile_accountConnected')}</Badge>
-            <Button size="sm" variant="outline" onClick={() => presenter.account()}>
-              {t('profile_accountDisconnect')}
-            </Button>
           </Row>
         ) : (
           <div className="flex flex-col gap-3 pb-3">

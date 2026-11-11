@@ -18,7 +18,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.LoadSharedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -358,11 +357,7 @@ class SharedBillViewModel(
         navigator.replaceAbove(
             size = navigator.backStack.value.size - 1,
             routes = listOf(
-                Route.GroupDetail(
-                    groupId = bill.groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
+                Route.GroupDetail.expensesOf(bill.groupId),
                 Route.BillDetail(
                     groupId = bill.groupId,
                     expenseId = bill.expenseId,

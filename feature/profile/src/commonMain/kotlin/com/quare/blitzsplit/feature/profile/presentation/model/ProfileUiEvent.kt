@@ -60,7 +60,7 @@ sealed interface ProfileUiEvent : UiEvent {
             )
 
             /*
-             * Why: each counts only when the profile takes it (nothing signing out or unlinking, the dialog it answers
+             * Why: each counts only when the profile takes it (nothing signing out, the dialog it answers
              * still open, the row or switch there to tap, another theme), never a late tap.
              */
             OnShareProfileClicked -> EventAnalytics.Manual("profile_share_clicked")
@@ -74,10 +74,6 @@ sealed interface ProfileUiEvent : UiEvent {
             is OnAddPaymentKeyClicked -> EventAnalytics.Manual("payment_key_add_clicked")
 
             is OnPaymentKeyClicked -> EventAnalytics.Manual("payment_key_clicked")
-
-            OnAccountClicked -> EventAnalytics.Manual("profile_account_clicked")
-
-            OnUnlinkConfirmed -> EventAnalytics.Manual("profile_unlink_confirmed")
 
             OnDeleteAccountClicked -> EventAnalytics.Manual("profile_delete_account_clicked")
 
@@ -157,11 +153,6 @@ sealed interface ProfileUiEvent : UiEvent {
     ) : ProfileUiEvent
 
     data object OnRecoveryCodeClicked : ProfileUiEvent
-
-    // Why: the Google or Apple row, which opens the "Desconectar" confirmation.
-    data object OnAccountClicked : ProfileUiEvent
-
-    data object OnUnlinkConfirmed : ProfileUiEvent
 
     data object OnExportClicked : ProfileUiEvent
 

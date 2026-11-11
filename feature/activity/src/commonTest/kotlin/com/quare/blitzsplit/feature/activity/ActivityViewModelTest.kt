@@ -446,6 +446,7 @@ class ActivityViewModelTest {
                     APE,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 Route.BillDetail(APE, BILL_JANTAR, focusCommentId = null),
             ),
@@ -470,6 +471,7 @@ class ActivityViewModelTest {
                     APE,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -502,6 +504,7 @@ class ActivityViewModelTest {
                     FLORIPA,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -518,7 +521,16 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null, GroupTab.MEMBERS)),
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    FLORIPA,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -533,7 +545,16 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.BALANCES)),
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    APE,
+                    joinedAs = null,
+                    GroupTab.BALANCES,
+                    isOverBill = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -549,7 +570,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.BALANCES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        GroupTab.BALANCES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -723,6 +753,7 @@ class ActivityViewModelTest {
                         APE,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.BillDetail(APE, BILL_MERCADO, focusCommentId = null),
                 ),
@@ -807,6 +838,7 @@ class ActivityViewModelTest {
                     APE,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -830,7 +862,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -848,7 +889,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -866,7 +916,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null, GroupTab.EXPENSES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        FLORIPA,
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -884,7 +943,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -901,7 +969,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -918,7 +995,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
             assertNull(viewModel.uiState.value.deletedNotice)
@@ -1019,7 +1105,16 @@ class ActivityViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, route, Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)),
+                listOf(
+                    Route.Home,
+                    route,
+                    Route.GroupDetail(
+                        APE,
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -1036,7 +1131,16 @@ class ActivityViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Home, route, Route.GroupDetail(FLORIPA, joinedAs = null, GroupTab.EXPENSES)),
+            listOf(
+                Route.Home,
+                route,
+                Route.GroupDetail(
+                    FLORIPA,
+                    joinedAs = null,
+                    GroupTab.EXPENSES,
+                    isOverBill = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -2252,7 +2356,12 @@ class ActivityViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val group = Route.GroupDetail(APE, joinedAs = null, GroupTab.EXPENSES)
+            val group = Route.GroupDetail(
+                APE,
+                joinedAs = null,
+                GroupTab.EXPENSES,
+                isOverBill = false,
+            )
             navigator.navigate(group)
 
             // When

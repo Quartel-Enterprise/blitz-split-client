@@ -373,6 +373,7 @@ class SearchViewModelTest {
                         "ape",
                         joinedAs = null,
                         tab = GroupTab.MEMBERS,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1356,6 +1357,7 @@ class SearchViewModelTest {
         groupId,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     // Why: Pierre, the first name, is this device's user.

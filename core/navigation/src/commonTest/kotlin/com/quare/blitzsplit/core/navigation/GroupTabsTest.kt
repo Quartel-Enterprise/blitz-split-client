@@ -22,7 +22,15 @@ class GroupTabsTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -36,6 +44,7 @@ class GroupTabsTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
@@ -55,6 +64,7 @@ class GroupTabsTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -70,6 +80,7 @@ class GroupTabsTest {
                 GROUP_ID,
                 joinedAs = "Bruno",
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
@@ -89,6 +100,7 @@ class GroupTabsTest {
                     GROUP_ID,
                     joinedAs = "Bruno",
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -104,6 +116,7 @@ class GroupTabsTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
@@ -117,7 +130,15 @@ class GroupTabsTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -131,6 +152,7 @@ class GroupTabsTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
@@ -145,7 +167,17 @@ class GroupTabsTest {
 
         // Then
         assertEquals(
-            listOf(listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))),
+            listOf(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                ),
+            ),
             recording.stacks,
         )
     }
@@ -155,7 +187,12 @@ class GroupTabsTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
 
@@ -168,7 +205,62 @@ class GroupTabsTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN Convidar over the group opened over a bill WHEN opening Membros THEN keeps it over the bill`() {
+        // Given
+        val membersUnderBill = Route.GroupDetail(
+            GROUP_ID,
+            joinedAs = null,
+            GroupTab.MEMBERS,
+            isOverBill = false,
+        )
+        val bill = Route.SplitBill.createNew(GROUP_ID)
+        prepareScenario(
+            Route.Groups,
+            membersUnderBill,
+            bill,
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+                isOverBill = true,
+            ),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
+
+        // When
+        navigator.openGroup(
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
+            groupId = GROUP_ID,
+            tab = GroupTab.MEMBERS,
+        )
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                membersUnderBill,
+                bill,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = true,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -182,6 +274,7 @@ class GroupTabsTest {
                 OTHER_GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.Invite(GROUP_ID, isNewGroup = false),
         )
@@ -201,11 +294,13 @@ class GroupTabsTest {
                     OTHER_GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 Route.GroupDetail(
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -221,6 +316,7 @@ class GroupTabsTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -239,6 +335,7 @@ class GroupTabsTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -248,7 +345,12 @@ class GroupTabsTest {
     @Test
     fun `GIVEN the group screen WHEN reading its group THEN is the group`() {
         // Given
-        val route = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.BALANCES)
+        val route = Route.GroupDetail(
+            GROUP_ID,
+            joinedAs = null,
+            GroupTab.BALANCES,
+            isOverBill = false,
+        )
 
         // When
         val groupId = groupScreenIdOrNull(route)

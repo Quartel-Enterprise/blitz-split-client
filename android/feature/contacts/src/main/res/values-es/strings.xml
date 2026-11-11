@@ -28,7 +28,7 @@
     <string name="contacts_hidden_meta">%s · saldado</string>
     <string name="contacts_hidden_show">Mostrar</string>
     <string name="contacts_hidden_show_person">Mostrar a %s en Contactos</string>
-    <string name="contacts_hidden_note">Quien está oculto sigue en los grupos. Vuelve a la lista por sí solo si se une contigo con una cuenta nueva.</string>
+    <string name="contacts_hidden_note">Quien está oculto sigue en los grupos. Vuelve a la lista por sí solo si se une contigo a un gasto nuevo.</string>
     <string name="contacts_empty_title">Aún no hay nadie aquí</string>
     <string name="contacts_empty_body">Quien comparta un grupo contigo aparece aquí, con el saldo de cada uno.</string>
     <string name="contacts_search_clear">Borrar búsqueda</string>
@@ -87,7 +87,7 @@
     <string name="contacts_menu_hide_blocked">Solo con saldo cero. Salda cuentas primero.</string>
     <string name="contacts_menu_show">Mostrar en Contactos</string>
     <string name="contacts_hide_title">¿Ocultar a %s?</string>
-    <string name="contacts_hide_message">%1$s sale de tu lista de Contactos. Se queda en %2$s y vuelve por sí solo si se une contigo con una cuenta nueva. Puedes volver a mostrarlo en Ocultos.</string>
+    <string name="contacts_hide_message">%1$s sale de tu lista de Contactos. Se queda en %2$s y vuelve por sí solo si se une contigo a un gasto nuevo. Puedes volver a mostrarlo en Ocultos.</string>
     <string name="contacts_hide_confirm">Ocultar</string>
     <string name="contacts_add_title">Agregar a %s a un grupo</string>
     <plurals name="contacts_add_members">

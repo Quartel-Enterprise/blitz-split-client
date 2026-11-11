@@ -121,6 +121,8 @@
     <string name="split_bill_group_lead">前回使ったグループが選択されています</string>
     <string name="split_bill_group_continue">続ける</string>
     <string name="split_bill_group_change">グループ：%s。変更</string>
+    <string name="split_bill_group_change_button">変更</string>
+    <string name="split_bill_group_open">グループを開く</string>
     <plurals name="split_bill_group_people">
         <item quantity="other">%d人</item>
     </plurals>

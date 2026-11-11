@@ -62,7 +62,7 @@ granted to `anon` and called without an account goes in the plugin's list too.
 | `SupabaseGuestMergeRemoteDataSource` | the `request_guest_merge`, `pending_guest_merges` and `cancel_guest_merge` functions: "Juntar com a conta dele", online only |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseRemoteChangeRemoteDataSource` (`:core:sync`) | Realtime: one channel with the inserts of `activity_events` and the updates of `profiles`, which the server's row level security filters per subscriber |
-| `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
+| `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `delete-account` and `apple-token` edge functions |
 
 The tables, functions and dashboard settings are documented in the `blitz-split-api` repository (`docs/auth.md`,
 `docs/database.md`).

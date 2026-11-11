@@ -16,7 +16,6 @@ import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
 import com.quare.blitzsplit.core.model.AppLanguage
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.ForwardHistory
@@ -284,13 +283,7 @@ class AppViewModel(
             // Why: the server says the person is in it, so a group not on the device yet comes with a later sync.
             if (observeGroup(groupId).first() == null || navigator.backStack.value != tabTop) return@launch
             if (location is BillLocation.Deleted) noticeBillGone(groupId, target.expenseId)
-            navigator.navigate(
-                Route.GroupDetail(
-                    groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
-            )
+            navigator.navigate(Route.GroupDetail.expensesOf(groupId))
             if (location is BillLocation.Found && location.isOnDevice) {
                 navigator.navigate(Route.BillDetail(groupId, target.expenseId, focusCommentId = target.commentId))
             }

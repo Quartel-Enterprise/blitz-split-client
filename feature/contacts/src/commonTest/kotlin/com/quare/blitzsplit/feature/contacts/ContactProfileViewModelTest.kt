@@ -326,6 +326,7 @@ class ContactProfileViewModelTest {
                     APE,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 navigator.backStack.value.last(),
             )
@@ -2499,6 +2500,7 @@ class ContactProfileViewModelTest {
         FLORIPA,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private val waitingMerge = GuestMerge(

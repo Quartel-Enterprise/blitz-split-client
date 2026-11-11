@@ -64,9 +64,6 @@ class JsProfileState(
     val hasSignInFailed: Boolean,
     val isSigningOut: Boolean,
     val hasSignOutFailed: Boolean,
-    val isUnlinking: Boolean,
-    val hasUnlinkFailed: Boolean,
-    val canUnlink: Boolean,
     val showsDeleteAccount: Boolean,
     // Why: Pix first, each method's default first; null while they load (shimmer), never "no key" before it.
     val paymentKeys: Array<JsPaymentKeyItem>?,
@@ -143,9 +140,6 @@ class ProfilePresenter {
                 hasSignInFailed = state.hasSignInFailed,
                 isSigningOut = state.isSigningOut,
                 hasSignOutFailed = state.hasSignOutFailed,
-                isUnlinking = state.isUnlinking,
-                hasUnlinkFailed = state.hasUnlinkFailed,
-                canUnlink = state.canUnlink,
                 showsDeleteAccount = state.showsDeleteAccount,
                 appInviteStatus = state.appInvite?.status?.name,
                 appInviteLink = state.appInvite?.link,
@@ -231,14 +225,6 @@ class ProfilePresenter {
 
     fun recoveryCode() {
         viewModel.onEvent(ProfileUiEvent.OnRecoveryCodeClicked)
-    }
-
-    fun account() {
-        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
-    }
-
-    fun confirmUnlink() {
-        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
     }
 
     fun export() {

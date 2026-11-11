@@ -117,5 +117,6 @@ class SearchViewModel(
         groupId,
         joinedAs = null,
         tab = tab,
+        isOverBill = false,
     )
 }

@@ -77,7 +77,5 @@ internal fun createPreviewProfileState(
     hasSignInFailed = false,
     isSigningOut = false,
     hasSignOutFailed = false,
-    isUnlinking = false,
-    hasUnlinkFailed = false,
     appInvite = null,
 )

@@ -37,3 +37,10 @@ node_modules/
 .claude/memory/
 .claude/settings.json
 .claude/settings.local.json
+
+# Store listing screenshots: generated, never versioned (docs/store-listing-screenshots.md)
+/store_listings/
+/fastlane/screenshots/
+/fastlane/screenshots-mac/
+/fastlane/metadata/android/*/images/
+/fastlane/report.xml

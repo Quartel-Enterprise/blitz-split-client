@@ -7,6 +7,8 @@ final class MembersModel {
     private(set) var state: MembersUiState
     private(set) var changeErrorCount = 0
     private(set) var releaseErrorCount = 0
+    /// "Link copied", each time the link card's copy button puts the group's link on the clipboard.
+    private(set) var linkCopiedCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<MembersViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -23,6 +25,9 @@ final class MembersModel {
             case is MembersUiActionShowChangeError: self?.changeErrorCount += 1
             case is MembersUiActionShowReleaseError: self?.releaseErrorCount += 1
             case let copy as MembersUiActionCopyLink: Pasteboard.copy(copy.link)
+            case let copy as MembersUiActionCopyGroupLink:
+                Pasteboard.copy(copy.link)
+                self?.linkCopiedCount += 1
             // The personal invite's ShareLink shares the link itself: a share sheet can't be opened from code.
             default: break
             }
@@ -44,7 +49,7 @@ final class MembersModel {
     }
 }
 
-/// "Members", the group's tab under its header: the group's link with "Add person" beside it, and who is in it and
+/// "Members", the group's tab under its header: the group's link with Copy, Share and "Add person", and who is in it and
 /// who joined. A tap on a person opens their options: rename, a personal invite, which joins straight in as someone
 /// nobody joined as yet, and removal, which only someone who hasn't joined and owes or is owed nothing allows. The
 /// group's creator may also release the name of someone who joined, online only. Each person shows their balance.
@@ -61,9 +66,7 @@ struct MembersSections: View {
     var body: some View {
         if state.isLoaded {
             Section {
-                HStack(spacing: 12) {
-                    Image(systemName: "link")
-                        .foregroundStyle(Palette.accent)
+                HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Invite link")
                         Group {
@@ -78,18 +81,29 @@ struct MembersSections: View {
                         .lineLimit(1)
                         .truncationMode(.middle)
                     }
-                    Spacer()
+                    Spacer(minLength: 0)
                     #if os(macOS)
                     addPersonButton
                         .buttonStyle(.glass)
                         .buttonBorderShape(.capsule)
                     #endif
-                    Button("Share") {
+                    // Nothing to copy until the group's first sync brings the code; Share still opens Invite
+                    Button("Copy link", systemImage: "doc.on.doc") {
+                        model.send(MembersUiEventOnLinkCopyClicked.shared)
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .disabled(!state.canCopyLink)
+                    .help("Copy link")
+                    Button("Share", systemImage: "square.and.arrow.up") {
                         model.send(MembersUiEventOnShareClicked.shared)
                     }
+                    .labelStyle(.iconOnly)
                     .buttonStyle(.glassProminent)
                     .prominentLabel()
-                    .buttonBorderShape(.capsule)
+                    .buttonBorderShape(.circle)
+                    .help("Share")
                     .invitePopover(host: host)
                 }
                 #if os(iOS)
@@ -181,11 +195,14 @@ private struct MembersOverlays: ViewModifier {
                 Text("Whoever joined as \(member.name) leaves the group. \(member.name)'s name, color and bills stay, and \(member.name) can be picked again through the group's link.")
             }
             // The count only grows on an action: `?? 0` keeps the model's arrival (nil to 0) from showing a toast.
-            .glassToast("Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0)
-            .glassToast(
-                "Couldn't release the name. Check your connection and try again.",
-                trigger: model?.releaseErrorCount ?? 0,
-            )
+            .glassToast([
+                GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model?.changeErrorCount ?? 0),
+                GlassToastMessage(
+                    text: "Couldn't release the name. Check your connection and try again.",
+                    trigger: model?.releaseErrorCount ?? 0,
+                ),
+                GlassToastMessage(text: "Link copied", trigger: model?.linkCopiedCount ?? 0),
+            ])
     }
 
     /// Dismissing the sheet (a swipe down, Esc) closes the editor in the ViewModel too.

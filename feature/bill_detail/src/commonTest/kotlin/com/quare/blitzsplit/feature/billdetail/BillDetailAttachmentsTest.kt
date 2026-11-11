@@ -1650,6 +1650,7 @@ class BillDetailAttachmentsTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private var nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()

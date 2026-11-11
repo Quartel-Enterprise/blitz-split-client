@@ -208,10 +208,19 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     one you used last comes marked", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones
     included, the most recent activity first as on the home (`ObserveGroupsByActivity`), each with "6 people", one
     marked until "Continue" (`SplitBillUiState.groupSelection`); closing it keeps the marked group's bill. With a
-    single group it goes straight to the bill, and a sync bringing a second one never asks later. A new bill's group
-    reopens it from the form on every platform, once there is another group (`SplitBillUiState.canChangeGroup`):
-    Android's chip, iOS's "Group" row, the web's "Group" field and a pop-up button on the Mac, which picks in one go
-    (the Mac's sheet only asks from the home); "Edit bill" keeps its group. Another group keeps what was typed
+    single group it goes straight to the bill, and a sync bringing a second one never asks later. The bill's group
+    opens that group's screen (its Expenses) over the form (beta feedback; the details below were settled while
+    Pierre was away, see PR #299: `OnOpenGroupClicked`, `SplitBillUiState.canOpenGroup`): Android's chip, iOS's
+    "Group" row, the web's "Group" field and the Mac's "Open group" link beside it, a new bill and "Edit bill" alike,
+    never while the bill saves or a receipt is read. Back comes to the form with what was typed: Android keeps its
+    entry under the group, iOS and the Mac push the group inside the bill's sheet (as the category map), with what it
+    opens but a screen that is only ever a sheet, the web draws it over the form, which stays mounted. The group's
+    "Split a bill" there comes back to a new bill's form instead of opening a second one ("Edit bill" opens a new
+    bill over the group), and a screen already on the stack (the bill being edited, opened again from its group) goes
+    back to it rather than stacking twice. A new bill's group is changed
+    apart from it, once there is another group (`SplitBillUiState.canChangeGroup`): "Change" beside Android's chip,
+    iOS's row and the web's field reopens "Split in which group?", and the Mac's pop-up button picks in one go (the
+    Mac's sheet only asks from the home); "Edit bill" keeps its group. Another group keeps what was typed
     (amount, description, when), but who paid and the split start over with its people: you pay, Equal among everyone.
     A sync deleting the group the bill was moved to sends it back to the group it was opened for, the same way, and
     closes Split a bill only once that one is gone too.

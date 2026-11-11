@@ -29,7 +29,7 @@
     <string name="contacts_hidden_meta">%s · rozliczone</string>
     <string name="contacts_hidden_show">Pokaż</string>
     <string name="contacts_hidden_show_person">Pokaż w Kontaktach: %s</string>
-    <string name="contacts_hidden_note">Ukryte osoby zostają w grupach. Same wracają na listę, jeśli dołączą z tobą do nowego konta.</string>
+    <string name="contacts_hidden_note">Ukryte osoby zostają w grupach. Same wracają na listę, jeśli dołączą z tobą do nowego wydatku.</string>
     <string name="contacts_empty_title">Nikogo tu jeszcze nie ma</string>
     <string name="contacts_empty_body">Każdy, kto ma z tobą wspólną grupę, pojawi się tutaj, z saldem każdej osoby.</string>
     <string name="contacts_search_clear">Wyczyść wyszukiwanie</string>
@@ -90,7 +90,7 @@
     <string name="contacts_menu_hide_blocked">Tylko przy zerowym saldzie. Najpierw się rozlicz.</string>
     <string name="contacts_menu_show">Pokaż w Kontaktach</string>
     <string name="contacts_hide_title">Ukryć kontakt %s?</string>
-    <string name="contacts_hide_message">%1$s zniknie z twojej listy Kontaktów. Ta osoba zostaje w grupach (%2$s) i sama wróci, jeśli dołączy z tobą do nowego konta. Możesz ją znowu pokazać w sekcji Ukryte.</string>
+    <string name="contacts_hide_message">%1$s zniknie z twojej listy Kontaktów. Ta osoba zostaje w grupach (%2$s) i sama wróci, jeśli dołączy z tobą do nowego wydatku. Możesz ją znowu pokazać w sekcji Ukryte.</string>
     <string name="contacts_hide_confirm">Ukryj</string>
     <string name="contacts_add_title">Dodaj do grupy: %s</string>
     <plurals name="contacts_add_members">

@@ -10,7 +10,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     column included (Pierre's call, beta feedback 16), and "Delete account" stays the last thing of its column, only
     the legal footer under it; on a book (a tabletop lying down alike) a half each, the 72 dp
     gap centered on the hinge, as Edit profile and the keys do, and its dialogs (Sign out,
-    Disconnect, "Erase profile and sign out") and Delete account open in the right half. Edit profile is full screen on
+    "Erase profile and sign out") and Delete account open in the right half. Edit profile is full screen on
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
     name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Save (✓). The Mac's profile is
     Settings (⌘,), the app's Settings window, never pushed: whatever opens the profile (any tab's avatar, "Protect your access", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
@@ -37,6 +37,10 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     recovery code yet, `ProfileUiState.erasesProfileOnSignOut`) reads "Erase profile and sign out", whose dialog says
     it is gone for good; one the server never saw (`isLocalOnly`) has no Delete account either, while an anonymous
     account whose code isn't made yet keeps it.
+  - "Account and sync"'s Google or Apple row only says which account it is ("Connected", and the masked email): it
+    opens nothing and nothing disconnects the Google or Apple account from the user (Pierre's call, beta feedback).
+    Who wants it gone signs out or deletes the account. The server's `unlink-identity` function stays for the
+    installs that still offer it, until the API drops it.
   - The profile ends in a discreet, centered legal footer, as Bible Planner's (Pierre's call, beta feedback 18):
     "Privacy Policy • Terms of Service", two links opening https://blitzsplit.com/privacy and
     https://blitzsplit.com/terms (`LegalLinks`, the site's English routes) in the browser, and "Version X" under them

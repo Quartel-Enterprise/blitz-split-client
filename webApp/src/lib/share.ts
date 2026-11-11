@@ -9,14 +9,19 @@ export function copyLink(link: string, copied?: string) {
     .catch(() => toast(t('invite_copyFailed')))
 }
 
+/** The link to the clipboard with a "Link copied" toast, for a button that can't say "Copied" itself. */
+export function copyLinkConfirmed(link: string) {
+  navigator.clipboard
+    .writeText(link)
+    .then(() => toast(t('invite_linkCopied')))
+    .catch(() => toast(t('invite_copyFailed')))
+}
+
 /** The browser's share sheet with `text` where there is one (phones, Safari); otherwise `link` goes to the clipboard. */
 export function shareOrCopy(text: string, link: string) {
   if (typeof navigator.share === 'function') {
     navigator.share({ text }).catch(() => {})
     return
   }
-  navigator.clipboard
-    .writeText(link)
-    .then(() => toast(t('invite_linkCopied')))
-    .catch(() => toast(t('invite_copyFailed')))
+  copyLinkConfirmed(link)
 }

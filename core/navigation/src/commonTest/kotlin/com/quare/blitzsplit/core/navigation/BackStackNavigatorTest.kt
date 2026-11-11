@@ -33,6 +33,20 @@ class BackStackNavigatorTest {
     }
 
     @Test
+    fun `GIVEN a route lower in the stack WHEN navigating to it THEN goes back to it`() {
+        // Given
+        prepareScenario(startRoute = Route.Groups)
+        navigator.navigate(Route.Profile)
+        navigator.navigate(Route.CategoryMap)
+
+        // When
+        navigator.navigate(Route.Profile)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN only the start route WHEN navigating back THEN keeps it`() {
         // Given
         prepareScenario(startRoute = Route.Welcome)
@@ -133,6 +147,7 @@ class BackStackNavigatorTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
         navigator.navigate(Route.GroupStats("trip"))
@@ -144,6 +159,7 @@ class BackStackNavigatorTest {
                 "flat",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -155,6 +171,7 @@ class BackStackNavigatorTest {
                     "flat",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -185,12 +202,14 @@ class BackStackNavigatorTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.MEMBERS,
+                isOverBill = false,
             ),
         )
         val group = Route.GroupDetail(
             "flat",
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
 
         // When

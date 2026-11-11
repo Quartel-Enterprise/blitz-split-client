@@ -170,6 +170,46 @@ targets:
         # signing lane (fastlane/Fastfile) sets production
         aps-environment: development
 
+  # The App Store screenshots (docs/store-listing-screenshots.md): launches the debug app seeded with the sample trip
+  # and captures each listing screen. Run by scripts/store-screenshots/capture-ios.sh, never by CI's build.
+  BoraRachar-iOS-StoreScreenshots:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: BoraRachar-iOS
+    settings:
+      base:
+        PRODUCT_NAME: BoraRacharStoreScreenshots
+        PRODUCT_MODULE_NAME: BoraRacharStoreScreenshots
+        PRODUCT_BUNDLE_IDENTIFIER: com.quare.blitzsplit.storescreenshots
+        TEST_TARGET_NAME: BoraRachar-iOS
+        TARGETED_DEVICE_FAMILY: "1,2"
+        # Only the app links the Shared framework
+        OTHER_LDFLAGS: []
+        FRAMEWORK_SEARCH_PATHS: []
+        SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
+
+  # The same capture on the Mac app: its window, at StoreScreenshotsRun.windowSize. Run by
+  # scripts/store-screenshots/capture-mac.sh.
+  BoraRachar-macOS-StoreScreenshots:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: BoraRachar-macOS
+    settings:
+      base:
+        PRODUCT_NAME: BoraRacharMacStoreScreenshots
+        PRODUCT_MODULE_NAME: BoraRacharMacStoreScreenshots
+        PRODUCT_BUNDLE_IDENTIFIER: com.quare.blitzsplit.macstorescreenshots
+        TEST_TARGET_NAME: BoraRachar-macOS
+        OTHER_LDFLAGS: []
+        FRAMEWORK_SEARCH_PATHS: []
+        SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
+
   BoraRachar-macOS:
     templates: [BoraRachar]
     platform: macOS
@@ -207,3 +247,21 @@ schemes:
         BoraRachar-macOS: all
     run:
       config: Debug
+  BoraRachar-iOS-StoreScreenshots:
+    build:
+      targets:
+        BoraRachar-iOS: all
+        BoraRachar-iOS-StoreScreenshots: [test]
+    test:
+      config: Debug
+      targets:
+        - BoraRachar-iOS-StoreScreenshots
+  BoraRachar-macOS-StoreScreenshots:
+    build:
+      targets:
+        BoraRachar-macOS: all
+        BoraRachar-macOS-StoreScreenshots: [test]
+    test:
+      config: Debug
+      targets:
+        - BoraRachar-macOS-StoreScreenshots

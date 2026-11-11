@@ -114,11 +114,6 @@
     <string name="profile_export_detail">Un archivo JSON con tu perfil y tus claves</string>
     <string name="profile_delete_account">Eliminar cuenta y datos</string>
     <string name="profile_delete_account_detail">Elimina tu cuenta de Blitz Split. Esta acción no se puede deshacer.</string>
-    <string name="profile_unlink_title">¿Desconectar tu cuenta de %1$s?</string>
-    <string name="profile_unlink_body">Sigues usando Blitz Split en este dispositivo, sin cuenta. Tus grupos se quedan aquí y la sincronización pasa a usar un ID anónimo. A continuación te mostramos tu código de recuperación: guárdalo para no perder el acceso.</string>
-    <string name="profile_unlink_offline">Requiere conexión a internet.</string>
-    <string name="profile_unlink_failed">No se pudo desconectar. Inténtalo de nuevo.</string>
-    <string name="profile_unlink_confirm">Desconectar</string>
     <string name="profile_bitcoin_in_sats">Bitcoin en satoshis</string>
     <string name="profile_bitcoin_in_sats_detail">Muestra e ingresa los montos de bitcoin en sats (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Mapa de categorías</string>
