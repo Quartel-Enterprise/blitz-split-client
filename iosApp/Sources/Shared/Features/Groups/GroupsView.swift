@@ -125,7 +125,6 @@ struct GroupsView: View {
         .navigationTitle("Groups")
         #if os(iOS)
         .tabTitleDisplayMode()
-        .phoneMinimizesNavigationBar()
         .toolbar {
             TabTitle(title: String(localized: "Groups", bundle: .appLanguage))
             TabTrailingItems(
