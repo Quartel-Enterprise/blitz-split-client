@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
+import com.quare.blitzsplit.core.utils.toAppLanguageUppercase
 
 data class EditProfileUiState(
     /*
@@ -32,7 +33,7 @@ data class EditProfileUiState(
     val accountPhotoUrl: String?,
 ) {
     val avatarInitial: String
-        get() = name.trim().firstOrNull()?.uppercase() ?: "?"
+        get() = name.trim().firstOrNull()?.toString()?.toAppLanguageUppercase() ?: "?"
 
     val nameLength: Int
         get() = name.length

@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.toImageUrl
+import com.quare.blitzsplit.core.utils.toAppLanguageUppercase
 
 data class ProfilePhotoUiState(
     // Why: the saved profile was read; until then the viewer draws no avatar, never "?" on the default color.
@@ -22,7 +23,7 @@ data class ProfilePhotoUiState(
     val accountPhotoUrl: String?,
 ) {
     val avatarInitial: String
-        get() = displayName.trim().firstOrNull()?.uppercase() ?: "?"
+        get() = displayName.trim().firstOrNull()?.toString()?.toAppLanguageUppercase() ?: "?"
 
     val photoUrl: String?
         get() = photo?.toImageUrl()

@@ -33,13 +33,10 @@
         <item quantity="one">%s entrou no grupo</item>
         <item quantity="other">%s entraram no grupo</item>
     </plurals>
-    <!-- Why: shown only once someone joined, so "one" is never 0. -->
     <string name="default_split_start_equal_one">Já entra na divisão</string>
     <string name="default_split_start_equal_other">Já entram na divisão</string>
-    <!-- Why: shown only once someone joined, so "one" is never 0. -->
     <string name="default_split_start_shares_one">Começa com 1 parte</string>
     <string name="default_split_start_shares_other">Cada um começa com 1 parte</string>
-    <!-- Why: shown only once someone joined, so "one" is never 0. -->
     <string name="default_split_start_percent_one">Começa com 0%</string>
     <string name="default_split_start_percent_other">Cada um começa com 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; ajuste se precisar.</string>

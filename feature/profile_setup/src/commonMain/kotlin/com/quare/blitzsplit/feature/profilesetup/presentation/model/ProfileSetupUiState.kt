@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.domain.model.DisplayNameRules
+import com.quare.blitzsplit.core.utils.toAppLanguageUppercase
 
 data class ProfileSetupUiState(
     val name: String,
@@ -20,7 +21,7 @@ data class ProfileSetupUiState(
     val isSaving: Boolean,
 ) {
     val avatarInitial: String
-        get() = name.trim().firstOrNull()?.uppercase() ?: "?"
+        get() = name.trim().firstOrNull()?.toString()?.toAppLanguageUppercase() ?: "?"
 
     // Why: the UIs put the limits in their copy, so the rule and the messages can't drift apart.
     val nameMinLength: Int

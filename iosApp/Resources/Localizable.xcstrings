@@ -118354,7 +118354,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ paie à %2$@ ce qui était dû à %3$@."
+            "value" : "%1$@ paie à %2$@ ce qu’il devait à %3$@."
           }
         },
         "id" : {
