@@ -26,6 +26,7 @@ internal fun groupsBarsOf(
     state: GroupsUiState,
     onEvent: (GroupsUiEvent) -> Unit,
     usesRail: Boolean,
+    collapsedFraction: () -> Float,
 ): HomeBars {
     val onSplitBillClick = { onEvent(GroupsUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     return HomeBars(
@@ -34,5 +35,6 @@ internal fun groupsBarsOf(
         onTabClick = { tab -> eventOf(tab, state.isSearching)?.let(onEvent) },
         onSearchClick = { onEvent(GroupsUiEvent.OnSearchOpened) },
         railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
+        collapsedFraction = collapsedFraction,
     )
 }
