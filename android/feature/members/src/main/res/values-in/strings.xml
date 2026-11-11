@@ -3,6 +3,7 @@
     <string name="members_link_title">Tautan undangan</string>
     <string name="members_link_pending">Belum dibuat</string>
     <string name="members_share">Bagikan</string>
+    <string name="members_link_copied">Disalin</string>
     <string name="members_me">%s (kamu)</string>
     <string name="members_status_this_device">Perangkat ini</string>
     <string name="members_status_joined">Sudah bergabung</string>

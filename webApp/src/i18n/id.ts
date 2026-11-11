@@ -305,6 +305,7 @@ export const id: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'Siapa pun yang membuka tautan ini langsung bergabung sebagai {name}, tanpa memilih dari daftar, dan langsung melihat bagiannya sebesar {amount} di {count} tagihan yang sudah ditambahkan. Hanya berlaku sekali.',
   members_personalLinkLabel: 'Tautan pribadi',
   members_copy: 'Salin',
+  members_copyLink: 'Salin tautan',
   members_copied: 'Disalin',
   members_close: 'Tutup',
   members_personalShare: 'Bagikan ke {name}',

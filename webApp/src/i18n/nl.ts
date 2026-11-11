@@ -307,6 +307,7 @@ export const nl: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'Wie deze link opent, wordt direct lid als {name}, zonder uit de lijst te kiezen, en ziet meteen zijn of haar deel van {amount} in de {count} uitgaven die al zijn toegevoegd. Hij werkt één keer.',
   members_personalLinkLabel: 'Persoonlijke link',
   members_copy: 'Kopiëren',
+  members_copyLink: 'Link kopiëren',
   members_copied: 'Gekopieerd',
   members_close: 'Sluiten',
   members_personalShare: 'Delen met {name}',

@@ -41,6 +41,8 @@ export function useMembers(route: JsRoute): { presenter: MembersPresenter | null
   useActions(presenter, (p, onAction: (action: JsMembersAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'copy' && action.link) {
       navigator.clipboard.writeText(action.link).catch(() => toast(t('members_copyFailed')))
+    } else if (action.type === 'copy-group' && action.link) {
+      copyConfirmed(action.link)
     } else if (action.type === 'share-personal' && action.link) {
       sharePersonalLink(action.link, action.memberName ?? '', action.groupName ?? '')
     } else if (action.type === 'change-error') {
@@ -60,23 +62,34 @@ export function useMembers(route: JsRoute): { presenter: MembersPresenter | null
 export function MembersTab({ presenter, state }: { presenter: MembersPresenter; state: JsMembersState }) {
   return (
     <>
-      {/* Why: "Adicionar pessoa" (someone without the app, by name) beside the link whoever has it joins through; the
-          group's main button stays "Rachar conta" on every tab. A phone puts both buttons under the link. */}
-      <section className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3 pl-4">
-        <div className="flex min-w-0 flex-1 basis-56 items-center gap-3">
-          <Link2 className="size-5 shrink-0 text-muted-foreground" />
+      {/* Why: copy and "Compartilhar" (whoever has the app joins through the link) as icons beside the link, and
+          "Adicionar pessoa" (someone without the app, by name) before them; the group's main button stays "Rachar
+          conta" on every tab. A phone puts "Adicionar pessoa" under the link, at the card's end. */}
+      <section className="@container rounded-xl border bg-card p-2 pl-4">
+        <div className="flex flex-wrap items-center gap-x-1 gap-y-2">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold">{t('members_linkTitle')}</p>
             <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
           </div>
-        </div>
-        <div className="ml-auto flex flex-wrap justify-end gap-2">
-          <Button variant="outline" onClick={() => presenter.add()}>
-            <UserPlus />
-            {t('members_add')}
+          <div className="order-last flex w-full justify-end @md:order-none @md:mr-1 @md:w-auto">
+            <Button variant="outline" onClick={() => presenter.add()}>
+              <UserPlus />
+              {t('members_add')}
+            </Button>
+          </div>
+          {/* Why: nothing to copy until the group's first sync brings the code; Compartilhar still opens Convidar. */}
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={!state.canCopyLink}
+            onClick={() => presenter.copyLink()}
+            aria-label={t('members_copyLink')}
+            title={t('members_copyLink')}
+          >
+            <Copy />
           </Button>
-          <Button variant="secondary" onClick={() => presenter.share()}>
-            {t('members_share')}
+          <Button size="icon" onClick={() => presenter.share()} aria-label={t('members_share')} title={t('members_share')}>
+            <Share2 />
           </Button>
         </div>
       </section>
@@ -370,6 +383,11 @@ function sharePersonalLink(link: string, memberName: string, groupName: string) 
     navigator.share({ text }).catch(() => {})
     return
   }
+  copyConfirmed(link)
+}
+
+/** The link to the clipboard with a "Link copied" toast, for a button that can't say "Copied" itself. */
+function copyConfirmed(link: string) {
   navigator.clipboard
     .writeText(link)
     .then(() => toast(t('members_linkCopied')))

@@ -3,6 +3,7 @@
     <string name="members_link_title">Link de convite</string>
     <string name="members_link_pending">Ainda não foi criado</string>
     <string name="members_share">Compartilhar</string>
+    <string name="members_link_copied">Copiado</string>
     <string name="members_me">%s (você)</string>
     <string name="members_status_this_device">Este aparelho</string>
     <string name="members_status_joined">Entrou</string>

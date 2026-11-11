@@ -307,6 +307,7 @@ export const de: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'Wer diesen Link öffnet, tritt direkt als {name} bei, ohne aus der Liste zu wählen, und sieht schon den eigenen Anteil von {amount} an den {count} bisher eingetragenen Ausgaben. Er funktioniert einmal.',
   members_personalLinkLabel: 'Persönlicher Link',
   members_copy: 'Kopieren',
+  members_copyLink: 'Link kopieren',
   members_copied: 'Kopiert',
   members_close: 'Schließen',
   members_personalShare: 'Mit {name} teilen',

@@ -306,6 +306,7 @@ export const fr: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'Quiconque ouvre ce lien rejoint directement en tant que {name}, sans choisir dans la liste, et voit déjà sa part de {amount} dans les {count} dépenses ajoutées jusqu’ici. Il ne fonctionne qu’une fois.',
   members_personalLinkLabel: 'Lien personnel',
   members_copy: 'Copie',
+  members_copyLink: 'Copie le lien',
   members_copied: 'Copié',
   members_close: 'Ferme',
   members_personalShare: 'Partage avec {name}',

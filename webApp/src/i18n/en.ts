@@ -304,6 +304,7 @@ export const en = {
   members_personalMessageBillOther: 'Whoever opens this link joins straight in as {name}, without picking from the list, and already sees their {amount} share in the {count} bills added so far. It works once.',
   members_personalLinkLabel: 'Personal link',
   members_copy: 'Copy',
+  members_copyLink: 'Copy link',
   members_copied: 'Copied',
   members_close: 'Close',
   members_personalShare: 'Share with {name}',

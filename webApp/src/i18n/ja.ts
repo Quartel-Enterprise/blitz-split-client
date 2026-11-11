@@ -306,6 +306,7 @@ export const ja: Record<MessageKey, string> = {
   members_personalMessageBillOther: 'このリンクを開いた人は、リストから選ばずに{name}としてそのまま参加し、これまでに追加された{count}件の支出の負担額{amount}がすぐに表示されます。1回だけ使えます。',
   members_personalLinkLabel: '個人リンク',
   members_copy: 'コピー',
+  members_copyLink: 'リンクをコピー',
   members_copied: 'コピーしました',
   members_close: '閉じる',
   members_personalShare: '{name}に共有',

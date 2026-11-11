@@ -1,8 +1,6 @@
 package com.quare.blitzsplit.android.feature.members
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,11 +10,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.PersonAdd
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -60,6 +60,7 @@ internal fun LazyListScope.memberItems(
     item(key = "members-link") {
         LinkCard(
             displayLink = state.displayLink,
+            canCopyLink = state.canCopyLink,
             onEvent = onEvent,
             modifier = Modifier.padding(
                 start = 16.dp,
@@ -95,12 +96,13 @@ internal fun LazyListScope.memberItems(
 }
 
 /*
- * Why: the group's link with its two ways in, "Adicionar pessoa" (someone without the app, by name) beside
- * "Compartilhar" (whoever has it joins through the link), under the link, where a phone has the room for them.
+ * Why: the group's link with its two ways in: copy and Compartilhar (whoever has the app joins through the link) as
+ * icons beside it, and "Adicionar pessoa" (someone without the app, by name) under it, at the card's end.
  */
 @Composable
 private fun LinkCard(
     displayLink: String?,
+    canCopyLink: Boolean,
     onEvent: (MembersUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -112,21 +114,20 @@ private fun LinkCard(
         Column(
             modifier = Modifier.padding(
                 start = 16.dp,
-                end = 12.dp,
-                top = 12.dp,
+                end = 8.dp,
+                top = 8.dp,
                 bottom = 12.dp,
             ),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.End,
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Link,
-                    contentDescription = null,
-                )
-                Column(modifier = Modifier.weight(1f)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 4.dp),
+                ) {
                     Text(
                         text = stringResource(R.string.members_link_title),
                         style = MaterialTheme.typography.titleSmall,
@@ -138,26 +139,38 @@ private fun LinkCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-            }
-            // Why: Compartilhar wraps under Adicionar pessoa when a narrow phone or a large font has no room for both.
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                OutlinedButton(onClick = { onEvent(MembersUiEvent.OnAddClicked) }) {
+                // Why: nothing to copy until the group's first sync brings the code; Compartilhar still opens Invite.
+                IconButton(
+                    onClick = { onEvent(MembersUiEvent.OnLinkCopyClicked) },
+                    enabled = canCopyLink,
+                ) {
                     Icon(
-                        imageVector = Icons.Outlined.PersonAdd,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(ButtonDefaults.IconSize),
+                        imageVector = Icons.Outlined.ContentCopy,
+                        contentDescription = stringResource(R.string.members_personal_copy),
                     )
-                    Text(stringResource(R.string.members_add))
                 }
-                Button(onClick = { onEvent(MembersUiEvent.OnShareClicked) }) {
-                    Text(stringResource(R.string.members_share))
+                FilledIconButton(onClick = { onEvent(MembersUiEvent.OnShareClicked) }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = stringResource(R.string.members_share),
+                    )
                 }
+            }
+            OutlinedButton(
+                onClick = { onEvent(MembersUiEvent.OnAddClicked) },
+                modifier = Modifier.padding(
+                    top = 4.dp,
+                    end = 4.dp,
+                ),
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.PersonAdd,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(ButtonDefaults.IconSize),
+                )
+                Text(stringResource(R.string.members_add))
             }
         }
     }

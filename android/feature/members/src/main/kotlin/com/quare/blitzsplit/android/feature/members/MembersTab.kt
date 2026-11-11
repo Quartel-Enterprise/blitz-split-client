@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.members
 
+import android.os.Build
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ fun rememberMembersTab(
     val resources = LocalResources.current
     val changeError = stringResource(R.string.members_change_error)
     val releaseError = stringResource(R.string.members_release_error)
+    val copied = stringResource(R.string.members_link_copied)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
@@ -45,6 +47,14 @@ fun rememberMembersTab(
                 MembersUiAction.ShowReleaseError -> showReplacingSnackbar(snackbarHostState, releaseError)
 
                 is MembersUiAction.CopyLink -> context.copyLink(action.link)
+
+                is MembersUiAction.CopyGroupLink -> {
+                    context.copyLink(action.link)
+                    // Why: Android 13 and later confirm what was copied themselves.
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        showReplacingSnackbar(snackbarHostState, copied)
+                    }
+                }
 
                 is MembersUiAction.SharePersonalLink -> context.shareText(
                     resources.getString(
