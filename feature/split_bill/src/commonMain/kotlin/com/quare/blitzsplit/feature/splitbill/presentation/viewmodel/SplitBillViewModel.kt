@@ -372,6 +372,8 @@ class SplitBillViewModel(
                     hasPickedSplit = true
                     duplicatedCategoryId = expense.categoryId
                     fill(group, expense.copy(spentAt = currentTimeMillis()))
+                    // Why: now has moved on since the form opened, so the pickers' limit reaches the copy's time.
+                    uiState.update { it.withSpentAtLimitRefreshed(currentTimeMillis(), currentTimeZone()) }
                 }
                 show(group)
             }

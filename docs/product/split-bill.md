@@ -30,8 +30,8 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     Picking a date never chains into the clock and keeps the bill's time of day, which is the time it opened at
     until the time is changed, so a new bill on another day is that day at the current time
     (`OnSpentDayPicked`); a later time than now on today's date becomes now. The time has its own control (`OnSpentTimeOpened`,
-    `OnSpentTimePicked`): the time on the row, opening the clock on Android, iOS's time picker beside the date, the
-    Mac's field, the web's time input. Never after now: a later time today becomes now. "Edit bill" keeps the time
+    `OnSpentTimePicked`): Android's clock button at the end of the row, opening the time picker, iOS's "Time" row
+    with its picker under the date, the Mac's field, the web's time input. "Edit bill" keeps the time
     the bill was saved with. The form asks what it was before how much (Pierre's call, beta feedback
     10): "Description" with its category's icon and the line saying why, then "Amount", in every layout, a new bill
     opening on the description. A bill is 0.01 to 100 million in its own currency (but the bitcoin, ether and rupiah

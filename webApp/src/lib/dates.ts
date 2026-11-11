@@ -36,10 +36,13 @@ export function formatDayLabel(dayStartMillis: number, relativeDay: string): str
 
 /** "Quando": "Hoje, 28 de out. · 21:30", "Ontem, 27 de out. · 21:30" or "Sex., 24 de out. · 21:30". */
 export function formatWhen(millis: number, relativeDay: string): string {
-  const time = formatTime(millis)
-  if (relativeDay === 'today') return `${t('date_todayOn', { date: dayMonthFormat.format(millis) })} · ${time}`
-  if (relativeDay === 'yesterday') return `${t('date_yesterdayOn', { date: dayMonthFormat.format(millis) })} · ${time}`
-  return `${weekdayDate(millis)} · ${time}`
+  const day =
+    relativeDay === 'today'
+      ? t('date_todayOn', { date: dayMonthFormat.format(millis) })
+      : relativeDay === 'yesterday'
+        ? t('date_yesterdayOn', { date: dayMonthFormat.format(millis) })
+        : weekdayDate(millis)
+  return `${day} · ${formatTime(millis)}`
 }
 
 /** A bill's day and time on its own page: "Hoje, 14:30", "Ontem, 21:10" or "27 de out., 21:10". */

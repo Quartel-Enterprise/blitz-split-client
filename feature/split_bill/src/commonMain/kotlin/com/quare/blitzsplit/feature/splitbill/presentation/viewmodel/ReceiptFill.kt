@@ -6,8 +6,6 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 
 /*
  * Why: what a receipt read fills in (7.1e): the amount, the place as the description and the day it was printed,
@@ -34,7 +32,7 @@ internal fun SplitBillUiState.withReceiptRead(
     )
     val date = reading.date ?: return filled
     // Why: a day printed without its time keeps the time "Quando" had; a later time today becomes now.
-    val time = reading.time ?: Instant.fromEpochMilliseconds(spentAt).toLocalDateTime(timeZone).time
+    val time = reading.time ?: return filled.withSpentDayPicked(date, now, timeZone)
     val printedAt = LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds()
     return filled.withSpentAt(printedAt, now, timeZone)
 }

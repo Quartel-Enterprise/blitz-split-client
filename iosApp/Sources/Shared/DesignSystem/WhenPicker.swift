@@ -130,8 +130,8 @@ struct MacWhenField: View {
         }
     }
 }
-/// A bill's "When:" on the Mac (beta feedback): a button with its date, which opens the calendar in a popover, and a
-/// time field beside it.
+/// A bill's "When:" on the Mac (beta feedback): a button with its date and time, which opens the calendar in a popover,
+/// and a time field beside it.
 struct MacBillWhenField: View {
     let millis: Int64
     let relativeDay: RelativeDay

@@ -1,7 +1,7 @@
 import type { JsBillHistoryChange, JsBillHistoryEntry, JsBillHistoryPart } from 'blitzsplit-shared'
 import { t, verbForYou, type MessageKey } from '@/i18n'
 import { categoryName } from '@/lib/categories'
-import { formatShortDate, formatTime } from '@/lib/dates'
+import { formatDayTime } from '@/lib/dates'
 import { payerNamesText } from '@/lib/payers'
 
 type Money = (minor: number) => string
@@ -148,7 +148,7 @@ function quoted(text: string | null | undefined): string {
 }
 
 function dateOrDash(millis: number | null | undefined): string {
-  return millis != null ? `${formatShortDate(millis)}, ${formatTime(millis)}` : '—'
+  return millis != null ? formatDayTime(millis, 'other') : '—'
 }
 
 // Why: "Bruno → Ana e Bruno"; someone no longer in the group is "Ex-membro".
