@@ -209,3 +209,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     action sheet on iPhone, an alert on iPad and a sheet on the Mac window, the web's AlertDialog, in every language
     the app ships. The web also warns before the tab closes or reloads (`beforeunload`) while any form has unsaved
     input. Restoring or deleting the account starts the app over and never asks.
+    ⌘R) and the web; the Mac's and the web's Home and Groups have no refresh of their own. The first download's chip
+    stays: it is the only place that says "Syncing… 3 of 7 groups", the bar under it has no text. Profile's "Account
+    and sync" row follows the same rule (`ProfileSyncStatus`): "Syncing…" only during the first full sync and the
+    retry, the row at rest otherwise, "Offline" and "No response from the server" as they were.
+    Activity's "Syncing…" only shows while a new device waits for the feed's first page.
