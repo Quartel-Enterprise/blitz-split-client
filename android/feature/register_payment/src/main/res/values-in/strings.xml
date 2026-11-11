@@ -64,7 +64,7 @@
     <string name="register_payment_simplified_new_pays_you">Utang disederhanakan: %1$s membayar ke kamu yang tadinya dia utang ke %2$s.</string>
     <string name="register_payment_simplified_grown">Utang disederhanakan: termasuk utang %1$s ke %2$s.</string>
     <string name="register_payment_simplified_grown_you">Utang disederhanakan: termasuk utangmu ke %s.</string>
-    <string name="register_payment_you_lowercase">kamu</string>
+    <string name="register_payment_you_owed">kamu</string>
     <string name="register_payment_simplify_someone">Seseorang</string>
     <string name="register_payment_simplify_on_paid">%1$s baru saja menyederhanakan utang. Kamu tidak lagi berutang ke %2$s di %3$s.</string>
     <string name="register_payment_simplify_off_paid">%1$s baru saja menonaktifkan Sederhanakan utang. Kamu tidak lagi berutang ke %2$s di %3$s.</string>

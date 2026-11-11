@@ -53,14 +53,14 @@ extension BillCopy {
 
     /// The viewer's "Ana attached it yesterday at 10:40 PM", or "Bruno scanned the receipt today at 9:10 PM".
     static func attached(_ attachment: BillAttachmentTile) -> String {
-        guard attachment.isAddedByMe else { return attachedText(attachment, who: adder(attachment)) }
+        let isMe = attachment.isAddedByMe
         // The user as the subject of the verb, "Tu" where a list says "Toi"
-        let you = String(
+        let who = isMe ? String(
             localized: "You, who did it",
             bundle: .appLanguage,
             comment: "The user as the one who did something, before its verb",
-        )
-        return SecondPerson.sayingToActor(attachedText(attachment, who: you), name: you)
+        ) : adder(attachment)
+        return SecondPerson.sentence(attachedText(attachment, who: SecondPerson.actor), actor: who, actorIsMe: isMe)
     }
 
     private static func attachedText(_ attachment: BillAttachmentTile, who: String) -> String {

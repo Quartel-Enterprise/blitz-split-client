@@ -65,7 +65,7 @@
     <string name="register_payment_simplified_new_pays_you">Vereinfachte Schuld: %1$s zahlt dir den Betrag, der %2$s geschuldet war.</string>
     <string name="register_payment_simplified_grown">Vereinfachte Schuld: enthält, was %1$s %2$s geschuldet hat.</string>
     <string name="register_payment_simplified_grown_you">Vereinfachte Schuld: enthält, was du %s geschuldet hast.</string>
-    <string name="register_payment_you_lowercase">dir</string>
+    <string name="register_payment_you_owed">dir</string>
     <string name="register_payment_simplify_someone">Jemand</string>
     <string name="register_payment_simplify_on_paid">%1$s hat gerade die Schulden vereinfacht. Du schuldest %2$s in %3$s nichts mehr.</string>
     <string name="register_payment_simplify_off_paid">%1$s hat gerade „Schulden vereinfachen“ ausgeschaltet. Du schuldest %2$s in %3$s nichts mehr.</string>

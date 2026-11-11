@@ -55,7 +55,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     Request saying "instead of paying Bruno you pay me directly; your total didn't change", 13.6). Record payment
     says why a pair it made or grew is there ("Simplified debt: Diego pays you what they owed Bruno.", 13.5), with its
     own sentence when the user pays, receives or had the debt that grew, and the user among whom the payer owed in
-    the form "owed" takes ("lo que debía a ti", "der dir geschuldet war", "zamiast płacić: tobie"; Turkish lists them
+    the form "owed" takes ("lo que antes era para ti", "der dir geschuldet war", "zamiast płacić: tobie"; Turkish lists them
     after "önceki alacaklı:"),
     and a pair that owes nothing only because the switch flipped while it was open stays with "I paid anyway", which records what was owed (13.5c, a pair of one group). Activity's `simplify_debts_changed` (People and
     groups) says "7 payments became 5. Now Diego pays you R$ 64, and Ana no longer owes you." with "See changes" of

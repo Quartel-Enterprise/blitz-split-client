@@ -65,7 +65,7 @@
     <string name="register_payment_simplified_new_pays_you">Sadeleştirilmiş borç: %1$s, %2$s kişisine olan borcunu sana öder.</string>
     <string name="register_payment_simplified_grown">Sadeleştirilmiş borç: %1$s kişisinin önceki borcunu da içerir; alacaklı: %2$s.</string>
     <string name="register_payment_simplified_grown_you">Sadeleştirilmiş borç: %s kişisine olan borcunu da içerir.</string>
-    <string name="register_payment_you_lowercase">sen</string>
+    <string name="register_payment_you_owed">sen</string>
     <string name="register_payment_simplify_someone">Biri</string>
     <string name="register_payment_simplify_on_paid">%1$s borçları az önce sadeleştirdi. Artık %3$s grubunda %2$s kişisine borcun yok.</string>
     <string name="register_payment_simplify_off_paid">%1$s borç sadeleştirmeyi az önce kapattı. Artık %3$s grubunda %2$s kişisine borcun yok.</string>

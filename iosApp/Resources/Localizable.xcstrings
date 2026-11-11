@@ -118348,7 +118348,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ le paga a %2$@ lo que debía a %3$@."
+            "value" : "%1$@ le paga a %2$@ lo que antes era para %3$@."
           }
         },
         "fr" : {
@@ -118478,7 +118478,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "incluye lo que %1$@ debía a %2$@."
+            "value" : "incluye la deuda de %1$@ que antes era para %2$@."
           }
         },
         "fr" : {

@@ -284,7 +284,7 @@ function PaymentForm({
  * você." for one that grew (13.5).
  */
 function SimplifiedNote({ note, state }: { note: JsSimplifiedPairNote; state: JsRegisterPaymentState }) {
-  // Why: the user among whom the payer owed is the object of "owed": "lo que debía a ti", "der dir geschuldet war".
+  // Why: the user among whom the payer owed is the object of "owed": "lo que antes era para ti", "der dir geschuldet war".
   const insteadOf = formatNames(note.insteadOf.map((person) => (person.isMe ? t('registerPayment_youOwed') : simplifyName(person))))
   const payer = state.from ? simplifyName(state.from) : nameOrFormer(null)
   const receiver = state.to ? simplifyName(state.to) : nameOrFormer(null)

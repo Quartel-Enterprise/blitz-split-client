@@ -99,14 +99,6 @@ enum SecondPerson {
         return actor + " " + verbForYou(String(phrase)) + rest.dropFirst(phrase.count)
     }
 
-    /// A sentence already localized with the user's `name` first, its verb said to them: "Tú lo adjuntaste", "Tu as
-    /// joint la photo". A line with no verb right after the name ("Sen · bugün, 21:10 eklendi") stays as it is.
-    static func sayingToActor(_ text: String, name: String) -> String {
-        guard text.hasPrefix(name + " ") else { return text }
-        let rest = String(text.dropFirst(name.count + 1))
-        return rest.hasPrefix("·") ? text : name + " " + verbForYou(rest)
-    }
-
     /// The sentence as a string, with the names in.
     static func sentence(
         _ template: String,

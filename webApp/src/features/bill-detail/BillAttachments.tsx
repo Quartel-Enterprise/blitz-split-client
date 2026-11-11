@@ -6,7 +6,7 @@ import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
-import { t, verbForYou, wordGap } from '@/i18n'
+import { sayToActor, t, wordGap } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
@@ -224,15 +224,6 @@ function addedText(attachment: JsBillAttachment): string {
   return attachment.isAddedByMe ? sayToActor(text, name) : text
 }
 
-/**
- * "Tú lo adjuntaste", "Du hast es angehängt": the verb right after the user's name, said to them. A line with no verb
- * there ("Sen · bugün, 21:10 eklendi") stays as it is.
- */
-function sayToActor(text: string, name: string): string {
-  if (!text.startsWith(`${name} `)) return text
-  const rest = text.slice(name.length + 1)
-  return rest.startsWith('·') ? text : `${name} ${verbForYou(rest)}`
-}
 
 const extensions: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic' }
 

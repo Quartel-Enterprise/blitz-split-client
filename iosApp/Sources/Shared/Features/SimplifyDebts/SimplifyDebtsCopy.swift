@@ -38,7 +38,7 @@ enum SimplifyDebtsCopy {
         isMe ? String(localized: "you", bundle: .appLanguage) : PaymentCopy.name(name)
     }
 
-    /// The user among whom someone owed, as the object of "owed": "lo que debía a ti", "der dir geschuldet war".
+    /// The user among whom someone owed, as the object of "owed": "lo que antes era para ti", "der dir geschuldet war".
     private static var youOwed: String {
         String(
             localized: "you, whom they owed",

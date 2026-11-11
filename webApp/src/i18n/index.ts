@@ -167,6 +167,16 @@ export function verbForYou(verb: string): string {
 }
 
 /**
+ * A sentence already in the user's language with their `name` first, its verb said to them: "Tú lo adjuntaste", "Du
+ * hast es angehängt". A line with no verb right after the name ("Sen · bugün, 21:10 eklendi") stays as it is.
+ */
+export function sayToActor(text: string, name: string): string {
+  if (!text.startsWith(`${name} `)) return text
+  const rest = text.slice(name.length + 1)
+  return rest.startsWith('·') ? text : `${name} ${verbForYou(rest)}`
+}
+
+/**
  * Turkish puts the verb last, so every Turkish verb phrase ends with its simple past, before the colon that leads to the
  * object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the vowel ("böldü"
  * → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
