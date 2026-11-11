@@ -440,8 +440,8 @@ class AccountRepositoryImpl(
             userId = user.userId,
             provider = null,
             /*
-             * Why: Google or Apple gone from the same user means another device unlinked and showed the new code;
-             * issuing one here would replace it, so this device offers none.
+             * Why: Google or Apple gone from the same user means an older install unlinked it and showed the new
+             * code; issuing one here would replace it, so this device offers none.
              */
             recoveryCodePrompt = if (provider != null && userId == user.userId) {
                 RecoveryCodePrompt.SAVED.code
