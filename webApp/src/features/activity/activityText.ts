@@ -134,8 +134,7 @@ function personName(name: string | null | undefined, isMe: boolean): string {
 /** One side of a change, as its field writes it: an amount, a day, a split, the people who paid… */
 export function valueText(field: string, value: JsActivityValue): string {
   if (value.minor != null && value.currency) return formatMoney(value.minor, value.currency, value.fractionDigits)
-  // Why: a bill without a time shows its date alone.
-  if (value.millis != null) return value.hasTime ? `${formatShortDate(value.millis)}, ${formatTime(value.millis)}` : formatShortDate(value.millis)
+  if (value.millis != null) return `${formatShortDate(value.millis)}, ${formatTime(value.millis)}`
   if (field === 'split' || field === 'default_split') return splitModeLabel(value.code) || '—'
   if (field === 'type' && value.code) return groupTypeLabel(value.code)
   if (field === 'color' && value.code) return avatarColorLabel(value.code)

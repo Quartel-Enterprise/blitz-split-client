@@ -17,10 +17,10 @@ import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +39,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.payerNamesTextOf
-import com.quare.blitzsplit.android.designsystem.format.relativeDateTextOf
+import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -90,10 +90,10 @@ internal fun BillDetailsSection(
                 )
             }
         }
-        // Why: the row picks the date alone; its time, optional, is the button at its end (beta feedback).
+        // Why: the row picks the date and shows the time; the clock button at its end changes the time on its own.
         BillOptionRow(
             label = stringResource(R.string.split_bill_when),
-            value = relativeDateTextOf(
+            value = relativeDateTimeTextOf(
                 epochMillis = state.spentAt,
                 day = state.spentDay,
                 dates = dates,
@@ -105,7 +105,6 @@ internal fun BillDetailsSection(
             trailing = {
                 SpentTimeButton(
                     state = state,
-                    dates = dates,
                     onClick = onTimeClick,
                 )
             },
@@ -157,30 +156,20 @@ private fun StackedFacesRow(people: List<BillPerson>) {
     }
 }
 
-// Why: "Adicionar horário" while the bill has no time, else its time ("20:40"), both opening the clock.
+// Why: the clock opening the time picker, which the date picker never chains into (beta feedback).
 @Composable
 private fun SpentTimeButton(
     state: SplitBillUiState,
-    dates: DateTimeTextFormatter,
     onClick: () -> Unit,
 ) {
-    TextButton(
+    IconButton(
         onClick = onClick,
         enabled = !state.isFormLocked,
     ) {
-        if (state.hasSpentTime) {
-            Text(dates.toTimeText(state.spentAt))
-        } else {
-            Icon(
-                imageVector = Icons.Outlined.Schedule,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-            Text(
-                text = stringResource(R.string.split_bill_add_time),
-                modifier = Modifier.padding(start = 8.dp),
-            )
-        }
+        Icon(
+            imageVector = Icons.Outlined.Schedule,
+            contentDescription = stringResource(R.string.split_bill_change_time),
+        )
     }
 }
 

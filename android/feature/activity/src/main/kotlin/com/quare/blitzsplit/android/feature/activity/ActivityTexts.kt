@@ -271,10 +271,9 @@ internal fun changeValueTextOf(
         ActivityField.NAME,
         -> value.text
 
-        // Why: a bill without a time shows its date alone.
         ActivityField.SPENT_AT -> value.millis?.let {
             val dates = rememberDateTimeTextFormatter()
-            if (value.hasTime) dates.toDateText(it) + " · " + dates.toTimeText(it) else dates.toDateText(it)
+            dates.toDateText(it) + " · " + dates.toTimeText(it)
         }
 
         ActivityField.PAYERS -> names.takeIf { it.isNotEmpty() }?.let { nameListOf(it) }

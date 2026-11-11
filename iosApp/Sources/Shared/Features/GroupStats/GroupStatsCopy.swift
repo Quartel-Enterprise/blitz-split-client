@@ -192,7 +192,7 @@ enum GroupStatsCopy {
 
     /// "Oct 28, 3:00 PM · You paid", the biggest bill's day, time and who paid it.
     static func biggestMeta(_ expense: StatsBiggestExpense) -> String {
-        let when = ExpenseFormat.dayTime(expense.spentAt, relativeDay: .other, hasTime: expense.hasSpentTime)
+        let when = ExpenseFormat.dayTime(expense.spentAt, relativeDay: .other)
         let payers = expense.payers.map { (name: $0.name, isMe: $0.isMe) }
         guard let paid = ExpenseFormat.paid(payers, loneFormer: nil) else { return when }
         return "\(when) · \(paid)"

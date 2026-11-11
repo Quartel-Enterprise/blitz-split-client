@@ -86,7 +86,7 @@ final class SplitBillModel {
         )
     }
 
-    /// The day of "When" in the device's calendar; another one keeps the bill's time, or its lack of one.
+    /// The day of "When" in the device's calendar; another one keeps the bill's time.
     var spentDay: Binding<Date> {
         Binding(
             get: { ExpenseFormat.date(of: self.state.spentAt) },
@@ -109,17 +109,6 @@ final class SplitBillModel {
                 let time = Calendar.current.dateComponents([.hour, .minute], from: $0)
                 guard let hour = time.hour, let minute = time.minute else { return }
                 self.send(SplitBillUiEventOnSpentTimePicked(hour: Int32(hour), minute: Int32(minute)))
-            },
-        )
-    }
-
-    /// "Time" switched on adds the time it is now (the ViewModel's) to the bill's day; off, the bill goes back to its
-    /// date alone.
-    var hasSpentTime: Binding<Bool> {
-        Binding(
-            get: { self.state.hasSpentTime },
-            set: { isOn in
-                self.send(isOn ? SplitBillUiEventOnSpentTimeAdded.shared : SplitBillUiEventOnSpentTimeCleared.shared)
             },
         )
     }
@@ -560,7 +549,6 @@ private struct PhoneSplitBill: View {
                 relativeDay: state.spentDay,
                 day: model.spentDay,
                 time: model.spentTime,
-                hasTime: model.hasSpentTime,
                 latest: model.latestSpentAt,
                 onOpen: { model.send(SplitBillUiEventOnSpentAtOpened.shared) },
             )
@@ -1159,7 +1147,6 @@ private struct MacBillForm: View {
                         relativeDay: state.spentDay,
                         day: model.spentDay,
                         time: model.spentTime,
-                        hasTime: model.hasSpentTime,
                         latest: model.latestSpentAt,
                         onOpen: { model.send(SplitBillUiEventOnSpentAtOpened.shared) },
                     )

@@ -110,7 +110,7 @@ function changeDiffs(change: JsBillHistoryChange, isFirst: boolean, money: Money
     case 'description':
       return [{ label, from: quoted(change.beforeText), to: quoted(change.afterText) }]
     case 'spent-at':
-      return [{ label, from: dateOrDash(change.beforeMillis, change.beforeHasTime), to: dateOrDash(change.afterMillis, change.afterHasTime) }]
+      return [{ label, from: dateOrDash(change.beforeMillis), to: dateOrDash(change.afterMillis) }]
     case 'currency':
       return [{ label, from: change.beforeText ?? '—', to: change.afterText ?? '—' }]
     case 'category':
@@ -147,10 +147,8 @@ function quoted(text: string | null | undefined): string {
   return text ? `“${text}”` : '—'
 }
 
-// Why: a bill without a time shows its date alone.
-function dateOrDash(millis: number | null | undefined, hasTime: boolean): string {
-  if (millis == null) return '—'
-  return hasTime ? `${formatShortDate(millis)}, ${formatTime(millis)}` : formatShortDate(millis)
+function dateOrDash(millis: number | null | undefined): string {
+  return millis != null ? `${formatShortDate(millis)}, ${formatTime(millis)}` : '—'
 }
 
 // Why: "Bruno → Ana e Bruno"; someone no longer in the group is "Ex-membro".

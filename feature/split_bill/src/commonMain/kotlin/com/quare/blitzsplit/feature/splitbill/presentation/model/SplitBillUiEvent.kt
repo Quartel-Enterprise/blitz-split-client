@@ -87,17 +87,11 @@ sealed interface SplitBillUiEvent : UiEvent {
     // Why: "Adicionar horário" (or the time there) opening its picker, which then stops at now, as OnSpentAtOpened.
     data object OnSpentTimeOpened : SpentAt
 
-    // Why: the time of day picked for the bill, on its day; 00:00 is the same as no time.
+    // Why: the time of day picked for the bill, on its day.
     data class OnSpentTimePicked(
         val hour: Int,
         val minute: Int,
     ) : SpentAt
-
-    // Why: Apple's "Horário" switched on and the web's "Adicionar horário": the bill takes the time it is now, on its day.
-    data object OnSpentTimeAdded : SpentAt
-
-    // Why: "Remover horário": the bill goes back to its date alone, the first instant of its day.
-    data object OnSpentTimeCleared : SpentAt
 
     // Why: "Divisão", which opens "Dividir".
     data object OnSplitClicked : SplitBillUiEvent

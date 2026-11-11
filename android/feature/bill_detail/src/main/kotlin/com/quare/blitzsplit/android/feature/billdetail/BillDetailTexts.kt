@@ -15,21 +15,13 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.MyPartNote
 
-// Why: "Hoje, 21:30", "Ontem, 21:30" or "Sex., 24 de out., 21:30"; a bill without a time "Hoje" or "Sex., 24 de out.".
+// Why: "Hoje, 21:30", "Ontem, 21:30" or "Sex., 24 de out., 21:30".
 @Composable
 internal fun spentAtTextOf(
     spentAt: Long,
     spentDay: RelativeDay,
-    hasSpentTime: Boolean,
     dates: DateTimeTextFormatter,
 ): String {
-    if (!hasSpentTime) {
-        return when (spentDay) {
-            RelativeDay.TODAY -> stringResource(R.string.bill_detail_today)
-            RelativeDay.YESTERDAY -> stringResource(R.string.bill_detail_yesterday)
-            RelativeDay.OTHER -> dates.toWeekdayDateText(spentAt)
-        }
-    }
     val time = dates.toTimeText(spentAt)
     return when (spentDay) {
         RelativeDay.TODAY -> stringResource(R.string.bill_detail_when_today, time)

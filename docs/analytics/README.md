@@ -367,9 +367,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_several_payers_clicked` | none | "Several people" | `:feature:split_bill` |
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Done" on "Several people paid", once the amounts add up | `:feature:split_bill` |
 | `split_bill_date_clicked` | none | "When", opening its date picker | `:feature:split_bill` |
-| `split_bill_time_clicked` | none | "When"'s time on Android ("Add time" or the time), opening the clock | `:feature:split_bill` |
-| `split_bill_time_added` | none | Apple's "Time" switched on, the web's "Add time": the bill takes the time it is now | `:feature:split_bill` |
-| `split_bill_time_cleared` | none | "Remove time" (Apple's "Time" switched off) on a bill that had a time | `:feature:split_bill` |
+| `split_bill_time_clicked` | none | "When"'s time, opening the clock | `:feature:split_bill` |
 | `split_bill_split_clicked` | none | "Split", which opens Split | `:feature:split_bill` |
 | `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose file" (Android) or "Choose File…" (Apple), or "Choose photo" (web); not sent where no camera leaves anything to choose; Home's shortcut asks the same | `:feature:split_bill`, `:feature:groups` |
 | `receipt_items_clicked` | none | "14 items" beside "Read from the receipt", which opens Items, while the receipt's items are there in the bill's currency | `:feature:split_bill` |

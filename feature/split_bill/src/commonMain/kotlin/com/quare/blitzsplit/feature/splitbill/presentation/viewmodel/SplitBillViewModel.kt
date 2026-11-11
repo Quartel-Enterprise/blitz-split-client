@@ -85,7 +85,6 @@ class SplitBillViewModel(
             createInitialBillState(
                 route = route,
                 now = currentTimeMillis(),
-                timeZone = currentTimeZone(),
                 showsSats = false,
             ),
         )
@@ -108,7 +107,7 @@ class SplitBillViewModel(
     private val groupPicking = GroupPicking(uiState, route, groupId, trackEvent)
 
     private val tracking = SplitFormTracking(uiState, trackEvent)
-    private val spentAtPicking = SpentAtPicking(uiState, currentTimeMillis, currentTimeZone, trackEvent)
+    private val spentAtPicking = SpentAtPicking(uiState, currentTimeMillis, currentTimeZone)
 
     // Why: "Quem pagou" and "Várias pessoas pagaram".
     private val payerPicking = PayerPicking(uiState, { separator }, trackEvent)
@@ -368,11 +367,11 @@ class SplitBillViewModel(
 
             route.expenseId == null -> {
                 if (expense != null && !hasFilledDuplicate) {
-                    // Why: "Duplicar" copies the original once, as the form opens, today with no time, its split kept.
+                    // Why: "Duplicar" copies the original once, as the form opens, spent now, its split kept.
                     hasFilledDuplicate = true
                     hasPickedSplit = true
                     duplicatedCategoryId = expense.categoryId
-                    fill(group, expense.copy(spentAt = startOfDayOf(currentTimeMillis(), currentTimeZone())))
+                    fill(group, expense.copy(spentAt = currentTimeMillis()))
                 }
                 show(group)
             }

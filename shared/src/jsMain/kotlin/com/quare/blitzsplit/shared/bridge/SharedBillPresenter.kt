@@ -32,8 +32,6 @@ class JsSharedBillState(
     val spentAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the date.
     val spentDay: String,
-    // Why: a bill without a time shows its date alone.
-    val hasSpentTime: Boolean,
     val category: JsCategory,
     val categoryParent: JsCategory?,
     // Why: the SplitMode's code: "equal", "amount", "percent" or "shares".
@@ -101,7 +99,6 @@ class SharedBillPresenter(
                 totalMinor = state.totalMinor.toDouble(),
                 spentAt = state.spentAt.toDouble(),
                 spentDay = toJsRelativeDay(state.spentDay),
-                hasSpentTime = state.hasSpentTime,
                 category = toJsCategory(state.category),
                 categoryParent = state.categoryParent?.let(::toJsCategory),
                 splitMode = state.splitMode.code,

@@ -9,7 +9,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
 import java.time.Instant
 import java.time.ZoneId
 
-// Why: "Quando"'s two pickers, its date and its optional time, each opened on its own (beta feedback).
+// Why: "Quando"'s two pickers, its date and its time, each opened on its own (beta feedback).
 internal enum class SpentAtPicker {
     DAY,
     TIME,
@@ -36,10 +36,8 @@ internal fun SpentAtPickerDialog(
         )
 
         SpentAtPicker.TIME -> {
-            // Why: a bill without a time opens the clock on now, as the ViewModel refreshed it when the clock opened.
-            val initial = remember(state.hasSpentTime, state.spentAt, state.latestSpentAt) {
-                val millis = if (state.hasSpentTime) state.spentAt else state.latestSpentAt
-                Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())
+            val initial = remember(state.spentAt) {
+                Instant.ofEpochMilli(state.spentAt).atZone(ZoneId.systemDefault())
             }
             TimeOfDayPickerDialog(
                 initialHour = initial.hour,
@@ -47,14 +45,6 @@ internal fun SpentAtPickerDialog(
                 onPicked = { hour, minute ->
                     onClose()
                     onEvent(SplitBillUiEvent.OnSpentTimePicked(hour, minute))
-                },
-                onRemove = if (state.hasSpentTime) {
-                    {
-                        onClose()
-                        onEvent(SplitBillUiEvent.OnSpentTimeCleared)
-                    }
-                } else {
-                    null
                 },
                 onDismiss = onClose,
             )

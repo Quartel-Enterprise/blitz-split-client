@@ -30,8 +30,6 @@ class JsExpenseRow(
     val id: String,
     val description: String,
     val spentAt: Double,
-    // Why: a bill without a time shows none.
-    val hasSpentTime: Boolean,
     // Why: this device's user first, then the group's order, then whoever left it.
     val payers: Array<JsExpenseRowPayer>,
     val totalMinor: Double,
@@ -418,7 +416,6 @@ private fun toJsExpenseRow(row: ExpenseRow): JsExpenseRow = JsExpenseRow(
     id = row.id,
     description = row.description,
     spentAt = row.spentAt.toDouble(),
-    hasSpentTime = row.hasSpentTime,
     payers = row.payers
         .map {
             JsExpenseRowPayer(

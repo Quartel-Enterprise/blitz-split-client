@@ -21,16 +21,11 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
-import kotlinx.datetime.TimeZone
 
-/*
- * Why: nothing is drawn until Room is read; a new bill is spent today, with no time until one is added (beta
- * feedback), so at the day's first instant.
- */
+// Why: nothing is drawn until Room is read; a bill is spent now, which is today.
 internal fun createInitialBillState(
     route: Route.SplitBill,
     now: Long,
-    timeZone: TimeZone,
     showsSats: Boolean,
 ): SplitBillUiState {
     val currency = GroupCurrency.BRL
@@ -56,9 +51,8 @@ internal fun createInitialBillState(
         severalPayers = null,
         payerSelection = null,
         payerAmounts = null,
-        spentAt = startOfDayOf(now, timeZone),
+        spentAt = now,
         spentDay = RelativeDay.TODAY,
-        hasSpentTime = false,
         latestSpentAt = now,
         split = createEmptySplit(currency, showsSats),
         splitEditor = null,

@@ -40,12 +40,9 @@
     <string name="designsystem_when_today">今日、%1$s · %2$s</string>
     <string name="designsystem_when_yesterday">昨日、%1$s · %2$s</string>
     <string name="designsystem_when_other">%1$s · %2$s</string>
-    <string name="designsystem_day_today">今日、%s</string>
-    <string name="designsystem_day_yesterday">昨日、%s</string>
     <string name="designsystem_picker_next">次へ</string>
     <string name="designsystem_picker_done">完了</string>
     <string name="designsystem_picker_cancel">キャンセル</string>
-    <string name="designsystem_picker_remove_time">時刻を削除</string>
     <string name="designsystem_method_pix">Pix</string>
     <string name="designsystem_method_cash">現金</string>
     <string name="designsystem_method_transfer">振込</string>

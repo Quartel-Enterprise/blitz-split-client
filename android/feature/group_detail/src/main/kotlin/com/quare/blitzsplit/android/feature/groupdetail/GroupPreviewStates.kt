@@ -109,7 +109,6 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 id = "1",
                 description = "Mercado",
                 spentAt = PREVIEW_TODAY_MILLIS + 9 * PREVIEW_HOUR_MILLIS,
-                hasSpentTime = true,
                 payers = listOf(
                     ExpenseRowPayer(
                         name = "Pierre",
@@ -132,7 +131,6 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 id = "3",
                 description = "Jantar no Ostradamus",
                 spentAt = PREVIEW_TODAY_MILLIS - 4 * PREVIEW_DAY_MILLIS + 21 * PREVIEW_HOUR_MILLIS,
-                hasSpentTime = true,
                 payers = listOf(
                     ExpenseRowPayer(
                         name = "Bruno",
@@ -153,7 +151,6 @@ internal fun createPreviewDays(): List<ExpenseDay> = listOf(
                 id = "4",
                 description = "Passeio de barco",
                 spentAt = PREVIEW_TODAY_MILLIS - 4 * PREVIEW_DAY_MILLIS + 15 * PREVIEW_HOUR_MILLIS,
-                hasSpentTime = true,
                 payers = listOf(
                     ExpenseRowPayer(
                         name = null,

@@ -57,7 +57,7 @@ internal fun historyOf(
     val payersAfter = payersAfterEachOf(events, expense)
     val entries = listOfNotNull(pendingEntryOf(events, expense, group, nowMillis)) +
         buildAttachmentRuns(events).mapNotNull { (event, count) ->
-            entryOf(event, count, group, expense, undoId, payersAfter.getValue(event.id), timeZone)
+            entryOf(event, count, group, expense, undoId, payersAfter.getValue(event.id))
         }
     return entries
         .groupBy { SpentDay.dateOf(it.occurredAt, timeZone) }
@@ -236,7 +236,6 @@ private fun entryOf(
     expense: Expense,
     undoId: String?,
     payerIds: List<String>,
-    timeZone: TimeZone,
 ): BillHistoryEntry? {
     val kind = when (event.kind) {
         ActivityKind.BILL_CREATED -> BillHistoryKind.CREATED
@@ -260,7 +259,7 @@ private fun entryOf(
         actorIsMe = actorMember?.isMe == true,
         actorMemberId = actorMember?.id,
         occurredAt = event.occurredAt,
-        changes = changesOf(event, group, expense, payerIds, timeZone),
+        changes = changesOf(event, group, expense, payerIds),
         amountMinor = event.amountMinor.takeIf { kind == BillHistoryKind.CREATED },
         splitMode = event.code?.takeIf { kind == BillHistoryKind.CREATED }?.let(SplitMode::fromCodeOrNull),
         sharesCount = event.sharesCount.takeIf { kind == BillHistoryKind.CREATED },
@@ -277,7 +276,6 @@ private fun changesOf(
     group: Group,
     expense: Expense,
     payerIds: List<String>,
-    timeZone: TimeZone,
 ): List<BillHistoryChange> {
     if (event.kind != ActivityKind.BILL_EDITED) return emptyList()
     val byField = event.changes.associateBy { it.field }
@@ -287,12 +285,7 @@ private fun changesOf(
 
             ActivityField.DESCRIPTION -> BillHistoryChange.Description(change.before.text, change.after.text)
 
-            ActivityField.SPENT_AT -> BillHistoryChange.SpentAt(
-                beforeMillis = change.before.millis,
-                afterMillis = change.after.millis,
-                beforeHasTime = change.before.millis?.let { SpentDay.hasTime(it, timeZone) } == true,
-                afterHasTime = change.after.millis?.let { SpentDay.hasTime(it, timeZone) } == true,
-            )
+            ActivityField.SPENT_AT -> BillHistoryChange.SpentAt(change.before.millis, change.after.millis)
 
             ActivityField.CATEGORY -> BillHistoryChange.Category(change.before.code, change.after.code)
 

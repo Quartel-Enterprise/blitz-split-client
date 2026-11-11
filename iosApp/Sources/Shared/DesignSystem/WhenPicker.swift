@@ -30,23 +30,21 @@ struct WhenPickerRows: View {
     }
 }
 
-/// A bill's "When" (beta feedback): its date alone, which opens the calendar inline under it, and "Time", a switch
-/// that adds the bill's optional time with its picker beside it. A bill without a time is at its day's first instant.
+/// A bill's "When" (beta feedback): its date and time, which open the calendar inline under it, and "Time", its own
+/// row, so picking a day never opens the clock.
 struct BillWhenPickerRows: View {
     let millis: Int64
     let relativeDay: RelativeDay
     @Binding var day: Date
     @Binding var time: Date
-    @Binding var hasTime: Bool
     let latest: Date
     let onOpen: () -> Void
 
     @State private var isOpen = false
-    @State private var isTimeShown = false
 
     var body: some View {
         WhenValueButton(
-            text: ExpenseFormat.when(millis, relativeDay: relativeDay, hasTime: false),
+            text: ExpenseFormat.when(millis, relativeDay: relativeDay),
             isOpen: $isOpen,
             onOpen: onOpen,
         )
@@ -58,15 +56,8 @@ struct BillWhenPickerRows: View {
         HStack {
             Text("Time")
             Spacer()
-            if hasTime || isTimeShown {
-                DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
-                    .labelsHidden()
-            }
-            Toggle("Time", isOn: timeSwitch(hasTime: $hasTime, isShown: $isTimeShown))
+            DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
                 .labelsHidden()
-        }
-        .onChange(of: hasTime, initial: true) { _, has in
-            if has { isTimeShown = true }
         }
     }
 }
@@ -140,24 +131,22 @@ struct MacWhenField: View {
     }
 }
 /// A bill's "When:" on the Mac (beta feedback): a button with its date, which opens the calendar in a popover, and a
-/// "Time" checkbox that adds the bill's optional time with its field beside it.
+/// time field beside it.
 struct MacBillWhenField: View {
     let millis: Int64
     let relativeDay: RelativeDay
     @Binding var day: Date
     @Binding var time: Date
-    @Binding var hasTime: Bool
     let latest: Date
     let onOpen: () -> Void
 
     @State private var isOpen = false
-    @State private var isTimeShown = false
     @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         LabeledContent("When:") {
             HStack(spacing: 12) {
-                Button(ExpenseFormat.when(millis, relativeDay: relativeDay, hasTime: false)) {
+                Button(ExpenseFormat.when(millis, relativeDay: relativeDay)) {
                     onOpen()
                     isOpen = true
                 }
@@ -171,29 +160,11 @@ struct MacBillWhenField: View {
                         .labelsHidden()
                         .padding()
                 }
-                Toggle("Time", isOn: timeSwitch(hasTime: $hasTime, isShown: $isTimeShown))
-                if hasTime || isTimeShown {
-                    DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
-                        .datePickerStyle(.stepperField)
-                        .labelsHidden()
-                }
-            }
-            .onChange(of: hasTime, initial: true) { _, has in
-                if has { isTimeShown = true }
+                DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
+                    .datePickerStyle(.stepperField)
+                    .labelsHidden()
             }
         }
     }
 }
 #endif
-
-/// A bill's "Time" switch: the time picker stays while it is turned, even through 00:00, which the bill reads as no
-/// time, so it never vanishes under the finger; only the switch turned off takes it away.
-private func timeSwitch(hasTime: Binding<Bool>, isShown: Binding<Bool>) -> Binding<Bool> {
-    Binding(
-        get: { hasTime.wrappedValue || isShown.wrappedValue },
-        set: { isOn in
-            isShown.wrappedValue = isOn
-            hasTime.wrappedValue = isOn
-        },
-    )
-}

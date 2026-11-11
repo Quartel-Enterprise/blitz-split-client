@@ -10,10 +10,7 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
-/*
- * Why: a later time today, which the pickers can't rule out, becomes now, the latest time they reach. Whether the bill
- * has a time follows from the instant itself (`SpentDay.hasTime`), so the form shows what saving it stores.
- */
+// Why: a later time today, which the pickers can't rule out, becomes now, the latest time they reach.
 internal fun SplitBillUiState.withSpentAt(
     epochMillis: Long,
     now: Long,
@@ -27,24 +24,21 @@ internal fun SplitBillUiState.withSpentAt(
             nowMillis = now,
             timeZone = timeZone,
         ),
-        hasSpentTime = SpentDay.hasTime(spentAt, timeZone),
         latestSpentAt = now,
     )
 }
 
-// Why: another day in "Quando"'s calendar keeps the bill's time, or its lack of one (beta feedback).
+/*
+ * Why: another day in "Quando"'s calendar keeps the bill's time of day, which is the time it was opened at unless
+ * picked otherwise (beta feedback), so a bill never lands on a day at a clock its own day hasn't reached.
+ */
 internal fun SplitBillUiState.withSpentDayPicked(
     date: LocalDate,
     now: Long,
     timeZone: TimeZone,
 ): SplitBillUiState {
-    val time = spentTimeOrNull(timeZone)
-    val epochMillis = if (time == null) {
-        SpentDay.startOf(date, timeZone)
-    } else {
-        LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds()
-    }
-    return withSpentAt(epochMillis, now, timeZone)
+    val time = Instant.fromEpochMilliseconds(spentAt).toLocalDateTime(timeZone).time
+    return withSpentAt(LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds(), now, timeZone)
 }
 
 // Why: the time of day picked for the bill, on the day it has.
@@ -56,22 +50,6 @@ internal fun SplitBillUiState.withSpentTimePicked(
     val date = SpentDay.dateOf(spentAt, timeZone)
     return withSpentAt(LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds(), now, timeZone)
 }
-
-// Why: "Remover horário": the first instant of the bill's day, which every screen shows as the date alone.
-internal fun SplitBillUiState.withSpentTimeCleared(
-    now: Long,
-    timeZone: TimeZone,
-): SplitBillUiState = withSpentAt(startOfDayOf(spentAt, timeZone), now, timeZone)
-
-// Why: the first instant of an instant's day, a bill with no time; a new bill's (a duplicate's too) is today's.
-internal fun startOfDayOf(
-    epochMillis: Long,
-    timeZone: TimeZone,
-): Long = SpentDay.startOf(SpentDay.dateOf(epochMillis, timeZone), timeZone)
-
-// Why: the time of day "Quando" has, null for a bill without one.
-internal fun SplitBillUiState.spentTimeOrNull(timeZone: TimeZone): LocalTime? =
-    if (hasSpentTime) Instant.fromEpochMilliseconds(spentAt).toLocalDateTime(timeZone).time else null
 
 /*
  * Why: "Hoje" may have become "Ontem" since the screen opened, and the picker may now reach a new day. Opening the
