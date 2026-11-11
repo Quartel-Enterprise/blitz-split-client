@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Política de Privacidad</string>
+    <string name="legal_terms">Términos de Servicio</string>
+    <string name="legal_updated_privacy_policy">Actualizada el %1$s</string>
+    <string name="legal_updated_terms">Actualizados el %1$s</string>
+    <string name="legal_load_failed_title">No se pudo cargar esta página</string>
+    <string name="legal_load_failed_body">Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="legal_retry">Intentar de nuevo</string>
+</resources>

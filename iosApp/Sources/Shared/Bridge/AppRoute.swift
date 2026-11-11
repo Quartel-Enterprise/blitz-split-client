@@ -75,6 +75,9 @@ enum AppRoute: Hashable, Identifiable {
     case deleteAccount
     case notificationSettings
     case categoryMap
+    /// "Privacy Policy" or "Terms of Service", from the profile's footer or a link of the other text; holds the Kotlin
+    /// route itself, which its ViewModel reads the page and the section to open on from.
+    case legalDocument(RouteLegalDocument)
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
     /// "Update available" over wherever the app is; holds the Kotlin route itself, which its ViewModel reads the
@@ -121,6 +124,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteDeleteAccount: self = .deleteAccount
         case is RouteNotificationSettings: self = .notificationSettings
         case is RouteCategoryMap: self = .categoryMap
+        case let legalDocument as RouteLegalDocument: self = .legalDocument(legalDocument)
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
         case let inAppUpdate as RouteInAppUpdate: self = .inAppUpdate(inAppUpdate)
         case let appDownload as RouteAppDownload: self = .appDownload(appDownload)
@@ -215,12 +219,13 @@ enum AppRoute: Hashable, Identifiable {
     }
 
     /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key, the photo big, deleting the
-    /// account and the update "Check for updates" found show as sheets on the Settings window there
-    /// (`AppModel.settingsSheet`). Never off the Mac.
+    /// account, the update "Check for updates" found and the legal texts show as sheets on the Settings window there
+    /// (`AppModel.settingsSheet`); a legal text a link of the other one opens takes its place, the top entry being
+    /// the one shown. Never off the Mac.
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
-        case .paymentKey, .profilePhoto, .deleteAccount: true
+        case .paymentKey, .profilePhoto, .deleteAccount, .legalDocument: true
         // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
         case let .inAppUpdate(route): route.source == .manual
         // Settings' iPhone row opens it there; Home's card over the main window

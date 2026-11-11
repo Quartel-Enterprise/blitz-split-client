@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.model.NotificationChannel
 import com.quare.blitzsplit.core.model.NotificationPreferences
 import com.quare.blitzsplit.core.model.NotificationType
@@ -1664,27 +1665,78 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN the profile WHEN tapping the privacy policy THEN opens its page`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN the profile on the web WHEN tapping the privacy policy THEN opens the page of the site`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.WEB)
 
-        // When
-        viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
 
-        // Then
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl("https://blitzsplit.com/privacy")), actions)
-    }
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl("https://blitzsplit.com/privacy")), actions)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
 
     @Test
-    fun `GIVEN the profile WHEN tapping the terms THEN opens their page`() = runTest(testDispatcher) {
+    fun `GIVEN the profile on the web WHEN tapping the terms THEN opens the page of the site`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.WEB)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl("https://blitzsplit.com/terms")), actions)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the profile in an app WHEN tapping the privacy policy THEN opens it in the app`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.IOS)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.Profile,
+                    Route.LegalDocument(
+                        page = LegalPage.PRIVACY_POLICY,
+                        anchor = null,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+            assertEquals(emptyList(), actions)
+        }
+
+    @Test
+    fun `GIVEN the profile in an app WHEN tapping the terms THEN opens them in the app`() = runTest(testDispatcher) {
         // Given
-        prepareScenario()
+        prepareScenario(clientPlatform = ClientPlatform.MACOS)
 
         // When
         viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
 
         // Then
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl("https://blitzsplit.com/terms")), actions)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.Profile,
+                Route.LegalDocument(
+                    page = LegalPage.TERMS_OF_USE,
+                    anchor = null,
+                ),
+            ),
+            navigator.backStack.value,
+        )
+        assertEquals(emptyList(), actions)
     }
 
     @Test
@@ -7301,6 +7353,7 @@ class ProfileViewModelTest {
         themeWriteHangs: Boolean = false,
         invite: AppInvite? = null,
         language: AppLanguage = AppLanguage.SYSTEM,
+        clientPlatform: ClientPlatform = ClientPlatform.ANDROID,
     ) {
         appInvite = MutableStateFlow(invite)
         appInviteDismissals = 0
@@ -7398,6 +7451,7 @@ class ProfileViewModelTest {
                 shownUpdatePrompts += availability to source
             },
             updateMechanism = updateMechanism,
+            clientPlatform = clientPlatform,
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),
             observePendingProfileChanges = ObservePendingProfileChangesUseCase(profiles),

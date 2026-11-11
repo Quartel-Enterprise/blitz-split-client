@@ -27,8 +27,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     it is gone for good; one the server never saw (`isLocalOnly`) has no Delete account either, while an anonymous
     account whose code isn't made yet keeps it.
   - The profile ends in a discreet, centered legal footer, as Bible Planner's (Pierre's call, beta feedback 18):
-    "Privacy Policy • Terms of Service", two links opening https://blitzsplit.com/privacy and
-    https://blitzsplit.com/terms (`LegalLinks`, the site's English routes) in the browser, and "Version X" under them
+    "Privacy Policy • Terms of Service", two links to the legal texts (below), and "Version X" under them
     in small, secondary text. It closes the column that ends with Delete account: Android's single column and the
     right column lying down or on a book, iOS's single column and its left column lying down, the Mac's Settings form,
     and the web's page under both columns. The version is the whole versionName, a beta's suffix too
@@ -36,6 +35,26 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Info.plist's `BlitzSplitVersionName`, since Apple refuses a suffix in the version string
     ([release-process.md](../release-process.md#versions)); the Apple betas only carry the suffix once the release
     workflow hands it to their builds (#239, which Pierre merges, since a workflow change needs the `workflow` scope).
+  - "Privacy Policy" and "Terms of Service" (`Route.LegalDocument`, `:core:legal`, `:feature:legal`) are drawn by
+    the app itself on Android, iOS and the Mac, with each platform's own components, and never copied into the apps:
+    the text is written once, as Markdown, in `blitz-split-site` (`public/legal/<page>.<language>.md`, its
+    `docs/legal.md`), which the site's own pages are generated from and the apps download
+    (`https://blitzsplit.com/legal/…`). The web keeps opening https://blitzsplit.com/privacy and
+    https://blitzsplit.com/terms in another tab (`LegalLinks`), a browser's own way (Pierre's call).
+    - The language is Profile › Language's, or the device's own while it follows the system, so a device in Turkish
+      reads them in Turkish though the app is in English; a language the site doesn't write them in (French, German,
+      Italian, Polish) reads the English text.
+    - The device keeps the last text it downloaded (`legal_document`, per page and language) and shows it at once,
+      offline too, while the current one downloads and takes its place. A device that never downloaded it draws the
+      shimmer, then "Couldn't load this page" with "Try again" when the download fails (Pierre's call: no copy ships
+      inside the app).
+    - Android and iOS push it over Profile, the page's name in the bar; the Mac opens it as a sheet on Settings with
+      Done. The text is one column, 640 dp / pt at most, centred in a wider window: "Updated November 5, 2026" in the
+      device's date format, the summary in a tinted card, each section's number beside its title, and a table as
+      cards, one per row, its first cell the title and the others under their column's name, as the site's phone
+      layout.
+    - A link to the other text, or to a section of it, opens that text over this one, scrolled to the section; a web
+      or mail address opens outside the app.
   - On the web and the Mac, "App on your phone" (Settings › iPhone on the Mac) sits right under the profile once a
     store lists the app, highlighted while the invite to the phone app stands ([get-the-app.md](get-the-app.md)).
   - The profile's avatar (Profile's on Android and iOS, the inline form's on the web and the Mac, never Edit profile's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,

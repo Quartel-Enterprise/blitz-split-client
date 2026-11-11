@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
+import com.quare.blitzsplit.core.provider.room.dao.LegalDocumentDao
 import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
@@ -42,6 +43,7 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
+import com.quare.blitzsplit.core.provider.room.entity.LegalDocumentEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
@@ -77,8 +79,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         BillCommentLikeEntity::class,
         PushSettingsEntity::class,
         AppCategoryColorEntity::class,
+        LegalDocumentEntity::class,
     ],
-    version = 41,
+    version = 42,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -243,6 +246,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 40,
             to = 41,
         ),
+        AutoMigration(
+            from = 41,
+            to = 42,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -286,4 +293,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun billCommentLikeDao(): BillCommentLikeDao
 
     abstract fun pushSettingsDao(): PushSettingsDao
+
+    abstract fun legalDocumentDao(): LegalDocumentDao
 }

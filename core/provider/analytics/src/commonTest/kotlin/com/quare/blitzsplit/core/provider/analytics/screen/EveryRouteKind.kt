@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.navigation.Route
@@ -109,5 +110,9 @@ internal val everyRouteKind: List<Route> = listOf(
     Route.PaymentKey(
         method = PaymentMethod.PIX,
         keyId = "secret-key",
+    ),
+    Route.LegalDocument(
+        page = LegalPage.PRIVACY_POLICY,
+        anchor = "secret-anchor",
     ),
 )

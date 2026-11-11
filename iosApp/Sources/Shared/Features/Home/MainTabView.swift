@@ -348,6 +348,8 @@ struct MainTabView: View {
         case .notificationSettings: NotificationSettingsView()
         // The profile's "Category map"; the Mac opens it in Ajustes instead (`AppModel`)
         case .categoryMap: CategoryMapView()
+        // The profile's "Privacy Policy" and "Terms of Service"; a sheet on the Mac's Ajustes instead
+        case let .legalDocument(route): LegalDocumentView(route: route)
         case let .paymentKey(route): PaymentKeyView(route: route)
         // A new identity per route: a group swapped in place (the Mac's sidebar) must not keep the model of the last one
         case let .groupDetail(route): GroupDetailView(route: route).id(route)

@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
@@ -23,6 +24,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
@@ -95,6 +97,7 @@ class ProfileViewModel(
     private val exportUserData: ExportUserData,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
+    private val clientPlatform: ClientPlatform,
     dismissAppInvite: DismissAppInvite,
     observeAppInvite: ObserveAppInvite,
     updateMechanism: UpdateMechanism,
@@ -267,9 +270,9 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
 
-            ProfileUiEvent.OnPrivacyPolicyClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.PRIVACY_POLICY))
+            ProfileUiEvent.OnPrivacyPolicyClicked -> openLegalPage(LegalPage.PRIVACY_POLICY)
 
-            ProfileUiEvent.OnTermsClicked -> emit(ProfileUiAction.OpenUrl(LegalLinks.TERMS_OF_USE))
+            ProfileUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE)
 
             ProfileUiEvent.OnCheckForUpdatesClicked -> checkForUpdates()
 
@@ -296,6 +299,23 @@ class ProfileViewModel(
             ) {
                 clearSession { trackEvent("profile_erase_confirmed", emptyMap()) }
             }
+        }
+    }
+
+    /*
+     * Why: the app draws the legal texts itself on Android, iOS and the Mac; in a browser the site's own page, in
+     * another tab, already is the platform's way.
+     */
+    private fun openLegalPage(page: LegalPage) {
+        if (clientPlatform == ClientPlatform.WEB) {
+            emit(ProfileUiAction.OpenUrl(LegalLinks.urlOf(page)))
+        } else {
+            navigator.navigate(
+                Route.LegalDocument(
+                    page = page,
+                    anchor = null,
+                ),
+            )
         }
     }
 
