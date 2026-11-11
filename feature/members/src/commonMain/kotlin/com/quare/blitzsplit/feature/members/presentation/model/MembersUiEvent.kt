@@ -12,6 +12,11 @@ sealed interface MembersUiEvent : UiEvent {
         get() = when (this) {
             OnShareClicked -> EventAnalytics.Automatic("members_share_clicked")
 
+            OnLinkCopyClicked -> EventAnalytics.Automatic(
+                "invite_link_copy_clicked",
+                mapOf("source" to SOURCE),
+            )
+
             is OnCurrencySelected -> EventAnalytics.Automatic("balances_currency_clicked", mapOf("source" to SOURCE))
 
             OnAddClicked -> EventAnalytics.Automatic("member_add_clicked")
@@ -67,6 +72,9 @@ sealed interface MembersUiEvent : UiEvent {
 
     // Why: "Compartilhar" on the link card opens "Convidar", with the QR code.
     data object OnShareClicked : MembersUiEvent
+
+    // Why: the copy button beside Share on the link card, which copies the group's link without leaving Members.
+    data object OnLinkCopyClicked : MembersUiEvent
 
     data object OnAddClicked : MembersUiEvent
 

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,6 +61,7 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.shimmer
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
+import com.quare.blitzsplit.android.designsystem.format.templateForActorOf
 import com.quare.blitzsplit.android.designsystem.format.wordGapUi
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
@@ -391,27 +393,40 @@ private fun viewerAddedTextOf(
     attachment: BillAttachmentTile,
     dates: DateTimeTextFormatter,
 ): String {
-    val name = personNameOf(attachment.adderName, attachment.isAddedByMe)
+    val isMe = attachment.isAddedByMe
+    // Why: the user as the subject of the verb, "Tu" where a list says "Toi".
+    val name = if (isMe) stringResource(R.string.bill_detail_history_you) else personNameOf(attachment.adderName, false)
     val time = dates.toTimeText(attachment.addedAt)
     val isReceipt = attachment.isReceipt
     return when (attachment.addedDay) {
-        RelativeDay.TODAY -> stringResource(
+        RelativeDay.TODAY -> actorTextOf(
             if (isReceipt) R.string.bill_detail_viewer_read_today else R.string.bill_detail_viewer_added_today,
+            isMe,
             name,
             time,
         )
 
-        RelativeDay.YESTERDAY -> stringResource(
+        RelativeDay.YESTERDAY -> actorTextOf(
             if (isReceipt) R.string.bill_detail_viewer_read_yesterday else R.string.bill_detail_viewer_added_yesterday,
+            isMe,
             name,
             time,
         )
 
-        RelativeDay.OTHER -> stringResource(
+        RelativeDay.OTHER -> actorTextOf(
             if (isReceipt) R.string.bill_detail_viewer_read_other else R.string.bill_detail_viewer_added_other,
+            isMe,
             name,
             dates.toDateText(attachment.addedAt),
             time,
         )
     }
 }
+
+// Why: "Tú la adjuntaste hoy a las 21:10": with the user as the actor, the verb after their name is said to them.
+@Composable
+private fun actorTextOf(
+    @StringRes template: Int,
+    isMe: Boolean,
+    vararg args: String,
+): String = templateForActorOf(stringResource(template), isMe).format(*args)

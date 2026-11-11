@@ -757,6 +757,60 @@ class MembersViewModelTest {
     }
 
     @Test
+    fun `GIVEN the group code WHEN copying the link of the link card THEN copies the whole group link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnLinkCopyClicked)
+
+            // Then
+            assertEquals(
+                listOf<MembersUiAction>(MembersUiAction.CopyGroupLink("https://blitzsplit.com/g/7Hk2pQ8x")),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN the group code WHEN reading the state THEN the link can be copied`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroup = tripWithCodes)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.canCopyLink)
+    }
+
+    @Test
+    fun `GIVEN a group without its code yet WHEN reading the state THEN the link cannot be copied`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes.copy(inviteCode = null))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.canCopyLink)
+        }
+
+    @Test
+    fun `GIVEN a group without its code yet WHEN copying the link of the link card THEN copies nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes.copy(inviteCode = null))
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnLinkCopyClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the personal invite of Carla open WHEN copying THEN copies her whole link and shows it copied`() =
         runTest(testDispatcher) {
             // Given
@@ -2544,6 +2598,19 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(listOf("members_share_clicked" to noParams), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the group code WHEN copying the link of the link card THEN sends the copy event from members`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = tripWithCodes)
+
+            // When
+            viewModel.onEvent(MembersUiEvent.OnLinkCopyClicked)
+
+            // Then
+            assertEquals(listOf("invite_link_copy_clicked" to fromMembers), trackedEvents)
         }
 
     @Test

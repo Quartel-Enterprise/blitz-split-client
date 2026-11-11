@@ -32,15 +32,12 @@
     <plurals name="default_split_joined">
         <item quantity="other">%sがグループに参加しました</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="other">すでに分け方に含まれています</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="other">各自1口から始まります</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="other">各自0%から始まります</item>
-    </plurals>
+    <string name="default_split_start_equal_one">すでに分け方に含まれています</string>
+    <string name="default_split_start_equal_other">すでに分け方に含まれています</string>
+    <string name="default_split_start_shares_one">1口から始まります</string>
+    <string name="default_split_start_shares_other">各自1口から始まります</string>
+    <string name="default_split_start_percent_one">0%から始まります</string>
+    <string name="default_split_start_percent_other">各自0%から始まります</string>
     <string name="default_split_joined_sentence">%1$s。%2$s。必要に応じて調整してください。</string>
     <string name="default_split_modes">分け方</string>
     <string name="default_split_hint_equal">全員が同じ額を支払います</string>

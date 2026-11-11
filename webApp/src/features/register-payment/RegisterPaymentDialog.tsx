@@ -284,17 +284,22 @@ function PaymentForm({
  * você." for one that grew (13.5).
  */
 function SimplifiedNote({ note, state }: { note: JsSimplifiedPairNote; state: JsRegisterPaymentState }) {
-  const insteadOf = formatNames(note.insteadOf.map(simplifyName))
+  // Why: the user among whom the payer owed is the object of "owed": "lo que antes era para ti", "der dir geschuldet war".
+  const insteadOf = formatNames(note.insteadOf.map((person) => (person.isMe ? t('registerPayment_youOwed') : simplifyName(person))))
   const payer = state.from ? simplifyName(state.from) : nameOrFormer(null)
   const receiver = state.to ? simplifyName(state.to) : nameOrFormer(null)
   const text =
     note.insteadOf.length === 0
       ? t('registerPayment_simplifiedPlain')
       : !note.isNewPair
-        ? t('registerPayment_simplifiedGrown', { payer, insteadOf })
+        ? state.from?.isMe
+          ? t('registerPayment_simplifiedGrownMe', { insteadOf })
+          : t('registerPayment_simplifiedGrown', { payer, insteadOf })
         : state.from?.isMe
           ? t('registerPayment_simplifiedNewPairMe', { receiver, insteadOf })
-          : t('registerPayment_simplifiedNewPair', { payer, receiver, insteadOf })
+          : state.to?.isMe
+            ? t('registerPayment_simplifiedNewPairToMe', { payer, insteadOf })
+            : t('registerPayment_simplifiedNewPair', { payer, receiver, insteadOf })
   return (
     <p className="flex gap-2 text-[13px] leading-[18px] text-muted-foreground">
       <SimplifyIcon className="mt-px" />

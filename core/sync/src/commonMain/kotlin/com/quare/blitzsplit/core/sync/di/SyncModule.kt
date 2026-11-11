@@ -29,7 +29,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
-import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.CancelSignOutWhenSyncedUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ChangeInviteLinkUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.ClaimGuestAsMeUseCase
@@ -48,7 +47,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SignOutWhenSyncedUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.StartSyncUseCase
 import com.quare.blitzsplit.core.sync.domain.usecase.impl.SyncNowUseCase
-import com.quare.blitzsplit.core.sync.domain.usecase.impl.UnlinkAccountUseCase
 import com.quare.blitzsplit.core.sync.signin.ProviderSignIn
 import com.quare.blitzsplit.core.sync.signin.ProviderSignInImpl
 import kotlinx.coroutines.CoroutineScope
@@ -105,7 +103,6 @@ val syncModule = module {
     factoryOf(::SignOutWhenSyncedUseCase).bind<SignOutWhenSynced>()
     factoryOf(::CancelSignOutWhenSyncedUseCase).bind<CancelSignOutWhenSynced>()
     factoryOf(::DeleteAccountUseCase).bind<DeleteAccount>()
-    factoryOf(::UnlinkAccountUseCase).bind<UnlinkAccount>()
     factoryOf(::UserDataExportMapperImpl).bind<UserDataExportMapper>()
     factoryOf(::ExportUserDataUseCase).bind<ExportUserData>()
     factoryOf(::JoinGroupUseCase).bind<JoinGroup>()

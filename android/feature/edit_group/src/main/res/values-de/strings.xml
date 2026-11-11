@@ -33,18 +33,12 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">%s ist der Gruppe beigetreten</item>
         <item quantity="other">%s sind der Gruppe beigetreten</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Schon in der Aufteilung</item>
-        <item quantity="other">Alle schon in der Aufteilung</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Startet mit 1 Anteil</item>
-        <item quantity="other">Alle starten mit 1 Anteil</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Startet bei 0%</item>
-        <item quantity="other">Alle starten bei 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Die Person ist schon in der Aufteilung</string>
+    <string name="default_split_start_equal_other">Alle schon in der Aufteilung</string>
+    <string name="default_split_start_shares_one">Die Person startet mit 1 Anteil</string>
+    <string name="default_split_start_shares_other">Alle starten mit 1 Anteil</string>
+    <string name="default_split_start_percent_one">Die Person startet bei 0%</string>
+    <string name="default_split_start_percent_other">Alle starten bei 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; pass es bei Bedarf an.</string>
     <string name="default_split_modes">Wie aufteilen</string>
     <string name="default_split_hint_equal">Alle zahlen gleich viel</string>

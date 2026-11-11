@@ -66,7 +66,7 @@
     <string name="register_payment_simplified_new_pays_you">Debito semplificato: %1$s ti paga quello che doveva a %2$s.</string>
     <string name="register_payment_simplified_grown">Debito semplificato: include quello che %1$s doveva a %2$s.</string>
     <string name="register_payment_simplified_grown_you">Debito semplificato: include quello che dovevi a %s.</string>
-    <string name="register_payment_you_lowercase">te</string>
+    <string name="register_payment_you_owed">te</string>
     <string name="register_payment_simplify_someone">Qualcuno</string>
     <string name="register_payment_simplify_on_paid">%1$s ha appena semplificato i debiti. Non devi più niente a %2$s in %3$s.</string>
     <string name="register_payment_simplify_off_paid">%1$s ha appena disattivato Semplifica debiti. Non devi più niente a %2$s in %3$s.</string>

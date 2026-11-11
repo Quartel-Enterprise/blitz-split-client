@@ -5,17 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.LinkOff
-import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -147,13 +143,6 @@ internal fun ProfileDialogsOverlay(
             placement = placement,
         )
 
-        ProfileDialog.UNLINK_ACCOUNT -> UnlinkAccountDialog(
-            state = state,
-            onEvent = onEvent,
-            onDismiss = onDismiss,
-            placement = placement,
-        )
-
         ProfileDialog.DYNAMIC_COLORS_INFO -> DynamicColorsInfoDialog(
             onDismiss = onDismiss,
             placement = placement,
@@ -161,84 +150,6 @@ internal fun ProfileDialogsOverlay(
 
         ProfileDialog.APPEARANCE, ProfileDialog.LANGUAGE, null -> Unit
     }
-}
-
-/*
- * Why: the device goes on without an account, so the dialog says what stays; once it is done the recovery
- * code sheet opens by itself. It opens offline too, to say why "Desconectar" waits for the internet.
- */
-@Composable
-private fun UnlinkAccountDialog(
-    state: ProfileUiState,
-    onEvent: (ProfileUiEvent) -> Unit,
-    onDismiss: () -> Unit,
-    placement: DialogPlacement,
-) {
-    val provider = state.accountProvider?.let { stringResource(it.labelRes) }.orEmpty()
-    FoldAlertDialog(
-        onDismissRequest = onDismiss,
-        icon = {
-            Icon(
-                imageVector = Icons.Outlined.LinkOff,
-                contentDescription = null,
-            )
-        },
-        title = stringResource(R.string.profile_unlink_title, provider),
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Text(stringResource(R.string.profile_unlink_body))
-                if (state.showsOfflineNotice) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.WifiOff,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                        )
-                        Text(
-                            text = stringResource(R.string.profile_unlink_offline),
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
-                }
-                if (state.hasUnlinkFailed) {
-                    Text(
-                        text = stringResource(R.string.profile_unlink_failed),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onEvent(ProfileUiEvent.OnUnlinkConfirmed) },
-                enabled = state.canUnlink,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) {
-                if (state.isUnlinking) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(18.dp),
-                        strokeWidth = 2.dp,
-                    )
-                } else {
-                    Text(stringResource(R.string.profile_unlink_confirm))
-                }
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                enabled = !state.isUnlinking,
-            ) { Text(stringResource(R.string.profile_cancel)) }
-        },
-        placement = placement,
-    )
 }
 
 /*
