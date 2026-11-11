@@ -132,6 +132,8 @@
     <string name="split_bill_group_lead">The one you used last comes marked</string>
     <string name="split_bill_group_continue">Continue</string>
     <string name="split_bill_group_change">Group: %s. Change</string>
+    <string name="split_bill_group_change_button">Change</string>
+    <string name="split_bill_group_open">Open group</string>
     <plurals name="split_bill_group_people">
         <item quantity="one">%d person</item>
         <item quantity="other">%d people</item>

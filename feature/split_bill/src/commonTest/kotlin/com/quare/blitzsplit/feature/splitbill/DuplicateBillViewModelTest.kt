@@ -542,6 +542,7 @@ class DuplicateBillViewModelTest {
             GROUP_ID,
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         ),
     )
 

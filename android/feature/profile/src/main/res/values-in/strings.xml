@@ -109,11 +109,6 @@
     <string name="profile_export_detail">File JSON berisi profil dan kuncimu</string>
     <string name="profile_delete_account">Hapus akun dan data</string>
     <string name="profile_delete_account_detail">Menghapus akun Blitz Split-mu. Ini tidak bisa dibatalkan.</string>
-    <string name="profile_unlink_title">Putuskan akun %1$s kamu?</string>
-    <string name="profile_unlink_body">Kamu tetap memakai Blitz Split di perangkat ini, tanpa akun. Grupmu tetap di sini dan sinkronisasi beralih ke ID anonim. Setelah ini kami menampilkan kode pemulihanmu: simpan agar kamu tidak kehilangan akses.</string>
-    <string name="profile_unlink_offline">Butuh koneksi internet.</string>
-    <string name="profile_unlink_failed">Tidak dapat memutuskan. Coba lagi.</string>
-    <string name="profile_unlink_confirm">Putuskan</string>
     <string name="profile_bitcoin_in_sats">Bitcoin dalam satoshi</string>
     <string name="profile_bitcoin_in_sats_detail">Menampilkan dan mengetik jumlah bitcoin dalam sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Peta kategori</string>

@@ -245,6 +245,7 @@ class RequestUpdatePromptIfNeededUseCaseTest {
                 groupId = "g1",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -253,6 +254,27 @@ class RequestUpdatePromptIfNeededUseCaseTest {
 
         // Then
         assertEquals(listOf(newVersion to UpdatePromptSource.STARTUP), shownPrompts)
+    }
+
+    @Test
+    fun `GIVEN the group opened over a bill form on top WHEN opening the app THEN offers nothing over it`() = runTest {
+        // Given
+        prepareScenario(
+            lastPromptAgo = null,
+            availability = newVersion,
+            top = Route.GroupDetail(
+                groupId = "g1",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+                isOverBill = true,
+            ),
+        )
+
+        // When
+        launchUseCase()
+
+        // Then
+        assertTrue(shownPrompts.isEmpty())
     }
 
     @Test

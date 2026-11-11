@@ -132,6 +132,8 @@
     <string name="split_bill_group_lead">En son kullandığın işaretli gelir</string>
     <string name="split_bill_group_continue">Devam et</string>
     <string name="split_bill_group_change">Grup: %s. Değiştir</string>
+    <string name="split_bill_group_change_button">Değiştir</string>
+    <string name="split_bill_group_open">Grubu aç</string>
     <plurals name="split_bill_group_people">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

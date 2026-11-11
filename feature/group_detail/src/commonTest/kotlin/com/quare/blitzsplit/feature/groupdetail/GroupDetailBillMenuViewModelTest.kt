@@ -859,6 +859,7 @@ class GroupDetailBillMenuViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private val editDinner = Route.SplitBill(

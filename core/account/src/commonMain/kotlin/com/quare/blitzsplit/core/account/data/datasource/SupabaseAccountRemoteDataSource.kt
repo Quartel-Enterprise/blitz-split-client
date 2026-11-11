@@ -197,14 +197,6 @@ class SupabaseAccountRemoteDataSource(
         )
     }
 
-    override suspend fun removeSocialIdentity(): String {
-        val response = functions.invoke(function = UNLINK_IDENTITY_FUNCTION)
-        val code = json.decodeFromString<RecoveryCodeResponseDto>(response.bodyAsText()).code
-        // Why: the identity is already gone and the code is what reaches the account now, so a failed read can't lose it.
-        suspendRunCatching { auth.retrieveUserForCurrentSession(updateSession = true) }
-        return code
-    }
-
     override suspend fun deleteAccount() {
         functions.invoke(function = DELETE_ACCOUNT_FUNCTION)
     }
@@ -249,7 +241,6 @@ class SupabaseAccountRemoteDataSource(
         const val RECOVER_FUNCTION = "recover"
         const val RECOVERY_CODE_FUNCTION = "recovery-code"
         const val APPLE_TOKEN_FUNCTION = "apple-token"
-        const val UNLINK_IDENTITY_FUNCTION = "unlink-identity"
         const val DELETE_ACCOUNT_FUNCTION = "delete-account"
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_NOT_FOUND = 404

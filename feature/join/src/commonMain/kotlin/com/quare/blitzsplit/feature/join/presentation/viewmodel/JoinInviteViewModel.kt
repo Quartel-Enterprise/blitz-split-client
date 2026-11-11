@@ -11,7 +11,6 @@ import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AvatarColor
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
@@ -200,13 +199,7 @@ class JoinInviteViewModel(
         if (below != null && groupScreenIdOrNull(below) == groupId) {
             navigator.navigateBack()
         } else {
-            navigator.replaceTop(
-                Route.GroupDetail(
-                    groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
-            )
+            navigator.replaceTop(Route.GroupDetail.expensesOf(groupId))
         }
     }
 

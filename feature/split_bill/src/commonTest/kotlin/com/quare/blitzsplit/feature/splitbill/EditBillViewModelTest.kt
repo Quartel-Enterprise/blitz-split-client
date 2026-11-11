@@ -385,6 +385,7 @@ class EditBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 billDetail,
             ),
@@ -578,6 +579,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     billDetail,
                 ),
@@ -731,6 +733,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -763,6 +766,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
             )
@@ -779,6 +783,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -802,6 +807,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     otherBill,
                 ),
@@ -819,6 +825,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     otherBill,
                 ),
@@ -925,6 +932,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -953,6 +961,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     billDetail,
                 ),
@@ -1000,6 +1009,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1040,6 +1050,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1057,6 +1068,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
             )
@@ -1073,6 +1085,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1084,7 +1097,12 @@ class EditBillViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val members = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)
+            val members = Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            )
             navigator.navigate(members)
 
             // When
@@ -1099,7 +1117,12 @@ class EditBillViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            val members = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS)
+            val members = Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            )
             navigator.navigate(members)
             expenses.expenses.value = emptyList()
 
@@ -1114,6 +1137,7 @@ class EditBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1371,6 +1395,7 @@ class EditBillViewModelTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             billDetail,
             route,
@@ -1474,6 +1499,7 @@ class EditBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 billDetail,
             ),

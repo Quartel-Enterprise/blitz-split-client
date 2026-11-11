@@ -47,7 +47,10 @@ class JsPersonalInvite(
     val billShareMinor: Double,
 )
 
-// Why: "change-error" and "release-error", toasts in the page's words; "copy" and "share-personal" with the link.
+/*
+ * Why: "change-error" and "release-error", toasts in the page's words; "copy" (the personal invite's, which says
+ * "Copiado" itself), "copy-group" (the link card's, which a toast confirms) and "share-personal" with the link.
+ */
 class JsMembersAction(
     val type: String,
     val link: String?,
@@ -69,6 +72,8 @@ class JsMembersState(
     // Why: the currency chips over the balances, drawn only with more than one.
     val currencies: Array<String>,
     val displayLink: String?,
+    // Why: the link card's copy button, disabled until the group's first sync brings the code.
+    val canCopyLink: Boolean,
     val members: Array<JsMembersMember>,
     val editor: JsMemberNameEditor?,
     // Why: the name in "Remover Carla do grupo?", null while nobody is about to be removed.
@@ -100,6 +105,7 @@ class MembersPresenter(
                 fractionDigits = state.currency.fractionDigits,
                 currencies = state.currencies.toCurrencyCodes(),
                 displayLink = state.displayLink,
+                canCopyLink = state.canCopyLink,
                 members = state.members.map(::toJsMembersMember).toTypedArray(),
                 editor = state.editor?.let(::toJsMemberNameEditor),
                 memberToRemoveName = state.memberToRemove?.name,
@@ -122,6 +128,8 @@ class MembersPresenter(
 
                 is MembersUiAction.CopyLink -> JsMembersAction("copy", action.link, null, null)
 
+                is MembersUiAction.CopyGroupLink -> JsMembersAction("copy-group", action.link, null, null)
+
                 is MembersUiAction.SharePersonalLink -> JsMembersAction(
                     type = "share-personal",
                     link = action.link,
@@ -142,6 +150,11 @@ class MembersPresenter(
 
     fun share() {
         viewModel.onEvent(MembersUiEvent.OnShareClicked)
+    }
+
+    // Why: the link card's copy button, beside Share.
+    fun copyLink() {
+        viewModel.onEvent(MembersUiEvent.OnLinkCopyClicked)
     }
 
     fun add() {

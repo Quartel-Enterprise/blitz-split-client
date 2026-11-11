@@ -1,4 +1,4 @@
-import { Banknote, ChevronDown, ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
+import { Banknote, ChevronDown, ChevronRight, ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
 import {
   SplitBillPresenter,
   type JsBillConflict,
@@ -381,32 +381,32 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
 }
 
 /**
- * "Grupo": a new bill's opens "Rachar em qual grupo?" once there is another group to pick; a saved bill's, or the only
- * group's, is plain text.
+ * "Grupo": the group opens its page over the form, which stays mounted with what was typed (beta feedback); a new
+ * bill's "Change" beside it opens "Rachar em qual grupo?" once there is another group to pick.
  */
 function GroupField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
-  const content = (
-    <>
-      <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-5 rounded-md text-[9px]" />
-      <span className="flex-1 truncate text-left">{state.groupName}</span>
-    </>
-  )
   return (
     <div className="flex flex-col gap-1.5">
-      {state.canChangeGroup ? (
-        <>
-          <Label htmlFor={groupId}>{t('splitBill_group')}</Label>
-          <button id={groupId} type="button" aria-haspopup="dialog" onClick={() => presenter.openGroup()} className={controlClass}>
-            {content}
-            <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
-          </button>
-        </>
-      ) : (
-        <>
-          <span className="text-sm font-medium">{t('splitBill_group')}</span>
-          <div className="flex h-9 items-center gap-2 rounded-md border bg-muted/40 px-3 text-sm">{content}</div>
-        </>
-      )}
+      <Label htmlFor={groupId}>{t('splitBill_group')}</Label>
+      <div className="flex items-center gap-2">
+        <button
+          id={groupId}
+          type="button"
+          title={t('groups_openGroup')}
+          disabled={!state.canOpenGroup}
+          onClick={() => presenter.openGroupScreen()}
+          className={cn(controlClass, 'flex-1')}
+        >
+          <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-5 rounded-md text-[9px]" />
+          <span className="flex-1 truncate text-left">{state.groupName}</span>
+          <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
+        </button>
+        {state.canChangeGroup && (
+          <Button type="button" variant="outline" aria-haspopup="dialog" onClick={() => presenter.openGroup()}>
+            {t('splitBill_change')}
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

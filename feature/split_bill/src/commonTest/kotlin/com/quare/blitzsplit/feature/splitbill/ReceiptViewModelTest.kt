@@ -1943,6 +1943,7 @@ class ReceiptViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 navigator.backStack.value.last(),
             )
@@ -3609,6 +3610,7 @@ class ReceiptViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 )
             }

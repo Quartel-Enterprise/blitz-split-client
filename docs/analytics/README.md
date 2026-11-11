@@ -158,7 +158,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_clicked` | none | Delete account's "Delete account" | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Delete account's Cancel, its back arrow, or a native dismiss | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`, `profile`) | "Export my data" | `:feature:delete_account`, `:feature:profile` |
-| `invite_link_copy_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
+| `invite_link_copy_clicked` | `source` (`invite`, `members`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, on Members' "Invite link" card, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Invite's "Share link", "Share with Carla", or the share of "Invite with link or QR" and "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Invite's "See who joined" | `:feature:invite` |
 | `invite_go_to_group_clicked` | none | Invite's "Go to the group" | `:feature:invite` |
@@ -355,7 +355,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_delete_clicked` | `source` (`category_map`, `split_bill`) | The category's Delete, which asks first | `:feature:category_map`, `:feature:split_bill` |
 | `category_delete_confirmed` | `source` (`category_map`, `split_bill`) | "Delete “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
 | `category_delete_cancelled` | `source` (`category_map`, `split_bill`) | "Delete “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
-| `split_bill_group_clicked` | none | The new bill's group, which opens "Split in which group?" | `:feature:split_bill` |
+| `split_bill_group_clicked` | none | "Change" beside the new bill's group, which opens "Split in which group?" | `:feature:split_bill` |
+| `split_bill_group_opened` | none | The bill's group, which opens its screen over the form, while the bill isn't saving nor reading a receipt | `:feature:split_bill` |
 | `split_bill_group_picked` | none | A group marked in "Split in which group?", while it is open, another than the one marked | `:feature:split_bill` |
 | `split_bill_group_confirmed` | `is_another` | "Continue" on it, while it is open, the group still there and the bill not saving | `:feature:split_bill` |
 | `split_bill_currency_picked` | `currency` (the code) | The bill's currency picked beside the total, another than the one it has, the form not locked or saving | `:feature:split_bill` |
@@ -477,13 +478,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_visibility_info_clicked` | none | "Who sees your profile", when it opens | `:feature:profile` |
-| `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`, `unlink_account`) | A confirmation of Profile (sign out, erase, disconnect) closed without its main button, while nothing signs out or unlinks | `:feature:profile` |
+| `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | A confirmation of Profile (sign out, erase) closed without its main button, while nothing signs out | `:feature:profile` |
 | `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
 | `payment_key_add_clicked` | `method` (`pix`, `bitcoin`) | "Add a Pix or Bitcoin key", while a key can be added | `:feature:profile` |
 | `payment_key_clicked` | `method` | A key of "Keys to receive payments" | `:feature:profile` |
-| `profile_account_clicked` | none | The Google or Apple row, when "Disconnect your account?" opens | `:feature:profile` |
-| `profile_unlink_confirmed` | none | "Disconnect", while it can disconnect | `:feature:profile` |
-| `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out or unlinks | `:feature:profile` |
+| `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out | `:feature:profile` |
 | `theme_selected` | `theme` (`system`, `light`, `dark`) | A theme, another than the one picked | `:feature:profile` |
 | `profile_appearance_clicked` | none | "Appearance", once the theme was read | `:feature:profile` |
 | `profile_language_clicked` | none | Android's "Language" row, once the profile was read | `:feature:profile` |

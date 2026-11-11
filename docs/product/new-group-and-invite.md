@@ -34,10 +34,17 @@ Creating a group and inviting people.
     title and buttons below. "Change the link?" takes a book's right half and a tabletop's top half. iOS opens it as a
     sheet on an iPhone (two columns lying down) and pushes it full screen with an iPad's room (two columns lying
     down, the QR card first upright); the Mac opens the new group's in a sheet and the group's as a popover on the
-    group's "Invite people" (or Members' Share), with "Change link…" under its share button. The Mac's sheet ends as
-    the personal invite does, "Add someone without the app" as a link and then a trailing row of regular buttons:
-    Close (Esc), "See who joined" and "Share…" (Return), or "Go to the group" while the link waits. The web's Invite lists the members with
+    group's "Invite people" (or Members' Share), with "Change link…" under its share button. The Mac's popover is
+    the exception to the order below: it keeps "Add someone without the app" as a link at its end and has no "See who
+    joined", since it opens over the group already. The buttons, on every other Invite (beta bugs of 2026-11-10): the share button first ("Share link" on Android, "Share invite" on iOS, "Share…"
+    on the Mac and the web), then "Add someone without the app" as the second, outlined
+    (bordered on iOS) button, then "See who joined" as a text link with a people icon ("Go to the group" with an arrow
+    while the link waits); the wide boards set the first two side by side. The Mac's sheet ends as the personal invite
+    does, "See who joined" as a link and then a trailing row of regular buttons: Close (Esc), "Add someone without
+    the app" and "Share…" (Return), or "Go to the group" (Return) in Share's place while the link waits. The web's
+    dialog has the link over a footer of Close, "Add someone without the app" and "Share…"; its phone drawer stacks
+    "Share…", "Add someone without the app", the link and Close. The web's Invite lists the members with
     their profile photos (yours too) over the initials (beta feedback 3, item 25). Every Invite, the new
-    group's too, ends with "Add someone without the app": someone who won't install it goes in by name, as in "New
+    group's too, offers "Add someone without the app": someone who won't install it goes in by name, as in "New
     group", so it opens the group's Members with "Add person" already open (`RequestAddPerson`, which the group's
     Members on top takes once).

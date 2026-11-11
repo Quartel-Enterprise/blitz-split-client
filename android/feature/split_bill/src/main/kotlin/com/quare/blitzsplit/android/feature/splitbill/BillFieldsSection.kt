@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,11 +32,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -48,6 +52,8 @@ import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptio
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
+
+private const val DISABLED_CHIP_ALPHA = 0.38f
 
 // Why: what to read first: the group the bill goes to, what it was and how much it was (beta feedback 10).
 @Composable
@@ -227,35 +233,46 @@ private fun MatchedTermsRow(state: SplitBillUiState) {
 }
 
 /*
- * Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group. A group
- * that can't change is a plain label (no button role for TalkBack), not a disabled control.
+ * Why: the group of the bill, whose screen it opens over the form, which keeps what was typed (beta feedback); a new
+ * bill's "Change" beside it opens "Rachar em qual grupo?", once there is another group.
  */
 @Composable
 private fun GroupChip(
     state: SplitBillUiState,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val shape = CircleShape
-    val color = MaterialTheme.colorScheme.surfaceContainerHigh
-    val contentColor = MaterialTheme.colorScheme.onSurface
-    if (state.canChangeGroup) {
-        val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val openLabel = stringResource(R.string.split_bill_group_open)
+        val openGroup = { onEvent(SplitBillUiEvent.OnOpenGroupClicked) }
+        // Why: Surface's click keeps the 48dp touch target; faded while saving or reading a receipt, as the rows are.
         Surface(
-            onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
-            modifier = Modifier.semantics { contentDescription = changeLabel },
-            shape = shape,
-            color = color,
-            contentColor = contentColor,
+            onClick = openGroup,
+            modifier = Modifier
+                .alpha(if (state.canOpenGroup) 1f else DISABLED_CHIP_ALPHA)
+                .semantics {
+                    onClick(label = openLabel) {
+                        openGroup()
+                        true
+                    }
+                },
+            enabled = state.canOpenGroup,
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
             GroupChipContent(state)
         }
-    } else {
-        Surface(
-            shape = shape,
-            color = color,
-            contentColor = contentColor,
-        ) {
-            GroupChipContent(state)
+        if (state.canChangeGroup) {
+            val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
+            TextButton(
+                onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
+                modifier = Modifier.semantics { contentDescription = changeLabel },
+            ) {
+                Text(stringResource(R.string.split_bill_group_change_button))
+            }
         }
     }
 }
@@ -267,7 +284,7 @@ private fun GroupChipContent(state: SplitBillUiState) {
             .height(40.dp)
             .padding(
                 start = 4.dp,
-                end = if (state.canChangeGroup) 10.dp else 14.dp,
+                end = 10.dp,
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -285,13 +302,11 @@ private fun GroupChipContent(state: SplitBillUiState) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        if (state.canChangeGroup) {
-            Icon(
-                imageVector = Icons.Outlined.KeyboardArrowDown,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+        )
     }
 }
 

@@ -752,6 +752,7 @@ class PayReceiverViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.BALANCES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -779,6 +780,7 @@ class PayReceiverViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.BALANCES,
+                    isOverBill = false,
                 ),
                 navigator.backStack.value.last(),
             )
@@ -818,6 +820,7 @@ class PayReceiverViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.BALANCES,
+                    isOverBill = false,
                 ),
                 navigator.backStack.value.last(),
             )
@@ -1186,6 +1189,7 @@ class PayReceiverViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.BALANCES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(route)

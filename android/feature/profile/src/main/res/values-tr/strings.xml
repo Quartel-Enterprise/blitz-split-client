@@ -113,11 +113,6 @@
     <string name="profile_export_detail">Profilini ve anahtarlarını içeren bir JSON dosyası</string>
     <string name="profile_delete_account">Hesabı ve verileri sil</string>
     <string name="profile_delete_account_detail">Blitz Split hesabını siler. Bu geri alınamaz.</string>
-    <string name="profile_unlink_title">%1$s hesabının bağlantısı kesilsin mi?</string>
-    <string name="profile_unlink_body">Blitz Split\'i bu cihazda hesapsız kullanmaya devam edersin. Grupların burada kalır ve eşitleme anonim bir kimliğe geçer. Ardından kurtarma kodunu gösteririz: erişimini kaybetmemek için sakla.</string>
-    <string name="profile_unlink_offline">İnternet bağlantısı gerekir.</string>
-    <string name="profile_unlink_failed">Bağlantı kesilemedi. Tekrar dene.</string>
-    <string name="profile_unlink_confirm">Bağlantıyı kes</string>
     <string name="profile_bitcoin_in_sats">Satoshi cinsinden Bitcoin</string>
     <string name="profile_bitcoin_in_sats_detail">Bitcoin tutarlarını sats olarak gösterir ve girer (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Kategori haritası</string>

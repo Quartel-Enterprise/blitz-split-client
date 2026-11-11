@@ -266,6 +266,8 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnGroupClicked -> groupPicking.open()
 
+            SplitBillUiEvent.OnOpenGroupClicked -> groupPicking.openScreen(exits::openGroup)
+
             is SplitBillUiEvent.OnGroupPicked -> groupPicking.pick(event.groupId)
 
             SplitBillUiEvent.OnGroupDone -> groupPicking.confirm()

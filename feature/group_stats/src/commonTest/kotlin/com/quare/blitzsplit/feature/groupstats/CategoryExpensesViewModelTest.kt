@@ -1230,6 +1230,7 @@ class CategoryExpensesViewModelTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             statsRoute,
         )
@@ -1269,6 +1270,7 @@ class CategoryExpensesViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(statsRoute)

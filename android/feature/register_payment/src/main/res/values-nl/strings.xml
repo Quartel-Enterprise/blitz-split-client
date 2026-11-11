@@ -65,7 +65,7 @@
     <string name="register_payment_simplified_new_pays_you">Vereenvoudigde schuld: %1$s betaalt jou wat die %2$s schuldig was.</string>
     <string name="register_payment_simplified_grown">Vereenvoudigde schuld: inclusief wat %1$s %2$s schuldig was.</string>
     <string name="register_payment_simplified_grown_you">Vereenvoudigde schuld: inclusief wat je %s schuldig was.</string>
-    <string name="register_payment_you_lowercase">jou</string>
+    <string name="register_payment_you_owed">jou</string>
     <string name="register_payment_simplify_someone">Iemand</string>
     <string name="register_payment_simplify_on_paid">%1$s heeft zojuist de schulden vereenvoudigd. Je bent %2$s niets meer schuldig in %3$s.</string>
     <string name="register_payment_simplify_off_paid">%1$s heeft zojuist “Schulden vereenvoudigen” uitgezet. Je bent %2$s niets meer schuldig in %3$s.</string>

@@ -292,6 +292,13 @@ data class SplitBillUiState(
     val canChangeGroup: Boolean
         get() = !isEditing && isLoaded && groups.size > 1 && !isSaving && !isFormLocked
 
+    /*
+     * Why: the bill's group opens its screen over the form, which keeps what was typed for back to find (beta
+     * feedback); not while the bill saves, which leaves the form, nor while a receipt is read, which locks it.
+     */
+    val canOpenGroup: Boolean
+        get() = isLoaded && !isSaving && !isFormLocked
+
     // Why: "Padrão do grupo" under Rachar conta's "Divisão" while the bill keeps the group's default split.
     val splitFollowsDefault: Boolean
         get() = defaultSplit?.isFollowedBy(split) == true

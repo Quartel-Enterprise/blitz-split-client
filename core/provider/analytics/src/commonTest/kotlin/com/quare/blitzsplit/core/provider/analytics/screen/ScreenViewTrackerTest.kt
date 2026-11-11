@@ -85,6 +85,7 @@ class ScreenViewTrackerTest {
                 groupId = "group-1",
                 joinedAs = "Bruno",
                 tab = GroupTab.BALANCES,
+                isOverBill = false,
             ),
         )
 
@@ -132,6 +133,7 @@ class ScreenViewTrackerTest {
                     groupId = "group-1",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             tracker.start()
@@ -145,6 +147,7 @@ class ScreenViewTrackerTest {
                     groupId = "group-1",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
 
@@ -166,6 +169,7 @@ class ScreenViewTrackerTest {
                 groupId = "group-1",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
         tracker.start()
@@ -178,6 +182,7 @@ class ScreenViewTrackerTest {
                 groupId = "group-2",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 

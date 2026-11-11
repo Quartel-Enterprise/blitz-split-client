@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -137,13 +138,20 @@ fun ColumnsFormLayout(
                     tabletop = tabletopForm,
                     first = first,
                     second = second,
-                    modifier = Modifier.padding(padding),
+                    modifier = Modifier
+                        .padding(padding)
+                        .consumeWindowInsets(padding),
                 )
             } else {
+                /*
+                 * Why: the scaffold's padding already holds the navigation bar, which the keyboard's inset holds too;
+                 * consumed first, the form ends right on the keyboard rather than a navigation bar above it.
+                 */
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
+                        .consumeWindowInsets(padding)
                         .imePadding(),
                     contentAlignment = Alignment.TopCenter,
                 ) {
