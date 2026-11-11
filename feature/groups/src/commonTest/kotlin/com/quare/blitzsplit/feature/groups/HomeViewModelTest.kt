@@ -2387,7 +2387,7 @@ class HomeViewModelTest {
             // Given
             prepareScenario(
                 syncState = SyncState.SYNCING,
-                isFirstDownloadPending = true,
+                awaitsFullSync = true,
             )
 
             // When
@@ -2399,18 +2399,35 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN the first full sync of the account WHEN it ends while a sync still runs THEN hides the syncing badge`() =
+    fun `GIVEN the first full sync of the account WHEN it settles THEN hides the sync badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 syncState = SyncState.SYNCING,
-                isFirstDownloadPending = true,
+                awaitsFullSync = true,
             )
 
             // When
-            firstDownload.end()
+            account.awaitsFullSync = false
+            syncState.value = SyncState.SYNCED
 
             // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN the retry runs THEN shows the syncing badge until it settles`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            syncState.value = SyncState.SYNCING
+            val whileRetrying = viewModel.uiState.value.syncBadge
+            syncState.value = SyncState.SYNCED
+
+            // Then
+            assertEquals(SyncBadge.SYNCING, whileRetrying)
             assertNull(viewModel.uiState.value.syncBadge)
         }
 

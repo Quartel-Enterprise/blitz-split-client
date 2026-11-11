@@ -161,11 +161,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     every try. Offline, Bill shows the device's comments and photos and takes new ones. Record
     payment never waits offline for the receiver's keys: the form opens, so a payment is recorded offline too.
   - Syncs run silently (Pierre's call, beta feedback: "Syncing" showed often enough to annoy, in an offline first app).
-    Home's and Groups' sync chip says "Syncing…" only during the account's first full sync, while a first download
-    is pending (a sign in, a recovery code or a new device, until a sync settled, across relaunches too:
-    `FirstDownload`, `AccountSnapshot.awaitsFullSync`); every later sync, a queued change going up or the catch up
-    on coming back to the front, shows nothing. "Offline · 1 change queued" and "No response from the server" still
-    show as they did, since they ask for attention (`SyncBadge.ofOrNull`, so no UI special-cases it). A refresh the
-    person asked for (pulling down, the Mac's View › Refresh, ⌘R) keeps its own spinner until that sync ends, since
-    they wait for it. Profile's "Account and sync" row still says "Syncing…" while one runs, a status read there on
-    purpose, and Activity's "Syncing…" only shows while a new device waits for the feed's first page.
+    Home's and Groups' sync chip says "Syncing…" only during the account's first full sync, from a restore (a sign
+    in, a recovery code, a new device) until a sync gets the whole copy through, retries and relaunches included
+    (`AccountSnapshot.awaitsFullSync`), and for the sync after "No response from the server", the retry, until it
+    settles, so a tap on "Try again" shows it working. Every other sync, a queued change going up or the catch up on
+    coming back to the front, shows nothing. "Offline · 1 change queued" and "No response from the server" still
+    show as they did, and win over "Syncing…" (`SyncBadge.ofOrNull`, so no UI special-cases it). Pulling down
+    (Android, iOS) keeps its own spinner until that sync ends, as Activity's refresh does on the Mac (View › Refresh,
+    ⌘R) and the web; the Mac's and the web's Home and Groups have no refresh of their own. Profile's "Account and sync" row still says
+    "Syncing…" while one runs, a status read there on purpose, and Activity's "Syncing…" only shows while a new device
+    waits for the feed's first page.

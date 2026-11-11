@@ -66,7 +66,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -76,7 +75,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -196,14 +194,12 @@ class GroupsViewModel(
     )
 
     init {
-        // Why: the sync badge and the first download's header read one subscription, not two.
-        val firstDownload = observeFirstDownload().shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         combine(
             observeProfile(),
             observeAccount(),
-            SyncBadge.observeActivity(observeSyncState(), firstDownload),
+            observeSyncState(),
             connectivityObserver.observe(),
-        ) { profile, account, sync, isOnline ->
+        ) { profile, account, syncState, isOnline ->
             exit.setOnline(isOnline)
             val badge = UserBadge.of(profile, account.status)
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
@@ -215,8 +211,10 @@ class GroupsViewModel(
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
                     syncBadge = SyncBadge.ofOrNull(
-                        sync = sync,
+                        syncState = syncState,
                         isOnline = isOnline,
+                        awaitsFullSync = account.awaitsFullSync,
+                        previous = state.syncBadge,
                     ),
                     showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 )
@@ -224,7 +222,7 @@ class GroupsViewModel(
             update
         }.onEach(uiState::update)
             .launchIn(viewModelScope)
-        firstDownload
+        observeFirstDownload()
             .onEach { progress ->
                 uiState.update { it.copy(firstDownload = progress?.toDownloadProgress()) }
             }.launchIn(viewModelScope)

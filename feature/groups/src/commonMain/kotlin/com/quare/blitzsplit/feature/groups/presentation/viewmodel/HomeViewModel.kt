@@ -75,7 +75,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -85,7 +84,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -208,15 +206,13 @@ class HomeViewModel(
     )
 
     init {
-        // Why: the sync badge and the first download's header read one subscription, not two.
-        val firstDownload = observeFirstDownload().shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         combine(
             observeProfile(),
             observeAccount(),
-            SyncBadge.observeActivity(observeSyncState(), firstDownload),
+            observeSyncState(),
             connectivityObserver.observe(),
             recoveryCodeCardDismissal.isDismissed,
-        ) { profile, account, sync, isOnline, isCardDismissed ->
+        ) { profile, account, syncState, isOnline, isCardDismissed ->
             val badge = UserBadge.of(profile, account.status)
             val isAnonymous = account.status is AccountStatus.Anonymous
             uiState.update { state ->
@@ -226,7 +222,7 @@ class HomeViewModel(
                     avatarColor = badge.avatarColor,
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
-                    syncBadge = SyncBadge.ofOrNull(sync, isOnline),
+                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline, account.awaitsFullSync, state.syncBadge),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
@@ -287,7 +283,7 @@ class HomeViewModel(
         observeActivityUnreadCount()
             .onEach { count -> uiState.update { it.copy(activityUnreadCount = count) } }
             .launchIn(viewModelScope)
-        firstDownload
+        observeFirstDownload()
             .onEach { progress ->
                 uiState.update { it.copy(firstDownload = progress?.toDownloadProgress()) }
             }.launchIn(viewModelScope)

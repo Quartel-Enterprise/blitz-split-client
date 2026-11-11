@@ -679,26 +679,21 @@ class GroupsViewModelTest {
     fun `GIVEN the first full sync of the account running WHEN the groups open THEN shows the syncing badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(
-                syncState = SyncState.SYNCING,
-                downloading = startingDownload,
-            )
+            prepareScenario(syncState = SyncState.SYNCING)
 
             // When
-            val state = viewModel.uiState.value
+            account.awaitsFullSync = true
 
             // Then
-            assertEquals(SyncBadge.SYNCING, state.syncBadge)
+            assertEquals(SyncBadge.SYNCING, viewModel.uiState.value.syncBadge)
         }
 
     @Test
     fun `GIVEN the first full sync of the account WHEN the device goes offline THEN shows the offline badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(
-                syncState = SyncState.SYNCING,
-                downloading = startingDownload,
-            )
+            prepareScenario(syncState = SyncState.SYNCING)
+            account.awaitsFullSync = true
 
             // When
             isOnline.value = false
@@ -711,10 +706,8 @@ class GroupsViewModelTest {
     fun `GIVEN the first full sync of the account WHEN the server does not answer THEN shows the failed badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(
-                syncState = SyncState.SYNCING,
-                downloading = startingDownload,
-            )
+            prepareScenario(syncState = SyncState.SYNCING)
+            account.awaitsFullSync = true
 
             // When
             syncState.value = SyncState.FAILED
@@ -724,20 +717,77 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the first full sync of the account WHEN it ends while a sync still runs THEN hides the syncing badge`() =
+    fun `GIVEN a failed first full sync WHEN it is retried THEN shows the syncing badge`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(syncState = SyncState.FAILED)
+        account.awaitsFullSync = true
+
+        // When
+        syncState.value = SyncState.SYNCING
+
+        // Then
+        assertEquals(SyncBadge.SYNCING, viewModel.uiState.value.syncBadge)
+    }
+
+    @Test
+    fun `GIVEN the first full sync of the account WHEN it settles THEN hides the sync badge`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(
-                syncState = SyncState.SYNCING,
-                downloading = startingDownload,
-            )
+            prepareScenario(syncState = SyncState.SYNCING)
+            account.awaitsFullSync = true
 
             // When
-            firstDownload.value = null
+            account.awaitsFullSync = false
+            syncState.value = SyncState.SYNCED
 
             // Then
             assertNull(viewModel.uiState.value.syncBadge)
         }
+
+    @Test
+    fun `GIVEN the first full sync settled WHEN a later sync runs THEN shows no sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+            account.awaitsFullSync = true
+            account.awaitsFullSync = false
+            syncState.value = SyncState.SYNCED
+
+            // When
+            syncState.value = SyncState.SYNCING
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN the retry runs THEN shows the syncing badge until it settles`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            syncState.value = SyncState.SYNCING
+            val whileRetrying = viewModel.uiState.value.syncBadge
+            syncState.value = SyncState.SYNCED
+
+            // Then
+            assertEquals(SyncBadge.SYNCING, whileRetrying)
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN the retry fails again THEN shows the failed badge`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(syncState = SyncState.FAILED)
+        syncState.value = SyncState.SYNCING
+
+        // When
+        syncState.value = SyncState.FAILED
+
+        // Then
+        assertEquals(SyncBadge.FAILED, viewModel.uiState.value.syncBadge)
+    }
 
     @Test
     fun `GIVEN internet and a change in the queue WHEN the groups open THEN shows no sync badge`() =
@@ -3769,11 +3819,6 @@ class GroupsViewModelTest {
     private val now = Instant.parse("2026-10-31T15:00:00Z").toEpochMilliseconds()
 
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
-    private val startingDownload = FirstDownloadProgress(
-        arrivedGroupCount = 0,
-        groupCount = null,
-        isWaitingForInternet = false,
-    )
 
     private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
 
