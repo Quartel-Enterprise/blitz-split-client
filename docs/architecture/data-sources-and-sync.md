@@ -327,9 +327,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     the server's account in `simplifyDebtsConflictBy` when its later change beat one still waiting here: the conflict
     of 13.1e, which the first screen of the group on top shows and clears (`ConsumeSimplifyDebtsConflict`).
   - **Changing the invite link** ("Trocar link"): only the group's creator, online, through the `rotate_invite_code`
-    RPC, which makes the new code on the server and answers with it. `SyncCoordinator.rotateInviteCode` first pushes
-    what waits on the device (`syncThen`), so a group created here is up before its code changes, then stores it with
-    `GroupDao.updateInviteCode` right away, under the sync lock, so a download that read the group before can't
+    RPC, which makes the new code on the server and answers with it. `SyncCoordinator.rotateInviteCode` first syncs
+    (`syncThen`) only when the group is not on the server yet (`GroupRepository.isOnServer`), so a group created here
+    is up before its code changes; one already up changes at once, whatever else waits to go up. It stores the new
+    code with `GroupDao.updateInviteCode` right away, under the sync lock, so a download that read the group before can't
     write the old code back, and in the app's scope, so leaving Convidar mid-call keeps it. The server leaves
     `updated_at` alone: the other devices take the new code on their next download, as with any code, and a
     member's earlier offline edit of the group still wins Last-Write-Wins. A failure starts a sync, since the
