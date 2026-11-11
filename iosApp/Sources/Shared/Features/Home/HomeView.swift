@@ -165,6 +165,7 @@ struct HomeView: View {
         .navigationTitle(HomeCopy.tabTitle)
         #if os(iOS)
         .tabTitleDisplayMode()
+        .phoneMinimizesNavigationBar()
         .toolbar {
             TabTitle(title: HomeCopy.tabTitle)
             // The sync status takes the bar's empty leading side, so it comes and goes without moving the content

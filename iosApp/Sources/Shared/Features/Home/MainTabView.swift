@@ -98,6 +98,9 @@ struct MainTabView: View {
         .tabViewStyle(.sidebarAdaptable)
         #if os(iOS)
         .searchTabApart()
+        // Apple's guideline: the bar shrinks to a compact floating control on a scroll down and opens on a scroll up.
+        // iPhone only (an iPad's top bar or sidebar never minimizes). The app has no bottom accessory to move.
+        .modifier(PhoneTabBarMinimization())
         #endif
         #if os(macOS)
         // The sidebar's button at the detail's leading edge instead of the sidebar's header, as in Ajustes (the system's
@@ -384,6 +387,16 @@ struct MainTabView: View {
 private extension View {
     func searchTabApart() -> some View {
         modifier(SearchTabApart())
+    }
+}
+
+private struct PhoneTabBarMinimization: ViewModifier {
+    func body(content: Content) -> some View {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            content.tabBarMinimizeBehavior(.onScrollDown)
+        } else {
+            content
+        }
     }
 }
 

@@ -138,6 +138,7 @@ struct ActivityView: View {
         #if os(iOS)
         // Why: pushed over Home by its bell, the bar names it beside the back button.
         .toolbarTitleDisplayMode(.inline)
+        .phoneMinimizesNavigationBar()
         .sheet(isPresented: model?.isFilterOpen ?? .constant(false)) {
             if let model {
                 ActivityFilterSheet(model: model)

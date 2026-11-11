@@ -133,6 +133,25 @@ private struct TabTitleDisplayMode: ViewModifier {
     }
 }
 
+extension View {
+    /// On iPhone, a long scrolling screen's navigation bar minimizes on a scroll down and comes back on a scroll up,
+    /// as Apple's guideline has it (iOS 27; before it the bar keeps its standard behavior). Never on an iPad, whose
+    /// bars stay put, nor on a form or a short screen: only the tabs and the group screen use it.
+    func phoneMinimizesNavigationBar() -> some View {
+        modifier(PhoneNavigationBarMinimization())
+    }
+}
+
+private struct PhoneNavigationBarMinimization: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 27, *), UIDevice.current.userInterfaceIdiom == .phone {
+            content.toolbarMinimizationBehavior(.onScrollDown, for: .navigationBar)
+        } else {
+            content
+        }
+    }
+}
+
 /// An iPad's room, by the root's measure of the window; until that first measure lands (a size of zero), the size
 /// class stands in, so an iPad's tab never draws a first frame with the iPhone's title and then jumps.
 private func isWideWindow(_ window: ScreenLayout, _ sizeClass: UserInterfaceSizeClass?) -> Bool {

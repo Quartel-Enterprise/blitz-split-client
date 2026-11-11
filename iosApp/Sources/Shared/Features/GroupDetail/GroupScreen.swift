@@ -106,6 +106,7 @@ private struct GroupScreenBars: ViewModifier {
             .navigationTitle(Text(verbatim: header?.groupName ?? ""))
             #if os(iOS)
             .toolbarTitleDisplayMode(.inline)
+            .phoneMinimizesNavigationBar()
             // On iPhone the group's own bar replaces the app's tabs, as the canvas draws it
             .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
             #else
