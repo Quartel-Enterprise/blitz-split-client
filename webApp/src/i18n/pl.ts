@@ -799,7 +799,7 @@ export const pl: Record<MessageKey, string> = {
   profile_language: 'Język',
   profile_languageSystem: 'System',
   profile_languageEnglish: 'Angielski',
-  profile_languagePortuguese: 'Portugalski (BR)',
+  profile_languagePortuguese: 'Portugalski (Brazylia)',
   profile_languageSpanish: 'Hiszpański',
   profile_languageFrench: 'Francuski',
   profile_languageGerman: 'Niemiecki',

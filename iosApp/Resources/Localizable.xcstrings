@@ -15129,67 +15129,67 @@
         }
       }
     },
-    "Portuguese (BR)" : {
+    "Portuguese (Brazil)" : {
       "comment" : "A language of Profile › Language, in the app's language",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugiesisch (BR)"
+            "value" : "Portugiesisch (Brasilien)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugués (BR)"
+            "value" : "Portugués (Brasil)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugais (BR)"
+            "value" : "Portugais (Brésil)"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bahasa Portugis (BR)"
+            "value" : "Bahasa Portugis (Brasil)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portoghese (BR)"
+            "value" : "Portoghese (Brasile)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ポルトガル語（BR）"
+            "value" : "ポルトガル語（ブラジル）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugees (BR)"
+            "value" : "Portugees (Brazilië)"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugalski (BR)"
+            "value" : "Portugalski (Brazylia)"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Português (BR)"
+            "value" : "Português (Brasil)"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portekizce (BR)"
+            "value" : "Portekizce (Brezilya)"
           }
         }
       }
