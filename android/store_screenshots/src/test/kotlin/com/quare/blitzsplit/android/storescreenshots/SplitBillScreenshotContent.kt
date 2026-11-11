@@ -185,5 +185,6 @@ private fun SampleTrip.splitBillState(
         isSaving = false,
         isDeleting = false,
         isLoaded = true,
+        openedInputs = null,
     )
 }

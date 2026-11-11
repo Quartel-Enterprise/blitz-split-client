@@ -2171,6 +2171,270 @@ class EditProfileViewModelTest {
         assertFalse(viewModel.uiState.value.hasChanges)
     }
 
+    @Test
+    fun `GIVEN a different name WHEN going back THEN holds the exit and asks to discard`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = true)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.EditProfile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a held exit WHEN confirming the discard THEN closes the editor without saving`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // When
+            navigator.confirmDiscard()
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+            assertFalse(navigator.pendingDiscard.value)
+            assertTrue(profiles.savedProfiles.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a held exit WHEN keeping the edits THEN stays in the editor with the typed name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // When
+            navigator.cancelDiscard()
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.EditProfile), navigator.backStack.value)
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals("Pierre Vieira", viewModel.uiState.value.name)
+            assertTrue(viewModel.uiState.value.hasChanges)
+        }
+
+    @Test
+    fun `GIVEN nothing touched WHEN going back THEN closes at once without asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = true)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN going back THEN closes at once without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = null,
+                pushed = true,
+            )
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a name typed back to the saved one WHEN going back THEN closes at once without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre"))
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the saved name with spaces around it WHEN going back THEN closes at once without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("  Pierre  "))
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a different avatar color WHEN going back THEN holds the exit and asks to discard`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.PEACH))
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.EditProfile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the saved color picked again WHEN going back THEN closes at once without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.PEACH))
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.SAND))
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a picked photo WHEN going back THEN holds the exit and asks to discard`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = true)
+        pickAndConfirmPhoto(photoSource)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.EditProfile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the account photo chosen WHEN going back THEN holds the exit and asks to discard`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = pierreWithUpload,
+                status = AccountStatus.Connected("u", AccountProvider.GOOGLE),
+                sessionUser = googleUser,
+                pushed = true,
+            )
+            viewModel.onEvent(EditProfileUiEvent.OnAccountPhotoSelected)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile, Route.EditProfile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a removed photo WHEN going back THEN holds the exit and asks to discard`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = true)
+        viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+        // Then
+        assertTrue(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.EditProfile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a photo picked and then removed WHEN going back THEN closes at once without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedProfile = pierreWithoutPhoto,
+                pushed = true,
+            )
+            pickAndConfirmPhoto(photoSource)
+            viewModel.onEvent(EditProfileUiEvent.OnPhotoRemoved)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a saved edit WHEN the save finishes THEN leaves the editor without asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pushed = true)
+        viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+
+        // When
+        viewModel.onEvent(EditProfileUiEvent.OnSaveClicked)
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        assertEquals(1, profiles.savedProfiles.size)
+    }
+
+    @Test
+    fun `GIVEN an untouched form WHEN sync changes the saved profile THEN going back still closes at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            profiles.profile.value = pierre.copy(
+                displayName = "Pierre Vieira",
+                photo = ProfilePhoto.Remote(UPLOADED_PHOTO_URL),
+            )
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN edits WHEN discarding inline THEN puts the saved values back and going back closes at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pushed = true)
+            viewModel.onEvent(EditProfileUiEvent.OnNameChanged("Pierre Vieira"))
+            viewModel.onEvent(EditProfileUiEvent.OnAvatarColorSelected(AvatarColor.PEACH))
+            assertTrue(navigator.hasUnsavedInput.value)
+
+            // When
+            viewModel.onEvent(EditProfileUiEvent.OnDiscardClicked)
+            viewModel.onEvent(EditProfileUiEvent.OnBackClicked)
+
+            // Then
+            assertEquals("Pierre", viewModel.uiState.value.name)
+            assertEquals(AvatarColor.SAND, viewModel.uiState.value.avatarColor)
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
     // Why: a picked photo opens "Ajustar foto" first; Concluir there, as it opened, makes the avatar.
     private fun pickAndConfirmPhoto(source: ByteArray) {
         viewModel.onEvent(EditProfileUiEvent.OnPhotoPicked(source))

@@ -34,6 +34,8 @@ data class RegisterPaymentUiState(
     val method: SettlementMethod,
     // Why: "Quando", date and time; each UI writes the date, after "Hoje" or "Ontem" when it is one of them.
     val paidAt: Long,
+    // Why: the time the form opened with, what a "Quando" picked is compared against.
+    val openedPaidAt: Long,
     val paidDay: RelativeDay,
     // Why: a payment was made by now, so "Quando" picks nothing later; the time of the last change, which pickers cap at.
     val latestPaidAt: Long,
@@ -194,6 +196,14 @@ data class RegisterPaymentUiState(
     // Why: "Sem internet: fica salvo no aparelho e sincroniza ao reconectar."
     val showsOfflineNotice: Boolean
         get() = !isOnline
+
+    /*
+     * Why: closing asks "Discard changes?" only when the form holds something the person changed: an amount other
+     * than the whole debt, a method other than Pix, or another "Quando". Untouched, or put back, it closes silently.
+     */
+    val hasUnsavedInput: Boolean
+        get() = isLoaded &&
+            ((hasEditedAmount && amountMinor != debtMinor) || method != SettlementMethod.PIX || paidAt != openedPaidAt)
 
     val canConfirm: Boolean
         get() = isLoaded && isAmountValid && !isSaving && !isLoadingReceiverKeys

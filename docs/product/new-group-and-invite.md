@@ -53,3 +53,4 @@ Creating a group and inviting people.
     group's too, offers "Add someone without the app": someone who won't install it goes in by name, as in "New
     group", so it opens the group's Members with "Add person" already open (`RequestAddPerson`, which the group's
     Members on top takes once).
+  - Closing New group with unsaved input asks "Discard changes?" first, on every way out ([general.md](general.md)).

@@ -154,7 +154,7 @@ struct RegisterPaymentView: View {
                 #endif
             }
         }
-        .interactiveDismissDisabled(model?.state.isSaving == true)
+        .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.hasUnsavedInput == true)
         #if os(iOS)
         // The canvas' 540×620 form sheet with an iPad's room; an iPhone's sheet keeps the system's width
         .formSheetSizing()

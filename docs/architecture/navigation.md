@@ -69,6 +69,18 @@ already open in the stack goes back to that group instead, so the group never st
 `Route.ProfileLink(code)`, whose ViewModel replaces it (`Navigator.replaceTop`) with `Route.Profile` or the contact's
 `Route.ContactProfile` once it knows whose it is, and only while it is still on top.
 
+### Forms with unsaved input
+
+A form says whether it holds input that leaving would lose (`UiState.hasUnsavedInput`, compared with how it opened) and
+its ViewModel tells the `Navigator` for its own route (`Navigator.guardUnsavedInput(scope, route, flow)`, which calls
+`markUnsaved`). From then on any change of the back stack that would drop that route (`navigateBack`, `popTo`,
+`openHomeTab`, a route replacing it, from the form or from the shell) is held: `pendingDiscard` turns true and each UI
+asks "Discard changes?" (`confirmDiscard` applies the held stack, `cancelDiscard` drops it). A change that keeps the
+route (a screen pushed over the form) is never held. A ViewModel marks its form clean (`markUnsaved(route, false)`)
+before it leaves for a reason that isn't the person's (saved, deleted, the group gone); `replaceAll` starts over and
+clears every mark. A UI that already moved (SwiftUI's sheet or `NavigationStack`, the browser's history) draws the
+stack again once the change is held.
+
 **Navigation never belongs in a `UiAction`.** `UiAction` is for what only a platform can do (see
 [state-management.md](state-management.md#uiaction--one-shot-effects-only-a-platform-can-perform)).
 

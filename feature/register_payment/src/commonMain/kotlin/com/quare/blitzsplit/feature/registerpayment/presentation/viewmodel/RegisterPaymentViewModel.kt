@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -125,6 +126,7 @@ class RegisterPaymentViewModel(
      * either person or the whole group, which leaves nothing to pay.
      */
     init {
+        navigator.guardUnsavedInput(viewModelScope, route, uiState.map { it.hasUnsavedInput })
         val targets = observeTarget(observeGroup, observeGroupBalances, observePeopleBalances)
             .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         /*
@@ -153,7 +155,7 @@ class RegisterPaymentViewModel(
             .onEach { sats -> uiState.update { it.withShowsSats(sats) } }
             .launchIn(viewModelScope)
         navigator.backStack
-            .onEach { if (isDebtGone) leave() }
+            .onEach { if (isDebtGone) leaveDebtGone() }
             .launchIn(viewModelScope)
         connectivityObserver
             .observe()
@@ -262,6 +264,7 @@ class RegisterPaymentViewModel(
             hasEditedAmount = false,
             method = SettlementMethod.PIX,
             paidAt = now,
+            openedPaidAt = now,
             paidDay = relativeDayOf(now),
             latestPaidAt = now,
             isOnline = true,
@@ -330,7 +333,7 @@ class RegisterPaymentViewModel(
         // Why: a currency this version doesn't know takes no new payment (see `GroupCurrency.fromCode`), wherever from.
         isDebtGone = target == null || target.debtMinor == 0L || !target.currency.isKnown
         if (target == null || isDebtGone) {
-            leave()
+            leaveDebtGone()
             return
         }
         shownDebtMinor = target.debtMinor
@@ -496,6 +499,8 @@ class RegisterPaymentViewModel(
                         ),
                     )
                     dropNoticeOfGoneOpener(settlementIds)
+                    // Why: the payment is recorded, so closing the form asks nothing.
+                    navigator.markUnsaved(route, false)
                     leave()
                 }.onFailure {
                     uiState.update { it.copy(isSaving = false) }
@@ -548,6 +553,12 @@ class RegisterPaymentViewModel(
     }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
+    // Why: the debt or the group is gone, so there is no payment left to make and nothing to ask about.
+    private fun leaveDebtGone() {
+        navigator.markUnsaved(route, false)
+        leave()
+    }
+
     private fun leave() {
         if (isOnTop()) navigator.navigateBack()
     }

@@ -99,6 +99,10 @@ data class EditGroupUiState(
     val showsNameError: Boolean
         get() = isLoaded && name.isBlank()
 
+    // Why: closing asks "Discard changes?" while the form differs from how it opened; Simplificar dívidas applies at once.
+    val hasUnsavedInput: Boolean
+        get() = isLoaded && hasChanges
+
     val canSave: Boolean
         get() = isLoaded && hasChanges && name.isNotBlank() && !isSaving && !isPreparingPhoto
 

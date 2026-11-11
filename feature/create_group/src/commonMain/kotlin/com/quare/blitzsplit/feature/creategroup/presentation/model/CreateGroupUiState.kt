@@ -28,7 +28,25 @@ data class CreateGroupUiState(
     val isCreating: Boolean,
     // Why: the device couldn't save the group; cleared by the next try.
     val showsCreateError: Boolean,
+    // Why: the color and the currency the form opened with, what "unsaved input" is compared against.
+    val openedColor: AvatarColor,
+    val openedCurrency: GroupCurrency,
 ) {
+    /*
+     * Why: closing the form asks "Discard changes?" only when something differs from how it opened: a name, a photo,
+     * a person added, a draft typed, another color, type or currency. The creator alone, as it opened, closes silently.
+     */
+    val hasUnsavedInput: Boolean
+        get() = name.isNotBlank() ||
+            photo != null ||
+            isPreparingPhoto ||
+            photoCrop != null ||
+            draft.isNotBlank() ||
+            members.any { !it.isMe } ||
+            type != GroupType.default ||
+            color != openedColor ||
+            currency != openedCurrency
+
     val types: List<GroupType>
         get() = GroupType.entries
 

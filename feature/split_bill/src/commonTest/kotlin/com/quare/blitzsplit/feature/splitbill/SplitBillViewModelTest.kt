@@ -2618,30 +2618,32 @@ class SplitBillViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen on top WHEN tapping close THEN goes back without saving`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        typeAmount("100")
-        describe("Mercado")
+    fun `GIVEN a bill filled in WHEN tapping close and discarding THEN goes back without saving`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+            describe("Mercado")
 
-        // When
-        viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
+            navigator.confirmDiscard()
 
-        // Then
-        assertEquals(
-            listOf(
-                Route.Groups,
-                Route.GroupDetail(
-                    GROUP_ID,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                    isOverBill = false,
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
                 ),
-            ),
-            navigator.backStack.value,
-        )
-        assertTrue(expenses.createdExpenses.isEmpty())
-    }
+                navigator.backStack.value,
+            )
+            assertTrue(expenses.createdExpenses.isEmpty())
+        }
 
     @Test
     fun `GIVEN another screen on top WHEN tapping close THEN the back stack stays`() = runTest(testDispatcher) {

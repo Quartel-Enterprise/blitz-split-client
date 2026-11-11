@@ -997,6 +997,40 @@ class PayReceiverViewModelTest {
             assertEquals(listOf(markAsPaidClicked), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN an edited form WHEN tapping Marcar como pago THEN records it and leaves without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("10,00"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(1, settlements.recordedSettlements.size)
+            assertFalse(navigator.pendingDiscard.value)
+            assertFalse(navigator.hasUnsavedInput.value)
+            assertFalse(route in navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN an edited form WHEN Marcar como pago fails THEN the form stays and still asks to discard`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(recordError = IllegalStateException("disk full"))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(route, navigator.backStack.value.last())
+        }
+
     private val markAsPaidClicked = "payment_mark_as_paid_clicked" to emptyMap<String, Any>()
 
     // Why: this device's user pays Bruno the whole debt of one group, the way "Marcar como pago" records it.

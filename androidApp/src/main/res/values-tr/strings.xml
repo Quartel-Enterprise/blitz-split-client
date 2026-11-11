@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">İnternet yok</string>
     <string name="bill_link_offline_message">Tekrar çevrimiçi olduğunda bağlantıyı yeniden aç.</string>
     <string name="bill_link_go_home">Ana Sayfa\'ya git</string>
+    <string name="discard_changes_title">Değişiklikler silinsin mi?</string>
+    <string name="discard_changes_message">Kaydedilmemiş değişiklikler kaybolacak.</string>
+    <string name="discard_changes_discard">Sil</string>
+    <string name="discard_changes_keep_editing">Düzenlemeye devam et</string>
 </resources>

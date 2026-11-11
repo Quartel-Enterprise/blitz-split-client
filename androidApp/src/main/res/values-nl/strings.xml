@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">Geen internet</string>
     <string name="bill_link_offline_message">Open de link opnieuw zodra je weer online bent.</string>
     <string name="bill_link_go_home">Naar Start</string>
+    <string name="discard_changes_title">Wijzigingen negeren?</string>
+    <string name="discard_changes_message">Niet-bewaarde wijzigingen gaan verloren.</string>
+    <string name="discard_changes_discard">Negeer</string>
+    <string name="discard_changes_keep_editing">Verder bewerken</string>
 </resources>

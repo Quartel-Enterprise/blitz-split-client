@@ -1072,6 +1072,7 @@ class SplitBillUiStateTest {
         isSaving = isSaving,
         isDeleting = isDeleting,
         isLoaded = isLoaded,
+        openedInputs = null,
     )
 
     private companion object {

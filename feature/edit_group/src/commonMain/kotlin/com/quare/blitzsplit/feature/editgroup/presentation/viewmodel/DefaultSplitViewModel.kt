@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -63,6 +65,7 @@ class DefaultSplitViewModel(
                 isSaving = false,
                 showsSaveError = false,
                 hasChanges = false,
+                hasEdits = false,
                 figures = DefaultSplitFigures.of(
                     mode = DefaultSplitMode.EQUAL,
                     people = emptyList(),
@@ -89,13 +92,14 @@ class DefaultSplitViewModel(
      * the people follow it: who joins comes in as the rules start them, who is removed goes.
      */
     init {
+        navigator.guardUnsavedInput(viewModelScope, route, uiState.map { it.hasUnsavedInput })
         // Why: the form opens once bitcoin's unit is known, so no income is filled in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
         combine(observeGroup(route.groupId), showsSats, ::Pair)
             .onEach { (group, sats) ->
                 if (opened == null) uiState.update { it.copy(showsSats = sats) }
                 isGroupGone = group == null
-                if (group == null) leave() else show(group)
+                if (group == null) leaveGroupGone() else show(group)
             }.launchIn(viewModelScope)
         // Why: "Bitcoin em satoshis" changed while the form is open (the Mac's Ajustes): each income keeps its value.
         observeBitcoinInSats()
@@ -121,7 +125,7 @@ class DefaultSplitViewModel(
             .onEach { tree -> uiState.update { it.copy(categories = tree) } }
             .launchIn(viewModelScope)
         navigator.backStack
-            .onEach { if (isGroupGone) leave() }
+            .onEach { if (isGroupGone) leaveGroupGone() }
             .launchIn(viewModelScope)
         connectivityObserver
             .observe()
@@ -396,6 +400,8 @@ class DefaultSplitViewModel(
                         people = current.people.map { it.copy(isNew = false) },
                     )
                 }
+                // Why: saved, so leaving asks nothing; said now, since the state's own report reaches the stack later.
+                navigator.markUnsaved(route, false)
                 leave()
             }.onFailure {
                 uiState.update {
@@ -424,7 +430,8 @@ class DefaultSplitViewModel(
             )
             next.copy(
                 figures = figures,
-                hasChanges = next.isChangedFrom(opened, figures),
+                hasChanges = next.isChangedFrom(opened, figures, countsNewPeople = true),
+                hasEdits = next.isChangedFrom(opened, figures, countsNewPeople = false),
             )
         }
     }
@@ -433,12 +440,13 @@ class DefaultSplitViewModel(
     private fun DefaultSplitUiState.isChangedFrom(
         opened: Opened?,
         figures: DefaultSplitFigures,
+        countsNewPeople: Boolean,
     ): Boolean {
         if (opened == null) return false
         val split = GroupDefaultSplit(mode, figures.weights, exceptions)
         return split.mode != opened.split.mode ||
             people.any { split.weightOf(it.id) != opened.split.weightOf(it.id) } ||
-            people.any { it.isNew } ||
+            (countsNewPeople && people.any { it.isNew }) ||
             exceptions != opened.split.exceptions ||
             (mode == DefaultSplitMode.INCOME && figures.incomes.filterValues { it > 0 } != opened.incomes)
     }
@@ -453,6 +461,12 @@ class DefaultSplitViewModel(
         showsSats = showsSats,
         decimalSeparator = TypedText.amountSeparatorOf(decimalSeparator()),
     )
+
+    // Why: the group is gone, so there is nothing left to save and nothing to ask about.
+    private fun leaveGroupGone() {
+        navigator.markUnsaved(route, false)
+        leave()
+    }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
     private fun leave() {

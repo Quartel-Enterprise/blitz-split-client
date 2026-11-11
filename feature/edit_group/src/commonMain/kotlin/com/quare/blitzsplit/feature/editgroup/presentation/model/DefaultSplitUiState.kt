@@ -29,6 +29,8 @@ data class DefaultSplitUiState(
     val showsSaveError: Boolean,
     // Why: Salvar stays off until the split differs from what the screen opened with, or someone new is in it.
     val hasChanges: Boolean,
+    // Why: what the person changed, which leaves out someone who joined meanwhile and is taken in by saving.
+    val hasEdits: Boolean,
     /*
      * Why: what the form gives (DefaultSplitFigures.of), worked out once per change of it with every such copy, not
      * on each copy for the connection or a save going on, since every UI reads it on each keystroke.
@@ -87,6 +89,10 @@ data class DefaultSplitUiState(
 
     val modes: List<DefaultSplitMode>
         get() = DefaultSplitMode.entries
+
+    // Why: closing asks "Discard changes?" only for what was edited, never for a person who joined meanwhile.
+    val hasUnsavedInput: Boolean
+        get() = isLoaded && hasEdits
 
     val canSave: Boolean
         get() = isLoaded && hasChanges && addsUp && !isSaving

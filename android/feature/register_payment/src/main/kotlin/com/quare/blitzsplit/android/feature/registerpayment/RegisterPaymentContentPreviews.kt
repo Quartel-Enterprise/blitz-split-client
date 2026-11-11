@@ -55,6 +55,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     hasEditedAmount = true,
     method = SettlementMethod.PIX,
     paidAt = PREVIEW_NOW_MILLIS,
+    openedPaidAt = PREVIEW_NOW_MILLIS,
     paidDay = RelativeDay.TODAY,
     latestPaidAt = PREVIEW_NOW_MILLIS,
     isOnline = isOnline,

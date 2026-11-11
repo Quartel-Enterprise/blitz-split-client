@@ -276,6 +276,29 @@ class AppPresenter {
         navigator.popTo(size)
     }
 
+    // Why: "Descartar alterações?", asked while a way out of a form with unsaved input waits for the answer.
+    fun observeDiscardPending(onChange: (Boolean) -> Unit): JsWatch {
+        val watch = FlowWatcher(navigator.pendingDiscard).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
+    // Why: the page warns before it closes while a form holds input that leaving would lose.
+    fun observeHasUnsavedInput(onChange: (Boolean) -> Unit): JsWatch {
+        val watch = FlowWatcher(navigator.hasUnsavedInput).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
+    // Why: the browser's back button already moved the history, so it must go forward again when the stack held.
+    fun isDiscardPending(): Boolean = navigator.pendingDiscard.value
+
+    fun confirmDiscard() {
+        navigator.confirmDiscard()
+    }
+
+    fun cancelDiscard() {
+        navigator.cancelDiscard()
+    }
+
     fun dispose() {
         holder.clear()
     }

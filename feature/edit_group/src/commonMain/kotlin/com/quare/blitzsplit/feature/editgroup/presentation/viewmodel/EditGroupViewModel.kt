@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -125,14 +127,15 @@ class EditGroupViewModel(
      * currency is only the default of new bills, so it is always editable and no bill or payment changes with it.
      */
     init {
+        navigator.guardUnsavedInput(viewModelScope, route, uiState.map { it.hasUnsavedInput })
         observeGroup(route.groupId)
             .onEach { group ->
                 isGroupGone = group == null
-                if (group == null) leave() else show(group)
+                if (group == null) leaveGroupGone() else show(group)
             }.launchIn(viewModelScope)
         navigator.backStack
             .onEach {
-                if (isGroupGone) leave() else latest?.let(::showConflict)
+                if (isGroupGone) leaveGroupGone() else latest?.let(::showConflict)
             }.launchIn(viewModelScope)
         /*
          * Why: the switch's line and its open confirmation follow the pairs as bills, payments and syncs change them,
@@ -458,6 +461,8 @@ class EditGroupViewModel(
                     currency = currency,
                 )
                 updateForm { it.copy(isSaving = false) }
+                // Why: saved, so leaving asks nothing; said now, since the state's own report reaches the stack later.
+                navigator.markUnsaved(route, false)
                 leave()
             }.onFailure {
                 uiState.update {
@@ -486,6 +491,12 @@ class EditGroupViewModel(
                 photo != group.photo ||
                 currency != group.currency
         )
+
+    // Why: the group is gone, so there is nothing left to save and nothing to ask about.
+    private fun leaveGroupGone() {
+        navigator.markUnsaved(route, false)
+        leave()
+    }
 
     // Why: only while it is still on top: a native back (a swipe, the browser's, a sheet dismissed) may have closed it.
     private fun leave() {

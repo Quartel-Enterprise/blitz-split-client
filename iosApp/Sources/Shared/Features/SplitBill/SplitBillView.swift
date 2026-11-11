@@ -179,7 +179,9 @@ struct SplitBillView: View {
                 #endif
             }
         }
-        .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isDeleting == true)
+        .interactiveDismissDisabled(
+            model?.state.isSaving == true || model?.state.isDeleting == true || model?.state.hasUnsavedInput == true
+        )
         #if os(iOS)
         // The canvas' 820×640 sheet lying down and 620×860 upright with an iPad's room
         .billSheetSizing(in: windowLayout)

@@ -1641,7 +1641,6 @@ class RegisterPaymentViewModelTest {
     fun `GIVEN the screen on top WHEN tapping close THEN goes back without recording`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        typeAmount("100")
 
         // When
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
@@ -1660,6 +1659,7 @@ class RegisterPaymentViewModelTest {
             navigator.backStack.value,
         )
         assertTrue(settlements.recordedSettlements.isEmpty())
+        assertFalse(navigator.pendingDiscard.value)
     }
 
     @Test
@@ -2009,6 +2009,358 @@ class RegisterPaymentViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN part of the debt typed WHEN tapping close THEN asks to discard and the form stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                    route,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the amount cleared WHEN tapping close THEN asks to discard and the form stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged(""))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                    route,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another method picked WHEN tapping close THEN asks to discard and the form stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                    route,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another Quando picked WHEN tapping close THEN asks to discard and the form stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAtChanged(nowMillis - HOUR))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                    route,
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the whole debt typed again WHEN tapping close THEN closes without asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("162,30")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                    isOverBill = false,
+                ),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN part typed then Toda a divida WHEN tapping close THEN closes without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+            viewModel.onEvent(RegisterPaymentUiEvent.OnFullDebtClicked)
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another method then Pix again WHEN tapping close THEN closes without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.PIX))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another Quando then the time the form opened WHEN tapping close THEN closes without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAtChanged(nowMillis - HOUR))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAtChanged(nowMillis))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the group not read yet WHEN tapping close THEN closes without asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isGroupRead = false)
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                    isOverBill = false,
+                ),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN a held close WHEN discarding THEN the form closes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("100")
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+        // When
+        navigator.confirmDiscard()
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                    isOverBill = false,
+                ),
+            ),
+            navigator.backStack.value,
+        )
+        assertTrue(settlements.recordedSettlements.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a held close WHEN keeping editing THEN the form stays with what was typed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("100")
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+        // When
+        navigator.cancelDiscard()
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                    isOverBill = false,
+                ),
+                route,
+            ),
+            navigator.backStack.value,
+        )
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN an edited form WHEN confirming THEN records it and leaves without asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("100")
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(1, settlements.recordedSettlements.size)
+        assertFalse(navigator.pendingDiscard.value)
+        assertFalse(navigator.hasUnsavedInput.value)
+        assertEquals(
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    tab = GroupTab.EXPENSES,
+                    isOverBill = false,
+                ),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN an edited form WHEN the save fails THEN the form stays open and still asks to discard`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(recordError = IllegalStateException("disk full"))
+            typeAmount("100")
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasUnsavedInput)
+            assertTrue(navigator.hasUnsavedInput.value)
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
+                    route,
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN the form open WHEN tapping close THEN tracks nothing`() = runTest(testDispatcher) {

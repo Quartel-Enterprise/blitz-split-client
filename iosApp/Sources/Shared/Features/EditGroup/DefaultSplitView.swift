@@ -99,7 +99,7 @@ struct DefaultSplitView: View {
         #else
         .navigationBarBackButtonHidden(true)
         #endif
-        .interactiveDismissDisabled(model?.state.isSaving == true)
+        .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.hasUnsavedInput == true)
         .toolbar {
             #if os(macOS)
             ToolbarItem(placement: .cancellationAction) {

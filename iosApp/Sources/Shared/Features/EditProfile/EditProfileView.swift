@@ -95,7 +95,7 @@ struct EditProfileView: View {
                 .disabled(!model.state.canSave)
             }
         }
-        .interactiveDismissDisabled(model.state.isSaving)
+        .interactiveDismissDisabled(model.state.isSaving || model.state.hasUnsavedInput)
         .photoCrop(model.state.photoCrop, frame: .circle) { model.send(EditProfileUiEventOnPhotoCrop(event: $0)) }
         #if os(iOS)
         // Half height on an iPhone, where the keyboard lifts it with the name field; lying down the sheet takes the

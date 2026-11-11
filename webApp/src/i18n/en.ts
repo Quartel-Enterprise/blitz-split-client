@@ -2068,6 +2068,10 @@ export const en = {
   billLinkNotice_offlineTitle: 'No internet',
   billLinkNotice_offlineBody: "Open the link again once you're back online.",
   billLinkNotice_goHome: 'Go to Home',
+  discardChanges_title: 'Discard changes?',
+  discardChanges_body: 'Unsaved changes will be lost.',
+  discardChanges_discard: 'Discard',
+  discardChanges_keepEditing: 'Keep editing',
   // "Simplificar dívidas" (page 13)
   simplify_title: 'Simplify debts',
   simplify_howItWorks: 'How it works',

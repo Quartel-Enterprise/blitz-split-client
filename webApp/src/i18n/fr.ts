@@ -2070,6 +2070,10 @@ export const fr: Record<MessageKey, string> = {
   billLinkNotice_offlineTitle: 'Pas d’internet',
   billLinkNotice_offlineBody: 'Rouvre le lien dès que tu es de nouveau en ligne.',
   billLinkNotice_goHome: 'Va à l’Accueil',
+  discardChanges_title: 'Abandonner les modifications ?',
+  discardChanges_body: 'Les modifications non enregistrées seront perdues.',
+  discardChanges_discard: 'Abandonner',
+  discardChanges_keepEditing: 'Continuer la modification',
   // "Simplificar dívidas" (page 13)
   simplify_title: 'Simplifier les dettes',
   simplify_howItWorks: 'Comment ça marche',

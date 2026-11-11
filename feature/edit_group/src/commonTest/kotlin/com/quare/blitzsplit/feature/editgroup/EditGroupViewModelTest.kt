@@ -507,6 +507,7 @@ class EditGroupViewModelTest {
 
         // When
         viewModel.onEvent(EditGroupUiEvent.OnCloseClicked)
+        navigator.confirmDiscard()
 
         // Then
         assertEquals(listOf(Route.Groups, groupDetail), navigator.backStack.value)

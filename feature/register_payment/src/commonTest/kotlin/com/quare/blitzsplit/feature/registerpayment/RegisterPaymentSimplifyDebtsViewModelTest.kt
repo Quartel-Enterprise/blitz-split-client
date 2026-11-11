@@ -690,6 +690,30 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
         assertEquals(listOf(paidAnywayClicked), trackedEvents)
     }
 
+    @Test
+    fun `GIVEN an edited form and the notice WHEN tapping paid anyway THEN records it and leaves without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = DIEGO,
+                to = PIERRE,
+            )
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            turnSimplifyDebts(
+                on = true,
+                by = ANA_USER,
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnPaidAnywayClicked)
+
+            // Then
+            assertEquals(1, settlements.recordedSettlements.size)
+            assertFalse(navigator.pendingDiscard.value)
+            assertFalse(navigator.hasUnsavedInput.value)
+            assertEquals(screenUnderForm(), navigator.backStack.value)
+        }
+
     private val paidAnywayClicked = "payment_paid_anyway_clicked" to emptyMap<String, Any>()
 
     // Why: what was owed as the form opened, the whole debt of one pair, recorded by "Já paguei mesmo assim".

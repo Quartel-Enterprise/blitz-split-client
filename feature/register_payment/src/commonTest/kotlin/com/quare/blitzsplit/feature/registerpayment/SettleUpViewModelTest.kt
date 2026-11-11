@@ -591,6 +591,109 @@ class SettleUpViewModelTest {
         assertEquals(listOf<Pair<String, Map<String, Any>>>("payment_confirm_clicked" to emptyMap()), trackedEvents)
     }
 
+    @Test
+    fun `GIVEN a settling up across groups with another method WHEN tapping close THEN asks to discard`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(route, navigator.backStack.value.last())
+        }
+
+    @Test
+    fun `GIVEN a settling up across groups untouched WHEN tapping close THEN closes without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a settling up in one group with part typed WHEN tapping close THEN asks to discard`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(bills = listOf(owes(FLORIPA, CARLA_FLORIPA, ME_FLORIPA, 9_840L)))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("40,00"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(route, navigator.backStack.value.last())
+        }
+
+    @Test
+    fun `GIVEN a held close of a settling up WHEN discarding THEN closes and records nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // When
+            navigator.confirmDiscard()
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+            assertTrue(settlements.recordedSettlements.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a settling up with another method WHEN confirming THEN records it and leaves without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(3, settlements.recordedSettlements.size)
+            assertFalse(navigator.pendingDiscard.value)
+            assertFalse(navigator.hasUnsavedInput.value)
+            assertEquals(
+                listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a settling up with another method WHEN the save fails THEN stays open and still asks to discard`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            settlements.recordError = IllegalStateException("disk full")
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(route, navigator.backStack.value.last())
+        }
+
     private fun paymentRecorded(
         method: SettlementMethod,
         way: String,

@@ -667,6 +667,7 @@ class CreateGroupViewModelTest {
             prepareScenario()
             viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
             navigator.navigateBack()
+            navigator.confirmDiscard()
             navigator.navigate(Route.Profile)
 
             // When
@@ -1759,6 +1760,389 @@ class CreateGroupViewModelTest {
                 trackedEvents,
             )
         }
+
+    @Test
+    fun `GIVEN a form as it opens WHEN reading the state THEN it holds no unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.hasUnsavedInput)
+        assertEquals(state.color, state.openedColor)
+        assertEquals(GroupCurrency.BRL, state.openedCurrency)
+    }
+
+    @Test
+    fun `GIVEN a creator in green WHEN the screen opens THEN the color it opened with is not unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = pierre.copy(avatarColor = AvatarColor.GREEN))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN a device in the United States WHEN the screen opens THEN the opened currency is clean`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(region = "US")
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupCurrency.USD, state.openedCurrency)
+            assertFalse(state.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN typing a name THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem"))
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a name with only spaces WHEN typing it THEN it holds no unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("   "))
+
+        // Then
+        assertFalse(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a typed name WHEN clearing it THEN it holds no unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem"))
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged(""))
+
+        // Then
+        assertFalse(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN typing a draft name THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN typing a blank draft THEN it holds no unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("  "))
+
+        // Then
+        assertFalse(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN adding a member THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana"))
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnAddMemberClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN Ana added WHEN removing Ana THEN it holds no unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        addMember("Ana")
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnRemoveMemberClicked(memberIdOf("Ana")))
+
+        // Then
+        assertFalse(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking home THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnTypeSelected(GroupType.HOME))
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN home picked WHEN picking the default type again THEN it holds no unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnTypeSelected(GroupType.HOME))
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnTypeSelected(GroupType.default))
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping the avatar THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnColorClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN cycling the colors back THEN it holds no unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            repeat(AvatarColor.entries.size) { viewModel.onEvent(CreateGroupUiEvent.OnColorClicked) }
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN reais WHEN picking euros THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN euros picked on a device in Brazil WHEN picking reais again THEN it holds no unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.EUR))
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(GroupCurrency.BRL))
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking a photo THEN it holds unsaved input while Ajustar foto is open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN Ajustar foto open on a photo WHEN dismissing it THEN it holds no unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN a photo confirmed WHEN reading the state THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        pickAndConfirm(firstPhoto)
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNotNull(state.photo)
+        assertTrue(state.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a photo confirmed WHEN removing it THEN it holds no unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        pickAndConfirm(firstPhoto)
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnPhotoRemoved)
+
+        // Then
+        assertFalse(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a picked photo still loading WHEN reading the state THEN it holds unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isLoadHeld = true)
+            viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(firstPhoto))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.isPreparingPhoto)
+            assertTrue(state.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN a named group WHEN closing it THEN asks to discard and stays open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem"))
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a closing held for the answer WHEN discarding THEN closes the form`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem"))
+        viewModel.onEvent(CreateGroupUiEvent.OnCloseClicked)
+        // When
+        navigator.confirmDiscard()
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a closing held for the answer WHEN keeping the form THEN keeps it open with its input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem"))
+            viewModel.onEvent(CreateGroupUiEvent.OnCloseClicked)
+            // When
+            navigator.cancelDiscard()
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+            assertEquals("Viagem", viewModel.uiState.value.name)
+            assertTrue(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN an untouched form WHEN closing it THEN closes at once without asking`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCloseClicked)
+
+        // Then
+        assertFalse(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a typed name cleared again WHEN closing it THEN closes at once without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem"))
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged(""))
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCloseClicked)
+
+            // Then
+            assertFalse(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a named group WHEN the form being marked unsaved THEN the back stack knows it has unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem"))
+            // When
+            val hasUnsaved = navigator.hasUnsavedInput.value
+
+            // Then
+            assertTrue(hasUnsaved)
+        }
+
+    @Test
+    fun `GIVEN a named group WHEN creating it THEN replaces the form with the invite without asking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            val groupId = groups.createdGroups.single().id
+            assertFalse(navigator.pendingDiscard.value)
+            assertFalse(navigator.hasUnsavedInput.value)
+            assertEquals(listOf(Route.Groups, Route.Invite(groupId, isNewGroup = true)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a failed save WHEN creating it THEN stays open and asks before closing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        groups.createError = IllegalStateException("disk full")
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+        viewModel.onEvent(CreateGroupUiEvent.OnCloseClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+        assertTrue(navigator.pendingDiscard.value)
+        assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+    }
 
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, null)
 
