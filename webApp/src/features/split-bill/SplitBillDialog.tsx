@@ -16,7 +16,7 @@ import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { CategoryDeleteDialog, categoryFormPane } from '@/components/CategoryForm'
 import { Avatar, PendingDot } from '@/components/common'
 import { CurrencyMenuItems } from '@/components/CurrencyMenuItems'
-import { AmountInput, controlClass, WhenField } from '@/components/fields'
+import { AmountInput, BillWhenField, controlClass } from '@/components/fields'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
@@ -337,14 +337,20 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
         <div className="flex min-w-0 flex-col gap-4">
           <fieldset disabled={state.isFormLocked} className="flex min-w-0 flex-col gap-4">
             <PayerField presenter={presenter} state={state} money={money} />
-            <WhenField
+            <BillWhenField
               id={whenId}
               label={t('splitBill_when')}
               millis={state.spentAt}
               relativeDay={state.spentDay}
+              hasTime={state.hasSpentTime}
               latestMillis={state.latestSpentAt}
-              onOpen={() => presenter.openSpentAt()}
-              onChange={(millis) => presenter.changeSpentAt(millis)}
+              actions={{
+                onOpen: () => presenter.openSpentAt(),
+                onDayPick: (year, month, day) => presenter.pickSpentDay(year, month, day),
+                onTimeOpen: () => presenter.openSpentTime(),
+                onTimePick: (hour, minute) => presenter.pickSpentTime(hour, minute),
+                onTimeClear: () => presenter.clearSpentTime(),
+              }}
               disabled={state.isFormLocked}
             />
             <div className="flex flex-col gap-1.5">

@@ -196,27 +196,33 @@ export function ExpenseLine({
   extraMeta?: string
   onOpen: () => void
 }) {
-  const time = formatTime(expense.spentAt)
   const payers = expense.payers
   const payer = payers.length === 1 ? payers[0] : null
-  const paid =
-    payers.length > 1
-      ? t('groupDetail_metaPaidBySeveral', {
-          time,
-          names: payerNamesText(payers.map((it) => (it.isMe ? t('splitBill_you') : nameOrFormer(it.name)))),
-        })
+  const names = payerNamesText(payers.map((it) => (it.isMe ? t('splitBill_you') : nameOrFormer(it.name))))
+  // Why: a bill without a time leaves it out, "Bruno pagou" rather than "00:00 · Bruno pagou".
+  const time = formatTime(expense.spentAt)
+  const paid = expense.hasSpentTime
+    ? payers.length > 1
+      ? t('groupDetail_metaPaidBySeveral', { time, names })
       : payer?.isMe
         ? t('groupDetail_metaPaidByMe', { time })
         : payer?.name != null
           ? t('groupDetail_metaPaidBy', { time, name: payer.name })
           : time
+    : payers.length > 1
+      ? t('groups_searchPaidBySeveral', { names })
+      : payer?.isMe
+        ? t('groups_searchYouPaid')
+        : payer?.name != null
+          ? t('groups_searchPaidBy', { name: payer.name })
+          : ''
   const balance = expense.myBalanceMinor
   return (
     <DayRow
       id={expense.id}
       icon={<CategoryBadge category={expense.category} className="size-full rounded-[inherit]" />}
       title={expense.description}
-      meta={extraMeta ? `${paid} · ${extraMeta}` : paid}
+      meta={[paid, extraMeta].filter(Boolean).join(' · ')}
       amount={formatMoney(expense.totalMinor, currency, fractionDigits)}
       isPending={expense.isPending}
       onOpen={onOpen}

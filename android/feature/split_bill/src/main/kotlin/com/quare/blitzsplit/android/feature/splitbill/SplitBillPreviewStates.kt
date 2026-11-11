@@ -160,6 +160,7 @@ internal fun createPreviewBillState(
     payerAmounts = null,
     spentAt = PREVIEW_SPENT_AT,
     spentDay = RelativeDay.TODAY,
+    hasSpentTime = true,
     latestSpentAt = PREVIEW_SPENT_AT,
     split = createPreviewEqualEditor(
         totalMinor = if (amountText.isEmpty() || amountText == "0,00") 0L else PREVIEW_TOTAL_MINOR,

@@ -568,6 +568,8 @@ export const pt: Record<MessageKey, string> = {
   splitBill_when: 'Quando',
   splitBill_date: 'Data',
   splitBill_time: 'Hora',
+  splitBill_addTime: 'Adicionar horário',
+  splitBill_removeTime: 'Remover horário',
   splitBill_split: 'Divisão',
   splitBill_splitEqual: 'Igual entre {count}',
   splitBill_splitAmount: 'Por valor entre {count}',

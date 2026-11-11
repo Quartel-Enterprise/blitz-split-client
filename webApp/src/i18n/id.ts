@@ -568,6 +568,8 @@ export const id: Record<MessageKey, string> = {
   splitBill_when: 'Kapan',
   splitBill_date: 'Tanggal',
   splitBill_time: 'Waktu',
+  splitBill_addTime: 'Tambah waktu',
+  splitBill_removeTime: 'Hapus waktu',
   splitBill_split: 'Pembagian',
   splitBill_splitEqual: 'Rata untuk {count}',
   splitBill_splitAmount: 'Per nominal untuk {count}',

@@ -567,6 +567,8 @@ export const en = {
   splitBill_when: 'When',
   splitBill_date: 'Date',
   splitBill_time: 'Time',
+  splitBill_addTime: 'Add time',
+  splitBill_removeTime: 'Remove time',
   splitBill_split: 'Split',
   splitBill_splitEqual: 'Equally among {count}',
   splitBill_splitAmount: 'By amount among {count}',

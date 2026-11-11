@@ -114,4 +114,5 @@ export const esES: Partial<Record<MessageKey, string>> = {
   item_modeAmount: 'Importe',
   item_personAmount: 'Importe de {name}',
   splitBill_scanReceiptHelp: 'Envía la foto del recibo: rellena el importe, la fecha y la descripción.',
+  splitBill_addTime: 'Añadir hora',
 }

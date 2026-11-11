@@ -572,6 +572,8 @@ export const pl: Record<MessageKey, string> = {
   splitBill_when: 'Kiedy',
   splitBill_date: 'Data',
   splitBill_time: 'Godzina',
+  splitBill_addTime: 'Dodaj godzinę',
+  splitBill_removeTime: 'Usuń godzinę',
   splitBill_split: 'Podział',
   splitBill_splitEqual: 'Po równo · {count} os.',
   splitBill_splitAmount: 'Według kwot · {count} os.',

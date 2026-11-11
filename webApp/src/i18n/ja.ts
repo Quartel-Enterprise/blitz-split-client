@@ -569,6 +569,8 @@ export const ja: Record<MessageKey, string> = {
   splitBill_when: '日時',
   splitBill_date: '日付',
   splitBill_time: '時刻',
+  splitBill_addTime: '時刻を追加',
+  splitBill_removeTime: '時刻を削除',
   splitBill_split: '分け方',
   splitBill_splitEqual: '{count}人で均等',
   splitBill_splitAmount: '{count}人で金額指定',

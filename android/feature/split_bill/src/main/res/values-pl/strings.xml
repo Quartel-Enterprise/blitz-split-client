@@ -17,6 +17,7 @@
     <string name="split_bill_payer">Kto zapłacił</string>
     <string name="split_bill_you">Ty</string>
     <string name="split_bill_when">Kiedy</string>
+    <string name="split_bill_add_time">Dodaj godzinę</string>
     <string name="split_bill_split">Podział</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="one">Po równo na %d</item>

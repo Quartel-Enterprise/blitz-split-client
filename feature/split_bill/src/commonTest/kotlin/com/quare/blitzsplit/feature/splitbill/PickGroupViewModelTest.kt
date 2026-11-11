@@ -292,7 +292,7 @@ class PickGroupViewModelTest {
                 storedGroups = listOf(trip, home, soccer),
             )
             fillIn()
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(YESTERDAY))
+            viewModel.pickSpentAt(YESTERDAY)
             viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
             viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
             viewModel.onEvent(SplitBillUiEvent.OnGroupDone)

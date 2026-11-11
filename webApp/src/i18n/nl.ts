@@ -570,6 +570,8 @@ export const nl: Record<MessageKey, string> = {
   splitBill_when: 'Wanneer',
   splitBill_date: 'Datum',
   splitBill_time: 'Tijd',
+  splitBill_addTime: 'Tijd toevoegen',
+  splitBill_removeTime: 'Tijd verwijderen',
   splitBill_split: 'Verdeling',
   splitBill_splitEqual: 'Gelijk over {count}',
   splitBill_splitAmount: 'Op bedrag over {count}',

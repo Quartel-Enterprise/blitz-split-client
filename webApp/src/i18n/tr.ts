@@ -569,6 +569,8 @@ export const tr: Record<MessageKey, string> = {
   splitBill_when: 'Ne zaman',
   splitBill_date: 'Tarih',
   splitBill_time: 'Saat',
+  splitBill_addTime: 'Saat ekle',
+  splitBill_removeTime: 'Saati kaldır',
   splitBill_split: 'Bölüşüm',
   splitBill_splitEqual: '{count} kişi arasında eşit',
   splitBill_splitAmount: '{count} kişi arasında tutara göre',

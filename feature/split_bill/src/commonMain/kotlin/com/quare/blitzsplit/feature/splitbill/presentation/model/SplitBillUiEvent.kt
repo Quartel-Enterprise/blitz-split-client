@@ -30,7 +30,9 @@ sealed interface SplitBillUiEvent : UiEvent {
              * Why: Apple's and the web's pickers send each step of "Quando" (a day, the time wheel) as it turns, like
              * typing; the tap that opened it counts.
              */
-            is OnSpentAtChanged -> EventAnalytics.NotTracked
+            is OnSpentDayPicked,
+            is OnSpentTimePicked,
+            -> EventAnalytics.NotTracked
 
             // Why: a close or a back, which each platform also does its own way: where it went is its screen view.
             OnGroupDismissed,
@@ -71,6 +73,11 @@ sealed interface SplitBillUiEvent : UiEvent {
             OnSeveralPayersDone -> EventAnalytics.Manual("split_bill_several_payers_confirmed")
 
             OnSpentAtOpened -> EventAnalytics.Automatic("split_bill_date_clicked")
+
+            OnSpentTimeOpened -> EventAnalytics.Automatic("split_bill_time_clicked")
+
+            // Why: only a time the bill had, never a late tap once it has none.
+            OnSpentTimeCleared -> EventAnalytics.Manual("split_bill_time_cleared")
 
             OnSplitClicked -> EventAnalytics.Automatic("split_bill_split_clicked")
 
@@ -300,10 +307,24 @@ sealed interface SplitBillUiEvent : UiEvent {
     // Why: "Quando" opening its picker, which then stops at the day it is now, also once midnight passed meanwhile.
     data object OnSpentAtOpened : SplitBillUiEvent
 
-    // Why: "Quando", picked in each platform's date and time picker.
-    data class OnSpentAtChanged(
-        val epochMillis: Long,
+    // Why: the day picked in "Quando"'s calendar, its month 1 to 12; the bill keeps its time, or still has none.
+    data class OnSpentDayPicked(
+        val year: Int,
+        val month: Int,
+        val day: Int,
     ) : SplitBillUiEvent
+
+    // Why: "Adicionar horário" (or the time there) opening its picker, which then stops at now, as OnSpentAtOpened.
+    data object OnSpentTimeOpened : SplitBillUiEvent
+
+    // Why: the time of day picked for the bill, on its day; 00:00 is the same as no time.
+    data class OnSpentTimePicked(
+        val hour: Int,
+        val minute: Int,
+    ) : SplitBillUiEvent
+
+    // Why: "Remover horário": the bill goes back to its date alone, the first instant of its day.
+    data object OnSpentTimeCleared : SplitBillUiEvent
 
     // Why: "Divisão", which opens "Dividir".
     data object OnSplitClicked : SplitBillUiEvent

@@ -398,15 +398,16 @@ class GroupDetailViewModel(
         val balances = shown?.balances
         val (mine, others) = balances?.debts.orEmpty().partition { it.fromMemberId == meId || it.toMemberId == meId }
         val payerOrder = PayerOrder(group.members)
-        val entries = expenses.map { it.spentAt to expenseRowOf(it, namesById, meId, payerOrder, categoryTree) } +
-            settlements.map {
-                it.paidAt to paymentRowOf(
-                    it,
-                    namesById,
-                    meId,
-                    SpentDay.relativeDayOf(it.paidAt, now, timeZone),
-                )
-            }
+        val entries =
+            expenses.map { it.spentAt to expenseRowOf(it, namesById, meId, payerOrder, categoryTree, timeZone) } +
+                settlements.map {
+                    it.paidAt to paymentRowOf(
+                        it,
+                        namesById,
+                        meId,
+                        SpentDay.relativeDayOf(it.paidAt, now, timeZone),
+                    )
+                }
         val days = entries
             .sortedByDescending { (time, _) -> time }
             .groupBy { (time, _) -> SpentDay.dateOf(time, timeZone) }
