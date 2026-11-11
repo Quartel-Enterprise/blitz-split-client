@@ -91,7 +91,10 @@ final class SplitBillModel {
         Binding(
             get: { ExpenseFormat.date(of: self.state.spentAt) },
             set: {
-                let day = Calendar.current.dateComponents([.year, .month, .day], from: $0)
+                // The shared code's year is Gregorian, whichever calendar the device shows (Japanese, Buddhist…)
+                var gregorian = Calendar(identifier: .gregorian)
+                gregorian.timeZone = .current
+                let day = gregorian.dateComponents([.year, .month, .day], from: $0)
                 guard let year = day.year, let month = day.month, let dayOfMonth = day.day else { return }
                 self.send(SplitBillUiEventOnSpentDayPicked(year: Int32(year), month: Int32(month), day: Int32(dayOfMonth)))
             },

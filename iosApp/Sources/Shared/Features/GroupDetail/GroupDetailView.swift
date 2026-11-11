@@ -710,7 +710,8 @@ private struct MacGroupExpenses: View {
                 }
             }
             TableColumn("Time") { item in
-                Text(verbatim: ExpenseFormat.time(item.time))
+                // A bill without a time leaves its cell empty, never "00:00"
+                Text(verbatim: item.expense?.hasSpentTime == false ? "" : ExpenseFormat.time(item.time))
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
             }

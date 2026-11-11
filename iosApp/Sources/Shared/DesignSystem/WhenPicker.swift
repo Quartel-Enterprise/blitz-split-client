@@ -42,6 +42,7 @@ struct BillWhenPickerRows: View {
     let onOpen: () -> Void
 
     @State private var isOpen = false
+    @State private var isTimeShown = false
 
     var body: some View {
         WhenValueButton(
@@ -57,12 +58,15 @@ struct BillWhenPickerRows: View {
         HStack {
             Text("Time")
             Spacer()
-            if hasTime {
+            if hasTime || isTimeShown {
                 DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
                     .labelsHidden()
             }
-            Toggle("Time", isOn: $hasTime)
+            Toggle("Time", isOn: timeSwitch(hasTime: $hasTime, isShown: $isTimeShown))
                 .labelsHidden()
+        }
+        .onChange(of: hasTime, initial: true) { _, has in
+            if has { isTimeShown = true }
         }
     }
 }
@@ -147,6 +151,7 @@ struct MacBillWhenField: View {
     let onOpen: () -> Void
 
     @State private var isOpen = false
+    @State private var isTimeShown = false
     @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
@@ -166,14 +171,29 @@ struct MacBillWhenField: View {
                         .labelsHidden()
                         .padding()
                 }
-                Toggle("Time", isOn: $hasTime)
-                if hasTime {
+                Toggle("Time", isOn: timeSwitch(hasTime: $hasTime, isShown: $isTimeShown))
+                if hasTime || isTimeShown {
                     DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
                         .datePickerStyle(.stepperField)
                         .labelsHidden()
                 }
             }
+            .onChange(of: hasTime, initial: true) { _, has in
+                if has { isTimeShown = true }
+            }
         }
     }
 }
 #endif
+
+/// A bill's "Time" switch: the time picker stays while it is turned, even through 00:00, which the bill reads as no
+/// time, so it never vanishes under the finger; only the switch turned off takes it away.
+private func timeSwitch(hasTime: Binding<Bool>, isShown: Binding<Bool>) -> Binding<Bool> {
+    Binding(
+        get: { hasTime.wrappedValue || isShown.wrappedValue },
+        set: { isOn in
+            isShown.wrappedValue = isOn
+            hasTime.wrappedValue = isOn
+        },
+    )
+}

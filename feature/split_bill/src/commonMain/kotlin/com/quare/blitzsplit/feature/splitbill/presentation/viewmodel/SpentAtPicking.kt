@@ -59,7 +59,7 @@ internal class SpentAtPicking(
         val timeZone = currentTimeZone()
         val clock = Instant.fromEpochMilliseconds(now).toLocalDateTime(timeZone).time
         val time = if (clock.hour == 0 && clock.minute == 0) LocalTime(0, 1) else LocalTime(clock.hour, clock.minute)
-        uiState.update { it.withSpentAtLimitRefreshed(now, timeZone).withSpentTimePicked(time, now, timeZone) }
+        uiState.update { it.withSpentTimePicked(time, now, timeZone) }
     }
 
     private fun clearTime() {

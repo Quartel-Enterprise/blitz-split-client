@@ -56,7 +56,7 @@ internal fun createInitialBillState(
         severalPayers = null,
         payerSelection = null,
         payerAmounts = null,
-        spentAt = startOfToday(now, timeZone),
+        spentAt = startOfDayOf(now, timeZone),
         spentDay = RelativeDay.TODAY,
         hasSpentTime = false,
         latestSpentAt = now,

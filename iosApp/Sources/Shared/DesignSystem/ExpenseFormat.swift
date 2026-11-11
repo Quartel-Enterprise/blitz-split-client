@@ -152,6 +152,12 @@ enum ExpenseFormat {
         }
     }
 
+    /// A bill's "When" in a change (Activity, the bill's history): "Oct 27, 9:10 PM", or "Oct 27" for a side without a
+    /// time, as Android and the web write it.
+    static func changedDayTime(_ millis: Int64, hasTime: Bool) -> String {
+        hasTime ? dayTime(millis, relativeDay: .other) : shortDate(millis)
+    }
+
     /// "Oct 28" or "28 de out.".
     static func shortDate(_ millis: Int64) -> String {
         date(of: millis).formatted(.dateTime.day().month(.abbreviated))

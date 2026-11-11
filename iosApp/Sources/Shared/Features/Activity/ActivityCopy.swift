@@ -334,7 +334,7 @@ enum ActivityCopy {
         case .amount: value.minor.map { minor in
                 value.currency?.format(minor.int64Value) ?? minor.int64Value.formatted()
             }
-        case .spentAt: value.millis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other, hasTime: value.hasTime) }
+        case .spentAt: value.millis.map { ExpenseFormat.changedDayTime($0.int64Value, hasTime: value.hasTime) }
         case .payers: names(value)
         case .split: value.code.map { splitMode($0) }
         case .type: value.code.flatMap { GroupType.companion.fromCodeOrNull(code: $0) }?.typeLabel

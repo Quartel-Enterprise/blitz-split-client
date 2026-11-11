@@ -61,13 +61,13 @@ internal fun SplitBillUiState.withSpentTimePicked(
 internal fun SplitBillUiState.withSpentTimeCleared(
     now: Long,
     timeZone: TimeZone,
-): SplitBillUiState = withSpentAt(SpentDay.startOf(SpentDay.dateOf(spentAt, timeZone), timeZone), now, timeZone)
+): SplitBillUiState = withSpentAt(startOfDayOf(spentAt, timeZone), now, timeZone)
 
-// Why: a new bill's "Quando" (a duplicate's too): today with no time, its first instant.
-internal fun startOfToday(
-    now: Long,
+// Why: the first instant of an instant's day, a bill with no time; a new bill's (a duplicate's too) is today's.
+internal fun startOfDayOf(
+    epochMillis: Long,
     timeZone: TimeZone,
-): Long = SpentDay.startOf(SpentDay.dateOf(now, timeZone), timeZone)
+): Long = SpentDay.startOf(SpentDay.dateOf(epochMillis, timeZone), timeZone)
 
 // Why: the time of day "Quando" has, null for a bill without one.
 internal fun SplitBillUiState.spentTimeOrNull(timeZone: TimeZone): LocalTime? =

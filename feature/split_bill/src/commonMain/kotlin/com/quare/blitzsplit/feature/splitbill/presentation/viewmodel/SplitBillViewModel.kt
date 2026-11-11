@@ -378,7 +378,7 @@ class SplitBillViewModel(
                     hasFilledDuplicate = true
                     hasPickedSplit = true
                     duplicatedCategoryId = expense.categoryId
-                    fill(group, expense.copy(spentAt = startOfToday(currentTimeMillis(), currentTimeZone())))
+                    fill(group, expense.copy(spentAt = startOfDayOf(currentTimeMillis(), currentTimeZone())))
                 }
                 show(group)
             }
