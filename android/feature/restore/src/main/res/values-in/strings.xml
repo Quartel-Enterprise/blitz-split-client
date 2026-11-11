@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Kembalikan grupmu</string>
+    <string name="restore_subtitle">Pernah masuk dengan akun? Cukup masuk lagi. Jika belum, gunakan kode pemulihan atau kode QR dari perangkat lamamu.</string>
+    <string name="restore_no_connection_title">Tidak ada koneksi</string>
+    <string name="restore_no_connection_body">Masuk dengan akun atau kode butuh internet untuk mengunduh grupmu. Yang sudah kamu ketik tetap tersimpan.</string>
+    <string name="restore_code_label">Atau gunakan kode pemulihan</string>
+    <string name="restore_code_hint">12 huruf dan angka. Tanda hubung opsional.</string>
+    <string name="restore_scan_qr_title">Pindai kode QR dari perangkat lamamu</string>
+    <string name="restore_scan_qr_body">Di sana: Profil › Kode pemulihan › Tampilkan kode QR</string>
+    <string name="restore_recover">Pulihkan</string>
+    <string name="restore_try_again">Coba lagi</string>
+    <string name="restore_start_fresh">Mulai dari awal di perangkat ini</string>
+    <string name="restore_error_invalid_code">Kode tidak ditemukan. Periksa hurufnya dan coba lagi.</string>
+    <string name="restore_error_too_many_attempts">Terlalu banyak percobaan. Tunggu beberapa menit dan coba lagi.</string>
+    <string name="restore_error_sign_in_failed">Tidak dapat masuk sekarang. Coba lagi.</string>
+    <string name="restore_error_unknown">Terjadi kesalahan. Coba lagi.</string>
+</resources>

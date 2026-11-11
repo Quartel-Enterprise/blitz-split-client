@@ -39,7 +39,8 @@ each platform.
       Spanish in `res/values-es/strings.xml` (`values-es-rES` only for what Spain says differently), in French in
       `res/values-fr/strings.xml`, in German in `res/values-de/strings.xml`, in Italian in `res/values-it/strings.xml`,
       in Polish in `res/values-pl/strings.xml` (with Polish's few and many plurals), in Dutch in
-      `res/values-nl/strings.xml` and in Japanese in `res/values-ja/strings.xml`
+      `res/values-nl/strings.xml`, in Japanese in `res/values-ja/strings.xml`, in Turkish in
+      `res/values-tr/strings.xml` and in Indonesian in `res/values-in/strings.xml` (Android's legacy code for `id`)
 
 ### Apple
 
@@ -50,7 +51,7 @@ each platform.
       differs by platform goes behind `#if os(macOS)` or into `Sources/iOS` / `Sources/macOS`; layout follows the
       window's size (`ScreenLayout`), never the idiom (see [responsive-layouts.md](responsive-layouts.md))
 - [ ] The route in `AppRoute` and `RootView`, or the sheet where its host presents it
-- [ ] Strings as English SwiftUI literals with their pt-BR, es, (where Spain differs) es-ES, fr, de, it, pl, nl and ja translations in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
+- [ ] Strings as English SwiftUI literals with their pt-BR, es, (where Spain differs) es-ES, fr, de, it, pl, nl, ja, tr and id translations in `Localizable.xcstrings`; rerun `./iosApp/generate-project.sh` after adding files, then build
       both `BoraRachar-iOS` and `BoraRachar-macOS`
 
 ### Web
@@ -62,7 +63,7 @@ each platform.
 - [ ] `webApp/src/features/<name>/XScreen.tsx` with `usePresenter`, `useWatch`, `useActions` (and `useDraft` for
       text inputs), shadcn/ui components and Tailwind
 - [ ] Strings through `t()` with the key in `src/i18n/en.ts` and every other dictionary (`pt`, `es`, `fr`, `de`, `it`,
-      `pl`, `nl`, `ja`, a Polish `…Other` with a `{count}` holding its few and many forms as "few|many"); `npm --prefix webApp run
+      `pl`, `nl`, `ja`, `tr`, `id`, a Polish `…Other` with a `{count}` holding its few and many forms as "few|many"); `npm --prefix webApp run
       build` passes (it type-checks against the generated `.d.ts`)
 
 ### Before the PR

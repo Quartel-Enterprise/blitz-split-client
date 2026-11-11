@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Gruplarını geri getir</string>
+    <string name="restore_subtitle">Daha önce bir hesapla giriş yaptın mı? Yeniden giriş yapman yeterli. Yapmadıysan kurtarma kodunu ya da eski cihazındaki QR kodunu kullan.</string>
+    <string name="restore_no_connection_title">Bağlantı yok</string>
+    <string name="restore_no_connection_body">Hesapla ya da kodla giriş yapmak, gruplarını indirmek için internet gerektirir. Yazdıkların saklanır.</string>
+    <string name="restore_code_label">Ya da kurtarma kodunu kullan</string>
+    <string name="restore_code_hint">12 harf ve rakam. Tireler isteğe bağlı.</string>
+    <string name="restore_scan_qr_title">Eski cihazındaki QR kodunu tara</string>
+    <string name="restore_scan_qr_body">Orada: Profil › Kurtarma › QR kodunu göster</string>
+    <string name="restore_recover">Kurtar</string>
+    <string name="restore_try_again">Tekrar dene</string>
+    <string name="restore_start_fresh">Bu cihazda sıfırdan başla</string>
+    <string name="restore_error_invalid_code">Kod bulunamadı. Harfleri kontrol edip tekrar dene.</string>
+    <string name="restore_error_too_many_attempts">Çok fazla deneme. Birkaç dakika bekleyip tekrar dene.</string>
+    <string name="restore_error_sign_in_failed">Şu an giriş yapılamadı. Tekrar dene.</string>
+    <string name="restore_error_unknown">Bir şeyler ters gitti. Tekrar dene.</string>
+</resources>

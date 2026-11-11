@@ -1,4 +1,5 @@
 import type { ChangeEvent, CompositionEvent } from 'react'
+import { locale } from '@/i18n'
 
 type TextElement = HTMLInputElement | HTMLTextAreaElement
 
@@ -12,7 +13,8 @@ export function capitalizedFirstLetter(typed: string, previous: string): string 
   const letter = typed.normalize('NFC')
   const before = previous.normalize('NFC')
   if (!/^\p{Ll}$/u.test(letter) || before.includes(letter)) return null
-  const uppercased = letter.toUpperCase()
+  // Why: in the app's language, so Turkish's "i" becomes "İ", not the capital of its dotless "ı"
+  const uppercased = letter.toLocaleUpperCase(locale)
   // "ß" uppercases to "SS": two letters where one was typed
   return [...uppercased].length === 1 && before !== uppercased ? uppercased : null
 }

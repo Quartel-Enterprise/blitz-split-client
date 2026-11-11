@@ -29,6 +29,12 @@
             "value" : "Blitz Split"
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -57,6 +63,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bora Rachar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
           }
         }
       }
@@ -89,6 +101,12 @@
             "value" : "Blitz Split"
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -117,6 +135,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bora Rachar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
           }
         }
       }
@@ -149,6 +173,12 @@
             "value" : "Pour scanner le QR code d’une invitation ou de ton ancien appareil, et pour prendre ta photo de profil et des photos de dépenses."
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untuk memindai kode QR undangan atau dari perangkat lamamu, serta mengambil foto profil dan foto tagihan."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -177,6 +207,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para ler o QR code de um convite ou do seu aparelho antigo, e tirar a foto do seu perfil e fotos das contas."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir davetin ya da eski cihazının QR kodunu taramak, profil fotoğrafını ve harcama fotoğraflarını çekmek için."
           }
         }
       }
@@ -209,6 +245,12 @@
             "value" : "Pour inviter des personnes de tes contacts avec le lien d’un groupe. Leurs numéros restent uniquement sur cet appareil."
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untuk mengundang orang dari kontakmu dengan tautan grup. Nomor mereka tetap di perangkat ini."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -237,6 +279,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para convidar gente da sua agenda com o link de um grupo. Os números ficam só neste aparelho."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kişilerinden birini bir grubun bağlantısıyla davet etmek için. Numaraları bu cihazda kalır."
           }
         }
       }
@@ -269,6 +317,12 @@
             "value" : "Pour enregistrer les photos des dépenses dans ta photothèque."
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untuk menyimpan foto tagihan ke galerimu."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -297,6 +351,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para salvar as fotos das contas na sua galeria."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir harcamanın fotoğraflarını fotoğraf arşivine kaydetmek için."
           }
         }
       }

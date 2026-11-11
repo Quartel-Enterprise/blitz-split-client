@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldo</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Offline · saldo di perangkat ini</string>
+    <string name="global_balances_filter">Tampilkan</string>
+    <string name="global_balances_filter_all">Semua</string>
+    <string name="global_balances_filter_you_owe">Utangmu</string>
+    <string name="global_balances_filter_owes_you">Berutang ke kamu</string>
+    <string name="global_balances_hint">Sudah diimbangi antargrup: setiap orang muncul sekali.</string>
+    <string name="global_balances_hint_empty">Menjumlahkan semua grup di perangkat ini.</string>
+    <string name="global_balances_section_you_owe">Utangmu · %d</string>
+    <string name="global_balances_section_owes_you">Berutang ke kamu · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">%d grup</item>
+    </plurals>
+    <string name="global_balances_guest">%s · tamu</string>
+    <string name="global_balances_you_owe">kamu berutang</string>
+    <string name="global_balances_owes_you">berutang ke kamu</string>
+    <string name="global_balances_by_group_show">Tampilkan %s per grup</string>
+    <string name="global_balances_by_group_hide">Sembunyikan %s per grup</string>
+    <string name="global_balances_received">Diterima</string>
+    <string name="global_balances_received_from">Diterima dari %s</string>
+    <string name="global_balances_settle">Lunasi</string>
+    <string name="global_balances_settle_with">Lunasi dengan %s</string>
+    <string name="global_balances_charge">Tagih</string>
+    <string name="global_balances_charge_person">Tagih %s</string>
+    <string name="global_balances_detail_pane">Saldo dengan %s</string>
+    <string name="global_balances_detail_owes_you">%s berutang ke kamu</string>
+    <string name="global_balances_detail_you_owe">Kamu berutang ke %s</string>
+    <string name="global_balances_detail_guest">%s · tamu tanpa aplikasi</string>
+    <string name="global_balances_detail_note_owed">Totalnya sudah mengimbangi antargrup: Tagih dan Diterima memakai %s. Aplikasi mencatat pembayaran di setiap grup.</string>
+    <string name="global_balances_detail_note_settle">Totalnya sudah mengimbangi antargrup: Lunasi memakai %s. Aplikasi mencatat pembayaran di setiap grup.</string>
+    <string name="global_balances_detail_note_single">Hanya satu grup yang masih terbuka dengan %s.</string>
+    <string name="global_balances_settled_title">Semua sudah lunas</string>
+    <string name="global_balances_settled_body">Tidak ada yang berutang ke kamu dan kamu tidak berutang ke siapa pun. Saat seseorang menambahkan tagihan, saldonya muncul di sini.</string>
+    <string name="global_balances_settled_action">Lihat grup</string>
+    <string name="global_balances_nothing_to_pay_title">Kamu tidak berutang</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">Kamu sudah lunas dengan semua orang. Kamu masih akan menerima %2$s dari %1$d orang.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Lihat siapa yang berutang ke kamu</string>
+    <string name="global_balances_nothing_to_receive_title">Tidak ada yang berutang ke kamu</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">Kamu masih berutang %2$s ke %1$d orang.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Lihat ke siapa kamu berutang</string>
+    <string name="global_balances_coming_soon">Segera hadir</string>
+    <string name="global_balances_change_error">Tidak dapat menyimpan perubahan. Coba lagi.</string>
+    <string name="global_balances_copied">Disalin</string>
+    <string name="global_balances_charge_title">Tagih %s</string>
+    <string name="global_balances_charge_owes">Berutang %1$s ke kamu · %2$s</string>
+    <string name="global_balances_charge_close">Tutup</string>
+    <string name="global_balances_charge_guest">%s adalah tamu tanpa aplikasi. Dia hanya tahu dari pesan ini, jadi pesannya sudah menyebutkan apa saja yang masuk ke tagihan.</string>
+    <string name="global_balances_charge_message">Pesan</string>
+    <string name="global_balances_charge_pix">Sertakan kunci Pix-ku</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Salin pesan</string>
+    <string name="global_balances_charge_send">Kirim</string>
+    <string name="global_balances_message">Hai %1$s! Menurut hitungan Blitz Split, kamu berutang %2$s ke aku dari %3$s.</string>
+    <string name="global_balances_message_guest">Hai %1$s! Kamu berutang %2$s ke aku dari %3$s: bagianmu dari %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hai %1$s! Kamu berutang %2$s ke aku dari %3$s: bagianmu dari %4$s, dikurangi %5$s yang sudah kamu bayar.</string>
+    <string name="global_balances_message_group">grup %s</string>
+    <string name="global_balances_message_groups">grup %s</string>
+    <string name="global_balances_message_pix">Pix %1$s: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telepon</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Kunci acak</string>
+    <string name="global_balances_message_reroute">%1$s menyederhanakan utangnya, jadi alih-alih membayar ke %2$s, kamu membayar langsung ke aku; totalmu tidak berubah.</string>
+</resources>

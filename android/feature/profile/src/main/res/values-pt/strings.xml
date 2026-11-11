@@ -56,6 +56,8 @@
     <string name="profile_language_polish">Polonês</string>
     <string name="profile_language_dutch">Holandês</string>
     <string name="profile_language_japanese">Japonês</string>
+    <string name="profile_language_turkish">Turco</string>
+    <string name="profile_language_indonesian">Indonésio</string>
     <string name="profile_language_system_detail">Idioma do aparelho</string>
     <string name="profile_notifications">Notificações</string>
     <plurals name="profile_notifications_active">

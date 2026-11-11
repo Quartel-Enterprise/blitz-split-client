@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Profili düzenle</string>
+    <string name="edit_profile_save">Kaydet</string>
+    <string name="edit_profile_change_photo">Fotoğrafı değiştir</string>
+    <string name="edit_profile_take_photo">Fotoğraf çek</string>
+    <string name="edit_profile_choose_photo">Galeriden seç</string>
+    <string name="edit_profile_use_account_photo">%1$s hesabının fotoğrafını kullan</string>
+    <string name="edit_profile_remove_photo">Fotoğrafı kaldır</string>
+    <string name="edit_profile_photo_error">Bu fotoğraf kullanılamadı. Başka birini dene.</string>
+    <string name="edit_profile_avatar_color">Avatar rengi</string>
+    <string name="edit_profile_avatar_color_hint">Fotoğrafın yokken görünür.</string>
+    <string name="edit_profile_name_label">Adın</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">En az %d harf yaz.</string>
+    <string name="edit_profile_name_too_long">En fazla %d karakter kullan.</string>
+    <string name="edit_profile_account_notice">Ad ve fotoğraf %1$s hesabından geldi. Burada değiştirmek yalnızca Blitz Split\'te geçerli olur, %1$s hesabını değiştirmez.</string>
+    <string name="edit_profile_footer">Adını ve fotoğrafını yalnızca gruplarındaki kişiler görür.</string>
+    <string name="profile_photo_close">Kapat</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galeri</string>
+    <string name="profile_photo_remove">Kaldır</string>
+    <string name="profile_photo_title">Profil fotoğrafı</string>
+</resources>

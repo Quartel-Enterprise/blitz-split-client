@@ -4,7 +4,7 @@
 
 An app to split bills among friends, offline first and with an optional account. It is **Bora Rachar** in
 Portuguese and **Blitz Split** in every other language (English is the fallback; Portuguese, Spanish, French,
-German, Italian, Polish, Dutch and Japanese are translated); Blitz Split is also the code name: the package `com.quare.blitzsplit`, the Gradle project, the
+German, Italian, Polish, Dutch, Japanese, Turkish and Indonesian are translated); Blitz Split is also the code name: the package `com.quare.blitzsplit`, the Gradle project, the
 `blitzsplit.*` convention plugins. The apps keep the legacy Blitz Split `applicationId` and bundle id, since they
 replace it in the stores.
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Hesabı sil</string>
+    <string name="delete_account_offline_title">İnternet yok.</string>
+    <string name="delete_account_offline_body">Hesabını silmek için internet bağlantısı gerekir. Bağlan ve tekrar dene.</string>
+    <string name="delete_account_heading">Hesabın ve verilerin silinsin mi?</string>
+    <string name="delete_account_deleted_title">Neler silinir</string>
+    <string name="delete_account_deleted_profile">Profilin (ad, fotoğraf ve renk)</string>
+    <string name="delete_account_deleted_keys">Pix ve Bitcoin anahtarların</string>
+    <string name="delete_account_deleted_provider">%1$s hesabınla olan bağlantı</string>
+    <string name="delete_account_deleted_recovery_code">Kurtarma kodun</string>
+    <string name="delete_account_deleted_device">Verilerinin bu cihazdaki kopyası</string>
+    <string name="delete_account_export">Önce verilerimi dışa aktar</string>
+    <string name="delete_account_confirm">Bunun geri alınamayacağını anlıyorum</string>
+    <string name="delete_account_delete">Hesabı sil</string>
+    <string name="delete_account_cancel">İptal</string>
+    <string name="delete_account_failed">Hesabın silinemedi. Tekrar dene.</string>
+</resources>

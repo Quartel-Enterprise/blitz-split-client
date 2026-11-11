@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Pengingat pelunasan</string>
+    <string name="push_bill_created">%1$s menambahkan “%2$s” bersamamu</string>
+    <string name="push_bill_edited">%1$s mengedit “%2$s”</string>
+    <string name="push_bill_deleted">%1$s menghapus “%2$s”</string>
+    <string name="push_comment_added">%1$s berkomentar di “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s menandai bahwa dia sudah membayarmu</string>
+    <string name="push_payment_to_you">%1$s menandai bahwa %2$s sudah membayarmu</string>
+    <string name="push_payment_received_yours">%1$s menandai pembayaranmu sudah diterima</string>
+    <string name="push_payment_from_you">%1$s menandai bahwa kamu sudah membayar %2$s</string>
+    <string name="push_payment_undone">%1$s membatalkan pembayaran denganmu</string>
+    <string name="push_charge_sent">%1$s mengirimimu pengingat untuk melunasi</string>
+    <string name="push_settle_reminder">Kamu punya saldo terbuka di %1$s</string>
+    <string name="push_settle_reminders">Kamu punya saldo terbuka di %1$s grup</string>
+    <string name="push_added_to_group">%1$s menambahkanmu ke grup</string>
+    <string name="push_member_joined">%1$s bergabung ke grup</string>
+    <string name="push_debts_simplified_to_you">%1$s menyederhanakan utang. Sekarang %2$s membayar %3$s ke kamu.</string>
+    <string name="push_debts_simplified_from_you">%1$s menyederhanakan utang. Sekarang kamu membayar %3$s ke %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s menyederhanakan utang. Lihat bagaimana pengaruhnya untukmu.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s mematikan Sederhanakan utang. Sekarang %2$s membayar %3$s ke kamu.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s mematikan Sederhanakan utang. Sekarang kamu membayar %3$s ke %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s mematikan Sederhanakan utang. Lihat bagaimana pengaruhnya untukmu.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Kamu tidak ada di grup ini</string>
+    <string name="bill_link_not_in_group_message">Komentar ini ada di grup yang tidak kamu ikuti. Minta undangan ke orang yang mengirim tautannya.</string>
+    <string name="bill_link_offline_title">Tidak ada internet</string>
+    <string name="bill_link_offline_message">Buka tautannya lagi setelah kamu online.</string>
+    <string name="bill_link_go_home">Ke Beranda</string>
+</resources>

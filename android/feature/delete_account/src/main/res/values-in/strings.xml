@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Hapus akun</string>
+    <string name="delete_account_offline_title">Tidak ada internet.</string>
+    <string name="delete_account_offline_body">Menghapus akun butuh koneksi internet. Sambungkan dan coba lagi.</string>
+    <string name="delete_account_heading">Hapus akun dan datamu?</string>
+    <string name="delete_account_deleted_title">Yang akan dihapus</string>
+    <string name="delete_account_deleted_profile">Profilmu (nama, foto, dan warna)</string>
+    <string name="delete_account_deleted_keys">Kunci Pix dan Bitcoin-mu</string>
+    <string name="delete_account_deleted_provider">Tautan ke akun %1$s kamu</string>
+    <string name="delete_account_deleted_recovery_code">Kode pemulihanmu</string>
+    <string name="delete_account_deleted_device">Salinan datamu di perangkat ini</string>
+    <string name="delete_account_export">Ekspor dataku dulu</string>
+    <string name="delete_account_confirm">Saya paham ini tidak bisa dibatalkan</string>
+    <string name="delete_account_delete">Hapus akun</string>
+    <string name="delete_account_cancel">Batal</string>
+    <string name="delete_account_failed">Tidak dapat menghapus akunmu. Coba lagi.</string>
+</resources>

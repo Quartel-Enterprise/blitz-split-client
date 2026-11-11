@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Edit profil</string>
+    <string name="edit_profile_save">Simpan</string>
+    <string name="edit_profile_change_photo">Ganti foto</string>
+    <string name="edit_profile_take_photo">Ambil foto</string>
+    <string name="edit_profile_choose_photo">Pilih dari galeri</string>
+    <string name="edit_profile_use_account_photo">Pakai foto akun %1$s</string>
+    <string name="edit_profile_remove_photo">Hapus foto</string>
+    <string name="edit_profile_photo_error">Tidak dapat memakai foto ini. Coba foto lain.</string>
+    <string name="edit_profile_avatar_color">Warna avatar</string>
+    <string name="edit_profile_avatar_color_hint">Muncul saat kamu tidak punya foto.</string>
+    <string name="edit_profile_name_label">Namamu</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Ketik minimal %d huruf.</string>
+    <string name="edit_profile_name_too_long">Gunakan maksimal %d karakter.</string>
+    <string name="edit_profile_account_notice">Nama dan foto diambil dari akun %1$s kamu. Mengubahnya di sini hanya berlaku di Blitz Split dan tidak mengubah akun %1$s kamu.</string>
+    <string name="edit_profile_footer">Hanya orang di grupmu yang melihat nama dan fotomu.</string>
+    <string name="profile_photo_close">Tutup</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galeri</string>
+    <string name="profile_photo_remove">Hapus</string>
+    <string name="profile_photo_title">Foto profil</string>
+</resources>

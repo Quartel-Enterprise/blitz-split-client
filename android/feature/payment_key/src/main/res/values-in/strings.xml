@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Kunci Pix baru</string>
+    <string name="payment_key_title_pix_edit">Edit kunci Pix</string>
+    <string name="payment_key_title_bitcoin_new">Kunci Bitcoin baru</string>
+    <string name="payment_key_title_bitcoin_edit">Edit kunci Bitcoin</string>
+    <string name="payment_key_save">Simpan</string>
+
+    <string name="payment_key_pix_intro">Siapa pun yang membayarmu melihat kunci ini saat melunasi. Jenis kunci apa?</string>
+    <string name="payment_key_pix_question">Jenis kunci apa?</string>
+    <string name="payment_key_pix_explanation">Siapa pun yang membayarmu melihat kunci ini saat melunasi.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telepon</string>
+    <string name="payment_key_type_email">Email</string>
+    <string name="payment_key_type_random">Acak</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Nomor ponsel dengan kode area</string>
+    <string name="payment_key_label_email">Email</string>
+    <string name="payment_key_label_random">Kunci acak</string>
+
+    <string name="payment_key_bitcoin_intro">Bagaimana kamu ingin menerima?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">cepat, biaya rendah</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">di blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address atau LNURL</string>
+    <string name="payment_key_label_onchain">Alamat Bitcoin</string>
+
+    <string name="payment_key_paste">Tempel</string>
+
+    <string name="payment_key_hint_cpf">Format 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format nama@domain.com</string>
+    <string name="payment_key_hint_random">32 huruf dan angka, seperti yang ditampilkan bankmu</string>
+    <string name="payment_key_hint_lightning">Seperti nama@wallet.com atau LNURL1…</string>
+    <string name="payment_key_hint_onchain">Alamat mainnet yang diawali bc1q atau bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format 000.000.000-00 · digit pemeriksa cocok</string>
+    <string name="payment_key_valid_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format nama@domain.com</string>
+    <string name="payment_key_valid_random">Kunci acak dikenali (32 karakter)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address valid</string>
+    <string name="payment_key_valid_lnurl">LNURL valid</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF tidak valid: digit pemeriksanya tidak cocok.</string>
+    <string name="payment_key_error_invalid_phone">Nomor ponsel tidak lengkap: gunakan kode area dan 9 digit, diawali angka 9.</string>
+    <string name="payment_key_error_invalid_email">Email tidak lengkap: domainnya belum ada, seperti .com atau .com.br.</string>
+    <string name="payment_key_error_invalid_random">Kunci acak tidak lengkap: kunci ini terdiri dari 32 huruf dan angka.</string>
+    <string name="payment_key_error_invalid_lightning">Ini bukan Lightning Address (nama@wallet) atau LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Ini adalah invoice Lightning (lnbc…): hanya bisa dibayar sekali lalu kedaluwarsa. Tempel Lightning Address atau LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Alamat tidak valid. Gunakan alamat mainnet bc1q atau bc1p.</string>
+    <string name="payment_key_error_testnet_address">Ini adalah alamat testnet (tb1…). Hanya Bitcoin mainnet yang berfungsi di sini, dengan alamat bc1….</string>
+    <string name="payment_key_error_already_saved">Kamu sudah punya kunci ini.</string>
+
+    <string name="payment_key_switched_to_onchain">Ini adalah alamat on-chain, jadi kami beralih ke On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Ini adalah Lightning Address, jadi kami beralih ke Lightning.</string>
+    <string name="payment_key_cpf_notice">Siapa pun yang membayarmu melihat CPF lengkapmu. Jika tidak ingin membagikannya, gunakan kunci telepon, email, atau acak.</string>
+
+    <string name="payment_key_accepted_title">Kami menerima</string>
+    <string name="payment_key_accepted_lightning_address_sample">nama@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Kunci Pix default</string>
+    <string name="payment_key_default_bitcoin_title">Kunci Bitcoin default</string>
+    <string name="payment_key_default_pix_detail">Ditampilkan pertama saat melunasi.</string>
+    <string name="payment_key_default_bitcoin_detail">Ditampilkan pertama saat seseorang membayar dengan BTC.</string>
+    <string name="payment_key_default_now">Sekarang: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Untuk mengubahnya, jadikan kunci lain sebagai default.</string>
+    <string name="payment_key_default_locked_new">Kunci pertamamu dari jenis ini menjadi default.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telepon</string>
+    <string name="payment_key_default_type_email">email</string>
+    <string name="payment_key_default_type_random">kunci acak</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split tidak memindahkan uang: pembayar membayar di aplikasi banknya. Pastikan kunci ini atas namamu.</string>
+    <string name="payment_key_footer_bitcoin">Saat melunasi, kami menampilkan jumlahnya dalam sats sesuai kurs saat ini. Ini hanya perkiraan: pembayar mengonfirmasinya di wallet-nya.</string>
+
+    <string name="payment_key_delete">Hapus kunci</string>
+    <string name="payment_key_delete_title">Hapus kunci ini?</string>
+    <string name="payment_key_delete_body">Orang yang berutang ke kamu tidak akan melihatnya lagi saat melunasi.</string>
+    <string name="payment_key_delete_confirm">Hapus</string>
+</resources>

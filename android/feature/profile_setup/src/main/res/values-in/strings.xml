@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Teman-temanmu memanggilmu apa?</string>
+    <string name="profile_setup_subtitle">Hanya orang di grupmu yang melihat namamu.</string>
+    <string name="profile_setup_avatar_color">Warna avatar</string>
+    <string name="profile_setup_add_photo">Tambah foto</string>
+    <string name="profile_setup_photo_error">Tidak dapat memakai foto ini. Coba foto lain.</string>
+    <string name="profile_setup_name_label">Namamu</string>
+    <string name="profile_setup_name_placeholder">Budi Santoso</string>
+    <string name="profile_setup_name_too_short">Ketik minimal %d huruf.</string>
+    <string name="profile_setup_name_too_long">Gunakan maksimal %d karakter.</string>
+    <string name="profile_setup_name_hint">Kamu bisa mengubahnya nanti di Profil.</string>
+    <string name="profile_setup_saved_locally">Untuk sementara hanya tersimpan di perangkat ini.</string>
+    <string name="profile_setup_continue">Lanjutkan</string>
+</resources>

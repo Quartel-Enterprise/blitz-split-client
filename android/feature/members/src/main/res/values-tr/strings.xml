@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Davet bağlantısı</string>
+    <string name="members_link_pending">Henüz oluşturulmadı</string>
+    <string name="members_share">Paylaş</string>
+    <string name="members_me">%s (sen)</string>
+    <string name="members_status_this_device">Bu cihaz</string>
+    <string name="members_status_joined">Katıldı</string>
+    <string name="members_status_not_joined">Henüz katılmadı</string>
+    <string name="members_options">Seçenekler: %s</string>
+    <string name="members_rename">Yeniden adlandır</string>
+    <string name="members_personal_invite">Kişisel davet: %s</string>
+    <string name="members_personal_message">Bu bağlantıyı açan kişi listeden seçmeden doğrudan şu adla katılır: %s. Tek seferlik çalışır.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Bu bağlantıyı açan kişi listeden seçmeden doğrudan %1$s adıyla katılır ve şimdiye kadar eklenen harcamadaki %2$s payını hemen görür. Tek seferlik çalışır.</item>
+        <item quantity="other">Bu bağlantıyı açan kişi listeden seçmeden doğrudan %1$s adıyla katılır ve şimdiye kadar eklenen %3$d harcamadaki %2$s payını hemen görür. Tek seferlik çalışır.</item>
+    </plurals>
+    <string name="members_personal_copy">Bağlantıyı kopyala</string>
+    <string name="members_personal_copied">Kopyalandı</string>
+    <string name="members_personal_share">Paylaş: %s</string>
+    <string name="members_personal_share_message">Blitz Split\'te %1$s grubuna %2$s adıyla katıl: %3$s</string>
+    <string name="members_remove">Gruptan çıkar</string>
+    <string name="members_remove_joined">%s gruba zaten katıldı</string>
+    <string name="members_remove_title">%s gruptan çıkarılsın mı?</string>
+    <string name="members_remove_message">%s henüz katılmadı. Daha sonra yeniden ekleyebilirsin.</string>
+    <string name="members_remove_confirm">Çıkar</string>
+    <string name="members_release">Adı serbest bırak</string>
+    <string name="members_release_title">Bu ad serbest bırakılsın mı: %s?</string>
+    <string name="members_release_message">%1$s adıyla katılan kişi gruptan ayrılır. %1$s adı, rengi ve harcamaları kalır; %1$s grubun bağlantısıyla yeniden seçilebilir.</string>
+    <string name="members_release_confirm">Serbest bırak</string>
+    <string name="members_release_error">Ad serbest bırakılamadı. Bağlantını kontrol edip tekrar dene.</string>
+    <string name="members_add">Kişi ekle</string>
+    <string name="members_invite_instead">Uygulaması var mı? Bağlantıyla davet et</string>
+    <string name="members_name_label">Ad</string>
+    <string name="members_save">Kaydet</string>
+    <string name="members_cancel">İptal</string>
+    <string name="members_change_error">Değişiklik kaydedilemedi. Tekrar dene.</string>
+    <string name="members_remove_open_balance">%s kişisinin açık bakiyesi var</string>
+    <string name="members_balance_to_get_back">%s alacak</string>
+    <string name="members_balance_owes">%s borç</string>
+    <string name="members_balance_settled">Hesap kapandı</string>
+</resources>

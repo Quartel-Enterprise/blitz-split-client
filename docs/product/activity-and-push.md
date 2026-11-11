@@ -54,7 +54,13 @@ The feed, unread state, real time and push notifications.
     geworden van Reis"). The deleted-item notice starts with who deleted it in these four languages too, as in Spanish
     and French. Japanese doesn't conjugate by person, so its rows need no rule: the verb phrase starts with its
     particle and follows the name with no space ("Anaが支出を割り勘しました：夕食", "あなたが…"), and the sentences the
-    code joins (a deleted item's date, Simplify debts' detail) go together with no space and end with "。".
+    code joins (a deleted item's date, Simplify debts' detail) go together with no space and end with "。". Turkish
+    puts the verb last: every Turkish verb phrase ends with its simple past in "-dı/-di/-du/-dü" (or "-tı…"), before
+    the colon that leads to the object ("Ana bir harcamayı böldü: Akşam yemeği"), and the user's rows add an "n" to
+    that past ("Sen bir harcamayı böldün: …", "Sen gruba katıldın: …"); its deleted-item notice starts with who deleted
+    it too ("Sen sildin: …"). A line that names the user without a verb rule (a photo's "added by") is impersonal in
+    Turkish ("Sen · bugün, 09:12 eklendi"). Indonesian verbs don't change with the person, so its rows need no rule
+    ("Ana membagi Makan malam", "Kamu membagi…").
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

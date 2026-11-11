@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Tautan undangan</string>
+    <string name="members_link_pending">Belum dibuat</string>
+    <string name="members_share">Bagikan</string>
+    <string name="members_me">%s (kamu)</string>
+    <string name="members_status_this_device">Perangkat ini</string>
+    <string name="members_status_joined">Sudah bergabung</string>
+    <string name="members_status_not_joined">Belum bergabung</string>
+    <string name="members_options">Opsi untuk %s</string>
+    <string name="members_rename">Ganti nama</string>
+    <string name="members_personal_invite">Undangan pribadi untuk %s</string>
+    <string name="members_personal_message">Siapa pun yang membuka tautan ini langsung bergabung sebagai %s, tanpa memilih dari daftar. Hanya berlaku sekali.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">Siapa pun yang membuka tautan ini langsung bergabung sebagai %1$s, tanpa memilih dari daftar, dan langsung melihat bagiannya sebesar %2$s di %3$d tagihan yang sudah ditambahkan. Hanya berlaku sekali.</item>
+    </plurals>
+    <string name="members_personal_copy">Salin tautan</string>
+    <string name="members_personal_copied">Disalin</string>
+    <string name="members_personal_share">Bagikan ke %s</string>
+    <string name="members_personal_share_message">Gabung ke %1$s sebagai %2$s di Blitz Split: %3$s</string>
+    <string name="members_remove">Keluarkan dari grup</string>
+    <string name="members_remove_joined">%s sudah bergabung ke grup</string>
+    <string name="members_remove_title">Keluarkan %s dari grup?</string>
+    <string name="members_remove_message">%s belum bergabung. Kamu bisa menambahkannya lagi nanti.</string>
+    <string name="members_remove_confirm">Keluarkan</string>
+    <string name="members_release">Lepas nama</string>
+    <string name="members_release_title">Lepas nama %s?</string>
+    <string name="members_release_message">Siapa pun yang bergabung sebagai %1$s keluar dari grup. Nama, warna, dan tagihan %1$s tetap ada, dan %1$s bisa dipilih lagi lewat tautan grup.</string>
+    <string name="members_release_confirm">Lepas</string>
+    <string name="members_release_error">Tidak dapat melepas nama. Periksa koneksimu dan coba lagi.</string>
+    <string name="members_add">Tambah orang</string>
+    <string name="members_invite_instead">Punya aplikasinya? Undang dengan tautan</string>
+    <string name="members_name_label">Nama</string>
+    <string name="members_save">Simpan</string>
+    <string name="members_cancel">Batal</string>
+    <string name="members_change_error">Tidak dapat menyimpan perubahan. Coba lagi.</string>
+    <string name="members_remove_open_balance">%s masih punya saldo terbuka</string>
+    <string name="members_balance_to_get_back">akan menerima %s</string>
+    <string name="members_balance_owes">berutang %s</string>
+    <string name="members_balance_settled">Lunas</string>
+</resources>
