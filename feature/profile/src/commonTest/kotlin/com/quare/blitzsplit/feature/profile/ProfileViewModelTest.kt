@@ -501,6 +501,32 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN a waiting change WHEN a quiet sync runs THEN keeps the row waiting`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(syncState = SyncState.PENDING)
+
+        // When
+        syncState.value = SyncState.SYNCING
+
+        // Then
+        assertEquals(ProfileSyncStatus.WAITING, viewModel.uiState.value.syncStatus)
+    }
+
+    @Test
+    fun `GIVEN the first full sync WHEN the device goes offline THEN does not show it syncing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+            account.awaitsFullSync = true
+
+            // When
+            isOnline.value = false
+
+            // Then
+            assertNull(viewModel.uiState.value.syncStatus)
+        }
+
+    @Test
     fun `GIVEN a failed sync WHEN the retry runs THEN shows it syncing until it settles`() = runTest(testDispatcher) {
         // Given
         prepareScenario(syncState = SyncState.FAILED)

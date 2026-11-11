@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.SyncState
+import com.quare.blitzsplit.core.model.showsSyncing
 
 /*
  * Why: everything synced draws no badge at all; these are the states that ask for attention.
@@ -28,7 +29,7 @@ enum class SyncBadge {
             syncState == SyncState.SYNCED -> null
             !isOnline -> OFFLINE
             syncState == SyncState.FAILED -> FAILED
-            awaitsFullSync || previous == FAILED || previous == SYNCING -> SYNCING
+            showsSyncing(awaitsFullSync, wasSyncingOrFailed = previous == FAILED || previous == SYNCING) -> SYNCING
             else -> null
         }
     }
