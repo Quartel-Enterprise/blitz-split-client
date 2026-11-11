@@ -217,9 +217,8 @@ private fun EditProfileDialog(
         isWide = false,
         spacing = 16.dp,
         snackbarHostState = snackbarHostState,
-        modifier = modifier
-            .imePadding()
-            .semantics { paneTitle = title },
+        modifier = modifier.semantics { paneTitle = title },
+        cardModifier = Modifier.imePadding(),
     ) {
         Text(
             text = title,

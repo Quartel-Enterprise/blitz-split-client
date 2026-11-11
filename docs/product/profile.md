@@ -14,7 +14,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     own, since a photo, a name and a notice are too little for one (Pierre's call, beta feedback): Android opens it as
     Registrar pagamento (`FormPresentation`), a bottom sheet on a phone with "Edit profile" and Save on top (the photo
     left and the name right lying down), a 560 dp dialog with Cancel and Save anywhere wider (a book's right half),
-    and full screen only on a tabletop (split on the hinge lying down, as a book's was); iOS opens it as a sheet with
+    and full screen only on a tabletop, as the screen always drew it there (the photo and the name side by side
+    lying down); iOS opens it as a sheet with
     Cancel (✕) and Save (✓), at half height on an iPhone, growing to the whole screen (two columns lying down: the
     photo and its color, then the name), and a 540 pt form sheet with an iPad's room. The keyboard lifts the sheet with
     the name field, and the photo menu and "Adjust photo" open over it. Dismissing it (back, a drag down, ✕, Cancel)

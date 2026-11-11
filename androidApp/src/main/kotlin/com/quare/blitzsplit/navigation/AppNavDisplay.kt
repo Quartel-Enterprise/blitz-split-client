@@ -161,7 +161,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     }
     /*
      * Why: Registrar pagamento, Convidar of Contatos and Edit profile open the same way: a sheet on a phone, a dialog
-     * wider (a book's right half) and full screen on a tabletop, their content split on its hinge.
+     * wider (a book's right half) and full screen on a tabletop, the first two with their content split on its hinge
+     * and Edit profile in the screen it always drew there.
      */
     val formPresentation = rememberFormPresentation()
     val formPresentationMetadata = when (formPresentation) {

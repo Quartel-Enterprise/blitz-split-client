@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -37,7 +38,7 @@ private fun EditProfilePreview() {
     BlitzSplitTheme {
         EditProfileContent(
             state = createPreviewState(),
-            presentation = FormPresentation.BottomSheet,
+            presentation = rememberFormPresentation(),
             snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
             onTakePhotoClick = {},
@@ -73,7 +74,7 @@ private fun EditProfileLoadingPreview() {
     BlitzSplitTheme {
         EditProfileContent(
             state = createPreviewState().copy(isLoaded = false),
-            presentation = FormPresentation.BottomSheet,
+            presentation = rememberFormPresentation(),
             snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
             onTakePhotoClick = {},
