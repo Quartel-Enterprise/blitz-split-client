@@ -40,12 +40,9 @@
     <string name="designsystem_when_today">Oggi, %1$s · %2$s</string>
     <string name="designsystem_when_yesterday">Ieri, %1$s · %2$s</string>
     <string name="designsystem_when_other">%1$s · %2$s</string>
-    <string name="designsystem_day_today">Oggi, %s</string>
-    <string name="designsystem_day_yesterday">Ieri, %s</string>
     <string name="designsystem_picker_next">Avanti</string>
     <string name="designsystem_picker_done">Fine</string>
     <string name="designsystem_picker_cancel">Annulla</string>
-    <string name="designsystem_picker_remove_time">Rimuovi orario</string>
     <string name="designsystem_method_pix">Pix</string>
     <string name="designsystem_method_cash">Contanti</string>
     <string name="designsystem_method_transfer">Bonifico</string>

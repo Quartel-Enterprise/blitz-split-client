@@ -33,5 +33,4 @@
     <string name="split_bill_items_row_amount">Por importe</string>
     <string name="split_bill_item_mode_amount">Importe</string>
     <string name="split_bill_scan_receipt_help">Completa el importe, la fecha y la descripción a partir de la foto.</string>
-    <string name="split_bill_add_time">Añadir hora</string>
 </resources>

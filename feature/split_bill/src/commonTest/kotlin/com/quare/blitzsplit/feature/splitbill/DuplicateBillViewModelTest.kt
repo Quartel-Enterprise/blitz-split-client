@@ -131,21 +131,9 @@ class DuplicateBillViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(TODAY_START_MILLIS, state.spentAt)
+            assertEquals(NOW_MILLIS, state.spentAt)
             assertEquals(RelativeDay.TODAY, state.spentDay)
         }
-
-    @Test
-    fun `GIVEN a bill saved at 20h WHEN Duplicar opens THEN the copy has no time`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        val state = viewModel.uiState.value
-
-        // Then
-        assertFalse(state.hasSpentTime)
-    }
 
     @Test
     fun `GIVEN a group with a default split WHEN Duplicar opens THEN the split is the one saved and not the default`() =
@@ -362,7 +350,7 @@ class DuplicateBillViewModelTest {
             assertEquals(listOf(ExpensePayer(ANA, 31_200L)), created.payers)
             assertEquals(SplitMode.EQUAL, created.splitMode)
             assertEquals(savedEqualShares, created.shares)
-            assertEquals(TODAY_START_MILLIS, created.spentAt)
+            assertEquals(NOW_MILLIS, created.spentAt)
             assertTrue(expenses.updatedExpenses.isEmpty())
             assertEquals(savedBill, expenses.expenses.value.single { it.id == EXPENSE_ID })
         }
@@ -523,7 +511,7 @@ class DuplicateBillViewModelTest {
             assertEquals(billItems, created.items)
             assertEquals(itemsBill.amountMinor, created.amountMinor)
             assertEquals(itemsBill.shares, created.shares)
-            assertEquals(TODAY_START_MILLIS, created.spentAt)
+            assertEquals(NOW_MILLIS, created.spentAt)
             assertTrue(expenses.updatedExpenses.isEmpty())
             assertEquals(itemsBill, expenses.expenses.value.single { it.id == EXPENSE_ID })
         }
@@ -732,7 +720,6 @@ class DuplicateBillViewModelTest {
 
         // Why: 2026-10-30T15:00:00Z.
         const val NOW_MILLIS = 1_793_372_400_000L
-        const val TODAY_START_MILLIS = 1_793_318_400_000L
         const val SAVED_VERSION = 1_793_300_000_000L
         const val LATER_VERSION = 1_793_350_000_000L
     }

@@ -4,13 +4,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
-import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.DayEntry
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
-import kotlinx.datetime.TimeZone
 
 // Why: a bill of Despesas, in its own currency whichever the group's or the chip picked.
 internal fun expenseRowOf(
@@ -19,7 +17,6 @@ internal fun expenseRowOf(
     meId: String?,
     payerOrder: PayerOrder,
     categoryTree: CategoryTree,
-    timeZone: TimeZone,
 ): DayEntry {
     val payers = payerOrder.sort(expense.payers.map { it.memberId }).map { id ->
         ExpenseRowPayer(
@@ -31,7 +28,6 @@ internal fun expenseRowOf(
         id = expense.id,
         description = expense.description,
         spentAt = expense.spentAt,
-        hasSpentTime = SpentDay.hasTime(expense.spentAt, timeZone),
         payers = payers,
         totalMinor = expense.amountMinor,
         currency = expense.currency,

@@ -200,7 +200,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     Statistics did: "This month" and "Last month" as the month, picked dates as their days.
   - "Duplicate", only in a bill's ⋮ on Expenses (Bill's top bar has no such button), opens "Split a bill" as a new bill
     in the same group (`Route.SplitBill.duplicatesExpenseId`) filled in with the original's description, amount,
-    currency, category, payers and split, spent today without a time, to change whatever the person wants before saving; nothing is
+    currency, category, payers and split, spent now, to change whatever the person wants before saving; nothing is
     saved until then, and "Back" leaves the original alone. Its attachments, comments and history are not copied, nor
     are people who left the group. A bill in a currency this version doesn't know can't be duplicated, as it can't be
     edited. As in any new bill, the group can still be changed ("Split in which group?"), which starts payers and

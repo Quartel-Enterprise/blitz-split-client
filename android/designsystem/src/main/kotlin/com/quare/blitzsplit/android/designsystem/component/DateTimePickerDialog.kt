@@ -81,15 +81,14 @@ fun DateTimePickerDialog(
                     .toEpochMilli()
                 onPicked(millis)
             },
-            onRemove = null,
             onDismiss = onDismiss,
         )
     }
 }
 
 /*
- * Why: a day of the device's calendar, no later than latestMillis's: a bill's "Quando" picks its date alone, its time
- * apart (beta feedback). The Material picker works in UTC days, so the local day goes in and out of it as midnight UTC.
+ * Why: a day of the device's calendar, no later than latestMillis's: a bill's "Quando" picks its date here, its time
+ * with its own control, never chained (beta feedback). The Material picker works in UTC days, so the local day goes in and out of it as midnight UTC.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -146,17 +145,13 @@ fun DayPickerDialog(
     }
 }
 
-/*
- * Why: a time of day on the clock, "Quando"'s second step for a payment and a bill's "Adicionar horário"; onRemove,
- * when given, offers "Remover horário" for a bill that has one.
- */
+// Why: a time of day on the clock, "Quando"'s second step for a payment and a bill's time.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeOfDayPickerDialog(
     initialHour: Int,
     initialMinute: Int,
     onPicked: (hour: Int, minute: Int) -> Unit,
-    onRemove: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
     val isInBookHalf = rememberIsPickerInBookHalf()
@@ -165,12 +160,7 @@ fun TimeOfDayPickerDialog(
         initialMinute = initialMinute,
     )
     val dismiss: @Composable () -> Unit = {
-        Row {
-            onRemove?.let {
-                TextButton(onClick = it) { Text(stringResource(R.string.designsystem_picker_remove_time)) }
-            }
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
-        }
+        TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
     }
     val confirm: @Composable () -> Unit = {
         TextButton(

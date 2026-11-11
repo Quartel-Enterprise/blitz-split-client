@@ -497,7 +497,7 @@ private struct PhoneBillDetail: View {
                             .font(.title.bold())
                             .lineLimit(3)
                             .accessibilityAddTraits(.isHeader)
-                        Text(verbatim: ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay, hasTime: state.hasSpentTime))
+                        Text(verbatim: ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -789,7 +789,7 @@ private struct MacBillDetail: View {
                 .font(isNarrow ? .title3.bold() : .title2.bold())
                 .lineLimit(2)
                 .accessibilityAddTraits(.isHeader)
-            Text(verbatim: "\(state.groupName) · \(ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay, hasTime: state.hasSpentTime))")
+            Text(verbatim: "\(state.groupName) · \(ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay))")
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
         }

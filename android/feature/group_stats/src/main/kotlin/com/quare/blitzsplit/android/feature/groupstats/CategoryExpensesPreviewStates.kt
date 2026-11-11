@@ -24,7 +24,6 @@ internal fun createPreviewCategoryExpensesState(): CategoryExpensesUiState {
         id = "dinner",
         description = "Jantar no Ostradamus",
         spentAt = PREVIEW_DAY + 21 * PREVIEW_HOUR,
-        hasSpentTime = true,
         payers = listOf(
             StatsPayer(
                 name = "Bruno",
@@ -40,7 +39,6 @@ internal fun createPreviewCategoryExpensesState(): CategoryExpensesUiState {
         id = "market",
         description = "Mercado",
         spentAt = PREVIEW_DAY - 2 * 24 * PREVIEW_HOUR + 10 * PREVIEW_HOUR,
-        hasSpentTime = true,
         payers = listOf(
             StatsPayer(
                 name = null,

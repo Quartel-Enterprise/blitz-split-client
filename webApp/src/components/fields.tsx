@@ -1,4 +1,4 @@
-import { CalendarDays, Clock } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import { Popover } from 'radix-ui'
 import { type ReactNode, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -108,40 +108,29 @@ export function WhenField({
         setTime(toTimeInputValue(millis))
       }}
     >
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${id}-date`}>{t('splitBill_date')}</Label>
-        <Input id={`${id}-date`} type="date" value={date} max={toDateInputValue(latestMillis)} required onChange={(event) => change(event.target.value, time)} />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${id}-time`}>{t('splitBill_time')}</Label>
-        <Input id={`${id}-time`} type="time" value={time} required onChange={(event) => change(date, event.target.value)} />
-      </div>
+      <WhenInputs id={id} date={date} time={time} latestMillis={latestMillis} onDate={(value) => change(value, time)} onTime={(value) => change(date, value)} />
     </WhenPopover>
   )
 }
 
-/** What a bill's "Quando" tells the ViewModel: a day picked, the time added, picked or removed. */
+/** What a bill's "Quando" tells the ViewModel: a day or a time picked. */
 export interface BillWhenActions {
   onOpen: () => void
   // Why: the date input's day, its month from 1 for January.
   onDayPick: (year: number, month: number, day: number) => void
-  onTimeAdd: () => void
   onTimePick: (hour: number, minute: number) => void
-  onTimeClear: () => void
 }
 
 /**
- * A bill's "Quando" (beta feedback): its date alone ("Hoje, 28 de out."), with its time once it has one. The popover
- * picks the day, and "Adicionar horário" adds the time it is now, which the time input then changes; "Remover
- * horário" takes it off. A bill without a time is at its day's first instant. The inputs keep what is being typed and
- * send only a complete value, so a year typed digit by digit never dates the bill in year 2.
+ * A bill's "Quando" (beta feedback): its date and time, a new bill's now. The popover picks the day, which keeps the
+ * bill's time, and the time input changes the time. The inputs keep what is being typed and send only a complete
+ * value, so a year typed digit by digit never dates the bill in year 2.
  */
 export function BillWhenField({
   id,
   label,
   millis,
   relativeDay,
-  hasTime,
   latestMillis,
   actions,
   disabled = false,
@@ -150,16 +139,13 @@ export function BillWhenField({
   label: string
   millis: number
   relativeDay: string
-  hasTime: boolean
   latestMillis: number
   actions: BillWhenActions
   disabled?: boolean
 }) {
   const [date, setDate] = useState(() => toDateInputValue(millis))
   const [time, setTime] = useState(() => toTimeInputValue(millis))
-  // Why: the time input stays while it is typed in, even through 00:00, which the bill reads as no time.
-  const [isTimeShown, setTimeShown] = useState(hasTime)
-  // Why: what the ViewModel made of a complete value (now for a later time, the time "Adicionar horário" added) shows.
+  // Why: what the ViewModel made of a complete value (now for a later time) shows.
   const [shownMillis, setShownMillis] = useState(millis)
   if (millis !== shownMillis) {
     setShownMillis(millis)
@@ -180,58 +166,52 @@ export function BillWhenField({
     <WhenPopover
       id={id}
       label={label}
-      text={formatWhen(millis, relativeDay, hasTime)}
+      text={formatWhen(millis, relativeDay)}
       disabled={disabled}
       onOpen={() => {
         // Why: the inputs open on what the field says now, not on a half-typed value left from before.
         actions.onOpen()
         setDate(toDateInputValue(millis))
         setTime(toTimeInputValue(millis))
-        setTimeShown(hasTime)
       }}
     >
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${id}-date`}>{t('splitBill_date')}</Label>
-        <Input id={`${id}-date`} type="date" value={date} max={toDateInputValue(latestMillis)} required onChange={(event) => pickDay(event.target.value)} />
-      </div>
-      {hasTime || isTimeShown ? (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={`${id}-time`}>{t('splitBill_time')}</Label>
-          <Input id={`${id}-time`} type="time" value={time} required onChange={(event) => pickTime(event.target.value)} />
-          <Button
-            type="button"
-            variant="link"
-            size="sm"
-            className="self-start px-0"
-            onClick={() => {
-              setTimeShown(false)
-              actions.onTimeClear()
-            }}
-          >
-            {t('splitBill_removeTime')}
-          </Button>
-        </div>
-      ) : (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="self-start"
-          onClick={() => {
-            setTimeShown(true)
-            actions.onTimeAdd()
-          }}
-        >
-          <Clock aria-hidden />
-          {t('splitBill_addTime')}
-        </Button>
-      )}
+      <WhenInputs id={id} date={date} time={time} latestMillis={latestMillis} onDate={pickDay} onTime={pickTime} />
     </WhenPopover>
   )
 }
 
 // Why: a date input fires each digit of the year as it is typed ("0002"); only a four-digit year of this era is a day.
 const MIN_TYPED_YEAR = 1900
+
+// Why: the date and the time inputs "Quando"'s popovers share; the date never goes past the latest instant.
+function WhenInputs({
+  id,
+  date,
+  time,
+  latestMillis,
+  onDate,
+  onTime,
+}: {
+  id: string
+  date: string
+  time: string
+  latestMillis: number
+  onDate: (value: string) => void
+  onTime: (value: string) => void
+}) {
+  return (
+    <>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor={`${id}-date`}>{t('splitBill_date')}</Label>
+        <Input id={`${id}-date`} type="date" value={date} max={toDateInputValue(latestMillis)} required onChange={(event) => onDate(event.target.value)} />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor={`${id}-time`}>{t('splitBill_time')}</Label>
+        <Input id={`${id}-time`} type="time" value={time} required onChange={(event) => onTime(event.target.value)} />
+      </div>
+    </>
+  )
+}
 
 /** The button of "Quando", in words, and the popover with its inputs and "Concluído". */
 function WhenPopover({

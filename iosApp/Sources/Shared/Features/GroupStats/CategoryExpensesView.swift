@@ -159,7 +159,6 @@ private struct CategoryExpensesList: View {
     private static func meta(_ expense: CategoryExpenseRow) -> String {
         let bill = billMeta(
             spentAt: expense.spentAt,
-            hasTime: expense.hasSpentTime,
             isPending: expense.isPending,
             payers: expense.payers.map { (name: $0.name, isMe: $0.isMe) },
         )

@@ -568,37 +568,6 @@ class ReceiptLockViewModelTest {
     }
 
     @Test
-    fun `GIVEN a time picked and a receipt being read WHEN removing the time THEN Quando keeps it`() =
-        runTest(testDispatcher) {
-            // Given
-            viewModel.pickSpentAt(millisOf(2026, 10, 29, 9, 30))
-            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
-
-            // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
-
-            // Then
-            val state = viewModel.uiState.value
-            assertEquals(millisOf(2026, 10, 29, 9, 30), state.spentAt)
-            assertTrue(state.hasSpentTime)
-        }
-
-    @Test
-    fun `GIVEN a time picked and a receipt being read WHEN removing the time THEN sends nothing`() =
-        runTest(testDispatcher) {
-            // Given
-            viewModel.pickSpentAt(millisOf(2026, 10, 29, 9, 30))
-            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
-            trackedEvents.clear()
-
-            // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
-
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
-
-    @Test
     fun `GIVEN a receipt being read past a minute WHEN opening the time THEN sends nothing and its limit stays`() =
         runTest(testDispatcher) {
             // Given

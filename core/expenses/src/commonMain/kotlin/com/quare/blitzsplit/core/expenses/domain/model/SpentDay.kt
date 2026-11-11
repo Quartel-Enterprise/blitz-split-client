@@ -21,15 +21,6 @@ object SpentDay {
         timeZone: TimeZone,
     ): Long = date.atStartOfDayIn(timeZone).toEpochMilliseconds()
 
-    /*
-     * Why: a bill's time is optional (beta feedback): one without it is saved at the first instant of its day, which
-     * every screen shows as the date alone. A time picked as 00:00 reads the same, as no time.
-     */
-    fun hasTime(
-        epochMillis: Long,
-        timeZone: TimeZone,
-    ): Boolean = epochMillis != startOf(dateOf(epochMillis, timeZone), timeZone)
-
     fun relativeDayOf(
         date: LocalDate,
         nowMillis: Long,

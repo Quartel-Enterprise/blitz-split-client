@@ -37,7 +37,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.time.Instant
 
 class ActivityItemsTest {
     @Test
@@ -442,39 +441,6 @@ class ActivityItemsTest {
             listOf("mine" to false, "opened" to false, "new" to true, "under-mark" to false),
             unread,
         )
-    }
-
-    @Test
-    fun `GIVEN a date edit from a bill without a time WHEN mapping the feed THEN only the side with one has a time`() {
-        // Given
-        val feed = feed(
-            events = listOf(
-                event(
-                    id = "edit",
-                    kind = ActivityKind.BILL_EDITED,
-                    changes = listOf(
-                        ActivityChange(
-                            field = ActivityField.SPENT_AT,
-                            before = ActivityValue.none.copy(
-                                millis = Instant.parse("2026-10-20T00:00:00Z").toEpochMilliseconds(),
-                            ),
-                            after = ActivityValue.none.copy(
-                                millis = Instant.parse("2026-10-20T21:30:00Z").toEpochMilliseconds(),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        )
-
-        // When
-        val change = entriesOf(feed, groups)
-            .single()
-            .item.changes
-            .single()
-
-        // Then
-        assertEquals(false to true, change.before.hasTime to change.after.hasTime)
     }
 
     @Test
@@ -892,7 +858,7 @@ class ActivityItemsTest {
         )
 
         // When
-        val change = entriesOf(feed, groups, CategoryTree.ofGroups(listOf(beach)), TimeZone.UTC)
+        val change = entriesOf(feed, groups, CategoryTree.ofGroups(listOf(beach)))
             .single()
             .item.changes
             .single()
@@ -2082,7 +2048,7 @@ class ActivityItemsTest {
     private fun entriesOf(
         feed: ActivityFeed,
         groups: List<Group>,
-    ): List<FeedEntry> = entriesOf(feed, groups, CategoryTree.appOnly, TimeZone.UTC)
+    ): List<FeedEntry> = entriesOf(feed, groups, CategoryTree.appOnly)
 
     private fun feed(
         events: List<ActivityEvent> = emptyList(),
@@ -2274,7 +2240,6 @@ class ActivityItemsTest {
         currency = GroupCurrency.BRL,
         text = null,
         millis = null,
-        hasTime = false,
         code = null,
         names = names,
         hasFormerMember = hasFormerMember,

@@ -43,7 +43,6 @@ internal fun entriesOf(
     feed: ActivityFeed,
     groups: List<Group>,
     categories: CategoryTree,
-    timeZone: TimeZone,
 ): List<FeedEntry> {
     val groupsById = groups.associateBy { it.id }
     val deletions = DeletionIndex(feed, groupsById)
@@ -58,7 +57,6 @@ internal fun entriesOf(
             myUserId = feed.myUserId,
             deletions = deletions,
             categories = categories,
-            timeZone = timeZone,
         )
     }
     return queued + events
@@ -143,7 +141,6 @@ private fun eventEntryOf(
     myUserId: String?,
     deletions: DeletionIndex,
     categories: CategoryTree,
-    timeZone: TimeZone,
 ): FeedEntry {
     val members = group?.members.orEmpty()
     val actorMember = event.actorMemberId?.let { id -> members.firstOrNull { it.id == id } }
@@ -178,7 +175,7 @@ private fun eventEntryOf(
         fromIsMe = from?.isMe == true,
         toName = to?.name,
         toIsMe = to?.isMe == true,
-        changes = event.changes.map { rowOf(it, group, previousCurrency, currency, categories, timeZone) },
+        changes = event.changes.map { rowOf(it, group, previousCurrency, currency, categories) },
         body = event.body,
         commentId = event.commentId,
         isCommentDeleted = event.isCommentDeleted,
@@ -314,15 +311,14 @@ private fun rowOf(
     beforeCurrency: GroupCurrency?,
     afterCurrency: GroupCurrency?,
     categories: CategoryTree,
-    timeZone: TimeZone,
 ): ActivityChangeRow {
     val categoryOf = { value: ActivityValue ->
         categories.resolve(value.code).takeIf { change.field == ActivityField.CATEGORY }
     }
     return ActivityChangeRow(
         field = change.field,
-        before = valueOf(change.before, group, beforeCurrency, categoryOf(change.before), timeZone),
-        after = valueOf(change.after, group, afterCurrency, categoryOf(change.after), timeZone),
+        before = valueOf(change.before, group, beforeCurrency, categoryOf(change.before)),
+        after = valueOf(change.after, group, afterCurrency, categoryOf(change.after)),
     )
 }
 
@@ -331,7 +327,6 @@ private fun valueOf(
     group: Group?,
     currency: GroupCurrency?,
     category: Category?,
-    timeZone: TimeZone,
 ): ActivityChangeValue {
     val names = value.memberIds.map { id -> group?.members?.firstOrNull { it.id == id }?.name }
     return ActivityChangeValue(
@@ -339,7 +334,6 @@ private fun valueOf(
         currency = currency,
         text = value.text,
         millis = value.millis,
-        hasTime = value.millis?.let { SpentDay.hasTime(it, timeZone) } == true,
         code = value.code,
         names = names.filterNotNull(),
         hasFormerMember = null in names,

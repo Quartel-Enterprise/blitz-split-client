@@ -800,26 +800,7 @@ class ReceiptViewModelTest {
     }
 
     @Test
-    fun `GIVEN a receipt with its date and time WHEN read THEN Quando has a time`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            scan = scanOf(
-                reading(
-                    date = LocalDate(2026, 10, 28),
-                    time = LocalTime(12, 34),
-                ),
-            ),
-        )
-
-        // When
-        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
-
-        // Then
-        assertTrue(viewModel.uiState.value.hasSpentTime)
-    }
-
-    @Test
-    fun `GIVEN no time and a receipt with a date but no time WHEN read THEN Quando is that day alone`() =
+    fun `GIVEN a new bill and a receipt dated but untimed WHEN read THEN Quando is that day at the current time`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -836,8 +817,7 @@ class ReceiptViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertEquals(millisOf(2026, 10, 25, 0, 0), state.spentAt)
-            assertFalse(state.hasSpentTime)
+            assertEquals(millisOf(2026, 10, 25, 15, 0), state.spentAt)
         }
 
     @Test
@@ -860,29 +840,6 @@ class ReceiptViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(NOW_MILLIS, state.spentAt)
-            assertTrue(state.hasSpentTime)
-        }
-
-    @Test
-    fun `GIVEN a receipt printed at midnight WHEN read THEN Quando is that day with no time`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                scan = scanOf(
-                    reading(
-                        date = LocalDate(2026, 10, 28),
-                        time = LocalTime(0, 0),
-                    ),
-                ),
-            )
-
-            // When
-            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
-
-            // Then
-            val state = viewModel.uiState.value
-            assertEquals(millisOf(2026, 10, 28, 0, 0), state.spentAt)
-            assertFalse(state.hasSpentTime)
         }
 
     @Test
@@ -1139,7 +1096,7 @@ class ReceiptViewModelTest {
             assertEquals("", state.amountText)
             assertFalse(state.hasEditedAmount)
             assertEquals("Jantar", state.description)
-            assertEquals(TODAY_START_MILLIS, state.spentAt)
+            assertEquals(NOW_MILLIS, state.spentAt)
             assertNull(state.receiptCategoryId)
             assertTrue(state.canScanReceipt)
         }
@@ -1249,7 +1206,7 @@ class ReceiptViewModelTest {
             assertFalse(state.isReadingReceipt)
             assertEquals("100,00", state.amountText)
             assertEquals("Jantar", state.description)
-            assertEquals(TODAY_START_MILLIS, state.spentAt)
+            assertEquals(NOW_MILLIS, state.spentAt)
             assertNull(state.receiptCategoryId)
         }
 
@@ -3680,6 +3637,5 @@ class ReceiptViewModelTest {
 
         // Why: 2026-10-30T15:00:00Z.
         const val NOW_MILLIS = 1_793_372_400_000L
-        const val TODAY_START_MILLIS = 1_793_318_400_000L
     }
 }

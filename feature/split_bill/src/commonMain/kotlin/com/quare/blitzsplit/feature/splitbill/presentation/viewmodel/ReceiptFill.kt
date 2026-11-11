@@ -31,7 +31,7 @@ internal fun SplitBillUiState.withReceiptRead(
         receiptCategoryId = reading.categoryId,
     )
     val date = reading.date ?: return filled
-    // Why: a day printed without its time keeps the time "Quando" had, or none; a later time today becomes now.
+    // Why: a day printed without its time keeps the time "Quando" had; a later time today becomes now.
     val time = reading.time ?: return filled.withSpentDayPicked(date, now, timeZone)
     val printedAt = LocalDateTime(date, time).toInstant(timeZone).toEpochMilliseconds()
     return filled.withSpentAt(printedAt, now, timeZone)
