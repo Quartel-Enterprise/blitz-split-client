@@ -133,6 +133,7 @@ class BackStackNavigatorTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
         navigator.navigate(Route.GroupStats("trip"))
@@ -144,6 +145,7 @@ class BackStackNavigatorTest {
                 "flat",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -155,6 +157,7 @@ class BackStackNavigatorTest {
                     "flat",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -185,12 +188,14 @@ class BackStackNavigatorTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.MEMBERS,
+                isOverBill = false,
             ),
         )
         val group = Route.GroupDetail(
             "flat",
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
 
         // When

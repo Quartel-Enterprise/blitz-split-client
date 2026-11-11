@@ -281,6 +281,7 @@ class AppViewModel(
                     groupId,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             if (location is BillLocation.Found && location.isOnDevice) {

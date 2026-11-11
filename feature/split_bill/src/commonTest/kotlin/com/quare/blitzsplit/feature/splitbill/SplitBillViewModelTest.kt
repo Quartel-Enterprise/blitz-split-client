@@ -1895,6 +1895,7 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1905,7 +1906,14 @@ class SplitBillViewModelTest {
     fun `GIVEN another screen on top WHEN the group is gone THEN stays under it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+        navigator.navigate(
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
+        )
 
         // When
         groups.groups.value = emptyList()
@@ -1918,9 +1926,15 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
-                Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
             ),
             navigator.backStack.value,
         )
@@ -1931,7 +1945,14 @@ class SplitBillViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+            navigator.navigate(
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            )
             groups.groups.value = emptyList()
 
             // When
@@ -1945,6 +1966,7 @@ class SplitBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1955,7 +1977,14 @@ class SplitBillViewModelTest {
     fun `GIVEN the group still there WHEN another screen on top closes THEN stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+        navigator.navigate(
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
+        )
 
         // When
         navigator.navigateBack()
@@ -1968,6 +1997,7 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -2031,6 +2061,7 @@ class SplitBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -2084,6 +2115,7 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -2101,6 +2133,7 @@ class SplitBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.GroupStats(GROUP_ID),
                 ),
@@ -2119,6 +2152,7 @@ class SplitBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.GroupStats(GROUP_ID),
                 ),
@@ -2174,6 +2208,7 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -2221,6 +2256,7 @@ class SplitBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -2249,6 +2285,7 @@ class SplitBillViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -2276,6 +2313,7 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -2301,6 +2339,7 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -2312,7 +2351,14 @@ class SplitBillViewModelTest {
     fun `GIVEN another screen on top WHEN tapping close THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+        navigator.navigate(
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
+        )
 
         // When
         viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
@@ -2325,9 +2371,15 @@ class SplitBillViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
-                Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
             ),
             navigator.backStack.value,
         )
@@ -3018,6 +3070,7 @@ class SplitBillViewModelTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         ),
     ) {

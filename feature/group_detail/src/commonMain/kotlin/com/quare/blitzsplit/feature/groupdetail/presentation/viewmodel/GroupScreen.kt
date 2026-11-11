@@ -200,8 +200,18 @@ internal class GroupScreen(
         if (isOnTop()) useCases.navigator.openActivity()
     }
 
+    /*
+     * Why: a new bill in the group; opened from that bill's form (its group's chip), the bill already being split
+     * there, so back to it with what was typed rather than a second form over the first.
+     */
     fun openSplitBill() {
-        open(Route.SplitBill.createNew(groupId))
+        val stack = useCases.navigator.backStack.value
+        val below = stack.getOrNull(stack.lastIndex - 1)
+        if (isOnTop() && below is Route.SplitBill && below.expenseId == null) {
+            useCases.navigator.navigateBack()
+        } else {
+            open(Route.SplitBill.createNew(groupId))
+        }
     }
 
     fun openRegisterPayment(

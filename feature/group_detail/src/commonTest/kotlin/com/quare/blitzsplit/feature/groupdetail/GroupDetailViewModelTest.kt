@@ -978,6 +978,40 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN the group opened from a new bill form WHEN Rachar conta is clicked THEN goes back to that form`() =
+        runTest(testDispatcher) {
+            // Given
+            val form = Route.SplitBill.createPickingGroup(GROUP_ID)
+            prepareScenario(routesBelow = listOf(form))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, form), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the group opened from Editar conta WHEN Rachar conta is clicked THEN opens a new bill over it`() =
+        runTest(testDispatcher) {
+            // Given
+            val form = Route.SplitBill.createEditing(
+                groupId = GROUP_ID,
+                expenseId = "expense-1",
+            )
+            prepareScenario(routesBelow = listOf(form))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, form, route, Route.SplitBill.createNew(GROUP_ID)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN the group gone while Rachar conta was on top WHEN Rachar conta closes THEN goes back`() =
         runTest(testDispatcher) {
             // Given
@@ -3110,6 +3144,7 @@ class GroupDetailViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
@@ -3343,6 +3378,7 @@ class GroupDetailViewModelTest {
                         GROUP_ID,
                         joinedAs = "Bruno",
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.Profile,
                 ),
@@ -3369,6 +3405,7 @@ class GroupDetailViewModelTest {
                         GROUP_ID,
                         joinedAs = "Bruno",
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.Invite(GROUP_ID, isNewGroup = false),
                 ),
@@ -3427,6 +3464,7 @@ class GroupDetailViewModelTest {
             GROUP_ID,
             joinedAs = joinedAs,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
         val categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         account = FakeAccountRepository(initialStatus = accountStatus)

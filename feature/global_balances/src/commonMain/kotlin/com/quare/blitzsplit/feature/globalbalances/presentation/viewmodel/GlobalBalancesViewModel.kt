@@ -282,6 +282,7 @@ class GlobalBalancesViewModel(
                 groupId,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
     }

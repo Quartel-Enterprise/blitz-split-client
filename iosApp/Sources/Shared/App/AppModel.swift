@@ -209,8 +209,9 @@ final class AppModel {
     /// category map inside Split a bill's sheet hides with it, rather than drawing as a page of its own.
     private func hiddenUnderScreen(_ entries: [AppRoute]) -> [Bool] {
         var hidden: [Bool] = []
-        for route in entries {
-            hidden.append(isHiddenUnderScreen(route) || (route.pushesInSheet && hidden.last == true))
+        for index in entries.indices {
+            let pushesInSheet = Self.pushesInSheet(entries, at: index)
+            hidden.append(isHiddenUnderScreen(entries[index]) || (pushesInSheet && hidden.last == true))
         }
         return hidden
     }
@@ -284,6 +285,16 @@ final class AppModel {
         holder.viewModel.navigator.popTo(size: Int32(windowStack.count - sheetPushCount + count))
     }
 
+    /// Whether the entry at `index` is pushed inside the sheet under it: a route that always is
+    /// (`AppRoute.pushesInSheet`), or the group's screen Split a bill's group opened, pushed inside the bill's sheet so
+    /// the form keeps what was typed under it, as the category map does.
+    private static func pushesInSheet(_ stack: [AppRoute], at index: Int) -> Bool {
+        let route = stack[index]
+        if route.pushesInSheet { return true }
+        guard route.isGroupScreen, index > 0, case .splitBill = stack[index - 1] else { return false }
+        return true
+    }
+
     /// The sheet the top entries are pushed inside, or the top one when none is.
     private var sheetBaseIndex: Int {
         windowStack.count - 1 - sheetPushCount
@@ -292,7 +303,7 @@ final class AppModel {
     /// How many entries on top are pushed inside the sheet right under them.
     private var sheetPushCount: Int {
         let stack = windowStack
-        let pushed = stack.reversed().prefix { $0.pushesInSheet }.count
+        let pushed = stack.indices.reversed().prefix { Self.pushesInSheet(stack, at: $0) }.count
         guard pushed > 0, stack.count > pushed + 1, presentsAsSheet(stack[stack.count - 1 - pushed]) else { return 0 }
         return pushed
     }
@@ -347,7 +358,8 @@ final class AppModel {
             let stack = windowStack
             guard stack.count > 2, case let .invite(route) = stack[stack.count - 1] else { return nil }
             let host = stack[stack.count - 2]
-            guard host.isGroupScreen else { return nil }
+            // A group pushed inside Split a bill's sheet isn't drawn once the popover closes the sheet: a sheet then
+            guard host.isGroupScreen, !Self.pushesInSheet(stack, at: stack.count - 2) else { return nil }
             return InvitePopover(host: host, route: route)
             #else
             return nil

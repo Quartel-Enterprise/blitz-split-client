@@ -18,6 +18,10 @@ The rules:
   dialog takes one half with the other under the scrim.
 - **Measure the window, not what the keyboard leaves**, so opening the keyboard never swaps the layout and rebuilds
   the focused field.
+- **Count the navigation bar once above the keyboard.** On Android the keyboard's inset (`imePadding()`) holds the
+  navigation bar too, so content already padded by a `Scaffold` consumes that padding first
+  (`.padding(padding).consumeWindowInsets(padding).imePadding()`, as `ColumnsFormLayout` and `FormLayout` do);
+  otherwise a blank band the height of the navigation bar sits over the keyboard and cuts the form.
 - The product decisions under `docs/product/` say how each flow is drawn at each size; where a board and a bullet disagree, the
   board wins and the bullet changes in the same pull request.
 

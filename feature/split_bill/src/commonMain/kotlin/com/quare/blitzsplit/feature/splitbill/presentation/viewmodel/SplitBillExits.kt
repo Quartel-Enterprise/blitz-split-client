@@ -17,6 +17,23 @@ internal class SplitBillExits(
         if (isOnTop()) navigator.navigate(Route.CategoryMap)
     }
 
+    /*
+     * Why: the bill's group, its Despesas over Rachar conta, which keeps what was typed; says whether it opened. The
+     * group's "Rachar conta" there comes back to this bill rather than opening a second one (GroupScreen).
+     */
+    fun openGroup(groupId: String): Boolean {
+        if (!isOnTop()) return false
+        navigator.navigate(
+            Route.GroupDetail(
+                groupId,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+                isOverBill = true,
+            ),
+        )
+        return true
+    }
+
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     fun leave() {
         if (isOnTop()) navigator.navigateBack()
@@ -37,6 +54,7 @@ internal class SplitBillExits(
                     groupId,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
         }

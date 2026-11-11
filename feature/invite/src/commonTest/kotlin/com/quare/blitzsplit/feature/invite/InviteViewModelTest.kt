@@ -515,7 +515,15 @@ class InviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -537,6 +545,7 @@ class InviteViewModelTest {
                         "group-1",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -553,6 +562,7 @@ class InviteViewModelTest {
                     "group-1",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             navigator.navigate(Route.Invite("group-1", isNewGroup = true))
@@ -568,6 +578,7 @@ class InviteViewModelTest {
                         "group-1",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -586,7 +597,15 @@ class InviteViewModelTest {
             // Then
             assertEquals(listOf("group-1"), addPersonAsks)
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -610,7 +629,14 @@ class InviteViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.replaceTop(Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS))
+            navigator.replaceTop(
+                Route.GroupDetail(
+                    "group-1",
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            )
             navigator.navigate(Route.Invite("group-1", isNewGroup = true))
 
             // When
@@ -618,7 +644,15 @@ class InviteViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -633,6 +667,7 @@ class InviteViewModelTest {
                     "group-1",
                     joinedAs = "Bruno",
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             navigator.navigate(Route.Invite("group-1", isNewGroup = true))
@@ -648,6 +683,7 @@ class InviteViewModelTest {
                         "group-1",
                         joinedAs = "Bruno",
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1264,6 +1300,7 @@ class InviteViewModelTest {
                         "group-1",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 )
                 it.navigate(route)

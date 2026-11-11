@@ -362,6 +362,7 @@ class SharedBillViewModel(
                     groupId = bill.groupId,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 Route.BillDetail(
                     groupId = bill.groupId,

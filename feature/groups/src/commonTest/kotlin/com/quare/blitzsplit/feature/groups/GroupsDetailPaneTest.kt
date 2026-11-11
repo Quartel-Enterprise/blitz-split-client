@@ -105,6 +105,7 @@ class GroupsDetailPaneTest {
                         "ape",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -130,6 +131,7 @@ class GroupsDetailPaneTest {
                         "churrasco",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -143,7 +145,14 @@ class GroupsDetailPaneTest {
             prepareScenario()
 
             // When
-            navigator.navigate(Route.GroupDetail("ape", joinedAs = null, GroupTab.MEMBERS))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "ape",
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            )
 
             // Then
             assertEquals("ape", viewModel.uiState.value.selectedGroupId)
@@ -183,6 +192,7 @@ class GroupsDetailPaneTest {
                         "churrasco",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.BillDetail("churrasco", "carne", focusCommentId = null),
                 ),
@@ -233,6 +243,7 @@ class GroupsDetailPaneTest {
                         "ape",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.Invite("churrasco", isNewGroup = false),
                 ),
@@ -276,6 +287,7 @@ class GroupsDetailPaneTest {
                         "ape",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -331,6 +343,7 @@ class GroupsDetailPaneTest {
                         "churrasco",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -351,7 +364,15 @@ class GroupsDetailPaneTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("aniversario", joinedAs = null, GroupTab.MEMBERS)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "aniversario",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -375,6 +396,7 @@ class GroupsDetailPaneTest {
                         "ape",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -402,6 +424,7 @@ class GroupsDetailPaneTest {
                         "aniversario",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -430,6 +453,7 @@ class GroupsDetailPaneTest {
                         "aniversario",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -448,6 +472,7 @@ class GroupsDetailPaneTest {
                     "ape",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
 
@@ -464,6 +489,7 @@ class GroupsDetailPaneTest {
                         "aniversario",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -502,6 +528,7 @@ class GroupsDetailPaneTest {
                         "churrasco",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -528,6 +555,7 @@ class GroupsDetailPaneTest {
                         "ape",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,

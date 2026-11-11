@@ -19,6 +19,7 @@ fun Navigator.openGroup(
         groupId,
         joinedAs = null,
         tab = tab,
+        isOverBill = false,
     )
     when {
         below == null || groupScreenIdOrNull(below) != groupId -> replaceTop(group)

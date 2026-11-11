@@ -454,9 +454,11 @@ private struct PhoneSplitBill: View {
 
     private var detailsSection: some View {
         Section {
-            if state.canChangeGroup {
+            // The group opens its screen inside the sheet, over the form, which keeps what was typed; a new bill's
+            // "Change" beside it asks "Split in which group?" once there is another group
+            HStack(spacing: 12) {
                 Button {
-                    model.send(SplitBillUiEventOnGroupClicked.shared)
+                    model.send(SplitBillUiEventOnOpenGroupClicked.shared)
                 } label: {
                     HStack(spacing: 8) {
                         Text("Group")
@@ -471,26 +473,22 @@ private struct PhoneSplitBill: View {
                         Text(verbatim: state.groupName)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
-                        Image(systemName: "chevron.up.chevron.down")
+                        Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.tertiary)
                             .accessibilityHidden(true)
                     }
                     .contentShape(.rect)
                 }
-                .buttonStyle(.plain)
-            } else {
-                LabeledContent("Group") {
-                    HStack(spacing: 8) {
-                        GroupAvatar(
-                            initials: state.groupInitials,
-                            color: state.groupColor,
-                            photoUrl: state.groupPhotoUrl,
-                            size: 24
-                        )
-                        Text(verbatim: state.groupName)
-                            .lineLimit(1)
+                .buttonStyle(.borderless)
+                .tint(.primary)
+                .disabled(!state.canOpenGroup)
+                .accessibilityHint(Text("Open group"))
+                if state.canChangeGroup {
+                    Button("Change") {
+                        model.send(SplitBillUiEventOnGroupClicked.shared)
                     }
+                    .buttonStyle(.borderless)
                 }
             }
             Button {
@@ -1026,16 +1024,19 @@ private struct MacBillForm: View {
                     .background(Palette.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             }
             Form {
-                if state.canChangeGroup {
-                    Picker("Group:", selection: groupChoice) {
-                        ForEach(state.groups, id: \.id) { group in
-                            Text(verbatim: group.name).tag(group.id)
-                        }
-                    }
-                    .fixedSize()
-                } else {
-                    LabeledContent("Group:") {
-                        HStack(spacing: 6) {
+                // The pop-up moves a new bill to another group; "Open group" opens its screen inside the sheet,
+                // over the form, which keeps what was typed
+                LabeledContent("Group:") {
+                    HStack(spacing: 8) {
+                        if state.canChangeGroup {
+                            Picker("Group:", selection: groupChoice) {
+                                ForEach(state.groups, id: \.id) { group in
+                                    Text(verbatim: group.name).tag(group.id)
+                                }
+                            }
+                            .labelsHidden()
+                            .fixedSize()
+                        } else {
                             GroupAvatar(
                                 initials: state.groupInitials,
                                 color: state.groupColor,
@@ -1044,6 +1045,11 @@ private struct MacBillForm: View {
                             )
                             Text(verbatim: state.groupName)
                         }
+                        Button("Open group") {
+                            model.send(SplitBillUiEventOnOpenGroupClicked.shared)
+                        }
+                        .buttonStyle(.link)
+                        .disabled(!state.canOpenGroup)
                     }
                 }
                 // Locked while a receipt is read, so the read never overwrites what was typed (7.1e)

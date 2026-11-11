@@ -126,11 +126,14 @@ const FRAME_PAGES = new Set([
 
 /**
  * Draws a back stack: its page, with the panel and the dialog over it. "Mapa de categorias" from Categoria (9.0)
- * covers Rachar conta, and so does whatever the map opens (Abrir Perfil): those draw as a stack of their own over
- * the bill, which stays mounted with what was typed while it is anywhere under them.
+ * covers Rachar conta, and so does the bill's group opened from its "Grupo" (beta feedback) and whatever either
+ * opens (Abrir Perfil, a bill of the group): those draw as a stack of their own over the bill, which stays mounted
+ * with what was typed while it is anywhere under them.
  */
 function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?: number }) {
-  const mapIndex = backStack.findIndex((route, index) => route.name === 'category-map' && backStack[index - 1]?.name === 'split-bill')
+  const mapIndex = backStack.findIndex(
+    (route, index) => (route.name === 'category-map' || route.name === 'group-detail') && backStack[index - 1]?.name === 'split-bill',
+  )
   const isMapOverBill = mapIndex > 0
   const stack = isMapOverBill ? backStack.slice(0, mapIndex) : backStack
   const top = stack[stack.length - 1]

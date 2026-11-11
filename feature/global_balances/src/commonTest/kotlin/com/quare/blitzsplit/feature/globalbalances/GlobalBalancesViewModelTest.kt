@@ -890,6 +890,7 @@ class GlobalBalancesViewModelTest {
                         APE,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,

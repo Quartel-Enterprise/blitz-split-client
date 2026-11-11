@@ -141,6 +141,8 @@
     <string name="split_bill_group_lead">Le dernier utilisé est marqué</string>
     <string name="split_bill_group_continue">Continuer</string>
     <string name="split_bill_group_change">Groupe : %s. Changer</string>
+    <string name="split_bill_group_change_button">Modifier</string>
+    <string name="split_bill_group_open">Ouvrir le groupe</string>
     <plurals name="split_bill_group_people">
         <item quantity="one">%d personne</item>
         <item quantity="many">%d personnes</item>

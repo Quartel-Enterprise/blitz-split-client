@@ -294,6 +294,7 @@ class ContactProfileViewModel(
             groupId,
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         ),
     )
 

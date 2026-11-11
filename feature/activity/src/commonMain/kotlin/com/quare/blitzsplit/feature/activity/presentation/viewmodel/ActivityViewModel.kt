@@ -372,6 +372,7 @@ class ActivityViewModel(
                 groupId,
                 joinedAs = null,
                 tab = tab,
+                isOverBill = false,
             ),
         )
     }

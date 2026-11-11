@@ -237,7 +237,12 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.Invite("group-1", isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -255,7 +260,16 @@ class MembersViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS), Route.Profile),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    "group-1",
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+                Route.Profile,
+            ),
             navigator.backStack.value,
         )
     }
@@ -274,7 +288,12 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.Invite("group-1", isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -297,7 +316,12 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.ContactProfile("name:carla dias"),
                 ),
                 navigator.backStack.value,
@@ -320,7 +344,12 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.ContactProfile("user:user-bruno"),
                 ),
                 navigator.backStack.value,
@@ -341,7 +370,16 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS), Route.Profile),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                    Route.Profile,
+                ),
                 navigator.backStack.value,
             )
         }
@@ -358,7 +396,15 @@ class MembersViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -374,7 +420,15 @@ class MembersViewModelTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    "group-1",
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -394,7 +448,12 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.ContactProfile("name:carla"),
                 ),
                 navigator.backStack.value,
@@ -416,7 +475,12 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.BillDetail("group-1", "dinner", focusCommentId = null),
                     Route.Profile,
                 ),
@@ -439,7 +503,12 @@ class MembersViewModelTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.Invite("group-1", isNewGroup = false),
                 ),
                 navigator.backStack.value,
@@ -460,7 +529,12 @@ class MembersViewModelTest {
         assertEquals(
             listOf(
                 Route.Groups,
-                Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS),
+                Route.GroupDetail(
+                    "group-1",
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
                 Route.Invite("group-1", isNewGroup = false),
             ),
             navigator.backStack.value,
@@ -496,7 +570,15 @@ class MembersViewModelTest {
             assertNull(viewModel.uiState.value.personalInvite)
             assertEquals(emptyList(), actions)
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "group-1",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -3054,7 +3136,14 @@ class MembersViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.GroupDetail("group-1", joinedAs = null, GroupTab.EXPENSES))
+            navigator.navigate(
+                Route.GroupDetail(
+                    "group-1",
+                    joinedAs = null,
+                    GroupTab.EXPENSES,
+                    isOverBill = false,
+                ),
+            )
 
             // When
             addPersonRequests.post("group-1")
@@ -4103,7 +4192,12 @@ class MembersViewModelTest {
     )
 
     // Why: the group's screen on its Members tab, whose ViewModel this is.
-    private val membersRoute = Route.GroupDetail("group-1", joinedAs = null, GroupTab.MEMBERS)
+    private val membersRoute = Route.GroupDetail(
+        "group-1",
+        joinedAs = null,
+        GroupTab.MEMBERS,
+        isOverBill = false,
+    )
 
     // Why: what the platform does when the screen goes, which runs the ViewModel's onCleared.
     private fun clear(viewModel: MembersViewModel) {

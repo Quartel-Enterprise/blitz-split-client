@@ -205,6 +205,7 @@ class JoinInviteViewModel(
                     groupId,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
         }

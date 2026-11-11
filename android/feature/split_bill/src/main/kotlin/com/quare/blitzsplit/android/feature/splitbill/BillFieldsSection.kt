@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -21,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +37,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -227,47 +231,56 @@ private fun MatchedTermsRow(state: SplitBillUiState) {
 }
 
 /*
- * Why: the group of the bill; a new one opens "Rachar em qual grupo?" from it, once there is another group. A group
- * that can't change is a plain label (no button role for TalkBack), not a disabled control.
+ * Why: the group of the bill, whose screen it opens over the form, which keeps what was typed (beta feedback); a new
+ * bill's "Change" beside it opens "Rachar em qual grupo?", once there is another group.
  */
 @Composable
 private fun GroupChip(
     state: SplitBillUiState,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    val shape = CircleShape
-    val color = MaterialTheme.colorScheme.surfaceContainerHigh
-    val contentColor = MaterialTheme.colorScheme.onSurface
-    if (state.canChangeGroup) {
-        val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Surface(
-            onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
-            modifier = Modifier.semantics { contentDescription = changeLabel },
-            shape = shape,
-            color = color,
-            contentColor = contentColor,
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
-            GroupChipContent(state)
+            GroupChipContent(
+                state = state,
+                modifier = Modifier.clickable(
+                    enabled = state.canOpenGroup,
+                    onClickLabel = stringResource(R.string.split_bill_group_open),
+                    role = Role.Button,
+                    onClick = { onEvent(SplitBillUiEvent.OnOpenGroupClicked) },
+                ),
+            )
         }
-    } else {
-        Surface(
-            shape = shape,
-            color = color,
-            contentColor = contentColor,
-        ) {
-            GroupChipContent(state)
+        if (state.canChangeGroup) {
+            val changeLabel = stringResource(R.string.split_bill_group_change, state.groupName)
+            TextButton(
+                onClick = { onEvent(SplitBillUiEvent.OnGroupClicked) },
+                modifier = Modifier.semantics { contentDescription = changeLabel },
+            ) {
+                Text(stringResource(R.string.split_bill_group_change_button))
+            }
         }
     }
 }
 
 @Composable
-private fun GroupChipContent(state: SplitBillUiState) {
+private fun GroupChipContent(
+    state: SplitBillUiState,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(40.dp)
             .padding(
                 start = 4.dp,
-                end = if (state.canChangeGroup) 10.dp else 14.dp,
+                end = 10.dp,
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -285,13 +298,11 @@ private fun GroupChipContent(state: SplitBillUiState) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        if (state.canChangeGroup) {
-            Icon(
-                imageVector = Icons.Outlined.KeyboardArrowDown,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+        )
     }
 }
 

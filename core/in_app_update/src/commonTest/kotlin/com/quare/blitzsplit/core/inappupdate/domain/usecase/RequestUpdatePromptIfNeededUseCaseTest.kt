@@ -245,6 +245,7 @@ class RequestUpdatePromptIfNeededUseCaseTest {
                 groupId = "g1",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
