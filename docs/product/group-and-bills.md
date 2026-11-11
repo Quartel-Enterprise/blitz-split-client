@@ -91,7 +91,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     fails with "Try again". Laid out as Contacts' "Invite with link or QR": a bottom sheet on an Android phone,
     a 560 dp dialog on its tablets (a book's right half), a sheet on iOS (a 540 pt form sheet with an iPad's room) and
     the Mac, a 480 px dialog on the web (a drawer on a phone). The link opens only on the web (`Route.SharedBill`,
-    page 7.3h), since the apps claim only `/g/` and `/b/` links: the bill, who paid, each one's part, the attachments and the
+    page 7.3h), since the apps claim only `/g/`, `/b/` and `/u/` links: the bill, who paid, each one's part, the attachments and the
     comments, never the balances nor the group's other bills, under "This bill belongs to the group X" (the server doesn't
     say who shared it, and a group's own category shows as Other). "Only people in the bill" opens it to the group's
     members signed in; "Anyone" to anyone, and any device with an account (an anonymous one too) comments

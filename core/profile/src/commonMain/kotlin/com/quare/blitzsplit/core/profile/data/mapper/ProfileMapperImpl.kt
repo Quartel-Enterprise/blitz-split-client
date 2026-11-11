@@ -28,6 +28,8 @@ class ProfileMapperImpl : ProfileMapper {
         pendingSync = pendingSync,
         pendingPhoto = (profile.photo as? ProfilePhoto.Pending)?.jpeg,
         ownerUserId = ownerUserId,
+        // Why: the profile's own fields only; ProfileRepository keeps the link the stored copy has.
+        shareCode = null,
     )
 
     override fun toDto(
@@ -39,6 +41,7 @@ class ProfileMapperImpl : ProfileMapper {
         avatarColor = entity.avatarColor,
         avatarUrl = entity.photoUrl,
         updatedAt = entity.updatedAt,
+        shareCode = entity.shareCode,
     )
 
     override fun toEntity(
@@ -53,5 +56,6 @@ class ProfileMapperImpl : ProfileMapper {
         pendingSync = false,
         pendingPhoto = null,
         ownerUserId = ownerUserId,
+        shareCode = dto.shareCode,
     )
 }

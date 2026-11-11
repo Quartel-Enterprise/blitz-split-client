@@ -38,6 +38,7 @@ import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactProfileScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactsScreen
+import com.quare.blitzsplit.android.feature.contacts.ProfileLinkScreen
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
@@ -402,6 +403,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: the home's Contatos tab, over the groups; a wide window draws the profile or the agenda beside it.
             entry<Route.Contacts>(metadata = homeTabMetadata) { ContactsScreen() }
             entry<Route.ContactProfile> { route -> ContactProfileScreen(route) }
+            // Why: a profile link opened, until it gives way to the contact's profile or Profile.
+            entry<Route.ProfileLink> { route -> ProfileLinkScreen(route) }
             entry<Route.ContactsAgenda> { AgendaScreen() }
             // Why: a sheet on a phone, a dialog elsewhere, and the code above the hinge on a tabletop.
             entry<Route.ContactInvite>(metadata = formPresentationMetadata) { route ->

@@ -1362,6 +1362,7 @@ class NotificationPreferencesRepositoryImplTest {
                         pendingSync = false,
                         pendingPhoto = null,
                         ownerUserId = profileOwner,
+                        shareCode = null,
                     )
                 } else {
                     null
@@ -1468,6 +1469,21 @@ private class FakePreferencesOwnerProfileLocalDataSource(
         ownerUserId: String,
         updatedAt: Long,
         photoUrl: String?,
+    ) = error("unused")
+
+    override suspend fun createShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    ) = error("unused")
+
+    override suspend fun replaceShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    ) = error("unused")
+
+    override suspend fun applyRemoteShareCode(
+        ownerUserId: String,
+        shareCode: String?,
     ) = error("unused")
 
     override suspend fun clear() = error("unused")

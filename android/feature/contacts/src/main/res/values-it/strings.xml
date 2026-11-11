@@ -145,4 +145,11 @@
     <string name="contacts_invite_qr">Codice QR del link d’invito</string>
     <string name="contacts_invite_share_message">Dividiamo le spese di %1$s su Blitz Split. Entra con questo link: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, dividiamo le spese di %2$s su Blitz Split. Entra con questo link: %3$s</string>
+    <string name="profile_link_unreachable_title">Impossibile aprire questo profilo</string>
+    <string name="profile_link_unreachable_body">Controlla la connessione. Si aprirà da solo quando tornerai online.</string>
+    <string name="profile_link_retry">Riprova</string>
+    <string name="profile_link_not_found_title">Profilo non trovato</string>
+    <string name="profile_link_not_found_body">Questo link non apre nessun profilo. Richiedilo di nuovo.</string>
+    <string name="profile_link_no_groups">Non hai ancora gruppi con %1$s.</string>
+    <string name="profile_link_invite">Invita in un gruppo</string>
 </resources>

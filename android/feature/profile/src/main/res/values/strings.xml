@@ -4,9 +4,6 @@
     <string name="profile_edit_subtitle">Name, photo and avatar color</string>
     <string name="profile_edit">Edit profile</string>
     <string name="profile_pending">Changed · waiting to upload</string>
-    <string name="profile_visibility">Who sees your profile</string>
-    <string name="profile_visibility_body">Your name, your photo and your payment keys only show to people in your groups. Anyone who shares no group with you sees nothing.</string>
-    <string name="profile_visibility_ok">Got it</string>
     <string name="profile_offline_title">No internet.</string>
     <string name="profile_offline_body">Edit freely: it stays saved on this device and goes up when the connection is back.</string>
     <string name="profile_section_account">Account and sync</string>
@@ -126,4 +123,7 @@
     <string name="profile_category_map">Category map</string>
     <string name="profile_category_map_detail">The words that pick a bill\'s category</string>
     <string name="profile_photo_open">View photo</string>
+    <string name="profile_share">Share profile</string>
+    <string name="profile_share_message">Here\'s my profile on Blitz Split: %1$s</string>
+    <string name="profile_link_copied">Link copied</string>
 </resources>

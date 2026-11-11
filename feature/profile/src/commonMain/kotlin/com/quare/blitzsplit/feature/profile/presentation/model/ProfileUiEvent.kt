@@ -63,7 +63,9 @@ sealed interface ProfileUiEvent : UiEvent {
              * Why: each counts only when the profile takes it (nothing signing out or unlinking, the dialog it answers
              * still open, the row or switch there to tap, another theme), never a late tap.
              */
-            OnVisibilityInfoClicked -> EventAnalytics.Manual("profile_visibility_info_clicked")
+            OnShareProfileClicked -> EventAnalytics.Manual("profile_share_clicked")
+
+            OnCopyProfileLinkClicked -> EventAnalytics.Manual("profile_link_copied")
 
             OnDialogDismissed -> EventAnalytics.Manual("profile_dialog_cancelled")
 
@@ -117,7 +119,11 @@ sealed interface ProfileUiEvent : UiEvent {
     // Why: the avatar opens the photo big, apart from the rest of the card, which edits the profile.
     data object OnAvatarClicked : ProfileUiEvent
 
-    data object OnVisibilityInfoClicked : ProfileUiEvent
+    // Why: "Share profile", the top bar's action where the account has a link: the system share with it.
+    data object OnShareProfileClicked : ProfileUiEvent
+
+    // Why: "Copy link", beside the share where the platform's idiom has one (the Mac's and the web's menu).
+    data object OnCopyProfileLinkClicked : ProfileUiEvent
 
     data object OnDialogDismissed : ProfileUiEvent
 

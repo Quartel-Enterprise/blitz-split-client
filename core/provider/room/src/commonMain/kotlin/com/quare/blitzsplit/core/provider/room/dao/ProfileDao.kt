@@ -75,6 +75,37 @@ interface ProfileDao {
         photoUrl: String?,
     )
 
+    // Why: the account's own code, made here before the server knows the profile, never another user's copy.
+    @Query(
+        "UPDATE profile SET shareCode = :shareCode, pendingSync = 1 " +
+            "WHERE id = '$SINGLE_ROW_ID' AND ownerUserId = :ownerUserId AND shareCode IS NULL",
+    )
+    suspend fun createShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    )
+
+    // Why: a code the server refused as taken gives way to a new one before the profile goes up again.
+    @Query(
+        "UPDATE profile SET shareCode = :shareCode WHERE id = '$SINGLE_ROW_ID' AND ownerUserId = :ownerUserId",
+    )
+    suspend fun replaceShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    )
+
+    /*
+     * Why: the server's code wins over any made here, whatever the Last-Write-Wins of the rest, since links already
+     * shared carry it and it never changes there. Null drops another user's code from a copy that changed hands.
+     */
+    @Query(
+        "UPDATE profile SET shareCode = :shareCode WHERE id = '$SINGLE_ROW_ID' AND ownerUserId = :ownerUserId",
+    )
+    suspend fun applyRemoteShareCode(
+        ownerUserId: String,
+        shareCode: String?,
+    )
+
     @Query("DELETE FROM profile")
     suspend fun deleteAll()
 }

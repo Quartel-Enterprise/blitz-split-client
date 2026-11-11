@@ -211,6 +211,7 @@ class ProfileDaoTest {
         pendingSync = pendingSync,
         pendingPhoto = pendingPhoto,
         ownerUserId = ownerUserId,
+        shareCode = null,
     )
 
     private suspend fun prepareScenario(stored: ProfileEntity) {

@@ -9,6 +9,8 @@ final class ProfileModel {
     /// Bumped by each "Check for updates" with nothing to offer, which a toast says.
     private(set) var upToDateCount = 0
     private(set) var updateCheckFailedCount = 0
+    /// Bumped by each "Copy link" of "Share profile", which a toast says.
+    private(set) var linkCopiedCount = 0
     /// The JSON of "Export my data", until the save sheet closes.
     var exportJson: String?
 
@@ -45,6 +47,14 @@ final class ProfileModel {
             #endif
         case let export as ProfileUiActionSaveExport:
             exportJson = export.json
+        case let share as ProfileUiActionShareProfileLink:
+            SystemShare.share(String(
+                localized: "Here's my profile on Blitz Split: \(share.link)",
+                bundle: .appLanguage,
+            ))
+        case let copy as ProfileUiActionCopyProfileLink:
+            Pasteboard.copy(copy.link)
+            linkCopiedCount += 1
         case let result as ProfileUiActionShowUpdateCheckResult:
             switch result.result {
             case .upToDate: upToDateCount += 1
@@ -137,15 +147,31 @@ struct ProfileView: View {
         }
         .navigationTitle("Profile")
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button("Who sees your profile", systemImage: "info.circle") {
-                    model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
+            // Only an account has a link. The share sheet has Copy on iPhone and iPad; the Mac's menu offers it beside
+            // the sharing picker, as its share menus do
+            if model.state.shareLink != nil {
+                ToolbarItem(placement: .primaryAction) {
+                    #if os(macOS)
+                    Menu("Share profile", systemImage: "square.and.arrow.up") {
+                        Button("Share profile", systemImage: "square.and.arrow.up") {
+                            model.send(ProfileUiEventOnShareProfileClicked.shared)
+                        }
+                        Button("Copy link", systemImage: "doc.on.doc") {
+                            model.send(ProfileUiEventOnCopyProfileLinkClicked.shared)
+                        }
+                    }
+                    #else
+                    Button("Share profile", systemImage: "square.and.arrow.up") {
+                        model.send(ProfileUiEventOnShareProfileClicked.shared)
+                    }
+                    #endif
                 }
             }
         }
         .profileDialogs(model: model)
         .glassToast([
             GlassToastMessage(text: "You already have the latest version.", trigger: model.upToDateCount),
+            GlassToastMessage(text: "Link copied", trigger: model.linkCopiedCount),
             GlassToastMessage(
                 text: "Couldn't check for updates. Check your connection and try again.",
                 trigger: model.updateCheckFailedCount,
@@ -841,9 +867,6 @@ private struct AboutSection: View {
     var body: some View {
         Section("Privacy and about") {
             ExportRow(model: model)
-            Button("Who sees your profile") {
-                model.send(ProfileUiEventOnVisibilityInfoClicked.shared)
-            }
             // The version itself sits in the legal footer, at the end of the profile (beta feedback 18)
             if model.state.showsCheckForUpdates {
                 CheckForUpdatesRow(model: model)

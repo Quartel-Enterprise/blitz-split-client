@@ -4,9 +4,6 @@
     <string name="profile_edit_subtitle">Naam, foto en avatarkleur</string>
     <string name="profile_edit">Profiel bewerken</string>
     <string name="profile_pending">Gewijzigd · wacht op uploaden</string>
-    <string name="profile_visibility">Wie je profiel ziet</string>
-    <string name="profile_visibility_body">Je naam, je foto en je betaalsleutels zijn alleen zichtbaar voor mensen in je groepen. Wie geen groep met je deelt, ziet niets.</string>
-    <string name="profile_visibility_ok">Begrepen</string>
     <string name="profile_offline_title">Geen internet.</string>
     <string name="profile_offline_body">Bewerk gerust: het blijft opgeslagen op dit apparaat en wordt geüpload zodra de verbinding terug is.</string>
     <string name="profile_section_account">Account en synchronisatie</string>
@@ -123,4 +120,7 @@
     <string name="profile_category_map">Categoriekaart</string>
     <string name="profile_category_map_detail">De woorden die de categorie van een uitgave kiezen</string>
     <string name="profile_photo_open">Foto bekijken</string>
+    <string name="profile_share">Profiel delen</string>
+    <string name="profile_share_message">Dit is mijn profiel op Blitz Split: %1$s</string>
+    <string name="profile_link_copied">Link gekopieerd</string>
 </resources>

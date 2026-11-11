@@ -59,8 +59,8 @@
             </intent-filter>
 
             <!--
-                A group's invite link, blitzsplit.com/g/<code>, and a comment's, blitzsplit.com/b/<billId>?comentario=<id>,
-                verified by the site's assetlinks.json
+                A group's invite link, blitzsplit.com/g/<code>, a comment's, blitzsplit.com/b/<billId>?comentario=<id>, and a
+                profile's, blitzsplit.com/u/<code>, verified by the site's assetlinks.json
             -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -72,6 +72,7 @@
                 <data android:host="blitzsplit.com" />
                 <data android:pathPrefix="/g/" />
                 <data android:pathPrefix="/b/" />
+                <data android:pathPrefix="/u/" />
             </intent-filter>
         </activity>
 

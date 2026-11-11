@@ -141,4 +141,11 @@
     <string name="contacts_invite_qr">QR code do link do convite</string>
     <string name="contacts_invite_share_message">Bora rachar as contas do grupo %1$s no Bora Rachar? Entra pelo link: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, bora rachar as contas do grupo %2$s no Bora Rachar? Entra pelo link: %3$s</string>
+    <string name="profile_link_unreachable_title">Não deu para abrir este perfil</string>
+    <string name="profile_link_unreachable_body">Confira sua conexão. Ele abre sozinho quando você voltar a ficar online.</string>
+    <string name="profile_link_retry">Tentar de novo</string>
+    <string name="profile_link_not_found_title">Perfil não encontrado</string>
+    <string name="profile_link_not_found_body">Este link não abre nenhum perfil. Peça o link de novo.</string>
+    <string name="profile_link_no_groups">Você ainda não tem grupos com %1$s.</string>
+    <string name="profile_link_invite">Convidar para um grupo</string>
 </resources>

@@ -14,11 +14,6 @@ private struct ProfileDialogsModifier: ViewModifier {
     func body(content: Content) -> some View {
         let state = model.state
         content
-            .alert("Who sees your profile", isPresented: isPresented(.visibilityInfo)) {
-                Button("Got it") {}
-            } message: {
-                Text("Your name, your photo and your payment keys only show to people in your groups. Anyone who shares no group with you sees nothing.")
-            }
             .alert("Sign out?", isPresented: isPresented(.signOut)) {
                 Button("Cancel", role: .cancel) {}
                 Button("Sign out", role: .destructive) {

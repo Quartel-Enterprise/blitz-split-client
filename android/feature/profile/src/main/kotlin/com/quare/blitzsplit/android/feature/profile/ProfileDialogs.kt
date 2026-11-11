@@ -64,21 +64,6 @@ internal fun ProfileDialogsOverlay(
         )
     }
     when (state.dialog) {
-        ProfileDialog.VISIBILITY_INFO -> FoldAlertDialog(
-            onDismissRequest = onDismiss,
-            title = stringResource(R.string.profile_visibility),
-            text = {
-                Text(
-                    text = stringResource(R.string.profile_visibility_body),
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_visibility_ok)) }
-            },
-            placement = placement,
-        )
-
         ProfileDialog.SIGN_OUT -> FoldAlertDialog(
             onDismissRequest = onDismiss,
             title = stringResource(R.string.profile_sign_out_title),

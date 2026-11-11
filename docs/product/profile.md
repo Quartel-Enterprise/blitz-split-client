@@ -9,7 +9,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     "Sign out" (or "Erase profile and sign out") comes right after "Account and sync" on every platform and layout, one
     column included (Pierre's call, beta feedback 16), and "Delete account" stays the last thing of its column, only
     the legal footer under it; on a book (a tabletop lying down alike) a half each, the 72 dp
-    gap centered on the hinge, as Edit profile and the keys do, and its dialogs ("Who sees your profile", Sign out,
+    gap centered on the hinge, as Edit profile and the keys do, and its dialogs (Sign out,
     Disconnect, "Erase profile and sign out") and Delete account open in the right half. Edit profile is full screen on
     Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
     name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Save (✓). The Mac's profile is
@@ -19,6 +19,17 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     centred, in a wider window), a key (also from its row's right-click, "Edit…") and Delete account open as sheets
     on it, leaving the main window's own sheet as it was and its window unclickable until they close, and it closes
     once no profile is left. The web's is a page.
+  - "Share profile" (Pierre's call, beta feedback: it took the place of the top bar's "i", and "Who sees your profile",
+    its row and its dialog, are gone): the top bar's share button shares the account's profile link,
+    `https://blitzsplit.com/u/<code>`, with "Here's my profile on Blitz Split: <link>" ("Esse é meu perfil no Bora
+    Rachar" in Portuguese). Android and iOS open the system share, whose own Copy covers copying; the Mac's toolbar and
+    the web's header (the page's heading from 768 px) open a menu with "Share profile" (the Mac's sharing picker,
+    the browser's share where there is one, else a copy) and "Copy link" ("Link copied"). The link is made on the
+    device the moment the account exists (its first sync, `ProfileUiState.shareLink`), so it is there offline right
+    after a sign in on a new device once the account's profile came down, and it never changes; a profile no account
+    owns yet (local only, before the first connection) has no link, and the button hides. Opening someone's link:
+    [balances-and-contacts.md](balances-and-contacts.md) (the profile link's page) and
+    [joining-and-folds.md](joining-and-folds.md) (where it opens).
   - "Sign out" and "Delete account" are two buttons for every account the server keeps, an anonymous one too, as for
     Google or Apple (Pierre's call, beta feedback 17): signing out an anonymous account asks "Sign out?" and for the
     recovery code to be kept, since it is the way back, and Delete account deletes it on the server (the
@@ -57,7 +68,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     and Mac apps are one purchase with one listing, whose version both read) and open "Update available"
     ("Version 3.1.0", "Open in the App Store", "Not now", only its buttons and Esc closing it) over the app, a sheet as
     tall as its content on an iPhone, a form sheet with an iPad's room, a sheet on the Mac (on Settings when its check
-    opened it). Profile's "Privacy and about" ("Export my data", "Who sees your profile") ends in "Check for updates" with
+    opened it). Profile's "Privacy and about" ("Export my data") ends in "Check for updates" with
     "Version <versionName>" under it (Pierre's call; the Mac's row keeps "Version <versionName>" with the button), as
     Bible Planner's keeps it next to its footer's version, "Checking…" while it
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update

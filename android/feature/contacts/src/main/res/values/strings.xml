@@ -141,4 +141,11 @@
     <string name="contacts_invite_qr">QR code of the invite link</string>
     <string name="contacts_invite_share_message">Let\'s split the bills of %1$s on Blitz Split. Join with this link: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, let\'s split the bills of %2$s on Blitz Split. Join with this link: %3$s</string>
+    <string name="profile_link_unreachable_title">Couldn\'t open this profile</string>
+    <string name="profile_link_unreachable_body">Check your connection. It opens by itself once you\'re back online.</string>
+    <string name="profile_link_retry">Try again</string>
+    <string name="profile_link_not_found_title">Profile not found</string>
+    <string name="profile_link_not_found_body">This link doesn\'t open any profile. Ask for it again.</string>
+    <string name="profile_link_no_groups">You don\'t have any groups with %1$s yet.</string>
+    <string name="profile_link_invite">Invite to a group</string>
 </resources>

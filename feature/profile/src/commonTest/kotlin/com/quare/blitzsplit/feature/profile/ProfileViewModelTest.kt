@@ -45,6 +45,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingNotificati
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingPaymentKeyChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileShareLinkUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
@@ -1026,20 +1027,6 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `GIVEN who sees your profile open WHEN the dynamic colors info arrives THEN keeps who sees your profile`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(supportsDynamicColors = true)
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
-
-            // Then
-            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
-        }
-
-    @Test
     fun `GIVEN the dynamic colors info over Appearance WHEN dismissing it THEN goes back to Appearance`() =
         runTest(testDispatcher) {
             // Given
@@ -1082,19 +1069,6 @@ class ProfileViewModelTest {
             // Then
             assertNull(viewModel.uiState.value.dialog)
         }
-
-    @Test
-    fun `GIVEN who sees your profile open WHEN dismissing it THEN closes it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-        // When
-        viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
-
-        // Then
-        assertNull(viewModel.uiState.value.dialog)
-    }
 
     @Test
     fun `GIVEN Appearance open WHEN choosing the dark theme THEN stores it and keeps Appearance open`() =
@@ -1460,21 +1434,6 @@ class ProfileViewModelTest {
             // Then
             assertTrue(languageWrites.isEmpty())
             assertTrue(actions.isEmpty())
-        }
-
-    @Test
-    fun `GIVEN who sees your profile open WHEN a language is picked THEN keeps who sees your profile`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(language = AppLanguage.SYSTEM)
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
-
-            // Then
-            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
-            assertEquals(listOf(AppLanguage.PORTUGUESE), languageWrites)
         }
 
     @Test
@@ -1969,18 +1928,6 @@ class ProfileViewModelTest {
             // Then
             assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
         }
-
-    @Test
-    fun `GIVEN the profile WHEN tapping who sees your profile THEN explains it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-        // Then
-        assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
-    }
 
     @Test
     fun `GIVEN the erase dialog with the code kept ticked WHEN dismissing it THEN closes it and unticks the box`() =
@@ -3179,24 +3126,6 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN who sees your profile open WHEN a sign out now arrives THEN does not sign out`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                status = connectedWithGoogle,
-                hasPendingProfile = true,
-            )
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnSignOutNowClicked)
-
-            // Then
-            assertEquals(0, signOutCalls)
-            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
-        }
-
-    @Test
     fun `GIVEN the sign out dialog WHEN the server fails the sign out THEN says so and keeps the dialog open`() =
         runTest(testDispatcher) {
             // Given
@@ -3413,25 +3342,6 @@ class ProfileViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.dialog)
-            assertFalse(viewModel.uiState.value.hasSignOutFailed)
-        }
-
-    @Test
-    fun `GIVEN a failed sign out WHEN tapping who sees your profile THEN explains it without the error`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                status = connectedWithGoogle,
-                signOutError = IllegalStateException("server error"),
-            )
-            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
-            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-            // Then
-            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
             assertFalse(viewModel.uiState.value.hasSignOutFailed)
         }
 
@@ -4095,7 +4005,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
 
             // When
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
 
             // Then
             assertEquals(ProfileDialog.UNLINK_ACCOUNT, viewModel.uiState.value.dialog)
@@ -5264,55 +5174,6 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `GIVEN the profile WHEN tapping who sees your profile THEN sends the visibility info clicked`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-            // Then
-            assertEquals(listOf("profile_visibility_info_clicked" to emptyMap<String, Any>()), trackedEvents)
-        }
-
-    @Test
-    fun `GIVEN a sign out under way WHEN tapping who sees your profile THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            status = connectedWithGoogle,
-            signOutHangs = true,
-        )
-        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
-        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN an unlink under way WHEN tapping who sees your profile THEN sends nothing`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            status = connectedWithGoogle,
-            unlinkHangs = true,
-        )
-        viewModel.onEvent(ProfileUiEvent.OnAccountClicked)
-        viewModel.onEvent(ProfileUiEvent.OnUnlinkConfirmed)
-        trackedEvents.clear()
-
-        // When
-        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-        // Then
-        assertTrue(trackedEvents.isEmpty())
-    }
-
-    @Test
     fun `GIVEN the theme read WHEN tapping Appearance THEN sends the appearance clicked`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -5413,21 +5274,6 @@ class ProfileViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
-
-    @Test
-    fun `GIVEN who sees your profile open WHEN the dynamic colors info arrives THEN sends nothing`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(supportsDynamicColors = true)
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-            trackedEvents.clear()
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnDynamicColorsInfoClicked)
-
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
 
     @Test
     fun `GIVEN Google WHEN tapping the account row THEN sends the account clicked`() = runTest(testDispatcher) {
@@ -5655,21 +5501,6 @@ class ProfileViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
-
-    @Test
-    fun `GIVEN who sees your profile open WHEN dismissing it THEN sends nothing as it is no confirmation`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-            trackedEvents.clear()
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
-
-            // Then
-            assertTrue(trackedEvents.isEmpty())
-        }
 
     @Test
     fun `GIVEN the dynamic colors info over Appearance WHEN dismissing it THEN sends nothing`() =
@@ -6672,21 +6503,6 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN who sees your profile open WHEN tapping it again THEN sends the tap once and keeps it open`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-            // When
-            viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
-
-            // Then
-            assertEquals(listOf("profile_visibility_info_clicked" to emptyMap<String, Any>()), trackedEvents)
-            assertEquals(ProfileDialog.VISIBILITY_INFO, viewModel.uiState.value.dialog)
-        }
-
-    @Test
     fun `GIVEN a failed sign out WHEN tapping sign out again THEN sends no second sign out tap`() =
         runTest(testDispatcher) {
             // Given
@@ -7189,6 +7005,279 @@ class ProfileViewModelTest {
             assertEquals(listOf("app_invite_dismissed" to mapOf<String, Any>("source" to "profile")), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN a local only profile WHEN the profile opens THEN shows no profile link`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = AccountStatus.LocalOnly,
+            shareCode = null,
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.shareLink)
+    }
+
+    @Test
+    fun `GIVEN an account with its profile code WHEN the profile opens THEN shows its profile link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                shareCode = shareCode,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(shareLink, state.shareLink)
+        }
+
+    @Test
+    fun `GIVEN a local only profile WHEN the account gets its profile code THEN shows the profile link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                shareCode = null,
+            )
+
+            // When
+            profiles.shareCode.value = shareCode
+
+            // Then
+            assertEquals(shareLink, viewModel.uiState.value.shareLink)
+        }
+
+    @Test
+    fun `GIVEN the profile link WHEN the profile code changes THEN shows the new link`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            shareCode = shareCode,
+        )
+
+        // When
+        profiles.shareCode.value = otherShareCode
+
+        // Then
+        assertEquals("https://blitzsplit.com/u/$otherShareCode", viewModel.uiState.value.shareLink)
+    }
+
+    @Test
+    fun `GIVEN the profile link WHEN tapping Share profile THEN shares the link with the name and tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                shareCode = shareCode,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+            assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the name just edited WHEN tapping Share profile THEN shares the link with the new name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                shareCode = shareCode,
+            )
+            profiles.profile.value = pierre.copy(displayName = "  Pierre Vieira  ")
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertEquals(
+                listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre Vieira")),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN a local only profile WHEN tapping Share profile THEN shares nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                shareCode = null,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the profile link gone WHEN a stale Share profile tap arrives THEN shares nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                shareCode = shareCode,
+            )
+            profiles.shareCode.value = null
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.shareLink)
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the profile link WHEN tapping Copy link THEN copies the link and tracks it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithApple,
+            shareCode = shareCode,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
+
+        // Then
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+        assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a local only profile WHEN tapping Copy link THEN copies nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.LocalOnly,
+                shareCode = null,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no internet and the profile link WHEN tapping Share profile THEN shares the link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                shareCode = shareCode,
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+            assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN no internet and the profile link WHEN tapping Copy link THEN copies the link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                shareCode = shareCode,
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+            assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping Share profile THEN still shares the link`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            shareCode = shareCode,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        actions.clear()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isSigningOut)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+        assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping Copy link THEN still copies the link`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            shareCode = shareCode,
+            signOutHangs = true,
+        )
+        viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+        viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+        actions.clear()
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isSigningOut)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+        assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a sign out scheduled for after the sync WHEN tapping Share profile THEN still shares the link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                shareCode = shareCode,
+                signOutScheduled = true,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isSignOutScheduled)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink, "Pierre")), actions)
+        }
+
+    // Why: the account's profile code as this device made it, and the link "Share profile" hands out.
+    private val shareCode = "7Hk2pQ8xZa"
+
+    private val shareLink = "https://blitzsplit.com/u/7Hk2pQ8xZa"
+
+    private val otherShareCode = "Q3mN8vR2tY"
+
     // Why: the web's invite while both stores list the app.
     private val webInvite = AppInvite(
         link = AppInvite.WEB_LINK,
@@ -7301,6 +7390,7 @@ class ProfileViewModelTest {
         themeWriteHangs: Boolean = false,
         invite: AppInvite? = null,
         language: AppLanguage = AppLanguage.SYSTEM,
+        shareCode: String? = null,
     ) {
         appInvite = MutableStateFlow(invite)
         appInviteDismissals = 0
@@ -7327,7 +7417,10 @@ class ProfileViewModelTest {
             it.connectResult = connectResult
             it.unlinkError = unlinkError
         }
-        profiles = FakeProfileRepository(profile).also { it.hasPendingChanges.value = hasPendingProfile }
+        profiles = FakeProfileRepository(profile).also {
+            it.hasPendingChanges.value = hasPendingProfile
+            it.shareCode.value = shareCode
+        }
         paymentKeys = FakePaymentKeyRepository(keys).also { it.hasPendingChanges.value = hasPendingKeys }
         notificationPreferences = FakeNotificationPreferencesRepository(preferences).also {
             it.hasPendingChanges.value = hasPendingPreferences
@@ -7400,6 +7493,7 @@ class ProfileViewModelTest {
             updateMechanism = updateMechanism,
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),
+            observeProfileShareLink = ObserveProfileShareLinkUseCase(profiles),
             observePendingProfileChanges = ObservePendingProfileChangesUseCase(profiles),
             observePaymentKeys = ObservePaymentKeysUseCase(paymentKeys),
             observePendingPaymentKeyChanges = ObservePendingPaymentKeyChangesUseCase(paymentKeys),

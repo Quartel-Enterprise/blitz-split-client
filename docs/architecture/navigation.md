@@ -64,7 +64,10 @@ the link and pushes `Route.JoinInvite(code, memberCode, inviterCode)` over whate
 before there is a profile), so the start route logic stays in one place. `InviteLink.targetOf` reads the codes from any
 host, so `borarachar.com` keeps working once it redirects there. Joining replaces the stack with `[Home,
 Groups, GroupDetail(groupId, joinedAs, EXPENSES)]`, `joinedAs` null when there is no member name to greet. A member's link to a group
-already open in the stack goes back to that group instead, so the group never stacks over itself.
+already open in the stack goes back to that group instead, so the group never stacks over itself. A profile's link
+(`https://blitzsplit.com/u/<code>`, `ProfileLink.codeOf`, App Links on `/u/` too) takes the same path and pushes
+`Route.ProfileLink(code)`, whose ViewModel replaces it (`Navigator.replaceTop`) with `Route.Profile` or the contact's
+`Route.ContactProfile` once it knows whose it is, and only while it is still on top.
 
 **Navigation never belongs in a `UiAction`.** `UiAction` is for what only a platform can do (see
 [state-management.md](state-management.md#uiaction--one-shot-effects-only-a-platform-can-perform)).

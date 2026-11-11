@@ -29,6 +29,7 @@ val profileModule = module {
             updateMechanism = get(),
             observeAccount = get(),
             observeProfile = get(),
+            observeProfileShareLink = get(),
             observePendingProfileChanges = get(),
             observePaymentKeys = get(),
             observePendingPaymentKeyChanges = get(),

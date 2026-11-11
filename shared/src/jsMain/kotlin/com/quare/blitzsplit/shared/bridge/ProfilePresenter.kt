@@ -22,6 +22,8 @@ class JsProfileState(
     val avatarInitial: String,
     val avatarColor: String,
     val photoUrl: String?,
+    // Why: "Share profile"'s link, null while no account owns the profile (the button hides).
+    val shareLink: String?,
     // Why: "google" or "apple", null while there is no account.
     val accountProvider: String?,
     val hasAccount: Boolean,
@@ -88,7 +90,10 @@ class JsPaymentKeyItem(
 )
 
 class JsProfileAction(
-    // Why: "copy" with the code, "open" with a URL, "export" with the JSON to save, or "reload" for a language picked.
+    /*
+     * Why: "copy" with the code, "open" with a URL, "export" with the JSON to save, "reload" for a language picked,
+     * "shareProfile" with the profile link (navigator.share, or a copy) or "copyProfileLink" with it.
+     */
     val type: String,
     val value: String,
 )
@@ -105,6 +110,7 @@ class ProfilePresenter {
                 avatarInitial = state.avatarInitial,
                 avatarColor = state.avatarColor.code,
                 photoUrl = state.photoUrl,
+                shareLink = state.shareLink,
                 accountProvider = state.accountProvider?.code,
                 hasAccount = state.hasAccount,
                 erasesProfileOnSignOut = state.erasesProfileOnSignOut,
@@ -172,6 +178,10 @@ class ProfilePresenter {
 
                 is ProfileUiAction.LaunchNativeSignIn -> null
 
+                is ProfileUiAction.ShareProfileLink -> JsProfileAction("shareProfile", action.link)
+
+                is ProfileUiAction.CopyProfileLink -> JsProfileAction("copyProfileLink", action.link)
+
                 // Why: the page reads its language once, before it draws; the reload comes back to the profile.
                 ProfileUiAction.ApplyLanguage -> {
                     keepProfileForLanguage()
@@ -190,8 +200,12 @@ class ProfilePresenter {
         viewModel.onEvent(ProfileUiEvent.OnBackClicked)
     }
 
-    fun visibilityInfo() {
-        viewModel.onEvent(ProfileUiEvent.OnVisibilityInfoClicked)
+    fun shareProfile() {
+        viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
+    }
+
+    fun copyProfileLink() {
+        viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
     }
 
     fun dismissDialog() {

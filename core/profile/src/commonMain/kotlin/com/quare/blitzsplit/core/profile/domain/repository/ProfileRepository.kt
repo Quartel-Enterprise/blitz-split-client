@@ -8,6 +8,9 @@ interface ProfileRepository {
 
     fun observeHasPendingChanges(): Flow<Boolean>
 
+    // Why: the code of the account's profile link, null while no account owns this device's profile.
+    fun observeShareCode(): Flow<String?>
+
     suspend fun saveProfile(profile: UserProfile)
 
     suspend fun uploadPendingProfile(userId: String): Result<Unit>

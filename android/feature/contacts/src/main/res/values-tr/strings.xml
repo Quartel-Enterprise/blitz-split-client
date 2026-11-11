@@ -141,4 +141,11 @@
     <string name="contacts_invite_qr">Davet bağlantısının QR kodu</string>
     <string name="contacts_invite_share_message">Blitz Split\'te harcamaları bölelim: %1$s. Bu bağlantıyla katıl: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, Blitz Split\'te harcamaları bölelim: %2$s. Bu bağlantıyla katıl: %3$s</string>
+    <string name="profile_link_unreachable_title">Bu profil açılamadı</string>
+    <string name="profile_link_unreachable_body">Bağlantını kontrol et. Yeniden çevrimiçi olduğunda kendiliğinden açılır.</string>
+    <string name="profile_link_retry">Tekrar dene</string>
+    <string name="profile_link_not_found_title">Profil bulunamadı</string>
+    <string name="profile_link_not_found_body">Bu bağlantı hiçbir profili açmıyor. Bağlantıyı yeniden iste.</string>
+    <string name="profile_link_no_groups">%1$s ile henüz ortak grubun yok.</string>
+    <string name="profile_link_invite">Bir gruba davet et</string>
 </resources>

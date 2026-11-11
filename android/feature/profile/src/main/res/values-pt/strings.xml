@@ -4,9 +4,6 @@
     <string name="profile_edit_subtitle">Nome, foto e cor do avatar</string>
     <string name="profile_edit">Editar perfil</string>
     <string name="profile_pending">Alterado · aguardando envio</string>
-    <string name="profile_visibility">Quem vê seu perfil</string>
-    <string name="profile_visibility_body">Seu nome, sua foto e suas chaves de pagamento aparecem só para quem está nos seus grupos. Quem não divide nenhum grupo com você não vê nada.</string>
-    <string name="profile_visibility_ok">Entendi</string>
     <string name="profile_offline_title">Sem internet.</string>
     <string name="profile_offline_body">Pode editar à vontade: fica salvo neste aparelho e sobe quando a conexão voltar.</string>
     <string name="profile_section_account">Conta e sincronização</string>
@@ -124,4 +121,7 @@
     <string name="profile_category_map">Mapa de categorias</string>
     <string name="profile_category_map_detail">As palavras que escolhem a categoria da conta</string>
     <string name="profile_photo_open">Ver foto</string>
+    <string name="profile_share">Compartilhar perfil</string>
+    <string name="profile_share_message">Esse é meu perfil no Bora Rachar: %1$s</string>
+    <string name="profile_link_copied">Link copiado</string>
 </resources>

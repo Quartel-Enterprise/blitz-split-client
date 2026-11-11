@@ -27,5 +27,20 @@ interface ProfileLocalDataSource {
         photoUrl: String?,
     )
 
+    suspend fun createShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    )
+
+    suspend fun replaceShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    )
+
+    suspend fun applyRemoteShareCode(
+        ownerUserId: String,
+        shareCode: String?,
+    )
+
     suspend fun clear()
 }

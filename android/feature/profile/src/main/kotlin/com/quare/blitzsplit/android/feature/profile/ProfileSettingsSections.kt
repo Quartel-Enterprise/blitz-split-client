@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Translate
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -158,12 +157,6 @@ internal fun AboutSection(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
-        )
-        HorizontalDivider()
-        SectionRow(
-            icon = Icons.Outlined.Visibility,
-            headline = stringResource(R.string.profile_visibility),
-            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnVisibilityInfoClicked) },
         )
         // Why: the version itself sits in the legal footer, at the end of the profile (beta feedback 18).
         if (state.showsCheckForUpdates) {

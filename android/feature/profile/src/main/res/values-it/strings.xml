@@ -4,9 +4,6 @@
     <string name="profile_edit_subtitle">Nome, foto e colore dell’avatar</string>
     <string name="profile_edit">Modifica profilo</string>
     <string name="profile_pending">Modificato · in attesa di invio</string>
-    <string name="profile_visibility">Chi vede il tuo profilo</string>
-    <string name="profile_visibility_body">Il tuo nome, la tua foto e le tue chiavi di pagamento sono visibili solo alle persone dei tuoi gruppi. Chi non ha gruppi in comune con te non vede niente.</string>
-    <string name="profile_visibility_ok">Ho capito</string>
     <string name="profile_offline_title">Nessuna connessione.</string>
     <string name="profile_offline_body">Modifica pure: resta salvato su questo dispositivo e viene caricato quando torna la connessione.</string>
     <string name="profile_section_account">Account e sincronizzazione</string>
@@ -127,4 +124,7 @@
     <string name="profile_category_map">Mappa delle categorie</string>
     <string name="profile_category_map_detail">Le parole che scelgono la categoria di una spesa</string>
     <string name="profile_photo_open">Vedi foto</string>
+    <string name="profile_share">Condividi profilo</string>
+    <string name="profile_share_message">Ecco il mio profilo su Blitz Split: %1$s</string>
+    <string name="profile_link_copied">Link copiato</string>
 </resources>

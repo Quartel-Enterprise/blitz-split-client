@@ -41,6 +41,7 @@ import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { SharedBillScreen } from '@/features/shared-bill/SharedBillScreen'
+import { ProfileLinkScreen } from '@/features/profile-link/ProfileLinkScreen'
 import { SimplifyDebtsInfoDialog } from '@/features/simplify-debts/SimplifyDebtsInfoDialog'
 import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
@@ -288,6 +289,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
     // Why: a bill's link (7.3h), a page of its own outside the home's frame.
     case 'shared-bill':
       return route ? <SharedBillScreen key={route.sharedBillCode} route={route} /> : null
+    // Why: a profile link, a page of its own until it gives way to the contact's profile or Perfil.
+    case 'profile-link':
+      return route ? <ProfileLinkScreen key={route.profileLinkCode} route={route} /> : null
     default:
       return <WelcomeScreen />
   }

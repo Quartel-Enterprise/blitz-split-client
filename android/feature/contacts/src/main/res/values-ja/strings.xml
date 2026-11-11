@@ -137,4 +137,11 @@
     <string name="contacts_invite_qr">招待リンクのQRコード</string>
     <string name="contacts_invite_share_message">Blitz Splitで%1$sの支出を割り勘しましょう。このリンクから参加してください：%2$s</string>
     <string name="contacts_invite_share_message_named">%1$s、Blitz Splitで%2$sの支出を割り勘しましょう。このリンクから参加してください：%3$s</string>
+    <string name="profile_link_unreachable_title">このプロフィールを開けませんでした</string>
+    <string name="profile_link_unreachable_body">接続を確認してください。オンラインに戻ると自動的に開きます。</string>
+    <string name="profile_link_retry">再試行</string>
+    <string name="profile_link_not_found_title">プロフィールが見つかりません</string>
+    <string name="profile_link_not_found_body">このリンクではプロフィールを開けません。もう一度リンクをもらってください。</string>
+    <string name="profile_link_no_groups">%1$sさんとの共通のグループはまだありません。</string>
+    <string name="profile_link_invite">グループに招待</string>
 </resources>

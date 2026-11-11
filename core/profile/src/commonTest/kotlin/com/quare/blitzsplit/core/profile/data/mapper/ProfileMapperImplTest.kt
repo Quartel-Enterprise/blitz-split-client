@@ -110,7 +110,7 @@ class ProfileMapperImplTest {
     @Test
     fun `GIVEN a profile from the server WHEN mapping to a row THEN keeps its url as synced with no pending photo`() {
         // Given
-        val dto = ProfileDto("user-1", "Larissa", "peach", OLD_URL, 99L)
+        val dto = ProfileDto("user-1", "Larissa", "peach", OLD_URL, 99L, null)
 
         // When
         val row = mapper.toEntity(
@@ -138,7 +138,54 @@ class ProfileMapperImplTest {
         )
 
         // Then
-        assertEquals(ProfileDto("user-1", "Pierre", "lilac", OLD_URL, 1L), dto)
+        assertEquals(ProfileDto("user-1", "Pierre", "lilac", OLD_URL, 1L, null), dto)
+    }
+
+    @Test
+    fun `GIVEN a row with a share code WHEN mapping to the server THEN sends the code`() {
+        // Given
+        val stored = entity(shareCode = SHARE_CODE)
+
+        // When
+        val dto = mapper.toDto(
+            entity = stored,
+            userId = "user-1",
+        )
+
+        // Then
+        assertEquals(SHARE_CODE, dto.shareCode)
+    }
+
+    @Test
+    fun `GIVEN a profile from the server with a share code WHEN mapping to a row THEN keeps the code`() {
+        // Given
+        val dto = ProfileDto("user-1", "Larissa", "peach", null, 99L, SHARE_CODE)
+
+        // When
+        val row = mapper.toEntity(
+            dto = dto,
+            ownerUserId = "user-1",
+        )
+
+        // Then
+        assertEquals(SHARE_CODE, row.shareCode)
+    }
+
+    @Test
+    fun `GIVEN an edited profile WHEN mapping to a row THEN the row has no share code of its own`() {
+        // Given
+        val profile = UserProfile("Pierre", AvatarColor.LILAC, photo = null)
+
+        // When
+        val row = mapper.toEntity(
+            profile = profile,
+            updatedAt = 7L,
+            pendingSync = true,
+            ownerUserId = "user-1",
+        )
+
+        // Then
+        assertNull(row.shareCode)
     }
 
     private val jpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 1)
@@ -146,6 +193,7 @@ class ProfileMapperImplTest {
     private fun entity(
         photoUrl: String? = null,
         pendingPhoto: ByteArray? = null,
+        shareCode: String? = null,
     ): ProfileEntity = ProfileEntity(
         id = "me",
         displayName = "Pierre",
@@ -155,9 +203,11 @@ class ProfileMapperImplTest {
         pendingSync = false,
         pendingPhoto = pendingPhoto,
         ownerUserId = "user-1",
+        shareCode = shareCode,
     )
 
     private companion object {
         const val OLD_URL = "https://storage/avatars/user-1/avatar.jpg?v=1"
+        const val SHARE_CODE = "7Hk2pQ8xZa"
     }
 }

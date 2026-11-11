@@ -141,4 +141,11 @@
     <string name="contacts_invite_qr">QR-Code des Einladungslinks</string>
     <string name="contacts_invite_share_message">Lass uns die Ausgaben von %1$s mit Blitz Split aufteilen. Tritt über diesen Link bei: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, lass uns die Ausgaben von %2$s mit Blitz Split aufteilen. Tritt über diesen Link bei: %3$s</string>
+    <string name="profile_link_unreachable_title">Dieses Profil konnte nicht geöffnet werden</string>
+    <string name="profile_link_unreachable_body">Prüfe deine Verbindung. Es öffnet sich von selbst, sobald du wieder online bist.</string>
+    <string name="profile_link_retry">Erneut versuchen</string>
+    <string name="profile_link_not_found_title">Profil nicht gefunden</string>
+    <string name="profile_link_not_found_body">Dieser Link öffnet kein Profil. Frag noch einmal danach.</string>
+    <string name="profile_link_no_groups">Du hast noch keine Gruppen mit %1$s.</string>
+    <string name="profile_link_invite">In eine Gruppe einladen</string>
 </resources>

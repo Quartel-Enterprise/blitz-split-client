@@ -25,6 +25,36 @@ class RoomProfileLocalDataSource(
         )
     }
 
+    override suspend fun createShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    ) {
+        dao.createShareCode(
+            ownerUserId = ownerUserId,
+            shareCode = shareCode,
+        )
+    }
+
+    override suspend fun replaceShareCode(
+        ownerUserId: String,
+        shareCode: String,
+    ) {
+        dao.replaceShareCode(
+            ownerUserId = ownerUserId,
+            shareCode = shareCode,
+        )
+    }
+
+    override suspend fun applyRemoteShareCode(
+        ownerUserId: String,
+        shareCode: String?,
+    ) {
+        dao.applyRemoteShareCode(
+            ownerUserId = ownerUserId,
+            shareCode = shareCode,
+        )
+    }
+
     override suspend fun clear() {
         dao.deleteAll()
     }

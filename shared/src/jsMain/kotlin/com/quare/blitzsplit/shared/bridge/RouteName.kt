@@ -49,6 +49,8 @@ internal fun toRouteName(route: Route): String = when (route) {
 
     is Route.SharedBill -> "shared-bill"
 
+    is Route.ProfileLink -> "profile-link"
+
     is Route.EditGroup -> "edit-group"
 
     is Route.GroupPhoto -> "group-photo"

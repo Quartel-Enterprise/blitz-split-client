@@ -299,6 +299,15 @@ sealed interface Route {
         val personKey: String,
     ) : Route
 
+    /*
+     * Why: a profile link opened, blitzsplit.com/u/<code> ("Share profile"), over wherever the app is, or the welcome
+     * without a profile, as an invite. It stays only while it asks the server or has no contact to show: a contact
+     * replaces it with their profile, and the person's own link with Profile.
+     */
+    data class ProfileLink(
+        val code: String,
+    ) : Route
+
     // Why: "Convidar da agenda" (11.3): the device's contacts, each invited with a group's link. Not on the web.
     data object ContactsAgenda : Route
 

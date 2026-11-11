@@ -315,6 +315,18 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     `group_members`, the `<member code>` of a personal link `blitzsplit.com/g/<code>/<member code>`) follows the same
     path: read back from the members' upsert and stored with `GroupDao.updateMemberInviteCode`, outside
     Last-Write-Wins, so a member added offline has no personal link until it goes up.
+  - **Profile code**: the account's profile link, `blitzsplit.com/u/<code>` (Profile's "Share profile"), whose code is
+    ten characters of `[A-Za-z0-9]` (`ProfileLink.CODE_LENGTH`) made through `RandomCode`, as a group's. It lives on
+    the profile row (`ProfileEntity.shareCode`, Room 43) and only means something while an account owns the row
+    (`ProfileRepository.observeShareCode`), so a local only profile has no link. `downloadProfile` makes it once the
+    row belongs to the user the sync runs under and has none (`ProfileDao.createShareCode`, which also marks the row
+    pending): the first sync of a new account, before the profile goes up or any answer comes back, so Profile shares
+    it offline from then on. The server's code (`profiles.share_code`, never changed once up) always wins over the
+    device's, outside Last-Write-Wins and even over a change still waiting (`ProfileDao.applyRemoteShareCode`), and a
+    copy that changes hands never keeps the previous user's code. `uploadPendingProfile` sends it; one another profile
+    already has is refused (`profile_code_taken`, `ProfileCodeTakenException`), so the device makes another
+    (`ProfileDao.replaceShareCode`) and sends again, up to three attempts in all, as the invite code does. Opening
+    someone's link asks `get_profile_by_share_code` (`ProfileLinkRepository`), online only.
   - **"Simplificar dívidas"** (page 13): the switch is a field of the group row with its own Last-Write-Wins stamp,
     `simplifyDebtsAt`, apart from `updatedAt`. `GroupDao.updateSimplifyDebts` writes it alone, with the pairs before and
     after it changed (`simplifyDebtsChange`, the JSON the server copies into Atividade's event and its push) and
