@@ -16,17 +16,18 @@ internal fun MutableStateFlow<ProfileUiState>.observeSyncSummary(
     hasPendingKeys: Flow<Boolean>,
     hasPendingPreferences: Flow<Boolean>,
     isOnline: Flow<Boolean>,
+    awaitsFullSync: Flow<Boolean>,
 ): Flow<Unit> = combine(
     syncState,
-    hasPendingProfile,
-    hasPendingKeys,
-    hasPendingPreferences,
+    combine(hasPendingProfile, hasPendingKeys, hasPendingPreferences, ::Triple),
     isOnline,
-) { state, pendingProfile, pendingKeys, pendingPreferences, online ->
+    awaitsFullSync,
+) { state, pending, online, awaitsFull ->
+    val (pendingProfile, pendingKeys, pendingPreferences) = pending
     update {
         it.copy(
             isOnline = online,
-            syncStatus = syncStatusOf(state),
+            syncStatus = syncStatusOf(state, awaitsFull, it.syncStatus),
             pendingChanges = listOfNotNull(
                 PendingChange.PROFILE.takeIf { pendingProfile },
                 PendingChange.PAYMENT_KEYS.takeIf { pendingKeys },
@@ -36,10 +37,23 @@ internal fun MutableStateFlow<ProfileUiState>.observeSyncSummary(
     }
 }
 
-// Why: SYNCED draws nothing; PENDING waits for the connection, or for the next sync, which is imminent online.
-private fun syncStatusOf(syncState: SyncState): ProfileSyncStatus? = when (syncState) {
+/*
+ * Why: SYNCED draws nothing; PENDING waits for the connection, or for the next sync, which is imminent online.
+ * SYNCING only shows during the account's first full sync and for the retry after FAILED (previous is the status
+ * shown), as Home's and Groups' chip does (`SyncBadge.ofOrNull`); every other sync shows the row at rest.
+ */
+private fun syncStatusOf(
+    syncState: SyncState,
+    awaitsFullSync: Boolean,
+    previous: ProfileSyncStatus?,
+): ProfileSyncStatus? = when (syncState) {
     SyncState.SYNCED -> null
+
     SyncState.PENDING -> ProfileSyncStatus.WAITING
-    SyncState.SYNCING -> ProfileSyncStatus.SYNCING
+
+    SyncState.SYNCING -> ProfileSyncStatus.SYNCING.takeIf {
+        awaitsFullSync || previous == ProfileSyncStatus.FAILED || previous == ProfileSyncStatus.SYNCING
+    }
+
     SyncState.FAILED -> ProfileSyncStatus.FAILED
 }

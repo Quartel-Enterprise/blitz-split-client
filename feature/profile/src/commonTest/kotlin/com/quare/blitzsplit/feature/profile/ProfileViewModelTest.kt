@@ -473,16 +473,46 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `GIVEN a sync running WHEN the profile opens THEN shows it syncing`() = runTest(testDispatcher) {
+    fun `GIVEN a background sync running WHEN the profile opens THEN shows the row at rest`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.syncStatus)
+            assertFalse(state.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account running WHEN the profile opens THEN shows it syncing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+
+            // When
+            account.awaitsFullSync = true
+
+            // Then
+            assertEquals(ProfileSyncStatus.SYNCING, viewModel.uiState.value.syncStatus)
+            assertFalse(viewModel.uiState.value.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN a failed sync WHEN the retry runs THEN shows it syncing until it settles`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(syncState = SyncState.SYNCING)
+        prepareScenario(syncState = SyncState.FAILED)
 
         // When
-        val state = viewModel.uiState.value
+        syncState.value = SyncState.SYNCING
+        val whileRetrying = viewModel.uiState.value.syncStatus
+        syncState.value = SyncState.SYNCED
 
         // Then
-        assertEquals(ProfileSyncStatus.SYNCING, state.syncStatus)
-        assertFalse(state.canRetrySync)
+        assertEquals(ProfileSyncStatus.SYNCING, whileRetrying)
+        assertNull(viewModel.uiState.value.syncStatus)
     }
 
     @Test
@@ -577,7 +607,25 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN a profile change not uploaded WHEN a sync runs THEN hides the waiting to upload label`() =
+    fun `GIVEN a profile change not uploaded WHEN the first full sync runs THEN hides the waiting to upload label`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasPendingProfile = true,
+                syncState = SyncState.PENDING,
+            )
+            account.awaitsFullSync = true
+
+            // When
+            syncState.value = SyncState.SYNCING
+
+            // Then
+            assertEquals(listOf(PendingChange.PROFILE), viewModel.uiState.value.pendingChanges)
+            assertFalse(viewModel.uiState.value.showsProfilePending)
+        }
+
+    @Test
+    fun `GIVEN a profile change not uploaded WHEN a quiet sync runs THEN keeps the waiting to upload label`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -589,8 +637,7 @@ class ProfileViewModelTest {
             syncState.value = SyncState.SYNCING
 
             // Then
-            assertEquals(listOf(PendingChange.PROFILE), viewModel.uiState.value.pendingChanges)
-            assertFalse(viewModel.uiState.value.showsProfilePending)
+            assertTrue(viewModel.uiState.value.showsProfilePending)
         }
 
     @Test
