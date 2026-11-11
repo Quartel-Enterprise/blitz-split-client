@@ -244,20 +244,20 @@ private struct LegalTableCards: View {
         VStack(spacing: 10) {
             ForEach(Array(table.rows.enumerated()), id: \.offset) { _, row in
                 VStack(alignment: .leading, spacing: 10) {
-                    ForEach(Array(row.cells.enumerated()), id: \.offset) { column, cell in
-                        if column == 0 {
-                            Text(cell.attributed)
-                                .font(.headline)
-                        } else {
-                            VStack(alignment: .leading, spacing: 2) {
-                                if table.header.indices.contains(column) {
-                                    Text(table.header[column].attributed)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Text(cell.attributed)
-                                    .font(.subheadline)
+                    if let title = row.cells.first {
+                        Text(title.attributed)
+                            .font(.headline)
+                    }
+                    // The row's other cells, the empty ones left out by the shared code
+                    ForEach(Array(table.detailsOf(row: row).enumerated()), id: \.offset) { _, detail in
+                        VStack(alignment: .leading, spacing: 2) {
+                            if let label = detail.label {
+                                Text(label.attributed)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
+                            Text(detail.text.attributed)
+                                .font(.subheadline)
                         }
                     }
                 }

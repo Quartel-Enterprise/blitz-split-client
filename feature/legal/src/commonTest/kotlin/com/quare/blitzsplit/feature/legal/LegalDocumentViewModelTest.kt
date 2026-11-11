@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -459,6 +460,52 @@ class LegalDocumentViewModelTest {
         }
 
     @Test
+    fun `GIVEN the terms opened over the privacy policy WHEN a link to the policy is clicked THEN returns to it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                page = LegalPage.TERMS_OF_USE,
+                saved = mapOf(LegalPage.TERMS_OF_USE to terms),
+            )
+            val termsRoute = navigator.backStack.value.last()
+            navigator.replaceAbove(
+                size = 1,
+                routes = listOf(privacyRoute, termsRoute),
+            )
+            val link = LegalLink.Page(
+                page = LegalPage.PRIVACY_POLICY,
+                anchor = null,
+            )
+
+            // When
+            viewModel.onEvent(LegalDocumentUiEvent.OnLinkClicked(link))
+
+            // Then
+            assertEquals(listOf(Route.Profile, privacyRoute), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a saved text still being read and no internet WHEN the read ends THEN load failed never showed`() =
+        runTest(testDispatcher) {
+            // Given
+            val readGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                saved = mapOf(LegalPage.PRIVACY_POLICY to savedPrivacy),
+                downloadError = offline,
+                readGate = readGate,
+            )
+            val failedWhileReading = viewModel.uiState.value.showsLoadFailed
+
+            // When
+            readGate.complete(Unit)
+
+            // Then
+            assertFalse(failedWhileReading)
+            assertEquals(savedPrivacy, viewModel.uiState.value.document)
+            assertFalse(viewModel.uiState.value.showsLoadFailed)
+        }
+
+    @Test
     fun `GIVEN the privacy policy WHEN a link to the top of the terms is clicked THEN opens the terms at the top`() =
         runTest(testDispatcher) {
             // Given
@@ -691,6 +738,7 @@ class LegalDocumentViewModelTest {
         saved: Map<LegalPage, LegalDocument> = emptyMap(),
         downloadError: Throwable? = null,
         isDownloadPending: Boolean = false,
+        readGate: CompletableDeferred<Unit>? = null,
     ) {
         repository = FakeLegalRepository(
             saved = saved,
@@ -701,6 +749,7 @@ class LegalDocumentViewModelTest {
         ).also {
             it.downloadError = downloadError
             it.downloadGate = if (isDownloadPending) CompletableDeferred() else null
+            it.readGate = readGate
         }
         val route = Route.LegalDocument(
             page = page,
@@ -739,13 +788,14 @@ private class FakeLegalRepository(
     val refreshedPages = mutableListOf<LegalPage>()
     var downloadError: Throwable? = null
     var downloadGate: CompletableDeferred<Unit>? = null
+    var readGate: CompletableDeferred<Unit>? = null
 
     override fun observeDocument(
         page: LegalPage,
         language: String,
     ): Flow<LegalDocument?> {
         observedPages += page
-        return documents.map { it[page] }
+        return documents.map { it[page] }.onStart { readGate?.await() }
     }
 
     override suspend fun refreshDocument(

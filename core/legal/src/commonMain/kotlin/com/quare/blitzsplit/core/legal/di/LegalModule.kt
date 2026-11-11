@@ -15,17 +15,24 @@ import com.quare.blitzsplit.core.legal.domain.usecase.impl.GetLegalLanguageUseCa
 import com.quare.blitzsplit.core.legal.domain.usecase.impl.ObserveLegalDocumentUseCase
 import com.quare.blitzsplit.core.legal.domain.usecase.impl.RefreshLegalDocumentUseCase
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+private const val SITE_TIMEOUT_MILLIS = 20_000L
 private val siteClient = named("legalSiteClient")
 
 val legalModule = module {
     // Why: a plain client of its own for the public site, on each platform's engine; Supabase's carries the session.
-    single(siteClient) { HttpClient() }
+    single(siteClient) {
+        HttpClient {
+            // Why: a connection that stalls ends in "Couldn't load", with "Try again", not in an endless skeleton.
+            install(HttpTimeout) { requestTimeoutMillis = SITE_TIMEOUT_MILLIS }
+        }
+    }
     single<LegalRemoteDataSource> { SiteLegalRemoteDataSource(httpClient = get(siteClient)) }
     singleOf(::RoomLegalLocalDataSource).bind<LegalLocalDataSource>()
     singleOf(::LegalDocumentParserImpl).bind<LegalDocumentParser>()

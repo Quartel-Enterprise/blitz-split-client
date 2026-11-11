@@ -41,5 +41,15 @@ sealed interface LegalBlock {
     data class Table(
         val header: List<LegalText>,
         val rows: List<LegalTableRow>,
-    ) : LegalBlock
+    ) : LegalBlock {
+        // Why: what a row's card lists under its title: each other cell with its column's name, but for the empty ones.
+        fun detailsOf(row: LegalTableRow): List<LegalTableDetail> = row.cells
+            .drop(1)
+            .mapIndexedNotNull { index, cell ->
+                LegalTableDetail(
+                    label = header.getOrNull(index + 1),
+                    text = cell,
+                ).takeIf { cell.plain.isNotBlank() }
+            }
+    }
 }

@@ -204,6 +204,18 @@ class LegalRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN the site has no English text WHEN refreshing in English THEN asks the site only once`() = runTest {
+        // Given
+        prepareScenario(site = mapOf("pt" to markdown(title = "Privacidade")))
+
+        // When
+        repository.refreshDocument(LegalPage.PRIVACY_POLICY, "en")
+
+        // Then
+        assertEquals(listOf(LegalPage.PRIVACY_POLICY to "en"), remote.requests)
+    }
+
+    @Test
     fun `GIVEN the site answers a page that is not a legal text WHEN refreshing THEN fails and keeps the saved text`() =
         runTest {
             // Given

@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.core.legal.domain.model.LegalBlock
 import com.quare.blitzsplit.core.legal.domain.model.LegalLink
-import com.quare.blitzsplit.core.legal.domain.model.LegalTableRow
+import com.quare.blitzsplit.core.legal.domain.model.LegalTableDetail
 import com.quare.blitzsplit.core.legal.domain.model.LegalText
 
 private const val BULLET = "•"
@@ -185,8 +185,8 @@ private fun TableRowsColumn(
     ) {
         table.rows.forEach { row ->
             TableRowCard(
-                header = table.header,
-                row = row,
+                title = row.cells.firstOrNull(),
+                details = table.detailsOf(row),
                 onLinkClick = onLinkClick,
             )
         }
@@ -195,8 +195,8 @@ private fun TableRowsColumn(
 
 @Composable
 private fun TableRowCard(
-    header: List<LegalText>,
-    row: LegalTableRow,
+    title: LegalText?,
+    details: List<LegalTableDetail>,
     onLinkClick: (LegalLink) -> Unit,
 ) {
     Surface(
@@ -208,21 +208,19 @@ private fun TableRowCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            row.cells.forEachIndexed { index, cell ->
-                when {
-                    index == 0 -> LegalRichText(
-                        text = cell,
-                        onLinkClick = onLinkClick,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-
-                    // Why: a cell the row leaves empty would be a column's name over nothing.
-                    cell.plain.isNotBlank() -> TableCellColumn(
-                        label = header.getOrNull(index),
-                        cell = cell,
-                        onLinkClick = onLinkClick,
-                    )
-                }
+            title?.let {
+                LegalRichText(
+                    text = it,
+                    onLinkClick = onLinkClick,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            details.forEach { detail ->
+                TableCellColumn(
+                    label = detail.label,
+                    cell = detail.text,
+                    onLinkClick = onLinkClick,
+                )
             }
         }
     }

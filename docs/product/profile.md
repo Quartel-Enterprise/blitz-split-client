@@ -53,8 +53,9 @@ The profile, its photo, appearance, in-app update and Adjust photo.
       device's date format, the summary in a tinted card, each section's number beside its title, and a table as
       cards, one per row, its first cell the title and the others under their column's name, as the site's phone
       layout.
-    - A link to the other text, or to a section of it, opens that text over this one, scrolled to the section; a web
-      or mail address opens outside the app.
+    - A link to the other text, or to a section of it, opens that text over this one, scrolled to the section; a
+      link to a text already open under this one goes back to it, so the two never pile up. A web or mail address
+      opens outside the app.
   - On the web and the Mac, "App on your phone" (Settings › iPhone on the Mac) sits right under the profile once a
     store lists the app, highlighted while the invite to the phone app stands ([get-the-app.md](get-the-app.md)).
   - The profile's avatar (Profile's on Android and iOS, the inline form's on the web and the Mac, never Edit profile's) opens the photo big, as Bible Planner's viewer (Pierre's call, beta feedback 16, `Route.ProfilePhoto`,

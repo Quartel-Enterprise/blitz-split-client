@@ -11,7 +11,12 @@ class LegalDocumentParserImpl : LegalDocumentParser {
     private val datePattern = Regex("""(\d{4})-(\d{2})-(\d{2})""")
 
     override fun parse(markdown: String): LegalDocument? {
-        val lines = markdown.replace("\r\n", "\n").trimEnd().split("\n")
+        // Why: an editor's byte order mark or a blank first line is no reason to lose the whole text.
+        val lines = markdown
+            .removePrefix(BYTE_ORDER_MARK)
+            .replace("\r\n", "\n")
+            .trim()
+            .split("\n")
         if (lines.firstOrNull() != FRONT_MATTER_FENCE) return null
         val frontMatterEnd = lines.drop(1).indexOf(FRONT_MATTER_FENCE) + 1
         if (frontMatterEnd == 0) return null
@@ -142,6 +147,7 @@ class LegalDocumentParserImpl : LegalDocumentParser {
     }
 
     private companion object {
+        const val BYTE_ORDER_MARK = "\uFEFF"
         const val FRONT_MATTER_FENCE = "---"
         const val SECTION_MARK = "## "
         const val HEADING_MARK = "### "

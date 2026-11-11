@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.legal.domain.model.LegalBlock
 import com.quare.blitzsplit.core.legal.domain.model.LegalDate
 import com.quare.blitzsplit.core.legal.domain.model.LegalDocument
 import com.quare.blitzsplit.core.legal.domain.model.LegalSpan
+import com.quare.blitzsplit.core.legal.domain.model.LegalTableDetail
 import com.quare.blitzsplit.core.legal.domain.model.LegalTableRow
 import com.quare.blitzsplit.core.legal.domain.model.LegalText
 import kotlin.test.Test
@@ -484,6 +485,39 @@ class LegalDocumentParserImplTest {
             ),
             blocks,
         )
+    }
+
+    @Test
+    fun `GIVEN a table row with an empty cell WHEN listing the details of the row THEN the empty cell is left out`() {
+        // Given
+        val markdown = document("| Purpose | Data | Legal basis |\n|---|---|---|\n| Run the app | | Contract |")
+        val table = parser.parse(markdown)?.blocks?.singleOrNull() as? LegalBlock.Table
+
+        // When
+        val details = table?.detailsOf(table.rows.single())
+
+        // Then
+        assertEquals(
+            listOf(
+                LegalTableDetail(
+                    label = plain("Legal basis"),
+                    text = plain("Contract"),
+                ),
+            ),
+            details,
+        )
+    }
+
+    @Test
+    fun `GIVEN a text saved with a byte order mark and a blank first line WHEN parsing THEN it still reads`() {
+        // Given
+        val markdown = "\uFEFF\n" + document("Hello.")
+
+        // When
+        val title = parser.parse(markdown)?.title
+
+        // Then
+        assertEquals("Privacy Policy", title)
     }
 
     @Test

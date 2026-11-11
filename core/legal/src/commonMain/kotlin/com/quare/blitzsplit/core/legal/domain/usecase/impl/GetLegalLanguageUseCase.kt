@@ -19,10 +19,14 @@ class GetLegalLanguageUseCase(
             ?.substringBefore('_')
             ?.lowercase()
             ?.takeIf { languagePattern.matches(it) }
+            // Why: an older Android still names Indonesian by the code ISO retired.
+            ?.let { if (it == LEGACY_INDONESIAN) INDONESIAN else it }
             ?: DEFAULT_LANGUAGE
     }
 
     private companion object {
         const val DEFAULT_LANGUAGE = "en"
+        const val LEGACY_INDONESIAN = "in"
+        const val INDONESIAN = "id"
     }
 }

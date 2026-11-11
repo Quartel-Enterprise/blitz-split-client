@@ -19,8 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -53,10 +52,16 @@ class LegalDocumentViewModel(
     val actionWatcher: FlowWatcher<LegalDocumentUiAction> = FlowWatcher(uiAction)
 
     init {
-        observeLegalDocument(route.page)
-            .onEach(::showDocument)
-            .launchIn(viewModelScope)
-        refresh()
+        viewModelScope.launch {
+            observeLegalDocument(route.page).collectIndexed { index, document ->
+                showDocument(document)
+                /*
+                 * Why: the download starts once the saved text was read, so one that fails at once never shows
+                 * "Couldn't load" over a device that holds the text.
+                 */
+                if (index == 0) refresh()
+            }
+        }
     }
 
     override fun handleEvent(event: LegalDocumentUiEvent) {
@@ -75,11 +80,12 @@ class LegalDocumentViewModel(
 
     private fun showDocument(document: LegalDocument?) {
         uiState.update { state ->
+            // Why: only the first text scrolls to the link's section; the current one taking its place stays put.
+            val isFirstText = state.document == null
+            val focusedBlockIndex = if (isFirstText) document?.findSectionIndex(route.anchor) else null
             state.copy(
                 document = document,
-                // Why: only the first text scrolls to the link's section; the current one taking its place stays put.
-                focusedBlockIndex = state.focusedBlockIndex.takeUnless { state.document == null }
-                    ?: document?.takeIf { state.document == null }?.findSectionIndex(route.anchor),
+                focusedBlockIndex = focusedBlockIndex ?: state.focusedBlockIndex,
             )
         }
     }
@@ -105,7 +111,7 @@ class LegalDocumentViewModel(
 
             is LegalLink.Page -> {
                 trackEvent("legal_document_link_clicked", mapOf("target" to link.page))
-                navigator.navigate(
+                openPage(
                     Route.LegalDocument(
                         page = link.page,
                         anchor = link.anchor,
@@ -113,6 +119,15 @@ class LegalDocumentViewModel(
                 )
             }
         }
+    }
+
+    /*
+     * Why: the two texts link to each other, and the stack never holds the same route twice (each entry is keyed by
+     * its route): a link to a text already open under this one goes back to it.
+     */
+    private fun openPage(target: Route.LegalDocument) {
+        val index = navigator.backStack.value.indexOf(target)
+        if (index >= 0) navigator.popTo(index + 1) else navigator.navigate(target)
     }
 
     private fun LegalDocument.findSectionIndex(anchor: String?): Int? = blocks

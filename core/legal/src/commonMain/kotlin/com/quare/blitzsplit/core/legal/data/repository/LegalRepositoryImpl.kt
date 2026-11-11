@@ -33,18 +33,28 @@ class LegalRepositoryImpl(
         val markdown = remote.fetchMarkdown(
             page = page,
             language = language,
+        ) ?: fetchFallback(
+            page = page,
+            language = language,
         )
-            ?: remote
-                .fetchMarkdown(
-                    page = page,
-                    language = FALLBACK_LANGUAGE,
-                ).takeIf { language != FALLBACK_LANGUAGE }
         // Why: only a text the app can read replaces the saved one, never an error page a proxy answered with.
         checkNotNull(markdown?.takeIf { parser.parse(it) != null }) { "The site has no ${page.slug} to read" }
         local.saveMarkdown(
             page = page,
             language = language,
             markdown = markdown,
+        )
+    }
+
+    private suspend fun fetchFallback(
+        page: LegalPage,
+        language: String,
+    ): String? = if (language == FALLBACK_LANGUAGE) {
+        null
+    } else {
+        remote.fetchMarkdown(
+            page = page,
+            language = FALLBACK_LANGUAGE,
         )
     }
 

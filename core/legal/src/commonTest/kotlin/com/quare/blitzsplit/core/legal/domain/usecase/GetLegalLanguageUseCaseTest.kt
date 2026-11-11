@@ -86,6 +86,22 @@ class GetLegalLanguageUseCaseTest {
     }
 
     @Test
+    fun `GIVEN System on a device that names Indonesian by its old code WHEN asking the language THEN it is id`() =
+        runTest {
+            // Given
+            prepareScenario(
+                picked = AppLanguage.SYSTEM,
+                device = "in-ID",
+            )
+
+            // When
+            val language = getLegalLanguage()
+
+            // Then
+            assertEquals("id", language)
+        }
+
+    @Test
     fun `GIVEN System on a zh-Hans-CN device WHEN asking the language THEN it is zh`() = runTest {
         // Given
         prepareScenario(
