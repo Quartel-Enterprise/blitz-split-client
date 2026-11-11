@@ -40049,6 +40049,12 @@
             "value" : "Impossible de charger cette page"
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halaman ini tidak dapat dimuat"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -40077,6 +40083,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Não foi possível carregar esta página"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu sayfa yüklenemedi"
           }
         }
       }
@@ -122556,6 +122568,12 @@
             "value" : "Mise à jour le %@"
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diperbarui %@"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -122584,6 +122602,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Atualizada em %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Güncelleme: %@"
           }
         }
       }
@@ -122615,6 +122639,12 @@
             "value" : "Mise à jour le %@"
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diperbarui %@"
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -122643,6 +122673,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Atualizados em %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Güncelleme: %@"
           }
         }
       }
@@ -122928,6 +122964,12 @@
             "value" : "Vérifie ta connexion et réessaie."
           }
         },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Periksa koneksimu, lalu coba lagi."
+          }
+        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
@@ -122956,6 +122998,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confira sua conexão e tente de novo."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bağlantını kontrol edip tekrar dene."
           }
         }
       }
