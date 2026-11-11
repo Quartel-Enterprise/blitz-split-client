@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.contacts.di.contactModule
 import com.quare.blitzsplit.core.expenses.di.expenseModule
 import com.quare.blitzsplit.core.groups.di.groupModule
 import com.quare.blitzsplit.core.inappupdate.di.inAppUpdateModule
+import com.quare.blitzsplit.core.legal.di.legalModule
 import com.quare.blitzsplit.core.navigation.di.navigationModule
 import com.quare.blitzsplit.core.profile.di.profileModule
 import com.quare.blitzsplit.core.provider.analytics.di.analyticsModule
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.feature.groupstats.di.groupStatsModule
 import com.quare.blitzsplit.feature.inappupdate.di.inAppUpdateFeatureModule
 import com.quare.blitzsplit.feature.invite.di.inviteModule
 import com.quare.blitzsplit.feature.join.di.joinModule
+import com.quare.blitzsplit.feature.legal.di.legalFeatureModule
 import com.quare.blitzsplit.feature.members.di.membersModule
 import com.quare.blitzsplit.feature.notificationsettings.di.notificationSettingsModule
 import com.quare.blitzsplit.feature.paymentkey.di.paymentKeyModule
@@ -83,6 +85,7 @@ val sharedModules: List<Module> = listOf(
     syncModule,
     settingsModule,
     inAppUpdateModule,
+    legalModule,
     welcomeModule,
     profileSetupModule,
     restoreModule,
@@ -108,6 +111,7 @@ val sharedModules: List<Module> = listOf(
     activityFeatureModule,
     contactsModule,
     inAppUpdateFeatureModule,
+    legalFeatureModule,
     appDownloadModule,
 )
 

@@ -61,6 +61,7 @@ import com.quare.blitzsplit.android.feature.invite.InviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinInviteScreen
 import com.quare.blitzsplit.android.feature.join.JoinPickScreen
 import com.quare.blitzsplit.android.feature.join.JoinWithLinkScreen
+import com.quare.blitzsplit.android.feature.legal.LegalDocumentScreen
 import com.quare.blitzsplit.android.feature.members.rememberMembersTab
 import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
@@ -287,6 +288,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }
             entry<Route.CategoryMap> { CategoryMapScreen() }
+            entry<Route.LegalDocument> { route -> LegalDocumentScreen(route = route) }
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
             entry<Route.PaymentKey>(metadata = formDialogMetadata) { route ->
                 PaymentKeyScreen(

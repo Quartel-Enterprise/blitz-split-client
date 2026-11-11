@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.UpdatePromptSource
 
@@ -77,6 +78,16 @@ sealed interface Route {
      * its Ajustes.
      */
     data object CategoryMap : Route
+
+    /*
+     * Why: "Privacy Policy" or "Terms of Service", from Profile's footer, drawn natively from the site's Markdown on
+     * Android, iOS and the Mac (a sheet on its Settings); the web opens the site's page instead. anchor is the section a
+     * link of the other text points at ("keep" in /privacy#keep), which the text opens scrolled to; null for the top.
+     */
+    data class LegalDocument(
+        val page: LegalPage,
+        val anchor: String?,
+    ) : Route
 
     // Why: "Convidar", the group's link and QR code. It takes the place of "Novo grupo" once the group is created.
     data class Invite(

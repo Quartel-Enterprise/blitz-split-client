@@ -182,6 +182,7 @@ struct RootView: View {
         case .deleteAccount: DeleteAccountView()
         case .notificationSettings: NotificationSettingsView()
         case .categoryMap: CategoryMapView()
+        case let .legalDocument(route): LegalDocumentView(route: route)
         case let .paymentKey(route): PaymentKeyView(route: route)
         case let .inAppUpdate(route): InAppUpdateView(route: route)
         case let .appDownload(route): AppDownloadView(route: route)

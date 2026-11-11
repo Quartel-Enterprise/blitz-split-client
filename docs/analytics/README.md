@@ -38,6 +38,7 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 | `activity` | `is_person` (one person's history), `is_bills_only` (Home's "See all" over "Latest expenses") |
 | `join_invite` | `is_personal` (a personal link) |
 | `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
+| `legal_document` | `page` (`privacy_policy`, `terms_of_use`) |
 | `category_expenses` | `has_period` (the statistics showed a period other than the whole history) |
 | Every other route (`home`, `groups`, `group_detail`, `bill_detail`…) | none |
 
@@ -477,6 +478,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_notifications_clicked` | none | "Notifications" (Android and iOS) | `:feature:profile` |
 | `privacy_policy_clicked` | none | "Privacy Policy", in Profile's footer | `:feature:profile` |
 | `terms_clicked` | none | "Terms of Service", in Profile's footer | `:feature:profile` |
+| `legal_document_retry_clicked` | none | "Try again" on a legal text that couldn't be downloaded (Android, iOS, macOS) | `:feature:legal` |
+| `legal_document_link_clicked` | `target` (`external`, `privacy_policy`, `terms_of_use`) | A link inside a legal text: one that leaves the app, or the other text | `:feature:legal` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_share_clicked` | none | The top bar's "Share profile", while the account has a link (it opens the system share) | `:feature:profile` |

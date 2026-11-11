@@ -46,6 +46,7 @@ import com.quare.blitzsplit.feature.invite.presentation.viewmodel.InviteViewMode
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinInviteViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinPickViewModel
 import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinWithLinkViewModel
+import com.quare.blitzsplit.feature.legal.presentation.viewmodel.LegalDocumentViewModel
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
@@ -178,6 +179,9 @@ object BlitzSplitApple : KoinComponent {
         ViewModelHolder(CreateGroupViewModel::class) { get() }
 
     fun createProfileViewModel(): ViewModelHolder<ProfileViewModel> = ViewModelHolder(ProfileViewModel::class) { get() }
+
+    fun createLegalDocumentViewModel(route: Route.LegalDocument): ViewModelHolder<LegalDocumentViewModel> =
+        ViewModelHolder(LegalDocumentViewModel::class) { get { parametersOf(route) } }
 
     // Why: "Atualização disponível" over wherever the app is, the App Store's newer version.
     fun createInAppUpdateViewModel(route: Route.InAppUpdate): ViewModelHolder<InAppUpdateViewModel> =

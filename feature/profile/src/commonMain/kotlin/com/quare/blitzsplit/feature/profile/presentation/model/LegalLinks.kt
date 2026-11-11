@@ -1,7 +1,8 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
-// Why: the same pages on every platform; each opens them in its own browser.
+import com.quare.blitzsplit.core.model.LegalPage
+
+// Why: the site's pages, which the web opens in the browser; the other platforms draw the same texts themselves.
 internal object LegalLinks {
-    const val PRIVACY_POLICY: String = "https://blitzsplit.com/privacy"
-    const val TERMS_OF_USE: String = "https://blitzsplit.com/terms"
+    fun urlOf(page: LegalPage): String = "https://blitzsplit.com/${page.slug}"
 }

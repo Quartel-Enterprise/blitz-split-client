@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
+import com.quare.blitzsplit.core.provider.room.dao.LegalDocumentDao
 import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
@@ -55,4 +56,5 @@ val roomModule: Module = module {
     single<BillCommentLikeDao> { get<AppDatabase>().billCommentLikeDao() }
     single<BillAttachmentDao> { get<AppDatabase>().billAttachmentDao() }
     single<PushSettingsDao> { get<AppDatabase>().pushSettingsDao() }
+    single<LegalDocumentDao> { get<AppDatabase>().legalDocumentDao() }
 }

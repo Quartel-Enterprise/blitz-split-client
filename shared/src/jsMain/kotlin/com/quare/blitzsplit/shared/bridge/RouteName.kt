@@ -86,5 +86,8 @@ internal fun toRouteName(route: Route): String = when (route) {
 
     Route.CategoryMap -> "category-map"
 
+    // Why: never on the web's stack, where Profile's footer opens the site's page.
+    is Route.LegalDocument -> "legal-document"
+
     is Route.PaymentKey -> "payment-key"
 }

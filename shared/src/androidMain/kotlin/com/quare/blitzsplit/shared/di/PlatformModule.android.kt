@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSource
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
+import com.quare.blitzsplit.core.utils.DeviceLanguage
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.shared.settings.AndroidAppLanguageLocalDataSource
 import org.koin.core.module.Module
@@ -27,6 +28,15 @@ internal actual val platformModule: Module = module {
                     ULocale.forLocale(Resources.getSystem().configuration.locales[0]),
                 ).country
                 .ifEmpty { null }
+        }
+    }
+    // Why: the system's own language, as the region above, never the one Profile › Language picked.
+    single {
+        DeviceLanguage {
+            Resources
+                .getSystem()
+                .configuration.locales[0]
+                .toLanguageTag()
         }
     }
     single { DeviceDecimalSeparator { DecimalFormatSymbols.getInstance().decimalSeparator } }

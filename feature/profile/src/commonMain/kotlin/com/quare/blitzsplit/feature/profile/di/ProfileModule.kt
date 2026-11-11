@@ -26,6 +26,7 @@ val profileModule = module {
             dismissAppInvite = get(),
             observeAppInvite = get(),
             updateMechanism = get(),
+            clientPlatform = get(),
             observeAccount = get(),
             observeProfile = get(),
             observeProfileShareLink = get(),

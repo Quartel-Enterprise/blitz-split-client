@@ -107,6 +107,8 @@ struct SettingsView: View {
                 case .deleteAccount: DeleteAccountView()
                 case let .inAppUpdate(route): InAppUpdateView(route: route)
                 case let .appDownload(route): AppDownloadView(route: route)
+                // A new identity per text: a link to the other one swaps it in this sheet
+                case let .legalDocument(route): LegalDocumentView(route: route).id(route)
                 default: EmptyView()
                 }
             }
