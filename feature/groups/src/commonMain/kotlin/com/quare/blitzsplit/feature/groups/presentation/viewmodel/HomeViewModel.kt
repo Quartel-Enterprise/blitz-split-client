@@ -221,7 +221,7 @@ class HomeViewModel(
                     avatarColor = badge.avatarColor,
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
-                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline),
+                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline, account.awaitsFullSync, state.syncBadge),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&

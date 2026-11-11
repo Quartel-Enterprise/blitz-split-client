@@ -2358,7 +2358,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet and a change in the queue WHEN Inicio opens THEN shows the syncing badge`() =
+    fun `GIVEN internet and a change in the queue WHEN Inicio opens THEN shows no sync badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(syncState = SyncState.PENDING)
@@ -2367,8 +2367,71 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
+            assertNull(state.syncBadge)
+            assertFalse(state.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN internet and a background sync running WHEN Inicio opens THEN shows no sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account running WHEN Inicio opens THEN shows the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                awaitsFullSync = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
             assertEquals(SyncBadge.SYNCING, state.syncBadge)
             assertFalse(state.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account WHEN it settles THEN hides the sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                awaitsFullSync = true,
+            )
+
+            // When
+            account.awaitsFullSync = false
+            syncState.value = SyncState.SYNCED
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN the retry runs THEN shows the syncing badge until it settles`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            syncState.value = SyncState.SYNCING
+            val whileRetrying = viewModel.uiState.value.syncBadge
+            syncState.value = SyncState.SYNCED
+
+            // Then
+            assertEquals(SyncBadge.SYNCING, whileRetrying)
+            assertNull(viewModel.uiState.value.syncBadge)
         }
 
     @Test
