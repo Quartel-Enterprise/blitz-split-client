@@ -53,10 +53,12 @@ struct BillWhenPickerRows: View {
                 .datePickerStyle(.graphical)
                 .labelsHidden()
         }
+        // The time picker has no upper bound: `latest` only moves when the calendar opens, and the ViewModel turns a
+        // later time today into now.
         HStack {
             Text("Time")
             Spacer()
-            DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
+            DatePicker("Time", selection: $time, displayedComponents: [.hourAndMinute])
                 .labelsHidden()
         }
     }
@@ -160,7 +162,7 @@ struct MacBillWhenField: View {
                         .labelsHidden()
                         .padding()
                 }
-                DatePicker("Time", selection: $time, in: ...latest, displayedComponents: [.hourAndMinute])
+                DatePicker("Time", selection: $time, displayedComponents: [.hourAndMinute])
                     .datePickerStyle(.stepperField)
                     .labelsHidden()
             }
