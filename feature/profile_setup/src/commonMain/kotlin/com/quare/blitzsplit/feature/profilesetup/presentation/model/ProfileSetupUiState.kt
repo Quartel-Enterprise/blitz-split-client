@@ -21,7 +21,11 @@ data class ProfileSetupUiState(
     val isSaving: Boolean,
 ) {
     val avatarInitial: String
-        get() = name.trim().firstOrNull()?.toString()?.toAppLanguageUppercase() ?: "?"
+        get() = name
+            .trim()
+            .firstOrNull()
+            ?.toString()
+            ?.toAppLanguageUppercase() ?: "?"
 
     // Why: the UIs put the limits in their copy, so the rule and the messages can't drift apart.
     val nameMinLength: Int

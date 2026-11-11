@@ -33,7 +33,11 @@ data class EditProfileUiState(
     val accountPhotoUrl: String?,
 ) {
     val avatarInitial: String
-        get() = name.trim().firstOrNull()?.toString()?.toAppLanguageUppercase() ?: "?"
+        get() = name
+            .trim()
+            .firstOrNull()
+            ?.toString()
+            ?.toAppLanguageUppercase() ?: "?"
 
     val nameLength: Int
         get() = name.length

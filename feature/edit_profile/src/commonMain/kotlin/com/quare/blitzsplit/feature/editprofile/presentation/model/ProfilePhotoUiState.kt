@@ -23,7 +23,11 @@ data class ProfilePhotoUiState(
     val accountPhotoUrl: String?,
 ) {
     val avatarInitial: String
-        get() = displayName.trim().firstOrNull()?.toString()?.toAppLanguageUppercase() ?: "?"
+        get() = displayName
+            .trim()
+            .firstOrNull()
+            ?.toString()
+            ?.toAppLanguageUppercase() ?: "?"
 
     val photoUrl: String?
         get() = photo?.toImageUrl()
