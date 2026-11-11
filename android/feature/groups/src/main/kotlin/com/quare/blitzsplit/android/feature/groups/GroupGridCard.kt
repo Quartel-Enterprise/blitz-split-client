@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -99,12 +100,13 @@ internal fun GroupGridCard(
     val metrics = cardMetricsOf(size)
     val money = rememberMoneyFormatter(group.currency)
     val dates = rememberDateTimeTextFormatter()
-    Surface(
+    // Why: a tappable card, but its long press holds the group's actions, so the content keeps the click (no TappableCard).
+    ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
             .semantics { selected = isSelected },
         shape = cardShape,
-        color = selectableRowColorOf(isSelected),
+        colors = CardDefaults.elevatedCardColors(containerColor = selectableRowColorOf(isSelected)),
     ) {
         Box {
             Column(
