@@ -1610,6 +1610,36 @@ class ActivityViewModelTest {
     }
 
     @Test
+    fun `GIVEN Inicio Ver tudo WHEN Atividade opens THEN shows only the bills with their chip`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(showsBillsOnly = true)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(ActivityFilter.none.copy(types = listOf(ActivityType.BILLS)), state.filter)
+            assertEquals(listOf(ActivityType.BILLS), state.typeChips)
+            assertTrue(state.items.isNotEmpty())
+            assertTrue(state.items.all { it.kind.type == ActivityType.BILLS })
+        }
+
+    @Test
+    fun `GIVEN Atividade opened on its bills WHEN removing the Contas chip THEN shows everything`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(showsBillsOnly = true)
+
+            // When
+            viewModel.onEvent(ActivityUiEvent.OnTypeChipRemoved(ActivityType.BILLS))
+
+            // Then
+            assertEquals(ActivityFilter.none, viewModel.uiState.value.filter)
+            assertEquals(5, viewModel.uiState.value.items.size)
+        }
+
+    @Test
     fun `GIVEN a contact history WHEN removing the person chip THEN shows everyone`() = runTest(testDispatcher) {
         // Given
         prepareScenario(personKey = "user:ana")
@@ -3621,6 +3651,7 @@ class ActivityViewModelTest {
 
     private fun TestScope.prepareScenario(
         personKey: String? = null,
+        showsBillsOnly: Boolean = false,
         storedEvents: List<ActivityEvent> = defaultEvents,
         storedQueued: List<QueuedChange> = emptyList(),
         readState: ActivityReadState = unreadState,
@@ -3655,7 +3686,7 @@ class ActivityViewModelTest {
         }
         groupRepository = FakeGroupRepository(initialGroups = storedGroups)
         val account = FakeAccountRepository(AccountStatus.Connected("pierre", AccountProvider.GOOGLE))
-        route = Route.Activity(personKey)
+        route = Route.Activity(personKey, showsBillsOnly)
         navigator = BackStackNavigator(startRoute = openedOver.first()).also { stack ->
             openedOver.drop(1).forEach(stack::navigate)
             stack.navigate(route)

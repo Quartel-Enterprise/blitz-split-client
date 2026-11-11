@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.contacts
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.ObserveContactBookUseCase
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -18,6 +19,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import kotlinx.coroutines.flow.flowOf
 
 /*
  * Test data the Contatos tests share. Three groups, most recently active first: Viagem Floripa (Carla, Bruno and
@@ -189,5 +191,6 @@ internal fun observeContactBookOf(
 ): ObserveContactBook = ObserveContactBookUseCase(
     observeGroups = ObserveGroupsUseCase(groups),
     observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
+    observeMapCategories = { flowOf(CategoryTree.appOnly) },
     hiddenContacts = hidden,
 )

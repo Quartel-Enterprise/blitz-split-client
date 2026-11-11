@@ -638,7 +638,7 @@ class GroupDetailSimplifyDebtsViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.simplifyConflict)
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
         }
 
     @Test

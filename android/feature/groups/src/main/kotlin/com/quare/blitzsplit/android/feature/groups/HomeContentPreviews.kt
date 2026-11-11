@@ -23,6 +23,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeGroup
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
+import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import software.quare.loadable.Loadable
@@ -266,10 +267,15 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
                     id = "b1",
                     groupId = "1",
                     groupName = "Viagem Floripa",
+                    groupInitials = "VF",
+                    groupColor = AvatarColor.PEACH,
+                    groupPhotoUrl = null,
                     description = "Mercado",
                     totalMinor = 31_200L,
                     currency = GroupCurrency.BRL,
                     payers = listOf(SearchBillPayer("Pierre", isMe = true)),
+                    payerFaces = listOf(MemberFace("P", AvatarColor.BLUE, photoUrl = null)),
+                    extraPayerCount = 0,
                     myBalanceMinor = 24_960L,
                     category = CategoryTree.appOnly.resolve(AppCategory.FOOD_MARKET.key),
                     isPending = true,
@@ -284,10 +290,15 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
                     id = "b2",
                     groupId = "2",
                     groupName = "Apê 302",
+                    groupInitials = "A3",
+                    groupColor = AvatarColor.GREEN,
+                    groupPhotoUrl = null,
                     description = "Conta de luz",
                     totalMinor = 19_600L,
                     currency = GroupCurrency.BRL,
                     payers = listOf(SearchBillPayer("Bruno", isMe = false)),
+                    payerFaces = listOf(MemberFace("B", AvatarColor.LILAC, photoUrl = null)),
+                    extraPayerCount = 0,
                     myBalanceMinor = -9_800L,
                     category = CategoryTree.appOnly.resolve(AppCategory.HOME_POWER.key),
                     isPending = false,

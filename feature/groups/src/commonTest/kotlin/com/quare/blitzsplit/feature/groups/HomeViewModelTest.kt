@@ -872,17 +872,18 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Atividade above Inicio`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = listOf(trio()))
+    fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Atividade on its bills above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
 
-        // When
-        viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
 
-        // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
-        assertTrue(actions.isEmpty())
-    }
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity.billsOnly), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
 
     @Test
     fun `GIVEN Inicio on top WHEN tapping the bell THEN opens Atividade above Inicio`() = runTest(testDispatcher) {
@@ -893,7 +894,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnActivityClicked)
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
         assertTrue(actions.isEmpty())
     }
 
@@ -907,7 +908,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnActivityClicked)
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
     }
 
     @Test

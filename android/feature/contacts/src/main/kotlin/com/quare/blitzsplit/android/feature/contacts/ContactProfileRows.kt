@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,6 +27,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.clickableWhen
@@ -86,7 +86,13 @@ internal fun HistoryRow(
         is ContactHistoryItem.Bill -> ProfileRow(
             index = index,
             count = count,
-            leading = { HistoryIcon(isPayment = false) },
+            // Why: as Despesas draws it (6.1), never a generic receipt (beta feedback).
+            leading = {
+                CategoryBadge(
+                    category = item.category,
+                    size = 36.dp,
+                )
+            },
             title = item.description,
             meta = stringResource(
                 R.string.contacts_history_meta,
@@ -102,7 +108,7 @@ internal fun HistoryRow(
         is ContactHistoryItem.Payment -> ProfileRow(
             index = index,
             count = count,
-            leading = { HistoryIcon(isPayment = true) },
+            leading = { PaymentIcon() },
             title = stringResource(
                 if (item.isFromMe) R.string.contacts_history_payment_to else R.string.contacts_history_payment_from,
                 name,
@@ -142,34 +148,23 @@ private fun payerTextOf(
     }
 }
 
+// Why: a payment has no category; its arrow on the secondary container.
 @Composable
-private fun HistoryIcon(isPayment: Boolean) {
+private fun PaymentIcon() {
     Box(
         modifier = Modifier
             .size(36.dp)
             .background(
-                color = if (isPayment) {
-                    MaterialTheme.colorScheme.secondaryContainer
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerHigh
-                },
+                color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(12.dp),
             ),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = if (isPayment) {
-                Icons.AutoMirrored.Outlined.ArrowForward
-            } else {
-                Icons.AutoMirrored.Outlined.ReceiptLong
-            },
+            imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
             contentDescription = null,
             modifier = Modifier.size(20.dp),
-            tint = if (isPayment) {
-                MaterialTheme.colorScheme.onSecondaryContainer
-            } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            },
+            tint = MaterialTheme.colorScheme.onSecondaryContainer,
         )
     }
 }

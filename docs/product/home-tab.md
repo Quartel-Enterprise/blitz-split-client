@@ -24,8 +24,17 @@ The home tab, its shortcuts and pinned groups.
     under Overall balance, beside the faces in a wide window). "Your groups": up to three open groups, the pinned
     first, then the latest activity, as Groups draws them; "See all" opens Groups. "Latest expenses": the five latest
     bills you paid or take part in, by day, with your share and its category's badge exactly as the group's Expenses
-    rows draw it (Pierre's call, the category as it reads now, `HomeBill.category`); a bill opens its Bill over its
-    group, and "See all" opens Activity over Home, as the bell in Home's bar does.
+    rows draw it (Pierre's call, the category as it reads now, `HomeBill.category`). Under the description, no
+    "Floripa trip · You paid" line (beta feedback, it was cut off on a phone): the group's rounded square (its photo,
+    or its initials on its color, `HomeBill.groupInitials`, `groupColor`, `groupPhotoUrl`) and then who paid as
+    overlapping faces (their photo, or their initial on their color; someone no longer in the group a blank face), up
+    to three and "+N" (`HomeBill.payerFaces`, `extraPayerCount`), the amber dot and "queued" after them while the bill
+    waits, as the legacy Bora Rachar drew the payer and the group; TalkBack, VoiceOver and the web's screen readers
+    still read "Floripa trip · You paid". The web's list keeps the day after the faces, and its desktop table draws the
+    group's square in its Group column and only the faces under the description. Inside the group, Expenses keeps its
+    rows as they are, the group being implied there. A bill opens its Bill over its group, and "See all" opens
+    Activity over Home as the bell in Home's bar does, but with its Bills type already picked, a chip it can remove
+    (Pierre's call, beta feedback; `Route.Activity.showsBillsOnly`).
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
     the top bar, never floating over the tab bar: its icon alone on an iPhone upright, as on Groups, and in an iPhone
     Duo's vertical bar, under the profile; spelled out lying down and on iPad. "Search" is the home's (5.2), over

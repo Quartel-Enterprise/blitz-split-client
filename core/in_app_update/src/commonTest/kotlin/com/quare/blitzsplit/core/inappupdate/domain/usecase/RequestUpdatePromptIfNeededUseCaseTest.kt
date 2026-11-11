@@ -261,7 +261,7 @@ class RequestUpdatePromptIfNeededUseCaseTest {
         prepareScenario(
             lastPromptAgo = null,
             availability = newVersion,
-            top = Route.Activity(personKey = null),
+            top = Route.Activity.all,
         )
 
         // When

@@ -664,6 +664,25 @@ struct HomeBillsSection: View {
         .background(Palette.card, in: .rect(cornerRadius: 26))
     }
 
+    /// The group's square, then who paid as overlapping faces and "+N" (beta feedback, as the legacy app drew them:
+    /// "Floripa trip · You paid" was cut off on an iPhone), "queued" while it waits; VoiceOver still reads the line.
+    private func billOrigin(_ bill: HomeBill) -> some View {
+        HStack(spacing: 6) {
+            GroupAvatar(initials: bill.groupInitials, color: bill.groupColor, photoUrl: bill.groupPhotoUrl, size: 20)
+            FaceStack(faces: bill.payerFaces, extraCount: Int(bill.extraPayerCount))
+                .foregroundStyle(.secondary)
+            if bill.isPending {
+                PendingDot()
+                Text("queued")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: HomeCopy.meta(bill)))
+    }
+
     private func billRow(_ bill: HomeBill) -> some View {
         Button {
             send(HomeUiEventOnBillClicked(groupId: bill.groupId, expenseId: bill.id))
@@ -674,15 +693,7 @@ struct HomeBillsSection: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(verbatim: bill.description_)
                         .lineLimit(1)
-                    HStack(spacing: 5) {
-                        if bill.isPending {
-                            PendingDot()
-                        }
-                        Text(verbatim: HomeCopy.meta(bill))
-                            .lineLimit(1)
-                    }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    billOrigin(bill)
                 }
                 Spacer(minLength: 8)
                 VStack(alignment: .trailing, spacing: 1) {

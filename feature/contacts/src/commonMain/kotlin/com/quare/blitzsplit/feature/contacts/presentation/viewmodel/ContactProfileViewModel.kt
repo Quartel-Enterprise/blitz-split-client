@@ -186,7 +186,10 @@ class ContactProfileViewModel(
              */
             ContactProfileUiEvent.OnSeeAllHistoryClicked -> if (isShown()) {
                 trackEvent("contact_history_see_all_clicked", emptyMap())
-                val history = Route.Activity(personKey = route.personKey)
+                val history = Route.Activity(
+                    personKey = route.personKey,
+                    showsBillsOnly = false,
+                )
                 val index = navigator.backStack.value.lastIndexOf(history)
                 if (index >= 0) navigator.popTo(index + 1) else navigator.navigate(history)
             }

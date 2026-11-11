@@ -413,12 +413,12 @@ class HomeViewModel(
 
             HomeUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
-            // Why: Atividade holds every bill and payment, so "Ver tudo" of Últimas despesas opens it, as the bell does.
-            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.Activity(personKey = null))
+            // Why: "Ver tudo" of Últimas despesas opens Atividade as the bell does, on its Contas type (a removable chip).
+            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.Activity.billsOnly)
 
             HomeUiEvent.OnActivityClicked -> if (isOnTop()) {
                 trackEvent("activity_bell_clicked", emptyMap())
-                navigator.navigate(Route.Activity(personKey = null))
+                navigator.navigate(Route.Activity.all)
             }
 
             // Why: the sheet of the code, which "Já guardei" settles; "Lembrar depois" brings the card back.

@@ -903,7 +903,7 @@ class GroupsSearchTest {
             navigator.openActivity()
 
             // Then
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
             assertFalse(viewModel.uiState.value.search.isOpen)
             assertEquals("", viewModel.uiState.value.search.query)
         }
@@ -915,7 +915,7 @@ class GroupsSearchTest {
             prepareScenario(backStack = listOf(Route.Home, Route.Groups))
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
             viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
-            navigator.replaceAbove(1, Route.Activity(personKey = null))
+            navigator.replaceAbove(1, Route.Activity.all)
 
             // When
             navigator.replaceAbove(1, Route.Groups)

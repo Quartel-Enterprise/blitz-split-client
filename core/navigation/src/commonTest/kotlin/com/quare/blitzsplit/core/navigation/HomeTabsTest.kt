@@ -352,7 +352,7 @@ class HomeTabsTest {
         navigator.openActivity()
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
     }
 
     @Test
@@ -360,7 +360,7 @@ class HomeTabsTest {
         // Given
         prepareScenario(
             Route.Home,
-            Route.Activity(personKey = null),
+            Route.Activity.all,
             Route.BillDetail("trip", "dinner", focusCommentId = null),
         )
 
@@ -368,7 +368,7 @@ class HomeTabsTest {
         navigator.openActivity()
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
     }
 
     @Test
@@ -594,7 +594,7 @@ class HomeTabsTest {
     fun `GIVEN a profile over Atividade WHEN asking whether it is right above a home tab THEN it is not`() {
         // Given
         val route = Route.ContactProfile(PERSON_KEY)
-        val stack = listOf(Route.Home, Route.Activity(personKey = null), route)
+        val stack = listOf(Route.Home, Route.Activity.all, route)
 
         // When
         val isAboveTab = stack.isRightAboveHomeTab(route)

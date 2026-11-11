@@ -161,6 +161,27 @@ class RouteScreenViewTest {
     }
 
     @Test
+    fun `GIVEN Activity opened on its bills WHEN naming its screen THEN says so`() {
+        // Given
+        val route = Route.Activity.billsOnly
+
+        // When
+        val screenView = route.toScreenView()
+
+        // Then
+        assertEquals(
+            ScreenView(
+                name = "activity",
+                params = mapOf(
+                    "is_person" to false,
+                    "is_bills_only" to true,
+                ),
+            ),
+            screenView,
+        )
+    }
+
+    @Test
     fun `GIVEN a group invite link WHEN naming its screen THEN says it is not personal`() {
         // Given
         val route = Route.JoinInvite(

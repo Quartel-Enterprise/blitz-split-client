@@ -26,7 +26,7 @@ fun Navigator.openHomeTab(tab: Route) {
  * platform draws it inside a sheet. Already open, it goes back to it.
  */
 fun Navigator.openActivity() {
-    openHomeTab(Route.Activity(personKey = null))
+    openHomeTab(Route.Activity.all)
 }
 
 /*

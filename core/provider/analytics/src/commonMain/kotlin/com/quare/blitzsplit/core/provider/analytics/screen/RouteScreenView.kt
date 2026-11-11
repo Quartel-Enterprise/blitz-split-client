@@ -44,10 +44,16 @@ internal fun Route.toScreenView(): ScreenView = when (this) {
     is Route.ContactProfile -> ScreenView("contact_profile", emptyMap())
     Route.ContactsAgenda -> ScreenView("contacts_agenda", emptyMap())
     is Route.ContactInvite -> ScreenView("contact_invite", mapOf("is_guest" to (personKey != null)))
-    is Route.Activity -> ScreenView("activity", mapOf("is_person" to (personKey != null)))
+    is Route.Activity -> ScreenView("activity", activityParamsOf(this))
     is Route.SettleUp -> ScreenView("settle_up", emptyMap())
     is Route.JoinInvite -> ScreenView("join_invite", mapOf("is_personal" to (memberCode != null)))
     is Route.JoinWithLink -> ScreenView("join_with_link", emptyMap())
     is Route.JoinPick -> ScreenView("join_pick", emptyMap())
     is Route.PaymentKey -> ScreenView("payment_key", mapOf("method" to method, "is_new" to (keyId == null)))
 }
+
+// Why: one person's history, or Início's "Ver tudo" over "Últimas despesas" (its bills).
+private fun activityParamsOf(route: Route.Activity): Map<String, Any> = mapOf(
+    "is_person" to (route.personKey != null),
+    "is_bills_only" to route.showsBillsOnly,
+)

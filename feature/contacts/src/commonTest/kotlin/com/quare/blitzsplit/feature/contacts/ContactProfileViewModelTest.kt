@@ -139,7 +139,10 @@ class ContactProfileViewModelTest {
                     Route.Home,
                     Route.Contacts,
                     Route.ContactProfile(CARLA_KEY),
-                    Route.Activity(personKey = CARLA_KEY),
+                    Route.Activity(
+                        personKey = CARLA_KEY,
+                        showsBillsOnly = false,
+                    ),
                 ),
                 navigator.backStack.value,
             )
@@ -162,7 +165,10 @@ class ContactProfileViewModelTest {
                     Route.Home,
                     Route.Contacts,
                     Route.ContactProfile(CARLA_KEY),
-                    Route.Activity(personKey = CARLA_KEY),
+                    Route.Activity(
+                        personKey = CARLA_KEY,
+                        showsBillsOnly = false,
+                    ),
                 ),
                 navigator.backStack.value,
             )

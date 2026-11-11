@@ -119,7 +119,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     who hasn't joined included), "Your share" and "You paid", on a neutral card under a neutral period chip on every
     platform (a pale blue fill read as one more slice of the ring);
     "By person" shows Consumed (each part as each bill
-    split it) or Paid, the largest first, someone who left the group as "Former member". "Settling up" (Pierre's call, beta
+    split it) or Paid (a segmented choice with no check on the one picked, beta feedback: Android's connected
+    buttons, Default split's included, say it by the filled pill alone, as the group's tabs, iOS and the web do), the largest first, someone who left the group as "Former member". "Settling up" (Pierre's call, beta
     feedback 12, `GroupStatsUiState.settling`, `SettlingCalculator`) names under it who "Settles fastest" and who
     "Slowest to settle" ("2 days on average", "same day on average", "R$ 80 still open"): each member's bills and
     payments of the group's whole history, the queue's too, go in date order, what a bill puts on them opening a

@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBill
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeBillDay
@@ -12,9 +13,10 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeGroup
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import kotlin.math.abs
 
-// Why: Início's cards and rows: three groups, five bills.
+// Why: Início's cards and rows: three groups, five bills, three faces of who paid a bill (more is "+N").
 private const val MAX_GROUPS = 3
 private const val MAX_BILLS = 5
+private const val MAX_PAYER_FACES = 3
 
 /*
  * Why: whom you owe comes first, then who owes you, the largest first in each; among equals, the order Saldos lists
@@ -88,16 +90,24 @@ internal fun homeBillsOf(
     latest: List<LatestExpense>,
     categories: CategoryTree,
 ): List<DatedHomeBill> = latest.map { (group, expense, myBalanceMinor) ->
+    val payersOf = PayersOfGroup(group)
+    val payerIds = payersOf.sortedIdsOf(expense)
+    val faces = payersOf.facesOf(payerIds)
     DatedHomeBill(
         spentAt = expense.spentAt,
         bill = HomeBill(
             id = expense.id,
             groupId = group.id,
             groupName = group.name,
+            groupInitials = Initials.of(group.name),
+            groupColor = group.color,
+            groupPhotoUrl = group.photo?.toImageUrl(),
             description = expense.description,
             totalMinor = expense.amountMinor,
             currency = expense.currency,
-            payers = PayersOfGroup(group).of(expense),
+            payers = payersOf.namesOf(payerIds),
+            payerFaces = faces.take(MAX_PAYER_FACES),
+            extraPayerCount = (faces.size - MAX_PAYER_FACES).coerceAtLeast(0),
             myBalanceMinor = myBalanceMinor,
             category = categories.resolve(expense.categoryId),
             isPending = expense.isPending,

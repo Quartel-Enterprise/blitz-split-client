@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.contacts.member
 import com.quare.blitzsplit.core.contacts.owes
 import com.quare.blitzsplit.core.contacts.payment
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
@@ -19,6 +20,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -244,6 +246,7 @@ class ObserveContactBookUseCaseTest {
         useCase = ObserveContactBookUseCase(
             observeGroups = ObserveGroupsUseCase(groups),
             observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
+            observeMapCategories = { flowOf(CategoryTree.appOnly) },
             hiddenContacts = hidden,
         )
     }

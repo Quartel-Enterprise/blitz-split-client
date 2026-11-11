@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.contacts.domain.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -13,11 +14,13 @@ object ContactHistory {
         contact: Contact,
         groups: List<Group>,
         money: Map<String, GroupMoney>,
+        // Why: every group's categories, merged, as Início reads them: a group's own category has the id only it uses.
+        categories: CategoryTree,
     ): List<ContactHistoryItem> = contact.groups
         .flatMap { part ->
             val group = groups.firstOrNull { it.id == part.groupId } ?: return@flatMap emptyList()
             val ofGroup = money[part.groupId] ?: GroupMoney.NONE
-            billsOf(group, ofGroup, part) + paymentsOf(ofGroup, part)
+            billsOf(group, ofGroup, part, categories) + paymentsOf(ofGroup, part)
         }.sortedWith(compareByDescending<ContactHistoryItem> { it.at }.thenBy { it.id })
 
     // Why: a group has one part per currency, so each bill and payment is listed once, under its own currency's part.
@@ -25,6 +28,7 @@ object ContactHistory {
         group: Group,
         money: GroupMoney,
         part: ContactGroup,
+        categories: CategoryTree,
     ): List<ContactHistoryItem> = money.expenses.filter { it.currency == part.currency }.mapNotNull { expense ->
         val debts = GroupBalances.findDebtsWithin(expense)
         val effect = debts
@@ -46,6 +50,7 @@ object ContactHistory {
             payerCount = expense.payers.size,
             totalMinor = expense.amountMinor,
             effectMinor = effect,
+            category = categories.resolve(expense.categoryId),
         )
     }
 

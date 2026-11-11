@@ -265,9 +265,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <CategoryExpensesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
-    // Why: a push notification replaces a contact's Atividade with everyone's, which is a new page.
+    // Why: a push notification replaces a contact's Atividade, or Início's bills, with everyone's, which is a new page.
     case 'activity':
-      return route ? <ActivityScreen key={route.personKey ?? ''} route={route} /> : null
+      return route ? <ActivityScreen key={`${route.personKey ?? ''}:${route.showsBillsOnly}`} route={route} /> : null
     // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it;
     // one opened from Saldos draws the same page.
     case 'contacts':
