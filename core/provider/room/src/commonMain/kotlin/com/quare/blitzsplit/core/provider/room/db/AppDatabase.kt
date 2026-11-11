@@ -78,7 +78,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         PushSettingsEntity::class,
         AppCategoryColorEntity::class,
     ],
-    version = 41,
+    version = 42,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -242,6 +242,11 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 40,
             to = 41,
+        ),
+        AutoMigration(
+            from = 41,
+            to = 42,
+            spec = GroupOnServerMigrationSpec::class,
         ),
     ],
 )

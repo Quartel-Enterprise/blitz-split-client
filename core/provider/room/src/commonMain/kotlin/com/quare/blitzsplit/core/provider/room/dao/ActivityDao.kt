@@ -56,7 +56,7 @@ interface ActivityDao {
     fun observeQueuedPayments(): Flow<List<QueuedPaymentRow>>
 
     @Query(
-        "SELECT id, name, type, inviteCode IS NULL AS isNew, updatedAt, simplifyDebtsPending, simplifyDebts " +
+        "SELECT id, name, type, isOnServer = 0 AS isNew, updatedAt, simplifyDebtsPending, simplifyDebts " +
             "FROM split_group WHERE pendingSync = 1",
     )
     fun observeQueuedGroups(): Flow<List<QueuedGroupRow>>

@@ -46,10 +46,8 @@ interface GroupDao {
     )
     suspend fun getRemovedMemberIds(ownerUserId: String): List<String>
 
-    // Why: a group with an invite code went up once, whatever this device changed in it since.
-    @Query(
-        "SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND (pendingSync = 0 OR inviteCode IS NOT NULL)",
-    )
+    // Why: a group that went up once, whatever this device changed in it since.
+    @Query("SELECT id FROM split_group WHERE ownerUserId = :ownerUserId AND isOnServer = 1")
     suspend fun getGroupIdsOnServer(ownerUserId: String): List<String>
 
     @Query(
@@ -98,6 +96,7 @@ interface GroupDao {
                 inviteCode = it,
             )
         }
+        markGroupRowsOnServer(listOf(entity.id))
         updateSimplifyDebtsFromRemote(
             id = entity.id,
             simplifyDebts = entity.simplifyDebts,
@@ -333,13 +332,35 @@ interface GroupDao {
     )
 
     /*
-     * Why: the server makes the code, also a new one for "Trocar link", which leaves updatedAt alone, so it is taken
+     * Why: the server's code wins, also a new one for "Trocar link", which leaves updatedAt alone, so it is taken
      * whatever Last-Write-Wins says: a group this device created comes back with the same updatedAt, which
      * updateGroupFromRemote leaves alone. A code already stored is not written again, so a sync doesn't wake every
      * observer of the groups once per group.
      */
     @Query("UPDATE split_group SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
     suspend fun updateInviteCode(
+        id: String,
+        inviteCode: String,
+    )
+
+    @Query("SELECT EXISTS(SELECT 1 FROM split_group WHERE id = :id AND isOnServer = 1)")
+    suspend fun isOnServer(id: String): Boolean
+
+    // Why: the server took them, so they leave the device once it no longer gives them (deleteGoneFromServer).
+    @Transaction
+    suspend fun markGroupsOnServer(ids: List<String>) {
+        ids.chunked(MAX_IDS_PER_QUERY).forEach { markGroupRowsOnServer(it) }
+    }
+
+    @Query("UPDATE split_group SET isOnServer = 1 WHERE id IN (:ids) AND isOnServer = 0")
+    suspend fun markGroupRowsOnServer(ids: List<String>)
+
+    /*
+     * Why: another group took the code this device made before the group went up, so it gets a new one. Only while the
+     * server doesn't have it: from then on its code is the server's.
+     */
+    @Query("UPDATE split_group SET inviteCode = :inviteCode WHERE id = :id AND isOnServer = 0")
+    suspend fun replaceInviteCodeBeforeUpload(
         id: String,
         inviteCode: String,
     )
@@ -355,7 +376,7 @@ interface GroupDao {
         }
     }
 
-    // Why: like the group's, the server makes the member's code and no client changes it.
+    // Why: the server makes the member's code and no client changes it.
     @Query("UPDATE group_member SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
     suspend fun updateMemberInviteCode(
         id: String,

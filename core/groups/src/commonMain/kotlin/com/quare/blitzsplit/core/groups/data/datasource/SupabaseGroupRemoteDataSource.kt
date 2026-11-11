@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.groups.data.dto.PersonalInviteParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 import com.quare.blitzsplit.core.groups.data.dto.RotateInviteCodeParamsDto
+import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
@@ -24,10 +25,22 @@ import io.github.jan.supabase.postgrest.rpc
 class SupabaseGroupRemoteDataSource(
     private val postgrest: Postgrest,
 ) : GroupRemoteDataSource {
-    override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> = postgrest
-        .from(GROUPS)
-        .upsert(groups) { select() }
-        .decodeList<GroupDto>()
+    override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> = try {
+        postgrest
+            .from(GROUPS)
+            .upsert(groups) { select() }
+            .decodeList<GroupDto>()
+    } catch (exception: PostgrestRestException) {
+        if (exception.isInviteCodeTaken()) throw InviteCodeTakenException()
+        throw exception
+    }
+
+    /*
+     * Why: set_group_invite_code refuses a taken code by name, whatever its SQLSTATE; two groups going up at once with
+     * the same code meet the unique constraint instead.
+     */
+    private fun PostgrestRestException.isInviteCodeTaken(): Boolean = INVITE_CODE_TAKEN in error ||
+        (code == UNIQUE_VIOLATION && INVITE_CODE_UNIQUE in error)
 
     override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> = postgrest
         .from(MEMBERS)
@@ -167,6 +180,9 @@ class SupabaseGroupRemoteDataSource(
 
         // Why: the Postgres code rotate_invite_code raises for anyone but the group's creator.
         const val INSUFFICIENT_PRIVILEGE = "42501"
+        const val UNIQUE_VIOLATION = "23505"
+        const val INVITE_CODE_TAKEN = "invite_code_taken"
+        const val INVITE_CODE_UNIQUE = "groups_invite_code_key"
         const val LEAVE_GROUP = "leave_group"
         const val DELETE_GROUP = "delete_group"
         const val REMOVED_GROUPS = "removed_groups"

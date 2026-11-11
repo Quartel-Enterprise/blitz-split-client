@@ -1797,7 +1797,11 @@ class CreateGroupViewModelTest {
                 backStacksWhenTracked += navigator.backStack.value
             },
             navigator = navigator,
-            createGroup = CreateGroupUseCase(groups) { 1_000L },
+            createGroup = CreateGroupUseCase(
+                repository = groups,
+                currentTimeMillis = { 1_000L },
+                randomCode = { length -> "AbCd1234".take(length) },
+            ),
             checkMemberName = CheckMemberNameUseCase(),
             observeProfile = ObserveProfileUseCase(profiles),
             deviceRegion = { region },

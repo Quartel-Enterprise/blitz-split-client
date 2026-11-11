@@ -6,6 +6,9 @@ package com.quare.blitzsplit.core.groups.domain.model
  * ?from=<member code> of whoever shared it, so the invite says who sent it.
  */
 object InviteLink {
+    // Why: as long as the site's /g/<code> route and the server's codes; this device makes a new group's (CreateGroup).
+    const val CODE_LENGTH = 8
+
     private const val BASE_URL = "https://blitzsplit.com/g/"
     private const val FROM = "from"
 
@@ -13,7 +16,8 @@ object InviteLink {
      * Why: any host, since only the app's own domains reach the apps, and the web app serves the path wherever it is
      * hosted (borarachar.com, which sends its links to blitzsplit.com, a preview, a local server).
      */
-    private val linkPattern = Regex("^https?://[^/?#]+/g/([A-Za-z0-9]{8})(?:/([A-Za-z0-9]{6}))?/?(\\?[^#]*)?(#.*)?$")
+    private val linkPattern =
+        Regex("^https?://[^/?#]+/g/([A-Za-z0-9]{$CODE_LENGTH})(?:/([A-Za-z0-9]{6}))?/?(\\?[^#]*)?(#.*)?$")
     private val fromPattern = Regex("(?:^|&)$FROM=([A-Za-z0-9]{6})(?:&|$)")
     private val whitespace = Regex("\\s+")
     private val sharedHosts = setOf("blitzsplit.com", "www.blitzsplit.com", "borarachar.com", "www.borarachar.com")

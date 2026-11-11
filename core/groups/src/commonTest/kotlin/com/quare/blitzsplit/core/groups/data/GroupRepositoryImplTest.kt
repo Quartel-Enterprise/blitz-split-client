@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -59,6 +60,9 @@ class GroupRepositoryImplTest {
     private lateinit var profileLocal: FakeGroupOwnerProfileLocalDataSource
     private lateinit var photoRemote: FakeGroupPhotoRemoteDataSource
     private lateinit var repository: GroupRepositoryImpl
+
+    // Why: the length of each code the repository asked RandomCode for, in order.
+    private val madeCodeLengths = mutableListOf<Int>()
 
     @Test
     fun `GIVEN two groups with members WHEN observing the groups THEN each has its own in the stored order`() =
@@ -2258,6 +2262,647 @@ class GroupRepositoryImplTest {
         assertEquals("newCode1", local.group("group-1")?.inviteCode)
         assertEquals(otherBefore, local.group("group-2"))
     }
+
+    @Test
+    fun `GIVEN a group created offline with its code WHEN observing THEN shows that code before any sync`() = runTest {
+        // Given
+        prepareScenario(profileOwnerUserId = "user-1")
+        repository.createGroup(newGroup.copy(inviteCode = "DevCode1"), createdAt = 1_000L)
+
+        // When
+        val groups = repository.observeGroups().first()
+
+        // Then
+        assertEquals("DevCode1", groups.single().inviteCode)
+        assertEquals(false, local.group("group-new")?.isOnServer)
+    }
+
+    @Test
+    fun `GIVEN a group created offline WHEN its first sync reaches a server that keeps the code THEN the link stays`() =
+        runTest {
+            // Given
+            prepareScenario(
+                profileOwnerUserId = "user-1",
+                keepsSentInviteCodes = true,
+            )
+            repository.createGroup(newGroup.copy(inviteCode = "DevCode1"), createdAt = 1_000L)
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                "DevCode1",
+                remote.upsertedGroups
+                    .single()
+                    .single()
+                    .inviteCode,
+            )
+            assertEquals(
+                "DevCode1",
+                repository
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .inviteCode,
+            )
+            assertEquals(true, local.group("group-new")?.isOnServer)
+            assertEquals(false, local.group("group-new")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a new group with its code WHEN an older server answers with its own THEN the server code wins`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                serverInviteCodes = mapOf("group-1" to "SrvCode1"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                "DevCode1",
+                remote.upsertedGroups
+                    .single()
+                    .single()
+                    .inviteCode,
+            )
+            assertEquals("SrvCode1", local.group("group-1")?.inviteCode)
+            assertEquals(true, local.group("group-1")?.isOnServer)
+        }
+
+    @Test
+    fun `GIVEN a new group and one already on the server WHEN uploading THEN only the new one sends its code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-new",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                    group(
+                        id = "group-up",
+                        pendingSync = true,
+                        inviteCode = "SrvCode9",
+                        isOnServer = true,
+                    ),
+                ),
+                serverInviteCodes = mapOf("group-up" to "SrvCode9"),
+                keepsSentInviteCodes = true,
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                mapOf("group-new" to "DevCode1", "group-up" to null),
+                remote.upsertedGroups.single().associate { it.id to it.inviteCode },
+            )
+            assertEquals("DevCode1", local.group("group-new")?.inviteCode)
+            assertEquals("SrvCode9", local.group("group-up")?.inviteCode)
+            assertEquals(true, local.group("group-new")?.isOnServer)
+            assertEquals(true, local.group("group-up")?.isOnServer)
+        }
+
+    @Test
+    fun `GIVEN the server leaves a new group out of its answer WHEN uploading THEN it waits for a download`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                keepsSentInviteCodes = true,
+            )
+            remote.refusedGroupIds = setOf("group-1")
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(false, local.group("group-1")?.isOnServer)
+            assertEquals("DevCode1", local.group("group-1")?.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN a new group edited while it goes up WHEN the upload ends THEN it is on the server and its edit waits`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                keepsSentInviteCodes = true,
+            )
+            remote.onUpsertGroups = {
+                local.put(
+                    checkNotNull(local.group("group-1")).copy(
+                        name = "Jantar",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                )
+            }
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(true, local.group("group-1")?.isOnServer)
+            assertEquals(true, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a new group edited during its first upload WHEN uploading next THEN the edit goes up without a code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                keepsSentInviteCodes = true,
+            )
+            remote.onUpsertGroups = {
+                local.put(
+                    checkNotNull(local.group("group-1")).copy(
+                        name = "Jantar",
+                        updatedAt = 9L,
+                        pendingSync = true,
+                    ),
+                )
+            }
+            repository.uploadPendingGroups("user-1")
+            remote.onUpsertGroups = {}
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            val pushed = remote.upsertedGroups.last().single()
+            assertEquals("Jantar", pushed.name)
+            assertNull(pushed.inviteCode)
+        }
+
+    @Test
+    fun `GIVEN another group has the code made here WHEN uploading THEN pushes again with a new code and keeps it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                takenInviteCodes = setOf("DevCode1"),
+                keepsSentInviteCodes = true,
+                madeCodes = listOf("FreeCod1"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                listOf(listOf("DevCode1"), listOf("FreeCod1")),
+                remote.upsertGroupsAttempts.map { attempt -> attempt.map { it.inviteCode } },
+            )
+            assertEquals(listOf(8), madeCodeLengths)
+            assertEquals("FreeCod1", local.group("group-1")?.inviteCode)
+            assertEquals(true, local.group("group-1")?.isOnServer)
+            assertEquals(false, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a taken code beside a group on the server WHEN uploading THEN every new group gets a new code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-a",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                    group(
+                        id = "group-b",
+                        pendingSync = true,
+                        inviteCode = "DevCode2",
+                        isOnServer = false,
+                    ),
+                    group(
+                        id = "group-up",
+                        pendingSync = true,
+                        inviteCode = "SrvCode9",
+                        isOnServer = true,
+                    ),
+                ),
+                serverInviteCodes = mapOf("group-up" to "SrvCode9"),
+                takenInviteCodes = setOf("DevCode1"),
+                keepsSentInviteCodes = true,
+                madeCodes = listOf("FreeCod1", "FreeCod2"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                mapOf("group-a" to "FreeCod1", "group-b" to "FreeCod2", "group-up" to null),
+                remote.upsertGroupsAttempts.last().associate { it.id to it.inviteCode },
+            )
+            assertEquals("FreeCod1", local.group("group-a")?.inviteCode)
+            assertEquals("FreeCod2", local.group("group-b")?.inviteCode)
+            assertEquals("SrvCode9", local.group("group-up")?.inviteCode)
+            assertEquals(listOf(true, true, true), local.groups.value.map { it.isOnServer })
+        }
+
+    @Test
+    fun `GIVEN every code made here is taken WHEN uploading THEN fails after three tries with a fresh code kept`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                storedMembers = listOf(
+                    member(
+                        id = "m-1",
+                        groupId = "group-1",
+                        pendingSync = true,
+                    ),
+                ),
+                takenInviteCodes = setOf("DevCode1", "FreeCod1", "FreeCod2", "FreeCod3"),
+                madeCodes = listOf("FreeCod1", "FreeCod2", "FreeCod3"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertIs<InviteCodeTakenException>(result.exceptionOrNull())
+            assertEquals(3, remote.upsertGroupsAttempts.size)
+            assertEquals("FreeCod3", local.group("group-1")?.inviteCode)
+            assertEquals(false, local.group("group-1")?.isOnServer)
+            assertEquals(true, local.group("group-1")?.pendingSync)
+            assertTrue(remote.upsertedMembers.isEmpty())
+            assertEquals(true, local.member("m-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN an old group without a code beside a taken one WHEN uploading THEN it takes the server code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-new",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                    group(
+                        id = "group-old",
+                        pendingSync = true,
+                        inviteCode = null,
+                        isOnServer = false,
+                    ),
+                ),
+                serverInviteCodes = mapOf("group-old" to "SrvCode7"),
+                takenInviteCodes = setOf("DevCode1"),
+                keepsSentInviteCodes = true,
+                madeCodes = listOf("FreeCod1", "FreeCod2"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(
+                remote.upsertGroupsAttempts.all { attempt ->
+                    attempt.single { it.id == "group-old" }.inviteCode == null
+                },
+            )
+            assertEquals("SrvCode7", local.group("group-old")?.inviteCode)
+            assertEquals(true, local.group("group-old")?.isOnServer)
+        }
+
+    @Test
+    fun `GIVEN the server fails the groups for another reason WHEN uploading THEN tries once and makes no new code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                upsertGroupsError = IllegalStateException("server down"),
+            )
+
+            // When
+            val result = repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(1, remote.upsertGroupsAttempts.size)
+            assertTrue(madeCodeLengths.isEmpty())
+            assertEquals("DevCode1", local.group("group-1")?.inviteCode)
+            assertEquals(false, local.group("group-1")?.isOnServer)
+        }
+
+    @Test
+    fun `GIVEN a new group with its code and a photo WHEN uploading THEN the photo goes up after its row`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    updatedAt = 5L,
+                    inviteCode = "DevCode1",
+                    isOnServer = false,
+                    pendingPhoto = photoJpeg,
+                ),
+            ),
+            storedMembers = listOf(
+                member(
+                    id = "m-1",
+                    groupId = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+        )
+        var callsBeforeUpload = emptyList<String>()
+        photoRemote.onUpload = { callsBeforeUpload = remote.calls.toList() }
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertEquals(listOf("groups", "members"), callsBeforeUpload)
+    }
+
+    @Test
+    fun `GIVEN a group on the server without a code and a new photo WHEN uploading THEN the photo goes up first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        pendingSync = true,
+                        updatedAt = 5L,
+                        inviteCode = null,
+                        isOnServer = true,
+                        pendingPhoto = photoJpeg,
+                    ),
+                ),
+            )
+            var callsBeforeUpload = listOf("not uploaded")
+            photoRemote.onUpload = { callsBeforeUpload = remote.calls.toList() }
+
+            // When
+            repository.uploadPendingGroups("user-1")
+
+            // Then
+            assertEquals(emptyList(), callsBeforeUpload)
+        }
+
+    @Test
+    fun `GIVEN a new group with its code not up yet WHEN a download misses it THEN it stays with its members`() =
+        runTest {
+            // Given
+            prepareScenario(profileOwnerUserId = "user-1")
+            repository.createGroup(newGroup.copy(inviteCode = "DevCode1"), createdAt = 1_000L)
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals("DevCode1", local.group("group-new")?.inviteCode)
+            assertEquals(true, local.group("group-new")?.pendingSync)
+            assertEquals(listOf("new-1", "new-2"), local.members.value.map { it.id })
+        }
+
+    @Test
+    fun `GIVEN a new group with its code not up yet WHEN downloading THEN asks for no removed group`() = runTest {
+        // Given
+        prepareScenario(profileOwnerUserId = "user-1")
+        repository.createGroup(newGroup.copy(inviteCode = "DevCode1"), createdAt = 1_000L)
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(remote.askedRemovedGroupIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group created offline that went up WHEN a download misses it THEN it leaves the device`() = runTest {
+        // Given
+        prepareScenario(
+            profileOwnerUserId = "user-1",
+            keepsSentInviteCodes = true,
+        )
+        repository.createGroup(newGroup.copy(inviteCode = "DevCode1"), createdAt = 1_000L)
+        repository.uploadPendingGroups("user-1")
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertNull(local.group("group-new"))
+        assertTrue(local.members.value.isEmpty())
+        assertEquals(listOf(listOf("group-new")), remote.askedRemovedGroupIds)
+    }
+
+    @Test
+    fun `GIVEN a group on the server edited here without a code WHEN a download misses it THEN it leaves`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                    inviteCode = null,
+                    isOnServer = true,
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertNull(local.group("group-1"))
+    }
+
+    @Test
+    fun `GIVEN a new group the server lists WHEN downloading THEN it is on the server with the server code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        updatedAt = 5L,
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        updatedAt = 1L,
+                        inviteCode = "SrvCode1",
+                    ),
+                ),
+            )
+
+            // When
+            val result = repository.downloadGroups("user-1")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(true, local.group("group-1")?.isOnServer)
+            assertEquals("SrvCode1", local.group("group-1")?.inviteCode)
+            assertEquals(true, local.group("group-1")?.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a group only the server has WHEN downloading THEN it is stored as on the server`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    inviteCode = "SrvCode1",
+                ),
+            ),
+        )
+
+        // When
+        val result = repository.downloadGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(true, local.group("group-1")?.isOnServer)
+    }
+
+    @Test
+    fun `GIVEN a new group here that the server has WHEN downloading only that group THEN it is on the server`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        updatedAt = 5L,
+                        pendingSync = true,
+                        inviteCode = "DevCode1",
+                        isOnServer = false,
+                    ),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        updatedAt = 1L,
+                        inviteCode = "DevCode1",
+                    ),
+                ),
+            )
+            val write = repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()
+
+            // When
+            write()
+
+            // Then
+            assertEquals(true, local.group("group-1")?.isOnServer)
+        }
+
+    @Test
+    fun `GIVEN a group only the server has WHEN downloading only that group THEN it is stored as on the server`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        inviteCode = "SrvCode1",
+                    ),
+                ),
+            )
+            val write = repository
+                .fetchGroupDownload(
+                    userId = "user-1",
+                    groupId = "group-1",
+                ).getOrThrow()
+
+            // When
+            write()
+
+            // Then
+            assertEquals(true, local.group("group-1")?.isOnServer)
+            assertEquals("SrvCode1", local.group("group-1")?.inviteCode)
+        }
 
     @Test
     fun `GIVEN a profile of an account WHEN creating a group THEN the group shows as created by me`() = runTest {
@@ -6204,6 +6849,7 @@ class GroupRepositoryImplTest {
         pendingSync: Boolean = false,
         ownerUserId: String? = "user-1",
         inviteCode: String? = null,
+        isOnServer: Boolean = inviteCode != null || !pendingSync,
         shape: String? = null,
         photoUrl: String? = null,
         pendingPhoto: ByteArray? = null,
@@ -6230,6 +6876,7 @@ class GroupRepositoryImplTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = isOnServer,
     )
 
     private fun member(
@@ -6343,6 +6990,9 @@ class GroupRepositoryImplTest {
         remoteMemberPhotos: List<MemberPhotoDto> = emptyList(),
         memberPhotosError: Throwable? = null,
         myPhotoUrl: String? = null,
+        takenInviteCodes: Set<String> = emptySet(),
+        keepsSentInviteCodes: Boolean = false,
+        madeCodes: List<String> = emptyList(),
     ) {
         local = FakeGroupLocalDataSource(storedGroups, storedMembers).also {
             it.insertError = insertError
@@ -6369,6 +7019,8 @@ class GroupRepositoryImplTest {
             it.removedGroupsError = removedGroupsError
             it.memberPhotos = remoteMemberPhotos
             it.memberPhotosError = memberPhotosError
+            it.takenInviteCodes = takenInviteCodes
+            it.keepsSentInviteCodes = keepsSentInviteCodes
         }
         profileLocal = FakeGroupOwnerProfileLocalDataSource(profileOwnerUserId).also {
             it.photoUrl.value = myPhotoUrl
@@ -6383,6 +7035,10 @@ class GroupRepositoryImplTest {
             profileMapper = ProfileMapperImpl(),
             mapper = GroupMapperImpl(),
             deletions = deletions,
+            randomCode = { length ->
+                madeCodeLengths += length
+                madeCodes.getOrNull(madeCodeLengths.lastIndex) ?: "N".repeat(length)
+            },
         )
     }
 }
@@ -6667,6 +7323,7 @@ private class FakeGroupLocalDataSource(
                 inviteCode = it,
             )
         }
+        markGroupsOnServer(listOf(entity.id))
         val now = group(entity.id)
         if (current != null && now != null && now.ownerUserId == entity.ownerUserId &&
             now.simplifyDebtsAt <= entity.simplifyDebtsAt
@@ -6742,6 +7399,19 @@ private class FakeGroupLocalDataSource(
         groups.value = groups.value.map { if (it.id == id) it.copy(inviteCode = inviteCode) else it }
     }
 
+    override suspend fun isOnServer(id: String): Boolean = group(id)?.isOnServer == true
+
+    override suspend fun markGroupsOnServer(ids: List<String>) {
+        groups.value = groups.value.map { if (it.id in ids) it.copy(isOnServer = true) else it }
+    }
+
+    override suspend fun replaceInviteCodeBeforeUpload(
+        id: String,
+        inviteCode: String,
+    ) {
+        groups.value = groups.value.map { if (it.id == id && !it.isOnServer) it.copy(inviteCode = inviteCode) else it }
+    }
+
     override suspend fun applyRemoteMember(entity: GroupMemberEntity) {
         val current = member(entity.id)
         when {
@@ -6798,7 +7468,7 @@ private class FakeGroupLocalDataSource(
     ) {
         val owned = groups.value.filter { it.ownerUserId == ownerUserId }
         val goneGroups = owned
-            .filter { (!it.pendingSync || it.inviteCode != null) && it.id !in serverGroupIds }
+            .filter { it.isOnServer && it.id !in serverGroupIds }
             .map { it.id }
             .toSet()
         val ownedIds = owned.map { it.id }.toSet()
@@ -6810,7 +7480,7 @@ private class FakeGroupLocalDataSource(
     }
 
     override suspend fun getUploadedGroupIds(ownerUserId: String): List<String> = groups.value
-        .filter { it.ownerUserId == ownerUserId && (!it.pendingSync || it.inviteCode != null) }
+        .filter { it.ownerUserId == ownerUserId && it.isOnServer }
         .map { it.id }
 
     override suspend fun deleteGroups(ids: List<String>) {
@@ -6911,6 +7581,15 @@ private class FakeGroupRemoteDataSource(
     var deleteMembersError: Throwable? = null
     var onUpsertGroups: suspend () -> Unit = {}
 
+    // Why: every push of the groups, a refused one included, with what it sent.
+    val upsertGroupsAttempts = mutableListOf<List<GroupDto>>()
+
+    // Why: the codes other groups have, which the server refuses a new group's push with, the whole push at once.
+    var takenInviteCodes: Set<String> = emptySet()
+
+    // Why: a server that keeps the code a new group goes up with; an older one answers with its own (inviteCodes).
+    var keepsSentInviteCodes = false
+
     // Why: rows the server leaves out of its answer, and the switch stamp it answers with in place of the one sent.
     var refusedGroupIds: Set<String> = emptySet()
     var serverSimplifyDebtsAt: Map<String, Long> = emptyMap()
@@ -6938,14 +7617,16 @@ private class FakeGroupRemoteDataSource(
 
     override suspend fun upsertGroups(groups: List<GroupDto>): List<GroupDto> {
         calls += "groups"
+        upsertGroupsAttempts += groups
         onUpsertGroups()
         upsertGroupsError?.let { throw it }
+        if (groups.mapNotNull { it.inviteCode }.any { it in takenInviteCodes }) throw InviteCodeTakenException()
         upsertedGroups += groups
         return groups
             .filterNot { it.id in refusedGroupIds }
             .map {
                 it.copy(
-                    inviteCode = inviteCodes[it.id],
+                    inviteCode = if (keepsSentInviteCodes) it.inviteCode ?: inviteCodes[it.id] else inviteCodes[it.id],
                     simplifyDebtsAt = serverSimplifyDebtsAt[it.id] ?: it.simplifyDebtsAt,
                 )
             }

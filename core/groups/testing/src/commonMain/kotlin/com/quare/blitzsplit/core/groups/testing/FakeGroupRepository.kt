@@ -80,6 +80,9 @@ class FakeGroupRepository(
     var nextInviteCode = "newCode1"
     var rotateInviteCodeError: Throwable? = null
 
+    // Why: groups created here that the server doesn't have yet; every other group is on the server.
+    val groupIdsNotOnServer = mutableSetOf<String>()
+
     // Why: while set, a change of the link waits for it, so a test can act while the call is in flight.
     var rotateInviteCodeGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
@@ -314,6 +317,8 @@ class FakeGroupRepository(
         return Result.success(Unit)
     }
 
+    override suspend fun isOnServer(groupId: String): Boolean = groupId !in groupIdsNotOnServer
+
     override suspend fun requestLeaveGroup(groupId: String): Result<GroupExitOutcome> = runExit(groupId, leftGroupIds)
 
     override suspend fun deleteGroup(groupId: String): Result<GroupExitOutcome> = runExit(groupId, deletedGroupIds)
@@ -341,6 +346,8 @@ class FakeGroupRepository(
         uploadedUserIds += userId
         pushError?.let { return Result.failure(it) }
         hasPendingChanges.value = false
+        // Why: an upload takes up every group created here.
+        groupIdsNotOnServer.clear()
         return Result.success(Unit)
     }
 

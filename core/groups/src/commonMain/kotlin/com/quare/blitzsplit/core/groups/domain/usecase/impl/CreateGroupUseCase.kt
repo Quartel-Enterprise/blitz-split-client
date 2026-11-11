@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.domain.usecase.impl
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
+import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
@@ -12,12 +13,17 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.core.utils.RandomCode
 import kotlin.uuid.Uuid
 
-// Why: the group exists on the device right away, offline included; the sync takes it to the server.
+/*
+ * Why: the group exists on the device right away, offline included; the sync takes it to the server. So does its
+ * invite link: this device makes the code, which the server keeps (or replaces, if another group took it first).
+ */
 class CreateGroupUseCase(
     private val repository: GroupRepository,
     private val currentTimeMillis: CurrentTimeMillis,
+    private val randomCode: RandomCode,
 ) : CreateGroup {
     override suspend fun invoke(
         name: String,
@@ -53,7 +59,7 @@ class CreateGroupUseCase(
                         )
                     },
                     isPending = true,
-                    inviteCode = null,
+                    inviteCode = randomCode(InviteLink.CODE_LENGTH),
                     isCreatedByMe = true,
                     defaultSplit = null,
                     updatedAt = createdAt,

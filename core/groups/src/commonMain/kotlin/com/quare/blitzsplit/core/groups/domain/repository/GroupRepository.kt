@@ -103,6 +103,9 @@ interface GroupRepository {
      */
     suspend fun rotateInviteCode(groupId: String): Result<Unit>
 
+    // Why: a group created here has its invite code before the server has the group, so the code can't tell.
+    suspend fun isOnServer(groupId: String): Boolean
+
     /*
      * Why: "Liberar nome", online only: the server gives the member a new personal invite code and turns it back into
      * someone nobody joined as, and the device takes the member as the server answers it.

@@ -20,7 +20,12 @@ Creating a group and inviting people.
     photo, the Mac's "Choose photo…" a file, and Remove photo once there is one), which opens "Adjust photo"; while a
     photo is on, the tap changes nothing, and the photo goes up with the group's first sync as Edit group's does.
   - "Invite" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the
-    only time it shows the "Group created" badge. The server makes each group's invite code, and only the group's creator may change it ("Change link",
+    only time it shows the "Group created" badge. The device makes the group's invite code when it creates the
+    group, so the link and QR code are there at once, offline included (beta bug: the web's "Generating link…" never
+    ended): it works for whoever opens it once the group's first sync took it up. In the rare case another group
+    already has the code (about one in 10^14), the device makes another before the group goes up, so a link shared
+    offline before then changes. A joined group, or one an older version made, gets the server's code with its
+    sync. Only the group's creator may change it, online, and the server makes the new code ("Change link",
     `InviteUiState.showsChangeLink`): only on Invite opened from the group and online, at the top on Android and
     iOS, "Change link…" in the ⋯ menu on macOS, and "Someone who shouldn't have the link? Change link" below the link on
     the web. It asks "Change the invite link?" first, then shows the new link and QR code right away; the old link

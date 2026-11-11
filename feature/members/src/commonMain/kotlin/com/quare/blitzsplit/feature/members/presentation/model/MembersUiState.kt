@@ -9,7 +9,7 @@ data class MembersUiState(
     val currency: GroupCurrency,
     // Why: the chips, drawn only with more than one: the currencies the group has money in, its default first.
     val currencies: List<GroupCurrency>,
-    // Why: "blitzsplit.com/g/7Hk2pQ", null until the group's first sync brings the code the server made.
+    // Why: "blitzsplit.com/g/7Hk2pQ", null only for a group joined, or made by an older version, until its sync.
     val displayLink: String?,
     // Why: in the order they were added, the creator first.
     val members: List<MembersMember>,

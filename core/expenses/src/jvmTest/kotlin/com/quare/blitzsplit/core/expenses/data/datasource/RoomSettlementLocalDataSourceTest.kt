@@ -629,6 +629,7 @@ class RoomSettlementLocalDataSourceTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = true,
     )
 
     private fun settlement(

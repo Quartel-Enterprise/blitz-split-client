@@ -348,6 +348,7 @@ class RoomGroupPinLocalDataSourceTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = true,
     )
 
     private fun pin(

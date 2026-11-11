@@ -5,7 +5,7 @@ import com.quare.blitzsplit.core.model.QrCode
 
 data class InviteUiState(
     val groupName: String,
-    // Why: null until the group's first sync brings the code the server made, offline right after creating it.
+    // Why: null only for a group joined, or made by an older version, until its sync brings the server's code.
     val link: String?,
     val qrCode: QrCode?,
     // Why: in the order they were added, the creator first.
