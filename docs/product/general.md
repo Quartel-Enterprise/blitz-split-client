@@ -150,18 +150,21 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     ViewModels take JetBrains' multiplatform lifecycle.
   - On Android a shadow means "tap me" (Pierre's call, beta feedback, after Material 3's card guidelines): a card that
     stands on its own and opens something as one touch target is `:android:designsystem`'s `TappableCard`, Material's
-    `ElevatedCard` with its `onClick`, so the ripple, the hovered elevation and TalkBack's "button" come with it
-    (pressed keeps the resting elevation, as Material's tokens say): a group's card on Home and in Groups' grid (the
-    cards of one collection share their resting elevation; the grid's is a plain `ElevatedCard` whose content keeps
-    the click, since its long press holds the group's actions), the balances summary on Contacts, the identity card on Profile, Statistics' "Biggest expense", Split a bill's
-    "Category map", Groups' search "Did you mean …?", the joined banner's "Protect your access" and Restore's "Scan
-    the QR code from your old device". The card keeps its screen's container color (Material's elevated card is
-    `surfaceContainerLow`, beside rows of `surfaceContainerLowest`). A card that only informs (balances, notices,
-    banners, empty states) stays flat, a filled card, its buttons the only thing to tap. Rows that form one rounded
-    group (Split a bill's Who paid / When / Split, settings, Balances, a day's bills, Home's shortcuts) and a single
-    picker row of a form (Record payment's When, New group's currency) are a list, not cards, and stay flat even when
-    tappable: a shadow per segment would draw a seam in the 2 dp gaps and break the group into separate cards. iOS,
-    the Mac and the web keep their own platform's look.
+    elevated card, with its ripple, TalkBack's "button" and its hovered elevation (1 dp at rest, 3 dp under a pointer;
+    pressed keeps the resting elevation, as Material's tokens say), and in a dark theme, where a shadow barely shows,
+    Material's tonal tint of that level (the surface tint over the container at 5 %): a group's card on Home and in
+    Groups' grid (the cards of one collection share their resting elevation; the grid's long press, its actions, is on
+    the same touch target), the balances summary on Contacts, the identity card on Profile, Statistics' "Biggest
+    expense", Split a bill's "Category map", Groups' search "Did you mean …?", the joined banner's "Protect your
+    access" and Restore's "Scan the QR code from your old device". A card may still hold buttons of its own beside its
+    one action (the balances summary's two totals, the identity card's photo), as Material's cards do. The card keeps
+    its screen's container color (Material's elevated card is `surfaceContainerLow`, beside rows of
+    `surfaceContainerLowest`). A card that only informs (balances, notices, banners, empty states) stays flat, a
+    filled card, its buttons the only thing to tap. Rows that form one rounded group (Split a bill's Who paid / When /
+    Split, settings, Balances, a day's bills, Home's shortcuts) and a single picker row of a form (Record payment's
+    When, New group's currency) are a list, not cards, and stay flat even when tappable: a shadow per segment would
+    draw a seam in the 2 dp gaps and break the group into separate cards. iOS, the Mac and the web keep their own
+    platform's look.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
   - Nothing is guessed while loading (Pierre's call): a section with no concrete answer yet (Room not read, the
     server not answered, or data only the account's first full sync brings while `AccountSnapshot.awaitsFullSync`)
