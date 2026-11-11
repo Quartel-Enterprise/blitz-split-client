@@ -34,21 +34,12 @@
         <item quantity="many">%s hanno raggiunto il gruppo</item>
         <item quantity="other">%s hanno raggiunto il gruppo</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one">Già nella divisione</item>
-        <item quantity="many">Già nella divisione</item>
-        <item quantity="other">Già nella divisione</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one">Parte con 1 quota</item>
-        <item quantity="many">Ognuno parte con 1 quota</item>
-        <item quantity="other">Ognuno parte con 1 quota</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one">Parte da 0%</item>
-        <item quantity="many">Ognuno parte da 0%</item>
-        <item quantity="other">Ognuno parte da 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Già nella divisione</string>
+    <string name="default_split_start_equal_other">Già nella divisione</string>
+    <string name="default_split_start_shares_one">Parte con 1 quota</string>
+    <string name="default_split_start_shares_other">Ognuno parte con 1 quota</string>
+    <string name="default_split_start_percent_one">Parte da 0%</string>
+    <string name="default_split_start_percent_other">Ognuno parte da 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; modifica se serve.</string>
     <string name="default_split_modes">Come dividere</string>
     <string name="default_split_hint_equal">Tutti pagano la stessa parte</string>

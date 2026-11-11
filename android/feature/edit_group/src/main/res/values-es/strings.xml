@@ -34,21 +34,12 @@
         <item quantity="many">%s se unieron al grupo</item>
         <item quantity="other">%s se unieron al grupo</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Ya está en la división</item>
-        <item quantity="many">Ya están en la división</item>
-        <item quantity="other">Ya están en la división</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Empieza con 1 parte</item>
-        <item quantity="many">Cada uno empieza con 1 parte</item>
-        <item quantity="other">Cada uno empieza con 1 parte</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Empieza en 0%</item>
-        <item quantity="many">Cada uno empieza en 0%</item>
-        <item quantity="other">Cada uno empieza en 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Ya está en la división</string>
+    <string name="default_split_start_equal_other">Ya están en la división</string>
+    <string name="default_split_start_shares_one">Empieza con 1 parte</string>
+    <string name="default_split_start_shares_other">Cada uno empieza con 1 parte</string>
+    <string name="default_split_start_percent_one">Empieza en 0%</string>
+    <string name="default_split_start_percent_other">Cada uno empieza en 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; ajusta si hace falta.</string>
     <string name="default_split_modes">Cómo dividir</string>
     <string name="default_split_hint_equal">Todos pagan la misma parte</string>

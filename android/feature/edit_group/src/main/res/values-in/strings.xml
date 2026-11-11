@@ -32,15 +32,12 @@
     <plurals name="default_split_joined">
         <item quantity="other">%s bergabung ke grup</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="other">Mereka sudah masuk pembagian</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="other">Masing-masing mulai dengan 1 bagian</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="other">Masing-masing mulai dari 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Dia sudah masuk pembagian</string>
+    <string name="default_split_start_equal_other">Mereka sudah masuk pembagian</string>
+    <string name="default_split_start_shares_one">Dia mulai dengan 1 bagian</string>
+    <string name="default_split_start_shares_other">Masing-masing mulai dengan 1 bagian</string>
+    <string name="default_split_start_percent_one">Dia mulai dari 0%</string>
+    <string name="default_split_start_percent_other">Masing-masing mulai dari 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; sesuaikan kalau perlu.</string>
     <string name="default_split_modes">Cara membagi</string>
     <string name="default_split_hint_equal">Semua membayar bagian yang sama</string>
