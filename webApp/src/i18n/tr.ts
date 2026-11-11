@@ -796,7 +796,7 @@ export const tr: Record<MessageKey, string> = {
   profile_language: 'Dil',
   profile_languageSystem: 'Sistem',
   profile_languageEnglish: 'İngilizce',
-  profile_languagePortuguese: 'Portekizce (BR)',
+  profile_languagePortuguese: 'Portekizce (Brezilya)',
   profile_languageSpanish: 'İspanyolca',
   profile_languageFrench: 'Fransızca',
   profile_languageGerman: 'Almanca',

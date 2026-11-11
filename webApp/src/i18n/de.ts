@@ -797,7 +797,7 @@ export const de: Record<MessageKey, string> = {
   profile_language: 'Sprache',
   profile_languageSystem: 'System',
   profile_languageEnglish: 'Englisch',
-  profile_languagePortuguese: 'Portugiesisch (BR)',
+  profile_languagePortuguese: 'Portugiesisch (Brasilien)',
   profile_languageSpanish: 'Spanisch',
   profile_languageFrench: 'Französisch',
   profile_languageGerman: 'Deutsch',

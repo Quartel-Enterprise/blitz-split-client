@@ -794,7 +794,7 @@ export const en = {
   profile_language: 'Language',
   profile_languageSystem: 'System',
   profile_languageEnglish: 'English',
-  profile_languagePortuguese: 'Portuguese (BR)',
+  profile_languagePortuguese: 'Portuguese (Brazil)',
   profile_languageSpanish: 'Spanish',
   profile_languageFrench: 'French',
   profile_languageGerman: 'German',
