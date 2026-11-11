@@ -201,6 +201,29 @@ class BillHistoriesTest {
     }
 
     @Test
+    fun `GIVEN a date edit from a bill without a time WHEN building the history THEN that side has no time`() {
+        // Given
+        val dayOnly = millisOf("2026-10-20T00:00:00Z")
+        val events = listOf(event(changes = listOf(change(ActivityField.SPENT_AT, millis(dayOnly), millis(spentAt)))))
+
+        // When
+        val entry = historyOf(events, expense(), group, now, TimeZone.UTC).single().entries.single()
+
+        // Then
+        assertEquals(
+            listOf(
+                BillHistoryChange.SpentAt(
+                    dayOnly,
+                    spentAt,
+                    beforeHasTime = false,
+                    afterHasTime = true,
+                ),
+            ),
+            entry.changes,
+        )
+    }
+
+    @Test
     fun `GIVEN an edit of the amount description date and category WHEN building the history THEN lists each change`() {
         // Given
         val events = listOf(
@@ -223,7 +246,12 @@ class BillHistoriesTest {
             listOf(
                 BillHistoryChange.Amount(40_000, 48_000),
                 BillHistoryChange.Description("Feira", "Mercado"),
-                BillHistoryChange.SpentAt(lastWeek, spentAt),
+                BillHistoryChange.SpentAt(
+                    lastWeek,
+                    spentAt,
+                    beforeHasTime = true,
+                    afterHasTime = true,
+                ),
                 BillHistoryChange.Category(null, AppCategory.FOOD_MARKET.key),
             ),
             entry.changes,

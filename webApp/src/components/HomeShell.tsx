@@ -1,10 +1,11 @@
 import { Bell, ChevronRight, CircleDollarSign, House, Search, UserRound, Users } from 'lucide-react'
 import type { JsGroupRow } from 'blitzsplit-shared'
-import { createContext, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Avatar, BrandMark } from '@/components/common'
 import { Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { usePhoneBarsHidden } from '@/hooks/usePhoneBarsHidden'
 import { t, type MessageKey } from '@/i18n'
 import { formatSignedPlainMoney } from '@/lib/money'
 import type { AccountProvider } from '@/lib/platform'
@@ -232,6 +233,16 @@ export function HomeShellView({
   // Why: a screen whose presenter can't count the logo yet opens Home as its tab does.
   const openBrand = onBrand ?? (() => select('home'))
   const current = (tab: HomeTab) => (tab === selected ? (isOutsideTabs ? 'true' : 'page') : undefined)
+  /*
+   * Why: the home tabs' phone bars leave on a scroll down and come back on a scroll up, out again on every new page;
+   * Activity and Profile keep the navigation under their own bar, as Android's screens over the tabs keep theirs.
+   */
+  const contentRef = useRef<HTMLDivElement>(null)
+  const pageKey = useContext(PageKeyContext)
+  const [hidesBars, showBars] = usePhoneBarsHidden(contentRef, pageKey)
+  const areBarsHidden = hidesBars && phoneBars === 'home'
+  // Why: slides, or moves at once under reduced motion, and comes back for a bar that takes the keyboard's focus.
+  const barMotion = 'motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out'
   return (
     <div className={cn('flex min-h-dvh', className)}>
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
@@ -311,7 +322,10 @@ export function HomeShellView({
       {/* Why: clips the page's 6 px rise as it comes in, which would otherwise flash a scrollbar on a short page. */}
       <div className="flex min-w-0 flex-1 flex-col overflow-y-clip">
         {phoneBars === 'home' && (
-          <header className="flex h-14 items-center gap-2.5 border-b px-4 md:hidden">
+          <header
+            onFocus={showBars}
+            className={cn('sticky top-0 z-10 flex h-14 items-center gap-2.5 border-b bg-background/95 px-4 backdrop-blur md:hidden', barMotion, areBarsHidden && '-translate-y-full')}
+          >
             <button
               aria-label={t('appName')}
               onClick={openBrand}
@@ -331,10 +345,16 @@ export function HomeShellView({
           </header>
         )}
 
-        <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+        <div ref={contentRef} className="flex min-w-0 flex-1 flex-col">
+          {children}
+        </div>
 
         {phoneBars !== 'none' && (
-          <nav aria-label={t('groups_mainNavigation')} className={cn('sticky bottom-0 grid h-16 border-t bg-card md:hidden', search ? 'grid-cols-5' : 'grid-cols-4')}>
+          <nav
+            aria-label={t('groups_mainNavigation')}
+            onFocus={showBars}
+            className={cn('sticky bottom-0 z-10 grid h-16 border-t bg-card md:hidden', search ? 'grid-cols-5' : 'grid-cols-4', barMotion, areBarsHidden && 'translate-y-full')}
+          >
             {tabs.map(({ tab, label, icon }) => (
               <button
                 key={tab}

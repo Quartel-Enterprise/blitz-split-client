@@ -218,6 +218,7 @@ internal class StatsCalculator(
             expenseId = expense.id,
             description = expense.description,
             spentAt = expense.spentAt,
+            hasSpentTime = SpentDay.hasTime(expense.spentAt, timeZone),
             payers = PayerOrder(group.members).sort(expense.payers.map { it.memberId }).map { id ->
                 StatsPayer(
                     name = membersById[id]?.name,

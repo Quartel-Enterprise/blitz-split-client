@@ -24,8 +24,17 @@ The home tab, its shortcuts and pinned groups.
     under Overall balance, beside the faces in a wide window). "Your groups": up to three open groups, the pinned
     first, then the latest activity, as Groups draws them; "See all" opens Groups. "Latest expenses": the five latest
     bills you paid or take part in, by day, with your share and its category's badge exactly as the group's Expenses
-    rows draw it (Pierre's call, the category as it reads now, `HomeBill.category`); a bill opens its Bill over its
-    group, and "See all" opens Activity over Home, as the bell in Home's bar does.
+    rows draw it (Pierre's call, the category as it reads now, `HomeBill.category`). Under the description, no
+    "Floripa trip · You paid" line (beta feedback, it was cut off on a phone): the group's rounded square (its photo,
+    or its initials on its color, `HomeBill.groupInitials`, `groupColor`, `groupPhotoUrl`) and then who paid as
+    overlapping faces (their photo, or their initial on their color; someone no longer in the group a blank face), up
+    to three and "+N" (`HomeBill.payerFaces`, `extraPayerCount`), the amber dot and "queued" after them while the bill
+    waits, as the legacy Bora Rachar drew the payer and the group; TalkBack, VoiceOver and the web's screen readers
+    still read "Floripa trip · You paid". The web's list keeps the day after the faces, and its desktop table draws the
+    group's square in its Group column and only the faces under the description. Inside the group, Expenses keeps its
+    rows as they are, the group being implied there. A bill opens its Bill over its group, and "See all" opens
+    Activity over Home as the bell in Home's bar does, but with its Bills type already picked, a chip it can remove
+    (Pierre's call, beta feedback; `Route.Activity.showsBillsOnly`).
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
     the top bar, never floating over the tab bar: its icon alone on an iPhone upright, as on Groups, and in an iPhone
     Duo's vertical bar, under the profile; spelled out lying down and on iPad. "Search" is the home's (5.2), over
@@ -37,7 +46,8 @@ The home tab, its shortcuts and pinned groups.
     `first_download_groups`, then each group comes down whole, the most recent activity first; until it answered,
     and after a relaunch midway, "Syncing…" and a bar that runs), what already came with skeletons under it and
     "so far · the rest is on its way"; offline the skeletons stay with "No internet. Your groups show up once you're back
-    online." (Mac: the window's subtitle); the sync chip as Groups', but in the top bar's empty leading side (Android's
+    online." (Mac: the window's subtitle); the sync chip as Groups' ("Syncing…" only during the account's first full
+    sync), but in the top bar's empty leading side (Android's
     title slot, beside the title on a tablet; iOS's and iPadOS's leading toolbar item, a button while "No response from
     the server" offers to try again; the web's phone top bar left of the bell, and its title row from the tablet up), so
     it comes and goes without moving the content (the beta's feedback), only the first download's bar staying above the

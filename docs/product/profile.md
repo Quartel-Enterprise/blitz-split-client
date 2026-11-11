@@ -9,10 +9,18 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     "Sign out" (or "Erase profile and sign out") comes right after "Account and sync" on every platform and layout, one
     column included (Pierre's call, beta feedback 16), and "Delete account" stays the last thing of its column, only
     the legal footer under it; on a book (a tabletop lying down alike) a half each, the 72 dp
-    gap centered on the hinge, as Edit profile and the keys do, and its dialogs ("Who sees your profile", Sign out,
-    "Erase profile and sign out") and Delete account open in the right half. Edit profile is full screen on
-    Android at every size; iOS pushes it on an iPhone (two columns lying down: the photo and its color, then the
-    name) and opens it as a 540 pt form sheet with an iPad's room, with Cancel and Save (✓). The Mac's profile is
+    gap centered on the hinge, as the keys do, and its dialogs ("Who sees your profile", Sign out,
+    "Erase profile and sign out") and Delete account open in the right half. Edit profile is never a screen of its
+    own, since a photo, a name and a notice are too little for one (Pierre's call, beta feedback): Android opens it as
+    Registrar pagamento (`FormPresentation`), a bottom sheet on a phone with "Edit profile" and Save on top (the photo
+    left and the name right lying down), a 560 dp dialog with Cancel and Save anywhere wider (a book's right half),
+    and full screen only on a tabletop, as the screen always drew it there (the photo and the name side by side
+    lying down); iOS opens it as a sheet with
+    Cancel (✕) and Save (✓), at half height on an iPhone, growing to the whole screen (two columns lying down: the
+    photo and its color, then the name), and a 540 pt form sheet with an iPad's room. The keyboard lifts the sheet with
+    the name field, and the photo menu and "Adjust photo" open over it. Dismissing it (back, a drag down, ✕, Cancel)
+    leaves without saving, as leaving the screen did; a drag down, ✕ and Cancel wait while it saves. The Mac and the web never open it: they
+    edit the name and photo inline, in Settings and in the profile page's "Your profile". The Mac's profile is
     Settings (⌘,), the app's Settings window, never pushed: whatever opens the profile (any tab's avatar, "Protect your access", a browser sign in started there coming back) opens it instead; its sidebar lists the sections and
     scrolls the form to the one picked, on every click (hidden under 700 pt; its button at the leading edge of the
     detail's toolbar, right of the divider, as in the main window, Pierre's beta feedback; the form 720 pt at most,
@@ -77,16 +85,20 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     explaining it over the sheet (`ProfileDialog.DYNAMIC_COLORS_INFO`, "Got it" back to the sheet); a bottom sheet
     on a phone, a 560 dp dialog anywhere wider, a book's right half. The Apple apps and the web keep their own picker.
   - Profile › Preferences › "Language", as Bible Planner's (Pierre's call): "System" first, the default, which follows
-    the device's language (English for one the app doesn't have), then each language named in the app's language
-    (Pierre's call, changed from each language in its own name: only translated names, with the region when the
-    language is written for one), "English", "Portuguese (BR)", "Spanish", "French", "German", "Italian", "Polish", "Dutch", "Japanese", "Turkish" and "Indonesian"
-    in English, "Inglês", "Português (BR)", "Espanhol", "Francês", "Alemão", "Italiano", "Polonês", "Holandês", "Japonês", "Turco" and "Indonésio" in Portuguese; "Spanish" is Spain's Spanish (es-ES) on a device whose
-    region is Spain, the neutral one anywhere else, so it carries no region. Kept per device and
+    the device's language (English for one the app doesn't have), then each language in its own name, the way its
+    speakers look for it, with its name in the app's language as a smaller line under it (Pierre's call, beta feedback,
+    back from only translated names): "English", "Português (Brasil)", "Español", "Français", "Deutsch", "Italiano",
+    "Polski", "Nederlands", "日本語", "Türkçe" and "Bahasa Indonesia", the same in every language, under them "Portuguese
+    (Brazil)", "Spanish"… in English and "Inglês", "Espanhol"… in Portuguese, the smaller line left out where both read
+    the same (Italian's "Italiano" in Portuguese, Portuguese's own row). A region is spelled out, never a code:
+    "Português (Brasil)", "Portuguese (Brazil)". "Spanish" is Spain's Spanish (es-ES) on a device whose region is Spain,
+    the neutral one anywhere else, so it carries no region. Each own name is marked with its language, so a screen
+    reader reads "日本語" as Japanese and the font draws it as Japan's. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's
     LocaleManager, which the system's app language settings also change (the languages the build generates its locale config from), the app's
     own copy before 13; the Apple apps' AppleLanguages, which iOS's Settings › Bora Rachar › Language also changes; the
-    browser's storage on the web. Android's row ("System", "Português (BR)") opens a sheet as Bible Planner's
+    browser's storage on the web. Android's row ("System", "Português (Brasil)") opens a sheet as Bible Planner's
     (`ProfileDialog.LANGUAGE`): a row per option with its chip ("EN", "PT", "ES", a phone for System, "Device language"
     under it) and a radio, a bottom sheet on a phone, a 560 dp dialog anywhere wider, a book's right half; a pick
     closes it and the app draws again in it (Android 13 and later on their own, the activity opening again before,

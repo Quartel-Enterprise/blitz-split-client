@@ -37,14 +37,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.HomeBars
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
-import com.quare.blitzsplit.android.designsystem.component.SplitBillRailHeader
-import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
+import com.quare.blitzsplit.android.designsystem.component.collapsingBarsScroll
+import com.quare.blitzsplit.android.designsystem.component.homeTabBarsOf
+import com.quare.blitzsplit.android.designsystem.component.rememberCollapsingTopBarScrollBehavior
 import com.quare.blitzsplit.android.designsystem.component.splitBillFabClearance
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -89,21 +89,30 @@ fun GlobalBalancesContent(
     val listState = rememberLazyListState()
     val onSplitBillClick = { onEvent(GlobalBalancesUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
+        // Why: the single list on a phone upright; beside a rail or a pane the bars stay, untouched by a scroll.
+        val collapsesBars = !layout.usesNavigationRail && listDetail == null
         // Why: the single list only, whose bottom padding makes room for it; beside a rail or a pane the rail has it.
-        val onFabClick = onSplitBillClick?.takeIf { !layout.usesNavigationRail && listDetail == null }
+        val onFabClick = onSplitBillClick?.takeIf { collapsesBars }
+        val scrollBehavior = rememberCollapsingTopBarScrollBehavior(
+            collapses = collapsesBars,
+            canScroll = { listState.canScrollForward || listState.canScrollBackward },
+        )
         HomeBarsScaffold(
-            bars = HomeBars(
-                kind = homeBarsKindOf(layout.usesNavigationRail),
+            bars = homeTabBarsOf(
+                usesRail = layout.usesNavigationRail,
                 selected = HomeTab.BALANCES,
                 onTabClick = onTabClick,
                 onSearchClick = { onEvent(GlobalBalancesUiEvent.OnSearchClicked) },
-                railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
+                onSplitBillClick = onSplitBillClick,
+                scrollBehavior = scrollBehavior,
             ),
             // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
             modifier = Modifier.semantics { paneTitle = title },
         ) {
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .collapsingBarsScroll(scrollBehavior, collapsesBars),
                 topBar = {
                     TopAppBar(
                         title = { HomeTabTitle(title) },
@@ -116,6 +125,7 @@ fun GlobalBalancesContent(
                                 onClick = { onEvent(GlobalBalancesUiEvent.OnProfileClicked) },
                             )
                         },
+                        scrollBehavior = scrollBehavior.takeIf { collapsesBars },
                     )
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },

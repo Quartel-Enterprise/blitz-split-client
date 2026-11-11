@@ -233,7 +233,7 @@ sealed interface HomeUiEvent : UiEvent {
         val expenseId: String,
     ) : HomeUiEvent
 
-    // Why: "Ver tudo" over "Últimas despesas", which opens Atividade over Início, as the bell does.
+    // Why: "Ver tudo" over "Últimas despesas", which opens Atividade over Início on its Contas type, a removable chip.
     data object OnSeeAllBillsClicked : HomeUiEvent
 
     // Why: the bell in Início's bar, with Atividade's unread count, which opens Atividade over Início.

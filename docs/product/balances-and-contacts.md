@@ -68,7 +68,9 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     the profile), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; either
     keeps their name even when someone in the group has it too, beta feedback 3 item 29; a group they're
     in shows disabled; on the Mac the arrow keys pick the group and Return adds them), "Groups in common" and the latest four of "History with Carla" (bills that move something
-    between the two and their payments); "See all" opens Activity on that person. A guest's profile
+    between the two and their payments; a bill with its category's badge as the group's Expenses draws it, never a
+    generic receipt, beta feedback, `ContactHistoryItem.Bill.category`; a payment with its arrow); "See all" opens
+    Activity on that person. A guest's profile
     offers "Invite Diego" (their personal link) and "Merge with an account" (online only): the server makes a
     request and a single use personal link, and once the guest joins through it everything in that name, in every
     group, passes to their account ("Waiting for Diego to accept", Cancel). When the person using the app is that

@@ -480,7 +480,7 @@ class HomeSidebarViewModelTest {
             prepareScenario(
                 stack = listOf(
                     Route.Home,
-                    Route.Activity(personKey = null),
+                    Route.Activity.all,
                     Route.BillDetail("other", "b1", focusCommentId = null),
                 ),
             )
@@ -634,7 +634,10 @@ class HomeSidebarViewModelTest {
                     Route.Home,
                     Route.Contacts,
                     Route.ContactProfile(anaKey),
-                    Route.Activity(personKey = anaKey),
+                    Route.Activity(
+                        personKey = anaKey,
+                        showsBillsOnly = false,
+                    ),
                 ),
             )
 

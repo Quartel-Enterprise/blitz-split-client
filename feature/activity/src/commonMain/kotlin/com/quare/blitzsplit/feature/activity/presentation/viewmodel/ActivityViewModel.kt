@@ -74,7 +74,10 @@ class ActivityViewModel(
             ActivityUiState(
                 days = emptyList(),
                 unreadCount = 0,
-                filter = ActivityFilter.none.copy(personKey = route.personKey),
+                filter = ActivityFilter.none.copy(
+                    types = if (route.showsBillsOnly) listOf(ActivityType.BILLS) else emptyList(),
+                    personKey = route.personKey,
+                ),
                 filterDraft = null,
                 draftResultCount = 0,
                 groups = emptyList(),
@@ -135,7 +138,7 @@ class ActivityViewModel(
             .onEach { (newFeed, newGroups, categories) ->
                 feed = newFeed
                 groups = newGroups
-                entries = entriesOf(newFeed, newGroups, categories)
+                entries = entriesOf(newFeed, newGroups, categories, currentTimeZone())
                 isFeedRead = true
                 feedVersion++
                 show()

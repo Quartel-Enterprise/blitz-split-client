@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 
 /*
  * Why: right after joining through the link (3.3), over the group's bills: "Você entrou como Bruno", and "Proteja seu
@@ -84,11 +85,11 @@ internal fun JoinedBanner(
             }
         }
         if (showsProtectAccess) {
-            Surface(
+            TappableCard(
                 onClick = onProtectAccessClick,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.tertiaryContainer,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),

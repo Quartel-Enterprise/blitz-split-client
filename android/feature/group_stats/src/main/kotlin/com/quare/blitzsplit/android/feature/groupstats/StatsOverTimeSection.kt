@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
@@ -299,10 +300,9 @@ internal fun StatsBiggestSection(
     val expense = state.biggestExpense ?: return
     Column(modifier = modifier) {
         StatsSectionHeading(stringResource(R.string.group_stats_biggest), modifier = sectionPadding)
-        Surface(
+        TappableCard(
             onClick = { onEvent(GroupStatsUiEvent.OnBiggestExpenseClicked) },
             shape = cardShape,
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
             Row(
                 modifier = Modifier.padding(
@@ -334,7 +334,11 @@ internal fun StatsBiggestSection(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    val whenText = "${times.toDateText(expense.spentAt)}, ${times.toTimeText(expense.spentAt)}"
+                    val whenText = if (expense.hasSpentTime) {
+                        "${times.toDateText(expense.spentAt)}, ${times.toTimeText(expense.spentAt)}"
+                    } else {
+                        times.toWeekdayDateText(expense.spentAt)
+                    }
                     val paid = paidTextOrNull(
                         expense.payers,
                         isMe = { it.isMe },

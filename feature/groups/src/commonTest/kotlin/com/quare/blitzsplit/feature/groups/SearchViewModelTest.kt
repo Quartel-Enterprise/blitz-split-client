@@ -1211,7 +1211,7 @@ class SearchViewModelTest {
 
     private val balances = Route.GlobalBalances(BalancesFilter.ALL)
 
-    private val activity = Route.Activity(personKey = null)
+    private val activity = Route.Activity.all
 
     private val churrasco = group(
         id = "churrasco",

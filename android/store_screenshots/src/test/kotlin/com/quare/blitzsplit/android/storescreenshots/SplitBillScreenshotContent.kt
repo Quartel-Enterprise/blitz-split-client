@@ -57,6 +57,7 @@ internal fun ReceiptScreenshotContent(trip: SampleTrip) {
         isDialog = false,
         snackbarHostState = remember { SnackbarHostState() },
         onWhenClick = {},
+        onTimeClick = {},
         onEvent = {},
     )
 }
@@ -146,6 +147,7 @@ private fun SampleTrip.splitBillState(
         payerAmounts = null,
         spentAt = spentAt,
         spentDay = relativeDayOf(bill.daysAgo),
+        hasSpentTime = true,
         latestSpentAt = spentAt,
         split = split,
         splitEditor = null,

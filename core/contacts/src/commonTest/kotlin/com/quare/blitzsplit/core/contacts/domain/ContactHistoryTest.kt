@@ -15,6 +15,8 @@ import com.quare.blitzsplit.core.contacts.owes
 import com.quare.blitzsplit.core.contacts.payer
 import com.quare.blitzsplit.core.contacts.payment
 import com.quare.blitzsplit.core.contacts.share
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
@@ -39,7 +41,7 @@ class ContactHistoryTest {
         val money = mapOf("floripa" to moneyOf(listOf(dinner)))
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         assertEquals(
@@ -55,10 +57,30 @@ class ContactHistoryTest {
                     payerCount = 1,
                     totalMinor = 19_600L,
                     effectMinor = 9_800L,
+                    category = CategoryTree.appOnly.other,
                 ),
             ),
             history,
         )
+    }
+
+    @Test
+    fun `GIVEN a bill with a category WHEN reading her history THEN the bill carries it for its badge`() {
+        // Given
+        val market = bill(
+            id = "market",
+            groupId = "floripa",
+            payers = listOf(payer(meId("floripa"), 10_000L)),
+            shares = listOf(share(meId("floripa"), 5_000L), share("carla-floripa", 5_000L)),
+        ).copy(categoryId = AppCategory.FOOD_MARKET.key)
+        val money = mapOf("floripa" to moneyOf(listOf(market)))
+
+        // When
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
+
+        // Then
+        val bill = assertIs<ContactHistoryItem.Bill>(history.single())
+        assertEquals(CategoryTree.appOnly.resolve(AppCategory.FOOD_MARKET.key), bill.category)
     }
 
     @Test
@@ -73,7 +95,7 @@ class ContactHistoryTest {
         val money = mapOf("floripa" to moneyOf(listOf(dinner)))
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         val item = assertIs<ContactHistoryItem.Bill>(history.single())
@@ -88,7 +110,7 @@ class ContactHistoryTest {
         val money = mapOf("floripa" to moneyOf(listOf(owes("floripa", "carla-floripa", "bruno-floripa", 5_000L))))
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         assertTrue(history.isEmpty())
@@ -106,7 +128,7 @@ class ContactHistoryTest {
         val money = mapOf("floripa" to moneyOf(listOf(pizza)))
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         assertEquals(emptyList(), history)
@@ -128,7 +150,7 @@ class ContactHistoryTest {
         val money = mapOf("floripa" to moneyOf(listOf(groceries)))
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         val item = assertIs<ContactHistoryItem.Bill>(history.single())
@@ -159,7 +181,7 @@ class ContactHistoryTest {
         )
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         assertEquals(
@@ -186,7 +208,7 @@ class ContactHistoryTest {
         )
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         val item = assertIs<ContactHistoryItem.Payment>(history.single())
@@ -202,7 +224,7 @@ class ContactHistoryTest {
         )
 
         // When
-        val history = ContactHistory.of(carlaIn("floripa"), groups, money)
+        val history = ContactHistory.of(carlaIn("floripa"), groups, money, CategoryTree.appOnly)
 
         // Then
         assertTrue(history.isEmpty())
@@ -265,7 +287,7 @@ class ContactHistoryTest {
         )
 
         // When
-        val history = ContactHistory.of(carla, groups, money)
+        val history = ContactHistory.of(carla, groups, money, CategoryTree.appOnly)
 
         // Then
         assertEquals(listOf("new", "paid", "old"), history.map { it.id })
@@ -285,7 +307,7 @@ class ContactHistoryTest {
         val money = mapOf("gone" to moneyOf(listOf(owes("gone", "carla-gone", meId("gone"), 1_000L))))
 
         // When
-        val history = ContactHistory.of(carla, groups, money)
+        val history = ContactHistory.of(carla, groups, money, CategoryTree.appOnly)
 
         // Then
         assertTrue(history.isEmpty())
@@ -344,7 +366,7 @@ class ContactHistoryTest {
         )
 
         // When
-        val history = ContactHistory.of(carla, groups, money)
+        val history = ContactHistory.of(carla, groups, money, CategoryTree.appOnly)
 
         // Then
         assertEquals(listOf("paid", "dollars", "reais"), history.map { it.id })

@@ -12,6 +12,8 @@ data class ActivityChangeValue(
     val currency: GroupCurrency?,
     val text: String?,
     val millis: Long?,
+    // Why: a bill's "Quando" without a time (`SpentDay.hasTime`), which shows its date alone.
+    val hasTime: Boolean,
     val code: String?,
     val names: List<String>,
     // Why: a member no longer in the group, whom each UI writes "Ex-membro".

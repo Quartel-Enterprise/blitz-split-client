@@ -58,9 +58,14 @@ data class SplitBillUiState(
     val payerSelection: PayerSelection?,
     // Why: the "Várias pessoas pagaram" sheet, open while not null; it changes who paid only on "Pronto".
     val payerAmounts: PayerAmounts?,
-    // Why: "Quando", date and time; each UI writes the date, after "Hoje" or "Ontem" when it is one of them.
+    /*
+     * Why: "Quando"; each UI writes the date, after "Hoje" or "Ontem" when it is one of them, and the time only while
+     * hasSpentTime. A bill without a time is at the first instant of its day (`SpentDay.hasTime`).
+     */
     val spentAt: Long,
     val spentDay: RelativeDay,
+    // Why: whether the bill has a time of day, which a new one hasn't until "Adicionar horário" (beta feedback).
+    val hasSpentTime: Boolean,
     // Why: a bill is spent by now, so "Quando" picks nothing later; the time of the last change, which pickers cap at.
     val latestSpentAt: Long,
     val split: SplitEditor,

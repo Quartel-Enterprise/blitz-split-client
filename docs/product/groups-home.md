@@ -17,7 +17,8 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     (Android's FAB, iOS's +, the main button on the web and the Mac, ⌘N there, with ⇧⌘N for the toolbar's "New
     group") opens New group while there's no group, and
     otherwise Split a bill asking which group first (7.1i). The sync status shows only when it asks for attention,
-    "Offline · 1 change queued" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
+    "Syncing…" only during the account's first full sync (later syncs run silently, see
+    [General rules](general.md)), "Offline · 1 change queued" counting the groups, bills and payments waiting, a deleted bill or an undone payment included
     (which also keep their group's "queued"). Pulling down syncs on Android and iOS. A new device's first download
     (5.1d) puts "Bringing your groups" in Overall balance's place, with its bar and "3 of 7 groups. You can use the app meanwhile: what has arrived shows below.", the groups that came over grey rows for up to three still coming,
     and no "Split a bill" (`GroupsUiState.firstDownload`), until the account's first full sync ends, across relaunches

@@ -186,18 +186,28 @@ struct MemberFaces: View {
     let group: GroupRow
 
     var body: some View {
+        FaceStack(faces: group.faces, extraCount: Int(group.extraMemberCount))
+            .accessibilityElement()
+            .accessibilityLabel(Text(verbatim: GroupsCopy.members(group.memberCount)))
+    }
+}
+
+/// Overlapping faces and "+N" for the rest: a group's members, or who paid a bill on Home.
+struct FaceStack: View {
+    let faces: [MemberFace]
+    let extraCount: Int
+
+    var body: some View {
         HStack(spacing: -6) {
-            ForEach(Array(group.faces.enumerated()), id: \.offset) { _, face in
+            ForEach(Array(faces.enumerated()), id: \.offset) { _, face in
                 AvatarPhoto(initial: face.initial, color: face.color, photoUrl: face.photoUrl, size: 20)
             }
-            if group.extraMemberCount > 0 {
-                Text(verbatim: "+\(group.extraMemberCount)")
+            if extraCount > 0 {
+                Text(verbatim: "+\(extraCount)")
                     .font(.caption2.weight(.semibold))
                     .padding(.leading, 10)
             }
         }
-        .accessibilityElement()
-        .accessibilityLabel(Text(verbatim: GroupsCopy.members(group.memberCount)))
     }
 }
 

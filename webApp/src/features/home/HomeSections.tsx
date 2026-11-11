@@ -1,12 +1,12 @@
 import { ChevronRight, Pin } from 'lucide-react'
 import type { HomePresenter, JsHomeBill, JsHomeGroup, JsHomePerson, JsHomeState, JsHomeTotal } from 'blitzsplit-shared'
-import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type RefObject } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react'
 import { Avatar, PendingDot } from '@/components/common'
 import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
-import { GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
+import { FaceStack, GroupBalance, lastActivityText, membersText } from '@/features/groups/GroupRowParts'
 import { paidText as payersText } from '@/features/groups/SearchDialog'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayLabel } from '@/lib/dates'
@@ -377,6 +377,29 @@ function paidText(bill: JsHomeBill): string {
   return bill.isPending ? [t('groups_queued'), paid].filter(Boolean).join(' · ') : paid
 }
 
+/**
+ * Under a bill, the group's square (left out in the table, whose Grupo column has it) and who paid as faces and "+N",
+ * the amber dot and "na fila" while it waits (beta feedback, as the legacy app drew them: "Viagem Floripa · Você pagou"
+ * was cut off on a phone). Screen readers get that sentence instead.
+ */
+function BillOrigin({ bill, showsGroup, children }: { bill: JsHomeBill; showsGroup: boolean; children?: ReactNode }) {
+  const label = showsGroup ? [bill.groupName, paidText(bill)].filter(Boolean).join(' · ') : paidText(bill)
+  return (
+    <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+      <span className="sr-only">{label}</span>
+      {showsGroup && <GroupAvatar initials={bill.groupInitials} color={bill.groupColor} photoUrl={bill.groupPhotoUrl} className="size-5 text-[7px]" />}
+      <FaceStack faces={Array.from(bill.payerFaces)} extraCount={bill.extraPayerCount} isSmall />
+      {bill.isPending && (
+        <span aria-hidden className="flex shrink-0 items-center gap-1">
+          <PendingDot className="size-[7px]" />
+          {t('groups_queued')}
+        </span>
+      )}
+      {children}
+    </span>
+  )
+}
+
 /** The table's "Sua parte" as "Seus grupos" draws a balance beside it: the amount, its word under it. */
 function ShareCell({ bill }: { bill: JsHomeBill }) {
   const { amount, word } = shareParts(bill)
@@ -390,12 +413,12 @@ function ShareCell({ bill }: { bill: JsHomeBill }) {
 
 /**
  * "Últimas despesas": the five latest bills you paid or take part in, from every group, the most recent first. A
- * table on the desktop (Despesa, Grupo, Quando, Total, Sua parte), a list below it with the group and the day in the
- * meta. The card picks by its own width, not the window's: beside "Seus grupos" a narrower desktop window (half a
+ * table on the desktop (Despesa, Grupo, Quando, Total, Sua parte), a list below it with the group's square, the faces
+ * of who paid and the day under the description. The card picks by its own width, not the window's: beside "Seus grupos" a narrower desktop window (half a
  * laptop's screen) leaves the table no room for "Sua parte", so the card stays a list until the table fits. There the
  * description takes what the other columns leave, the group's name is capped, tighter the narrower the card, and Sua
  * parte's word sits under its amount; a hundred million of another year in the narrowest card scrolls the table
- * sideways rather than cutting it. A bill opens its Conta over its group; "Ver tudo" is Atividade, not built yet.
+ * sideways rather than cutting it. A bill opens its Conta over its group; "Ver tudo" opens Atividade on its bills.
  */
 export function RecentBills({ presenter, state }: SectionProps) {
   const rows = Array.from(state.billDays).flatMap((day) => Array.from(day.bills).map((bill) => ({ bill, day: formatDayLabel(day.dayStartMillis, day.relativeDay) })))
@@ -444,18 +467,16 @@ export function RecentBills({ presenter, state }: SectionProps) {
                           >
                             {bill.description}
                           </button>
-                          <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
-                            {bill.isPending && <PendingDot className="size-[7px]" />}
-                            <span title={paidText(bill)} className="truncate">
-                              {paidText(bill)}
-                            </span>
-                          </span>
+                          <BillOrigin bill={bill} showsGroup={false} />
                         </span>
                       </span>
                     </td>
                     <td className="px-3 py-2.5">
-                      <span title={bill.groupName} className="block max-w-24 truncate @3xl:max-w-32 @4xl:max-w-48 @5xl:max-w-64">
-                        {bill.groupName}
+                      <span className="flex items-center gap-2">
+                        <GroupAvatar initials={bill.groupInitials} color={bill.groupColor} photoUrl={bill.groupPhotoUrl} className="size-5 text-[7px]" />
+                        <span title={bill.groupName} className="block max-w-24 truncate @3xl:max-w-32 @4xl:max-w-48 @5xl:max-w-64">
+                          {bill.groupName}
+                        </span>
                       </span>
                     </td>
                     <td className="px-3 py-2.5 whitespace-nowrap text-muted-foreground">{day}</td>
@@ -478,10 +499,9 @@ export function RecentBills({ presenter, state }: SectionProps) {
                   <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="truncate font-medium">{bill.description}</span>
-                    <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
-                      {bill.isPending && <PendingDot className="size-[7px]" />}
-                      <span className="truncate">{[bill.groupName, paidText(bill), day].join(' · ')}</span>
-                    </span>
+                    <BillOrigin bill={bill} showsGroup>
+                      <span className="truncate">{day}</span>
+                    </BillOrigin>
                   </span>
                   <span className="flex shrink-0 flex-col items-end gap-0.5">
                     <span className="tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</span>

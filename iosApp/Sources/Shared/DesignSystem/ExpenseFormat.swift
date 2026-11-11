@@ -128,24 +128,34 @@ enum ExpenseFormat {
         }
     }
 
-    /// "When" on a bill: "Today, Oct 28 · 9:30 PM", "Yesterday, Oct 27 · 9:30 PM" or "Fri, Oct 24 · 9:30 PM".
-    static func when(_ millis: Int64, relativeDay: RelativeDay) -> String {
+    /// "When" on a bill: "Today, Oct 28 · 9:30 PM", "Yesterday, Oct 27 · 9:30 PM" or "Fri, Oct 24 · 9:30 PM"; without
+    /// its time (a bill without one) "Today, Oct 28".
+    static func when(_ millis: Int64, relativeDay: RelativeDay, hasTime: Bool = true) -> String {
         let day = switch relativeDay {
         case .today: String(localized: "Today, \(shortDate(millis))", bundle: .appLanguage)
         case .yesterday: String(localized: "Yesterday, \(shortDate(millis))", bundle: .appLanguage)
         default: weekdayDate(millis)
         }
-        return "\(day) · \(time(millis))"
+        return hasTime ? "\(day) · \(time(millis))" : day
     }
 
     /// Under a bill's description: "Today, 2:30 PM", "Yesterday, 9:10 PM" or "Oct 27, 9:10 PM" ("Hoje, 14:30",
-    /// "27 de out., 21:10").
-    static func dayTime(_ millis: Int64, relativeDay: RelativeDay) -> String {
-        switch relativeDay {
+    /// "27 de out., 21:10"); a bill without a time "Today", "Yesterday" or "Fri, Oct 24".
+    static func dayTime(_ millis: Int64, relativeDay: RelativeDay, hasTime: Bool = true) -> String {
+        if !hasTime {
+            return day(millis, relativeDay: relativeDay)
+        }
+        return switch relativeDay {
         case .today: String(localized: "Today, \(time(millis))", bundle: .appLanguage)
         case .yesterday: String(localized: "Yesterday, \(time(millis))", bundle: .appLanguage)
         default: "\(shortDate(millis)), \(time(millis))"
         }
+    }
+
+    /// A bill's "When" in a change (Activity, the bill's history): "Oct 27, 9:10 PM", or "Oct 27" for a side without a
+    /// time, as Android and the web write it.
+    static func changedDayTime(_ millis: Int64, hasTime: Bool) -> String {
+        hasTime ? dayTime(millis, relativeDay: .other) : shortDate(millis)
     }
 
     /// "Oct 28" or "28 de out.".

@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.ConnectionAlertCard
 import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -411,11 +412,10 @@ private fun RestoreCodeSection(
                 keyboardActions = KeyboardActions(onDone = { onEvent(RestoreUiEvent.OnRestoreClicked) }),
             )
         }
-        Surface(
+        TappableCard(
             onClick = { onEvent(RestoreUiEvent.OnScanQrClicked) },
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.large,
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
         ) {
             Row(
                 modifier = Modifier.padding(

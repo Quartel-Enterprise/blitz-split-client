@@ -160,8 +160,9 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         opensBillOverGroup && !(formFactor == FormFactor.Tabletop && route.expenseId == null)
     }
     /*
-     * Why: Registrar pagamento and Convidar of Contatos open the same way: a sheet on a phone, a dialog wider (a book's
-     * right half) and full screen on a tabletop, their content split on its hinge.
+     * Why: Registrar pagamento, Convidar of Contatos and Edit profile open the same way: a sheet on a phone, a dialog
+     * wider (a book's right half) and full screen on a tabletop, the first two with their content split on its hinge
+     * and Edit profile in the screen it always drew there.
      */
     val formPresentation = rememberFormPresentation()
     val formPresentationMetadata = when (formPresentation) {
@@ -255,7 +256,12 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: "Buscar" over Início, Saldos, Contatos or Atividade, full screen as Grupos' own takes its place.
             entry<Route.Search>(metadata = homeTabMetadata) { SearchScreen() }
             entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
-            entry<Route.EditProfile> { EditProfileScreen() }
+            // Why: a sheet over the profile on a phone, a dialog wider (a book's right half), full screen on a tabletop.
+            entry<Route.EditProfile>(metadata = formPresentationMetadata) {
+                // Why: an open scene keeps the way it opened when the fold changes under it, so its content does too.
+                val presentation = remember { formPresentation }
+                EditProfileScreen(presentation = presentation)
+            }
             // Why: the photo big over the profile, the whole window dimmed behind it (a book's end half, as any dialog).
             entry<Route.ProfilePhoto>(
                 metadata = FoldDialogSceneStrategy.dialogMetadataOf(

@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
+import com.quare.blitzsplit.android.designsystem.component.rememberCollapsingTopBarScrollBehavior
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.ListDetailLayout
@@ -95,7 +96,6 @@ fun GroupsContent(
     val listState = rememberLazyGridState()
     // Why: the row whose long press opened the actions sheet; it closes once its group leaves the list.
     var actionsGroupId by rememberSaveable { mutableStateOf<String?>(null) }
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     // Why: the group open beside the list in a list and detail, whose row or card shows it.
     val listDetail = rememberListDetailLayout()
     if (rememberFoldLayout().isOnCoverScreen && state.groups.isNotEmpty()) {
@@ -113,12 +113,21 @@ fun GroupsContent(
          */
         val usesSideColumn = layout == DeviceLayout.PhoneLandscape &&
             (state.groups.isNotEmpty() || state.firstDownload != null || state.isReadingGroups)
+        /*
+         * Why: only GroupsTopBar collapses: the search bar stays, and the bottom bar with it. The side column is a
+         * phone lying down's, which has the rail.
+         */
+        val scrollBehavior = rememberCollapsingTopBarScrollBehavior(
+            collapses = !layout.usesNavigationRail && !state.isSearching,
+            canScroll = { listState.canScrollForward || listState.canScrollBackward },
+        )
         // Why: the home's one bar or rail, drawn around the navigation, beside or under the scaffold.
         HomeBarsScaffold(
             bars = groupsBarsOf(
                 state = state,
                 onEvent = onEvent,
                 usesRail = layout.usesNavigationRail,
+                collapsedFraction = { scrollBehavior.state.collapsedFraction },
             ),
             // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
             modifier = Modifier.semantics { paneTitle = title },

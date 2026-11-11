@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.component.SplitBillRailHeader
 import com.quare.blitzsplit.android.designsystem.component.homeBarsKindOf
+import com.quare.blitzsplit.android.designsystem.component.rememberCollapsingTopBarScrollBehavior
 import com.quare.blitzsplit.android.designsystem.component.splitBillFabClearance
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
@@ -71,6 +72,7 @@ private fun homeBarsOf(
     state: HomeUiState,
     onEvent: (HomeUiEvent) -> Unit,
     usesRail: Boolean,
+    collapsedFraction: () -> Float,
 ): HomeBars {
     val onSplitBillClick = { onEvent(HomeUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     return HomeBars(
@@ -79,6 +81,7 @@ private fun homeBarsOf(
         onTabClick = { tab -> eventOf(tab)?.let(onEvent) },
         onSearchClick = { onEvent(HomeUiEvent.OnSearchClicked) },
         railHeader = { isShort -> SplitBillRailHeader(isShort, onSplitBillClick) },
+        collapsedFraction = collapsedFraction,
     )
 }
 
@@ -100,15 +103,24 @@ fun HomeContent(
     val homeLayout = rememberHomeLayout()
     val metrics = rememberHomeMetrics(homeLayout)
     val scrollState = rememberScrollState()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
         if (homeLayout == HomeLayout.COVER) {
             Box(modifier = Modifier.fillMaxSize().semantics { paneTitle = title }) { HomeCoverPane(state = state) }
             return@AdaptiveScreen
         }
+        // Why: the phone's top bar, the one HomeTopBar that leaves on a scroll; anywhere wider the rail and the bar stay.
+        val scrollBehavior = rememberCollapsingTopBarScrollBehavior(
+            collapses = homeLayout == HomeLayout.PHONE,
+            canScroll = { scrollState.canScrollForward || scrollState.canScrollBackward },
+        )
         // Why: the home's one bar or rail, drawn around the navigation, beside or under the scaffold.
         HomeBarsScaffold(
-            bars = homeBarsOf(state, onEvent, homeLayout.usesRail),
+            bars = homeBarsOf(
+                state = state,
+                onEvent = onEvent,
+                usesRail = homeLayout.usesRail,
+                collapsedFraction = { scrollBehavior.state.collapsedFraction },
+            ),
             // Why: the pane's title on the content beside the bars, which TalkBack then still reaches.
             modifier = Modifier.semantics { paneTitle = title },
         ) {

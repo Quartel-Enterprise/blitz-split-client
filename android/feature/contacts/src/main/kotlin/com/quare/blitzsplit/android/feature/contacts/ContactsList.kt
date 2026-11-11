@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
@@ -161,11 +162,10 @@ private fun BalancesSummaryCard(
         return
     }
     val money = rememberMoneyFormatter(total.currency)
-    Surface(
+    TappableCard(
         onClick = { onEvent(ContactsUiEvent.OnBalancesCardClicked) },
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Row(
             modifier = Modifier.padding(
