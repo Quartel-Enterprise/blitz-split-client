@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.members
 
+import android.os.Build
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -22,7 +23,7 @@ import org.koin.core.parameter.parametersOf
 /*
  * Why: "Membros", the group's tab drawn under its header: the screen asks for it whatever tab is picked, so the members
  * are already read when the tab is tapped, and hands the group its rows, drawn only while it is picked. "Adicionar
- * pessoa" sits beside the link, since the group's "Rachar conta" floats over every tab. Its dialogs and sheet open
+ * pessoa" sits in the link's card, since the group's "Rachar conta" floats over every tab. Its dialogs and sheet open
  * over the group.
  */
 @Composable
@@ -37,6 +38,7 @@ fun rememberMembersTab(
     val resources = LocalResources.current
     val changeError = stringResource(R.string.members_change_error)
     val releaseError = stringResource(R.string.members_release_error)
+    val copied = stringResource(R.string.members_personal_copied)
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
@@ -45,6 +47,14 @@ fun rememberMembersTab(
                 MembersUiAction.ShowReleaseError -> showReplacingSnackbar(snackbarHostState, releaseError)
 
                 is MembersUiAction.CopyLink -> context.copyLink(action.link)
+
+                is MembersUiAction.CopyGroupLink -> {
+                    context.copyLink(action.link)
+                    // Why: Android 13 and later confirm what was copied themselves.
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        showReplacingSnackbar(snackbarHostState, copied)
+                    }
+                }
 
                 is MembersUiAction.SharePersonalLink -> context.shareText(
                     resources.getString(

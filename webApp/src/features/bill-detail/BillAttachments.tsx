@@ -6,7 +6,7 @@ import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
-import { t, wordGap } from '@/i18n'
+import { sayToActor, t, wordGap } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
@@ -218,9 +218,12 @@ function addedText(attachment: JsBillAttachment): string {
       : attachment.addedDay === 'yesterday'
         ? t('billDetail_atYesterday', { time })
         : t('billDetail_atDate', { date: formatShortDate(attachment.addedAt), time })
-  const name = adderText(attachment)
-  return attachment.isReceipt ? t('billDetail_receiptReadBy', { name, when }) : t('billDetail_attachedBy', { name, when })
+  // Why: the user as the subject of the verb, "Tu" where a list says "Toi".
+  const name = attachment.isAddedByMe ? t('activity_you') : adderText(attachment)
+  const text = attachment.isReceipt ? t('billDetail_receiptReadBy', { name, when }) : t('billDetail_attachedBy', { name, when })
+  return attachment.isAddedByMe ? sayToActor(text, name) : text
 }
+
 
 const extensions: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic' }
 

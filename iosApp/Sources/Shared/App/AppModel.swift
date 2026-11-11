@@ -286,12 +286,24 @@ final class AppModel {
     }
 
     /// Whether the entry at `index` is pushed inside the sheet under it: a route that always is
-    /// (`AppRoute.pushesInSheet`), or the group's screen Split a bill's group opened, pushed inside the bill's sheet so
-    /// the form keeps what was typed under it, as the category map does.
+    /// (`AppRoute.pushesInSheet`), the group's screen Split a bill's group opened, or anything that group opens but a
+    /// screen that is only ever a sheet: all of it pushed inside the bill's sheet, so the form keeps what was typed
+    /// under it, as the category map does.
     private static func pushesInSheet(_ stack: [AppRoute], at index: Int) -> Bool {
         let route = stack[index]
-        if route.pushesInSheet { return true }
-        guard route.isGroupScreen, index > 0, case .splitBill = stack[index - 1] else { return false }
+        if route.pushesInSheet || isGroupOverBill(stack, at: index) { return true }
+        guard !route.drawsOnlyAsModal else { return false }
+        var below = index - 1
+        while below > 0, !stack[below].drawsOnlyAsModal {
+            if isGroupOverBill(stack, at: below) { return true }
+            below -= 1
+        }
+        return false
+    }
+
+    /// The group's screen right above Split a bill, which the bill's group opened.
+    private static func isGroupOverBill(_ stack: [AppRoute], at index: Int) -> Bool {
+        guard stack[index].isGroupScreen, index > 0, case .splitBill = stack[index - 1] else { return false }
         return true
     }
 

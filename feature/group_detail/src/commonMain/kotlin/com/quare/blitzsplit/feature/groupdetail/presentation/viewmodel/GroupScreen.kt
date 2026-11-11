@@ -201,14 +201,18 @@ internal class GroupScreen(
     }
 
     /*
-     * Why: a new bill in the group; opened from that bill's form (its group's chip), the bill already being split
-     * there, so back to it with what was typed rather than a second form over the first.
+     * Why: a new bill in the group. The group opened over a new bill's form (its group's chip) goes back to that form
+     * with what was typed rather than a second form over the first, also from under its bill on the Mac's inspector.
      */
     fun openSplitBill() {
         val stack = useCases.navigator.backStack.value
-        val below = stack.getOrNull(stack.lastIndex - 1)
-        if (isOnTop() && below is Route.SplitBill && below.expenseId == null) {
-            useCases.navigator.navigateBack()
+        val index = stack.lastIndexOf(route)
+        val form = stack.getOrNull(index - 1)
+        val isGroupShown = isOnTop() || (index == stack.lastIndex - 1 && stack.last() is Route.BillDetail)
+        val isOverNewBill = (route as? Route.GroupDetail)?.isOverBill == true && form is Route.SplitBill &&
+            form.expenseId == null
+        if (isGroupShown && isOverNewBill) {
+            useCases.navigator.popTo(index)
         } else {
             open(Route.SplitBill.createNew(groupId))
         }

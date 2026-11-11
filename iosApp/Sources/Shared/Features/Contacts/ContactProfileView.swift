@@ -149,7 +149,7 @@ struct ContactProfileView: View {
         } message: {
             if let contact = model?.state.contact {
                 let groups = ExpenseFormat.names(contact.groups.map(\.groupName))
-                Text("\(contact.name) leaves your Contacts. They stay in \(groups) and come back by themselves if they join a new account with you. You can show them again in Hidden.")
+                Text("\(contact.name) leaves your Contacts. They stay in \(groups) and come back by themselves if they join a new bill with you. You can show them again in Hidden.")
             }
         }
         .sheet(isPresented: model?.isAddingToGroup ?? .constant(false)) {

@@ -209,13 +209,15 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     included, the most recent activity first as on the home (`ObserveGroupsByActivity`), each with "6 people", one
     marked until "Continue" (`SplitBillUiState.groupSelection`); closing it keeps the marked group's bill. With a
     single group it goes straight to the bill, and a sync bringing a second one never asks later. The bill's group
-    opens that group's screen (its Expenses) over the form (Pierre's call, beta feedback, `OnOpenGroupClicked`,
-    `SplitBillUiState.canOpenGroup`): Android's chip, iOS's "Group" row, the web's "Group" field and the Mac's "Open
-    group" link beside it, a new bill and "Edit bill" alike, never while the bill saves or a receipt is read. Back
-    comes to the form with what was typed: Android keeps its entry under the group, iOS and the Mac push the group
-    inside the bill's sheet (as the category map), the web draws it over the form, which stays mounted. The group's
+    opens that group's screen (its Expenses) over the form (beta feedback; the details below were settled while
+    Pierre was away, see PR #299: `OnOpenGroupClicked`, `SplitBillUiState.canOpenGroup`): Android's chip, iOS's
+    "Group" row, the web's "Group" field and the Mac's "Open group" link beside it, a new bill and "Edit bill" alike,
+    never while the bill saves or a receipt is read. Back comes to the form with what was typed: Android keeps its
+    entry under the group, iOS and the Mac push the group inside the bill's sheet (as the category map), with what it
+    opens but a screen that is only ever a sheet, the web draws it over the form, which stays mounted. The group's
     "Split a bill" there comes back to a new bill's form instead of opening a second one ("Edit bill" opens a new
-    bill over the group). On the Mac, the group's "Invite people" there opens as a sheet, not the popover. A new bill's group is changed
+    bill over the group), and a screen already on the stack (the bill being edited, opened again from its group) goes
+    back to it rather than stacking twice. A new bill's group is changed
     apart from it, once there is another group (`SplitBillUiState.canChangeGroup`): "Change" beside Android's chip,
     iOS's row and the web's field reopens "Split in which group?", and the Mac's pop-up button picks in one go (the
     Mac's sheet only asks from the home); "Edit bill" keeps its group. Another group keeps what was typed

@@ -24,4 +24,8 @@ data class MembersUiState(
     val personalInvite: PersonalInvite?,
     // Why: nothing is drawn under the group's header until Room is read.
     val isLoaded: Boolean,
-)
+) {
+    // Why: the link card's copy button, disabled until the group's first sync brings the code.
+    val canCopyLink: Boolean
+        get() = displayLink != null
+}

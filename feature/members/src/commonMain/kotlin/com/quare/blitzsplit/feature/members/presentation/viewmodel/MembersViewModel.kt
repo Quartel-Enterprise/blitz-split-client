@@ -157,6 +157,8 @@ class MembersViewModel(
             // Why: over the group, or in the place of its bill the Mac draws beside it.
             MembersUiEvent.OnShareClicked -> openInvite()
 
+            MembersUiEvent.OnLinkCopyClicked -> copyGroupLink()
+
             is MembersUiEvent.OnCurrencySelected -> pickCurrency(event.currency)
 
             // Why: Invite opens first, so an ask still waiting doesn't open "Add person" under it as this one closes.
@@ -318,6 +320,12 @@ class MembersViewModel(
             delay(CopiedFeedback.duration)
             uiState.update { state -> state.copy(personalInvite = state.personalInvite?.copy(isLinkCopied = false)) }
         }
+    }
+
+    // Why: nothing to copy until the group's first sync brings the code the server made (`canCopyLink`).
+    private fun copyGroupLink() {
+        val code = shownGroup?.inviteCode ?: return
+        send(MembersUiAction.CopyGroupLink(InviteLink.of(code)))
     }
 
     private fun sharePersonalLink() {

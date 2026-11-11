@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.utils.toAppLanguageUppercase
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoaded
 
@@ -75,7 +76,8 @@ data class ProfileUiState(
         get() = displayName
             .trim()
             .firstOrNull()
-            ?.uppercase()
+            ?.toString()
+            ?.toAppLanguageUppercase()
             .orEmpty()
 
     val hasAccount: Boolean

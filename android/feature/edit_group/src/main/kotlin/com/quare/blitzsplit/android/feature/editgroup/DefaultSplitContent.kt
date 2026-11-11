@@ -175,13 +175,20 @@ private fun newcomerTextOf(
     names: List<String>,
 ): String {
     val joined = pluralStringResource(R.plurals.default_split_joined, names.size, nameListOf(names))
+    // Why: one person or several, not a count's plural, which Japanese and Indonesian don't have.
+    val isOne = names.size == 1
     val start = when (mode) {
-        DefaultSplitMode.EQUAL -> pluralStringResource(R.plurals.default_split_joined_equal, names.size)
+        DefaultSplitMode.EQUAL -> stringResource(
+            if (isOne) R.string.default_split_start_equal_one else R.string.default_split_start_equal_other,
+        )
 
-        DefaultSplitMode.SHARES -> pluralStringResource(R.plurals.default_split_joined_shares, names.size)
+        DefaultSplitMode.SHARES -> stringResource(
+            if (isOne) R.string.default_split_start_shares_one else R.string.default_split_start_shares_other,
+        )
 
-        DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME ->
-            pluralStringResource(R.plurals.default_split_joined_percent, names.size)
+        DefaultSplitMode.PERCENT, DefaultSplitMode.INCOME -> stringResource(
+            if (isOne) R.string.default_split_start_percent_one else R.string.default_split_start_percent_other,
+        )
     }
     return stringResource(R.string.default_split_joined_sentence, joined, start)
 }

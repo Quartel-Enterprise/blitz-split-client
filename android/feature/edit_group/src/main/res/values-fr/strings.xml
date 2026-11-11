@@ -34,21 +34,12 @@
         <item quantity="many">%s ont rejoint le groupe</item>
         <item quantity="other">%s ont rejoint le groupe</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Déjà dans la répartition</item>
-        <item quantity="many">Déjà dans la répartition</item>
-        <item quantity="other">Déjà dans la répartition</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Démarre avec 1 part</item>
-        <item quantity="many">Chacun démarre avec 1 part</item>
-        <item quantity="other">Chacun démarre avec 1 part</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Démarre à 0%</item>
-        <item quantity="many">Chacun démarre à 0%</item>
-        <item quantity="other">Chacun démarre à 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Cette personne est déjà dans la répartition</string>
+    <string name="default_split_start_equal_other">Déjà dans la répartition</string>
+    <string name="default_split_start_shares_one">Cette personne démarre avec 1 part</string>
+    <string name="default_split_start_shares_other">Chacun démarre avec 1 part</string>
+    <string name="default_split_start_percent_one">Cette personne démarre à 0%</string>
+    <string name="default_split_start_percent_other">Chacun démarre à 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s ; ajuste si besoin.</string>
     <string name="default_split_modes">Comment répartir</string>
     <string name="default_split_hint_equal">Tout le monde paie la même part</string>

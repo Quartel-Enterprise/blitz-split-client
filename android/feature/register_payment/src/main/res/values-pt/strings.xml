@@ -65,7 +65,7 @@
     <string name="register_payment_simplified_new_pays_you">Dívida simplificada: %1$s paga a você o que devia a %2$s.</string>
     <string name="register_payment_simplified_grown">Dívida simplificada: inclui o que %1$s devia a %2$s.</string>
     <string name="register_payment_simplified_grown_you">Dívida simplificada: inclui o que você devia a %s.</string>
-    <string name="register_payment_you_lowercase">você</string>
+    <string name="register_payment_you_owed">você</string>
     <string name="register_payment_simplify_someone">Alguém</string>
     <string name="register_payment_simplify_on_paid">%1$s simplificou as dívidas agora há pouco. Você não deve mais a %2$s na %3$s.</string>
     <string name="register_payment_simplify_off_paid">%1$s desligou Simplificar dívidas agora há pouco. Você não deve mais a %2$s na %3$s.</string>

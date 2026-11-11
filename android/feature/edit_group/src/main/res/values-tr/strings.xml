@@ -33,18 +33,12 @@
         <item quantity="one">%s gruba katıldı</item>
         <item quantity="other">%s gruba katıldı</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one">Bölüşüme zaten dahil</item>
-        <item quantity="other">Bölüşüme zaten dahiller</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one">1 payla başlar</item>
-        <item quantity="other">Her biri 1 payla başlar</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one">%0 ile başlar</item>
-        <item quantity="other">Her biri %0 ile başlar</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Bölüşüme zaten dahil</string>
+    <string name="default_split_start_equal_other">Bölüşüme zaten dahiller</string>
+    <string name="default_split_start_shares_one">1 payla başlar</string>
+    <string name="default_split_start_shares_other">Her biri 1 payla başlar</string>
+    <string name="default_split_start_percent_one">%0 ile başlar</string>
+    <string name="default_split_start_percent_other">Her biri %0 ile başlar</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; gerekirse ayarla.</string>
     <string name="default_split_modes">Nasıl bölünür</string>
     <string name="default_split_hint_equal">Herkes aynı payı öder</string>

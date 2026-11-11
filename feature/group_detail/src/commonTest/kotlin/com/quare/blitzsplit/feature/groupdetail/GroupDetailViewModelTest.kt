@@ -982,7 +982,10 @@ class GroupDetailViewModelTest {
         runTest(testDispatcher) {
             // Given
             val form = Route.SplitBill.createPickingGroup(GROUP_ID)
-            prepareScenario(routesBelow = listOf(form))
+            prepareScenario(
+                routesBelow = listOf(form),
+                isOverBill = true,
+            )
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
@@ -999,7 +1002,10 @@ class GroupDetailViewModelTest {
                 groupId = GROUP_ID,
                 expenseId = "expense-1",
             )
-            prepareScenario(routesBelow = listOf(form))
+            prepareScenario(
+                routesBelow = listOf(form),
+                isOverBill = true,
+            )
 
             // When
             viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
@@ -3456,6 +3462,7 @@ class GroupDetailViewModelTest {
         exitGate: CompletableDeferred<Unit>? = null,
         pinnedGroupIds: Set<String> = emptySet(),
         routesBelow: List<Route> = listOf(Route.Groups),
+        isOverBill: Boolean = false,
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
         groupCategories: List<GroupCategory> = emptyList(),
@@ -3464,7 +3471,7 @@ class GroupDetailViewModelTest {
             GROUP_ID,
             joinedAs = joinedAs,
             tab = GroupTab.EXPENSES,
-            isOverBill = false,
+            isOverBill = isOverBill,
         )
         val categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         account = FakeAccountRepository(initialStatus = accountStatus)
