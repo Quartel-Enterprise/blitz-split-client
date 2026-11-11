@@ -61,12 +61,12 @@
     <string name="register_payment_pix_keys">Claves Pix de %s</string>
     <string name="register_payment_no_pix_key">%s no tiene clave Pix en la app.</string>
     <string name="register_payment_simplified_none">Deuda simplificada.</string>
-    <string name="register_payment_simplified_new">Deuda simplificada: %1$s le paga a %2$s lo que le debía a %3$s.</string>
+    <string name="register_payment_simplified_new">Deuda simplificada: %1$s le paga a %2$s lo que debía a %3$s.</string>
     <string name="register_payment_simplified_new_you_pay">Deuda simplificada: le pagas a %1$s lo que le debías a %2$s.</string>
     <string name="register_payment_simplified_new_pays_you">Deuda simplificada: %1$s te paga lo que le debía a %2$s.</string>
-    <string name="register_payment_simplified_grown">Deuda simplificada: incluye lo que %1$s le debía a %2$s.</string>
+    <string name="register_payment_simplified_grown">Deuda simplificada: incluye lo que %1$s debía a %2$s.</string>
     <string name="register_payment_simplified_grown_you">Deuda simplificada: incluye lo que le debías a %s.</string>
-    <string name="register_payment_you_lowercase">tú</string>
+    <string name="register_payment_you_lowercase">ti</string>
     <string name="register_payment_simplify_someone">Alguien</string>
     <string name="register_payment_simplify_on_paid">%1$s simplificó las deudas hace un momento. Ya no le debes a %2$s en %3$s.</string>
     <string name="register_payment_simplify_off_paid">%1$s desactivó Simplificar deudas hace un momento. Ya no le debes a %2$s en %3$s.</string>

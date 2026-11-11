@@ -6,7 +6,7 @@ import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
-import { t, wordGap } from '@/i18n'
+import { t, verbForYou, wordGap } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
@@ -218,8 +218,20 @@ function addedText(attachment: JsBillAttachment): string {
       : attachment.addedDay === 'yesterday'
         ? t('billDetail_atYesterday', { time })
         : t('billDetail_atDate', { date: formatShortDate(attachment.addedAt), time })
-  const name = adderText(attachment)
-  return attachment.isReceipt ? t('billDetail_receiptReadBy', { name, when }) : t('billDetail_attachedBy', { name, when })
+  // Why: the user as the subject of the verb, "Tu" where a list says "Toi".
+  const name = attachment.isAddedByMe ? t('activity_you') : adderText(attachment)
+  const text = attachment.isReceipt ? t('billDetail_receiptReadBy', { name, when }) : t('billDetail_attachedBy', { name, when })
+  return attachment.isAddedByMe ? sayToActor(text, name) : text
+}
+
+/**
+ * "Tú lo adjuntaste", "Du hast es angehängt": the verb right after the user's name, said to them. A line with no verb
+ * there ("Sen · bugün, 21:10 eklendi") stays as it is.
+ */
+function sayToActor(text: string, name: string): string {
+  if (!text.startsWith(`${name} `)) return text
+  const rest = text.slice(name.length + 1)
+  return rest.startsWith('·') ? text : `${name} ${verbForYou(rest)}`
 }
 
 const extensions: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/heic': 'heic' }

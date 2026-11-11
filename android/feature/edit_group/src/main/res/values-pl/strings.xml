@@ -35,24 +35,12 @@
         <item quantity="many">Nowe osoby w grupie: %s</item>
         <item quantity="other">Nowe osoby w grupie: %s</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Jest już w podziale</item>
-        <item quantity="few">Są już w podziale</item>
-        <item quantity="many">Są już w podziale</item>
-        <item quantity="other">Są już w podziale</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Zaczyna z 1 udziałem</item>
-        <item quantity="few">Każda osoba zaczyna z 1 udziałem</item>
-        <item quantity="many">Każda osoba zaczyna z 1 udziałem</item>
-        <item quantity="other">Każda osoba zaczyna z 1 udziałem</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Zaczyna od 0%</item>
-        <item quantity="few">Każda osoba zaczyna od 0%</item>
-        <item quantity="many">Każda osoba zaczyna od 0%</item>
-        <item quantity="other">Każda osoba zaczyna od 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Jest już w podziale</string>
+    <string name="default_split_start_equal_other">Są już w podziale</string>
+    <string name="default_split_start_shares_one">Zaczyna z 1 udziałem</string>
+    <string name="default_split_start_shares_other">Każda osoba zaczyna z 1 udziałem</string>
+    <string name="default_split_start_percent_one">Zaczyna od 0%</string>
+    <string name="default_split_start_percent_other">Każda osoba zaczyna od 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; w razie potrzeby dostosuj.</string>
     <string name="default_split_modes">Jak dzielić</string>
     <string name="default_split_hint_equal">Każdy płaci tyle samo</string>

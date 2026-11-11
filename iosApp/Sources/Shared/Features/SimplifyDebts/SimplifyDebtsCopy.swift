@@ -38,6 +38,16 @@ enum SimplifyDebtsCopy {
         isMe ? String(localized: "you", bundle: .appLanguage) : PaymentCopy.name(name)
     }
 
+    /// The user among whom someone owed, as the object of "owed": "lo que debía a ti", "der dir geschuldet war".
+    private static var youOwed: String {
+        String(
+            localized: "you, whom they owed",
+            defaultValue: "you",
+            bundle: .appLanguage,
+            comment: "Record payment: this device's user among the people someone owed before Simplify debts, as the object of \"owed\": \"what they owed you\"",
+        )
+    }
+
     /// Who changed it, "Someone" when nobody is known.
     static func changedBy(_ name: String?) -> String {
         name ?? String(localized: "Someone", bundle: .appLanguage, comment: "Who did something in Activity, unnamed")
@@ -303,14 +313,20 @@ enum SimplifyDebtsCopy {
     /// "Simplified debt: Diego pays you what they owed Bruno." or "Simplified debt: includes what Ana owed you."
     static func pairNote(_ note: SimplifiedPairNote, from: PaymentPerson?, to: PaymentPerson?) -> String {
         guard !note.insteadOf.isEmpty else { return String(localized: "Simplified debt.", bundle: .appLanguage) }
-        let insteadOf = ExpenseFormat.names(note.insteadOf.map { name($0.name, isMe: $0.isMe) })
+        let insteadOf = ExpenseFormat.names(note.insteadOf.map { $0.isMe ? youOwed : name($0.name, isMe: false) })
         let payerIsMe = from?.isMe == true
         let payer = name(from?.name, isMe: payerIsMe)
         let receiver = name(to?.name, isMe: to?.isMe == true)
         let reason = if note.isNewPair {
-            payerIsMe
-                ? String(localized: "You pay \(receiver) what you owed \(insteadOf).", bundle: .appLanguage)
-                : String(localized: "\(payer) pays \(receiver) what they owed \(insteadOf).", bundle: .appLanguage)
+            if payerIsMe {
+                String(localized: "You pay \(receiver) what you owed \(insteadOf).", bundle: .appLanguage)
+            } else if to?.isMe == true {
+                String(localized: "\(payer) pays you what they owed \(insteadOf).", bundle: .appLanguage)
+            } else {
+                String(localized: "\(payer) pays \(receiver) what they owed \(insteadOf).", bundle: .appLanguage)
+            }
+        } else if payerIsMe {
+            String(localized: "includes what you owed \(insteadOf).", bundle: .appLanguage)
         } else {
             String(localized: "includes what \(payer) owed \(insteadOf).", bundle: .appLanguage)
         }

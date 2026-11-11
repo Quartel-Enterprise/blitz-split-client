@@ -124,13 +124,17 @@ const irregularSecondPerson: Record<string, string> = {
   copió: 'copiaste',
   vació: 'vaciaste',
   anunció: 'anunciaste',
+  leyó: 'leíste',
 }
+
+// Why: the object pronoun Spanish puts before the verb ("lo adjuntó"), which stays as the verb changes ("lo adjuntaste").
+const spanishObjectPronouns = new Set(['lo', 'la', 'los', 'las', 'le', 'les'])
 
 // Why: each language's perfect auxiliary in the third person, with its second person.
 const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> = {
-  fr: { a: 'as' },
+  fr: { a: 'as', 'l’a': 'l’as', "l'a": "l'as" },
   de: { hat: 'hast', ist: 'bist' },
-  it: { ha: 'hai' },
+  it: { ha: 'hai', 'l’ha': 'l’hai', "l'ha": "l'hai" },
   nl: { heeft: 'hebt', is: 'bent' },
 }
 
@@ -154,6 +158,7 @@ export function verbForYou(verb: string): string {
   if (!isSpanish) return verb
   const [first, ...rest] = verb.split(' ')
   if (first === 'se' && rest.length > 0) return ['te', verbForYou(rest[0]), ...rest.slice(1)].join(' ')
+  if (spanishObjectPronouns.has(first) && rest.length > 0) return [first, verbForYou(rest[0]), ...rest.slice(1)].join(' ')
   const known = irregularSecondPerson[first]
   if (known) return [known, ...rest].join(' ')
   if (first.endsWith('ió')) return [`${first.slice(0, -2)}iste`, ...rest].join(' ')

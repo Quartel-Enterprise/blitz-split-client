@@ -60,7 +60,10 @@ The feed, unread state, real time and push notifications.
     that past ("Sen bir harcamayı böldün: …", "Sen gruba katıldın: …"); its deleted-item notice starts with who deleted
     it too ("Sen sildin: …"). A line that names the user without a verb rule (a photo's "added by") is impersonal in
     Turkish ("Sen · bugün, 09:12 eklendi"). Indonesian verbs don't change with the person, so its rows need no rule
-    ("Ana membagi Makan malam", "Kamu membagi…").
+    ("Ana membagi Makan malam", "Kamu membagi…"). The same rules say a bill's photo line to the user who attached it
+    ("Tú lo adjuntaste hoy a las 21:10", "Tu l’as jointe…", "Du hast es… angehängt"), in the subject's form ("Tu", not
+    the list's "Toi"): a Spanish object pronoun before the verb stays ("lo adjuntó" to "lo adjuntaste"), and French's
+    and Italian's elided auxiliaries change as the bare ones do ("l’a" to "l’as", "l’ha" to "l’hai").
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else
