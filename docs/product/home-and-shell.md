@@ -27,6 +27,22 @@ The home's four tabs and the web's and the Mac's shell.
     tabletop, the rail beside Groups' list and detail on a tablet and an unfolded foldable, and no rail beside a group
     in the pane by the list nor on a tabletop's group. Apple keeps one `TabView` (the iPad's and Mac's sidebar) above
     the tabs, and the web one frame (`HomeFrame`), so their bars never redraw either.
+  - The bars make room for the content on a phone upright, on Android and the web (Pierre's call, beta feedback): a
+    scroll down slides the top bar up and the bottom bar down, animated, and a scroll up brings both back from
+    anywhere in the list, as Material's enter-always top bar does. On Android the top bar follows Material
+    (`TopAppBarDefaults.enterAlwaysScrollBehavior`) and the home's bottom bar moves with it, by the same fraction
+    (`rememberCollapsingTopBarScrollBehavior`, `HomeBars.collapsedFraction`), on Home, Groups (not while searching),
+    Balances and Contacts; the screen's bottom padding shrinks with the bar, so "Split a bill" and a snackbar ride on
+    it with no gap and never sit behind it. A group's two-line bar folds to its one line on a scroll down and opens
+    again on a scroll up (Material's two-line bars never leave whole, which keeps back and the group's actions in
+    reach). The web's phone (under 768 px) does the same on the home tabs with the frame's top bar and bottom
+    navigation (`usePhoneBarsHidden`), after 8 px of travel each way, sliding in 200 ms, or at once under reduced
+    motion; Activity and Profile keep the navigation under their own bar, as Android's screens over the tabs do. The
+    bars only start leaving over content that scrolls, and come back near the top, on every tab switch and every
+    screen opened or gone back to, and on the web for a bar that takes the keyboard's focus and for a page that no
+    longer scrolls. On Android, once gone, any drag down brings them back, even over content that stopped scrolling: a
+    list that fits only because the bars left would otherwise bounce them back in. Anywhere wider (a rail, a phone
+    lying down, a tablet, an unfolded foldable or a tabletop, the web from the tablet up) the bars stay put.
   - What a tab keeps once shown. Apple's tabs keep their content: back on Balances or Contacts, the screen is already
     read, never blank nor shimmering again, and keeps the person picked beside the list and the rows opened
     (`MainTabView`). Android keeps Groups, Balances and Contacts the same way (their list, its scroll, the person picked,

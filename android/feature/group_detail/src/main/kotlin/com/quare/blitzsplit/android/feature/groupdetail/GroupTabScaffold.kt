@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CurrencyChipRow
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.rememberCollapsingTopBarScrollBehavior
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -104,8 +105,17 @@ private fun GroupTabScaffoldContent(
     body: GroupTabBody,
 ) {
     val layout = rememberDeviceLayout()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberLazyListState()
+    /*
+     * Why: on a phone upright the bar folds to its one line on a scroll down and opens again on a scroll up, wherever
+     * the list is; anywhere wider it opens only back at the top. Material's two-line bars never leave whole, which
+     * keeps back and the group's actions in reach.
+     */
+    val scrollBehavior = rememberCollapsingTopBarScrollBehavior(
+        collapses = !layout.usesNavigationRail && frame.isLoaded,
+        canScroll = { listState.canScrollForward || listState.canScrollBackward },
+        otherwise = { state -> TopAppBarDefaults.exitUntilCollapsedScrollBehavior(state) },
+    )
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
