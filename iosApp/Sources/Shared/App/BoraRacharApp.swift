@@ -31,7 +31,22 @@ struct BoraRacharApp: App {
         NSWindow.allowsAutomaticWindowTabbing = false
         #endif
         FirebaseSetup.start()
+        #if DEBUG
+        if let run = StoreScreenshotsRun.current {
+            StoreScreenshotsRun.saveLanguages()
+            BlitzSplitApple.shared.startForStoreScreenshots(
+                language: run.language,
+                isDark: run.isDark,
+                assetsDirectory: run.assetsDirectory,
+                screenCode: run.screen,
+            )
+        } else {
+            StoreScreenshotsRun.restoreLanguagesIfAsked()
+            BlitzSplitApple.shared.start()
+        }
+        #else
         BlitzSplitApple.shared.start()
+        #endif
         FirebaseSetup.attachAnalytics()
         _app = State(initialValue: AppModel())
     }
@@ -39,6 +54,9 @@ struct BoraRacharApp: App {
     var body: some Scene {
         WindowGroup {
             RootView(app: app)
+                #if DEBUG && os(macOS)
+                .onAppear { StoreScreenshotsRun.sizeWindow() }
+                #endif
                 .appLocale(app.mainWindowLanguage)
                 // Drawn again in a language picked, as Android opens its activity again: titles and the strings
                 // views read once take it too, and the shared back stack puts back where the person was

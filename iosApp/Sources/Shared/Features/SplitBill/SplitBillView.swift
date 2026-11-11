@@ -553,6 +553,8 @@ private struct PhoneSplitBill: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            // The App Store screenshots' UI test opens "Bill items" through it, whatever the language
+            .accessibilityIdentifier("splitBill.split")
         } header: {
             Text("Details")
         } footer: {
@@ -1132,6 +1134,8 @@ private struct MacBillForm: View {
                             Button("Change…") {
                                 model.send(SplitBillUiEventOnSplitClicked.shared)
                             }
+                            // The Mac store screenshots' UI test opens "Bill Items" through it, whatever the language
+                            .accessibilityIdentifier("splitBill.split")
                         }
                     }
                 }
