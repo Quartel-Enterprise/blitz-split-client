@@ -66,6 +66,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -75,6 +76,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
@@ -194,10 +196,12 @@ class GroupsViewModel(
     )
 
     init {
+        // Why: the sync badge and the first download's header read one subscription, not two.
+        val firstDownload = observeFirstDownload().shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         combine(
             observeProfile(),
             observeAccount(),
-            SyncBadge.observeActivity(observeSyncState(), observeFirstDownload()),
+            SyncBadge.observeActivity(observeSyncState(), firstDownload),
             connectivityObserver.observe(),
         ) { profile, account, sync, isOnline ->
             exit.setOnline(isOnline)
@@ -220,7 +224,7 @@ class GroupsViewModel(
             update
         }.onEach(uiState::update)
             .launchIn(viewModelScope)
-        observeFirstDownload()
+        firstDownload
             .onEach { progress ->
                 uiState.update { it.copy(firstDownload = progress?.toDownloadProgress()) }
             }.launchIn(viewModelScope)
