@@ -724,6 +724,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             GROUP_ID,
             joinedAs = null,
             tab = GroupTab.BALANCES,
+            isOverBill = false,
         ),
     )
 
@@ -905,6 +906,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.BALANCES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(route)

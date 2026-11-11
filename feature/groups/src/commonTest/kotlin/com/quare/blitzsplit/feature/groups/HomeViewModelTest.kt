@@ -1800,6 +1800,7 @@ class HomeViewModelTest {
                         "trio",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1836,6 +1837,7 @@ class HomeViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1958,6 +1960,7 @@ class HomeViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 Route.BillDetail("trio", "dinner", focusCommentId = null),
             ),
@@ -2687,6 +2690,7 @@ class HomeViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             navigator.navigate(registerPayment)

@@ -355,7 +355,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_delete_clicked` | `source` (`category_map`, `split_bill`) | The category's Delete, which asks first | `:feature:category_map`, `:feature:split_bill` |
 | `category_delete_confirmed` | `source` (`category_map`, `split_bill`) | "Delete “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
 | `category_delete_cancelled` | `source` (`category_map`, `split_bill`) | "Delete “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
-| `split_bill_group_clicked` | none | The new bill's group, which opens "Split in which group?" | `:feature:split_bill` |
+| `split_bill_group_clicked` | none | "Change" beside the new bill's group, which opens "Split in which group?" | `:feature:split_bill` |
+| `split_bill_group_opened` | none | The bill's group, which opens its screen over the form, while the bill isn't saving nor reading a receipt | `:feature:split_bill` |
 | `split_bill_group_picked` | none | A group marked in "Split in which group?", while it is open, another than the one marked | `:feature:split_bill` |
 | `split_bill_group_confirmed` | `is_another` | "Continue" on it, while it is open, the group still there and the bill not saving | `:feature:split_bill` |
 | `split_bill_currency_picked` | `currency` (the code) | The bill's currency picked beside the total, another than the one it has, the form not locked or saving | `:feature:split_bill` |

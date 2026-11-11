@@ -112,6 +112,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -139,6 +140,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -164,6 +166,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -513,6 +516,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                 ),
@@ -764,6 +768,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                 ),
@@ -1027,6 +1032,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1052,6 +1058,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1094,6 +1101,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1148,6 +1156,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                 ),
@@ -1176,6 +1185,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1237,6 +1247,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -1264,6 +1275,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1299,6 +1311,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1336,6 +1349,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                 ),
@@ -1362,6 +1376,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             backStack,
@@ -1391,6 +1406,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1420,6 +1436,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1443,6 +1460,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                 ),
@@ -1471,6 +1489,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                 ),
@@ -1495,6 +1514,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1506,7 +1526,14 @@ class RegisterPaymentViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+            navigator.navigate(
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            )
 
             // When
             settlements.settlements.update {
@@ -1525,9 +1552,15 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
-                    Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                 ),
                 navigator.backStack.value,
             )
@@ -1538,7 +1571,14 @@ class RegisterPaymentViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario()
-            navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+            navigator.navigate(
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            )
             settlements.settlements.update {
                 it + settlement(
                     from = ANA,
@@ -1558,6 +1598,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1568,7 +1609,14 @@ class RegisterPaymentViewModelTest {
     fun `GIVEN the debt still open WHEN a screen on top closes THEN this one stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+        navigator.navigate(
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
+        )
 
         // When
         navigator.navigateBack()
@@ -1581,6 +1629,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -1605,6 +1654,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1630,6 +1680,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -1644,6 +1695,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1654,7 +1706,14 @@ class RegisterPaymentViewModelTest {
     fun `GIVEN another screen on top WHEN tapping close THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+        navigator.navigate(
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
+        )
 
         // When
         viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
@@ -1667,9 +1726,15 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
-                Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
             ),
             navigator.backStack.value,
         )
@@ -1705,6 +1770,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
                 Route.ContactProfile("name:ana"),
@@ -1730,6 +1796,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                     Route.ContactProfile("user:$ANA_USER"),
@@ -1758,6 +1825,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                     Route.ContactProfile("name:bruno"),
@@ -1783,6 +1851,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                     Route.Profile,
@@ -1808,6 +1877,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     route,
                 ),
@@ -1832,6 +1902,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -1855,6 +1926,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -1879,6 +1951,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             ),
@@ -1890,7 +1963,14 @@ class RegisterPaymentViewModelTest {
     fun `GIVEN another screen on top WHEN tapping a face THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        navigator.navigate(Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS))
+        navigator.navigate(
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
+        )
 
         // When
         viewModel.onEvent(RegisterPaymentUiEvent.OnPersonClicked(ANA))
@@ -1903,9 +1983,15 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
-                Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.MEMBERS),
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
             ),
             navigator.backStack.value,
         )
@@ -2321,6 +2407,7 @@ class RegisterPaymentViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -2610,6 +2697,7 @@ class RegisterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(route)

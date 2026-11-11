@@ -40,6 +40,12 @@ internal class GroupPicking(
         }
     }
 
+    // Why: the group the form shows, its screen over the form (beta feedback), which keeps what was typed for back.
+    fun openScreen(open: (groupId: String) -> Boolean) {
+        val state = uiState.value
+        if (state.canOpenGroup && open(state.groupId)) trackEvent("split_bill_group_opened", emptyMap())
+    }
+
     fun pick(groupId: String) {
         val before = uiState.value
         uiState.update { it.withGroupPicked(groupId) }

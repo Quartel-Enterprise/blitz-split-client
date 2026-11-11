@@ -20,6 +20,7 @@ internal fun Navigator.openJoinedGroup(
             groupId = groupId,
             joinedAs = joinedAs,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         ),
     )
 }

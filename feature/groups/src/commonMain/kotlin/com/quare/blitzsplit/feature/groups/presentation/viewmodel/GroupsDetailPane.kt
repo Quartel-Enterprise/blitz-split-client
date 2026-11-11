@@ -98,5 +98,6 @@ internal class GroupsDetailPane(
         groupId,
         joinedAs = null,
         tab = tab,
+        isOverBill = false,
     )
 }

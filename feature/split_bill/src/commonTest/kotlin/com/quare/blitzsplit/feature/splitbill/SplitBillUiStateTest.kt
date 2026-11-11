@@ -11,10 +11,12 @@ import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
+import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
@@ -865,6 +867,80 @@ class SplitBillUiStateTest {
         assertFalse(canChange)
     }
 
+    @Test
+    fun `GIVEN a new bill loaded in a group alone WHEN reading if its group opens THEN it does`() {
+        // Given
+        val state = state()
+
+        // When
+        val canOpen = state.canOpenGroup
+
+        // Then
+        assertFalse(state.canChangeGroup)
+        assertTrue(canOpen)
+    }
+
+    @Test
+    fun `GIVEN a bill being edited WHEN reading if its group opens THEN it does`() {
+        // Given
+        val state = state(isEditing = true)
+
+        // When
+        val canOpen = state.canOpenGroup
+
+        // Then
+        assertTrue(canOpen)
+    }
+
+    @Test
+    fun `GIVEN Room not read WHEN reading if the group opens THEN it does not`() {
+        // Given
+        val state = state(isLoaded = false)
+
+        // When
+        val canOpen = state.canOpenGroup
+
+        // Then
+        assertFalse(canOpen)
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN reading if the group opens THEN it does not`() {
+        // Given
+        val state = state(isSaving = true)
+
+        // When
+        val canOpen = state.canOpenGroup
+
+        // Then
+        assertFalse(canOpen)
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN reading if the group opens THEN it does not`() {
+        // Given
+        val state = state(receipt = receipt(ReceiptStatus.READING))
+
+        // When
+        val canOpen = state.canOpenGroup
+
+        // Then
+        assertTrue(state.isFormLocked)
+        assertFalse(canOpen)
+    }
+
+    @Test
+    fun `GIVEN a receipt already read WHEN reading if the group opens THEN it does`() {
+        // Given
+        val state = state(receipt = receipt(ReceiptStatus.READ))
+
+        // When
+        val canOpen = state.canOpenGroup
+
+        // Then
+        assertTrue(canOpen)
+    }
+
     private val billGroup = BillGroup(
         id = "group-1",
         name = "Viagem Floripa",
@@ -885,6 +961,13 @@ class SplitBillUiStateTest {
         photoUrl = null,
         isMe = isMe,
         hasJoined = true,
+    )
+
+    private fun receipt(status: ReceiptStatus): BillReceipt = BillReceipt(
+        status = status,
+        itemCount = 0,
+        hasPhoto = true,
+        error = null,
     )
 
     // Why: "Várias pessoas pagaram" of the 100,00 bill, with what each one typed.
@@ -918,6 +1001,7 @@ class SplitBillUiStateTest {
         receiptSource: ReceiptPhotoSource? = null,
         groupSelection: GroupSelection? = null,
         pickedGroupId: String = "group-1",
+        receipt: BillReceipt? = null,
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
         groupId = "group-1",
@@ -977,7 +1061,7 @@ class SplitBillUiStateTest {
         categoryPicker = null,
         categoryForm = null,
         categoryDeletion = null,
-        receipt = null,
+        receipt = receipt,
         receiptCategoryId = null,
         receiptRequest = receiptSource?.let(ReceiptRequest::Open)
             ?: ReceiptRequest.Choice.takeIf { isReceiptSourceRequested },
