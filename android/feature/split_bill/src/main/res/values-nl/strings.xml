@@ -17,6 +17,7 @@
     <string name="split_bill_payer">Wie heeft betaald</string>
     <string name="split_bill_you">Jij</string>
     <string name="split_bill_when">Wanneer</string>
+    <string name="split_bill_add_time">Tijd toevoegen</string>
     <string name="split_bill_split">Verdeling</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="one">Gelijk over %d</item>
@@ -131,6 +132,8 @@
     <string name="split_bill_group_lead">De laatst gebruikte is al aangevinkt</string>
     <string name="split_bill_group_continue">Doorgaan</string>
     <string name="split_bill_group_change">Groep: %s. Wijzigen</string>
+    <string name="split_bill_group_change_button">Wijzigen</string>
+    <string name="split_bill_group_open">Groep openen</string>
     <plurals name="split_bill_group_people">
         <item quantity="one">%d persoon</item>
         <item quantity="other">%d personen</item>

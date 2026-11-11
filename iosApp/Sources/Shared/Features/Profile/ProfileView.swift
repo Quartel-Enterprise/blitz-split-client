@@ -377,7 +377,6 @@ private struct PreferencesSection: View {
                 Text("Dark").tag(ThemePreference.dark)
             }
             Picker(
-                "Language",
                 selection: Binding(
                     get: { model.state.language },
                     set: { model.send(ProfileUiEventOnLanguageSelected(language: $0)) },
@@ -386,6 +385,11 @@ private struct PreferencesSection: View {
                 ForEach(model.state.languageOptions, id: \.self) { language in
                     LanguageName(language: language).tag(language)
                 }
+            } label: {
+                Text("Language")
+            } currentValueLabel: {
+                // The row shows the pick by its own name alone, the menu's subtitle being for choosing
+                LanguageName(language: model.state.language, showsTranslation: false)
             }
             Toggle(
                 isOn: Binding(
@@ -423,25 +427,111 @@ private struct PreferencesSection: View {
     }
 }
 
-/// Each language in the app's language, "Português (BR)" saying the region it is written for.
+/// Each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), with the region
+/// spelled out for the one written for a region ("Português (Brasil)"), and under it its name in the app's language,
+/// unless both read the same ("Italiano"). A menu draws the second line as the item's subtitle.
 private struct LanguageName: View {
     let language: AppLanguage
+    var showsTranslation = true
 
     var body: some View {
-        switch language {
-        case .english: Text("English", comment: "A language of Profile › Language, in the app's language")
-        case .portuguese: Text("Portuguese (BR)", comment: "A language of Profile › Language, in the app's language")
-        case .spanish: Text("Spanish", comment: "A language of Profile › Language, in the app's language")
-        case .french: Text("French", comment: "A language of Profile › Language, in the app's language")
-        case .german: Text("German", comment: "A language of Profile › Language, in the app's language")
-        case .italian: Text("Italian", comment: "A language of Profile › Language, in the app's language")
-        case .polish: Text("Polish", comment: "A language of Profile › Language, in the app's language")
-        case .dutch: Text("Dutch", comment: "A language of Profile › Language, in the app's language")
-        case .japanese: Text("Japanese", comment: "A language of Profile › Language, in the app's language")
-        case .turkish: Text("Turkish", comment: "A language of Profile › Language, in the app's language")
-        case .indonesian: Text("Indonesian", comment: "A language of Profile › Language, in the app's language")
-        default: Text("System")
+        // One view, so the Picker takes it as one option, its second line as the menu item's subtitle
+        VStack(alignment: .leading) {
+            if let native = nativeName, let tag = language.tag {
+                Text(Self.spoken(native, in: tag))
+                if showsTranslation, translatedName != native {
+                    Text(verbatim: translatedName)
+                }
+            } else {
+                Text("System")
+            }
         }
+    }
+
+    /// The same in every language of the app, so not in the string catalog.
+    private var nativeName: String? {
+        switch language {
+        case .english: "English"
+        case .portuguese: "Português (Brasil)"
+        case .spanish: "Español"
+        case .french: "Français"
+        case .german: "Deutsch"
+        case .italian: "Italiano"
+        case .polish: "Polski"
+        case .dutch: "Nederlands"
+        case .japanese: "日本語"
+        case .turkish: "Türkçe"
+        case .indonesian: "Bahasa Indonesia"
+        default: nil
+        }
+    }
+
+    private var translatedName: String {
+        switch language {
+        case .english: String(
+            localized: "English",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .portuguese: String(
+            localized: "Portuguese (Brazil)",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .spanish: String(
+            localized: "Spanish",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .french: String(
+            localized: "French",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .german: String(
+            localized: "German",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .italian: String(
+            localized: "Italian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .polish: String(
+            localized: "Polish",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .dutch: String(
+            localized: "Dutch",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .japanese: String(
+            localized: "Japanese",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .turkish: String(
+            localized: "Turkish",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .indonesian: String(
+            localized: "Indonesian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        default: String(localized: "System", bundle: .appLanguage)
+        }
+    }
+
+    /// In its own language, so VoiceOver reads "日本語" as Japanese.
+    private static func spoken(_ name: String, in tag: String) -> AttributedString {
+        var text = AttributedString(name)
+        text.languageIdentifier = tag
+        return text
     }
 }
 
@@ -620,51 +710,18 @@ private struct AccountSection: View {
     }
 }
 
-/// The Google or Apple row. On iPhone and iPad the whole row opens the "Disconnect" alert; the Mac
-/// has a "Disconnect…" button, as its settings rows do.
+/// The Google or Apple row only says which account it is: leaving it is signing out or deleting the
+/// account (Pierre's call, beta feedback), so it opens nothing.
 private struct ConnectedAccountRow: View {
     let model: ProfileModel
     let provider: AccountProvider
 
     var body: some View {
-        let state = model.state
-        #if os(macOS)
         LabeledContent {
-            HStack(spacing: 12) {
-                Text("Connected").foregroundStyle(Palette.accent)
-                if state.isUnlinking {
-                    ProgressView().controlSize(.small)
-                } else {
-                    Button("Disconnect…") { model.send(ProfileUiEventOnAccountClicked.shared) }
-                }
-            }
+            Text("Connected").foregroundStyle(Palette.accent)
         } label: {
             label
         }
-        #else
-        Button {
-            model.send(ProfileUiEventOnAccountClicked.shared)
-        } label: {
-            LabeledContent {
-                if state.isUnlinking {
-                    ProgressView().controlSize(.small)
-                } else {
-                    HStack(spacing: 8) {
-                        Text("Connected").foregroundStyle(Palette.accent)
-                        Image(systemName: "chevron.right")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                            .accessibilityHidden(true)
-                    }
-                }
-            } label: {
-                label
-            }
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityHint("Disconnect")
-        #endif
     }
 
     @ViewBuilder

@@ -34,6 +34,7 @@ internal object CategoryExpenseDays {
                             id = expense.id,
                             description = expense.description,
                             spentAt = expense.spentAt,
+                            hasSpentTime = SpentDay.hasTime(expense.spentAt, timeZone),
                             payers = payerOrder.sort(expense.payers.map { it.memberId }).map { id ->
                                 StatsPayer(
                                     name = membersById[id]?.name,

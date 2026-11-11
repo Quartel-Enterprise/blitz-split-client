@@ -47,7 +47,7 @@
     <string name="profile_language">言語</string>
     <string name="profile_language_system">システム</string>
     <string name="profile_language_english">英語</string>
-    <string name="profile_language_portuguese">ポルトガル語（BR）</string>
+    <string name="profile_language_portuguese">ポルトガル語（ブラジル）</string>
     <string name="profile_language_spanish">スペイン語</string>
     <string name="profile_language_french">フランス語</string>
     <string name="profile_language_german">ドイツ語</string>
@@ -109,11 +109,6 @@
     <string name="profile_export_detail">プロフィールとキーを含むJSONファイル</string>
     <string name="profile_delete_account">アカウントとデータを削除</string>
     <string name="profile_delete_account_detail">Blitz Splitのアカウントを削除します。この操作は元に戻せません。</string>
-    <string name="profile_unlink_title">%1$sアカウントとの連携を解除しますか？</string>
-    <string name="profile_unlink_body">このデバイスでは、アカウントなしでBlitz Splitを引き続き使えます。グループはここに残り、同期は匿名IDに切り替わります。次に復元コードを表示するので、アクセスを失わないよう保管してください。</string>
-    <string name="profile_unlink_offline">インターネット接続が必要です。</string>
-    <string name="profile_unlink_failed">連携を解除できませんでした。もう一度お試しください。</string>
-    <string name="profile_unlink_confirm">連携を解除</string>
     <string name="profile_bitcoin_in_sats">Bitcoinをsatsで表示</string>
     <string name="profile_bitcoin_in_sats_detail">Bitcoinの金額をsatsで表示・入力します（1 ₿ = 100,000,000 sats）。</string>
     <string name="profile_category_map">カテゴリマップ</string>

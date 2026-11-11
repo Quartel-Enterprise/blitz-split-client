@@ -638,7 +638,7 @@ class GroupDetailSimplifyDebtsViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.simplifyConflict)
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
         }
 
     @Test
@@ -659,7 +659,12 @@ class GroupDetailSimplifyDebtsViewModelTest {
             )
         }
 
-    private val route = Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.BALANCES)
+    private val route = Route.GroupDetail(
+        GROUP_ID,
+        joinedAs = null,
+        GroupTab.BALANCES,
+        isOverBill = false,
+    )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val paidAt = Instant.parse("2026-10-30T13:00:00Z").toEpochMilliseconds()

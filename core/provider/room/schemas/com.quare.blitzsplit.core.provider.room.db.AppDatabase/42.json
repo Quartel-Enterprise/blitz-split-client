@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 42,
-    "identityHash": "e4bc40a38d9d4a740c6359fd7877d44d",
+    "identityHash": "87e27ec9ad70bba861486d5988e4b312",
     "entities": [
       {
         "tableName": "profile",
@@ -439,7 +439,7 @@
       },
       {
         "tableName": "split_group",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `color` TEXT NOT NULL, `currency` TEXT NOT NULL, `createdBy` TEXT, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, `ownerUserId` TEXT, `inviteCode` TEXT, `defaultSplit` TEXT DEFAULT NULL, `splitIncomes` TEXT DEFAULT NULL, `shape` TEXT DEFAULT NULL, `photoUrl` TEXT DEFAULT NULL, `pendingPhoto` BLOB DEFAULT NULL, `simplifyDebts` INTEGER NOT NULL DEFAULT 0, `simplifyDebtsAt` INTEGER NOT NULL DEFAULT 0, `simplifyDebtsBy` TEXT DEFAULT NULL, `simplifyDebtsChange` TEXT DEFAULT NULL, `simplifyDebtsPending` INTEGER NOT NULL DEFAULT 0, `simplifyDebtsConflictBy` TEXT DEFAULT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `color` TEXT NOT NULL, `currency` TEXT NOT NULL, `createdBy` TEXT, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, `ownerUserId` TEXT, `inviteCode` TEXT, `defaultSplit` TEXT DEFAULT NULL, `splitIncomes` TEXT DEFAULT NULL, `shape` TEXT DEFAULT NULL, `photoUrl` TEXT DEFAULT NULL, `pendingPhoto` BLOB DEFAULT NULL, `simplifyDebts` INTEGER NOT NULL DEFAULT 0, `simplifyDebtsAt` INTEGER NOT NULL DEFAULT 0, `simplifyDebtsBy` TEXT DEFAULT NULL, `simplifyDebtsChange` TEXT DEFAULT NULL, `simplifyDebtsPending` INTEGER NOT NULL DEFAULT 0, `simplifyDebtsConflictBy` TEXT DEFAULT NULL, `isOnServer` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -572,6 +572,13 @@
             "columnName": "simplifyDebtsConflictBy",
             "affinity": "TEXT",
             "defaultValue": "NULL"
+          },
+          {
+            "fieldPath": "isOnServer",
+            "columnName": "isOnServer",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -1824,42 +1831,11 @@
             "categoryKey"
           ]
         }
-      },
-      {
-        "tableName": "legal_document",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`page` TEXT NOT NULL, `language` TEXT NOT NULL, `markdown` TEXT NOT NULL, PRIMARY KEY(`page`, `language`))",
-        "fields": [
-          {
-            "fieldPath": "page",
-            "columnName": "page",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "language",
-            "columnName": "language",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "markdown",
-            "columnName": "markdown",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "page",
-            "language"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e4bc40a38d9d4a740c6359fd7877d44d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '87e27ec9ad70bba861486d5988e4b312')"
     ]
   }
 }

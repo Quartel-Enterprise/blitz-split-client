@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react'
-import type { JsGroupRow } from 'blitzsplit-shared'
+import type { JsGroupRow, JsMemberFace } from 'blitzsplit-shared'
 import { Avatar, pendingSurfaceClass } from '@/components/common'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { t, type MessageKey } from '@/i18n'
@@ -81,14 +81,25 @@ export function QueuedBadge() {
 
 /** Up to three faces and "+N"; screen readers get the member count from the row instead. */
 export function Faces({ group }: { group: JsGroupRow }) {
+  return <FaceStack faces={Array.from(group.faces)} extraCount={group.extraMemberCount} />
+}
+
+/** Overlapping faces and "+N" for the rest: a group's members, or who paid a bill on Home (`isSmall`, a line tall). */
+export function FaceStack({ faces, extraCount, isSmall = false }: { faces: JsMemberFace[]; extraCount: number; isSmall?: boolean }) {
+  const size = isSmall ? 'size-5 text-[9px]' : 'size-6 text-[10px]'
   return (
-    <span className="flex items-center -space-x-1.5">
-      {group.faces.map((face, index) => (
-        <Avatar key={index} initial={face.initial} color={face.color} photoUrl={face.photoUrl} className="size-6 text-[10px] ring-2 ring-card" />
+    <span aria-hidden className="flex shrink-0 items-center -space-x-1.5">
+      {faces.map((face, index) => (
+        <Avatar key={index} initial={face.initial} color={face.color} photoUrl={face.photoUrl} className={cn(size, 'ring-2 ring-card')} />
       ))}
-      {group.extraMemberCount > 0 && (
-        <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-1.5 text-[10px] font-semibold text-muted-foreground ring-2 ring-card">
-          +{group.extraMemberCount}
+      {extraCount > 0 && (
+        <span
+          className={cn(
+            'flex items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground ring-2 ring-card',
+            isSmall ? 'h-5 min-w-5 px-1 text-[9px]' : 'h-6 min-w-6 px-1.5 text-[10px]',
+          )}
+        >
+          +{extraCount}
         </span>
       )}
     </span>

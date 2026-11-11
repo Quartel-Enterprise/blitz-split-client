@@ -149,7 +149,7 @@ struct ContactProfileView: View {
         } message: {
             if let contact = model?.state.contact {
                 let groups = ExpenseFormat.names(contact.groups.map(\.groupName))
-                Text("\(contact.name) leaves your Contacts. They stay in \(groups) and come back by themselves if they join a new account with you. You can show them again in Hidden.")
+                Text("\(contact.name) leaves your Contacts. They stay in \(groups) and come back by themselves if they join a new bill with you. You can show them again in Hidden.")
             }
         }
         .sheet(isPresented: model?.isAddingToGroup ?? .constant(false)) {
@@ -604,11 +604,7 @@ private struct HistoryRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: isPayment ? "arrow.right" : "receipt")
-                .font(.subheadline)
-                .foregroundStyle(isPayment ? Palette.accent : Color.secondary)
-                .frame(width: 32, height: 32)
-                .background(isPayment ? AnyShapeStyle(Palette.accent.opacity(0.14)) : AnyShapeStyle(.fill.tertiary), in: .rect(cornerRadius: 9))
+            leading
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text(verbatim: title)
@@ -632,8 +628,17 @@ private struct HistoryRow: View {
         .accessibilityElement(children: .combine)
     }
 
-    private var isPayment: Bool {
-        item is ContactHistoryItemPayment
+    /// A bill's category badge, as Expenses draws it (6.1), never a generic receipt; a payment's arrow.
+    @ViewBuilder private var leading: some View {
+        if let bill = item as? ContactHistoryItemBill {
+            CategoryBadge(category: bill.category, size: 32)
+        } else {
+            Image(systemName: "arrow.right")
+                .font(.subheadline)
+                .foregroundStyle(Palette.accent)
+                .frame(width: 32, height: 32)
+                .background(Palette.accent.opacity(0.14), in: .rect(cornerRadius: 9))
+        }
     }
 
     private var title: String {

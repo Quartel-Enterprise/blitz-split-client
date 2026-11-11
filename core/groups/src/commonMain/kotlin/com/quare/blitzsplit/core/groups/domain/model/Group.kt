@@ -20,7 +20,10 @@ data class Group(
     val members: List<GroupMember>,
     // Why: created or changed on this device and not up on the server yet.
     val isPending: Boolean,
-    // Why: the code of the invite link, null until the group's first sync brings the one the server made.
+    /*
+     * Why: the code of the invite link, which this device makes with a new group so the link works offline; null only
+     * for a group made by an older version until its first sync brings the server's.
+     */
     val inviteCode: String?,
     /*
      * Why: only the group's creator may release a member someone joined as ("Liberar nome") or change the

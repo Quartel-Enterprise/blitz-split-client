@@ -2617,7 +2617,7 @@ class EditGroupViewModelTest {
             viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictActivityClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
             assertNull(viewModel.uiState.value.simplifyConflict)
         }
 
@@ -2648,6 +2648,7 @@ class EditGroupViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private val trip = Group(

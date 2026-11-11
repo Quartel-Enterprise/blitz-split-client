@@ -38,6 +38,7 @@ internal val everyRouteKind: List<Route> = listOf(
         groupId = "secret-group",
         joinedAs = "secret-name",
         tab = GroupTab.MEMBERS,
+        isOverBill = false,
     ),
     Route.GroupStats(groupId = "secret-group"),
     Route.CategoryExpenses(
@@ -92,7 +93,10 @@ internal val everyRouteKind: List<Route> = listOf(
         personKey = "secret-person",
         name = "secret-name",
     ),
-    Route.Activity(personKey = "secret-person"),
+    Route.Activity(
+        personKey = "secret-person",
+        showsBillsOnly = false,
+    ),
     Route.SettleUp(
         personKey = "secret-person",
         currency = GroupCurrency.BRL,

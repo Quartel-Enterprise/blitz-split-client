@@ -292,7 +292,7 @@ class PickGroupViewModelTest {
                 storedGroups = listOf(trip, home, soccer),
             )
             fillIn()
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(YESTERDAY))
+            viewModel.pickSpentAt(YESTERDAY)
             viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
             viewModel.onEvent(SplitBillUiEvent.OnGroupPicked(HOME_ID))
             viewModel.onEvent(SplitBillUiEvent.OnGroupDone)
@@ -338,6 +338,7 @@ class PickGroupViewModelTest {
                     TRIP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -389,6 +390,7 @@ class PickGroupViewModelTest {
                         TRIP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -418,6 +420,7 @@ class PickGroupViewModelTest {
                         HOME_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -445,11 +448,13 @@ class PickGroupViewModelTest {
                         TRIP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.GroupDetail(
                         HOME_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -695,6 +700,7 @@ class PickGroupViewModelTest {
                         screen.groupId,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 )
             }

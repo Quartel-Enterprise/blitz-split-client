@@ -1691,6 +1691,7 @@ class CryptoBillViewModelTest {
                         route.groupId,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 )
             }

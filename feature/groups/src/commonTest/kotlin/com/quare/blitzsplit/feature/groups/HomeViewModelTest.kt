@@ -872,17 +872,18 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Atividade above Inicio`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedGroups = listOf(trio()))
+    fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Atividade on its bills above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
 
-        // When
-        viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
+            // When
+            viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
 
-        // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
-        assertTrue(actions.isEmpty())
-    }
+            // Then
+            assertEquals(listOf(Route.Home, Route.Activity.billsOnly), navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
 
     @Test
     fun `GIVEN Inicio on top WHEN tapping the bell THEN opens Atividade above Inicio`() = runTest(testDispatcher) {
@@ -893,7 +894,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnActivityClicked)
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
         assertTrue(actions.isEmpty())
     }
 
@@ -907,7 +908,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnActivityClicked)
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
     }
 
     @Test
@@ -1800,6 +1801,7 @@ class HomeViewModelTest {
                         "trio",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1836,6 +1838,7 @@ class HomeViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1958,6 +1961,7 @@ class HomeViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 Route.BillDetail("trio", "dinner", focusCommentId = null),
             ),
@@ -2355,7 +2359,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet and a change in the queue WHEN Inicio opens THEN shows the syncing badge`() =
+    fun `GIVEN internet and a change in the queue WHEN Inicio opens THEN shows no sync badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(syncState = SyncState.PENDING)
@@ -2364,8 +2368,71 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
+            assertNull(state.syncBadge)
+            assertFalse(state.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN internet and a background sync running WHEN Inicio opens THEN shows no sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account running WHEN Inicio opens THEN shows the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                awaitsFullSync = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
             assertEquals(SyncBadge.SYNCING, state.syncBadge)
             assertFalse(state.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account WHEN it settles THEN hides the sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                awaitsFullSync = true,
+            )
+
+            // When
+            account.awaitsFullSync = false
+            syncState.value = SyncState.SYNCED
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the failed badge WHEN the retry runs THEN shows the syncing badge until it settles`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.FAILED)
+
+            // When
+            syncState.value = SyncState.SYNCING
+            val whileRetrying = viewModel.uiState.value.syncBadge
+            syncState.value = SyncState.SYNCED
+
+            // Then
+            assertEquals(SyncBadge.SYNCING, whileRetrying)
+            assertNull(viewModel.uiState.value.syncBadge)
         }
 
     @Test
@@ -2687,6 +2754,7 @@ class HomeViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             navigator.navigate(registerPayment)

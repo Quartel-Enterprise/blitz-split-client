@@ -60,8 +60,12 @@ class RequestUpdatePromptIfNeededUseCase(
         return elapsed < Duration.ZERO || elapsed >= cooldown
     }
 
-    // Why: Atividade too, no tab since its bell, where a push notification's cold start lands.
-    private fun Route.isRestingScreen(): Boolean = isHomeTab() || this is Route.GroupDetail || this is Route.Activity
+    /*
+     * Why: Atividade too, no tab since its bell, where a push notification's cold start lands. Not the group opened over
+     * Rachar conta, whose form still holds what was typed under it.
+     */
+    private fun Route.isRestingScreen(): Boolean =
+        isHomeTab() || (this is Route.GroupDetail && !isOverBill) || this is Route.Activity
 
     private val UpdateAvailability.Pending.cooldown: Duration
         get() = when (this) {

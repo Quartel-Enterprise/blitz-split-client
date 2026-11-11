@@ -50,7 +50,7 @@
     <string name="profile_language">Język</string>
     <string name="profile_language_system">System</string>
     <string name="profile_language_english">Angielski</string>
-    <string name="profile_language_portuguese">Portugalski (BR)</string>
+    <string name="profile_language_portuguese">Portugalski (Brazylia)</string>
     <string name="profile_language_spanish">Hiszpański</string>
     <string name="profile_language_french">Francuski</string>
     <string name="profile_language_german">Niemiecki</string>
@@ -121,11 +121,6 @@
     <string name="profile_export_detail">Plik JSON z twoim profilem i kluczami</string>
     <string name="profile_delete_account">Usuń konto i dane</string>
     <string name="profile_delete_account_detail">Usuwa twoje konto Blitz Split. Tego nie można cofnąć.</string>
-    <string name="profile_unlink_title">Odłączyć konto %1$s?</string>
-    <string name="profile_unlink_body">Nadal korzystasz z aplikacji Blitz Split na tym urządzeniu, bez konta. Twoje grupy zostają tutaj, a synchronizacja przechodzi na anonimowy identyfikator. Następnie pokażemy ci kod odzyskiwania: zachowaj go, aby nie stracić dostępu.</string>
-    <string name="profile_unlink_offline">Wymaga połączenia z internetem.</string>
-    <string name="profile_unlink_failed">Nie udało się odłączyć. Spróbuj ponownie.</string>
-    <string name="profile_unlink_confirm">Odłącz</string>
     <string name="profile_bitcoin_in_sats">Bitcoin w satoshi</string>
     <string name="profile_bitcoin_in_sats_detail">Pokazuje i wpisuje kwoty w bitcoinach w satsach (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Mapa kategorii</string>

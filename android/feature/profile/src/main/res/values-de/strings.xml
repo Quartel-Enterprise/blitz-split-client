@@ -48,7 +48,7 @@
     <string name="profile_language">Sprache</string>
     <string name="profile_language_system">System</string>
     <string name="profile_language_english">Englisch</string>
-    <string name="profile_language_portuguese">Portugiesisch (BR)</string>
+    <string name="profile_language_portuguese">Portugiesisch (Brasilien)</string>
     <string name="profile_language_spanish">Spanisch</string>
     <string name="profile_language_french">Französisch</string>
     <string name="profile_language_german">Deutsch</string>
@@ -113,11 +113,6 @@
     <string name="profile_export_detail">Eine JSON-Datei mit deinem Profil und deinen Schlüsseln</string>
     <string name="profile_delete_account">Konto und Daten löschen</string>
     <string name="profile_delete_account_detail">Löscht dein Blitz Split-Konto. Das lässt sich nicht rückgängig machen.</string>
-    <string name="profile_unlink_title">Dein %1$s-Konto trennen?</string>
-    <string name="profile_unlink_body">Du nutzt Blitz Split auf diesem Gerät weiter, ohne Konto. Deine Gruppen bleiben hier und die Synchronisierung wechselt zu einer anonymen ID. Danach zeigen wir dir deinen Wiederherstellungscode: Bewahre ihn auf, damit du den Zugang nicht verlierst.</string>
-    <string name="profile_unlink_offline">Braucht eine Internetverbindung.</string>
-    <string name="profile_unlink_failed">Trennen fehlgeschlagen. Versuch es noch einmal.</string>
-    <string name="profile_unlink_confirm">Trennen</string>
     <string name="profile_bitcoin_in_sats">Bitcoin in Satoshis</string>
     <string name="profile_bitcoin_in_sats_detail">Zeigt Bitcoin-Beträge in sats an und nimmt sie so entgegen (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Kategorienzuordnung</string>

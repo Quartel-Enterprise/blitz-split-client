@@ -5,7 +5,8 @@ The feed, unread state, real time and push notifications.
   - "Activity" (page 12, `Route.Activity`, `ActivityViewModel`) is every group's feed and the notification center. It
     is no tab (Pierre's call: the room it left in the tab bar is iOS's search tab): a bell in Home's bar, beside the
     profile, opens it over Home on every platform (`HomeUiEvent.OnActivityClicked`, `activity_bell_clicked`), as do
-    Home's "See all" over "Latest expenses" and a push notification; back returns to Home. It has a back button and
+    Home's "See all" over "Latest expenses" (with the Bills type already picked, as a removable chip:
+    `Route.Activity.showsBillsOnly`) and a push notification; back returns to Home. It has a back button and
     neither the tabs, the profile nor the search of its own (on the web, the home's frame around it, the tab it sits
     over selected and its Search going back to that tab, and on the phone its own bar with back). Its bar's
     "Notification settings" (`ActivityUiEvent.OnNotificationSettingsClicked`, `activity_notification_settings_clicked`)
@@ -60,7 +61,12 @@ The feed, unread state, real time and push notifications.
     that past ("Sen bir harcamayı böldün: …", "Sen gruba katıldın: …"); its deleted-item notice starts with who deleted
     it too ("Sen sildin: …"). A line that names the user without a verb rule (a photo's "added by") is impersonal in
     Turkish ("Sen · bugün, 09:12 eklendi"). Indonesian verbs don't change with the person, so its rows need no rule
-    ("Ana membagi Makan malam", "Kamu membagi…").
+    ("Ana membagi Makan malam", "Kamu membagi…"). The same rules say a bill's photo line to the user who attached it,
+    in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
+    "Tu l’as joint…", "Ty dodałeś(-aś) je…". A Spanish object pronoun before the verb stays ("lo adjuntó" to "lo
+    adjuntaste"), and French's and Italian's elided auxiliaries change as the bare ones do ("l’a" to "l’as", "l’ha" to
+    "l’hai"). A line written without a verb after the name stays as it is (German's "Du · heute um 21:10 angehängt",
+    Turkish's "Sen · bugün, 21:10 eklendi").
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

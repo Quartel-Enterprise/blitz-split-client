@@ -2665,53 +2665,6 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN a sync in flight WHEN unlinking THEN waits for it before removing the identity`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            status = google,
-            pullHangs = true,
-        )
-        backgroundScope.launch { coordinator.syncNow() }
-        runCurrent()
-        backgroundScope.launch { coordinator.removeSocialIdentity() }
-        runCurrent()
-        val unlinksDuringSync = account.unlinkCount
-
-        // When
-        pullGate.complete(Unit)
-        runCurrent()
-
-        // Then
-        assertEquals(0, unlinksDuringSync)
-        assertEquals(1, account.unlinkCount)
-        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
-    }
-
-    @Test
-    fun `GIVEN an unlink waiting on a sync WHEN the screen that asked leaves THEN still unlinks`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            status = google,
-            pullHangs = true,
-        )
-        backgroundScope.launch { coordinator.syncNow() }
-        runCurrent()
-        val caller = backgroundScope.launch { coordinator.removeSocialIdentity() }
-        runCurrent()
-
-        // When
-        caller.cancel()
-        pullGate.complete(Unit)
-        runCurrent()
-
-        // Then
-        assertEquals(1, account.unlinkCount)
-        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
-    }
-
-    @Test
     fun `GIVEN a sync in flight WHEN changing the invite link THEN waits for it before rotating the code`() = runTest {
         // Given
         prepareScenario(
@@ -2819,6 +2772,110 @@ class SyncCoordinatorTest {
         )
         assertTrue(groups.downloadedUserIds.isEmpty())
     }
+
+    @Test
+    fun `GIVEN the group still waits to go up WHEN changing the link THEN uploads it before rotating the code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedGroups = listOf(
+                    dinner.copy(
+                        inviteCode = "AbCd1234",
+                        isPending = true,
+                    ),
+                ),
+            )
+            groups.hasPendingChanges.value = true
+            groups.groupIdsNotOnServer += "dinner"
+
+            // When
+            val result = coordinator.rotateInviteCode("dinner")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            val upload = calls.indexOf("groups upload ${FakeAccountRepository.ANONYMOUS_USER_ID}")
+            assertTrue(upload >= 0)
+            assertTrue(calls.indexOf("groups rotate invite code dinner") > upload)
+        }
+
+    @Test
+    fun `GIVEN a new group whose sync fails after it went up WHEN changing the link THEN still rotates the code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedGroups = listOf(
+                    dinner.copy(
+                        inviteCode = "AbCd1234",
+                        isPending = true,
+                    ),
+                ),
+            )
+            groups.hasPendingChanges.value = true
+            groups.groupIdsNotOnServer += "dinner"
+            expenses.pushError = IllegalStateException("a bill the server refuses")
+
+            // When
+            val result = coordinator.rotateInviteCode("dinner")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("dinner"), groups.rotatedInviteCodeGroupIds)
+        }
+
+    @Test
+    fun `GIVEN a new group whose upload fails WHEN changing the link THEN fails without rotating`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            storedGroups = listOf(
+                dinner.copy(
+                    inviteCode = "AbCd1234",
+                    isPending = true,
+                ),
+            ),
+        )
+        groups.hasPendingChanges.value = true
+        groups.groupIdsNotOnServer += "dinner"
+        groups.pushError = IllegalStateException("network")
+
+        // When
+        val result = coordinator.rotateInviteCode("dinner")
+        runCurrent()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(groups.rotatedInviteCodeGroupIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a group on the server and other changes waiting WHEN changing the link THEN rotates without a sync`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                storedGroups = listOf(dinner.copy(inviteCode = "oldCode1")),
+            )
+            groups.hasPendingChanges.value = true
+            groups.pushError = IllegalStateException("a bill the server refuses")
+
+            // When
+            val result = coordinator.rotateInviteCode("dinner")
+            runCurrent()
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(groups.uploadedUserIds.isEmpty())
+            assertEquals(
+                "newCode1",
+                groups.groups.value
+                    .single()
+                    .inviteCode,
+            )
+        }
 
     @Test
     fun `GIVEN the server changes the link WHEN changing it THEN succeeds without another sync`() = runTest {

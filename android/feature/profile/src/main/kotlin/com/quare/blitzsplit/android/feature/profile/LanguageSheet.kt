@@ -32,7 +32,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.core.model.AppLanguage
@@ -107,18 +111,24 @@ private fun LanguageRow(
     onClick: () -> Unit,
 ) {
     val primary = MaterialTheme.colorScheme.primary
+    val name = languageName(language)
+    // Why: the translated name says it again in the app's language, unless both read the same ("Italiano").
+    val detail = if (language == AppLanguage.SYSTEM) {
+        stringResource(R.string.profile_language_system_detail)
+    } else {
+        translatedLanguageName(language).takeUnless { it == name }
+    }
     ListItem(
         headlineContent = {
+            // Why: in its own locale, so TalkBack reads "日本語" as Japanese and the font draws its glyphs as Japan's.
             Text(
-                text = languageName(language),
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(localeList = language.tag?.let { LocaleList(it) })) { append(name) }
+                },
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             )
         },
-        supportingContent = if (language == AppLanguage.SYSTEM) {
-            { Text(stringResource(R.string.profile_language_system_detail)) }
-        } else {
-            null
-        },
+        supportingContent = detail?.let { { Text(it) } },
         leadingContent = {
             LanguageChip(
                 language = language,
@@ -176,9 +186,29 @@ private fun LanguageChip(
     }
 }
 
-// Why: each language in the app's language, "Português (BR)" saying the region it is written for.
+/*
+ * Why: each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), the region
+ * spelled out for the one written for a region: "Português (Brasil)".
+ */
 @Composable
 internal fun languageName(language: AppLanguage): String = when (language) {
+    AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
+    AppLanguage.ENGLISH -> stringResource(R.string.profile_language_native_english)
+    AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_native_portuguese)
+    AppLanguage.SPANISH -> stringResource(R.string.profile_language_native_spanish)
+    AppLanguage.FRENCH -> stringResource(R.string.profile_language_native_french)
+    AppLanguage.GERMAN -> stringResource(R.string.profile_language_native_german)
+    AppLanguage.ITALIAN -> stringResource(R.string.profile_language_native_italian)
+    AppLanguage.POLISH -> stringResource(R.string.profile_language_native_polish)
+    AppLanguage.DUTCH -> stringResource(R.string.profile_language_native_dutch)
+    AppLanguage.JAPANESE -> stringResource(R.string.profile_language_native_japanese)
+    AppLanguage.TURKISH -> stringResource(R.string.profile_language_native_turkish)
+    AppLanguage.INDONESIAN -> stringResource(R.string.profile_language_native_indonesian)
+}
+
+// Why: the same language in the app's language, "Portuguese (Brazil)", under its own name.
+@Composable
+private fun translatedLanguageName(language: AppLanguage): String = when (language) {
     AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
     AppLanguage.ENGLISH -> stringResource(R.string.profile_language_english)
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_portuguese)

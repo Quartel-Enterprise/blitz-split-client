@@ -62,7 +62,7 @@ granted to `anon` and called without an account goes in the plugin's list too.
 | `SupabaseGuestMergeRemoteDataSource` | the `request_guest_merge`, `pending_guest_merges` and `cancel_guest_merge` functions: "Juntar com a conta dele", online only |
 | `SupabaseProfilePhotoRemoteDataSource` | the `avatars` Storage bucket: one `{userId}/avatar.jpg` per user, overwritten with upsert |
 | `SupabaseRemoteChangeRemoteDataSource` (`:core:sync`) | Realtime: one channel with the inserts of `activity_events` and the updates of `profiles`, which the server's row level security filters per subscriber |
-| `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `unlink-identity`, `delete-account` and `apple-token` edge functions |
+| `SupabaseAccountRemoteDataSource` | Auth (session, anonymous sign in, ID token, OAuth, email + password) and the `recover`, `recovery-code`, `delete-account` and `apple-token` edge functions |
 
 The tables, functions and dashboard settings are documented in the `blitz-split-api` repository (`docs/auth.md`,
 `docs/database.md`).
@@ -275,8 +275,8 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   link, and the server never lets a client take over a member that has an account. The server keeps the newer row
   too, with the same trigger as the keys. The download reads every group and member page by page and deletes the
   synced ones the server no longer has (`GroupDao.deleteGoneFromServer`); pending ones stay, except a group that went
-  up once (it has its invite code): the server would refuse its changes now, so it leaves with its members, bills and
-  payments. When an account is deleted, the server unlinks it from its groups and deletes the groups nobody with an
+  up once (`GroupEntity.isOnServer`, set by the push and by every download): the server would refuse its changes now,
+  so it leaves with its members, bills and payments. When an account is deleted, the server unlinks it from its groups and deletes the groups nobody with an
   account is left in.
   - **Releasing a member** ("Liberar nome"): the group's creator turns a member someone joined as back into a name,
     online only, through the `release_member` RPC, which also gives the member a new personal invite code. The
@@ -298,12 +298,20 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     sync go on. Each upload changes the photo's URL (`?v=`), so the image caches never show the old one. The faces
     of this device's user take the local profile's photo instead (`GroupRepository.observeGroups`), one picked
     offline included, and a member nobody joined as has none.
-  - **Invite code**: the server makes each group's code (`invite_code`, the `blitzsplit.com/g/<code>` of "Convidar")
-    when the group first goes up, and no client sends it. The push reads it back from the upsert's answer,
-    since the sync downloads before it uploads and a new group would otherwise wait a whole sync for its link. Both
-    the push and the download store it with `GroupDao.updateInviteCode`, outside Last-Write-Wins: a group this
-    device created comes back with the same `updatedAt`, which `updateGroupFromRemote` leaves alone. A group created
-    offline has no code until then, and `InviteUiState.isLinkPending` says so. Each member's code (`invite_code` of
+  - **Invite code**: the device makes a new group's code (`invite_code`, the `blitzsplit.com/g/<code>` of
+    "Convidar") when it creates the group (`CreateGroupUseCase`, through `RandomCode`: 8 characters of `[A-Za-z0-9]`
+    from the platform's secure random source), so the link exists at once, offline included; it works for others
+    once the group went up. The push sends it only while the group is not on the server (`GroupMapper.toDto`), and
+    the server keeps it (`set_group_invite_code`). One another group already has is refused with the whole upsert
+    (`invite_code_taken`, `InviteCodeTakenException`): every group not up yet gets a new code
+    (`GroupDao.replaceInviteCodeBeforeUpload`) and the upsert goes again, up to three attempts in all. From then on the server's
+    code wins: the push reads it back from the upsert's answer (an older server that ignores the device's code
+    answers with its own, which takes its place), and both the push and the download store it with
+    `GroupDao.updateInviteCode`, outside Last-Write-Wins: a group this device created comes back with the same
+    `updatedAt`, which `updateGroupFromRemote` leaves alone. A group an older version created offline has no code
+    until its first sync, and a joined group gets the server's with its download; `InviteUiState.isLinkPending` says
+    so meanwhile. The code no longer tells whether a group went up: `GroupEntity.isOnServer` does (Room 42, whose
+    migration sets it for every group with a code or synced). Each member's code (`invite_code` of
     `group_members`, the `<member code>` of a personal link `blitzsplit.com/g/<code>/<member code>`) follows the same
     path: read back from the members' upsert and stored with `GroupDao.updateMemberInviteCode`, outside
     Last-Write-Wins, so a member added offline has no personal link until it goes up.
@@ -319,8 +327,11 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     the server's account in `simplifyDebtsConflictBy` when its later change beat one still waiting here: the conflict
     of 13.1e, which the first screen of the group on top shows and clears (`ConsumeSimplifyDebtsConflict`).
   - **Changing the invite link** ("Trocar link"): only the group's creator, online, through the `rotate_invite_code`
-    RPC, which answers with the new code. `SyncCoordinator.rotateInviteCode` stores it with
-    `GroupDao.updateInviteCode` right away, under the sync lock, so a download that read the group before can't
+    RPC, which makes the new code on the server and answers with it. `SyncCoordinator.rotateInviteCode` first syncs
+    only when the group is not on the server yet (`GroupRepository.isOnServer`), so a group created here is up before
+    its code changes, and changes it once the group went up even if that sync failed further on (a bill the server
+    refuses); one already up changes at once, whatever else waits to go up. It stores the new
+    code with `GroupDao.updateInviteCode` right away, under the sync lock, so a download that read the group before can't
     write the old code back, and in the app's scope, so leaving Convidar mid-call keeps it. The server leaves
     `updated_at` alone: the other devices take the new code on their next download, as with any code, and a
     member's earlier offline edit of the group still wins Last-Write-Wins. A failure starts a sync, since the

@@ -147,7 +147,6 @@ internal fun ItemEditorContent(
                 itemRole = Role.RadioButton,
                 height = 44.dp,
                 innerRadius = 6.dp,
-                showsCheck = false,
             )
             ItemStatusCard(
                 editor = editor,

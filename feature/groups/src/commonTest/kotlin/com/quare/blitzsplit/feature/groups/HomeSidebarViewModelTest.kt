@@ -428,6 +428,7 @@ class HomeSidebarViewModelTest {
                         "other",
                         joinedAs = null,
                         tab = GroupTab.BALANCES,
+                        isOverBill = false,
                     ),
                     Route.GroupStats("other"),
                 ),
@@ -448,6 +449,7 @@ class HomeSidebarViewModelTest {
                 "trio",
                 joinedAs = null,
                 tab = GroupTab.MEMBERS,
+                isOverBill = false,
             )
             prepareScenario(stack = listOf(Route.Home, Route.Groups, members, Route.GroupStats("trio")))
 
@@ -478,7 +480,7 @@ class HomeSidebarViewModelTest {
             prepareScenario(
                 stack = listOf(
                     Route.Home,
-                    Route.Activity(personKey = null),
+                    Route.Activity.all,
                     Route.BillDetail("other", "b1", focusCommentId = null),
                 ),
             )
@@ -497,6 +499,7 @@ class HomeSidebarViewModelTest {
             "trio",
             joinedAs = null,
             tab = GroupTab.MEMBERS,
+            isOverBill = false,
         )
         prepareScenario(stack = listOf(Route.Home, members))
 
@@ -631,7 +634,10 @@ class HomeSidebarViewModelTest {
                     Route.Home,
                     Route.Contacts,
                     Route.ContactProfile(anaKey),
-                    Route.Activity(personKey = anaKey),
+                    Route.Activity(
+                        personKey = anaKey,
+                        showsBillsOnly = false,
+                    ),
                 ),
             )
 
@@ -729,6 +735,7 @@ class HomeSidebarViewModelTest {
         groupId,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     // Why: Pierre is this device's user, in a group with Ana and Bruno.

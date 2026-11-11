@@ -386,7 +386,15 @@ class GroupsRowActionsTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.GroupDetail("trio", joinedAs = null, GroupTab.BALANCES)),
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        "trio",
+                        joinedAs = null,
+                        GroupTab.BALANCES,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }

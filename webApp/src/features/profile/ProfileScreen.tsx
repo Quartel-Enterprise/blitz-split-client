@@ -29,7 +29,25 @@ const themes: { code: string; label: MessageKey }[] = [
   { code: 'dark', label: 'profile_themeDark' },
 ]
 
-/** Each language in the app's language, "Português (BR)" saying the region it is written for. */
+/**
+ * Each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), the region spelled
+ * out for the one written for a region. The same in every language of the app, so not in the dictionaries.
+ */
+const nativeLanguageNames: Record<string, string> = {
+  en: 'English',
+  'pt-BR': 'Português (Brasil)',
+  es: 'Español',
+  fr: 'Français',
+  de: 'Deutsch',
+  it: 'Italiano',
+  pl: 'Polski',
+  nl: 'Nederlands',
+  ja: '日本語',
+  tr: 'Türkçe',
+  id: 'Bahasa Indonesia',
+}
+
+/** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
 const languageNames: Record<string, MessageKey> = {
   en: 'profile_languageEnglish',
   'pt-BR': 'profile_languagePortuguese',
@@ -247,9 +265,6 @@ function AccountCard({ presenter, state, className }: CardProps) {
         ) : provider ? (
           <Row title={providerLabel(provider, true)} detail={state.maskedEmail && t('profile_accountConnectedDetail', { email: state.maskedEmail })}>
             <Badge variant="secondary">{t('profile_accountConnected')}</Badge>
-            <Button size="sm" variant="outline" onClick={() => presenter.account()}>
-              {t('profile_accountDisconnect')}
-            </Button>
           </Row>
         ) : (
           <div className="flex flex-col gap-3 pb-3">
@@ -369,6 +384,8 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
             <div role="radiogroup" aria-labelledby="language" className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 sm:grid-cols-3">
               {state.languageOptions.map((code) => {
                 const isSelected = code === state.language
+                const nativeName = nativeLanguageNames[code]
+                const name = t(languageNames[code] ?? 'profile_languageSystem')
                 return (
                   <button
                     key={code}
@@ -376,11 +393,14 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
                     aria-checked={isSelected}
                     onClick={() => presenter.selectLanguage(code)}
                     className={cn(
-                      'h-8 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                      'flex min-h-8 flex-col items-center justify-center rounded-md px-2 py-1 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                       segmentClass(isSelected),
                     )}
                   >
-                    {t(languageNames[code] ?? 'profile_languageSystem')}
+                    {/* lang, so a screen reader reads "日本語" as Japanese and the font draws it as Japan's */}
+                    <span lang={nativeName ? code : undefined}>{nativeName ?? name}</span>
+                    {/* The app's own name for it, unless both read the same ("Italiano") */}
+                    {nativeName && nativeName !== name && <span className="text-xs font-normal opacity-80">{name}</span>}
                   </button>
                 )
               })}

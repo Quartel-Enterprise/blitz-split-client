@@ -262,17 +262,16 @@ class CreateGroupUseCaseTest {
         }
 
     @Test
-    fun `GIVEN a new group WHEN creating it on the device THEN it has no invite code until the server makes one`() =
-        runTest {
-            // Given
-            prepareScenario()
+    fun `GIVEN a new group WHEN creating it on the device THEN it has its 8 character invite code at once`() = runTest {
+        // Given
+        prepareScenario()
 
-            // When
-            createGroup()
+        // When
+        createGroup()
 
-            // Then
-            assertNull(repository.createdGroups.single().inviteCode)
-        }
+        // Then
+        assertEquals("AbCd1234", repository.createdGroups.single().inviteCode)
+    }
 
     @Test
     fun `GIVEN a new group WHEN creating it on the device THEN it is created by me`() = runTest {
@@ -384,6 +383,7 @@ class CreateGroupUseCaseTest {
         useCase = CreateGroupUseCase(
             repository = repository,
             currentTimeMillis = { now },
+            randomCode = { length -> "AbCd1234".take(length) },
         )
     }
 }

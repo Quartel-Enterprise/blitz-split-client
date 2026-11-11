@@ -62,6 +62,7 @@ data class PushLink(
         groupId,
         joinedAs = null,
         tab = tab,
+        isOverBill = false,
     )
 
     companion object {

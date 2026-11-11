@@ -201,6 +201,30 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN a bill saved without a time WHEN it opens THEN it shows no time`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(spentAt = Instant.parse("2026-10-30T00:00:00Z").toEpochMilliseconds()))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.hasSpentTime)
+    }
+
+    @Test
+    fun `GIVEN a bill saved with a time WHEN it opens THEN it shows its time`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpense = expense(spentAt = earlierToday))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.hasSpentTime)
+    }
+
+    @Test
     fun `GIVEN a bill spent yesterday WHEN it opens THEN its day is yesterday`() = runTest(testDispatcher) {
         // Given
         prepareScenario(storedExpense = expense(spentAt = yesterdayEvening))
@@ -4619,6 +4643,7 @@ class BillDetailViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private var nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()

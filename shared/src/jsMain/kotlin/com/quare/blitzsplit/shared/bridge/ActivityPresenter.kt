@@ -32,6 +32,8 @@ class JsActivityValue(
     val fractionDigits: Int,
     val text: String?,
     val millis: Double?,
+    // Why: a bill's "Quando" without a time shows its date alone.
+    val hasTime: Boolean,
     // Why: a split mode, a group type, a color or a currency, by its code.
     val code: String?,
     val names: Array<String>,
@@ -407,6 +409,7 @@ private fun toJsActivityValue(value: ActivityChangeValue): JsActivityValue = JsA
     fractionDigits = value.currency?.fractionDigits ?: 2,
     text = value.text,
     millis = value.millis?.toDouble(),
+    hasTime = value.hasTime,
     code = value.code,
     names = value.names.toTypedArray(),
     hasFormerMember = value.hasFormerMember,

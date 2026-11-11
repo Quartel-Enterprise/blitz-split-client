@@ -58,9 +58,14 @@ data class SplitBillUiState(
     val payerSelection: PayerSelection?,
     // Why: the "Várias pessoas pagaram" sheet, open while not null; it changes who paid only on "Pronto".
     val payerAmounts: PayerAmounts?,
-    // Why: "Quando", date and time; each UI writes the date, after "Hoje" or "Ontem" when it is one of them.
+    /*
+     * Why: "Quando"; each UI writes the date, after "Hoje" or "Ontem" when it is one of them, and the time only while
+     * hasSpentTime. A bill without a time is at the first instant of its day (`SpentDay.hasTime`).
+     */
     val spentAt: Long,
     val spentDay: RelativeDay,
+    // Why: whether the bill has a time of day, which a new one hasn't until "Adicionar horário" (beta feedback).
+    val hasSpentTime: Boolean,
     // Why: a bill is spent by now, so "Quando" picks nothing later; the time of the last change, which pickers cap at.
     val latestSpentAt: Long,
     val split: SplitEditor,
@@ -286,6 +291,13 @@ data class SplitBillUiState(
      */
     val canChangeGroup: Boolean
         get() = !isEditing && isLoaded && groups.size > 1 && !isSaving && !isFormLocked
+
+    /*
+     * Why: the bill's group opens its screen over the form, which keeps what was typed for back to find (beta
+     * feedback); not while the bill saves, which leaves the form, nor while a receipt is read, which locks it.
+     */
+    val canOpenGroup: Boolean
+        get() = isLoaded && !isSaving && !isFormLocked
 
     // Why: "Padrão do grupo" under Rachar conta's "Divisão" while the bill keeps the group's default split.
     val splitFollowsDefault: Boolean

@@ -8,7 +8,13 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     the header, "Your balance in this group" and the tabs stay, only what is under them changes, with no transition nor
     check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the
     group. Invite's "Go to the group" and "See who joined" open it in Invite's place (`openGroup`), so the
-    group never stacks over itself.
+    group never stacks over itself; the one exception is "Split a bill"'s group, which opens the group over the form
+    as an entry of its own (`Route.GroupDetail.isOverBill`, see [Split a bill](split-bill.md)), and whose "Split a
+    bill" goes back to that new bill's form rather than opening a second one. On Android the top bar's subtitle ("2
+    members · R$ 3,418.31 in total") ellipsizes 16 dp short of the bar's actions, so the Statistics button keeps room
+    around it (beta bugs of 2026-11-10). On an Android phone upright that bar folds to its one line on a scroll down
+    and opens again on a scroll up, from anywhere in the list; wider, it opens only back at the top (see
+    [the bars on scroll](home-and-shell.md)).
   - The group's avatar in the header (its rounded square, the photo or the initials on the color; the web's page header, the top bar on Android, the header on iOS and the Mac) opens the photo big (Pierre's call, `Route.GroupPhoto`,
     `GroupPhotoViewModel`), as the profile's avatar does ([the profile's viewer](profile.md)): the group's square, 200 pt/dp/px (260 once both sides have 600) over the
     dimmed, blurred group, with "Camera" where there is one, "Gallery" and "Remove" (with a photo) under it. Each saves
@@ -119,7 +125,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     who hasn't joined included), "Your share" and "You paid", on a neutral card under a neutral period chip on every
     platform (a pale blue fill read as one more slice of the ring);
     "By person" shows Consumed (each part as each bill
-    split it) or Paid, the largest first, someone who left the group as "Former member". "Settling up" (Pierre's call, beta
+    split it) or Paid (a segmented choice with no check on the one picked, beta feedback: Android's connected
+    buttons, Default split's included, say it by the filled pill alone, as the group's tabs, iOS and the web do), the largest first, someone who left the group as "Former member". "Settling up" (Pierre's call, beta
     feedback 12, `GroupStatsUiState.settling`, `SettlingCalculator`) names under it who "Settles fastest" and who
     "Slowest to settle" ("2 days on average", "same day on average", "R$ 80 still open"): each member's bills and
     payments of the group's whole history, the queue's too, go in date order, what a bill puts on them opening a
@@ -193,7 +200,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     Statistics did: "This month" and "Last month" as the month, picked dates as their days.
   - "Duplicate", only in a bill's ⋮ on Expenses (Bill's top bar has no such button), opens "Split a bill" as a new bill
     in the same group (`Route.SplitBill.duplicatesExpenseId`) filled in with the original's description, amount,
-    currency, category, payers and split, spent now, to change whatever the person wants before saving; nothing is
+    currency, category, payers and split, spent today without a time, to change whatever the person wants before saving; nothing is
     saved until then, and "Back" leaves the original alone. Its attachments, comments and history are not copied, nor
     are people who left the group. A bill in a currency this version doesn't know can't be duplicated, as it can't be
     edited. As in any new bill, the group can still be changed ("Split in which group?"), which starts payers and

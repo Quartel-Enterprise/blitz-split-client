@@ -925,6 +925,7 @@ class DefaultSplitViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(editGroup)

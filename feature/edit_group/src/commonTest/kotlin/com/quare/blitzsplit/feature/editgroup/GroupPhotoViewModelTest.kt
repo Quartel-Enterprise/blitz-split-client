@@ -755,6 +755,7 @@ class GroupPhotoViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
     private val groupPhoto = Route.GroupPhoto(GROUP_ID)
     private val uploadedPhoto = ProfilePhoto.Remote(UPLOADED_PHOTO_URL)

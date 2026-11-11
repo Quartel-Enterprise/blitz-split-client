@@ -339,6 +339,7 @@ class ExpenseDaoTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = true,
     )
 
     private fun expense(

@@ -51,7 +51,7 @@
     <string name="profile_language">Language</string>
     <string name="profile_language_system">System</string>
     <string name="profile_language_english">English</string>
-    <string name="profile_language_portuguese">Portuguese (BR)</string>
+    <string name="profile_language_portuguese">Portuguese (Brazil)</string>
     <string name="profile_language_spanish">Spanish</string>
     <string name="profile_language_french">French</string>
     <string name="profile_language_german">German</string>
@@ -62,6 +62,18 @@
     <string name="profile_language_turkish">Turkish</string>
     <string name="profile_language_indonesian">Indonesian</string>
     <string name="profile_language_system_detail">Device language</string>
+    <!-- Each language in its own language, the same in every locale -->
+    <string name="profile_language_native_english" translatable="false">English</string>
+    <string name="profile_language_native_portuguese" translatable="false">Português (Brasil)</string>
+    <string name="profile_language_native_spanish" translatable="false">Español</string>
+    <string name="profile_language_native_french" translatable="false">Français</string>
+    <string name="profile_language_native_german" translatable="false">Deutsch</string>
+    <string name="profile_language_native_italian" translatable="false">Italiano</string>
+    <string name="profile_language_native_polish" translatable="false">Polski</string>
+    <string name="profile_language_native_dutch" translatable="false">Nederlands</string>
+    <string name="profile_language_native_japanese" translatable="false">日本語</string>
+    <string name="profile_language_native_turkish" translatable="false">Türkçe</string>
+    <string name="profile_language_native_indonesian" translatable="false">Bahasa Indonesia</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>
@@ -116,11 +128,6 @@
     <string name="profile_export_detail">A JSON file with your profile and keys</string>
     <string name="profile_delete_account">Delete account and data</string>
     <string name="profile_delete_account_detail">Deletes your Blitz Split account. This can\'t be undone.</string>
-    <string name="profile_unlink_title">Disconnect your %1$s account?</string>
-    <string name="profile_unlink_body">You keep using Blitz Split on this device, without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don\'t lose access.</string>
-    <string name="profile_unlink_offline">Needs an internet connection.</string>
-    <string name="profile_unlink_failed">Couldn\'t disconnect. Try again.</string>
-    <string name="profile_unlink_confirm">Disconnect</string>
     <string name="profile_bitcoin_in_sats">Bitcoin in satoshis</string>
     <string name="profile_bitcoin_in_sats_detail">Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">Category map</string>

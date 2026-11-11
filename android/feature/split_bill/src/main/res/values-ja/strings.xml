@@ -17,6 +17,7 @@
     <string name="split_bill_payer">支払った人</string>
     <string name="split_bill_you">あなた</string>
     <string name="split_bill_when">日時</string>
+    <string name="split_bill_add_time">時刻を追加</string>
     <string name="split_bill_split">分け方</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="other">%d人で均等</item>
@@ -121,6 +122,8 @@
     <string name="split_bill_group_lead">前回使ったグループが選択されています</string>
     <string name="split_bill_group_continue">続ける</string>
     <string name="split_bill_group_change">グループ：%s。変更</string>
+    <string name="split_bill_group_change_button">変更</string>
+    <string name="split_bill_group_open">グループを開く</string>
     <plurals name="split_bill_group_people">
         <item quantity="other">%d人</item>
     </plurals>

@@ -17,6 +17,7 @@
     <string name="split_bill_payer">Quem pagou</string>
     <string name="split_bill_you">Você</string>
     <string name="split_bill_when">Quando</string>
+    <string name="split_bill_add_time">Adicionar horário</string>
     <string name="split_bill_split">Divisão</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="one">Igual entre %d</item>
@@ -131,6 +132,8 @@
     <string name="split_bill_group_lead">O último que você usou vem marcado</string>
     <string name="split_bill_group_continue">Continuar</string>
     <string name="split_bill_group_change">Grupo: %s. Trocar</string>
+    <string name="split_bill_group_change_button">Trocar</string>
+    <string name="split_bill_group_open">Abrir grupo</string>
     <plurals name="split_bill_group_people">
         <item quantity="one">%d pessoa</item>
         <item quantity="other">%d pessoas</item>

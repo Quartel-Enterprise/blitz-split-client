@@ -46,7 +46,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     binding, the web's `freeTextProps`): a lone lowercase letter typed into an empty field, after a dead key's
     accent or over a selected text, the caret staying after it. Not the capital lowercased, nor a lowercase letter
     the field had before (deleting down to it), so someone who wants it lowercase keeps it. Never an email, a payment key, an invite or recovery code,
-    a link, an amount, a search or a category map's word.
+    a link, an amount, a search or a category map's word. A group's or a member's initials are capitalized as the
+    app's language writes them ("ilker" is "İ" in Turkish, `toAppLanguageUppercase`).
   - An amount shown, not typed, drops its decimals when they are all zero (Pierre's call, beta feedback 9): "R$ 500",
     "+R$ 125 to get back", "you get 120 and owe 218", and keeps every one otherwise ("R$ 12,50", never "R$ 12,5"),
     decided amount by amount, so one list may mix "R$ 125" and "R$ 12,50" (`GroupCurrency.getDisplayFractionDigits`,
@@ -147,6 +148,23 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (Share bill, a contact's invite, "Update available") is large there and regular on the Mac (`sheetButtonSize()`).
   - The Android UI uses the AndroidX Compose artifacts (BOM), not the JetBrains Compose coordinates; only the shared
     ViewModels take JetBrains' multiplatform lifecycle.
+  - On Android a shadow means "tap me" (Pierre's call, beta feedback, after Material 3's card guidelines): a card that
+    stands on its own and opens something as one touch target is `:android:designsystem`'s `TappableCard`, Material's
+    elevated card, with its ripple, TalkBack's "button" and its hovered elevation (1 dp at rest, 3 dp under a pointer;
+    pressed keeps the resting elevation, as Material's tokens say), and in a dark theme, where a shadow barely shows,
+    Material's tonal tint of that level (the surface tint over the container at 5 %): a group's card on Home and in
+    Groups' grid (the cards of one collection share their resting elevation; the grid's long press, its actions, is on
+    the same touch target), the balances summary on Contacts, the identity card on Profile, Statistics' "Biggest
+    expense", Split a bill's "Category map", Groups' search "Did you mean …?", the joined banner's "Protect your
+    access" and Restore's "Scan the QR code from your old device". A card may still hold buttons of its own beside its
+    one action (the balances summary's two totals, the identity card's photo), as Material's cards do. The card keeps
+    its screen's container color (Material's elevated card is `surfaceContainerLow`, beside rows of
+    `surfaceContainerLowest`). A card that only informs (balances, notices, banners, empty states) stays flat, a
+    filled card, its buttons the only thing to tap. Rows that form one rounded group (Split a bill's Who paid / When /
+    Split, settings, Balances, a day's bills, Home's shortcuts) and a single picker row of a form (Record payment's
+    When, New group's currency) are a list, not cards, and stay flat even when tappable: a shadow per segment would
+    draw a seam in the 2 dp gaps and break the group into separate cards. iOS, the Mac and the web keep their own
+    platform's look.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
   - Nothing is guessed while loading (Pierre's call): a section with no concrete answer yet (Room not read, the
     server not answered, or data only the account's first full sync brings while `AccountSnapshot.awaitsFullSync`)
@@ -159,3 +177,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     screens show what the device holds under the failed sync's badge, since a change the server keeps refusing fails
     every try. Offline, Bill shows the device's comments and photos and takes new ones. Record
     payment never waits offline for the receiver's keys: the form opens, so a payment is recorded offline too.
+  - Syncs run silently (Pierre's call, beta feedback: "Syncing" showed often enough to annoy, in an offline first app).
+    Home's and Groups' sync chip says "Syncing…" only during the account's first full sync, from a restore (a sign
+    in, a recovery code, a new device) until a sync gets the whole copy through, retries and relaunches included
+    (`AccountSnapshot.awaitsFullSync`), and for the sync after "No response from the server", the retry, until it
+    settles, so a tap on "Try again" shows it working. Every other sync, a queued change going up or the catch up on
+    coming back to the front, shows nothing. "Offline · 1 change queued" and "No response from the server" still
+    show as they did, and win over "Syncing…" (`SyncBadge.ofOrNull`, so no UI special-cases it). Pulling down
+    (Android, iOS) keeps its own spinner until that sync ends, as Activity's refresh does on the Mac (View › Refresh,
+    ⌘R) and the web; the Mac's and the web's Home and Groups have no refresh of their own. Profile's "Account and sync" row still says
+    "Syncing…" while one runs, a status read there on purpose, and Activity's "Syncing…" only shows while a new device
+    waits for the feed's first page.

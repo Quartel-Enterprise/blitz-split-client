@@ -373,6 +373,7 @@ class SearchViewModelTest {
                         "ape",
                         joinedAs = null,
                         tab = GroupTab.MEMBERS,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1210,7 +1211,7 @@ class SearchViewModelTest {
 
     private val balances = Route.GlobalBalances(BalancesFilter.ALL)
 
-    private val activity = Route.Activity(personKey = null)
+    private val activity = Route.Activity.all
 
     private val churrasco = group(
         id = "churrasco",
@@ -1356,6 +1357,7 @@ class SearchViewModelTest {
         groupId,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     // Why: Pierre, the first name, is this device's user.

@@ -47,6 +47,13 @@ ktlint_quare_prepare-scenario-last-member = enabled
 ktlint_quare_prepare-scenario-in-given = enabled
 ktlint_quare_max-file-length = disabled
 
+# The store screenshots' generators (docs/store-listing-screenshots.md) are unit tests only to run under Robolectric:
+# each test draws listing images, with no Given/When/Then to it, and the fixtures are named after what they build.
+[android/store_screenshots/src/test/**]
+ktlint_quare_test-name-given-when-then = disabled
+ktlint_quare_test-body-sections = disabled
+ktlint_quare_value-returning-function-naming = disabled
+
 [**/testing/src/**]
 ktlint_quare_comments-say-why = disabled
 

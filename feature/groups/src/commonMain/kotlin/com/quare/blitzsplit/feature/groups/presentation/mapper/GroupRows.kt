@@ -18,8 +18,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import kotlinx.datetime.daysUntil
 
-// Why: three faces on a row, the rest "+N"; "1 semana" up to "3 semanas", and from the 28th day on, the date.
-private const val MAX_FACES = 3
+// Why: "1 semana" up to "3 semanas", and from the 28th day on, the date.
 private const val DAYS_IN_WEEK = 7
 private const val MAX_WEEKS = 4
 
@@ -62,7 +61,7 @@ internal fun rowOf(
                 photoUrl = it.photoUrl,
             )
         },
-        extraMemberCount = (group.members.size - MAX_FACES).coerceAtLeast(0),
+        extraMemberCount = extraFacesOf(group.members.size),
         memberCount = group.members.size,
         memberNames = group.members.take(MAX_FACES).map { it.name },
         isPending = group.isPending ||

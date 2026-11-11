@@ -33,6 +33,7 @@ class RouteScreenViewTest {
             groupId = "group-1",
             joinedAs = "Bruno",
             tab = GroupTab.BALANCES,
+            isOverBill = false,
         )
 
         // When
@@ -155,6 +156,27 @@ class RouteScreenViewTest {
             ScreenView(
                 name = "join_invite",
                 params = mapOf("is_personal" to true),
+            ),
+            screenView,
+        )
+    }
+
+    @Test
+    fun `GIVEN Activity opened on its bills WHEN naming its screen THEN says so`() {
+        // Given
+        val route = Route.Activity.billsOnly
+
+        // When
+        val screenView = route.toScreenView()
+
+        // Then
+        assertEquals(
+            ScreenView(
+                name = "activity",
+                params = mapOf(
+                    "is_person" to false,
+                    "is_bills_only" to true,
+                ),
             ),
             screenView,
         )

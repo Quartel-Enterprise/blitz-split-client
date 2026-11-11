@@ -33,18 +33,12 @@
         <item quantity="one">%s is lid geworden van de groep</item>
         <item quantity="other">%s zijn lid geworden van de groep</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one">Die doet al mee in de verdeling</item>
-        <item quantity="other">Ze doen al mee in de verdeling</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one">Die begint met 1 aandeel</item>
-        <item quantity="other">Ieder begint met 1 aandeel</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one">Die begint op 0%</item>
-        <item quantity="other">Ieder begint op 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">Die doet al mee in de verdeling</string>
+    <string name="default_split_start_equal_other">Ze doen al mee in de verdeling</string>
+    <string name="default_split_start_shares_one">Die begint met 1 aandeel</string>
+    <string name="default_split_start_shares_other">Ieder begint met 1 aandeel</string>
+    <string name="default_split_start_percent_one">Die begint op 0%</string>
+    <string name="default_split_start_percent_other">Ieder begint op 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; pas het zo nodig aan.</string>
     <string name="default_split_modes">Hoe verdelen</string>
     <string name="default_split_hint_equal">Iedereen betaalt hetzelfde deel</string>

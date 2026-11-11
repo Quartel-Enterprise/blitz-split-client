@@ -40,9 +40,12 @@
     <string name="designsystem_when_today">Hoy, %1$s · %2$s</string>
     <string name="designsystem_when_yesterday">Ayer, %1$s · %2$s</string>
     <string name="designsystem_when_other">%1$s · %2$s</string>
+    <string name="designsystem_day_today">Hoy, %s</string>
+    <string name="designsystem_day_yesterday">Ayer, %s</string>
     <string name="designsystem_picker_next">Siguiente</string>
     <string name="designsystem_picker_done">Listo</string>
     <string name="designsystem_picker_cancel">Cancelar</string>
+    <string name="designsystem_picker_remove_time">Quitar hora</string>
     <string name="designsystem_method_pix">Pix</string>
     <string name="designsystem_method_cash">Efectivo</string>
     <string name="designsystem_method_transfer">Transferencia</string>

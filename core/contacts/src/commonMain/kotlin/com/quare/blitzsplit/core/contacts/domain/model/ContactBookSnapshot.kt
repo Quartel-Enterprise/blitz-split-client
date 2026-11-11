@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.contacts.domain.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.groups.domain.model.Group
 
@@ -13,5 +14,9 @@ data class ContactBookSnapshot(
 ) {
     fun findOrNull(key: String): Contact? = contacts.firstOrNull { it.key == key }
 
-    fun historyOf(contact: Contact): List<ContactHistoryItem> = ContactHistory.of(contact, groups, money)
+    // Why: the categories only the profile's history needs (its bills' badges), read by the profile itself.
+    fun historyOf(
+        contact: Contact,
+        categories: CategoryTree,
+    ): List<ContactHistoryItem> = ContactHistory.of(contact, groups, money, categories)
 }

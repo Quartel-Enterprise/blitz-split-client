@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -40,12 +41,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
@@ -373,11 +376,11 @@ private fun IdentityCard(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    Surface(
+    TappableCard(
+        onClick = { onEvent(ProfileUiEvent.OnEditClicked) },
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        onClick = { onEvent(ProfileUiEvent.OnEditClicked) },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Row(
             modifier = Modifier.padding(20.dp),
@@ -455,6 +458,8 @@ internal fun SectionRow(
     headline: String,
     modifier: Modifier = Modifier,
     supporting: String? = null,
+    // Why: the BCP-47 tag of a supporting text in another language than the app's, a language's own name.
+    supportingLanguageTag: String? = null,
     isSupportingLoading: Boolean = false,
     trailing: @Composable (() -> Unit)? = null,
 ) {
@@ -464,7 +469,18 @@ internal fun SectionRow(
         supportingContent = if (isSupportingLoading) {
             { ProfileValueSkeleton() }
         } else {
-            supporting?.let { { Text(it) } }
+            supporting?.let {
+                {
+                    Text(
+                        text = it,
+                        style = LocalTextStyle.current.copy(
+                            localeList = supportingLanguageTag?.let { tag ->
+                                LocaleList(tag)
+                            },
+                        ),
+                    )
+                }
+            }
         },
         leadingContent = {
             Icon(

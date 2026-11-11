@@ -3,6 +3,9 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.model.AppLanguage
+import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
@@ -57,6 +60,11 @@ import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewMo
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
+import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
+import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsScreen
+import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsSeed
+import com.quare.blitzsplit.shared.storescreenshots.deleteStoreScreenshotsDatabase
+import com.quare.blitzsplit.shared.storescreenshots.storeScreenshotsModuleOf
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.cinterop.BetaInteropApi
@@ -65,8 +73,10 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -74,6 +84,8 @@ import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.Foundation.create
 import platform.posix.memcpy
+import kotlin.experimental.ExperimentalNativeApi
+import kotlin.native.Platform
 import com.quare.blitzsplit.core.provider.crashlytics.startCrashReporting as startCrashlytics
 
 /*
@@ -89,6 +101,45 @@ object BlitzSplitApple : KoinComponent {
 
     fun start() {
         startBlitzSplitKoin()
+    }
+
+    /*
+     * Why: the App Store screenshots (docs/store-listing-screenshots.md): the UI tests launch a debug build with the
+     * sample trip seeded into a fresh Room, in their language and theme, before the first screen reads it, then open
+     * the screen named by screenCode over Início. A release framework never seeds: it starts as usual, so the hook does
+     * nothing even if something calls it.
+     */
+    @OptIn(ExperimentalNativeApi::class)
+    fun startForStoreScreenshots(
+        language: String,
+        isDark: Boolean,
+        assetsDirectory: String?,
+        screenCode: String?,
+    ) {
+        if (!Platform.isDebugBinary) {
+            start()
+            return
+        }
+        deleteStoreScreenshotsDatabase()
+        val trip = SampleTrips.tripOf(language)
+        startBlitzSplitKoin(extraModules = listOf(storeScreenshotsModuleOf(trip)))
+        /*
+         * Why: blocks the launch until the trip is there, off the main thread, so a seed step that hops to Main can't
+         * wait on it.
+         */
+        val seeded = runBlocking(Dispatchers.Default) {
+            StoreScreenshotsSeed(trip, assetsDirectory).createTrip(
+                language = AppLanguage.fromTag(language),
+                theme = if (isDark) ThemePreference.DARK else ThemePreference.LIGHT,
+            )
+        }
+        val routes = StoreScreenshotsScreen.fromCodeOrNull(screenCode)?.routesOf(seeded).orEmpty()
+        val navigator = get<Navigator>()
+        scope.launch {
+            // Why: the app puts Início at the root once it read the profile; the screen goes over it after that.
+            navigator.backStack.first { it.firstOrNull() == Route.Home }
+            routes.forEach(navigator::navigate)
+        }
     }
 
     // Why: right after FirebaseApp.configure(), which only a build with its GoogleService-Info.plist calls.

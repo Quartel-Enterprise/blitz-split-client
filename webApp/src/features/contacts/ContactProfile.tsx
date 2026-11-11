@@ -1,4 +1,4 @@
-import { ArrowRight, Check, ChevronLeft, CircleDollarSign, Ellipsis, EyeOff, Eye, Info, Merge, ReceiptText, UserPlus, Wallet, WifiOff } from 'lucide-react'
+import { ArrowRight, Check, ChevronLeft, CircleDollarSign, Ellipsis, EyeOff, Eye, Info, Merge, UserPlus, Wallet, WifiOff } from 'lucide-react'
 import {
   ContactProfilePresenter,
   type JsContact,
@@ -17,6 +17,7 @@ import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } f
 import { balanceTone, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t } from '@/i18n'
+import { CategoryBadge } from '@/lib/categories'
 import { formatDayTime, formatShortDate } from '@/lib/dates'
 import { formatMoney, formatNames, formatSignedMoney } from '@/lib/money'
 import { copyLink, shareOrCopy } from '@/lib/share'
@@ -395,9 +396,14 @@ function HistoryRow({ item, name }: { item: JsContactHistoryItem; name: string }
   }
   return (
     <li className="flex min-h-14 items-center gap-3 border-b px-3.5 py-2.5 last:border-b-0 @md:px-4">
-      <span aria-hidden className={cn('flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted', isPayment ? 'text-primary' : 'text-muted-foreground')}>
-        {isPayment ? <ArrowRight className="size-4" /> : <ReceiptText className="size-4" />}
-      </span>
+      {item.category ? (
+        // Why: a bill's category, as Despesas draws it (6.1), never a generic receipt (beta feedback).
+        <CategoryBadge category={item.category} className="size-8 rounded-lg" />
+      ) : (
+        <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+          <ArrowRight className="size-4" />
+        </span>
+      )}
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">{title}</span>
         <span className="truncate text-xs text-muted-foreground">{meta}</span>

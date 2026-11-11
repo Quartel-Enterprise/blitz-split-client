@@ -36,6 +36,7 @@ private fun SplitBillBookPreview() {
             isDialog = true,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},
+            onTimeClick = {},
             onEvent = {},
         )
     }
@@ -53,6 +54,7 @@ private fun SplitBillTabletopPreview() {
             isDialog = false,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},
+            onTimeClick = {},
             onEvent = {},
         )
     }

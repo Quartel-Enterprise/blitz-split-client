@@ -134,6 +134,7 @@ private fun toJsCategoryExpenseRow(
         id,
         description,
         spentAt.toDouble(),
+        hasSpentTime,
         payers.map { JsExpenseRowPayer(it.name, it.isMe) }.toTypedArray(),
         totalMinor.toDouble(),
         currency.code,

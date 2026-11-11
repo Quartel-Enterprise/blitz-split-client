@@ -27,7 +27,6 @@ import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -222,7 +221,7 @@ class HomeViewModel(
                     avatarColor = badge.avatarColor,
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
-                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline),
+                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline, account.awaitsFullSync, state.syncBadge),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
@@ -384,13 +383,7 @@ class HomeViewModel(
                 ),
             )
 
-            is HomeUiEvent.OnGroupClicked -> open(
-                Route.GroupDetail(
-                    event.groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
-            )
+            is HomeUiEvent.OnGroupClicked -> open(Route.GroupDetail.expensesOf(event.groupId))
 
             HomeUiEvent.OnSeeAllGroupsClicked -> if (isOnTop()) navigator.openHomeTab(Route.Groups)
 
@@ -399,13 +392,7 @@ class HomeViewModel(
 
             // Why: over its group, so back goes to the group's bills, as from Despesas.
             is HomeUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(
-                    Route.GroupDetail(
-                        event.groupId,
-                        joinedAs = null,
-                        tab = GroupTab.EXPENSES,
-                    ),
-                )
+                navigator.navigate(Route.GroupDetail.expensesOf(event.groupId))
                 navigator.navigate(Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null))
             }
 
@@ -413,12 +400,12 @@ class HomeViewModel(
 
             HomeUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
-            // Why: Atividade holds every bill and payment, so "Ver tudo" of Últimas despesas opens it, as the bell does.
-            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.Activity(personKey = null))
+            // Why: "Ver tudo" of Últimas despesas opens Atividade as the bell does, on its Contas type (a removable chip).
+            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.Activity.billsOnly)
 
             HomeUiEvent.OnActivityClicked -> if (isOnTop()) {
                 trackEvent("activity_bell_clicked", emptyMap())
-                navigator.navigate(Route.Activity(personKey = null))
+                navigator.navigate(Route.Activity.all)
             }
 
             // Why: the sheet of the code, which "Já guardei" settles; "Lembrar depois" brings the card back.

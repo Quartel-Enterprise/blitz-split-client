@@ -18,6 +18,8 @@ import com.quare.blitzsplit.core.settings.di.settingsModule
 import com.quare.blitzsplit.core.sync.di.syncModule
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
+import com.quare.blitzsplit.core.utils.RandomCode
+import com.quare.blitzsplit.core.utils.SecureRandomCode
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemMinuteTicks
 import com.quare.blitzsplit.feature.activity.di.activityFeatureModule
@@ -58,6 +60,7 @@ import com.quare.blitzsplit.feature.profile.di.profileModule as profileScreenMod
 
 private val appModule = module {
     single<CurrentTimeMillis> { SystemCurrentTimeMillis() }
+    single<RandomCode> { SecureRandomCode() }
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
     viewModelOf(::AppViewModel)

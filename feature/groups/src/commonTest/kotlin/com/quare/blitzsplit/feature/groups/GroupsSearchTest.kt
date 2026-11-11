@@ -398,7 +398,15 @@ class GroupsSearchTest {
 
         // Then
         assertEquals(
-            listOf(Route.Groups, Route.GroupDetail("ape", joinedAs = null, GroupTab.MEMBERS)),
+            listOf(
+                Route.Groups,
+                Route.GroupDetail(
+                    "ape",
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = false,
+                ),
+            ),
             navigator.backStack.value,
         )
     }
@@ -420,6 +428,7 @@ class GroupsSearchTest {
                     "churrasco",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 Route.BillDetail("churrasco", "carne", focusCommentId = null),
             ),
@@ -556,6 +565,7 @@ class GroupsSearchTest {
                         churrasco.id,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
             )
@@ -775,6 +785,7 @@ class GroupsSearchTest {
                         "churrasco",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -847,6 +858,7 @@ class GroupsSearchTest {
                 "churrasco",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             )
             prepareScenario(backStack = listOf(Route.Home, Route.Groups, group))
 
@@ -879,6 +891,7 @@ class GroupsSearchTest {
                 "churrasco",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             )
             prepareScenario(backStack = listOf(Route.Home, Route.Groups, group))
 
@@ -903,7 +916,7 @@ class GroupsSearchTest {
             navigator.openActivity()
 
             // Then
-            assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
             assertFalse(viewModel.uiState.value.search.isOpen)
             assertEquals("", viewModel.uiState.value.search.query)
         }
@@ -915,7 +928,7 @@ class GroupsSearchTest {
             prepareScenario(backStack = listOf(Route.Home, Route.Groups))
             viewModel.onEvent(GroupsUiEvent.OnSearchOpened)
             viewModel.onEvent(GroupsUiEvent.OnSearch(SearchUiEvent.OnQueryChanged("chur")))
-            navigator.replaceAbove(1, Route.Activity(personKey = null))
+            navigator.replaceAbove(1, Route.Activity.all)
 
             // When
             navigator.replaceAbove(1, Route.Groups)
@@ -1072,7 +1085,12 @@ class GroupsSearchTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("aniversario", joinedAs = null, GroupTab.MEMBERS),
+                    Route.GroupDetail(
+                        "aniversario",
+                        joinedAs = null,
+                        GroupTab.MEMBERS,
+                        isOverBill = false,
+                    ),
                     Route.ContactProfile("name:carla"),
                 ),
                 navigator.backStack.value,
@@ -1095,7 +1113,12 @@ class GroupsSearchTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("churrasco", joinedAs = null, GroupTab.EXPENSES),
+                    Route.GroupDetail(
+                        "churrasco",
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
                     Route.BillDetail("churrasco", "carne", focusCommentId = null),
                 ),
                 navigator.backStack.value,
@@ -1139,7 +1162,12 @@ class GroupsSearchTest {
             assertEquals(
                 listOf(
                     Route.Groups,
-                    Route.GroupDetail("churrasco", joinedAs = null, GroupTab.EXPENSES),
+                    Route.GroupDetail(
+                        "churrasco",
+                        joinedAs = null,
+                        GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
                     Route.BillDetail("churrasco", "carne", focusCommentId = null),
                 ),
                 navigator.backStack.value,

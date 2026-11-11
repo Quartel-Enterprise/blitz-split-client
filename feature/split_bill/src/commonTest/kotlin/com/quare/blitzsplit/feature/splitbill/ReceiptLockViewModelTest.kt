@@ -80,6 +80,7 @@ class ReceiptLockViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(newRoute)
@@ -395,6 +396,7 @@ class ReceiptLockViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -412,7 +414,7 @@ class ReceiptLockViewModelTest {
         // When
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
         viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado do mês"))
-        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(spentAt))
+        viewModel.pickSpentAt(spentAt)
 
         // Then
         val state = viewModel.uiState.value
@@ -432,7 +434,7 @@ class ReceiptLockViewModelTest {
             // When
             viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
             viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado do mês"))
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(spentAt))
+            viewModel.pickSpentAt(spentAt)
 
             // Then
             val state = viewModel.uiState.value
@@ -506,7 +508,7 @@ class ReceiptLockViewModelTest {
             // Given
             viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("100,00"))
             viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Mercado do mês"))
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(millisOf(2026, 10, 29, 9, 30)))
+            viewModel.pickSpentAt(millisOf(2026, 10, 29, 9, 30))
             viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
 
             // When
@@ -564,6 +566,53 @@ class ReceiptLockViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN a time picked and a receipt being read WHEN removing the time THEN Quando keeps it`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.pickSpentAt(millisOf(2026, 10, 29, 9, 30))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(millisOf(2026, 10, 29, 9, 30), state.spentAt)
+            assertTrue(state.hasSpentTime)
+        }
+
+    @Test
+    fun `GIVEN a time picked and a receipt being read WHEN removing the time THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.pickSpentAt(millisOf(2026, 10, 29, 9, 30))
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a receipt being read past a minute WHEN opening the time THEN sends nothing and its limit stays`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+            trackedEvents.clear()
+            clockMillis = LATER_MILLIS
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeOpened)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(NOW_MILLIS, viewModel.uiState.value.latestSpentAt)
+        }
 
     @Test
     fun `GIVEN a receipt being read WHEN opening Quando THEN sends nothing`() = runTest(testDispatcher) {

@@ -544,6 +544,7 @@ class GroupDetailViewModelTest {
                     id = "dinner",
                     description = "Jantar no Ostradamus",
                     spentAt = thisMorning,
+                    hasSpentTime = true,
                     payers = listOf(
                         ExpenseRowPayer(
                             name = "Bruno",
@@ -949,6 +950,24 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN a bill saved without a time WHEN Despesas lists it THEN its row has no time`() =
+        runTest(testDispatcher) {
+            // Given
+            val startOfToday = Instant.parse("2026-10-30T00:00:00Z").toEpochMilliseconds()
+            prepareScenario(storedExpenses = listOf(expense("expense-1", spentAt = startOfToday)))
+
+            // When
+            val row = viewModel.uiState.value.days
+                .single()
+                .entries
+                .filterIsInstance<ExpenseRow>()
+                .single()
+
+            // Then
+            assertFalse(row.hasSpentTime)
+        }
+
+    @Test
     fun `GIVEN Rachar conta opened on top WHEN the group disappears THEN leaves Rachar conta in place`() =
         runTest(testDispatcher) {
             // Given
@@ -973,6 +992,46 @@ class GroupDetailViewModelTest {
                         duplicatesExpenseId = null,
                     ),
                 ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN the group opened from a new bill form WHEN Rachar conta is clicked THEN goes back to that form`() =
+        runTest(testDispatcher) {
+            // Given
+            val form = Route.SplitBill.createPickingGroup(GROUP_ID)
+            prepareScenario(
+                routesBelow = listOf(form),
+                isOverBill = true,
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, form), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the group opened from Editar conta WHEN Rachar conta is clicked THEN opens a new bill over it`() =
+        runTest(testDispatcher) {
+            // Given
+            val form = Route.SplitBill.createEditing(
+                groupId = GROUP_ID,
+                expenseId = "expense-1",
+            )
+            prepareScenario(
+                routesBelow = listOf(form),
+                isOverBill = true,
+            )
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSplitBillClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, form, route, Route.SplitBill.createNew(GROUP_ID)),
                 navigator.backStack.value,
             )
         }
@@ -3110,6 +3169,7 @@ class GroupDetailViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
@@ -3343,6 +3403,7 @@ class GroupDetailViewModelTest {
                         GROUP_ID,
                         joinedAs = "Bruno",
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.Profile,
                 ),
@@ -3369,6 +3430,7 @@ class GroupDetailViewModelTest {
                         GROUP_ID,
                         joinedAs = "Bruno",
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.Invite(GROUP_ID, isNewGroup = false),
                 ),
@@ -3419,6 +3481,7 @@ class GroupDetailViewModelTest {
         exitGate: CompletableDeferred<Unit>? = null,
         pinnedGroupIds: Set<String> = emptySet(),
         routesBelow: List<Route> = listOf(Route.Groups),
+        isOverBill: Boolean = false,
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
         groupCategories: List<GroupCategory> = emptyList(),
@@ -3427,6 +3490,7 @@ class GroupDetailViewModelTest {
             GROUP_ID,
             joinedAs = joinedAs,
             tab = GroupTab.EXPENSES,
+            isOverBill = isOverBill,
         )
         val categories = FakeCategoryRepository(initialGroupCategories = groupCategories)
         account = FakeAccountRepository(initialStatus = accountStatus)

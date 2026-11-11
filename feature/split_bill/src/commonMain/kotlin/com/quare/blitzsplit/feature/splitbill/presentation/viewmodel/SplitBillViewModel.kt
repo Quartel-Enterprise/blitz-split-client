@@ -5,7 +5,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
-import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
@@ -86,6 +85,7 @@ class SplitBillViewModel(
             createInitialBillState(
                 route = route,
                 now = currentTimeMillis(),
+                timeZone = currentTimeZone(),
                 showsSats = false,
             ),
         )
@@ -108,6 +108,7 @@ class SplitBillViewModel(
     private val groupPicking = GroupPicking(uiState, route, groupId, trackEvent)
 
     private val tracking = SplitFormTracking(uiState, trackEvent)
+    private val spentAtPicking = SpentAtPicking(uiState, currentTimeMillis, currentTimeZone, trackEvent)
 
     // Why: "Quem pagou" and "Várias pessoas pagaram".
     private val payerPicking = PayerPicking(uiState, { separator }, trackEvent)
@@ -265,6 +266,8 @@ class SplitBillViewModel(
 
             SplitBillUiEvent.OnGroupClicked -> groupPicking.open()
 
+            SplitBillUiEvent.OnOpenGroupClicked -> groupPicking.openScreen(exits::openGroup)
+
             is SplitBillUiEvent.OnGroupPicked -> groupPicking.pick(event.groupId)
 
             SplitBillUiEvent.OnGroupDone -> groupPicking.confirm()
@@ -275,11 +278,7 @@ class SplitBillViewModel(
 
             is SplitBillUiEvent.Payers -> payerPicking.onEvent(event)
 
-            SplitBillUiEvent.OnSpentAtOpened -> uiState.update {
-                it.withSpentAtLimitRefreshed(currentTimeMillis(), currentTimeZone())
-            }
-
-            is SplitBillUiEvent.OnSpentAtChanged -> changeSpentAt(event.epochMillis)
+            is SplitBillUiEvent.SpentAt -> spentAtPicking.onEvent(event)
 
             SplitBillUiEvent.OnSplitClicked -> openSplit()
 
@@ -369,11 +368,11 @@ class SplitBillViewModel(
 
             route.expenseId == null -> {
                 if (expense != null && !hasFilledDuplicate) {
-                    // Why: "Duplicar" copies the original once, as the form opens, spent now, with its split kept.
+                    // Why: "Duplicar" copies the original once, as the form opens, today with no time, its split kept.
                     hasFilledDuplicate = true
                     hasPickedSplit = true
                     duplicatedCategoryId = expense.categoryId
-                    fill(group, expense.copy(spentAt = currentTimeMillis()))
+                    fill(group, expense.copy(spentAt = startOfDayOf(currentTimeMillis(), currentTimeZone())))
                 }
                 show(group)
             }
@@ -431,8 +430,7 @@ class SplitBillViewModel(
         group: Group,
         expense: Expense,
     ) {
-        val spentDay = SpentDay.relativeDayOf(expense.spentAt, currentTimeMillis(), currentTimeZone())
-        uiState.update { it.toFilledWith(group, expense, separator, spentDay) }
+        uiState.update { it.toFilledWith(group, expense, separator, currentTimeMillis(), currentTimeZone()) }
         val split = uiState.value.split
         amountAnchor = if (split.mode == SplitMode.AMOUNT) expense.amountMinor to split.entries else null
     }
@@ -472,10 +470,6 @@ class SplitBillViewModel(
                 .withSplitAsDefaultSettled()
                 .withReceiptRequestSettled()
         }
-    }
-
-    private fun changeSpentAt(epochMillis: Long) {
-        uiState.update { it.withSpentAt(epochMillis, currentTimeMillis(), currentTimeZone()) }
     }
 
     private fun changeAmount(text: String) {

@@ -22,6 +22,7 @@ class HomeTabsTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
         )
@@ -57,6 +58,7 @@ class HomeTabsTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
         val tab = Route.GlobalBalances(BalancesFilter.ALL)
@@ -211,8 +213,14 @@ class HomeTabsTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
-            Route.GroupDetail(GROUP_ID, joinedAs = null, GroupTab.BALANCES),
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                GroupTab.BALANCES,
+                isOverBill = false,
+            ),
         )
 
         // When
@@ -268,6 +276,7 @@ class HomeTabsTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -288,8 +297,14 @@ class HomeTabsTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
-            Route.GroupDetail("trip", joinedAs = null, GroupTab.MEMBERS),
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
         )
 
         // When
@@ -313,6 +328,7 @@ class HomeTabsTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -345,6 +361,7 @@ class HomeTabsTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -352,7 +369,7 @@ class HomeTabsTest {
         navigator.openActivity()
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
     }
 
     @Test
@@ -360,7 +377,7 @@ class HomeTabsTest {
         // Given
         prepareScenario(
             Route.Home,
-            Route.Activity(personKey = null),
+            Route.Activity.all,
             Route.BillDetail("trip", "dinner", focusCommentId = null),
         )
 
@@ -368,7 +385,7 @@ class HomeTabsTest {
         navigator.openActivity()
 
         // Then
-        assertEquals(listOf(Route.Home, Route.Activity(personKey = null)), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.Activity.all), navigator.backStack.value)
     }
 
     @Test
@@ -393,6 +410,7 @@ class HomeTabsTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -439,6 +457,7 @@ class HomeTabsTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -452,7 +471,12 @@ class HomeTabsTest {
     @Test
     fun `GIVEN a group over the groups WHEN asking its home tab THEN is Grupos`() {
         // Given
-        val route = Route.GroupDetail("trip", joinedAs = null, GroupTab.MEMBERS)
+        val route = Route.GroupDetail(
+            "trip",
+            joinedAs = null,
+            GroupTab.MEMBERS,
+            isOverBill = false,
+        )
         val stack =
             listOf(
                 Route.Home,
@@ -461,6 +485,7 @@ class HomeTabsTest {
                     "trip",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
             )
@@ -479,6 +504,7 @@ class HomeTabsTest {
             "trip",
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
 
         // When
@@ -495,6 +521,7 @@ class HomeTabsTest {
             "trip",
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
         val stack = listOf(Route.Home, Route.Contacts, Route.ContactsAgenda, route)
 
@@ -524,6 +551,7 @@ class HomeTabsTest {
             "trip",
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
 
         // When
@@ -594,7 +622,7 @@ class HomeTabsTest {
     fun `GIVEN a profile over Atividade WHEN asking whether it is right above a home tab THEN it is not`() {
         // Given
         val route = Route.ContactProfile(PERSON_KEY)
-        val stack = listOf(Route.Home, Route.Activity(personKey = null), route)
+        val stack = listOf(Route.Home, Route.Activity.all, route)
 
         // When
         val isAboveTab = stack.isRightAboveHomeTab(route)
@@ -641,6 +669,7 @@ class HomeTabsTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null),
                 route,
@@ -665,6 +694,7 @@ class HomeTabsTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.MEMBERS,
+                    isOverBill = false,
                 ),
                 route,
             )

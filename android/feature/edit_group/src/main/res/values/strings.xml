@@ -33,18 +33,12 @@
         <item quantity="one">%s joined the group</item>
         <item quantity="other">%s joined the group</item>
     </plurals>
-    <plurals name="default_split_joined_equal">
-        <item quantity="one">They\'re already in the split</item>
-        <item quantity="other">They\'re already in the split</item>
-    </plurals>
-    <plurals name="default_split_joined_shares">
-        <item quantity="one">They start with 1 share</item>
-        <item quantity="other">Each one starts with 1 share</item>
-    </plurals>
-    <plurals name="default_split_joined_percent">
-        <item quantity="one">They start at 0%</item>
-        <item quantity="other">Each one starts at 0%</item>
-    </plurals>
+    <string name="default_split_start_equal_one">They\'re already in the split</string>
+    <string name="default_split_start_equal_other">They\'re already in the split</string>
+    <string name="default_split_start_shares_one">They start with 1 share</string>
+    <string name="default_split_start_shares_other">Each one starts with 1 share</string>
+    <string name="default_split_start_percent_one">They start at 0%</string>
+    <string name="default_split_start_percent_other">Each one starts at 0%</string>
     <string name="default_split_joined_sentence">%1$s. %2$s; adjust if needed.</string>
     <string name="default_split_modes">How to split</string>
     <string name="default_split_hint_equal">Everyone pays the same part</string>

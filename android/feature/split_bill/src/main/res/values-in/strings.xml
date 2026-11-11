@@ -17,6 +17,7 @@
     <string name="split_bill_payer">Siapa yang bayar</string>
     <string name="split_bill_you">Kamu</string>
     <string name="split_bill_when">Kapan</string>
+    <string name="split_bill_add_time">Tambah waktu</string>
     <string name="split_bill_split">Pembagian</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="other">Rata untuk %d orang</item>
@@ -121,6 +122,8 @@
     <string name="split_bill_group_lead">Grup yang terakhir kamu pakai sudah ditandai</string>
     <string name="split_bill_group_continue">Lanjutkan</string>
     <string name="split_bill_group_change">Grup: %s. Ubah</string>
+    <string name="split_bill_group_change_button">Ubah</string>
+    <string name="split_bill_group_open">Buka grup</string>
     <plurals name="split_bill_group_people">
         <item quantity="other">%d orang</item>
     </plurals>

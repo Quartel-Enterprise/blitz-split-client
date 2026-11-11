@@ -174,7 +174,7 @@ class EditAfterPaymentViewModelTest {
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("624,00"))
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(afterThePaymentMillis))
+        viewModel.pickSpentAt(afterThePaymentMillis)
 
         // Then
         assertNull(viewModel.uiState.value.settledPair)
@@ -188,7 +188,7 @@ class EditAfterPaymentViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("624,00"))
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(beforeThePaymentMillis))
+            viewModel.pickSpentAt(beforeThePaymentMillis)
 
             // Then
             assertEquals(
@@ -348,6 +348,7 @@ class EditAfterPaymentViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(Route.BillDetail(GROUP_ID, EXPENSE_ID, focusCommentId = null))

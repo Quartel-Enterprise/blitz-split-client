@@ -125,3 +125,236 @@ lane :apple_signing do |options|
     }))
   end
 end
+
+# Store listing screenshots (docs/store-listing-screenshots.md): the Play and App Store images of every language, made
+# from the sample trip, and their upload. Ported from Bible Planner's lanes, with the retries its releases needed.
+ANDROID_PACKAGE = "com.quare.blitzsplit".freeze
+# App Store Connect may not have finished deleting the screenshot sets deliver replaces:
+SCREENSHOT_SET_RACE_MESSAGE = "Screenshot Set Already Exists".freeze
+SCREENSHOT_SET_RACE_ATTEMPTS = 3
+SCREENSHOT_SET_RACE_WAIT_SECONDS = 30
+# Google Play's API answers a 5xx now and then, which supply reports once its own HTTP retries run out:
+PLAY_SERVER_ERROR_MESSAGE = "Google Api Error: Server error".freeze
+PLAY_SERVER_ERROR_ATTEMPTS = 3
+PLAY_SERVER_ERROR_WAIT_SECONDS = 30
+# App Store Connect refuses to reorder a shelf holding a screenshot it is still copying or deleting:
+SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder Set".freeze
+SCREENSHOT_REORDER_ATTEMPTS = 3
+SCREENSHOT_REORDER_WAIT_SECONDS = 10
+
+desc "Generate the store listing screenshots of both stores in all 11 languages, then upload them"
+desc "Options: skip_upload:true only generates (store_listings/ and the fastlane folders); platform:android or"
+desc "platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true reuses the Apple captures"
+desc "already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's screen); locale:<store code>"
+desc "uploads that locale alone (es-419, es-MX…). Uploading needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
+desc "APP_STORE_CONNECT_API_KEY_ID / _ISSUER_ID with KEY_PATH or APP_STORE_CONNECT_API_KEY_P8 (App Store)."
+lane :screenshots do |options|
+  repo_root = File.expand_path("..", __dir__)
+  platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios]
+  heavy_check = File.join(repo_root, "scripts/heavy-check.sh")
+
+  if platforms.include?("ios") && !options[:skip_capture]
+    sh(heavy_check, File.join(repo_root, "scripts/store-screenshots/capture-ios.sh"))
+    sh(heavy_check, File.join(repo_root, "scripts/store-screenshots/capture-mac.sh")) unless options[:skip_mac]
+  end
+  stage_tasks = platforms.map { |platform| platform == "ios" ? "stageAppStoreScreenshots" : "stagePlayStoreScreenshots" }
+  collect_tasks = platforms.map { |platform| platform == "ios" ? "collectAppStoreScreenshots" : "collectPlayStoreScreenshots" }
+  Dir.chdir(repo_root) { sh(heavy_check, "./gradlew", *stage_tasks, *collect_tasks) }
+  UI.success("Generated into store_listings/ for a look, and into fastlane/ for the upload")
+  next if options[:skip_upload]
+
+  upload_store_screenshots(repo_root, platforms, options)
+end
+
+desc "Upload what `fastlane screenshots skip_upload:true` staged, without generating again. Same options."
+lane :upload_screenshots do |options|
+  repo_root = File.expand_path("..", __dir__)
+  platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios]
+  upload_store_screenshots(repo_root, platforms, options)
+end
+
+# The Mac app is a version of its own on App Store Connect, so its screenshots go up apart (platform osx), and only
+# when they were staged and skip_mac wasn't passed: a run with skip_mac leaves its listing as it is, even when an
+# earlier run's Mac captures were framed again. The stores name a language differently (es-419 on Play, es-MX on the
+# App Store), so a locale: goes only to the stores that have it staged.
+def upload_store_screenshots(repo_root, platforms, options)
+  locale = options[:locale]
+  play_path = File.join(repo_root, "fastlane/metadata/android")
+  app_store_path = File.join(repo_root, "fastlane/screenshots")
+  stores = { "android" => play_path, "ios" => app_store_path }.select do |platform, path|
+    platforms.include?(platform) && (locale.nil? || File.directory?(File.join(path, locale)))
+  end
+  UI.user_error!("No store has screenshots staged for #{locale}") if stores.empty?
+  upload_play_screenshots(play_path, locale) if stores.key?("android")
+  return unless stores.key?("ios")
+
+  upload_app_store_screenshots(app_store_path, locale, "ios")
+  mac_path = File.join(repo_root, "fastlane/screenshots-mac")
+  if options[:skip_mac]
+    UI.important("skip_mac: the Mac listing keeps its own")
+  elsif Dir.glob(File.join(mac_path, "*", "*.png")).any?
+    upload_app_store_screenshots(mac_path, locale, "osx")
+  else
+    UI.important("No Mac screenshots staged: the Mac listing keeps its own")
+  end
+end
+
+desc "Remove the duplicate screenshots deliver can leave on the editable App Store version and sort every shelf"
+lane :finish_app_store_screenshots do
+  app_store_screenshots_api_key
+  tidy_app_store_screenshots("ios")
+  tidy_app_store_screenshots("osx")
+end
+
+# Listing images only: no bundle, no track, no text. sync_image_upload sends only the images whose SHA-256 differs from
+# what Play holds, so running it again uploads nothing that already landed. supply sends everything in one edit and
+# commits it at the end, so a 5xx throws the edit away and the next attempt starts over.
+def upload_play_screenshots(metadata_path, locale)
+  with_locale_only(metadata_path, locale) do |path|
+    ensure_screenshots_staged(File.join(path, "*", "images", "*", "*.png"))
+    retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+      upload_to_play_store(
+        package_name: ANDROID_PACKAGE,
+        json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
+        metadata_path: path,
+        skip_upload_aab: true,
+        skip_upload_apk: true,
+        skip_upload_metadata: true,
+        skip_upload_changelogs: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: false,
+        sync_image_upload: true,
+        validate_only: ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true",
+      )
+    end
+  end
+end
+
+# deliver deletes a locale's screenshots and recreates its sets; a set recreated before App Store Connect finished
+# deleting it is refused with "Screenshot Set Already Exists!", and waiting and running deliver again recovers. A shelf
+# it can't reorder (a copy of the previous version's screenshot still there) doesn't fail an upload that landed: the
+# tidy-up after the last locale removes the copy and sorts it.
+def upload_app_store_screenshots(screenshots_path, locale, platform)
+  api_key = app_store_screenshots_api_key
+  with_locale_only(screenshots_path, locale) do |path|
+    ensure_screenshots_staged(File.join(path, "*", "*.png"))
+    tolerating(SCREENSHOT_REORDER_REFUSED_MESSAGE) do
+      retrying_on(SCREENSHOT_SET_RACE_MESSAGE, attempts: SCREENSHOT_SET_RACE_ATTEMPTS, wait_seconds: SCREENSHOT_SET_RACE_WAIT_SECONDS) do
+        upload_to_app_store(
+          api_key: api_key,
+          app_identifier: BUNDLE_ID,
+          # Unset, deliver uses the editable version; set, it creates that version when it doesn't exist yet
+          app_version: ENV["APP_VERSION"],
+          platform: platform,
+          screenshots_path: path,
+          skip_binary_upload: true,
+          skip_metadata: true,
+          skip_screenshots: false,
+          submit_for_review: false,
+          force: true,
+          precheck_include_in_app_purchases: false,
+          overwrite_screenshots: true,
+        )
+      end
+    end
+  end
+  tidy_app_store_screenshots(platform) if locale.nil?
+end
+
+def app_store_screenshots_api_key
+  key = {
+    key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+    issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+    set_spaceship_token: true,
+  }
+  if ENV["APP_STORE_CONNECT_API_KEY_P8"]
+    key.merge!(key_content: ENV["APP_STORE_CONNECT_API_KEY_P8"], is_key_content_base64: true)
+  else
+    key[:key_filepath] = ENV.fetch("KEY_PATH")
+  end
+  app_store_connect_api_key(**key)
+end
+
+# Both stores replace a listing's screenshots with what is staged, so an empty folder would wipe it instead of failing.
+def ensure_screenshots_staged(glob)
+  staged = Dir.glob(glob)
+  UI.user_error!("No staged screenshots matching #{glob}") if staged.empty?
+  UI.message("Found #{staged.size} staged screenshot(s)")
+end
+
+# Yields `path`, or a temporary copy holding only `locale`'s folder: supply and deliver upload every locale they find.
+def with_locale_only(path, locale)
+  return yield(path) if locale.nil?
+
+  require "tmpdir"
+  source = File.join(path, locale)
+  UI.user_error!("No staged screenshots for #{locale} under #{path}") unless File.directory?(source)
+  Dir.mktmpdir("screenshots-#{locale}-") do |dir|
+    FileUtils.cp_r(source, File.join(dir, locale))
+    yield(dir)
+  end
+end
+
+# Runs the block again when it fails with an error whose message includes `message`, `attempts` times in all.
+def retrying_on(message, attempts:, wait_seconds:)
+  attempt = 1
+  begin
+    yield
+  rescue => e
+    raise unless e.message.include?(message) && attempt < attempts
+
+    UI.important("#{e.message.lines.first.strip} (attempt #{attempt} of #{attempts}), trying again in #{wait_seconds}s")
+    sleep(wait_seconds)
+    attempt += 1
+    retry
+  end
+end
+
+# Runs the block and carries on past an error whose message includes `message`; returns whether it did.
+def tolerating(message)
+  yield
+  false
+rescue => e
+  raise unless e.message.include?(message)
+
+  UI.important("Carrying on past: #{e.message.lines.first.strip}")
+  true
+end
+
+# Removes the later copy of any screenshot uploaded twice (deliver re-uploads one whose checksum App Store Connect has
+# not published yet) and puts every shelf of the editable version in file-name order, the shelf order.
+def tidy_app_store_screenshots(platform)
+  require "naturally"
+  require "spaceship"
+
+  app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
+  version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform.map(platform.to_sym))
+  # The Mac app may have no version open for editing while the iOS one has, or the other way round: nothing to tidy
+  if version.nil?
+    UI.important("No editable #{platform} App Store version: no screenshots to tidy up there")
+    return
+  end
+
+  refused = []
+  version.get_app_store_version_localizations.each do |localization|
+    localization.get_app_screenshot_sets.each do |set|
+      shelf = "#{localization.locale}/#{set.screenshot_display_type}"
+      begin
+        strays = set.app_screenshots.group_by(&:file_name).flat_map { |_, copies| copies.drop(1) }
+        strays.each(&:delete!)
+        remaining = set.app_screenshots - strays
+        sorted_ids = Naturally.sort(remaining, by: :file_name).map(&:id)
+        next if remaining.map(&:id) == sorted_ids
+
+        attempts = strays.empty? ? 1 : SCREENSHOT_REORDER_ATTEMPTS
+        retrying_on(SCREENSHOT_REORDER_REFUSED_MESSAGE, attempts: attempts, wait_seconds: SCREENSHOT_REORDER_WAIT_SECONDS) do
+          set.reorder_screenshots(app_screenshot_ids: sorted_ids)
+        end
+      rescue => e
+        UI.error("Could not tidy #{shelf} up: #{e.message.lines.first.strip}")
+        refused << shelf
+      end
+    end
+  end
+  UI.user_error!("App Store Connect refused to tidy #{refused.join(', ')} up") if refused.any?
+end

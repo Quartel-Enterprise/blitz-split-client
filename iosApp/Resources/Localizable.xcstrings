@@ -15129,67 +15129,67 @@
         }
       }
     },
-    "Portuguese (BR)" : {
+    "Portuguese (Brazil)" : {
       "comment" : "A language of Profile › Language, in the app's language",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugiesisch (BR)"
+            "value" : "Portugiesisch (Brasilien)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugués (BR)"
+            "value" : "Portugués (Brasil)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugais (BR)"
+            "value" : "Portugais (Brésil)"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bahasa Portugis (BR)"
+            "value" : "Bahasa Portugis (Brasil)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portoghese (BR)"
+            "value" : "Portoghese (Brasile)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ポルトガル語（BR）"
+            "value" : "ポルトガル語（ブラジル）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugees (BR)"
+            "value" : "Portugees (Brazilië)"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portugalski (BR)"
+            "value" : "Portugalski (Brazylia)"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Português (BR)"
+            "value" : "Português (Brasil)"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Portekizce (BR)"
+            "value" : "Portekizce (Brezilya)"
           }
         }
       }
@@ -42956,55 +42956,55 @@
         }
       }
     },
-    "%@ leaves your Contacts. They stay in %@ and come back by themselves if they join a new account with you. You can show them again in Hidden." : {
+    "%@ leaves your Contacts. They stay in %@ and come back by themselves if they join a new bill with you. You can show them again in Hidden." : {
       "comment" : "Hide a contact?; the first %@ is them, the second their groups",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ verschwindet aus deinen Kontakten. Bleibt aber in %2$@ und kommt von selbst zurück, wenn ihr gemeinsam in einer neuen Gruppe seid. Unter „Ausgeblendet“ kannst du die Person wieder einblenden."
+            "value" : "%1$@ verschwindet aus deinen Kontakten. Bleibt aber in %2$@ und kommt von selbst zurück, wenn ihr gemeinsam bei einer neuen Ausgabe dabei seid. Unter „Ausgeblendet“ kannst du die Person wieder einblenden."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ sale de tu lista de Contactos. Se mantiene en %2$@ y vuelve automáticamente si se une a una cuenta nueva contigo. Puedes mostrarlo de nuevo en Ocultos."
+            "value" : "%1$@ sale de tu lista de Contactos. Se mantiene en %2$@ y vuelve automáticamente si se une a un gasto nuevo contigo. Puedes mostrarlo de nuevo en Ocultos."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ quitte tes Contacts. La personne reste dans %2$@ et revient toute seule si elle rejoint un nouveau compte avec toi. Tu peux l’afficher de nouveau dans Masqués."
+            "value" : "%1$@ quitte tes Contacts. La personne reste dans %2$@ et revient toute seule si elle rejoint une nouvelle dépense avec toi. Tu peux l’afficher de nouveau dans Masqués."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ hilang dari Kontakmu. Dia tetap ada di %@ dan kembali dengan sendirinya jika bergabung ke akun baru bersamamu. Kamu bisa menampilkannya lagi di Tersembunyi."
+            "value" : "%@ hilang dari Kontakmu. Dia tetap ada di %@ dan kembali dengan sendirinya jika ikut tagihan baru bersamamu. Kamu bisa menampilkannya lagi di Tersembunyi."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ esce dai tuoi Contatti. Resta in %@ e ricompare da sé se entra in un nuovo gruppo con te. Puoi mostrare di nuovo questo contatto in Nascosti."
+            "value" : "%@ esce dai tuoi Contatti. Resta in %@ e ricompare da sé se partecipa a una nuova spesa con te. Puoi mostrare di nuovo questo contatto in Nascosti."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@は連絡先から外れます。%@には残り、あなたと新しいグループに参加すると自動で戻ります。「非表示」から再表示できます。"
+            "value" : "%@は連絡先から外れます。%@には残り、あなたと一緒に新しい支出に加わると自動で戻ります。「非表示」から再表示できます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ verdwijnt uit je Contacten. Diegene blijft in %2$@ en komt vanzelf terug bij een nieuwe gezamenlijke groep met jou. Je kunt diegene weer tonen bij Verborgen."
+            "value" : "%1$@ verdwijnt uit je Contacten. Diegene blijft in %2$@ en komt vanzelf terug bij een nieuwe uitgave met jou. Je kunt diegene weer tonen bij Verborgen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ znika z twoich Kontaktów. Zostaje w: %2$@ i wróci samoczynnie, jeśli połączy się z tobą przez nowe konto. Możesz pokazać tę osobę ponownie w sekcji Ukryte."
+            "value" : "%1$@ znika z twoich Kontaktów. Zostaje w: %2$@ i wróci samoczynnie, jeśli dołączy z tobą do nowego wydatku. Możesz pokazać tę osobę ponownie w sekcji Ukryte."
           }
         },
         "pt-BR" : {
@@ -43016,7 +43016,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ Kişiler'inden çıkar. %@ içinde kalır ve seninle yeni bir hesapla katılırsa kendiliğinden geri gelir. Onu Gizli'de yeniden gösterebilirsin."
+            "value" : "%@ Kişiler'inden çıkar. %@ içinde kalır ve seninle yeni bir harcamaya katılırsa kendiliğinden geri gelir. Onu Gizli'de yeniden gösterebilirsin."
           }
         }
       }
@@ -56905,6 +56905,71 @@
         }
       }
     },
+    "Change" : {
+      "comment" : "Split a bill: beside the group, asks Split in which group? to move a new bill to another group",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ändern"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubah"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambia"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "変更"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wijzigen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zmień"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocar"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Değiştir"
+          }
+        }
+      }
+    },
     "Changing the total later rescales the amounts." : {
       "comment" : "Hint of the split by amount",
       "localizations" : {
@@ -58588,70 +58653,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hesabın silinemedi. Tekrar dene."
-          }
-        }
-      }
-    },
-    "Couldn't disconnect. Try again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trennen fehlgeschlagen. Versuch es erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo desconectar. Inténtalo de nuevo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Impossible de déconnecter. Réessaie."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gagal memutuskan. Coba lagi."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Impossibile scollegare. Riprova."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "連携を解除できませんでした。もう一度お試しください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kan niet ontkoppelen. Probeer het opnieuw."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie udało się rozłączyć. Spróbuj ponownie."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não deu para desconectar. Tente de novo."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bağlantı kesilemedi. Tekrar dene."
           }
         }
       }
@@ -61572,200 +61573,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ayrıntılar"
-          }
-        }
-      }
-    },
-    "Disconnect" : {
-      "comment" : "The destructive button of the alert that disconnects Google or Apple; also the account row's hint",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trennen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desconectar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Déconnecter"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Putuskan"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scollega"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "連携を解除"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ontkoppelen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rozłącz"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desconectar"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bağlantıyı kes"
-          }
-        }
-      }
-    },
-    "Disconnect your %@ account?" : {
-      "comment" : "%@ is the account: Google or Apple",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein %@-Konto trennen?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Desconectar tu cuenta de %@?"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Déconnecter ton compte %@ ?"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Putuskan akun %@-mu?"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scollegare il tuo account %@?"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@アカウントの連携を解除しますか？"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je %@-account ontkoppelen?"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rozłączyć konto %@?"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desconectar a conta %@?"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ hesabının bağlantısı kesilsin mi?"
-          }
-        }
-      }
-    },
-    "Disconnect…" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trennen…"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desconectar…"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Déconnecter…"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Putuskan…"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scollega…"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "連携を解除…"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ontkoppelen…"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rozłącz…"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desconectar…"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bağlantıyı kes…"
           }
         }
       }
@@ -69698,70 +69505,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ad, fotoğraf ve avatar rengi"
-          }
-        }
-      }
-    },
-    "Needs an internet connection." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Braucht eine Internetverbindung."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Requiere conexión a internet."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nécessite une connexion internet."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Butuh koneksi internet."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serve una connessione a internet."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "インターネット接続が必要です。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vereist een internetverbinding."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wymaga połączenia z internetem."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Precisa de internet."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İnternet bağlantısı gerekir."
           }
         }
       }
@@ -83675,71 +83418,6 @@
         }
       }
     },
-    "You keep using Blitz Split on this %@, without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don't lose access." : {
-      "comment" : "%@ is the device: iPhone, iPad or Mac",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Du nutzt Blitz Split auf diesem %@ weiter, ohne Konto. Deine Gruppen bleiben hier, und die Synchronisierung wechselt zu einer anonymen ID. Als Nächstes zeigen wir dir deinen Wiederherstellungscode: Bewahre ihn auf, damit du den Zugang nicht verlierst."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sigues usando Blitz Split en este %@, sin cuenta. Tus grupos se quedan aquí y la sincronización pasa a usar un ID anónimo. A continuación te mostramos tu código de recuperación: guárdalo para no perder el acceso."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu continues d’utiliser Blitz Split sur ton %@, sans compte. Tes groupes restent ici et la synchronisation passe à un ID anonyme. On te montre ensuite ton code de récupération : garde-le pour ne pas perdre l’accès."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kamu tetap memakai Blitz Split di %@ ini, tanpa akun. Grupmu tetap di sini dan sinkronisasi beralih ke ID anonim. Selanjutnya kami tampilkan kode pemulihanmu: simpan agar kamu tidak kehilangan akses."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Continui a usare Blitz Split su questo %@, senza account. I tuoi gruppi restano qui e la sincronizzazione passa a un ID anonimo. Poi ti mostriamo il tuo codice di recupero: conservalo per non perdere l’accesso."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "この%@でアカウントなしでBlitz Splitを使い続けます。グループはここに残り、同期は匿名IDに切り替わります。次に復元コードを表示します：アクセスを失わないよう保管してください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je blijft Blitz Split gebruiken op deze %@, zonder account. Je groepen blijven hier en de synchronisatie gaat over op een anonieme ID. Daarna tonen we je herstelcode: bewaar hem zodat je je toegang niet kwijtraakt."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nadal używasz Blitz Split na tym urządzeniu (%@), bez konta. Twoje grupy zostają tutaj, a synchronizacja przełącza się na anonimowy identyfikator. Za chwilę pokażemy ci kod odzyskiwania: zachowaj go, aby nie stracić dostępu."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Você continua usando o Bora Rachar neste %@, sem conta. Seus grupos ficam aqui e a sincronização passa a usar um ID anônimo. Em seguida mostramos seu código de recuperação: guarde-o para não perder o acesso."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blitz Split'i bu %@ cihazında hesapsız kullanmaya devam edersin. Grupların burada kalır ve eşitleme anonim bir kimliğe geçer. Sonra kurtarma kodunu gösteririz: erişimini kaybetmemek için sakla."
-          }
-        }
-      }
-    },
     "You no longer get back %@." : {
       "comment" : "Deleting a bill this user paid; %@ is what they were to get back",
       "localizations" : {
@@ -85807,6 +85485,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ty"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "você"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sen"
+          }
+        }
+      }
+    },
+    "you, whom they owed" : {
+      "comment" : "Record payment: this device's user among the people someone owed before Simplify debts, as the object of \"owed\": \"what they owed you\"",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dir"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "you"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "toi"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kamu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "te"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなた"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "jou"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tobie"
           }
         },
         "pt-BR" : {
@@ -103871,55 +103621,55 @@
         }
       }
     },
-    "Whoever is hidden stays in the groups. They come back to the list by themselves if they join a new account with you." : {
+    "Whoever is hidden stays in the groups. They come back to the list by themselves if they join a new bill with you." : {
       "comment" : "Under the hidden contacts",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ausgeblendete Personen bleiben in den Gruppen. Sie kommen von selbst in die Liste zurück, wenn ihr gemeinsam in einer neuen Gruppe seid."
+            "value" : "Ausgeblendete Personen bleiben in den Gruppen. Sie kommen von selbst in die Liste zurück, wenn ihr gemeinsam bei einer neuen Ausgabe dabei seid."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quien está oculto sigue en los grupos. Vuelve a la lista automáticamente si se une a una cuenta nueva contigo."
+            "value" : "Quien está oculto sigue en los grupos. Vuelve a la lista automáticamente si se une a un gasto nuevo contigo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les personnes masquées restent dans les groupes. Elles reviennent dans la liste toutes seules si elles rejoignent un nouveau compte avec toi."
+            "value" : "Les personnes masquées restent dans les groupes. Elles reviennent dans la liste toutes seules si elles rejoignent une nouvelle dépense avec toi."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yang disembunyikan tetap ada di grup. Mereka kembali ke daftar dengan sendirinya kalau bergabung ke grup baru bersamamu."
+            "value" : "Yang disembunyikan tetap ada di grup. Mereka kembali ke daftar dengan sendirinya kalau ikut tagihan baru bersamamu."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chi è nascosto resta nei gruppi. Torna nella lista da sé se entra in un nuovo gruppo con te."
+            "value" : "Chi è nascosto resta nei gruppi. Torna nella lista da sé se partecipa a una nuova spesa con te."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "非表示にした人もグループには残ります。あなたと一緒に新しいアカウントで参加すると、自動的にリストに戻ります。"
+            "value" : "非表示にした人もグループには残ります。あなたと一緒に新しい支出に加わると、自動的にリストに戻ります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wie verborgen is, blijft in de groepen. Ze komen vanzelf terug in de lijst als ze een nieuw account met je delen."
+            "value" : "Wie verborgen is, blijft in de groepen. Ze komen vanzelf terug in de lijst als ze met jou in een nieuwe uitgave zitten."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukryte osoby zostają w grupach. Wrócą na listę samoczynnie, jeśli połączą się z tobą przez nowe konto."
+            "value" : "Ukryte osoby zostają w grupach. Wrócą na listę samoczynnie, jeśli dołączą z tobą do nowego wydatku."
           }
         },
         "pt-BR" : {
@@ -103931,7 +103681,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gizlenen kişiler gruplarda kalır. Seninle yeni bir hesaba katılırsa listeye kendiliğinden geri döner."
+            "value" : "Gizlenen kişiler gruplarda kalır. Seninle yeni bir harcamaya katılırsa listeye kendiliğinden geri döner."
           }
         }
       }
@@ -118341,13 +118091,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ le paga a %2$@ lo que le debía a %3$@."
+            "value" : "%1$@ le paga a %2$@ lo que antes era para %3$@."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ paie à %2$@ ce qui était dû à %3$@."
+            "value" : "%1$@ paie à %2$@ ce qu’il devait à %3$@."
           }
         },
         "id" : {
@@ -118377,7 +118127,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ płaci osobie %2$@ swój dług wobec osoby %3$@."
+            "value" : "%1$@ płaci osobie %2$@ zamiast płacić: %3$@."
           }
         },
         "pt-BR" : {
@@ -118389,7 +118139,72 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@, %2$@ kişisine, %3$@ kişisine olan borcunu ödüyor."
+            "value" : "%1$@, %2$@ kişisine öder; önceki alacaklı: %3$@."
+          }
+        }
+      }
+    },
+    "%@ pays you what they owed %@." : {
+      "comment" : "Record payment: a pair Simplify debts made, this device's user receiving; payer, whom they owed by the bills",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ zahlt dir den Betrag, der %2$@ geschuldet war."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te paga lo que le debía a %2$@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ te paie ce qu’il devait à %2$@."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ membayar ke kamu yang tadinya dia utang ke %2$@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ti paga quello che doveva a %2$@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@が%2$@に払う予定だった分をあなたに支払います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ betaalt jou wat die %2$@ schuldig was."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ płaci tobie zamiast płacić: %2$@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ paga a você o que devia a %2$@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@ kişisine olan borcunu sana öder."
           }
         }
       }
@@ -118406,7 +118221,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "incluye lo que %1$@ le debía a %2$@."
+            "value" : "incluye la deuda de %1$@ que antes era para %2$@."
           }
         },
         "fr" : {
@@ -118442,7 +118257,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "obejmuje dług osoby %1$@ wobec osoby %2$@."
+            "value" : "obejmuje też dawny dług %1$@ → %2$@."
           }
         },
         "pt-BR" : {
@@ -118454,7 +118269,72 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ kişisinin %2$@ kişisine olan borcunu içerir."
+            "value" : "%1$@ kişisinin önceki borcunu da içerir; alacaklı: %2$@."
+          }
+        }
+      }
+    },
+    "includes what you owed %@." : {
+      "comment" : "Record payment: a pair Simplify debts grew, this device's user paying; whom they owed by the bills",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "enthält, was du %@ geschuldet hast."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "incluye lo que le debías a %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "inclut ce que tu devais à %@."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "termasuk utangmu ke %@."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "include quello che dovevi a %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@に払う予定だった分を含みます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "inclusief wat je %@ schuldig was."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "obejmuje też twój dawny dług wobec: %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "inclui o que você devia a %@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ kişisine olan borcunu da içerir."
           }
         }
       }

@@ -705,6 +705,7 @@ class RoomActivityLocalDataSourceTest {
         id: String,
         pendingSync: Boolean = false,
         inviteCode: String? = "7Hk2pQxa",
+        isOnServer: Boolean = inviteCode != null || !pendingSync,
     ): GroupEntity = GroupEntity(
         id = id,
         name = "Apê 302",
@@ -728,6 +729,7 @@ class RoomActivityLocalDataSourceTest {
         simplifyDebtsChange = null,
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
+        isOnServer = isOnServer,
     )
 
     private fun expense(

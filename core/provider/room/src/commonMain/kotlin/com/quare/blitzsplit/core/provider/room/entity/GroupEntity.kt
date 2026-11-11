@@ -23,7 +23,11 @@ data class GroupEntity(
     val pendingSync: Boolean,
     // Why: the user whose copy this is, as ProfileEntity.ownerUserId, so a sync under another user drops it.
     val ownerUserId: String?,
-    // Why: the code of the invite link, which the server makes; null until the group's first sync brings it.
+    /*
+     * Why: the code of the invite link. This device makes a new group's, so the link works offline; the server keeps it
+     * unless another group took it, and its code wins from then on. Null only for a group an older version made, until
+     * its first sync brings the server's.
+     */
     val inviteCode: String?,
     /*
      * Why: "Divisão padrão" (6.7) as the JSON object the server keeps ({"mode", "weights"}, plus whatever a newer
@@ -70,4 +74,10 @@ data class GroupEntity(
     // Why: the account whose later change took the place of this device's, until "Ana desligou depois de você" shows.
     @ColumnInfo(defaultValue = "NULL")
     val simplifyDebtsConflictBy: String?,
+    /*
+     * Why: the server has the group: it went up once, or came down from it, whatever changed here since. A new group has
+     * its invite code from the start, so the code no longer tells.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val isOnServer: Boolean,
 )

@@ -8,7 +8,7 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     menu "Currency" row under the total, the web a menu button, labeled "Currency: BRL. Change it" for a screen
     reader). A new bill opens in the group's currency (`Group.currency`, only the default), a bill being edited, and
     a duplicate of a bill (bill's "Duplicate", `Route.SplitBill.duplicatesExpenseId`: a new bill filled in once with
-    the original's description, amount, category, payers and split, spent now), in its own (`Expense.currency`); the
+    the original's description, amount, category, payers and split, spent today without a time), in its own (`Expense.currency`); the
     state's `currency` is the one source, so saving an edit never moves the bill to the group's. Nothing remembers the last pick: the next bill opens in the group's again, and a bill moved to
     another group starts in that group's. Changing it re-bases the form as moving the bill to a group of another
     currency does: the typed total, "Amounts" values and what each one paid keep their number with the decimals cut
@@ -21,7 +21,23 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     312 of R$ 312. Adds up.", else "R$ X left" / "R$ X over"), and Done waits until it does
     (`SplitBillUiState.severalPayers`, `payerAmounts`). A new total keeps what each one paid, and Save waits until
     someone makes it add up again; one person holding the whole total is one payer again. "When"
-    picks date and time, never after now. The form asks what it was before how much (Pierre's call, beta feedback
+    picks the date, and the time is optional (Pierre's call, beta feedback, `SplitBillUiState.hasSpentTime`): a new
+    bill (and a duplicate) is today with no time, which is saved as the first instant of its day, 00:00 on the device
+    (`SpentDay.hasTime`, so a time picked as 00:00 is no time either), and shows the date alone ("Today, Nov 10").
+    Picking a date never chains into the clock and keeps the time the bill has, or its lack of one
+    (`OnSpentDayPicked`); the time has its own control (`OnSpentTimeOpened`, `OnSpentTimePicked`,
+    `OnSpentTimeCleared`): Android's "Add time" at the end of the row, or the time itself, opening the clock, which
+    offers "Remove time" while there is one; iOS's "Time" switch with its picker beside it on its own row, the Mac's
+    "Time" checkbox with its field; the web's "Add time" in the popover, then its time input with "Remove time". The
+    switch, the checkbox and the web's "Add time" give the bill the time it is now by the shared clock
+    (`OnSpentTimeAdded`). A bill saved with a time keeps showing and editing it. Never after now: a later time today
+    becomes now. Counting as 00:00, a bill without a time sorts after the day's timed bills and payments in Expenses
+    (the most recent on top), and a payment made later that day counts as after it. Known limit: "no time" is read from the instant in the reader's time zone, so a member in another
+    time zone sees the creator's midnight as a time (and, west of it, on the day before) until the bill stores whether
+    it has a time (a `has_time` column of `expenses` in `blitz-split-api`, not done yet). Wherever a bill's
+    time shows, one without a time shows its date alone, never 00:00 (`hasSpentTime`, `hasTime`): Expenses' rows, a
+    category's bills, Bill (and the web's bill page), Bill's history ("When"), Activity's changes and Statistics'
+    "Biggest expense" ("Bruno paid", "Today", "Tue, Oct 27"). The form asks what it was before how much (Pierre's call, beta feedback
     10): "Description" with its category's icon and the line saying why, then "Amount", in every layout, a new bill
     opening on the description. A bill is 0.01 to 100 million in its own currency (but the bitcoin, ether and rupiah
     caps of `ExpenseRules.maxAmountMinorFor`; a new bill starts in the group's default currency, and "Edit bill" keeps
@@ -187,7 +203,7 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     Save waits and every other field of the form shows disabled, so nothing typed is overwritten (Pierre's call,
     beta feedback 17, `SplitBillUiState.isFormLocked`: description, category, amount, group, who paid, when and
     split; a sheet or picker left open closes as the read starts), while × on "Receipt photo" still cancels it. Once read it fills the total, the description (the place)
-    and When (the day printed, with its time or the form's, never after now), shows "Read from the receipt" and "14 items" under the description, and its items
+    and When (the day printed, with its time or the form's, or none, never after now), shows "Read from the receipt" and "14 items" under the description, and its items
     wait for Split's Items, which "14 items" opens straight away (Pierre's call, `OnReceiptItemsClicked`: Split
     under it, so back goes there; the Mac's count is a link); the split stays the group's default until Items or another mode is picked. Its category
     is one of the app's or of the group's own, which go with the photo with the person's map terms counting in that
@@ -208,10 +224,19 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     one you used last comes marked", `Route.SplitBill.picksGroupFirst`): every group on the device, settled ones
     included, the most recent activity first as on the home (`ObserveGroupsByActivity`), each with "6 people", one
     marked until "Continue" (`SplitBillUiState.groupSelection`); closing it keeps the marked group's bill. With a
-    single group it goes straight to the bill, and a sync bringing a second one never asks later. A new bill's group
-    reopens it from the form on every platform, once there is another group (`SplitBillUiState.canChangeGroup`):
-    Android's chip, iOS's "Group" row, the web's "Group" field and a pop-up button on the Mac, which picks in one go
-    (the Mac's sheet only asks from the home); "Edit bill" keeps its group. Another group keeps what was typed
+    single group it goes straight to the bill, and a sync bringing a second one never asks later. The bill's group
+    opens that group's screen (its Expenses) over the form (beta feedback; the details below were settled while
+    Pierre was away, see PR #299: `OnOpenGroupClicked`, `SplitBillUiState.canOpenGroup`): Android's chip, iOS's
+    "Group" row, the web's "Group" field and the Mac's "Open group" link beside it, a new bill and "Edit bill" alike,
+    never while the bill saves or a receipt is read. Back comes to the form with what was typed: Android keeps its
+    entry under the group, iOS and the Mac push the group inside the bill's sheet (as the category map), with what it
+    opens but a screen that is only ever a sheet, the web draws it over the form, which stays mounted. The group's
+    "Split a bill" there comes back to a new bill's form instead of opening a second one ("Edit bill" opens a new
+    bill over the group), and a screen already on the stack (the bill being edited, opened again from its group) goes
+    back to it rather than stacking twice. A new bill's group is changed
+    apart from it, once there is another group (`SplitBillUiState.canChangeGroup`): "Change" beside Android's chip,
+    iOS's row and the web's field reopens "Split in which group?", and the Mac's pop-up button picks in one go (the
+    Mac's sheet only asks from the home); "Edit bill" keeps its group. Another group keeps what was typed
     (amount, description, when), but who paid and the split start over with its people: you pay, Equal among everyone.
     A sync deleting the group the bill was moved to sends it back to the group it was opened for, the same way, and
     closes Split a bill only once that one is gone too.

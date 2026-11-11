@@ -18,7 +18,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.LoadSharedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -92,6 +91,7 @@ class SharedBillViewModel(
                 totalMinor = 0L,
                 spentAt = 0L,
                 spentDay = RelativeDay.OTHER,
+                hasSpentTime = false,
                 categoryId = null,
                 categories = CategoryTree.of(emptyList()),
                 splitMode = SplitMode.EQUAL,
@@ -283,11 +283,8 @@ class SharedBillViewModel(
                         description = bill.description,
                         totalMinor = bill.amountMinor,
                         spentAt = bill.spentAt,
-                        spentDay = SpentDay.relativeDayOf(
-                            epochMillis = bill.spentAt,
-                            nowMillis = nowMillis,
-                            timeZone = timeZone,
-                        ),
+                        spentDay = SpentDay.relativeDayOf(bill.spentAt, nowMillis, timeZone),
+                        hasSpentTime = SpentDay.hasTime(bill.spentAt, timeZone),
                         categoryId = bill.categoryId,
                         splitMode = bill.splitMode,
                         payers = payersOf(bill),
@@ -358,11 +355,7 @@ class SharedBillViewModel(
         navigator.replaceAbove(
             size = navigator.backStack.value.size - 1,
             routes = listOf(
-                Route.GroupDetail(
-                    groupId = bill.groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
+                Route.GroupDetail.expensesOf(bill.groupId),
                 Route.BillDetail(
                     groupId = bill.groupId,
                     expenseId = bill.expenseId,
