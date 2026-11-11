@@ -112,6 +112,7 @@ class ProfileViewModelTest {
     private val isPushEnabled = MutableStateFlow(true)
     private lateinit var isOnline: MutableStateFlow<Boolean>
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
+    private val showsPix = MutableStateFlow(true)
     private lateinit var syncState: MutableStateFlow<SyncState>
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
@@ -6498,6 +6499,56 @@ class ProfileViewModelTest {
         }
 
     // Why: the account's profile code as this device made it, and the link "Share profile" hands out.
+    @Test
+    fun `GIVEN the Pix rule has not answered WHEN the profile opens THEN shows Pix`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsPix)
+    }
+
+    @Test
+    fun `GIVEN the Pix rule off WHEN the profile opens THEN does not show Pix`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pixRuleOn = false)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsPix)
+    }
+
+    @Test
+    fun `GIVEN the profile open with the Pix rule off WHEN the rule turns on THEN shows Pix`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pixRuleOn = false)
+
+            // When
+            showsPix.value = true
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsPix)
+        }
+
+    @Test
+    fun `GIVEN the profile open with the Pix rule on WHEN the rule turns off THEN stops showing Pix`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pixRuleOn = true)
+
+            // When
+            showsPix.value = false
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsPix)
+        }
+
     private val shareCode = "7Hk2pQ8xZa"
 
     private val shareLink = "https://blitzsplit.com/u/7Hk2pQ8xZa"
@@ -6616,7 +6667,9 @@ class ProfileViewModelTest {
         language: AppLanguage = AppLanguage.SYSTEM,
         clientPlatform: ClientPlatform = ClientPlatform.ANDROID,
         shareCode: String? = null,
+        pixRuleOn: Boolean = true,
     ) {
+        showsPix.value = pixRuleOn
         appInvite = MutableStateFlow(invite)
         appInviteDismissals = 0
         syncRetries = 0
@@ -6725,6 +6778,7 @@ class ProfileViewModelTest {
             },
             observePushEnabled = { isPushEnabled },
             observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
+            observeShowsPix = { showsPix },
             updateBitcoinInSats = { storedBitcoinInSats.value = it },
             observeBitcoinInSats = { storedBitcoinInSats },
             updateAppLanguage = {

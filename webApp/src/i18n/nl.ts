@@ -903,6 +903,8 @@ export const nl: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Wie jou iets schuldig is, ziet je standaardsleutel bij het verrekenen.',
   profile_keysDefault: 'Standaard',
   profile_keysAdd: 'Een Pix- of Bitcoin-sleutel toevoegen',
+  profile_keysAddBitcoinEntry: 'Bitcoin-sleutel toevoegen',
+  profile_keysAddPixEntry: 'Pix-sleutel toevoegen',
   profile_keysAddPix: 'Pix-sleutel',
   profile_keysAddBitcoin: 'Bitcoin-sleutel',
   profile_keyRowCPF: 'Pix · CPF',

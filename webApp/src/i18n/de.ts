@@ -903,6 +903,8 @@ export const de: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Wer dir etwas schuldet, sieht beim Begleichen deinen Standardschlüssel.',
   profile_keysDefault: 'Standard',
   profile_keysAdd: 'Pix- oder Bitcoin-Schlüssel hinzufügen',
+  profile_keysAddBitcoinEntry: 'Bitcoin-Schlüssel hinzufügen',
+  profile_keysAddPixEntry: 'Pix-Schlüssel hinzufügen',
   profile_keysAddPix: 'Pix-Schlüssel',
   profile_keysAddBitcoin: 'Bitcoin-Schlüssel',
   profile_keyRowCPF: 'Pix · CPF',

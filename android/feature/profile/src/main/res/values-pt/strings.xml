@@ -38,6 +38,8 @@
     <string name="profile_payment_key_onchain">Bitcoin · On-chain</string>
     <string name="profile_payment_key_default">Padrão</string>
     <string name="profile_payment_keys_add">Adicionar chave Pix ou Bitcoin</string>
+    <string name="profile_payment_keys_add_bitcoin_entry">Adicionar chave Bitcoin</string>
+    <string name="profile_payment_keys_add_pix_entry">Adicionar chave Pix</string>
     <string name="profile_payment_keys_add_pix">Chave Pix</string>
     <string name="profile_payment_keys_add_bitcoin">Chave Bitcoin</string>
     <string name="profile_section_preferences">Preferências</string>

@@ -961,6 +961,57 @@ class RegisterPaymentUiStateTest {
         previousDebtMinor = 8_000L,
     )
 
+    @Test
+    fun `GIVEN the Pix rule on WHEN listing the methods THEN lists Pix first and the others`() {
+        // Given
+        val state = state(
+            showsPix = true,
+            method = SettlementMethod.CASH,
+        )
+
+        // When
+        val methods = state.methods
+
+        // Then
+        assertEquals(
+            listOf(SettlementMethod.PIX, SettlementMethod.CASH, SettlementMethod.TRANSFER, SettlementMethod.OTHER),
+            methods,
+        )
+    }
+
+    @Test
+    fun `GIVEN the Pix rule off and Transfer picked WHEN listing the methods THEN hides Pix`() {
+        // Given
+        val state = state(
+            showsPix = false,
+            method = SettlementMethod.TRANSFER,
+        )
+
+        // When
+        val methods = state.methods
+
+        // Then
+        assertEquals(listOf(SettlementMethod.CASH, SettlementMethod.TRANSFER, SettlementMethod.OTHER), methods)
+    }
+
+    @Test
+    fun `GIVEN the Pix rule off and Pix picked WHEN listing the methods THEN still lists Pix`() {
+        // Given
+        val state = state(
+            showsPix = false,
+            method = SettlementMethod.PIX,
+        )
+
+        // When
+        val methods = state.methods
+
+        // Then
+        assertEquals(
+            listOf(SettlementMethod.PIX, SettlementMethod.CASH, SettlementMethod.TRANSFER, SettlementMethod.OTHER),
+            methods,
+        )
+    }
+
     private val pixCpf = key("cpf", PaymentKeyType.CPF, "12345678909")
     private val pixPhone = key("phone", PaymentKeyType.PHONE, "+5521987654321", isDefault = true)
     private val pixEmail = key("email", PaymentKeyType.EMAIL, "ana@email.com")
@@ -999,6 +1050,7 @@ class RegisterPaymentUiStateTest {
         offersReceiverKeys: Boolean = true,
         simplifyChange: SimplifyChangedNotice? = null,
         areReceiverKeysUnknown: Boolean = false,
+        showsPix: Boolean = true,
     ): RegisterPaymentUiState = RegisterPaymentUiState(
         currency = currency,
         showsSats = false,
@@ -1019,6 +1071,7 @@ class RegisterPaymentUiStateTest {
         areReceiverKeysUnknown = areReceiverKeysUnknown,
         groupName = null,
         keyMethod = keyMethod,
+        showsPix = showsPix,
         offersReceiverKeys = offersReceiverKeys,
         prefersForm = prefersForm,
         pixCode = null,

@@ -13,6 +13,9 @@ interface MemberPaymentKeyDao {
     fun observeOf(userId: String): Flow<List<MemberPaymentKeyEntity>>
 
     @Query("SELECT * FROM member_payment_key")
+    fun observeAll(): Flow<List<MemberPaymentKeyEntity>>
+
+    @Query("SELECT * FROM member_payment_key")
     suspend fun getAll(): List<MemberPaymentKeyEntity>
 
     @Insert

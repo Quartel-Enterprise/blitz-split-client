@@ -51,6 +51,7 @@ import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveShowsPix
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
@@ -117,6 +118,7 @@ class ProfileViewModel(
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
     observePushEnabled: ObservePushEnabled,
     observeFirstDownload: ObserveFirstDownload,
+    observeShowsPix: ObserveShowsPix,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
@@ -178,6 +180,10 @@ class ProfileViewModel(
         combine(observePaymentKeys(), firstDownload) { keys, download ->
             if (download != null) Loadable.Loading else keys.mapNotNull(::toItem).toLoaded()
         }.onEach { keys -> uiState.update { it.copy(paymentKeys = keys) } }
+            .launchIn(viewModelScope)
+        // Why: the Pix rule (docs/product/general.md): without it the Pix keys collapse behind "Add a Pix key".
+        observeShowsPix()
+            .onEach { showsPix -> uiState.update { it.copy(showsPix = showsPix) } }
             .launchIn(viewModelScope)
         // Why: none is active while Notifications' "Push notifications" switch is off on this device.
         combine(

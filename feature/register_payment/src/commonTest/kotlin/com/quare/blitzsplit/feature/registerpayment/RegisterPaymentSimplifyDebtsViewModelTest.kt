@@ -929,6 +929,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
             observeBitcoinInSats = { flowOf(false) },
+            observeShowsPix = { flowOf(true) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

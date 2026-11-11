@@ -40,6 +40,11 @@ data class ProfileUiState(
      * restored account's copy is not whole, since its keys only come with that sync: never "no key" before it.
      */
     val paymentKeys: Loadable<List<PaymentKeyItem>>,
+    /*
+     * Why: the Pix rule (docs/product/general.md). False means the Pix section collapses to one "Add a Pix key" row,
+     * so nobody is locked out; it is never false while a Pix key is saved.
+     */
+    val showsPix: Boolean,
     val isSignOutScheduled: Boolean,
     val theme: ThemePreference,
     // Why: "Cores dinâmicas" only shows where the platform draws the wallpaper's scheme (Android 12 and later).

@@ -245,19 +245,42 @@ function PaymentKeysCard({ presenter, state, className }: CardProps) {
             <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
           </button>
         ))}
-        {/* Why: a key added before the account's own came down could take the default the server already gave another. */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild disabled={!state.canAddPaymentKey}>
-            <button className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+        {/* Why: the Pix rule: without it Pix and Bitcoin each get their own row, so Pix stays one click away. */}
+        {!state.showsPix && (
+          <>
+            <button
+              disabled={!state.canAddPaymentKey}
+              onClick={() => presenter.addPaymentKey('BITCOIN')}
+              className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            >
               <Plus className="size-4 shrink-0" />
-              {t('profile_keysAdd')}
+              {t('profile_keysAddBitcoinEntry')}
             </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onSelect={() => presenter.addPaymentKey('PIX')}>{t('profile_keysAddPix')}</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => presenter.addPaymentKey('BITCOIN')}>{t('profile_keysAddBitcoin')}</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <button
+              disabled={!state.canAddPaymentKey}
+              onClick={() => presenter.addPaymentKey('PIX')}
+              className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            >
+              <Plus className="size-4 shrink-0" />
+              {t('profile_keysAddPixEntry')}
+            </button>
+          </>
+        )}
+        {/* Why: a key added before the account's own came down could take the default the server already gave another. */}
+        {state.showsPix && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild disabled={!state.canAddPaymentKey}>
+              <button className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+                <Plus className="size-4 shrink-0" />
+                {t('profile_keysAdd')}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onSelect={() => presenter.addPaymentKey('PIX')}>{t('profile_keysAddPix')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => presenter.addPaymentKey('BITCOIN')}>{t('profile_keysAddBitcoin')}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </CardContent>
     </Card>
   )

@@ -902,6 +902,8 @@ export const fr: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Ceux qui te doivent de l’argent voient ta clé par défaut au moment de régler.',
   profile_keysDefault: 'Par défaut',
   profile_keysAdd: 'Ajoute une clé Pix ou Bitcoin',
+  profile_keysAddBitcoinEntry: 'Ajouter une clé Bitcoin',
+  profile_keysAddPixEntry: 'Ajouter une clé Pix',
   profile_keysAddPix: 'Clé Pix',
   profile_keysAddBitcoin: 'Clé Bitcoin',
   profile_keyRowCPF: 'Pix · CPF',

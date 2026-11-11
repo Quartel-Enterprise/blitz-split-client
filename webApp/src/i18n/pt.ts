@@ -901,6 +901,8 @@ export const pt: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Quem te deve vê a chave padrão na hora do acerto.',
   profile_keysDefault: 'Padrão',
   profile_keysAdd: 'Adicionar chave Pix ou Bitcoin',
+  profile_keysAddBitcoinEntry: 'Adicionar chave Bitcoin',
+  profile_keysAddPixEntry: 'Adicionar chave Pix',
   profile_keysAddPix: 'Chave Pix',
   profile_keysAddBitcoin: 'Chave Bitcoin',
   profile_keyRowCPF: 'Pix · CPF',

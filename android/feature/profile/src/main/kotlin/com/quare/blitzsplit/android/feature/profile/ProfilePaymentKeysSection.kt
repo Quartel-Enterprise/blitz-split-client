@@ -64,7 +64,8 @@ internal fun PaymentKeysSection(
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     val keys = state.paymentKeys.valueOrNull()
-    val count = (keys?.size ?: 0) + 1
+    // Why: the Pix rule: without it Pix and Bitcoin each get their own row, and the Pix one is the way back in.
+    val count = (keys?.size ?: 0) + if (state.showsPix) 1 else 2
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -96,13 +97,32 @@ internal fun PaymentKeysSection(
                     onClick = { onEvent(ProfileUiEvent.OnPaymentKeyClicked(key.id)) },
                 )
             }
-            AddPaymentKeyRow(
-                shape = segmentShapeOf(
-                    index = count - 1,
-                    count = count,
-                ),
-                onEvent = onEvent,
-            )
+            if (state.showsPix) {
+                AddPaymentKeyRow(
+                    shape = segmentShapeOf(
+                        index = count - 1,
+                        count = count,
+                    ),
+                    onEvent = onEvent,
+                )
+            } else {
+                AddKeySurface(
+                    label = stringResource(R.string.profile_payment_keys_add_bitcoin_entry),
+                    shape = segmentShapeOf(
+                        index = count - 2,
+                        count = count,
+                    ),
+                    onClick = { onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.BITCOIN)) },
+                )
+                AddKeySurface(
+                    label = stringResource(R.string.profile_payment_keys_add_pix_entry),
+                    shape = segmentShapeOf(
+                        index = count - 1,
+                        count = count,
+                    ),
+                    onClick = { onEvent(ProfileUiEvent.OnAddPaymentKeyClicked(PaymentMethod.PIX)) },
+                )
+            }
         }
     }
 }
@@ -209,31 +229,11 @@ private fun AddPaymentKeyRow(
 ) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
     Box {
-        Surface(
-            onClick = { isMenuOpen = true },
-            modifier = Modifier.fillMaxWidth(),
+        AddKeySurface(
+            label = stringResource(R.string.profile_payment_keys_add),
             shape = shape,
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            contentColor = MaterialTheme.colorScheme.primary,
-        ) {
-            Row(
-                modifier = Modifier
-                    .heightIn(min = 56.dp)
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp,
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                DashedAddIcon()
-                Text(
-                    text = stringResource(R.string.profile_payment_keys_add),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-        }
+            onClick = { isMenuOpen = true },
+        )
         DropdownMenu(
             expanded = isMenuOpen,
             onDismissRequest = { isMenuOpen = false },
@@ -263,6 +263,39 @@ private fun AddPaymentKeyRow(
                         contentDescription = null,
                     )
                 },
+            )
+        }
+    }
+}
+
+@Composable
+private fun AddKeySurface(
+    label: String,
+    shape: Shape,
+    onClick: () -> Unit,
+) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = shape,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        contentColor = MaterialTheme.colorScheme.primary,
+    ) {
+        Row(
+            modifier = Modifier
+                .heightIn(min = 56.dp)
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp,
+                ),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            DashedAddIcon()
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
             )
         }
     }

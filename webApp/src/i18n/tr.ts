@@ -902,6 +902,8 @@ export const tr: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Sana borçlu olan kişi, hesaplaşırken varsayılan anahtarını görür.',
   profile_keysDefault: 'Varsayılan',
   profile_keysAdd: 'Pix veya Bitcoin anahtarı ekle',
+  profile_keysAddBitcoinEntry: 'Bitcoin anahtarı ekle',
+  profile_keysAddPixEntry: 'Pix anahtarı ekle',
   profile_keysAddPix: 'Pix anahtarı',
   profile_keysAddBitcoin: 'Bitcoin anahtarı',
   profile_keyRowCPF: 'Pix · CPF',

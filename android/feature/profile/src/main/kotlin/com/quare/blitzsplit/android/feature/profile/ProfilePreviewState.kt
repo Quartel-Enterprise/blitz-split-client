@@ -61,6 +61,7 @@ internal fun createPreviewProfileState(
             isDefault = false,
         ),
     ).toLoaded(),
+    showsPix = true,
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
     showsDynamicColors = true,

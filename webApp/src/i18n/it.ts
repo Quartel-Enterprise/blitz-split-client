@@ -902,6 +902,8 @@ export const it: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Chi ti deve dei soldi vede la tua chiave predefinita quando salda.',
   profile_keysDefault: 'Predefinita',
   profile_keysAdd: 'Aggiungi una chiave Pix o Bitcoin',
+  profile_keysAddBitcoinEntry: 'Aggiungi una chiave Bitcoin',
+  profile_keysAddPixEntry: 'Aggiungi una chiave Pix',
   profile_keysAddPix: 'Chiave Pix',
   profile_keysAddBitcoin: 'Chiave Bitcoin',
   profile_keyRowCPF: 'Pix · CPF',

@@ -57,6 +57,8 @@ data class RegisterPaymentUiState(
     val groupName: String?,
     // Why: Pix or Bitcoin, the method picked in "Forma de pagamento"; one the receiver has no key of reads as the other.
     val keyMethod: PaymentMethod,
+    // Why: the Pix rule (docs/product/general.md); false hides Pix from "Como foi pago" unless it is the one picked.
+    val showsPix: Boolean,
     // Why: Início's "Quem pagou a quem?" only records a payment; every Acertar offers the receiver's keys.
     val offersReceiverKeys: Boolean,
     /*
@@ -75,6 +77,10 @@ data class RegisterPaymentUiState(
     // Why: 13.5c, which takes the place of the form or "Pagar Ana" until closed or paid anyway.
     val simplifyChange: SimplifyChangedNotice?,
 ) {
+    // Why: "Como foi pago", Pix only where the rule offers it or while it is the method already picked.
+    val methods: List<SettlementMethod>
+        get() = SettlementMethod.entries.filter { it != SettlementMethod.PIX || showsPix || method == it }
+
     val canPayAnyway: Boolean
         get() = simplifyChange != null && !isSaving
 

@@ -29,6 +29,9 @@ interface PaymentKeyRepository {
      */
     fun observeKeysOf(userId: String): Flow<List<PaymentKey>>
 
+    // Why: the Pix rule (docs/product/general.md): whether anyone in the user's groups has a key, as the last sync cached them.
+    fun observeAllMemberKeys(): Flow<List<PaymentKey>>
+
     // Why: every key of the people in the user's groups at once, which drops one deleted or of someone gone.
     suspend fun downloadMemberKeys(userId: String): Result<Unit>
 
