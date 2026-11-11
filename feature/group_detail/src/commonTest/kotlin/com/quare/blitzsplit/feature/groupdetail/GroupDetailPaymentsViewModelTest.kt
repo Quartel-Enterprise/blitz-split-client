@@ -1343,6 +1343,7 @@ class GroupDetailPaymentsViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private val pins = FakeGroupPinRepository()

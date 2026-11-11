@@ -209,6 +209,7 @@ class GroupsViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
 
@@ -245,6 +246,7 @@ class GroupsViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
 
@@ -309,6 +311,7 @@ class GroupsViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
 
@@ -379,6 +382,7 @@ class GroupsViewModelTest {
                     "trio",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
 
@@ -1435,6 +1439,7 @@ class GroupsViewModelTest {
                     "floripa",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -1460,6 +1465,7 @@ class GroupsViewModelTest {
                         "floripa",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -83,6 +84,8 @@ fun FormLayout(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    // Why: the scaffold's padding holds the navigation bar, which the keyboard's inset holds too.
+                    .consumeWindowInsets(padding)
                     .imePadding(),
                 contentAlignment = Alignment.TopCenter,
             ) {
@@ -111,6 +114,7 @@ private fun FormColumnsRow(
         modifier = Modifier
             .fillMaxSize()
             .padding(padding)
+            .consumeWindowInsets(padding)
             .imePadding()
             .padding(
                 start = 24.dp,

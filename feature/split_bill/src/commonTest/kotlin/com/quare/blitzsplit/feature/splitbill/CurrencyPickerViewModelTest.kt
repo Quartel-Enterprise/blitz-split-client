@@ -1090,6 +1090,7 @@ class CurrencyPickerViewModelTest {
                     route.groupId,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             route.expenseId?.let { expenseId ->

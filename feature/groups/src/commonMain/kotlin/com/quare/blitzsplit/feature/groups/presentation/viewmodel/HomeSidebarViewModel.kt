@@ -108,6 +108,7 @@ class HomeSidebarViewModel(
             groupId,
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
         when {
             (stack.lastOrNull() as? Route.GroupDetail)?.groupId == groupId -> Unit

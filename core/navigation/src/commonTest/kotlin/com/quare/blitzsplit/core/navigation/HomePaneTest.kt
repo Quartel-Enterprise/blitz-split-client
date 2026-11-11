@@ -23,6 +23,7 @@ class HomePaneTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -34,6 +35,7 @@ class HomePaneTest {
                     "trip",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -43,7 +45,15 @@ class HomePaneTest {
     @Test
     fun `GIVEN a tab of a group beside the groups WHEN opening another group THEN takes its place`() {
         // Given
-        prepareScenario(Route.Groups, Route.GroupDetail("trip", joinedAs = null, GroupTab.MEMBERS))
+        prepareScenario(
+            Route.Groups,
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                GroupTab.MEMBERS,
+                isOverBill = false,
+            ),
+        )
 
         // When
         navigator.openBesideGroups(
@@ -51,6 +61,7 @@ class HomePaneTest {
                 "flat",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -62,6 +73,7 @@ class HomePaneTest {
                     "flat",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -79,6 +91,7 @@ class HomePaneTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -90,6 +103,7 @@ class HomePaneTest {
                     "trip",
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -101,7 +115,12 @@ class HomePaneTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.GroupDetail("trip", joinedAs = null, GroupTab.BALANCES),
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                GroupTab.BALANCES,
+                isOverBill = false,
+            ),
             Route.GroupStats("trip"),
         )
 
@@ -117,7 +136,12 @@ class HomePaneTest {
         // Given
         prepareScenario(
             Route.Groups,
-            Route.GroupDetail("trip", joinedAs = null, GroupTab.EXPENSES),
+            Route.GroupDetail(
+                "trip",
+                joinedAs = null,
+                GroupTab.EXPENSES,
+                isOverBill = false,
+            ),
             Route.GroupStats("trip"),
             Route.CategoryExpenses(
                 "trip",
@@ -171,6 +195,7 @@ class HomePaneTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 
@@ -190,6 +215,7 @@ class HomePaneTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.BALANCES,
+                isOverBill = false,
             ),
             Route.GroupStats("trip"),
         )
@@ -210,6 +236,7 @@ class HomePaneTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.BillDetail("trip", "dinner", focusCommentId = null),
         )
@@ -242,11 +269,13 @@ class HomePaneTest {
                 "trip",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             Route.GroupDetail(
                 "flat",
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
         )
 

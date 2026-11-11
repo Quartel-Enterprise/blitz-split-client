@@ -502,6 +502,7 @@ class GroupStatsViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
                 route,
                 Route.BillDetail(GROUP_ID, "boat", focusCommentId = null),
@@ -647,6 +648,7 @@ class GroupStatsViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -811,6 +813,7 @@ class GroupStatsViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             ),
             navigator.backStack.value,
@@ -836,6 +839,7 @@ class GroupStatsViewModelTest {
                         GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 ),
                 navigator.backStack.value,
@@ -1682,6 +1686,7 @@ class GroupStatsViewModelTest {
                 GROUP_ID,
                 joinedAs = null,
                 tab = GroupTab.EXPENSES,
+                isOverBill = false,
             ),
             route,
         )
@@ -2584,6 +2589,7 @@ class GroupStatsViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(route)

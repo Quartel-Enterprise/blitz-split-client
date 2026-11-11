@@ -28,6 +28,7 @@ internal enum class StoreScreenshotsScreen(
             groupId = trip.groupId,
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         )
         return when (this) {
             GROUP, LIGHT_THEME -> listOf(group)
