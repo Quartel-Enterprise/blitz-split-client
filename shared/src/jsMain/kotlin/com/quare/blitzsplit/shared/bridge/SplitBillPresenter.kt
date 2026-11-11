@@ -472,15 +472,15 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnSpentDayPicked(year, month, day))
     }
 
-    fun openSpentTime() {
-        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeOpened)
-    }
-
     fun pickSpentTime(
         hour: Int,
         minute: Int,
     ) {
         viewModel.onEvent(SplitBillUiEvent.OnSpentTimePicked(hour, minute))
+    }
+
+    fun addSpentTime() {
+        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeAdded)
     }
 
     fun clearSpentTime() {

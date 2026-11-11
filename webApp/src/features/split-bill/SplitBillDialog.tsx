@@ -347,7 +347,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               actions={{
                 onOpen: () => presenter.openSpentAt(),
                 onDayPick: (year, month, day) => presenter.pickSpentDay(year, month, day),
-                onTimeOpen: () => presenter.openSpentTime(),
+                onTimeAdd: () => presenter.addSpentTime(),
                 onTimePick: (hour, minute) => presenter.pickSpentTime(hour, minute),
                 onTimeClear: () => presenter.clearSpentTime(),
               }}

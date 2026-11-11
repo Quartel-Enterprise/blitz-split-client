@@ -110,15 +110,13 @@ final class SplitBillModel {
         )
     }
 
-    /// "Time" switched on adds the time it is now to the bill's day; off, the bill goes back to its date alone.
+    /// "Time" switched on adds the time it is now (the ViewModel's) to the bill's day; off, the bill goes back to its
+    /// date alone.
     var hasSpentTime: Binding<Bool> {
         Binding(
             get: { self.state.hasSpentTime },
             set: { isOn in
-                guard isOn else { return self.send(SplitBillUiEventOnSpentTimeCleared.shared) }
-                self.send(SplitBillUiEventOnSpentTimeOpened.shared)
-                let now = Calendar.current.dateComponents([.hour, .minute], from: Date())
-                self.send(SplitBillUiEventOnSpentTimePicked(hour: Int32(now.hour ?? 0), minute: Int32(now.minute ?? 0)))
+                self.send(isOn ? SplitBillUiEventOnSpentTimeAdded.shared : SplitBillUiEventOnSpentTimeCleared.shared)
             },
         )
     }

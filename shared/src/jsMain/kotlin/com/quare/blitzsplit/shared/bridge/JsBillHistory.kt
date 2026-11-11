@@ -33,6 +33,9 @@ class JsBillHistoryChange(
     val afterText: String?,
     val beforeMillis: Double?,
     val afterMillis: Double?,
+    // Why: "spent-at"'s sides without a time show their date alone.
+    val beforeHasTime: Boolean,
+    val afterHasTime: Boolean,
     val beforeCategory: JsCategory?,
     val afterCategory: JsCategory?,
     val beforeNames: Array<String?>,
@@ -137,6 +140,8 @@ private fun toJsBillHistoryChange(
         field = "spent-at",
         beforeMillis = change.beforeMillis?.toDouble(),
         afterMillis = change.afterMillis?.toDouble(),
+        beforeHasTime = change.beforeHasTime,
+        afterHasTime = change.afterHasTime,
     )
 
     is BillHistoryChange.Currency -> buildHistoryChange(
@@ -174,6 +179,8 @@ private fun buildHistoryChange(
     afterText: String? = null,
     beforeMillis: Double? = null,
     afterMillis: Double? = null,
+    beforeHasTime: Boolean = true,
+    afterHasTime: Boolean = true,
     beforeCategory: JsCategory? = null,
     afterCategory: JsCategory? = null,
     beforeNames: Array<String?> = emptyArray(),
@@ -189,6 +196,8 @@ private fun buildHistoryChange(
     afterText = afterText,
     beforeMillis = beforeMillis,
     afterMillis = afterMillis,
+    beforeHasTime = beforeHasTime,
+    afterHasTime = afterHasTime,
     beforeCategory = beforeCategory,
     afterCategory = afterCategory,
     beforeNames = beforeNames,

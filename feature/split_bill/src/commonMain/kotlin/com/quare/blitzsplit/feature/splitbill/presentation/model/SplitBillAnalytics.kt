@@ -74,6 +74,8 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
 
     SplitBillUiEvent.OnSpentTimeOpened -> EventAnalytics.Automatic("split_bill_time_clicked")
 
+    SplitBillUiEvent.OnSpentTimeAdded -> EventAnalytics.Automatic("split_bill_time_added")
+
     // Why: only a time the bill had, never a late tap once it has none.
     SplitBillUiEvent.OnSpentTimeCleared -> EventAnalytics.Manual("split_bill_time_cleared")
 
@@ -182,7 +184,7 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
 
     is SplitBillUiEvent.OnNewCategoryClicked -> EventAnalytics.Automatic(
         "category_create_clicked",
-        mapOf("is_subcategory" to (parentId != null), "source" to SPLIT_BILL_SOURCE),
+        mapOf("is_subcategory" to (event.parentId != null), "source" to SPLIT_BILL_SOURCE),
     )
 
     // Why: only a category its form opens for, as the map counts it.
@@ -195,12 +197,12 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
 
     is SplitBillUiEvent.OnCategoryIconPicked -> EventAnalytics.Automatic(
         "category_icon_picked",
-        mapOf("icon" to icon, "source" to SPLIT_BILL_SOURCE),
+        mapOf("icon" to event.icon, "source" to SPLIT_BILL_SOURCE),
     )
 
     is SplitBillUiEvent.OnCategoryColorPicked -> EventAnalytics.Automatic(
         "category_color_picked",
-        mapOf("color" to color.code, "source" to SPLIT_BILL_SOURCE),
+        mapOf("color" to event.color.code, "source" to SPLIT_BILL_SOURCE),
     )
 
     // Why: the tap, then the category once it is saved.
@@ -234,7 +236,7 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
     // Why: a toggle, sent with where it ended up.
     is SplitBillUiEvent.OnReceiptTorchClicked -> EventAnalytics.Automatic(
         "receipt_camera_torch_toggled",
-        mapOf("is_on" to isOn),
+        mapOf("is_on" to event.isOn),
     )
 
     SplitBillUiEvent.OnReceiptCameraAllowClicked -> EventAnalytics.Automatic(

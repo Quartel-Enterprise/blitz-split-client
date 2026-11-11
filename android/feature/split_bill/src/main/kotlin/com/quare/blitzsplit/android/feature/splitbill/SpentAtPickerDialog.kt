@@ -36,9 +36,9 @@ internal fun SpentAtPickerDialog(
         )
 
         SpentAtPicker.TIME -> {
-            // Why: a bill without a time opens the clock on now.
-            val initial = remember(state.hasSpentTime, state.spentAt) {
-                val millis = if (state.hasSpentTime) state.spentAt else System.currentTimeMillis()
+            // Why: a bill without a time opens the clock on now, as the ViewModel refreshed it when the clock opened.
+            val initial = remember(state.hasSpentTime, state.spentAt, state.latestSpentAt) {
+                val millis = if (state.hasSpentTime) state.spentAt else state.latestSpentAt
                 Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())
             }
             TimeOfDayPickerDialog(

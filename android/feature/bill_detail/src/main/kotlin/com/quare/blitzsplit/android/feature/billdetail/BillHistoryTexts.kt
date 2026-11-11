@@ -188,8 +188,8 @@ private fun diffsOf(
         is BillHistoryChange.SpentAt -> listOf(
             HistoryDiff(
                 field = fieldOrNull(R.string.bill_detail_field_spent_at, showsField),
-                before = change.beforeMillis?.let { momentTextOf(it, dates) } ?: none,
-                after = change.afterMillis?.let { momentTextOf(it, dates) } ?: none,
+                before = change.beforeMillis?.let { momentTextOf(it, change.beforeHasTime, dates) } ?: none,
+                after = change.afterMillis?.let { momentTextOf(it, change.afterHasTime, dates) } ?: none,
             ),
         )
 
@@ -275,11 +275,17 @@ private fun fieldOrNull(
     showsField: Boolean,
 ): String? = if (showsField) stringResource(field) else null
 
+// Why: "28 de out., 21:30", or "28 de out." for a bill without a time.
 @Composable
 private fun momentTextOf(
     millis: Long,
+    hasTime: Boolean,
     dates: DateTimeTextFormatter,
-): String = stringResource(R.string.bill_detail_when_other, dates.toDateText(millis), dates.toTimeText(millis))
+): String = if (hasTime) {
+    stringResource(R.string.bill_detail_when_other, dates.toDateText(millis), dates.toTimeText(millis))
+} else {
+    dates.toDateText(millis)
+}
 
 // Why: "Ana e Bruno"; someone no longer in the group is "Ex-membro".
 @Composable

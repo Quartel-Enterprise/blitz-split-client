@@ -90,6 +90,9 @@ sealed interface SplitBillUiEvent : UiEvent {
         val minute: Int,
     ) : SplitBillUiEvent
 
+    // Why: Apple's "Horário" switched on and the web's "Adicionar horário": the bill takes the time it is now, on its day.
+    data object OnSpentTimeAdded : SplitBillUiEvent
+
     // Why: "Remover horário": the bill goes back to its date alone, the first instant of its day.
     data object OnSpentTimeCleared : SplitBillUiEvent
 

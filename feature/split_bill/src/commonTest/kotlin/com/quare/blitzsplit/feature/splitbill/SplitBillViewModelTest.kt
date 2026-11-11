@@ -181,6 +181,34 @@ class SplitBillViewModelTest {
     }
 
     @Test
+    fun `GIVEN a new bill WHEN adding the time THEN it takes the time it is now`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeAdded)
+
+        // Then
+        assertEquals(nowMillis, viewModel.uiState.value.spentAt)
+        assertTrue(viewModel.uiState.value.hasSpentTime)
+    }
+
+    @Test
+    fun `GIVEN the first minute of the day WHEN adding the time THEN it has a time rather than none`() =
+        runTest(testDispatcher) {
+            // Given
+            val firstMinute = Instant.parse("2026-10-30T00:00:30Z").toEpochMilliseconds()
+            prepareScenario(now = firstMinute)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeAdded)
+
+            // Then
+            assertEquals(firstMinute, viewModel.uiState.value.spentAt)
+            assertTrue(viewModel.uiState.value.hasSpentTime)
+        }
+
+    @Test
     fun `GIVEN a new bill WHEN the screen opens THEN no field shows an error`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

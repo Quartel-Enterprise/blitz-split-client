@@ -135,7 +135,7 @@ class ActivityViewModel(
             .onEach { (newFeed, newGroups, categories) ->
                 feed = newFeed
                 groups = newGroups
-                entries = entriesOf(newFeed, newGroups, categories)
+                entries = entriesOf(newFeed, newGroups, categories, currentTimeZone())
                 isFeedRead = true
                 feedVersion++
                 show()
