@@ -33,6 +33,7 @@ struct BoraRacharApp: App {
         FirebaseSetup.start()
         #if DEBUG
         if let run = StoreScreenshotsRun.current {
+            StoreScreenshotsRun.saveLanguages()
             BlitzSplitApple.shared.startForStoreScreenshots(
                 language: run.language,
                 isDark: run.isDark,
@@ -40,6 +41,7 @@ struct BoraRacharApp: App {
                 screenCode: run.screen,
             )
         } else {
+            StoreScreenshotsRun.restoreLanguagesIfAsked()
             BlitzSplitApple.shared.start()
         }
         #else

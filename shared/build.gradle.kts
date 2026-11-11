@@ -81,6 +81,7 @@ kotlin {
         // The store screenshots' seed (docs/store-listing-screenshots.md) writes the sample trip's feed and links.
         appleMain.dependencies {
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.androidx.sqlite.bundled)
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
             implementation(libs.supabase.postgrest)

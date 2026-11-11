@@ -29,6 +29,35 @@ struct StoreScreenshotsRun {
         )
     }()
 
+    /// The key that keeps the app's own language while a run sets the listing's, and the argument that puts it back.
+    private static let savedLanguagesKey = "StoreScreenshotsSavedLanguages"
+    private static let restoreArgument = "StoreScreenshotsRestore"
+
+    /// The app's own AppleLanguages (the Settings app's per-app language, the in-app picker), before the first launch of
+    /// a run replaces it with the listing's: on the Mac the captures run the developer's own debug app. An empty list
+    /// stands for none. Read from the app's persistent domain, never the launch arguments' -AppleLanguages.
+    static func saveLanguages() {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: savedLanguagesKey) == nil, let domain = Bundle.main.bundleIdentifier else { return }
+        let languages = defaults.persistentDomain(forName: domain)?["AppleLanguages"] as? [String] ?? []
+        defaults.set(languages, forKey: savedLanguagesKey)
+    }
+
+    /// The UI test's last launch, `-StoreScreenshotsRestore YES`, puts the app's own language back once every capture
+    /// is made.
+    static func restoreLanguagesIfAsked() {
+        let defaults = UserDefaults.standard
+        guard defaults.bool(forKey: restoreArgument), let saved = defaults.stringArray(forKey: savedLanguagesKey) else {
+            return
+        }
+        if saved.isEmpty {
+            defaults.removeObject(forKey: "AppleLanguages")
+        } else {
+            defaults.set(saved, forKey: "AppleLanguages")
+        }
+        defaults.removeObject(forKey: savedLanguagesKey)
+    }
+
     /// The faces and the receipt the UI test passed as base64, written where this app may read them: the shared code
     /// reads `faces/person<n>.jpg` and `receipt.jpg` there. Nil when the test passed none.
     private static func writeAssets() -> String? {

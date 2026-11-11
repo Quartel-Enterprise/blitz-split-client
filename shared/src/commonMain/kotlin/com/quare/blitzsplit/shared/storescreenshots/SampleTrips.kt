@@ -7,15 +7,25 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillItemsSplit
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
+import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.math.roundToLong
+import kotlin.native.HiddenFromObjC
 
 /*
  * Why: one trip per language of the listing, its amounts priced in that language's currency at a round rate and
  * rounded to what a menu there shows, so no screenshot reads "¥2,397" or "Rp 255.873". The prices are in US cents.
  */
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 object SampleTrips {
+    // Why: what both stores draw the people and the other groups in, and the made-up invite code their QR codes hold.
+    val avatarColors: List<AvatarColor> =
+        listOf(AvatarColor.BLUE, AvatarColor.PEACH, AvatarColor.GREEN, AvatarColor.LILAC, AvatarColor.SAND)
+    val sideGroupColors: List<AvatarColor> = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
+    const val INVITE_CODE = "Lx7Kp2Qa"
     private val italianDishes =
         listOf("Pizza margherita", "Burrata", "Risotto ai funghi", "Tiramisù", "Prosecco", "Espresso")
     private val copies = mapOf(
@@ -187,6 +197,8 @@ object SampleTrips {
         "id" to GroupCurrency.IDR,
         "ja" to GroupCurrency.JPY,
     )
+
+    fun avatarColorOf(person: Int): AvatarColor = avatarColors[person % avatarColors.size]
 
     fun tripOf(language: String): SampleTrip {
         val copy = copies[language] ?: copies.getValue("en")

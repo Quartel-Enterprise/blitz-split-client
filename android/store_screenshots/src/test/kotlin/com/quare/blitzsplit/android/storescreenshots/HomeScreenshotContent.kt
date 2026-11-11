@@ -19,6 +19,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
 import com.quare.blitzsplit.shared.storescreenshots.SampleSideGroup
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
+import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
 import software.quare.loadable.toLoaded
 import kotlin.math.abs
 
@@ -27,7 +28,6 @@ private const val UNREAD_ACTIVITY = 3
 private const val MINUTES_PER_DAY = 1_440
 private const val MINUTES_NOW = 13 * 60
 private const val MINUTES_SINCE_PAYMENT = 3 * 60
-private val sideGroupColors = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
 
 /** Início with the trip and the two other groups pinned, the people who owe or are owed, and yesterday's bills. */
 @Composable
@@ -56,7 +56,7 @@ private fun SampleTrip.homeState(): HomeUiState {
         groupRow(
             id = "side-$index",
             name = group.name,
-            color = sideGroupColors[index % sideGroupColors.size],
+            color = SampleTrips.sideGroupColors[index % SampleTrips.sideGroupColors.size],
             members = group.people,
             netMinor = myNetOf(group),
             minutesAgo = group.daysAgo * MINUTES_PER_DAY,

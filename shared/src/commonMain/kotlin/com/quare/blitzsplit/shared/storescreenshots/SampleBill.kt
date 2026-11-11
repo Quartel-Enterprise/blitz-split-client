@@ -2,8 +2,12 @@ package com.quare.blitzsplit.shared.storescreenshots
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.model.GroupCurrency
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
 // Why: items is null for a bill everyone splits equally; its member ids are "0", "1"… until the seed maps them.
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 data class SampleBill(
     val description: String,
     val totalMinor: Long,

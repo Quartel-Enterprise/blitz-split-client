@@ -6,8 +6,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Debt
+import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
+import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -20,13 +25,10 @@ internal const val TODAY_MILLIS = 1_792_713_600_000L
 internal const val DAY_MILLIS = 86_400_000L
 internal const val MINUTE_MILLIS = 60_000L
 
-private val avatarColors =
-    listOf(AvatarColor.BLUE, AvatarColor.PEACH, AvatarColor.GREEN, AvatarColor.LILAC, AvatarColor.SAND)
-
 /** Member ids are the people's indexes, as in SampleTrip's items. */
 internal fun memberIdOf(person: Int): String = person.toString()
 
-internal fun avatarColorOf(person: Int): AvatarColor = avatarColors[person % avatarColors.size]
+internal fun avatarColorOf(person: Int): AvatarColor = SampleTrips.avatarColorOf(person)
 
 internal fun SampleTrip.faceOf(person: Int): GroupFace = GroupFace(
     initials = previewInitialsOf(people[person]),
@@ -67,7 +69,12 @@ internal fun SampleTrip.sharesOf(bill: SampleBill): Map<Int, Long> {
     val shares = BillSplit.split(
         totalMinor = bill.totalMinor,
         mode = SplitMode.EQUAL,
-        entries = people.indices.map { SplitEntry(memberId = memberIdOf(it), value = 1) },
+        entries = people.indices.map {
+            SplitEntry(
+                memberId = memberIdOf(it),
+                value = 1,
+            )
+        },
         payerIds = payerIds,
     )
     return checkNotNull(shares) { "${bill.description} doesn't split" }.associate {
@@ -99,26 +106,43 @@ internal val SampleTrip.netBalances: Map<Int, Long>
 internal val SampleTrip.totalSpentMinor: Long
     get() = bills.filter { it.currency == currency }.sumOf { it.totalMinor }
 
-/** The fewest payments that settle the group's currency: the greatest debtor pays the greatest creditor. */
+/**
+ * Who owes whom in the group's currency, bill by bill, as Balances shows a group with "Simplify debts" off, the way
+ * the iOS seed creates it: the app's own GroupBalances works it out from the trip's bills and payment.
+ */
 internal val SampleTrip.debts: List<Debt>
     get() {
-        val nets = netBalances.toMutableMap()
-        val debts = mutableListOf<Debt>()
-        while (true) {
-            val debtor = nets.minBy { it.value }
-            val creditor = nets.maxBy { it.value }
-            if (debtor.value >= 0 || creditor.value <= 0) break
-            val amount = minOf(-debtor.value, creditor.value)
-            debts +=
-                Debt(
-                    fromMemberId = memberIdOf(debtor.key),
-                    toMemberId = memberIdOf(creditor.key),
-                    amountMinor = amount,
-                )
-            nets[debtor.key] = debtor.value + amount
-            nets[creditor.key] = creditor.value - amount
+        val expenses = bills.mapIndexed { index, bill ->
+            Expense(
+                id = "bill-$index",
+                groupId = "trip",
+                description = bill.description,
+                amountMinor = bill.totalMinor,
+                currency = bill.currency,
+                splitMode = if (bill.items == null) SplitMode.EQUAL else SplitMode.ITEMS,
+                payers = bill.payers.map { ExpensePayer(memberIdOf(it.person), it.amountMinor) },
+                shares = sharesOf(bill).map { (person, amount) -> ExpenseShare(memberIdOf(person), amount, amount) },
+                items = bill.items,
+                categoryId = bill.categoryKey,
+                spentAt = momentOf(bill.daysAgo, bill.minuteOfDay),
+                isPending = false,
+                updatedAt = momentOf(bill.daysAgo, bill.minuteOfDay),
+                updatedByMemberId = null,
+            )
         }
-        return debts.sortedByDescending { it.amountMinor }
+        val settlement = Settlement(
+            id = "payment",
+            groupId = "trip",
+            fromMemberId = memberIdOf(payment.fromPerson),
+            toMemberId = memberIdOf(payment.toPerson),
+            amountMinor = payment.amountMinor,
+            currency = currency,
+            method = payment.method,
+            paidAt = momentOf(payment.daysAgo, payment.minuteOfDay),
+            isPending = false,
+            updatedAt = momentOf(payment.daysAgo, payment.minuteOfDay),
+        )
+        return GroupBalances.createUnsimplified(expenses, listOf(settlement), currency).debts
     }
 
 internal val SampleTrip.me: Int

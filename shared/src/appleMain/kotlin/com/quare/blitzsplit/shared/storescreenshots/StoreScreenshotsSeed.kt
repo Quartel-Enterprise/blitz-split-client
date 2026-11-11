@@ -56,14 +56,25 @@ internal class StoreScreenshotsSeed(
 ) : KoinComponent {
     private val database: AppDatabase = get()
     private val now = Clock.System.now()
-    private val startOfToday = Clock.System
-        .todayIn(TimeZone.currentSystemDefault())
-        .atStartOfDayIn(TimeZone.currentSystemDefault())
-    private val statements = mutableListOf<String>()
-    private val avatarColors =
-        listOf(AvatarColor.BLUE, AvatarColor.PEACH, AvatarColor.GREEN, AvatarColor.LILAC, AvatarColor.SAND)
-    private val sideGroupColors = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
     private val feedDelay = 5.minutes
+    private val statements = mutableListOf<String>()
+
+    /*
+     * Why: the day the story calls today. A run before today's last moment (the 10:00 payment) moves the whole story a
+     * day back, rather than a moment into the future or out of its order, so "Today" and the order never depend on when
+     * the capture runs.
+     */
+    private val storyToday = run {
+        val startOfToday = Clock.System
+            .todayIn(TimeZone.currentSystemDefault())
+            .atStartOfDayIn(TimeZone.currentSystemDefault())
+        val latestTodayMinute = (
+            trip.bills.filter { it.daysAgo == 0 }.map { it.minuteOfDay } +
+                listOfNotNull(trip.payment.minuteOfDay.takeIf { trip.payment.daysAgo == 0 })
+        ).maxOrNull() ?: 0
+        val isTooEarly = now < startOfToday + latestTodayMinute.minutes + feedDelay
+        if (isTooEarly) startOfToday - 1.days else startOfToday
+    }
 
     suspend fun createTrip(
         language: AppLanguage,
@@ -72,7 +83,7 @@ internal class StoreScreenshotsSeed(
         get<UpdateAppLanguage>().invoke(language)
         get<UpdateThemePreference>().invoke(theme)
         get<UpdateLastNotificationPromptAt>().invoke(now.toEpochMilliseconds())
-        get<SaveProfile>().invoke(UserProfile(trip.people.first(), avatarColorOf(0), photo = null))
+        get<SaveProfile>().invoke(UserProfile(trip.people.first(), SampleTrips.avatarColorOf(0), photo = null))
         val tripMembers = createGroup(trip.groupName, GroupType.TRIP, AvatarColor.PEACH, trip.people.indices.toList())
         val tripId = tripMembers.groupId
         val billIds = trip.bills.map { bill -> createBill(tripMembers, bill) }
@@ -90,7 +101,12 @@ internal class StoreScreenshotsSeed(
         get<ConsumeRecordedPayment>().invoke(paymentId)
         val sideGroups = trip.sideGroups.mapIndexed { index, group ->
             val members =
-                createGroup(group.name, group.type, sideGroupColors[index % sideGroupColors.size], group.people)
+                createGroup(
+                    group.name,
+                    group.type,
+                    SampleTrips.sideGroupColors[index % SampleTrips.sideGroupColors.size],
+                    group.people,
+                )
             createBill(
                 members,
                 SampleBill(
@@ -135,7 +151,7 @@ internal class StoreScreenshotsSeed(
                 shape = GroupShape.fallback,
                 photo = null,
                 currency = trip.currency,
-                members = people.map { NewGroupMember(trip.people[it], avatarColorOf(it), isMe = it == 0) },
+                members = people.map { NewGroupMember(trip.people[it], SampleTrips.avatarColorOf(it), isMe = it == 0) },
             ).getOrThrow()
         val group = get<ObserveGroup>().invoke(groupId).filterNotNull().first()
         return SeededMembers(
@@ -192,7 +208,9 @@ internal class StoreScreenshotsSeed(
         }
         statements += "UPDATE split_group SET createdBy = ${toSqlLiteral(userIdOf(0))}, ownerUserId = NULL"
         statements +=
-            "UPDATE split_group SET inviteCode = ${toSqlLiteral(INVITE_CODE)} WHERE id = ${toSqlLiteral(tripId)}"
+            "UPDATE split_group SET inviteCode = ${toSqlLiteral(
+                SampleTrips.INVITE_CODE,
+            )} WHERE id = ${toSqlLiteral(tripId)}"
         statements +=
             "UPDATE expense SET createdBy = ${toSqlLiteral(userIdOf(0))}, updatedBy = ${toSqlLiteral(userIdOf(0))}"
         statements += "UPDATE settlement SET createdBy = ${toSqlLiteral(userIdOf(0))}"
@@ -295,23 +313,19 @@ internal class StoreScreenshotsSeed(
         return "data:image/jpeg;base64," + data.base64EncodedStringWithOptions(0u)
     }
 
-    // Why: a time later today than now would read as the future, so today's moments stay behind the clock.
     private fun momentOf(
         daysAgo: Int,
         minuteOfDay: Int,
     ): Long {
-        val moment = startOfToday - daysAgo.days + minuteOfDay.minutes
-        return minOf(moment, now - feedDelay).toEpochMilliseconds()
+        val moment = storyToday - daysAgo.days + minuteOfDay.minutes
+        return moment.toEpochMilliseconds()
     }
-
-    private fun avatarColorOf(person: Int): AvatarColor = avatarColors[person % avatarColors.size]
 
     private fun userIdOf(person: Int): String = "sample-user-$person"
 
     private fun toSqlLiteral(text: String): String = "'" + text.replace("'", "''") + "'"
 
     private companion object {
-        const val INVITE_CODE = "Lx7Kp2Qa"
         const val SIDE_BILL_MINUTE = 19 * 60
         const val JOINED_DAYS_AGO = 5
         const val JOINED_MINUTE = 20 * 60

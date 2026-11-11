@@ -67,6 +67,8 @@ final class StoreScreenshotsUITests: XCTestCase {
         XCUIDevice.shared.orientation = .portrait
         if slot.hasPrefix("ipad") { useFullScreenApps() }
         #endif
+        // The app's own language comes back once the captures end, whatever they stopped on.
+        defer { restoreAppLanguage() }
         for locale in Self.locales where onlyLocales?.contains(locale.tag) ?? true {
             let directory = output.appendingPathComponent(slot).appendingPathComponent(locale.tag)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -96,6 +98,15 @@ final class StoreScreenshotsUITests: XCTestCase {
         settings.terminate()
     }
     #endif
+
+    /// One last launch, without the seed, that puts back the language the app had before the run (StoreScreenshotsRun).
+    @MainActor
+    private func restoreAppLanguage() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-StoreScreenshotsRestore", "YES"]
+        app.launch()
+        app.terminate()
+    }
 
     /// A comma-separated list narrowing the run, nil (everything) when unset or empty.
     private static func subset(_ list: String?) -> Set<String>? {

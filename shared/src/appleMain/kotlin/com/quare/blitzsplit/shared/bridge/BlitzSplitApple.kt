@@ -122,7 +122,11 @@ object BlitzSplitApple : KoinComponent {
         deleteStoreScreenshotsDatabase()
         val trip = SampleTrips.tripOf(language)
         startBlitzSplitKoin(extraModules = listOf(storeScreenshotsModuleOf(trip)))
-        val seeded = runBlocking {
+        /*
+         * Why: blocks the launch until the trip is there, off the main thread, so a seed step that hops to Main can't
+         * wait on it.
+         */
+        val seeded = runBlocking(Dispatchers.Default) {
             StoreScreenshotsSeed(trip, assetsDirectory).createTrip(
                 language = AppLanguage.fromTag(language),
                 theme = if (isDark) ThemePreference.DARK else ThemePreference.LIGHT,

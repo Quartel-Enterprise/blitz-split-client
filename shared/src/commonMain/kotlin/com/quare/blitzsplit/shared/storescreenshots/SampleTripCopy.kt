@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.shared.storescreenshots
 
 // Why: the words of the trip in one language, which SampleTrips turns into amounts in that language's currency.
-data class SampleTripCopy(
+internal data class SampleTripCopy(
     val groupName: String,
     val people: List<String>,
     val dinner: String,

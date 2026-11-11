@@ -8,11 +8,12 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteMember
 import com.quare.blitzsplit.feature.invite.presentation.model.InviteUiState
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
+import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
 
 private const val JOINED_COUNT = 3
 
 // A made-up code: scanning the listing's QR code opens the "invite not found" page, never someone's group.
-internal const val SAMPLE_INVITE_LINK = "https://blitzsplit.com/g/Lx7Kp2Qa"
+internal const val SAMPLE_INVITE_LINK = "https://blitzsplit.com/g/${SampleTrips.INVITE_CODE}"
 
 /** The trip's invite: its link, its QR code and who already joined. */
 @Composable

@@ -41,7 +41,7 @@ internal fun BalancesScreenshotContent(trip: SampleTrip) {
 }
 
 internal fun SampleTrip.groupHeader(): GroupHeader {
-    val myNet = netBalances.getValue(me)
+    val myId = memberIdOf(me)
     return GroupHeader(
         groupName = groupName,
         groupInitials = previewInitialsOf(groupName),
@@ -54,8 +54,8 @@ internal fun SampleTrip.groupHeader(): GroupHeader {
         notJoinedCount = 0,
         totalSpentMinor = totalSpentMinor,
         myBalance = MemberBalance(
-            receivesMinor = myNet.coerceAtLeast(0),
-            owesMinor = (-myNet).coerceAtLeast(0),
+            receivesMinor = debts.filter { it.toMemberId == myId }.sumOf { it.amountMinor },
+            owesMinor = debts.filter { it.fromMemberId == myId }.sumOf { it.amountMinor },
         ),
         isEveryoneSettled = false,
         isPinned = true,

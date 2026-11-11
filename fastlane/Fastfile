@@ -329,7 +329,11 @@ def tidy_app_store_screenshots(platform)
 
   app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
   version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform.map(platform.to_sym))
-  UI.user_error!("No editable App Store version to tidy screenshots up on") if version.nil?
+  # The Mac app may have no version open for editing while the iOS one has, or the other way round: nothing to tidy
+  if version.nil?
+    UI.important("No editable #{platform} App Store version: no screenshots to tidy up there")
+    return
+  end
 
   refused = []
   version.get_app_store_version_localizations.each do |localization|
