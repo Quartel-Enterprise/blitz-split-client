@@ -197,9 +197,9 @@ class GroupsViewModel(
         combine(
             observeProfile(),
             observeAccount(),
-            observeSyncState(),
+            SyncBadge.observeActivity(observeSyncState(), observeFirstDownload()),
             connectivityObserver.observe(),
-        ) { profile, account, syncState, isOnline ->
+        ) { profile, account, sync, isOnline ->
             exit.setOnline(isOnline)
             val badge = UserBadge.of(profile, account.status)
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
@@ -211,7 +211,7 @@ class GroupsViewModel(
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
                     syncBadge = SyncBadge.ofOrNull(
-                        syncState = syncState,
+                        sync = sync,
                         isOnline = isOnline,
                     ),
                     showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,

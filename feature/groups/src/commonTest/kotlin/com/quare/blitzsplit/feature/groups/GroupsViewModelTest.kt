@@ -663,10 +663,26 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet and a sync running WHEN the groups open THEN shows the syncing badge`() =
+    fun `GIVEN internet and a background sync running WHEN the groups open THEN shows no sync badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(syncState = SyncState.SYNCING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account running WHEN the groups open THEN shows the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                downloading = startingDownload,
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -676,7 +692,55 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet and a change in the queue WHEN the groups open THEN shows the syncing badge`() =
+    fun `GIVEN the first full sync of the account WHEN the device goes offline THEN shows the offline badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                downloading = startingDownload,
+            )
+
+            // When
+            isOnline.value = false
+
+            // Then
+            assertEquals(SyncBadge.OFFLINE, viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account WHEN the server does not answer THEN shows the failed badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                downloading = startingDownload,
+            )
+
+            // When
+            syncState.value = SyncState.FAILED
+
+            // Then
+            assertEquals(SyncBadge.FAILED, viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account WHEN it ends while a sync still runs THEN hides the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                downloading = startingDownload,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN internet and a change in the queue WHEN the groups open THEN shows no sync badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(syncState = SyncState.PENDING)
@@ -685,7 +749,7 @@ class GroupsViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(SyncBadge.SYNCING, state.syncBadge)
+            assertNull(state.syncBadge)
         }
 
     @Test
@@ -743,7 +807,7 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN a change in the queue offline WHEN the device connects THEN shows the syncing badge`() =
+    fun `GIVEN a change in the queue offline WHEN the device connects THEN hides the sync badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -755,7 +819,7 @@ class GroupsViewModelTest {
             isOnline.value = true
 
             // Then
-            assertEquals(SyncBadge.SYNCING, viewModel.uiState.value.syncBadge)
+            assertNull(viewModel.uiState.value.syncBadge)
         }
 
     @Test
@@ -1501,13 +1565,13 @@ class GroupsViewModelTest {
     }
 
     @Test
-    fun `GIVEN a Google account and a sync running WHEN a group gets created THEN keeps the profile and the badge`() =
+    fun `GIVEN a Google account and a failed sync WHEN a group gets created THEN keeps the profile and the badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
                 status = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE),
                 profile = pierre.copy(photo = ProfilePhoto.Remote(googlePhotoUrl)),
-                syncState = SyncState.SYNCING,
+                syncState = SyncState.FAILED,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -1521,7 +1585,7 @@ class GroupsViewModelTest {
             assertEquals(AvatarColor.GREEN, state.avatarColor)
             assertEquals(googlePhotoUrl, state.photoUrl)
             assertEquals(AccountProvider.GOOGLE, state.accountProvider)
-            assertEquals(SyncBadge.SYNCING, state.syncBadge)
+            assertEquals(SyncBadge.FAILED, state.syncBadge)
             assertTrue(state.showsRecoveryCodePrompt)
             assertEquals(listOf("floripa"), state.groups.map(GroupRow::id))
         }
@@ -3705,6 +3769,11 @@ class GroupsViewModelTest {
     private val now = Instant.parse("2026-10-31T15:00:00Z").toEpochMilliseconds()
 
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
+    private val startingDownload = FirstDownloadProgress(
+        arrivedGroupCount = 0,
+        groupCount = null,
+        isWaitingForInternet = false,
+    )
 
     private val googlePhotoUrl = "https://lh3.googleusercontent.com/a/pierre"
 

@@ -2355,7 +2355,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN internet and a change in the queue WHEN Inicio opens THEN shows the syncing badge`() =
+    fun `GIVEN internet and a change in the queue WHEN Inicio opens THEN shows no sync badge`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(syncState = SyncState.PENDING)
@@ -2364,8 +2364,54 @@ class HomeViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
+            assertNull(state.syncBadge)
+            assertFalse(state.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN internet and a background sync running WHEN Inicio opens THEN shows no sync badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account running WHEN Inicio opens THEN shows the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                isFirstDownloadPending = true,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
             assertEquals(SyncBadge.SYNCING, state.syncBadge)
             assertFalse(state.canRetrySync)
+        }
+
+    @Test
+    fun `GIVEN the first full sync of the account WHEN it ends while a sync still runs THEN hides the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                isFirstDownloadPending = true,
+            )
+
+            // When
+            firstDownload.end()
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
         }
 
     @Test

@@ -209,10 +209,10 @@ class HomeViewModel(
         combine(
             observeProfile(),
             observeAccount(),
-            observeSyncState(),
+            SyncBadge.observeActivity(observeSyncState(), observeFirstDownload()),
             connectivityObserver.observe(),
             recoveryCodeCardDismissal.isDismissed,
-        ) { profile, account, syncState, isOnline, isCardDismissed ->
+        ) { profile, account, sync, isOnline, isCardDismissed ->
             val badge = UserBadge.of(profile, account.status)
             val isAnonymous = account.status is AccountStatus.Anonymous
             uiState.update { state ->
@@ -222,7 +222,7 @@ class HomeViewModel(
                     avatarColor = badge.avatarColor,
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
-                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline),
+                    syncBadge = SyncBadge.ofOrNull(sync, isOnline),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
