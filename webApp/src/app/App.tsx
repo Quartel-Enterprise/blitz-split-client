@@ -131,11 +131,11 @@ const FRAME_PAGES = new Set([
  * with what was typed while it is anywhere under them.
  */
 function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?: number }) {
-  const mapIndex = backStack.findIndex(
+  const overBillIndex = backStack.findIndex(
     (route, index) => (route.name === 'category-map' || route.name === 'group-detail') && backStack[index - 1]?.name === 'split-bill',
   )
-  const isMapOverBill = mapIndex > 0
-  const stack = isMapOverBill ? backStack.slice(0, mapIndex) : backStack
+  const isOverBill = overBillIndex > 0
+  const stack = isOverBill ? backStack.slice(0, overBillIndex) : backStack
   const top = stack[stack.length - 1]
   // Why: a payment key and the account deletion open as dialogs over the profile, and a new group, its invite and
   // the reader of an invite's link or QR over the home or the group's members, which stay mounted under them. A new
@@ -227,10 +227,10 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       {isContactInvite && <ContactInviteDialog key={top.personKey ?? ''} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       {isSearch && <SearchRouteDialog />}
-      {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} isCovered={isMapOverBill} />}
-      {isMapOverBill && (
+      {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} isCovered={isOverBill} />}
+      {isOverBill && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
-          <StackLayers backStack={backStack.slice(mapIndex)} offset={offset + mapIndex} />
+          <StackLayers backStack={backStack.slice(overBillIndex)} offset={offset + overBillIndex} />
         </div>
       )}
       {editGroup && <EditGroupDialog key={editGroup.groupId} route={editGroup} isCovered={isOverEditGroup} />}

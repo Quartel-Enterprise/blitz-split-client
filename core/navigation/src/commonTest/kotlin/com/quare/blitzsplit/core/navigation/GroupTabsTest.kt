@@ -219,6 +219,53 @@ class GroupTabsTest {
     }
 
     @Test
+    fun `GIVEN Convidar over the group opened over a bill WHEN opening Membros THEN keeps it over the bill`() {
+        // Given
+        val membersUnderBill = Route.GroupDetail(
+            GROUP_ID,
+            joinedAs = null,
+            GroupTab.MEMBERS,
+            isOverBill = false,
+        )
+        val bill = Route.SplitBill.createNew(GROUP_ID)
+        prepareScenario(
+            Route.Groups,
+            membersUnderBill,
+            bill,
+            Route.GroupDetail(
+                GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+                isOverBill = true,
+            ),
+            Route.Invite(GROUP_ID, isNewGroup = false),
+        )
+
+        // When
+        navigator.openGroup(
+            from = Route.Invite(GROUP_ID, isNewGroup = false),
+            groupId = GROUP_ID,
+            tab = GroupTab.MEMBERS,
+        )
+
+        // Then
+        assertEquals(
+            listOf(
+                Route.Groups,
+                membersUnderBill,
+                bill,
+                Route.GroupDetail(
+                    GROUP_ID,
+                    joinedAs = null,
+                    GroupTab.MEMBERS,
+                    isOverBill = true,
+                ),
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
     fun `GIVEN Convidar over another group WHEN opening the group THEN takes the place of Convidar`() {
         // Given
         prepareScenario(

@@ -16,7 +16,6 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveHasGroups
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -277,14 +276,7 @@ class GlobalBalancesViewModel(
             .valueOrNull()
             .orEmpty()
         if (rows.none { row -> row.groups.any { it.groupId == groupId } }) return
-        navigator.navigate(
-            Route.GroupDetail(
-                groupId,
-                joinedAs = null,
-                tab = GroupTab.EXPENSES,
-                isOverBill = false,
-            ),
-        )
+        navigator.navigate(Route.GroupDetail.expensesOf(groupId))
     }
 
     // Why: only from Saldos on top, and only in the direction the row offers, so a stale tap never pays the wrong way.

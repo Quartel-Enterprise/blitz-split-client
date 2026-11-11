@@ -11,7 +11,6 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.RequestGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.BalancesFilter
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -289,14 +288,7 @@ class ContactProfileViewModel(
         return true
     }
 
-    private fun openGroup(groupId: String): Boolean = navigate(
-        Route.GroupDetail(
-            groupId,
-            joinedAs = null,
-            tab = GroupTab.EXPENSES,
-            isOverBill = false,
-        ),
-    )
+    private fun openGroup(groupId: String): Boolean = navigate(Route.GroupDetail.expensesOf(groupId))
 
     private fun openAddToGroup() {
         val contact = uiState.value.contact ?: return

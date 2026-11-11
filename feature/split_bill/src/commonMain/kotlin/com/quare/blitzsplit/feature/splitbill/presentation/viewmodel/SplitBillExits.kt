@@ -49,14 +49,7 @@ internal class SplitBillExits(
         if (isBackOnGroupScreen(groupId)) {
             navigator.navigateBack()
         } else {
-            navigator.replaceTop(
-                Route.GroupDetail(
-                    groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                    isOverBill = false,
-                ),
-            )
+            navigator.replaceTop(Route.GroupDetail.expensesOf(groupId))
         }
     }
 

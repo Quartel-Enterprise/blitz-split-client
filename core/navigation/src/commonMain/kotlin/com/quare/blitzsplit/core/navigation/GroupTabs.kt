@@ -19,7 +19,8 @@ fun Navigator.openGroup(
         groupId,
         joinedAs = null,
         tab = tab,
-        isOverBill = false,
+        // Why: the group opened over Rachar conta stays its own entry on another tab, never equal to the one under it.
+        isOverBill = below is Route.GroupDetail && below.groupId == groupId && below.isOverBill,
     )
     when {
         below == null || groupScreenIdOrNull(below) != groupId -> replaceTop(group)
