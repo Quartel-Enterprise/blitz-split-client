@@ -21,6 +21,11 @@ export function usePhoneBarsHidden(root: RefObject<HTMLElement | null>, pageKey:
   const hiddenOnRef = useRef<string | null>(null)
   useEffect(() => {
     pageKeyRef.current = pageKey
+    // Why: forgets the page they left on once another shows (the frame stays), so going back to it brings them out.
+    if (hiddenOnRef.current !== null && hiddenOnRef.current !== pageKey) {
+      hiddenOnRef.current = null
+      setHiddenOn(null)
+    }
   }, [pageKey])
   const setHidden = useCallback((hidden: boolean) => {
     hiddenOnRef.current = hidden ? pageKeyRef.current : null

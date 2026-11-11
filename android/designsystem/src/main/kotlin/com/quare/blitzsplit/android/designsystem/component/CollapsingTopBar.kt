@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.quare.blitzsplit.core.model.HomeTab
@@ -35,12 +36,16 @@ fun rememberCollapsingTopBarScrollBehavior(
     // Why: saved, so a wider layout's bar keeps how far it folded across a rotation, as Material's own state does.
     val state = rememberTopAppBarState()
     val currentCanScroll by rememberUpdatedState(canScroll)
+    /*
+     * Why: whether the bars could leave in the last composition, so leaving the phone's layout brings them back.
+     * Saved with the state, so a rotation or an unfold that recreates the activity never hands a wider layout's
+     * pinned bar the phone's folded one, which nothing would open again.
+     */
+    val wasCollapsing = rememberSaveable { booleanArrayOf(collapses) }
     // Why: before the first frame, so a screen entered again never flashes its bars folded.
     remember(state) {
-        if (collapses) state.heightOffset = 0f
+        if (collapses || wasCollapsing[0]) state.heightOffset = 0f
     }
-    // Why: whether the bars could leave in the last composition, so leaving the phone's layout brings them back.
-    val wasCollapsing = remember { booleanArrayOf(collapses) }
     LaunchedEffect(collapses) {
         if (wasCollapsing[0] && !collapses && state.heightOffset != 0f) {
             animate(

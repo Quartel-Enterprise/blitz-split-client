@@ -113,9 +113,12 @@ fun GroupsContent(
          */
         val usesSideColumn = layout == DeviceLayout.PhoneLandscape &&
             (state.groups.isNotEmpty() || state.firstDownload != null || state.isReadingGroups)
-        // Why: only GroupsTopBar collapses: the search bar and the side column stay, and the bottom bar with them.
+        /*
+         * Why: only GroupsTopBar collapses: the search bar stays, and the bottom bar with it. The side column is a
+         * phone lying down's, which has the rail.
+         */
         val scrollBehavior = rememberCollapsingTopBarScrollBehavior(
-            collapses = !layout.usesNavigationRail && !usesSideColumn && !state.isSearching,
+            collapses = !layout.usesNavigationRail && !state.isSearching,
             canScroll = { listState.canScrollForward || listState.canScrollBackward },
         )
         // Why: the home's one bar or rail, drawn around the navigation, beside or under the scaffold.

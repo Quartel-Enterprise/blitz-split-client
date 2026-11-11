@@ -89,10 +89,10 @@ fun GlobalBalancesContent(
     val listState = rememberLazyListState()
     val onSplitBillClick = { onEvent(GlobalBalancesUiEvent.OnSplitBillClicked) }.takeIf { state.showsSplitBillButton }
     AdaptiveScreen(modifier = modifier.fillMaxSize()) { layout ->
-        // Why: the single list only, whose bottom padding makes room for it; beside a rail or a pane the rail has it.
-        val onFabClick = onSplitBillClick?.takeIf { !layout.usesNavigationRail && listDetail == null }
         // Why: the single list on a phone upright; beside a rail or a pane the bars stay, untouched by a scroll.
         val collapsesBars = !layout.usesNavigationRail && listDetail == null
+        // Why: the single list only, whose bottom padding makes room for it; beside a rail or a pane the rail has it.
+        val onFabClick = onSplitBillClick?.takeIf { collapsesBars }
         val scrollBehavior = rememberCollapsingTopBarScrollBehavior(
             collapses = collapsesBars,
             canScroll = { listState.canScrollForward || listState.canScrollBackward },
