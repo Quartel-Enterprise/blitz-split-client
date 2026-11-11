@@ -61,9 +61,9 @@ internal class ProfileDialogs(
      * counts as cancelled: the info dialogs close with their only button, and Appearance and Language have none.
      */
     fun close() {
-        if (uiState.value.isSigningOut) return
-        // Why: a close after a failure is giving up on it, not declining, so it isn't counted as cancelled.
         val state = uiState.value
+        if (state.isSigningOut) return
+        // Why: a close after a failure is giving up on it, not declining, so it isn't counted as cancelled.
         state.dialog?.takeIf { it in confirmations && !state.hasSignOutFailed }?.let {
             trackEvent("profile_dialog_cancelled", mapOf("dialog" to it))
         }
