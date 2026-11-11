@@ -3,7 +3,6 @@
     <string name="members_link_title">招待リンク</string>
     <string name="members_link_pending">まだ作成されていません</string>
     <string name="members_share">共有</string>
-    <string name="members_link_copied">コピーしました</string>
     <string name="members_me">%s（あなた）</string>
     <string name="members_status_this_device">このデバイス</string>
     <string name="members_status_joined">参加済み</string>

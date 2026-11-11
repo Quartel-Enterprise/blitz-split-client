@@ -2,7 +2,8 @@ package com.quare.blitzsplit.android.feature.invite
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -57,6 +58,7 @@ internal fun PhoneButtonsColumn(
  * Why: the wide boards set "Compartilhar link" with "Adicionar quem não tem o app" beside it, or stacked in a half or
  * a column, and "Ver quem já entrou" under them.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun WideButtonsLayout(
     state: InviteUiState,
@@ -69,9 +71,11 @@ internal fun WideButtonsLayout(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (isRow) {
-            Row(
+            // Why: "Adicionar quem não tem o app" wraps under "Compartilhar link" when a phone lying down has no room.
+            FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
             ) {
                 ShareButton(
                     state = state,

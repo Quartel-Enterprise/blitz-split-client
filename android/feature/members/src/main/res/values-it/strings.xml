@@ -3,7 +3,6 @@
     <string name="members_link_title">Link d’invito</string>
     <string name="members_link_pending">Non ancora creato</string>
     <string name="members_share">Condividi</string>
-    <string name="members_link_copied">Copiato</string>
     <string name="members_me">%s (tu)</string>
     <string name="members_status_this_device">Questo dispositivo</string>
     <string name="members_status_joined">Nel gruppo</string>

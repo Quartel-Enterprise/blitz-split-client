@@ -310,7 +310,6 @@ export const id: Record<MessageKey, string> = {
   members_close: 'Tutup',
   members_personalShare: 'Bagikan ke {name}',
   members_personalShareMessage: 'Gabung ke {group} sebagai {name} di Blitz Split: {link}',
-  members_linkCopied: 'Tautan disalin',
   members_copyFailed: 'Tidak bisa menyalin tautan',
 
   date_today: 'Hari ini',

@@ -309,7 +309,6 @@ export const en = {
   members_close: 'Close',
   members_personalShare: 'Share with {name}',
   members_personalShareMessage: 'Join {group} as {name} on Blitz Split: {link}',
-  members_linkCopied: 'Link copied',
   members_copyFailed: "Couldn't copy the link",
 
   date_today: 'Today',

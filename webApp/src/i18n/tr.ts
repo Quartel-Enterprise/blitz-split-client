@@ -311,7 +311,6 @@ export const tr: Record<MessageKey, string> = {
   members_close: 'Kapat',
   members_personalShare: 'Paylaş: {name}',
   members_personalShareMessage: "Blitz Split'te {group} grubuna {name} olarak katıl: {link}",
-  members_linkCopied: 'Bağlantı kopyalandı',
   members_copyFailed: 'Bağlantı kopyalanamadı',
 
   date_today: 'Bugün',

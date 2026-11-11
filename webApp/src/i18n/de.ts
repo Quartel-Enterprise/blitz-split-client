@@ -312,7 +312,6 @@ export const de: Record<MessageKey, string> = {
   members_close: 'Schließen',
   members_personalShare: 'Mit {name} teilen',
   members_personalShareMessage: 'Tritt {group} als {name} bei Blitz Split bei: {link}',
-  members_linkCopied: 'Link kopiert',
   members_copyFailed: 'Der Link konnte nicht kopiert werden',
 
   date_today: 'Heute',

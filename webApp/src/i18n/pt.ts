@@ -310,7 +310,6 @@ export const pt: Record<MessageKey, string> = {
   members_close: 'Fechar',
   members_personalShare: 'Compartilhar com {name}',
   members_personalShareMessage: 'Entra no grupo {group} como {name} no Bora Rachar: {link}',
-  members_linkCopied: 'Link copiado',
   members_copyFailed: 'Não deu para copiar o link',
 
   date_today: 'Hoje',

@@ -311,7 +311,6 @@ export const ja: Record<MessageKey, string> = {
   members_close: '閉じる',
   members_personalShare: '{name}に共有',
   members_personalShareMessage: 'Blitz Splitで{name}として{group}に参加してください：{link}',
-  members_linkCopied: 'リンクをコピーしました',
   members_copyFailed: 'リンクをコピーできませんでした',
 
   date_today: '今日',

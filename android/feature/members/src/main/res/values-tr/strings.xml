@@ -3,7 +3,6 @@
     <string name="members_link_title">Davet bağlantısı</string>
     <string name="members_link_pending">Henüz oluşturulmadı</string>
     <string name="members_share">Paylaş</string>
-    <string name="members_link_copied">Kopyalandı</string>
     <string name="members_me">%s (sen)</string>
     <string name="members_status_this_device">Bu cihaz</string>
     <string name="members_status_joined">Katıldı</string>

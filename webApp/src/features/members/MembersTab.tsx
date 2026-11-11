@@ -26,6 +26,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { freeTextProps } from '@/lib/freeText'
+import { copyLinkConfirmed, shareOrCopy } from '@/lib/share'
 import { cn } from '@/lib/utils'
 
 const nameId = 'member-name'
@@ -42,7 +43,7 @@ export function useMembers(route: JsRoute): { presenter: MembersPresenter | null
     if (action.type === 'copy' && action.link) {
       navigator.clipboard.writeText(action.link).catch(() => toast(t('members_copyFailed')))
     } else if (action.type === 'copy-group' && action.link) {
-      copyConfirmed(action.link)
+      copyLinkConfirmed(action.link)
     } else if (action.type === 'share-personal' && action.link) {
       sharePersonalLink(action.link, action.memberName ?? '', action.groupName ?? '')
     } else if (action.type === 'change-error') {
@@ -378,18 +379,5 @@ function MemberNameDialog({ presenter, editor }: { presenter: MembersPresenter; 
 
 // Why: the browser's share sheet where there is one (phones, Safari), otherwise the link goes to the clipboard, as in "Convidar".
 function sharePersonalLink(link: string, memberName: string, groupName: string) {
-  const text = t('members_personalShareMessage', { group: groupName, name: memberName, link })
-  if (typeof navigator.share === 'function') {
-    navigator.share({ text }).catch(() => {})
-    return
-  }
-  copyConfirmed(link)
-}
-
-/** The link to the clipboard with a "Link copied" toast, for a button that can't say "Copied" itself. */
-function copyConfirmed(link: string) {
-  navigator.clipboard
-    .writeText(link)
-    .then(() => toast(t('members_linkCopied')))
-    .catch(() => toast(t('members_copyFailed')))
+  shareOrCopy(t('members_personalShareMessage', { group: groupName, name: memberName, link }), link)
 }

@@ -105,7 +105,8 @@ export function InviteDialog({ route }: { route: JsRoute }) {
         </DialogHeader>
         {body}
         {next}
-        <DialogFooter>
+        {/* Why: a long "Adicionar quem não tem o app" (German, Italian) takes a line of its own instead of overflowing the dialog. */}
+        <DialogFooter className="sm:flex-wrap">
           {close}
           {addPerson}
           {share}

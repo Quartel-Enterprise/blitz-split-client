@@ -41,8 +41,8 @@ import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiState
 
 /*
- * Why: Membros under the group's header: the group's link, with "Adicionar pessoa" beside it, and who is in it. The
- * link and the people shimmer until Room is read, the header staying where it is.
+ * Why: Membros under the group's header: the group's link, with copy, Compartilhar and "Adicionar pessoa", and who is
+ * in it. The link and the people shimmer until Room is read, the header staying where it is.
  */
 internal fun LazyListScope.memberItems(
     state: MembersUiState,

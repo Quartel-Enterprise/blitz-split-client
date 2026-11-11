@@ -3,7 +3,6 @@
     <string name="members_link_title">Uitnodigingslink</string>
     <string name="members_link_pending">Nog niet gemaakt</string>
     <string name="members_share">Delen</string>
-    <string name="members_link_copied">Gekopieerd</string>
     <string name="members_me">%s (jij)</string>
     <string name="members_status_this_device">Dit apparaat</string>
     <string name="members_status_joined">Lid</string>

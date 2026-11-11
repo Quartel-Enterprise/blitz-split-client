@@ -324,7 +324,6 @@ class MembersViewModel(
 
     // Why: nothing to copy until the group's first sync brings the code the server made (`canCopyLink`).
     private fun copyGroupLink() {
-        if (!uiState.value.canCopyLink) return
         val code = shownGroup?.inviteCode ?: return
         send(MembersUiAction.CopyGroupLink(InviteLink.of(code)))
     }

@@ -312,7 +312,6 @@ export const nl: Record<MessageKey, string> = {
   members_close: 'Sluiten',
   members_personalShare: 'Delen met {name}',
   members_personalShareMessage: 'Word lid van {group} als {name} in Blitz Split: {link}',
-  members_linkCopied: 'Link gekopieerd',
   members_copyFailed: 'Kan de link niet kopiëren',
 
   date_today: 'Vandaag',

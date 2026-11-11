@@ -311,7 +311,6 @@ export const fr: Record<MessageKey, string> = {
   members_close: 'Ferme',
   members_personalShare: 'Partage avec {name}',
   members_personalShareMessage: 'Rejoins {group} en tant que {name} sur Blitz Split : {link}',
-  members_linkCopied: 'Lien copié',
   members_copyFailed: 'Impossible de copier le lien',
 
   date_today: 'Aujourd’hui',
