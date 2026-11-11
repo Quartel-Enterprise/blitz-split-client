@@ -4,81 +4,74 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarColorPicker
 import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
+import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.component.SheetActionItem
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.component.personNameKeyboardOptions
-import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
-import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
-import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
-import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
-import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
-import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileNameError
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.EditProfileUiState
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-// Why: the gap of flow 4's book, centered on the hinge: its 24dp band and 24dp on each side.
-private val bookGap = 72.dp
-private val contentMaxWidth = 560.dp
 private val avatarSize = 120.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*
+ * Why: a photo, a name and a notice are too little for a screen of their own (Pierre's call, beta feedback), so Edit
+ * profile opens as Registrar pagamento does: a bottom sheet on a phone, a 560dp dialog over the profile anywhere wider
+ * (a book's half after the hinge), and full screen on a tabletop, as the screen was.
+ */
 @Composable
 fun EditProfileContent(
     state: EditProfileUiState,
+    presentation: FormPresentation,
     snackbarHostState: SnackbarHostState,
     onEvent: (EditProfileUiEvent) -> Unit,
     // Why: null on a device that can't take a photo, which only offers choosing one.
@@ -87,52 +80,31 @@ fun EditProfileContent(
     modifier: Modifier = Modifier,
 ) {
     var isPhotoMenuOpen by rememberSaveable { mutableStateOf(false) }
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.edit_profile_title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onEvent(EditProfileUiEvent.OnBackClicked) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = stringResource(DesignR.string.designsystem_back),
-                        )
-                    }
-                },
-                actions = {
-                    TextButton(
-                        onClick = { onEvent(EditProfileUiEvent.OnSaveClicked) },
-                        enabled = state.canSave,
-                        modifier = Modifier.padding(end = 8.dp),
-                    ) { Text(stringResource(R.string.edit_profile_save)) }
-                },
-            )
-        },
-    ) { padding ->
-        val isBook = rememberFoldLayout().bookSplit != null
-        AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) { layout ->
-            if (isBook) {
-                EditProfileBookLayout(
-                    state = state,
-                    onEvent = onEvent,
-                    onPhotoClick = { isPhotoMenuOpen = true },
-                )
-            } else if (layout.usesTwoColumns) {
-                EditProfileTwoColumnLayout(
-                    state = state,
-                    onEvent = onEvent,
-                    onPhotoClick = { isPhotoMenuOpen = true },
-                )
-            } else {
-                EditProfileSingleColumn(
-                    state = state,
-                    onEvent = onEvent,
-                    onPhotoClick = { isPhotoMenuOpen = true },
-                )
-            }
-        }
+    val onPhotoClick = { isPhotoMenuOpen = true }
+    when (presentation) {
+        FormPresentation.BottomSheet -> EditProfileSheet(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            onPhotoClick = onPhotoClick,
+            modifier = modifier,
+        )
+
+        FormPresentation.Dialog -> EditProfileDialog(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            onPhotoClick = onPhotoClick,
+            modifier = modifier,
+        )
+
+        FormPresentation.TabletopHalves -> EditProfileFullScreen(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEvent = onEvent,
+            onPhotoClick = onPhotoClick,
+            modifier = modifier,
+        )
     }
     if (isPhotoMenuOpen) {
         PhotoMenuSheet(
@@ -147,25 +119,119 @@ fun EditProfileContent(
     }
 }
 
+/*
+ * Why: a phone's sheet, its title beside Save. The keyboard pushes the form up, so the name stays above it; lying down
+ * the photo goes left and the name right, as the screen did.
+ */
 @Composable
-private fun EditProfileSingleColumn(
+private fun EditProfileSheet(
     state: EditProfileUiState,
+    snackbarHostState: SnackbarHostState,
     onEvent: (EditProfileUiEvent) -> Unit,
     onPhotoClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter,
-    ) {
+    val title = stringResource(R.string.edit_profile_title)
+    val isLyingDown = rememberFoldLayout().formFactor == FormFactor.PhoneLandscape
+    Box(modifier = modifier.semantics { paneTitle = title }) {
         Column(
             modifier = Modifier
-                .widthIn(max = contentMaxWidth)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
+                .imePadding()
                 .padding(
-                    horizontal = 24.dp,
-                    vertical = 16.dp,
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 24.dp,
                 ),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier
+                        .weight(1f)
+                        .semantics { heading() },
+                )
+                Button(
+                    onClick = { onEvent(EditProfileUiEvent.OnSaveClicked) },
+                    enabled = state.canSave,
+                ) { Text(stringResource(R.string.edit_profile_save)) }
+            }
+            if (isLyingDown) {
+                Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.TopCenter,
+                    ) {
+                        AvatarSection(
+                            state = state,
+                            onEvent = onEvent,
+                            onPhotoClick = onPhotoClick,
+                        )
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        NameSection(
+                            state = state,
+                            onEvent = onEvent,
+                        )
+                    }
+                }
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    AvatarSection(
+                        state = state,
+                        onEvent = onEvent,
+                        onPhotoClick = onPhotoClick,
+                    )
+                    NameSection(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
+            }
+        }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
+    }
+}
+
+// Why: a 560dp card over the profile, Cancel and Save at its foot as a dialog's buttons.
+@Composable
+private fun EditProfileDialog(
+    state: EditProfileUiState,
+    snackbarHostState: SnackbarHostState,
+    onEvent: (EditProfileUiEvent) -> Unit,
+    onPhotoClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val title = stringResource(R.string.edit_profile_title)
+    DialogCard(
+        isWide = false,
+        spacing = 16.dp,
+        snackbarHostState = snackbarHostState,
+        modifier = modifier
+            .imePadding()
+            .semantics { paneTitle = title },
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.semantics { heading() },
+        )
+        Column(
+            modifier = Modifier
+                .weight(
+                    weight = 1f,
+                    fill = false,
+                ).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -179,101 +245,26 @@ private fun EditProfileSingleColumn(
                 onEvent = onEvent,
             )
         }
-    }
-}
-
-// Why: lying down there is little height, so the avatar goes left and the name right.
-@Composable
-private fun EditProfileTwoColumnLayout(
-    state: EditProfileUiState,
-    onEvent: (EditProfileUiEvent) -> Unit,
-    onPhotoClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 32.dp),
-        horizontalArrangement = Arrangement.spacedBy(48.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-            contentAlignment = Alignment.Center,
+        Row(
+            modifier = Modifier.align(Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            AvatarSection(
-                state = state,
-                onEvent = onEvent,
-                onPhotoClick = onPhotoClick,
-            )
-        }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp),
-        ) {
-            NameSection(
-                state = state,
-                onEvent = onEvent,
-            )
+            TextButton(
+                onClick = { onEvent(EditProfileUiEvent.OnBackClicked) },
+                enabled = !state.isSaving,
+            ) {
+                Text(stringResource(DesignR.string.designsystem_confirm_cancel))
+            }
+            TextButton(
+                onClick = { onEvent(EditProfileUiEvent.OnSaveClicked) },
+                enabled = state.canSave,
+            ) { Text(stringResource(R.string.edit_profile_save)) }
         }
     }
 }
 
-// Why: a book (and a tabletop lying down) splits on the hinge: the avatar in the half before it, the name after it.
 @Composable
-private fun EditProfileBookLayout(
-    state: EditProfileUiState,
-    onEvent: (EditProfileUiEvent) -> Unit,
-    onPhotoClick: () -> Unit,
-) {
-    TwoHalvesLayout(
-        start = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        start = 32.dp,
-                        top = 16.dp,
-                        bottom = 24.dp,
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                AvatarSection(
-                    state = state,
-                    onEvent = onEvent,
-                    onPhotoClick = onPhotoClick,
-                )
-            }
-        },
-        end = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        end = 32.dp,
-                        top = 16.dp,
-                        bottom = 24.dp,
-                    ),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                NameSection(
-                    state = state,
-                    onEvent = onEvent,
-                )
-            }
-        },
-        modifier = Modifier.fillMaxSize(),
-        gap = bookGap,
-    )
-}
-
-@Composable
-private fun AvatarSection(
+internal fun AvatarSection(
     state: EditProfileUiState,
     onEvent: (EditProfileUiEvent) -> Unit,
     onPhotoClick: () -> Unit,
@@ -331,7 +322,7 @@ private fun AvatarSection(
 }
 
 @Composable
-private fun NameSection(
+internal fun NameSection(
     state: EditProfileUiState,
     onEvent: (EditProfileUiEvent) -> Unit,
 ) {
@@ -462,69 +453,5 @@ private fun PhotoMenuSheet(
                 )
             }
         }
-    }
-}
-
-private fun createPreviewState(): EditProfileUiState = EditProfileUiState(
-    isLoaded = true,
-    name = "Pierre Vieira",
-    avatarColor = AvatarColor.BLUE,
-    photo = null,
-    isPreparingPhoto = false,
-    showsPhotoError = false,
-    photoCrop = null,
-    nameError = null,
-    isNameValid = true,
-    hasChanges = true,
-    isSaving = false,
-    accountProvider = AccountProvider.GOOGLE,
-    accountPhotoUrl = null,
-)
-
-@DevicePreviews
-@Composable
-private fun EditProfilePreview() {
-    BlitzSplitTheme {
-        EditProfileContent(
-            state = createPreviewState(),
-            snackbarHostState = remember { SnackbarHostState() },
-            onEvent = {},
-            onTakePhotoClick = {},
-            onChoosePhotoClick = {},
-        )
-    }
-}
-
-// Why: a preview's window reports no fold, so the tabletop's hinge is handed in.
-@Preview(
-    name = "Tabletop",
-    device = "spec:width=841dp,height=673dp,orientation=landscape",
-)
-@Composable
-private fun EditProfileTabletopPreview() {
-    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
-        BlitzSplitTheme {
-            EditProfileContent(
-                state = createPreviewState(),
-                snackbarHostState = remember { SnackbarHostState() },
-                onEvent = {},
-                onTakePhotoClick = {},
-                onChoosePhotoClick = {},
-            )
-        }
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun EditProfileLoadingPreview() {
-    BlitzSplitTheme {
-        EditProfileContent(
-            state = createPreviewState().copy(isLoaded = false),
-            snackbarHostState = remember { SnackbarHostState() },
-            onEvent = {},
-            onTakePhotoClick = {},
-            onChoosePhotoClick = {},
-        )
     }
 }
