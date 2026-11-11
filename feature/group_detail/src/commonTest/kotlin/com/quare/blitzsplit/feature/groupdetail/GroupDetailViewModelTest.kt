@@ -544,6 +544,7 @@ class GroupDetailViewModelTest {
                     id = "dinner",
                     description = "Jantar no Ostradamus",
                     spentAt = thisMorning,
+                    hasSpentTime = true,
                     payers = listOf(
                         ExpenseRowPayer(
                             name = "Bruno",
@@ -946,6 +947,24 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Home, Route.Groups, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a bill saved without a time WHEN Despesas lists it THEN its row has no time`() =
+        runTest(testDispatcher) {
+            // Given
+            val startOfToday = Instant.parse("2026-10-30T00:00:00Z").toEpochMilliseconds()
+            prepareScenario(storedExpenses = listOf(expense("expense-1", spentAt = startOfToday)))
+
+            // When
+            val row = viewModel.uiState.value.days
+                .single()
+                .entries
+                .filterIsInstance<ExpenseRow>()
+                .single()
+
+            // Then
+            assertFalse(row.hasSpentTime)
         }
 
     @Test

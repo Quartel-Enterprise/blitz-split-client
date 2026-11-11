@@ -30,6 +30,8 @@ data class SharedBillUiState(
     val totalMinor: Long,
     val spentAt: Long,
     val spentDay: RelativeDay,
+    // Why: a bill saved without a time (`SpentDay.hasTime`) shows its date alone.
+    val hasSpentTime: Boolean,
     val categoryId: String?,
     // Why: the app's categories only: a group's own is the group's, so it shows as Outros here.
     val categories: CategoryTree,

@@ -81,6 +81,7 @@ internal fun BillSummaryColumn(
             text = spentAtTextOf(
                 spentAt = state.spentAt,
                 spentDay = state.spentDay,
+                hasSpentTime = state.hasSpentTime,
                 dates = dates,
             ),
             style = MaterialTheme.typography.bodyMedium,

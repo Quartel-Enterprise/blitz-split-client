@@ -36,6 +36,7 @@ fun SplitBillContent(
     isDialog: Boolean,
     snackbarHostState: SnackbarHostState,
     onWhenClick: () -> Unit,
+    onTimeClick: () -> Unit,
     onEvent: (SplitBillUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,6 +83,7 @@ fun SplitBillContent(
                     money = money,
                     dates = dates,
                     onWhenClick = onWhenClick,
+                    onTimeClick = onTimeClick,
                     onEvent = onEvent,
                 )
                 ReceiptSection(
@@ -221,6 +223,7 @@ private fun PreviewSplitBillContent(state: SplitBillUiState) {
             isDialog = false,
             snackbarHostState = SnackbarHostState(),
             onWhenClick = {},
+            onTimeClick = {},
             onEvent = {},
         )
     }

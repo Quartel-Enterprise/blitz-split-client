@@ -167,7 +167,7 @@ class SplitBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN a new bill WHEN the screen opens THEN it was spent now and today`() = runTest(testDispatcher) {
+    fun `GIVEN a new bill WHEN the screen opens THEN it is today with no time`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -175,9 +175,38 @@ class SplitBillViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals(nowMillis, state.spentAt)
+        assertEquals(startOfToday, state.spentAt)
         assertEquals(RelativeDay.TODAY, state.spentDay)
+        assertFalse(state.hasSpentTime)
     }
+
+    @Test
+    fun `GIVEN a new bill WHEN adding the time THEN it takes the time it is now`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeAdded)
+
+        // Then
+        assertEquals(nowMillis, viewModel.uiState.value.spentAt)
+        assertTrue(viewModel.uiState.value.hasSpentTime)
+    }
+
+    @Test
+    fun `GIVEN the first minute of the day WHEN adding the time THEN it has a time rather than none`() =
+        runTest(testDispatcher) {
+            // Given
+            val firstMinute = Instant.parse("2026-10-30T00:00:30Z").toEpochMilliseconds()
+            prepareScenario(now = firstMinute)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeAdded)
+
+            // Then
+            assertEquals(Instant.parse("2026-10-30T00:01:00Z").toEpochMilliseconds(), viewModel.uiState.value.spentAt)
+            assertTrue(viewModel.uiState.value.hasSpentTime)
+        }
 
     @Test
     fun `GIVEN a new bill WHEN the screen opens THEN no field shows an error`() = runTest(testDispatcher) {
@@ -202,7 +231,7 @@ class SplitBillViewModelTest {
         val yesterday = Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(yesterday))
+        viewModel.pickSpentAt(yesterday)
 
         // Then
         assertEquals(yesterday, viewModel.uiState.value.spentAt)
@@ -216,7 +245,7 @@ class SplitBillViewModelTest {
         val weekAgo = Instant.parse("2026-10-23T15:00:00Z").toEpochMilliseconds()
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(weekAgo))
+        viewModel.pickSpentAt(weekAgo)
 
         // Then
         assertEquals(weekAgo, viewModel.uiState.value.spentAt)
@@ -234,7 +263,7 @@ class SplitBillViewModelTest {
             val thatMorning = Instant.parse("2026-10-29T12:00:00Z").toEpochMilliseconds()
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(thatMorning))
+            viewModel.pickSpentAt(thatMorning, saoPaulo)
 
             // Then
             assertEquals(RelativeDay.TODAY, viewModel.uiState.value.spentDay)
@@ -251,7 +280,7 @@ class SplitBillViewModelTest {
             val thatMorning = Instant.parse("2026-10-29T12:00:00Z").toEpochMilliseconds()
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(thatMorning))
+            viewModel.pickSpentAt(thatMorning)
 
             // Then
             assertEquals(RelativeDay.YESTERDAY, viewModel.uiState.value.spentDay)
@@ -277,7 +306,7 @@ class SplitBillViewModelTest {
         val laterToday = Instant.parse("2026-10-30T17:00:00Z").toEpochMilliseconds()
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(laterToday))
+        viewModel.pickSpentAt(laterToday)
 
         // Then
         assertEquals(nowMillis, viewModel.uiState.value.spentAt)
@@ -289,13 +318,15 @@ class SplitBillViewModelTest {
     fun `GIVEN yesterday picked WHEN picking tomorrow THEN it was spent now and today`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        viewModel.onEvent(
-            SplitBillUiEvent.OnSpentAtChanged(Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()),
-        )
-        val tomorrow = Instant.parse("2026-10-31T10:00:00Z").toEpochMilliseconds()
-
+        viewModel.pickSpentAt(Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds())
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(tomorrow))
+        viewModel.onEvent(
+            SplitBillUiEvent.OnSpentDayPicked(
+                year = 2026,
+                month = 10,
+                day = 31,
+            ),
+        )
 
         // Then
         assertEquals(nowMillis, viewModel.uiState.value.spentAt)
@@ -312,7 +343,7 @@ class SplitBillViewModelTest {
             val anHourLater = nowMillis + 1.hours.inWholeMilliseconds
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(anHourLater))
+            viewModel.pickSpentAt(anHourLater)
 
             // Then
             assertEquals(tenMinutesLater, viewModel.uiState.value.spentAt)
@@ -329,7 +360,7 @@ class SplitBillViewModelTest {
             val yesterday = Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds()
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(yesterday))
+            viewModel.pickSpentAt(yesterday)
 
             // Then
             assertEquals(yesterday, viewModel.uiState.value.spentAt)
@@ -345,7 +376,7 @@ class SplitBillViewModelTest {
         clockMillis = tenMinutesLater
 
         // When
-        viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(tenMinutesLater))
+        viewModel.pickSpentAt(tenMinutesLater)
 
         // Then
         assertEquals(tenMinutesLater, viewModel.uiState.value.spentAt)
@@ -364,7 +395,7 @@ class SplitBillViewModelTest {
             val thatEvening = Instant.parse("2026-10-30T23:00:00Z").toEpochMilliseconds()
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(thatEvening))
+            viewModel.pickSpentAt(thatEvening)
 
             // Then
             assertEquals(thatEvening, viewModel.uiState.value.spentAt)
@@ -385,9 +416,313 @@ class SplitBillViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnSpentAtOpened)
 
             // Then
-            assertEquals(beforeMidnight, viewModel.uiState.value.spentAt)
+            assertEquals(Instant.parse("2026-10-30T00:00:00Z").toEpochMilliseconds(), viewModel.uiState.value.spentAt)
             assertEquals(RelativeDay.YESTERDAY, viewModel.uiState.value.spentDay)
             assertEquals(afterMidnight, viewModel.uiState.value.latestSpentAt)
+        }
+
+    @Test
+    fun `GIVEN a device in Sao Paulo WHEN a new bill opens THEN it is at midnight there with no time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                now = lateEveningInSaoPaulo,
+                timeZone = saoPaulo,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Instant.parse("2026-10-29T03:00:00Z").toEpochMilliseconds(), state.spentAt)
+            assertFalse(state.hasSpentTime)
+            assertEquals(RelativeDay.TODAY, state.spentDay)
+        }
+
+    @Test
+    fun `GIVEN a new bill with no time WHEN picking another day THEN it is that day with no time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val day = SplitBillUiEvent.OnSpentDayPicked(
+                year = 2026,
+                month = 10,
+                day = 25,
+            )
+
+            // When
+            viewModel.onEvent(day)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(Instant.parse("2026-10-25T00:00:00Z").toEpochMilliseconds(), state.spentAt)
+            assertFalse(state.hasSpentTime)
+            assertEquals(RelativeDay.OTHER, state.spentDay)
+        }
+
+    @Test
+    fun `GIVEN a bill at 20h40 WHEN picking another day THEN it keeps 20h40 on that day`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+        val day = SplitBillUiEvent.OnSpentDayPicked(
+            year = 2026,
+            month = 10,
+            day = 25,
+        )
+
+        // When
+        viewModel.onEvent(day)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(Instant.parse("2026-10-25T20:40:00Z").toEpochMilliseconds(), state.spentAt)
+        assertTrue(state.hasSpentTime)
+    }
+
+    @Test
+    fun `GIVEN a new bill with no time WHEN picking tomorrow THEN it was spent now with a time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val tomorrow = SplitBillUiEvent.OnSpentDayPicked(
+                year = 2026,
+                month = 10,
+                day = 31,
+            )
+
+            // When
+            viewModel.onEvent(tomorrow)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(nowMillis, state.spentAt)
+            assertTrue(state.hasSpentTime)
+            assertEquals(RelativeDay.TODAY, state.spentDay)
+        }
+
+    @Test
+    fun `GIVEN a bill at 20h yesterday WHEN picking today before 20h THEN it was spent now`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.pickSpentAt(Instant.parse("2026-10-29T20:00:00Z").toEpochMilliseconds())
+            val today = SplitBillUiEvent.OnSpentDayPicked(
+                year = 2026,
+                month = 10,
+                day = 30,
+            )
+
+            // When
+            viewModel.onEvent(today)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(nowMillis, state.spentAt)
+            assertTrue(state.hasSpentTime)
+            assertEquals(RelativeDay.TODAY, state.spentDay)
+        }
+
+    @Test
+    fun `GIVEN a bill at 20h40 WHEN picking February 30 THEN Quando stays as it was`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+        val before = viewModel.uiState.value
+
+        // When
+        viewModel.onEvent(
+            SplitBillUiEvent.OnSpentDayPicked(
+                year = 2026,
+                month = 2,
+                day = 30,
+            ),
+        )
+
+        // Then
+        assertEquals(before, viewModel.uiState.value)
+    }
+
+    @Test
+    fun `GIVEN a bill at 20h40 WHEN picking a 13th month THEN Quando stays as it was`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+        val before = viewModel.uiState.value
+
+        // When
+        viewModel.onEvent(
+            SplitBillUiEvent.OnSpentDayPicked(
+                year = 2026,
+                month = 13,
+                day = 1,
+            ),
+        )
+
+        // Then
+        assertEquals(before, viewModel.uiState.value)
+    }
+
+    @Test
+    fun `GIVEN a new bill with no time WHEN picking 9h15 THEN it was spent today at 9h15`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val time = SplitBillUiEvent.OnSpentTimePicked(
+            hour = 9,
+            minute = 15,
+        )
+
+        // When
+        viewModel.onEvent(time)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(Instant.parse("2026-10-30T09:15:00Z").toEpochMilliseconds(), state.spentAt)
+        assertTrue(state.hasSpentTime)
+        assertEquals(RelativeDay.TODAY, state.spentDay)
+    }
+
+    @Test
+    fun `GIVEN yesterday with no time WHEN picking 20h40 THEN it was spent yesterday at 20h40`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(
+                SplitBillUiEvent.OnSpentDayPicked(
+                    year = 2026,
+                    month = 10,
+                    day = 29,
+                ),
+            )
+            val time = SplitBillUiEvent.OnSpentTimePicked(
+                hour = 20,
+                minute = 40,
+            )
+
+            // When
+            viewModel.onEvent(time)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(Instant.parse("2026-10-29T20:40:00Z").toEpochMilliseconds(), state.spentAt)
+            assertTrue(state.hasSpentTime)
+            assertEquals(RelativeDay.YESTERDAY, state.spentDay)
+        }
+
+    @Test
+    fun `GIVEN today with no time WHEN picking a time later than now THEN it was spent now`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val laterToday = SplitBillUiEvent.OnSpentTimePicked(
+                hour = 18,
+                minute = 0,
+            )
+
+            // When
+            viewModel.onEvent(laterToday)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(nowMillis, state.spentAt)
+            assertTrue(state.hasSpentTime)
+            assertEquals(nowMillis, state.latestSpentAt)
+        }
+
+    @Test
+    fun `GIVEN a bill at 20h40 WHEN picking midnight THEN it is that day with no time`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+        val midnight = SplitBillUiEvent.OnSpentTimePicked(
+            hour = 0,
+            minute = 0,
+        )
+
+        // When
+        viewModel.onEvent(midnight)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(Instant.parse("2026-10-27T00:00:00Z").toEpochMilliseconds(), state.spentAt)
+        assertFalse(state.hasSpentTime)
+    }
+
+    @Test
+    fun `GIVEN a bill at 20h40 WHEN picking hour 25 THEN Quando stays as it was`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+        val before = viewModel.uiState.value
+
+        // When
+        viewModel.onEvent(
+            SplitBillUiEvent.OnSpentTimePicked(
+                hour = 25,
+                minute = 0,
+            ),
+        )
+
+        // Then
+        assertEquals(before, viewModel.uiState.value)
+    }
+
+    @Test
+    fun `GIVEN a time picked before midnight WHEN opening the time after midnight THEN only its limit and day move`() =
+        runTest(testDispatcher) {
+            // Given
+            val beforeMidnight = Instant.parse("2026-10-30T23:50:00Z").toEpochMilliseconds()
+            prepareScenario(now = beforeMidnight)
+            val thatEvening = Instant.parse("2026-10-30T23:00:00Z").toEpochMilliseconds()
+            viewModel.pickSpentAt(thatEvening)
+            val afterMidnight = Instant.parse("2026-10-31T00:10:00Z").toEpochMilliseconds()
+            clockMillis = afterMidnight
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeOpened)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(thatEvening, state.spentAt)
+            assertTrue(state.hasSpentTime)
+            assertEquals(RelativeDay.YESTERDAY, state.spentDay)
+            assertEquals(afterMidnight, state.latestSpentAt)
+        }
+
+    @Test
+    fun `GIVEN a bill at 20h40 WHEN removing the time THEN it is that day with no time`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(Instant.parse("2026-10-27T00:00:00Z").toEpochMilliseconds(), state.spentAt)
+        assertFalse(state.hasSpentTime)
+        assertEquals(RelativeDay.OTHER, state.spentDay)
+    }
+
+    @Test
+    fun `GIVEN a device in Sao Paulo and a time picked WHEN removing the time THEN it is at midnight there`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                now = lateEveningInSaoPaulo,
+                timeZone = saoPaulo,
+            )
+            viewModel.pickSpentAt(Instant.parse("2026-10-29T12:00:00Z").toEpochMilliseconds(), saoPaulo)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(Instant.parse("2026-10-29T03:00:00Z").toEpochMilliseconds(), state.spentAt)
+            assertFalse(state.hasSpentTime)
+            assertEquals(RelativeDay.TODAY, state.spentDay)
         }
 
     @Test
@@ -2094,8 +2429,28 @@ class SplitBillViewModelTest {
             ),
             saved.shares,
         )
-        assertEquals(nowMillis, saved.spentAt)
+        assertEquals(startOfToday, saved.spentAt)
     }
+
+    @Test
+    fun `GIVEN a time picked and then removed WHEN tapping Salvar THEN saves the first instant of its day`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+            describe("Mercado")
+            viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(
+                Instant.parse("2026-10-27T00:00:00Z").toEpochMilliseconds(),
+                expenses.createdExpenses.single().spentAt,
+            )
+        }
 
     @Test
     fun `GIVEN a bill filled in WHEN tapping Salvar THEN goes back`() = runTest(testDispatcher) {
@@ -2169,7 +2524,7 @@ class SplitBillViewModelTest {
             typeAmount("100")
             describe("Mercado")
             pickPayer(BRUNO)
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(yesterday))
+            viewModel.pickSpentAt(yesterday)
             confirmAmounts(ANA to "70,00", PIERRE to "", BRUNO to "30,00", CARLA to "")
 
             // When
@@ -2515,11 +2870,52 @@ class SplitBillViewModelTest {
             trackedEvents.clear()
 
             // When
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(nowMillis - 1.hours.inWholeMilliseconds))
-            viewModel.onEvent(SplitBillUiEvent.OnSpentAtChanged(nowMillis - 2.hours.inWholeMilliseconds))
+            viewModel.pickSpentAt(nowMillis - 1.hours.inWholeMilliseconds)
+            viewModel.pickSpentAt(nowMillis - 2.hours.inWholeMilliseconds)
 
             // Then
             assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the bill WHEN opening the time THEN sends the time clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeOpened)
+
+        // Then
+        assertEquals(listOf("split_bill_time_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a bill with a time WHEN removing the time THEN sends the time cleared`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.pickSpentAt(Instant.parse("2026-10-27T20:40:00Z").toEpochMilliseconds())
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
+
+        // Then
+        assertEquals(listOf("split_bill_time_cleared" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a bill with no time WHEN removing the time THEN sends nothing and Quando stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSpentTimeCleared)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(before, viewModel.uiState.value)
         }
 
     @Test
@@ -3000,6 +3396,7 @@ class SplitBillViewModelTest {
     )
 
     private val nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
+    private val startOfToday = Instant.parse("2026-10-30T00:00:00Z").toEpochMilliseconds()
 
     // Why: São Paulo, with no daylight saving since 2019, as a fixed offset: the JS target has no time-zone database.
     private val saoPaulo = UtcOffset(hours = -3).asTimeZone()
