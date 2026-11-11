@@ -52,9 +52,6 @@ interface AccountRemoteDataSource {
 
     suspend fun keepAppleToken(token: AppleToken)
 
-    // Why: returns the new recovery code; the session's user is read again, now without the identity.
-    suspend fun removeSocialIdentity(): String
-
     suspend fun deleteAccount()
 
     // Why: ends the session here only, for a user the server no longer has, whose logout could only fail.

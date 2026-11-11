@@ -682,6 +682,7 @@ class InviteChangeLinkViewModelTest {
                         "group-1",
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                 )
                 it.navigate(route)

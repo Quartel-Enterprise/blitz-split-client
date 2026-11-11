@@ -2648,6 +2648,7 @@ class EditGroupViewModelTest {
         GROUP_ID,
         joinedAs = null,
         tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     private val trip = Group(

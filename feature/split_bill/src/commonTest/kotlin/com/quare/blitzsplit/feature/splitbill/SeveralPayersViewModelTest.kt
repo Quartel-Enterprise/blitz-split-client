@@ -1010,6 +1010,7 @@ class SeveralPayersViewModelTest {
                     GROUP_ID,
                     joinedAs = null,
                     tab = GroupTab.EXPENSES,
+                    isOverBill = false,
                 ),
             )
             it.navigate(route)

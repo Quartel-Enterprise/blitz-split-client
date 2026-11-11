@@ -2459,103 +2459,6 @@ class AccountRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN a Google account WHEN disconnecting Google THEN the same user becomes anonymous with a new code due`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = googleUserWithEmail)
-            repository.ensureRegistered()
-
-            // When
-            val result = repository.removeSocialIdentity()
-
-            // Then
-            val account = repository.observeAccount().first()
-            assertTrue(result.isSuccess)
-            assertEquals(1, remote.unlinkCount)
-            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
-            assertEquals("P3XR7MQA2TKE", account.recoveryCode)
-            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
-            assertNull(account.email)
-        }
-
-    @Test
-    fun `GIVEN a session waiting for its refresh WHEN disconnecting Google THEN stays the same user with a new code`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = googleUserWithEmail)
-            repository.ensureRegistered()
-            repository.updateAwaitsFullSync(true)
-            remote.isRefreshing = true
-
-            // When
-            val result = repository.removeSocialIdentity()
-
-            // Then
-            val account = repository.observeAccount().first()
-            assertTrue(result.isSuccess)
-            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
-            assertEquals("P3XR7MQA2TKE", account.recoveryCode)
-            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
-            assertTrue(account.awaitsFullSync)
-            assertNull(account.email)
-        }
-
-    @Test
-    fun `GIVEN an Apple account WHEN disconnecting Apple THEN the same user becomes anonymous with a new code due`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = appleUserWithEmail)
-            repository.ensureRegistered()
-
-            // When
-            val result = repository.removeSocialIdentity()
-
-            // Then
-            val account = repository.observeAccount().first()
-            assertTrue(result.isSuccess)
-            assertEquals(AccountStatus.Anonymous("apple-user"), account.status)
-            assertEquals("P3XR7MQA2TKE", account.recoveryCode)
-            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
-            assertNull(account.email)
-        }
-
-    @Test
-    fun `GIVEN a failed user read after the unlink WHEN disconnecting THEN keeps the new code due`() = runTest {
-        // Given
-        prepareScenario(currentUser = googleUserWithEmail)
-        repository.ensureRegistered()
-        remote.keepsStaleUserOnUnlink = true
-
-        // When
-        val result = repository.removeSocialIdentity()
-
-        // Then
-        val account = repository.observeAccount().first()
-        assertTrue(result.isSuccess)
-        assertEquals(AccountStatus.Anonymous("user-1"), account.status)
-        assertEquals("P3XR7MQA2TKE", account.recoveryCode)
-        assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
-        assertNull(account.email)
-    }
-
-    @Test
-    fun `GIVEN no internet WHEN disconnecting Google THEN fails and keeps the account as it was`() = runTest {
-        // Given
-        prepareScenario(currentUser = googleUserWithEmail)
-        repository.ensureRegistered()
-        val before = local.get()
-        remote.unlinkError = IllegalStateException("offline")
-
-        // When
-        val result = repository.removeSocialIdentity()
-
-        // Then
-        assertIs<IllegalStateException>(result.exceptionOrNull())
-        assertEquals(before, local.get())
-        assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), repository.observeStatus().first())
-    }
-
-    @Test
     fun `GIVEN a Google account WHEN deleting the account THEN deletes it on the server only`() = runTest {
         // Given
         prepareScenario(currentUser = googleUserWithEmail)
@@ -2822,11 +2725,6 @@ private class FakeAccountRemoteDataSource(
     val appleRefreshTokens = MutableSharedFlow<String>()
     val keptAppleTokens = mutableListOf<AppleToken>()
     var keepAppleTokenError: Throwable? = null
-    var unlinkError: Throwable? = null
-    var unlinkCount = 0
-
-    // Why: the server unlinked, but the read of the user after it failed, so the session still holds the old one.
-    var keepsStaleUserOnUnlink = false
     var deleteAccountError: Throwable? = null
     var deleteAccountCount = 0
     var clearedLocalSessions = 0
@@ -2910,17 +2808,6 @@ private class FakeAccountRemoteDataSource(
     override suspend fun keepAppleToken(token: AppleToken) {
         keepAppleTokenError?.let { throw it }
         keptAppleTokens += token
-    }
-
-    override suspend fun removeSocialIdentity(): String {
-        unlinkError?.let { throw it }
-        unlinkCount++
-        if (keepsStaleUserOnUnlink) return "P3XR7MQA2TKE"
-        currentUser = currentUser?.copy(
-            socialProvider = null,
-            email = null,
-        )
-        return "P3XR7MQA2TKE"
     }
 
     override suspend fun deleteAccount() {

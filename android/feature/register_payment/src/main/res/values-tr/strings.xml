@@ -60,12 +60,12 @@
     <string name="register_payment_pix_keys">%s kişisinin Pix anahtarları</string>
     <string name="register_payment_no_pix_key">%s kişisinin uygulamada Pix anahtarı yok.</string>
     <string name="register_payment_simplified_none">Sadeleştirilmiş borç.</string>
-    <string name="register_payment_simplified_new">Sadeleştirilmiş borç: %1$s, %3$s kişisine olan borcunu %2$s kişisine öder.</string>
+    <string name="register_payment_simplified_new">Sadeleştirilmiş borç: %1$s, %2$s kişisine öder; önceki alacaklı: %3$s.</string>
     <string name="register_payment_simplified_new_you_pay">Sadeleştirilmiş borç: %2$s kişisine olan borcunu %1$s kişisine ödersin.</string>
     <string name="register_payment_simplified_new_pays_you">Sadeleştirilmiş borç: %1$s, %2$s kişisine olan borcunu sana öder.</string>
-    <string name="register_payment_simplified_grown">Sadeleştirilmiş borç: %1$s kişisinin %2$s kişisine olan borcunu da içerir.</string>
+    <string name="register_payment_simplified_grown">Sadeleştirilmiş borç: %1$s kişisinin önceki borcunu da içerir; alacaklı: %2$s.</string>
     <string name="register_payment_simplified_grown_you">Sadeleştirilmiş borç: %s kişisine olan borcunu da içerir.</string>
-    <string name="register_payment_you_lowercase">sen</string>
+    <string name="register_payment_you_owed">sen</string>
     <string name="register_payment_simplify_someone">Biri</string>
     <string name="register_payment_simplify_on_paid">%1$s borçları az önce sadeleştirdi. Artık %3$s grubunda %2$s kişisine borcun yok.</string>
     <string name="register_payment_simplify_off_paid">%1$s borç sadeleştirmeyi az önce kapattı. Artık %3$s grubunda %2$s kişisine borcun yok.</string>

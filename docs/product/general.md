@@ -46,7 +46,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     binding, the web's `freeTextProps`): a lone lowercase letter typed into an empty field, after a dead key's
     accent or over a selected text, the caret staying after it. Not the capital lowercased, nor a lowercase letter
     the field had before (deleting down to it), so someone who wants it lowercase keeps it. Never an email, a payment key, an invite or recovery code,
-    a link, an amount, a search or a category map's word.
+    a link, an amount, a search or a category map's word. A group's or a member's initials are capitalized as the
+    app's language writes them ("ilker" is "İ" in Turkish, `toAppLanguageUppercase`).
   - An amount shown, not typed, drops its decimals when they are all zero (Pierre's call, beta feedback 9): "R$ 500",
     "+R$ 125 to get back", "you get 120 and owe 218", and keeps every one otherwise ("R$ 12,50", never "R$ 12,5"),
     decided amount by amount, so one list may mix "R$ 125" and "R$ 12,50" (`GroupCurrency.getDisplayFractionDigits`,
@@ -159,3 +160,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     screens show what the device holds under the failed sync's badge, since a change the server keeps refusing fails
     every try. Offline, Bill shows the device's comments and photos and takes new ones. Record
     payment never waits offline for the receiver's keys: the form opens, so a payment is recorded offline too.
+  - Syncs run silently (Pierre's call, beta feedback: "Syncing" showed often enough to annoy, in an offline first app).
+    Home's and Groups' sync chip says "Syncing…" only during the account's first full sync, from a restore (a sign
+    in, a recovery code, a new device) until a sync gets the whole copy through, retries and relaunches included
+    (`AccountSnapshot.awaitsFullSync`), and for the sync after "No response from the server", the retry, until it
+    settles, so a tap on "Try again" shows it working. Every other sync, a queued change going up or the catch up on
+    coming back to the front, shows nothing. "Offline · 1 change queued" and "No response from the server" still
+    show as they did, and win over "Syncing…" (`SyncBadge.ofOrNull`, so no UI special-cases it). Pulling down
+    (Android, iOS) keeps its own spinner until that sync ends, as Activity's refresh does on the Mac (View › Refresh,
+    ⌘R) and the web; the Mac's and the web's Home and Groups have no refresh of their own. Profile's "Account and sync" row still says
+    "Syncing…" while one runs, a status read there on purpose, and Activity's "Syncing…" only shows while a new device
+    waits for the feed's first page.

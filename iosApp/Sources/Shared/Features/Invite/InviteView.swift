@@ -307,8 +307,8 @@ private struct InviteText: View {
     }
 }
 
-/// "Compartilhar convite" and "Ver quem já entrou", or a disabled share and "Ir para o grupo" while the link waits, then
-/// "Add someone without the app".
+/// "Compartilhar convite" and "Add someone without the app", then "Ver quem já entrou" as a link, or a disabled share
+/// and "Ir para o grupo" while the link waits.
 private struct InviteButtons: View {
     let model: InviteModel
     /// An iPhone upright spaces them like the rest of its column.
@@ -337,7 +337,8 @@ private struct InviteButtons: View {
                 .prominentLabel()
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
-                TintedButton(title: "See who joined") {
+                AddWithoutAppButton(model: model)
+                SecondaryLinkButton(title: "See who joined", systemImage: "person.2") {
                     model.send(InviteUiEventOnSeeWhoJoinedClicked.shared)
                 }
             } else {
@@ -351,40 +352,43 @@ private struct InviteButtons: View {
                 .buttonBorderShape(.capsule)
                 .controlSize(.large)
                 .disabled(true)
-                TintedButton(title: "Go to the group") {
+                AddWithoutAppButton(model: model)
+                SecondaryLinkButton(title: "Go to the group", systemImage: "arrow.forward") {
                     model.send(InviteUiEventOnGoToGroupClicked.shared)
                 }
             }
-            AddWithoutAppButton(model: model)
         }
     }
     #endif
 }
 
 #if os(macOS)
-/// The Mac's sheet right after creating a group: "Add someone without the app" as a link, then a trailing row of
-/// regular buttons as the personal invite's, Close, "See who joined" (or "Go to the group" while the link waits) and
-/// "Share…", the default one, on Return.
+/// The Mac's sheet right after creating a group: "See who joined" as a link, then a trailing row of regular buttons as
+/// the personal invite's, Close, "Add someone without the app" and "Share…", the default one, on Return (or "Go to the
+/// group" while the link waits).
 private struct MacInviteButtons: View {
     let model: InviteModel
 
     var body: some View {
         let state = model.state
+        let isLinkReady = state.link != nil && state.displayLink != nil && state.qrCode != nil
         VStack(alignment: .leading, spacing: 16) {
-            Button("Add someone without the app") {
-                model.send(InviteUiEventOnAddPersonClicked.shared)
+            if isLinkReady {
+                Button("See who joined", systemImage: "person.2") {
+                    model.send(InviteUiEventOnSeeWhoJoinedClicked.shared)
+                }
+                .buttonStyle(.link)
             }
-            .buttonStyle(.link)
             HStack(spacing: 8) {
                 Spacer()
                 Button("Close") {
                     model.send(InviteUiEventOnCloseClicked.shared)
                 }
                 .keyboardShortcut(.cancelAction)
-                if let link = state.link, state.displayLink != nil, state.qrCode != nil {
-                    Button("See who joined") {
-                        model.send(InviteUiEventOnSeeWhoJoinedClicked.shared)
-                    }
+                Button("Add someone without the app") {
+                    model.send(InviteUiEventOnAddPersonClicked.shared)
+                }
+                if let link = state.link, isLinkReady {
                     ShareLink(item: link, message: inviteShareMessage(groupName: state.groupName)) {
                         Text("Share…")
                     }
@@ -414,11 +418,31 @@ private struct AddWithoutAppButton: View {
             model.send(InviteUiEventOnAddPersonClicked.shared)
         } label: {
             Label("Add someone without the app", systemImage: "person.badge.plus")
+                .font(.headline)
+                .frame(maxWidth: .infinity, minHeight: 36)
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .controlSize(.large)
+    }
+}
+
+#if os(iOS)
+/// "See who joined", or "Go to the group" while the link waits: a link under the buttons, as Members opens either way.
+private struct SecondaryLinkButton: View {
+    let title: LocalizedStringKey
+    let systemImage: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
                 .frame(maxWidth: .infinity, minHeight: 36)
         }
         .buttonStyle(.borderless)
     }
 }
+#endif
 
 /// The message the share sheet sends with the invite link, from the screen and from the Mac's popover.
 private func inviteShareMessage(groupName: String) -> Text {

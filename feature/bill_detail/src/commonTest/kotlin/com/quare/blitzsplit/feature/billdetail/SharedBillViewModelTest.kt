@@ -547,6 +547,7 @@ class SharedBillViewModelTest {
                         groupId = GROUP_ID,
                         joinedAs = null,
                         tab = GroupTab.EXPENSES,
+                        isOverBill = false,
                     ),
                     Route.BillDetail(
                         groupId = GROUP_ID,

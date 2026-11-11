@@ -529,7 +529,7 @@ private struct HiddenContactsSection: View {
             .accessibilityAddTraits(.isHeader)
         } footer: {
             if state.isHiddenExpanded {
-                Text("Whoever is hidden stays in the groups. They come back to the list by themselves if they join a new account with you.")
+                Text("Whoever is hidden stays in the groups. They come back to the list by themselves if they join a new bill with you.")
             }
         }
     }

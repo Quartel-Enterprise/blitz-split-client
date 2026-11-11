@@ -67,7 +67,7 @@
     <string name="register_payment_simplified_new_pays_you">Uproszczony dług: %1$s płaci tobie zamiast płacić: %2$s.</string>
     <string name="register_payment_simplified_grown">Uproszczony dług: obejmuje też dawny dług %1$s → %2$s.</string>
     <string name="register_payment_simplified_grown_you">Uproszczony dług: obejmuje też twój dawny dług wobec: %s.</string>
-    <string name="register_payment_you_lowercase">ty</string>
+    <string name="register_payment_you_owed">tobie</string>
     <string name="register_payment_simplify_someone">Ktoś</string>
     <string name="register_payment_simplify_on_paid">%1$s właśnie uprościł(a) długi. Nie masz już nic do oddania osobie %2$s w grupie %3$s.</string>
     <string name="register_payment_simplify_off_paid">%1$s właśnie wyłączył(a) „Uprość długi”. Nie masz już nic do oddania osobie %2$s w grupie %3$s.</string>

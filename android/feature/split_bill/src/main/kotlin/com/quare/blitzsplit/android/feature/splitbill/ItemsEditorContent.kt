@@ -63,7 +63,7 @@ private val innerRadius = 6.dp
  * strip of chips, a tablet's dialog as a list.
  */
 @Composable
-internal fun ItemsEditorContent(
+fun ItemsEditorContent(
     state: SplitBillUiState,
     items: ItemsEditor,
     isDialog: Boolean,

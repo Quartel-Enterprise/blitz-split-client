@@ -15,13 +15,14 @@ private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
 private const val SINGULAR_SUFFIX_O = "ó"
 private val secondPersonAuxiliaries = mapOf(
-    FRENCH to mapOf("a" to "as"),
+    FRENCH to mapOf("a" to "as", "l’a" to "l’as", "l'a" to "l'as"),
     GERMAN to mapOf("hat" to "hast", "ist" to "bist"),
-    ITALIAN to mapOf("ha" to "hai"),
+    ITALIAN to mapOf("ha" to "hai", "l’ha" to "l’hai", "l'ha" to "l'hai"),
     DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
 )
-private val youSubjectLanguages = setOf(SPANISH, FRENCH, GERMAN, ITALIAN, POLISH, DUTCH, TURKISH)
 private val turkishPast = Regex("[dt][ıiuü]$")
+private val youSubjectLanguages = setOf(SPANISH, FRENCH, GERMAN, ITALIAN, POLISH, DUTCH, TURKISH)
+private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val irregularSecondPerson = mapOf(
     "deshizo" to "deshiciste",
     "cambió" to "cambiaste",
@@ -30,12 +31,13 @@ private val irregularSecondPerson = mapOf(
     "copió" to "copiaste",
     "vació" to "vaciaste",
     "anunció" to "anunciaste",
+    "leyó" to "leíste",
 )
 
 /*
  * Why: "Ana dividió", but "Tú dividiste": Spanish conjugates the verb for the person, and one message serves them all.
- * "dividió" becomes "dividiste" and "se unió a" "te uniste a". French does the same with its auxiliary, every verb
- * phrase being a passé composé that starts with "a": "Ana a divisé", "Tu as divisé". German, Italian and Dutch too,
+ * "dividió" becomes "dividiste", "se unió a" "te uniste a" and "lo adjuntó" "lo adjuntaste". French does the same with
+ * its auxiliary, every verb phrase being a passé composé that starts with "a" or "l’a": "Ana a divisé", "Tu as divisé". German, Italian and Dutch too,
  * with their perfect's auxiliary: "Ana hat geteilt", "Du hast geteilt"; "Ana ha diviso", "Tu hai diviso"; "Ana heeft
  * verdeeld", "Jij hebt verdeeld". Polish's past says the gender, which the app doesn't know, so its verb phrases start
  * with a past in "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü",
@@ -88,6 +90,9 @@ private fun toSpanishSecondPerson(verb: String): String {
     return when {
         first == "se" && rest.isNotEmpty() ->
             (listOf("te", toSpanishSecondPerson(rest.first())) + rest.drop(1)).joinToString(" ")
+
+        first in spanishObjectPronouns && rest.isNotEmpty() ->
+            (listOf(first, toSpanishSecondPerson(rest.first())) + rest.drop(1)).joinToString(" ")
 
         first in irregularSecondPerson -> (listOf(irregularSecondPerson.getValue(first)) + rest).joinToString(" ")
 

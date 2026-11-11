@@ -46,7 +46,8 @@ The home tab, its shortcuts and pinned groups.
     `first_download_groups`, then each group comes down whole, the most recent activity first; until it answered,
     and after a relaunch midway, "Syncing…" and a bar that runs), what already came with skeletons under it and
     "so far · the rest is on its way"; offline the skeletons stay with "No internet. Your groups show up once you're back
-    online." (Mac: the window's subtitle); the sync chip as Groups', but in the top bar's empty leading side (Android's
+    online." (Mac: the window's subtitle); the sync chip as Groups' ("Syncing…" only during the account's first full
+    sync), but in the top bar's empty leading side (Android's
     title slot, beside the title on a tablet; iOS's and iPadOS's leading toolbar item, a button while "No response from
     the server" offers to try again; the web's phone top bar left of the bell, and its title row from the tablet up), so
     it comes and goes without moving the content (the beta's feedback), only the first download's bar staying above the

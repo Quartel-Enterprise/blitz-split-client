@@ -1087,6 +1087,7 @@ class BillCategoryViewModelTest {
             GROUP_ID,
             joinedAs = null,
             tab = GroupTab.EXPENSES,
+            isOverBill = false,
         ),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup))

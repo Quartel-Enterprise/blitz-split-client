@@ -17,13 +17,17 @@ enum SecondPerson {
         "deshizo": "deshiciste", "cambió": "cambiaste",
         // Why: an -iar verb ends its preterite in "-ió" but takes "-aste", unlike the -er and -ir verbs.
         "envió": "enviaste", "inició": "iniciaste", "copió": "copiaste", "vació": "vaciaste", "anunció": "anunciaste",
+        "leyó": "leíste",
     ]
+
+    /// The object pronoun Spanish puts before the verb ("lo adjuntó"), which stays as the verb changes ("lo adjuntaste").
+    private static let spanishObjectPronouns: Set = ["lo", "la", "los", "las", "le", "les"]
 
     /// Each language's perfect auxiliary in the third person, with its second person.
     private static let auxiliaries = [
-        "fr": ["a": "as"],
+        "fr": ["a": "as", "l’a": "l’as", "l'a": "l'as"],
         "de": ["hat": "hast", "ist": "bist"],
-        "it": ["ha": "hai"],
+        "it": ["ha": "hai", "l’ha": "l’hai", "l'ha": "l'hai"],
         "nl": ["heeft": "hebt", "is": "bent"],
     ]
 
@@ -74,6 +78,8 @@ enum SecondPerson {
         if first == "se", words.count > 1 {
             words[1] = spanishVerbForYou(words[1])
             words[0] = "te"
+        } else if spanishObjectPronouns.contains(first), words.count > 1 {
+            words[1] = spanishVerbForYou(words[1])
         } else if let known = irregular[first] {
             words[0] = known
         } else if first.hasSuffix("ió") {

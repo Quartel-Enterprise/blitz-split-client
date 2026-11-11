@@ -121,6 +121,8 @@
     <string name="split_bill_group_lead">Grup yang terakhir kamu pakai sudah ditandai</string>
     <string name="split_bill_group_continue">Lanjutkan</string>
     <string name="split_bill_group_change">Grup: %s. Ubah</string>
+    <string name="split_bill_group_change_button">Ubah</string>
+    <string name="split_bill_group_open">Buka grup</string>
     <plurals name="split_bill_group_people">
         <item quantity="other">%d orang</item>
     </plurals>

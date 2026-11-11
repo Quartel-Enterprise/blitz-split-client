@@ -2665,53 +2665,6 @@ class SyncCoordinatorTest {
         }
 
     @Test
-    fun `GIVEN a sync in flight WHEN unlinking THEN waits for it before removing the identity`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            status = google,
-            pullHangs = true,
-        )
-        backgroundScope.launch { coordinator.syncNow() }
-        runCurrent()
-        backgroundScope.launch { coordinator.removeSocialIdentity() }
-        runCurrent()
-        val unlinksDuringSync = account.unlinkCount
-
-        // When
-        pullGate.complete(Unit)
-        runCurrent()
-
-        // Then
-        assertEquals(0, unlinksDuringSync)
-        assertEquals(1, account.unlinkCount)
-        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
-    }
-
-    @Test
-    fun `GIVEN an unlink waiting on a sync WHEN the screen that asked leaves THEN still unlinks`() = runTest {
-        // Given
-        prepareScenario(
-            storedProfile = pierre,
-            status = google,
-            pullHangs = true,
-        )
-        backgroundScope.launch { coordinator.syncNow() }
-        runCurrent()
-        val caller = backgroundScope.launch { coordinator.removeSocialIdentity() }
-        runCurrent()
-
-        // When
-        caller.cancel()
-        pullGate.complete(Unit)
-        runCurrent()
-
-        // Then
-        assertEquals(1, account.unlinkCount)
-        assertEquals(AccountStatus.Anonymous(FakeAccountRepository.CONNECTED_USER_ID), account.status)
-    }
-
-    @Test
     fun `GIVEN a sync in flight WHEN changing the invite link THEN waits for it before rotating the code`() = runTest {
         // Given
         prepareScenario(

@@ -27,7 +27,6 @@ import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
-import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -222,7 +221,7 @@ class HomeViewModel(
                     avatarColor = badge.avatarColor,
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
-                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline),
+                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline, account.awaitsFullSync, state.syncBadge),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
@@ -384,13 +383,7 @@ class HomeViewModel(
                 ),
             )
 
-            is HomeUiEvent.OnGroupClicked -> open(
-                Route.GroupDetail(
-                    event.groupId,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                ),
-            )
+            is HomeUiEvent.OnGroupClicked -> open(Route.GroupDetail.expensesOf(event.groupId))
 
             HomeUiEvent.OnSeeAllGroupsClicked -> if (isOnTop()) navigator.openHomeTab(Route.Groups)
 
@@ -399,13 +392,7 @@ class HomeViewModel(
 
             // Why: over its group, so back goes to the group's bills, as from Despesas.
             is HomeUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(
-                    Route.GroupDetail(
-                        event.groupId,
-                        joinedAs = null,
-                        tab = GroupTab.EXPENSES,
-                    ),
-                )
+                navigator.navigate(Route.GroupDetail.expensesOf(event.groupId))
                 navigator.navigate(Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null))
             }
 

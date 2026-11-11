@@ -64,7 +64,7 @@
     <string name="register_payment_simplified_new_pays_you">シンプル化された精算：%1$sが%2$sに払う予定だった分をあなたに支払います。</string>
     <string name="register_payment_simplified_grown">シンプル化された精算：%1$sが%2$sに払う予定だった分を含みます。</string>
     <string name="register_payment_simplified_grown_you">シンプル化された精算：%sに払う予定だった分を含みます。</string>
-    <string name="register_payment_you_lowercase">あなた</string>
+    <string name="register_payment_you_owed">あなた</string>
     <string name="register_payment_simplify_someone">誰か</string>
     <string name="register_payment_simplify_on_paid">%1$sがたった今、精算をシンプルにしました。%3$sで%2$sへの支払いはなくなりました。</string>
     <string name="register_payment_simplify_off_paid">%1$sがたった今、「精算をシンプルに」をオフにしました。%3$sで%2$sへの支払いはなくなりました。</string>

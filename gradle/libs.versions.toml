@@ -56,6 +56,10 @@ quare-connectivity = "1.2.0"
 quare-loadable = "1.1.0"
 qrose = "1.3.1"
 supabase = "3.9.0"
+# Store listing screenshots: frames the screens under Robolectric (docs/store-listing-screenshots.md)
+store-screenshots = "1.6.1"
+robolectric = "4.17"
+junit = "4.13.2"
 
 [libraries]
 # Gradle plugins consumed as libraries (build-logic)
@@ -162,6 +166,13 @@ quare-connectivity = { module = "software.quare:connectivity", version.ref = "qu
 quare-loadable = { module = "software.quare:loadable", version.ref = "quare-loadable" }
 # Unused by Gradle; it lets Dependabot / Renovate propose new releases of the ktlint ruleset
 quare-ktlint-rules = { module = "software.quare:ktlint-rules", version.ref = "quare-ktlint-rules" }
+
+# Store listing screenshots
+storeScreenshots-library = { module = "io.github.lucianosantosdev:storescreenshots-library", version.ref = "store-screenshots" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+junit = { module = "junit:junit", version.ref = "junit" }
+compose-ui-testManifest = { module = "androidx.compose.ui:ui-test-manifest" }
+compose-ui-testJunit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 
 # Observability
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }

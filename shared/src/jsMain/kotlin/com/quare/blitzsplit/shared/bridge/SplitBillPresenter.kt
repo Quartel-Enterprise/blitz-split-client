@@ -9,8 +9,6 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
-import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
-import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -61,24 +59,6 @@ class JsSplitEditor(
     val statusDetails: Array<JsSplitFact>,
 )
 
-// Why: person is null for someone who left the group, "Ex-membro".
-class JsPayerAmountRow(
-    val memberId: String,
-    val person: JsBillPerson?,
-    val amountText: String,
-)
-
-// Why: "Várias pessoas pagaram", amounts in the currency's minor unit.
-class JsPayerAmounts(
-    val rows: Array<JsPayerAmountRow>,
-    val totalMinor: Double,
-    val paidMinor: Double,
-    val remainingMinor: Double,
-    val addsUp: Boolean,
-    val showsMismatch: Boolean,
-    val paying: Array<JsPayerAmountRow>,
-)
-
 /*
  * Why: the group's "Divisão padrão" a new bill opens with. mode is the DefaultSplitMode's code ("shares"), values the
  * parts or percentages of who is in it ("3 para 1"), excluded who an "Igual" default leaves out, editorMode the
@@ -127,6 +107,7 @@ class JsSplitBillState(
     val groupPhotoUrl: String?,
     val groups: Array<JsBillGroup>,
     val canChangeGroup: Boolean,
+    val canOpenGroup: Boolean,
     // Why: the group "Rachar em qual grupo?" marks while it is open, null while it is closed.
     val groupSelection: String?,
     val currency: String,
@@ -238,6 +219,7 @@ class SplitBillPresenter(
                         )
                     }.toTypedArray(),
                 canChangeGroup = state.canChangeGroup,
+                canOpenGroup = state.canOpenGroup,
                 groupSelection = state.groupSelection?.groupId,
                 currency = state.currency.code,
                 fractionDigits = state.currency.fractionDigits,
@@ -410,8 +392,14 @@ class SplitBillPresenter(
 
     fun getDescription(): String = viewModel.uiState.value.description
 
+    // Why: "Change" beside the group, which asks "Rachar em qual grupo?".
     fun openGroup() {
         viewModel.onEvent(SplitBillUiEvent.OnGroupClicked)
+    }
+
+    // Why: the group itself, whose page opens over the form, which stays mounted with what was typed.
+    fun openGroupScreen() {
+        viewModel.onEvent(SplitBillUiEvent.OnOpenGroupClicked)
     }
 
     fun pickGroup(groupId: String) {
@@ -552,22 +540,6 @@ internal fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
     photoUrl = person.photoUrl,
     isMe = person.isMe,
     hasJoined = person.hasJoined,
-)
-
-private fun toJsPayerAmountRow(row: PayerAmountRow): JsPayerAmountRow = JsPayerAmountRow(
-    memberId = row.memberId,
-    person = row.person?.let(::toJsBillPerson),
-    amountText = row.amountText,
-)
-
-private fun toJsPayerAmounts(amounts: PayerAmounts): JsPayerAmounts = JsPayerAmounts(
-    rows = amounts.rows.map(::toJsPayerAmountRow).toTypedArray(),
-    totalMinor = amounts.totalMinor.toDouble(),
-    paidMinor = amounts.paidMinor.toDouble(),
-    remainingMinor = amounts.remainingMinor.toDouble(),
-    addsUp = amounts.addsUp,
-    showsMismatch = amounts.showsMismatch,
-    paying = amounts.paying.map(::toJsPayerAmountRow).toTypedArray(),
 )
 
 private fun toJsSplitRow(row: SplitRow): JsSplitRow = JsSplitRow(

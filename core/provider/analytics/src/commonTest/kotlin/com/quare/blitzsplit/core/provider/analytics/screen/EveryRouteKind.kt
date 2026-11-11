@@ -37,6 +37,7 @@ internal val everyRouteKind: List<Route> = listOf(
         groupId = "secret-group",
         joinedAs = "secret-name",
         tab = GroupTab.MEMBERS,
+        isOverBill = false,
     ),
     Route.GroupStats(groupId = "secret-group"),
     Route.CategoryExpenses(

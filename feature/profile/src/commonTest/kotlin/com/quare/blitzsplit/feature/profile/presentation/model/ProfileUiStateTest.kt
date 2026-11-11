@@ -372,90 +372,6 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN an unlink under way WHEN drawing the sign out button THEN disables it`() {
-        // Given
-        val profile = state(isUnlinking = true)
-
-        // When
-        val canSignOut = profile.canSignOut
-
-        // Then
-        assertFalse(canSignOut)
-    }
-
-    @Test
-    fun `GIVEN online and nothing under way WHEN drawing the unlink button THEN enables it`() {
-        // Given
-        val profile = state(accountProvider = AccountProvider.GOOGLE)
-
-        // When
-        val canUnlink = profile.canUnlink
-
-        // Then
-        assertTrue(canUnlink)
-    }
-
-    @Test
-    fun `GIVEN no internet WHEN drawing the unlink button THEN disables it`() {
-        // Given
-        val profile = state(
-            accountProvider = AccountProvider.GOOGLE,
-            isOnline = false,
-        )
-
-        // When
-        val canUnlink = profile.canUnlink
-
-        // Then
-        assertFalse(canUnlink)
-    }
-
-    @Test
-    fun `GIVEN an unlink under way WHEN drawing the unlink button THEN disables it`() {
-        // Given
-        val profile = state(
-            accountProvider = AccountProvider.GOOGLE,
-            isUnlinking = true,
-        )
-
-        // When
-        val canUnlink = profile.canUnlink
-
-        // Then
-        assertFalse(canUnlink)
-    }
-
-    @Test
-    fun `GIVEN a sign out under way WHEN drawing the unlink button THEN disables it`() {
-        // Given
-        val profile = state(
-            accountProvider = AccountProvider.APPLE,
-            isSigningOut = true,
-        )
-
-        // When
-        val canUnlink = profile.canUnlink
-
-        // Then
-        assertFalse(canUnlink)
-    }
-
-    @Test
-    fun `GIVEN a sign out scheduled once synced WHEN drawing the unlink button THEN disables it`() {
-        // Given
-        val profile = state(
-            accountProvider = AccountProvider.APPLE,
-            isSignOutScheduled = true,
-        )
-
-        // When
-        val canUnlink = profile.canUnlink
-
-        // Then
-        assertFalse(canUnlink)
-    }
-
-    @Test
     fun `GIVEN Google WHEN drawing the danger zone THEN shows delete account`() {
         // Given
         val profile = state(accountProvider = AccountProvider.GOOGLE)
@@ -709,7 +625,6 @@ class ProfileUiStateTest {
         hasAnonymousId: Boolean = false,
         isConnectExpanded: Boolean = false,
         formattedRecoveryCode: String? = null,
-        isUnlinking: Boolean = false,
         language: AppLanguage = AppLanguage.SYSTEM,
     ): ProfileUiState = ProfileUiState(
         isLoaded = isLoaded,
@@ -741,8 +656,6 @@ class ProfileUiStateTest {
         hasSignInFailed = false,
         isSigningOut = isSigningOut,
         hasSignOutFailed = false,
-        isUnlinking = isUnlinking,
-        hasUnlinkFailed = false,
         appInvite = null,
     )
 }

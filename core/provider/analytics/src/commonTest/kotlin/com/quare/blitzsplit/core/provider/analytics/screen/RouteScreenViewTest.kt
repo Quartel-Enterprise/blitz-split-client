@@ -33,6 +33,7 @@ class RouteScreenViewTest {
             groupId = "group-1",
             joinedAs = "Bruno",
             tab = GroupTab.BALANCES,
+            isOverBill = false,
         )
 
         // When

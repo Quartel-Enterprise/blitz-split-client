@@ -48,6 +48,9 @@ sealed interface SplitBillUiEvent : UiEvent {
 
             OnGroupClicked -> EventAnalytics.Automatic("split_bill_group_clicked")
 
+            // Why: only a tap that opens the group, never one while the bill saves or a receipt is read.
+            OnOpenGroupClicked -> EventAnalytics.Manual("split_bill_group_opened")
+
             // Why: only a pick that changes the bill's currency, never the one already there.
             is OnCurrencyPicked -> EventAnalytics.Manual("split_bill_currency_picked")
 
@@ -254,8 +257,11 @@ sealed interface SplitBillUiEvent : UiEvent {
         val text: String,
     ) : SplitBillUiEvent
 
-    // Why: the group of a new bill, which opens "Rachar em qual grupo?" with it marked.
+    // Why: "Change" beside the group of a new bill, which opens "Rachar em qual grupo?" with it marked.
     data object OnGroupClicked : SplitBillUiEvent
+
+    // Why: the bill's group (Android's chip, Apple's "Group" row, the web's field), which opens its screen over the form.
+    data object OnOpenGroupClicked : SplitBillUiEvent
 
     data class OnGroupPicked(
         val groupId: String,

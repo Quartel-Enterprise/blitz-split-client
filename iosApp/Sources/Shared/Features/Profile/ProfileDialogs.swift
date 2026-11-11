@@ -50,41 +50,10 @@ private struct ProfileDialogsModifier: ViewModifier {
                     Text("You're offline. Your data stays on this \(DeviceName.current) until the sync finishes. Once everything is uploaded, we sign out and erase the local copy.")
                 }
             }
-            .alert(unlinkTitle, isPresented: isPresented(.unlinkAccount)) {
-                Button("Cancel", role: .cancel) {}
-                Button("Disconnect", role: .destructive) {
-                    model.send(ProfileUiEventOnUnlinkConfirmed.shared)
-                }
-                .disabled(!state.canUnlink)
-            } message: {
-                Text(verbatim: unlinkMessage)
-            }
             .sheet(isPresented: isPresented(.eraseProfile)) {
                 EraseProfileSheet(model: model)
                     .foldSheetPlacement()
             }
-    }
-
-    private var unlinkTitle: Text {
-        Text("Disconnect your \(model.state.accountProvider?.displayName ?? "") account?")
-    }
-
-    /// An alert has one message, so the offline note and the error follow the explanation in it.
-    private var unlinkMessage: String {
-        let state = model.state
-        var lines = [
-            String(
-                localized: "You keep using Blitz Split on this \(DeviceName.current), without an account. Your groups stay here and syncing switches to an anonymous ID. Next we show your recovery code: keep it so you don't lose access.",
-                bundle: .appLanguage,
-            ),
-        ]
-        if state.showsOfflineNotice {
-            lines.append(String(localized: "Needs an internet connection.", bundle: .appLanguage))
-        }
-        if state.hasUnlinkFailed {
-            lines.append(String(localized: "Couldn't disconnect. Try again.", bundle: .appLanguage))
-        }
-        return lines.joined(separator: "\n\n")
     }
 
     private func pendingTitle(count: Int) -> Text {
@@ -92,14 +61,14 @@ private struct ProfileDialogsModifier: ViewModifier {
     }
 
     /// An alert closes itself on any of its buttons, so the close waits for the button's own event to
-    /// reach the ViewModel first, and the sign out and unlink alerts, which can't show progress, stay
-    /// hidden while it runs (the account row shows it); a failure brings the alert back with the error.
+    /// reach the ViewModel first, and the sign out alerts, which can't show progress, stay hidden while
+    /// it runs; a failure brings the alert back with the error.
     private func isPresented(_ dialog: ProfileDialog) -> Binding<Bool> {
         Binding(
             get: {
                 let state = model.state
                 let isSignOutAlert = dialog == .signOut || dialog == .signOutPending
-                let isBusy = (isSignOutAlert && state.isSigningOut) || (dialog == .unlinkAccount && state.isUnlinking)
+                let isBusy = isSignOutAlert && state.isSigningOut
                 return state.dialog == dialog && !isBusy
             },
             set: { isPresented in
