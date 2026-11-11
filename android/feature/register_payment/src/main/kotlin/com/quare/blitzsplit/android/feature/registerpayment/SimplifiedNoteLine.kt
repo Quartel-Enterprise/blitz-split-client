@@ -79,7 +79,7 @@ private fun simplifiedNoteTextOf(
 
 @Composable
 private fun notePersonNameOf(person: NotePerson): String = if (person.isMe) {
-    stringResource(R.string.register_payment_you_lowercase)
+    stringResource(R.string.register_payment_you_owed)
 } else {
     person.name ?: stringResource(R.string.register_payment_former_member)
 }

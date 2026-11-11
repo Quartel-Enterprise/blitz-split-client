@@ -710,51 +710,18 @@ private struct AccountSection: View {
     }
 }
 
-/// The Google or Apple row. On iPhone and iPad the whole row opens the "Disconnect" alert; the Mac
-/// has a "Disconnect…" button, as its settings rows do.
+/// The Google or Apple row only says which account it is: leaving it is signing out or deleting the
+/// account (Pierre's call, beta feedback), so it opens nothing.
 private struct ConnectedAccountRow: View {
     let model: ProfileModel
     let provider: AccountProvider
 
     var body: some View {
-        let state = model.state
-        #if os(macOS)
         LabeledContent {
-            HStack(spacing: 12) {
-                Text("Connected").foregroundStyle(Palette.accent)
-                if state.isUnlinking {
-                    ProgressView().controlSize(.small)
-                } else {
-                    Button("Disconnect…") { model.send(ProfileUiEventOnAccountClicked.shared) }
-                }
-            }
+            Text("Connected").foregroundStyle(Palette.accent)
         } label: {
             label
         }
-        #else
-        Button {
-            model.send(ProfileUiEventOnAccountClicked.shared)
-        } label: {
-            LabeledContent {
-                if state.isUnlinking {
-                    ProgressView().controlSize(.small)
-                } else {
-                    HStack(spacing: 8) {
-                        Text("Connected").foregroundStyle(Palette.accent)
-                        Image(systemName: "chevron.right")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                            .accessibilityHidden(true)
-                    }
-                }
-            } label: {
-                label
-            }
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityHint("Disconnect")
-        #endif
     }
 
     @ViewBuilder

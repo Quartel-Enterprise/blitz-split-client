@@ -46,7 +46,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     binding, the web's `freeTextProps`): a lone lowercase letter typed into an empty field, after a dead key's
     accent or over a selected text, the caret staying after it. Not the capital lowercased, nor a lowercase letter
     the field had before (deleting down to it), so someone who wants it lowercase keeps it. Never an email, a payment key, an invite or recovery code,
-    a link, an amount, a search or a category map's word.
+    a link, an amount, a search or a category map's word. A group's or a member's initials are capitalized as the
+    app's language writes them ("ilker" is "İ" in Turkish, `toAppLanguageUppercase`).
   - An amount shown, not typed, drops its decimals when they are all zero (Pierre's call, beta feedback 9): "R$ 500",
     "+R$ 125 to get back", "you get 120 and owe 218", and keeps every one otherwise ("R$ 12,50", never "R$ 12,5"),
     decided amount by amount, so one list may mix "R$ 125" and "R$ 12,50" (`GroupCurrency.getDisplayFractionDigits`,

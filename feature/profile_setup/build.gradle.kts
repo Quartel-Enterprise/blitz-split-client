@@ -8,6 +8,7 @@ kotlin {
             api(projects.core.presentation)
             api(projects.core.model)
             implementation(projects.core.navigation)
+            implementation(projects.core.utils)
             api(projects.core.profile)
             implementation(projects.core.account)
             implementation(project.dependencies.platform(libs.koin.bom))

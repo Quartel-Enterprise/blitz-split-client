@@ -40,7 +40,5 @@ internal fun createInitialProfileUiState(
     hasSignInFailed = false,
     isSigningOut = false,
     hasSignOutFailed = false,
-    isUnlinking = false,
-    hasUnlinkFailed = false,
     appInvite = null,
 )

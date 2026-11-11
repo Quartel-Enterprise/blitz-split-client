@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
@@ -75,9 +76,11 @@ internal fun GroupTopBar(
                 onAction = onAction,
             )
         },
+        // Why: the totals ellipsize short of the bar's actions instead of running into the chart button.
         subtitle = {
             Text(
                 text = meta,
+                modifier = Modifier.padding(end = 16.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

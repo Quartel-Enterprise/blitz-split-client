@@ -113,11 +113,6 @@
     <string name="profile_export_detail">Een JSON-bestand met je profiel en sleutels</string>
     <string name="profile_delete_account">Account en gegevens verwijderen</string>
     <string name="profile_delete_account_detail">Verwijdert je Blitz Split-account. Dit kan niet ongedaan worden gemaakt.</string>
-    <string name="profile_unlink_title">Je %1$s-account ontkoppelen?</string>
-    <string name="profile_unlink_body">Je blijft Blitz Split gebruiken op dit apparaat, zonder account. Je groepen blijven hier en synchronisatie schakelt over naar een anonieme ID. Daarna tonen we je herstelcode: bewaar die zodat je de toegang niet kwijtraakt.</string>
-    <string name="profile_unlink_offline">Er is een internetverbinding nodig.</string>
-    <string name="profile_unlink_failed">Kan niet ontkoppelen. Probeer het opnieuw.</string>
-    <string name="profile_unlink_confirm">Ontkoppelen</string>
     <string name="profile_bitcoin_in_sats">Bitcoin in satoshi’s</string>
     <string name="profile_bitcoin_in_sats_detail">Toont en typt bitcoinbedragen in sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Categoriekaart</string>

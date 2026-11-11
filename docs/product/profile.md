@@ -10,7 +10,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     column included (Pierre's call, beta feedback 16), and "Delete account" stays the last thing of its column, only
     the legal footer under it; on a book (a tabletop lying down alike) a half each, the 72 dp
     gap centered on the hinge, as the keys do, and its dialogs ("Who sees your profile", Sign out,
-    Disconnect, "Erase profile and sign out") and Delete account open in the right half. Edit profile is never a screen of its
+    "Erase profile and sign out") and Delete account open in the right half. Edit profile is never a screen of its
     own, since a photo, a name and a notice are too little for one (Pierre's call, beta feedback): Android opens it as
     Registrar pagamento (`FormPresentation`), a bottom sheet on a phone with "Edit profile" and Save on top (the photo
     left and the name right lying down), a 560 dp dialog with Cancel and Save anywhere wider (a book's right half),
@@ -34,6 +34,10 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     recovery code yet, `ProfileUiState.erasesProfileOnSignOut`) reads "Erase profile and sign out", whose dialog says
     it is gone for good; one the server never saw (`isLocalOnly`) has no Delete account either, while an anonymous
     account whose code isn't made yet keeps it.
+  - "Account and sync"'s Google or Apple row only says which account it is ("Connected", and the masked email): it
+    opens nothing and nothing disconnects the Google or Apple account from the user (Pierre's call, beta feedback).
+    Who wants it gone signs out or deletes the account. The server's `unlink-identity` function stays for the
+    installs that still offer it, until the API drops it.
   - The profile ends in a discreet, centered legal footer, as Bible Planner's (Pierre's call, beta feedback 18):
     "Privacy Policy • Terms of Service", two links opening https://blitzsplit.com/privacy and
     https://blitzsplit.com/terms (`LegalLinks`, the site's English routes) in the browser, and "Version X" under them
