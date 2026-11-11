@@ -72,6 +72,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -161,7 +162,7 @@ class ProfileViewModel(
                 hasPendingKeys = observePendingPaymentKeyChanges(),
                 hasPendingPreferences = observePendingNotificationPreferenceChanges(),
                 isOnline = connectivityObserver.observe(),
-                awaitsFullSync = observeAccount().map { it.awaitsFullSync },
+                awaitsFullSync = observeAccount().map { it.awaitsFullSync }.distinctUntilChanged(),
             ),
             combine(observeDynamicColors(), observeBitcoinInSats()) { isDynamic, showsSats ->
                 uiState.update {

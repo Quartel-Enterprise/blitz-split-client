@@ -487,7 +487,7 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN the first full sync of the account running WHEN the profile opens THEN shows it syncing`() =
+    fun `GIVEN a sync running WHEN the account awaits its first full sync THEN shows it syncing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(syncState = SyncState.SYNCING)
