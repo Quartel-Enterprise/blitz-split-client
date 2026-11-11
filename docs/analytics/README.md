@@ -475,13 +475,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_visibility_info_clicked` | none | "Who sees your profile", when it opens | `:feature:profile` |
-| `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`, `unlink_account`) | A confirmation of Profile (sign out, erase, disconnect) closed without its main button, while nothing signs out or unlinks | `:feature:profile` |
+| `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | A confirmation of Profile (sign out, erase) closed without its main button, while nothing signs out | `:feature:profile` |
 | `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
 | `payment_key_add_clicked` | `method` (`pix`, `bitcoin`) | "Add a Pix or Bitcoin key", while a key can be added | `:feature:profile` |
 | `payment_key_clicked` | `method` | A key of "Keys to receive payments" | `:feature:profile` |
-| `profile_account_clicked` | none | The Google or Apple row, when "Disconnect your account?" opens | `:feature:profile` |
-| `profile_unlink_confirmed` | none | "Disconnect", while it can disconnect | `:feature:profile` |
-| `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out or unlinks | `:feature:profile` |
+| `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out | `:feature:profile` |
 | `theme_selected` | `theme` (`system`, `light`, `dark`) | A theme, another than the one picked | `:feature:profile` |
 | `profile_appearance_clicked` | none | "Appearance", once the theme was read | `:feature:profile` |
 | `profile_language_clicked` | none | Android's "Language" row, once the profile was read | `:feature:profile` |

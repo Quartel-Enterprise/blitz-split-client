@@ -65,9 +65,6 @@ data class ProfileUiState(
     val isSigningOut: Boolean,
     // Why: each UI says it in its own words, in the dialog that stays open for another try.
     val hasSignOutFailed: Boolean,
-    val isUnlinking: Boolean,
-    // Why: like the sign out's, said in the dialog that stays open for another try.
-    val hasUnlinkFailed: Boolean,
     // Why: "App on your phone" (14.4), only on the web and the Mac once a store lists the app; null everywhere else.
     val appInvite: ProfileAppInvite?,
 ) {
@@ -123,11 +120,7 @@ data class ProfileUiState(
      * the dialog would be picked from no account and no pending change.
      */
     val canSignOut: Boolean
-        get() = isLoaded && !isSigningOut && !isSignOutScheduled && connectingProvider == null && !isUnlinking
-
-    // Why: the dialog opens offline too, to say why "Desconectar" waits for the internet.
-    val canUnlink: Boolean
-        get() = isOnline && !isUnlinking && !isSigningOut && !isSignOutScheduled
+        get() = isLoaded && !isSigningOut && !isSignOutScheduled && connectingProvider == null
 
     // Why: a profile the server never saw has no account there to delete (beta feedback 17).
     val isLocalOnly: Boolean

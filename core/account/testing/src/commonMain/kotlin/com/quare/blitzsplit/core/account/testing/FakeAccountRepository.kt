@@ -88,7 +88,6 @@ class FakeAccountRepository(
     var appPauseCount = 0
     var appResumeCount = 0
     var signOutCount = 0
-    var unlinkCount = 0
     var endedDeletedSessions = 0
     var deleteAccountCount = 0
     var keepAppleTokensCount = 0
@@ -97,9 +96,7 @@ class FakeAccountRepository(
     var registerError: Throwable? = null
     var restoreError: Throwable? = null
     var signOutError: Throwable? = null
-    var unlinkError: Throwable? = null
     var deleteAccountError: Throwable? = null
-    var unlinkedRecoveryCode: String = "P3XR7MQA2TKE"
     var restoredStatus: AccountStatus = AccountStatus.Anonymous(RESTORED_USER_ID)
 
     // Why: like Room, a new query reads the status as it is, while an open one sees a write only once
@@ -239,22 +236,6 @@ class FakeAccountRepository(
             signOutWhenSynced = false,
             awaitsFullSync = false,
         )
-    }
-
-    // Why: like the real one, the same user without an account, its new code due.
-    override suspend fun removeSocialIdentity(): Result<Unit> {
-        unlinkCount++
-        unlinkError?.let { return Result.failure(it) }
-        val current = status as? AccountStatus.Connected
-        snapshot.update {
-            it.copy(
-                status = current?.let { connected -> AccountStatus.Anonymous(connected.userId) } ?: it.status,
-                recoveryCode = unlinkedRecoveryCode,
-                recoveryCodePrompt = RecoveryCodePrompt.DUE,
-                email = null,
-            )
-        }
-        return Result.success(Unit)
     }
 
     override suspend fun deleteAccount(): Result<Unit> {

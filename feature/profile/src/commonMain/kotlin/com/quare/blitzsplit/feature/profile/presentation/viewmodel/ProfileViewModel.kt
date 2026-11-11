@@ -52,7 +52,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
-import com.quare.blitzsplit.core.sync.domain.usecase.UnlinkAccount
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
@@ -91,7 +90,6 @@ class ProfileViewModel(
     private val signOutWhenSynced: SignOutWhenSynced,
     private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
     private val validatePaymentKey: ValidatePaymentKey,
-    private val unlinkAccount: UnlinkAccount,
     private val exportUserData: ExportUserData,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
@@ -127,7 +125,7 @@ class ProfileViewModel(
 
     private val appInviteRow = ProfileAppInviteRow(uiState, navigator, dismissAppInvite, trackEvent, viewModelScope)
 
-    // Why: Profile's dialogs and sheets, which open only while nothing signs out or unlinks.
+    // Why: Profile's dialogs and sheets, which open only while nothing signs out.
     private val dialogs = ProfileDialogs(uiState, trackEvent)
 
     private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
@@ -239,10 +237,6 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
 
-            ProfileUiEvent.OnAccountClicked -> dialogs.openUnlink()
-
-            ProfileUiEvent.OnUnlinkConfirmed -> unlink()
-
             ProfileUiEvent.OnExportClicked -> export()
 
             ProfileUiEvent.OnDeleteAccountClicked -> openDeleteAccount()
@@ -335,8 +329,6 @@ class ProfileViewModel(
         val connected = account.status as? AccountStatus.Connected
         uiState.update {
             it.copy(
-                // Why: the account gone closes the unlink dialog with it, so it never asks about no provider.
-                dialog = it.dialog.takeUnless { dialog -> dialog == ProfileDialog.UNLINK_ACCOUNT && connected == null },
                 accountProvider = connected?.provider,
                 hasAnonymousId = account.status is AccountStatus.Anonymous,
                 maskedEmail = account.email?.takeIf { connected != null }?.toMaskedEmail(),
@@ -451,39 +443,13 @@ class ProfileViewModel(
         providerConnector.expand()
     }
 
-    // Why: an unlink or sign out under way, or one scheduled, changes the account the deletion would name.
+    // Why: a sign out under way, or one scheduled, changes the account the deletion would name.
     private fun openDeleteAccount() {
         val state = uiState.value
-        val isBusy = state.isUnlinking || state.isSigningOut || state.isSignOutScheduled
+        val isBusy = state.isSigningOut || state.isSignOutScheduled
         if (state.showsDeleteAccount && !isBusy) {
             trackEvent("profile_delete_account_clicked", emptyMap())
             navigator.navigate(Route.DeleteAccount)
-        }
-    }
-
-    /*
-     * Why: the recovery code sheet shows once the account is gone, since its prompt comes due with the new
-     * code, so a success only closes the dialog.
-     */
-    private fun unlink() {
-        val state = uiState.value
-        if (state.dialog != ProfileDialog.UNLINK_ACCOUNT || !state.canUnlink) return
-        trackEvent("profile_unlink_confirmed", emptyMap())
-        uiState.update {
-            it.copy(
-                isUnlinking = true,
-                hasUnlinkFailed = false,
-            )
-        }
-        viewModelScope.launch {
-            val result = unlinkAccount()
-            uiState.update {
-                it.copy(
-                    dialog = it.dialog.takeIf { result.isFailure },
-                    isUnlinking = false,
-                    hasUnlinkFailed = result.isFailure,
-                )
-            }
         }
     }
 

@@ -20,7 +20,6 @@ val profileModule = module {
             signOutWhenSynced = get(),
             cancelSignOutWhenSynced = get(),
             validatePaymentKey = get(),
-            unlinkAccount = get(),
             exportUserData = get(),
             checkForUpdate = get(),
             showUpdatePrompt = get(),

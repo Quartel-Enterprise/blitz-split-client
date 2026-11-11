@@ -258,29 +258,6 @@ class AccountRepositoryImpl(
         local.clear()
     }
 
-    override suspend fun removeSocialIdentity(): Result<Unit> = suspendRunCatching {
-        val code = remote.removeSocialIdentity()
-        val session = remote.getSession()
-        local.update { account ->
-            // Why: the server removes every Google and Apple identity, so the user is anonymous even if its read failed.
-            val mirrored = when (session) {
-                is RemoteSession.Active -> account.toMirrorOf(session.user.copy(socialProvider = null))
-
-                // Why: still this user, so its id, scheduled sign out and awaited sync stay until the session settles.
-                RemoteSession.Refreshing -> account.copy(
-                    provider = null,
-                    email = null,
-                )
-
-                RemoteSession.None -> account.toMirrorOf(null)
-            }
-            mirrored.copy(
-                recoveryCode = code,
-                recoveryCodePrompt = RecoveryCodePrompt.DUE.code,
-            )
-        }
-    }
-
     override suspend fun deleteAccount(): Result<Unit> = suspendRunCatching { remote.deleteAccount() }
 
     override suspend fun endDeletedSession() {

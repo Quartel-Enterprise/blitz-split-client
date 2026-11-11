@@ -7,20 +7,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 /*
- * Why: Profile's dialogs and sheets (who sees the profile, Appearance, Disconnect, Sign out or Erase profile and sign
- * out). A sign out or unlink under way keeps its dialog, which shows how it ends, so none opens or closes then; each
- * tap that opens one counts only once it opened.
+ * Why: Profile's dialogs and sheets (who sees the profile, Appearance, Language, Sign out or Erase profile and sign
+ * out). A sign out under way keeps its dialog, which shows how it ends, so none opens or closes then; each tap that
+ * opens one counts only once it opened.
  */
 internal class ProfileDialogs(
     private val uiState: MutableStateFlow<ProfileUiState>,
     private val trackEvent: TrackEvent,
 ) {
-    // Why: the dialogs that ask before signing out, erasing or disconnecting, whose close is an answer.
+    // Why: the dialogs that ask before signing out or erasing, whose close is an answer.
     private val confirmations = setOf(
         ProfileDialog.SIGN_OUT,
         ProfileDialog.SIGN_OUT_PENDING,
         ProfileDialog.ERASE_PROFILE,
-        ProfileDialog.UNLINK_ACCOUNT,
     )
 
     fun openVisibilityInfo() {
@@ -50,14 +49,6 @@ internal class ProfileDialogs(
         }
     }
 
-    // Why: a sign out on its way would end the account the unlink keeps, so the row waits for it.
-    fun openUnlink() {
-        val state = uiState.value
-        if (state.hasAccount && !state.isSignOutScheduled && show(ProfileDialog.UNLINK_ACCOUNT)) {
-            trackEvent("profile_account_clicked", emptyMap())
-        }
-    }
-
     fun openSignOut() {
         val state = uiState.value
         if (!state.canSignOut) return
@@ -70,11 +61,10 @@ internal class ProfileDialogs(
      * counts as cancelled: the info dialogs close with their only button, and Appearance and Language have none.
      */
     fun close() {
-        if (uiState.value.isSigningOut || uiState.value.isUnlinking) return
+        if (uiState.value.isSigningOut) return
         // Why: a close after a failure is giving up on it, not declining, so it isn't counted as cancelled.
         val state = uiState.value
-        val isShowingFailure = state.hasSignOutFailed || state.hasUnlinkFailed
-        state.dialog?.takeIf { it in confirmations && !isShowingFailure }?.let {
+        state.dialog?.takeIf { it in confirmations && !state.hasSignOutFailed }?.let {
             trackEvent("profile_dialog_cancelled", mapOf("dialog" to it))
         }
         uiState.update {
@@ -82,7 +72,6 @@ internal class ProfileDialogs(
                 dialog = if (it.dialog == ProfileDialog.DYNAMIC_COLORS_INFO) ProfileDialog.APPEARANCE else null,
                 hasConfirmedCodeSaved = false,
                 hasSignOutFailed = false,
-                hasUnlinkFailed = false,
             )
         }
     }
@@ -90,7 +79,7 @@ internal class ProfileDialogs(
     // Why: says whether it opened a dialog not open yet, which Analytics counts.
     private fun show(dialog: ProfileDialog): Boolean {
         val state = uiState.value
-        if (state.isSigningOut || state.isUnlinking) return false
+        if (state.isSigningOut) return false
         // Why: a dialog already open shows again without its error, but its second tap opens nothing new to count.
         val isNew = state.dialog != dialog
         uiState.update {
@@ -98,7 +87,6 @@ internal class ProfileDialogs(
                 dialog = dialog,
                 hasConfirmedCodeSaved = false,
                 hasSignOutFailed = false,
-                hasUnlinkFailed = false,
             )
         }
         return isNew
