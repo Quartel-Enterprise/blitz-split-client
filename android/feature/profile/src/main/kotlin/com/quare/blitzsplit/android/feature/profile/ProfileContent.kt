@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.OfflineNoticeBanner
+import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
@@ -375,11 +376,11 @@ private fun IdentityCard(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    Surface(
+    TappableCard(
+        onClick = { onEvent(ProfileUiEvent.OnEditClicked) },
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        onClick = { onEvent(ProfileUiEvent.OnEditClicked) },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Row(
             modifier = Modifier.padding(20.dp),
