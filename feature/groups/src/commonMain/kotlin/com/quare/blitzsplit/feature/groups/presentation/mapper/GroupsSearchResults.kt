@@ -5,10 +5,12 @@ import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.utils.TypoTolerantQuery
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearch
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSearchResults
+import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillHit
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchBillPayer
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchContactHit
@@ -253,14 +255,29 @@ private fun billHitsOf(
 internal class PayersOfGroup(
     group: Group,
 ) {
-    private val namesById = group.members.associate { it.id to it.name }
+    private val membersById = group.members.associateBy { it.id }
     private val meId = group.members.firstOrNull { it.isMe }?.id
     private val order = PayerOrder(group.members)
 
-    fun of(expense: Expense): List<SearchBillPayer> = order.sort(expense.payers.map { it.memberId }).map { id ->
+    fun of(expense: Expense): List<SearchBillPayer> = namesOf(sortedIdsOf(expense))
+
+    // Why: who paid, this device's user first, as Despesas names them; one sort for both their names and faces.
+    fun sortedIdsOf(expense: Expense): List<String> = order.sort(expense.payers.map { it.memberId })
+
+    fun namesOf(sortedIds: List<String>): List<SearchBillPayer> = sortedIds.map { id ->
         SearchBillPayer(
-            name = namesById[id],
+            name = membersById[id]?.name,
             isMe = id == meId,
+        )
+    }
+
+    // Why: someone no longer in the group gets a blank face on the first color, as Conta draws them.
+    fun facesOf(sortedIds: List<String>): List<MemberFace> = sortedIds.map { id ->
+        val member = membersById[id]
+        MemberFace(
+            initial = member?.name?.let(Initials::firstOf).orEmpty(),
+            color = member?.avatarColor ?: AvatarColor.entries.first(),
+            photoUrl = member?.photoUrl,
         )
     }
 }

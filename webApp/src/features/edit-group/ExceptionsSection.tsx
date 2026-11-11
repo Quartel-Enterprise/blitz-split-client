@@ -94,7 +94,6 @@ export function ExceptionBody({ presenter, state, editor }: { presenter: Default
               editor.mode === mode ? 'rounded-full bg-primary font-semibold text-primary-foreground' : 'bg-muted font-medium',
             )}
           >
-            {editor.mode === mode && <Check aria-hidden className="size-4" />}
             {t(exceptionModes[mode] ?? 'defaultSplit_exceptionModeEqual')}
           </button>
         ))}

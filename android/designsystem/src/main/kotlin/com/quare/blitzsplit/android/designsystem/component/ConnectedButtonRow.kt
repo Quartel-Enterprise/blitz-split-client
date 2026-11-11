@@ -5,12 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +27,8 @@ import androidx.compose.ui.unit.dp
 /*
  * Why: the connected button group of Material 3 Expressive, as the canvas draws it: equal widths, the outer corners
  * round, the inner ones tight, and the selected button a full pill. It serves as the group's tabs (Despesas, Saldos,
- * Membros) and as Dividir's modes (Igual, Valores, %, Partes).
+ * Membros) and as Dividir's modes (Igual, Valores, %, Partes). The pill and its color say which is picked, with no
+ * check before the label (beta feedback: the check of Material's segmented button read as clutter in Estatísticas).
  */
 @Composable
 fun ConnectedButtonRow(
@@ -43,7 +40,6 @@ fun ConnectedButtonRow(
     itemRole: Role = Role.Tab,
     height: Dp = 48.dp,
     innerRadius: Dp = 8.dp,
-    showsCheck: Boolean = true,
 ) {
     Row(
         modifier = modifier
@@ -86,15 +82,6 @@ fun ConnectedButtonRow(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (isSelected && showsCheck) {
-                        Icon(
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(end = 6.dp)
-                                .size(18.dp),
-                        )
-                    }
                     Text(
                         text = label,
                         style = MaterialTheme.typography.labelLarge,

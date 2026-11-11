@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.contacts.domain.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.GroupCurrency
 
@@ -28,6 +29,8 @@ sealed interface ContactHistoryItem {
         val totalMinor: Long,
         // Why: what the bill moves between the two: positive when it puts it on them, negative when on you.
         val effectMinor: Long,
+        // Why: the row's badge, as Despesas draws it (6.1): its category as it reads now, "Outros" for none.
+        val category: Category,
     ) : ContactHistoryItem
 
     data class Payment(

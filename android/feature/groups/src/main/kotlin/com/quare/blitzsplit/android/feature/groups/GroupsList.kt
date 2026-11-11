@@ -40,6 +40,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
@@ -57,6 +58,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupRowDetail
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
+import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 
 // Why: Room and the layout are still being read (a first download draws its own card and rows instead).
 internal val GroupsUiState.isReadingGroups: Boolean
@@ -406,22 +408,38 @@ private fun GroupMetaRow(
 @Composable
 internal fun MemberFacesRow(group: GroupRow) {
     val members = membersTextOf(group.memberCount)
-    Row(
+    FacesRow(
+        faces = group.faces,
+        extraCount = group.extraMemberCount,
+        size = 22.dp,
         modifier = Modifier.clearAndSetSemantics { contentDescription = members },
+    )
+}
+
+// Why: overlapping faces and "+N" for the rest: a group's members, or who paid a bill on Início.
+@Composable
+internal fun FacesRow(
+    faces: List<MemberFace>,
+    extraCount: Int,
+    size: Dp,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy((-6).dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        group.faces.forEach { face ->
+        faces.forEach { face ->
             AvatarBadge(
                 initial = face.initial,
                 color = face.color,
                 photoUrl = face.photoUrl,
-                size = 22.dp,
+                size = size,
             )
         }
-        if (group.extraMemberCount > 0) {
+        if (extraCount > 0) {
             Text(
-                text = stringResource(R.string.groups_extra_members, group.extraMemberCount),
+                text = stringResource(R.string.groups_extra_members, extraCount),
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

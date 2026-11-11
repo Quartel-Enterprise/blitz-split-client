@@ -35,7 +35,7 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 | `split_bill` | `is_edit` (Edit bill) |
 | `register_payment` | `offers_keys` ("Pay Ana") |
 | `contact_invite` | `is_guest` (a guest's personal link) |
-| `activity` | `is_person` (one person's history) |
+| `activity` | `is_person` (one person's history), `is_bills_only` (Home's "See all" over "Latest expenses") |
 | `join_invite` | `is_personal` (a personal link) |
 | `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
 | `category_expenses` | `has_period` (the statistics showed a period other than the whole history) |
