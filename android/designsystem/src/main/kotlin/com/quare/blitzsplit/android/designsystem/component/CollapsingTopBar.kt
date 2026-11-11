@@ -34,7 +34,7 @@ fun rememberCollapsingTopBarScrollBehavior(
     },
 ): TopAppBarScrollBehavior {
     // Why: saved, so a wider layout's bar keeps how far it folded across a rotation, as Material's own state does.
-    val state = rememberTopAppBarState()
+    val savedState = rememberTopAppBarState()
     val currentCanScroll by rememberUpdatedState(canScroll)
     /*
      * Why: whether the bars could leave in the last composition, so leaving the phone's layout brings them back.
@@ -42,9 +42,9 @@ fun rememberCollapsingTopBarScrollBehavior(
      * pinned bar the phone's folded one, which nothing would open again.
      */
     val wasCollapsing = rememberSaveable { booleanArrayOf(collapses) }
-    // Why: before the first frame, so a screen entered again never flashes its bars folded.
-    remember(state) {
-        if (collapses || wasCollapsing[0]) state.heightOffset = 0f
+    // Why: opened before the first frame, so a screen entered again never flashes its bars folded.
+    val state = remember(savedState) {
+        savedState.also { if (collapses || wasCollapsing[0]) it.heightOffset = 0f }
     }
     LaunchedEffect(collapses) {
         if (wasCollapsing[0] && !collapses && state.heightOffset != 0f) {
