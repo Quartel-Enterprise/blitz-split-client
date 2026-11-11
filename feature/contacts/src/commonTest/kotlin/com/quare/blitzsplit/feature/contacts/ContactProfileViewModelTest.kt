@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.contacts
 
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
+import com.quare.blitzsplit.core.contacts.domain.model.ContactHistoryItem
 import com.quare.blitzsplit.core.contacts.domain.model.GuestMerge
 import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
@@ -12,7 +13,10 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.impl.RequestGuestMergeU
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.SetContactHiddenUseCase
 import com.quare.blitzsplit.core.contacts.testing.FakeGuestMergeRepository
 import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -60,6 +64,7 @@ class ContactProfileViewModelTest {
     private lateinit var hidden: FakeHiddenContactRepository
     private lateinit var merges: FakeGuestMergeRepository
     private lateinit var isOnline: MutableStateFlow<Boolean>
+    private lateinit var categories: MutableStateFlow<CategoryTree>
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: ContactProfileViewModel
     private val actions = mutableListOf<ContactProfileUiAction>()
@@ -122,6 +127,45 @@ class ContactProfileViewModelTest {
             // Then
             assertEquals(listOf("bill-5", "bill-4", "bill-3", "bill-2"), state.history.map { it.id })
             assertTrue(state.hasMoreHistory)
+        }
+
+    @Test
+    fun `GIVEN a bill in a category of its group WHEN her profile opens THEN the history draws that category`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                bills = defaultBills().map { if (it.id == "dinner") it.copy(categoryId = CHURRASCO) else it },
+                storedCategories = CategoryTree.of(listOf(churrasco)),
+            )
+
+            // When
+            val bill = viewModel.uiState.value.history
+                .single()
+
+            // Then
+            assertEquals(CHURRASCO, assertIs<ContactHistoryItem.Bill>(bill).category.id)
+        }
+
+    @Test
+    fun `GIVEN the history WHEN that category is deleted THEN the bill reads as its parent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                bills = defaultBills().map { if (it.id == "dinner") it.copy(categoryId = CHURRASCO) else it },
+                storedCategories = CategoryTree.of(listOf(churrasco)),
+            )
+
+            // When
+            categories.value = CategoryTree.of(listOf(churrasco.copy(isDeleted = true)))
+
+            // Then
+            val bill = assertIs<ContactHistoryItem.Bill>(
+                viewModel.uiState.value.history
+                    .single(),
+            )
+            assertEquals(AppCategory.FOOD.key, bill.category.id)
         }
 
     @Test
@@ -2499,6 +2543,19 @@ class ContactProfileViewModelTest {
 
     private val profileSource: Map<String, Any> = mapOf("source" to "contact_profile")
 
+    // Why: a subcategory of Alimentação Floripa created, which its bills read as.
+    private val churrasco = GroupCategory(
+        id = CHURRASCO,
+        groupId = FLORIPA,
+        parentId = AppCategory.FOOD.key,
+        name = "Churrasco",
+        icon = null,
+        color = null,
+        createdByMemberId = null,
+        isDeleted = false,
+        isPending = false,
+    )
+
     private val mergeSource: Map<String, Any> = mapOf("source" to "contact_merge")
 
     private val floripaExpenses = Route.GroupDetail(
@@ -2529,8 +2586,10 @@ class ContactProfileViewModelTest {
         cancelAnswered: Boolean = true,
         claimResult: Result<Int> = Result.success(1),
         claimAnswered: Boolean = true,
+        storedCategories: CategoryTree = CategoryTree.appOnly,
     ) {
         claimedContacts.clear()
+        categories = MutableStateFlow(storedCategories)
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = bills)
         hidden = FakeHiddenContactRepository(
@@ -2571,8 +2630,14 @@ class ContactProfileViewModelTest {
                 if (claimAnswered) claimResult else awaitCancellation()
             },
             observeContactBook = observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden),
+            observeMapCategories = { categories },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+    }
+
+    private companion object {
+        // Why: a group's own category, a subcategory of Alimentação.
+        const val CHURRASCO = "churrasco"
     }
 }

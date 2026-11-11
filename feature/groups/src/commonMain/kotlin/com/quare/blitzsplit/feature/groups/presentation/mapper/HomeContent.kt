@@ -13,10 +13,9 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeGroup
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import kotlin.math.abs
 
-// Why: Início's cards and rows: three groups, five bills, three faces of who paid a bill (more is "+N").
+// Why: Início's cards and rows: three groups, five bills.
 private const val MAX_GROUPS = 3
 private const val MAX_BILLS = 5
-private const val MAX_PAYER_FACES = 3
 
 /*
  * Why: whom you owe comes first, then who owes you, the largest first in each; among equals, the order Saldos lists
@@ -92,7 +91,6 @@ internal fun homeBillsOf(
 ): List<DatedHomeBill> = latest.map { (group, expense, myBalanceMinor) ->
     val payersOf = PayersOfGroup(group)
     val payerIds = payersOf.sortedIdsOf(expense)
-    val faces = payersOf.facesOf(payerIds)
     DatedHomeBill(
         spentAt = expense.spentAt,
         bill = HomeBill(
@@ -106,8 +104,8 @@ internal fun homeBillsOf(
             totalMinor = expense.amountMinor,
             currency = expense.currency,
             payers = payersOf.namesOf(payerIds),
-            payerFaces = faces.take(MAX_PAYER_FACES),
-            extraPayerCount = (faces.size - MAX_PAYER_FACES).coerceAtLeast(0),
+            payerFaces = payersOf.facesOf(payerIds.take(MAX_FACES)),
+            extraPayerCount = extraFacesOf(payerIds.size),
             myBalanceMinor = myBalanceMinor,
             category = categories.resolve(expense.categoryId),
             isPending = expense.isPending,

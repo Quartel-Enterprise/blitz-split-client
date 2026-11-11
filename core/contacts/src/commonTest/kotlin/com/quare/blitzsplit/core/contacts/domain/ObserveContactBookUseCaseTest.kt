@@ -20,7 +20,6 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -205,7 +204,7 @@ class ObserveContactBookUseCaseTest {
         val carla = snapshot.contacts.single()
 
         // When
-        val history = snapshot.historyOf(carla)
+        val history = snapshot.historyOf(carla, CategoryTree.appOnly)
 
         // Then
         assertEquals(listOf("dinner"), history.map { it.id })
@@ -246,7 +245,6 @@ class ObserveContactBookUseCaseTest {
         useCase = ObserveContactBookUseCase(
             observeGroups = ObserveGroupsUseCase(groups),
             observeGroupsMoney = ObserveGroupsMoneyUseCase(expenses, settlements),
-            observeMapCategories = { flowOf(CategoryTree.appOnly) },
             hiddenContacts = hidden,
         )
     }

@@ -29,6 +29,21 @@ class CategoryTreeTest {
     }
 
     @Test
+    fun `GIVEN an app category recolored WHEN comparing the trees THEN they differ`() {
+        // Given
+        val first = CategoryTree.of(listOf(praia, churrasco))
+
+        // When
+        val second = CategoryTree.of(
+            groupCategories = listOf(praia, churrasco),
+            appColors = mapOf(AppCategory.FOOD.key to CategoryColor.BLUE),
+        )
+
+        // Then
+        assertFalse(first == second)
+    }
+
+    @Test
     fun `GIVEN a category renamed WHEN comparing the trees THEN they differ`() {
         // Given
         val first = CategoryTree.of(listOf(praia, churrasco))
