@@ -285,8 +285,9 @@ class ContactBookTest {
     }
 
     @Test
-    fun `GIVEN a group with a photo WHEN listing THEN the group in common carries the photo url`() {
+    fun `GIVEN groups with and without photos WHEN listing THEN the groups in common carry each photo url`() {
         // Given
+        val picked = ProfilePhoto.Pending(byteArrayOf(1, 2, 3))
         val groups = listOf(
             group(
                 "ape",
@@ -295,6 +296,7 @@ class ContactBookTest {
                 photo = ProfilePhoto.Remote("https://example.com/ape.jpg"),
             ),
             group("floripa", me("floripa"), member("diego-floripa", "Diego")),
+            group("praia", me("praia"), member("diego-praia", "Diego"), photo = picked),
         )
 
         // When
@@ -306,7 +308,7 @@ class ContactBookTest {
 
         // Then
         assertEquals(
-            listOf("https://example.com/ape.jpg", null),
+            listOf("https://example.com/ape.jpg", null, picked.dataUri),
             contacts.flatMap { it.groups }.sortedBy { it.groupId }.map { it.groupPhotoUrl },
         )
     }
