@@ -532,7 +532,7 @@ private struct GroupsInCommon: View {
                         model.send(ContactProfileUiEventOnGroupClicked(groupId: group.groupId))
                     } label: {
                         HStack(spacing: 12) {
-                            GroupAvatar(initials: group.groupInitials, color: group.groupColor, size: 32)
+                            GroupAvatar(initials: group.groupInitials, color: group.groupColor, photoUrl: group.groupPhotoUrl, size: 32)
                                 .accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(verbatim: group.groupName)

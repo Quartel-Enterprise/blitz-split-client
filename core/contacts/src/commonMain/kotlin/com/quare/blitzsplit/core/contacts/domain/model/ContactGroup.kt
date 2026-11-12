@@ -9,6 +9,8 @@ data class ContactGroup(
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
+    // Why: the group's photo, drawn over its initials, null when it has none.
+    val groupPhotoUrl: String?,
     val currency: GroupCurrency,
     // Why: who the person is in that group, and who this device's user is.
     val memberId: String,

@@ -79,7 +79,7 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     (`Route.ContactProfile`) shows the net ("Already offset across 3 groups"), Request (Balances' message, opened over
     the profile), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; either
     keeps their name even when someone in the group has it too, beta feedback 3 item 29; a group they're
-    in shows disabled; on the Mac the arrow keys pick the group and Return adds them), "Groups in common" and the latest four of "History with Carla" (bills that move something
+    in shows disabled; on the Mac the arrow keys pick the group and Return adds them), "Groups in common" (each group with its photo when it has one, its initials otherwise) and the latest four of "History with Carla" (bills that move something
     between the two and their payments; a bill with its category's badge as the group's Expenses draws it, never a
     generic receipt, beta feedback, `ContactHistoryItem.Bill.category`; a payment with its arrow); "See all" opens
     Activity on that person. A guest's profile

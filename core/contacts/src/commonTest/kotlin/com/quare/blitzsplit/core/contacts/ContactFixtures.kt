@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 
 // Test data the contacts tests share: groups, their members, bills and payments, and contacts.
 
@@ -60,13 +61,14 @@ internal fun group(
     updatedAt: Long = 0L,
     inviteCode: String? = null,
     color: AvatarColor = AvatarColor.GREEN,
+    photo: ProfilePhoto? = null,
 ): Group = Group(
     id = id,
     name = name,
     type = GroupType.OTHER,
     color = color,
     shape = GroupShape.SQUARE,
-    photo = null,
+    photo = photo,
     currency = currency,
     members = members.toList(),
     isPending = false,
@@ -186,6 +188,7 @@ internal fun contactGroup(
     groupName = groupName,
     groupInitials = "",
     groupColor = AvatarColor.GREEN,
+    groupPhotoUrl = null,
     currency = currency,
     memberId = memberId,
     meMemberId = meId(groupId),

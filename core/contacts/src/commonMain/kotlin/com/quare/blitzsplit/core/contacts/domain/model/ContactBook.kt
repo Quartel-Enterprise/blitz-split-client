@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.utils.TextFolding
 
 /*
@@ -66,6 +67,7 @@ object ContactBook {
                     groupName = group.name,
                     groupInitials = Initials.of(group.name),
                     groupColor = group.color,
+                    groupPhotoUrl = group.photo?.toImageUrl(),
                     currency = currency,
                     memberId = member.id,
                     meMemberId = me.id,

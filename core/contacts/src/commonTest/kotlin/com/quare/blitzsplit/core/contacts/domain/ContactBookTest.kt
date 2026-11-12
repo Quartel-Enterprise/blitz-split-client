@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -284,6 +285,35 @@ class ContactBookTest {
     }
 
     @Test
+    fun `GIVEN groups with and without photos WHEN listing THEN the groups in common carry each photo url`() {
+        // Given
+        val picked = ProfilePhoto.Pending(byteArrayOf(1, 2, 3))
+        val groups = listOf(
+            group(
+                "ape",
+                me("ape"),
+                member("diego-ape", "Diego"),
+                photo = ProfilePhoto.Remote("https://example.com/ape.jpg"),
+            ),
+            group("floripa", me("floripa"), member("diego-floripa", "Diego")),
+            group("praia", me("praia"), member("diego-praia", "Diego"), photo = picked),
+        )
+
+        // When
+        val contacts = ContactBook.of(
+            groups,
+            money = emptyMap(),
+            hidden = emptyList(),
+        )
+
+        // Then
+        assertEquals(
+            listOf("https://example.com/ape.jpg", null, picked.dataUri),
+            contacts.flatMap { it.groups }.sortedBy { it.groupId }.map { it.groupPhotoUrl },
+        )
+    }
+
+    @Test
     fun `GIVEN a guest with invite codes WHEN listing THEN the group in common carries the personal link codes`() {
         // Given
         val diego = member("diego-ape", "Diego", inviteCode = "dg1234")
@@ -311,6 +341,7 @@ class ContactBookTest {
                 groupName = "Apê 302",
                 groupInitials = Initials.of("Apê 302"),
                 groupColor = AvatarColor.PEACH,
+                groupPhotoUrl = null,
                 currency = GroupCurrency.EUR,
                 memberId = "diego-ape",
                 meMemberId = meId("ape"),
