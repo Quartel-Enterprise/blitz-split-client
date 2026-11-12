@@ -6,13 +6,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.CloudSync
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.NoAccounts
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AccountProviderLogoIcon
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.labelRes
@@ -85,22 +89,35 @@ private fun AccountRow(
 ) {
     val provider = state.accountProvider
     if (provider != null) {
-        // Why: only says which account it is; leaving it is signing out or deleting the account (beta feedback).
+        /*
+         * Why: only says which account it is, by its provider's logo and its whole email; leaving it is signing out or
+         * deleting the account (beta feedback). The ⓘ says only the person sees the email (Pierre's call).
+         */
+        val email = state.email
         SectionRow(
-            icon = Icons.Outlined.Badge,
-            headline = stringResource(provider.labelRes),
-            supporting = state.maskedEmail?.let { stringResource(R.string.profile_account_connected_detail, it) },
-            trailing = {
-                Text(
-                    text = stringResource(R.string.profile_account_connected),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
+            leading = {
+                AccountProviderLogoIcon(
+                    provider = provider,
+                    modifier = Modifier.size(24.dp),
+                    // Why: without an email the headline already names the provider, which a label would repeat.
+                    contentDescription = email?.let { stringResource(provider.labelRes) },
                 )
+            },
+            headline = email ?: stringResource(provider.labelRes),
+            trailing = email?.let {
+                {
+                    IconButton(onClick = { onEvent(ProfileUiEvent.OnEmailInfoClicked) }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Info,
+                            contentDescription = stringResource(R.string.profile_email_info),
+                        )
+                    }
+                }
             },
         )
     } else {
         SectionRow(
-            icon = Icons.Outlined.Badge,
+            icon = Icons.Outlined.NoAccounts,
             headline = stringResource(R.string.profile_account_none),
             supporting = if (state.hasAnonymousId) {
                 stringResource(R.string.profile_account_none_detail)

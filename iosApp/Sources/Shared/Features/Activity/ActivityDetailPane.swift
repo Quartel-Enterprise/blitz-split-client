@@ -231,7 +231,7 @@ private struct ActivityRelatedRow: View {
             model.send(ActivityUiEventOnItemClicked(itemId: item.id))
         } label: {
             HStack(alignment: .top, spacing: 12) {
-                AvatarPhoto(initial: item.actor.initials, color: item.actor.color, photoUrl: nil, size: 32)
+                AvatarPhoto(initial: item.actor.initials, color: item.actor.color, photoUrl: item.actor.photoUrl, size: 32)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     ActivityCopy.headline(item)

@@ -12,7 +12,9 @@ The feed, unread state, real time and push notifications.
     "Notification settings" (`ActivityUiEvent.OnNotificationSettingsClicked`, `activity_notification_settings_clicked`)
     opens Notifications, below. It lists who split, edited or deleted a bill, recorded or undid a payment, created, edited or
     deleted a group, changed its invite link, added, joined, left, was removed, released or renamed in it, and the
-    payment requests sent from Balances, by day (Today, Yesterday, the date), the most recent first. The server writes the events
+    payment requests sent from Balances, by day (Today, Yesterday, the date), the most recent first. Each row draws
+    who did it by their profile photo, their initials on their color without one (`ActivityActor.photoUrl`), with
+    what it was as a badge on its corner. The server writes the events
     (`activity_events`, by triggers); each keeps the names it had, so it still reads once its bill, group or person is
     gone. Unread is someone else's event never opened and after the last "Mark all as read", of a row of
     Notifications whose In app toggle is on: a blue dot and bold names, counted on the bell's badge in the primary

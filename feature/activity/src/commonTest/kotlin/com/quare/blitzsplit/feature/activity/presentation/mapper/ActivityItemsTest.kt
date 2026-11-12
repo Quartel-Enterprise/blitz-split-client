@@ -93,6 +93,22 @@ class ActivityItemsTest {
     }
 
     @Test
+    fun `GIVEN a queued bill by a user with a photo WHEN mapping the feed THEN the actor carries the photo`() {
+        // Given
+        val photoUrl = "https://example.com/pierre.jpg"
+        val withPhoto = groups.map { group ->
+            group.copy(members = group.members.map { if (it.isMe) it.copy(photoUrl = photoUrl) else it })
+        }
+        val feed = feed(queued = listOf(queued(id = BILL_MERCADO)))
+
+        // When
+        val actor = entriesOf(feed, withPhoto).single().item.actor
+
+        // Then
+        assertEquals(photoUrl, actor.photoUrl)
+    }
+
+    @Test
     fun `GIVEN a payment in the queue WHEN mapping the feed THEN names its payer and receiver`() {
         // Given
         val feed = feed(
@@ -161,6 +177,29 @@ class ActivityItemsTest {
     }
 
     @Test
+    fun `GIVEN an actor with a profile photo WHEN mapping the feed THEN the actor carries it`() {
+        // Given
+        val photoUrl = "https://example.com/ana.jpg"
+        val withPhoto = groups.map { group ->
+            group.copy(members = group.members.map { if (it.id == ANA_APE) it.copy(photoUrl = photoUrl) else it })
+        }
+        val feed = feed(
+            events = listOf(
+                event(
+                    id = "e1",
+                    actorMemberId = ANA_APE,
+                ),
+            ),
+        )
+
+        // When
+        val actor = entriesOf(feed, withPhoto).single().item.actor
+
+        // Then
+        assertEquals(photoUrl, actor.photoUrl)
+    }
+
+    @Test
     fun `GIVEN an event with an unknown member WHEN mapping the feed THEN finds the actor by account`() {
         // Given
         val feed = feed(
@@ -203,6 +242,7 @@ class ActivityItemsTest {
         assertEquals("Elisa", entry.item.actor.name)
         assertFalse(entry.item.actor.isMe)
         assertEquals(AvatarColor.default, entry.item.actor.color)
+        assertNull(entry.item.actor.photoUrl)
         assertTrue("user:gone-user" in entry.personKeys)
     }
 

@@ -116,6 +116,7 @@ internal fun ActorAvatarIcon(
         AvatarBadge(
             initial = item.actor.initials,
             color = item.actor.color,
+            photoUrl = item.actor.photoUrl,
             modifier = Modifier
                 .clip(CircleShape)
                 .semantics { if (item.actor.opensProfile) contentDescription = name }

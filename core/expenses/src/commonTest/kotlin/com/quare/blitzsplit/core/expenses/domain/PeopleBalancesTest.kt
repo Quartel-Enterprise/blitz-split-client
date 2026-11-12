@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -48,6 +49,37 @@ class PeopleBalancesTest {
         assertEquals(listOf("floripa", "ape", "churrasco"), person.groups.map { it.groupId })
         assertEquals(listOf(9_840L, -9_800L, 3_250L), person.groups.map { it.amountMinor })
         assertFalse(person.isGuest)
+    }
+
+    @Test
+    fun `GIVEN groups with and without photos WHEN netting THEN Por grupo carries each group photo url`() {
+        // Given
+        val picked = ProfilePhoto.Pending(byteArrayOf(1, 2, 3))
+        val groups = listOf(
+            group(
+                "floripa",
+                "Viagem Floripa",
+                me,
+                carla,
+                photo = ProfilePhoto.Remote("https://example.com/floripa.jpg"),
+            ),
+            group("ape", "Apê 302", me, carla),
+            group("churrasco", "Churrasco de sábado", me, carla, photo = picked),
+        )
+        val money = mapOf(
+            "floripa" to moneyOf(owes("floripa", carla.id, me.id, 9_840L)),
+            "ape" to moneyOf(owes("ape", me.id, carla.id, 9_800L)),
+            "churrasco" to moneyOf(owes("churrasco", carla.id, me.id, 3_250L)),
+        )
+
+        // When
+        val person = PeopleBalances.of(groups, money).people.single()
+
+        // Then
+        assertEquals(
+            listOf("https://example.com/floripa.jpg", null, picked.dataUri),
+            person.groups.map { it.groupPhotoUrl },
+        )
     }
 
     @Test
@@ -491,13 +523,14 @@ class PeopleBalancesTest {
         vararg members: GroupMember,
         currency: GroupCurrency = GroupCurrency.BRL,
         simplifiesDebts: Boolean = false,
+        photo: ProfilePhoto? = null,
     ): Group = Group(
         id = id,
         name = name,
         type = GroupType.OTHER,
         color = AvatarColor.GREEN,
         shape = GroupShape.SQUARE,
-        photo = null,
+        photo = photo,
         currency = currency,
         members = members.toList(),
         isPending = false,

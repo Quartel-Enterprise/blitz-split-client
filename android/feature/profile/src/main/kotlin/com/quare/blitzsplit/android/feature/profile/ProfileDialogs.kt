@@ -10,6 +10,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalIconButton
@@ -129,6 +130,11 @@ internal fun ProfileDialogsOverlay(
         )
 
         ProfileDialog.DYNAMIC_COLORS_INFO -> DynamicColorsInfoDialog(
+            onDismiss = onDismiss,
+            placement = placement,
+        )
+
+        ProfileDialog.EMAIL_INFO -> EmailInfoDialog(
             onDismiss = onDismiss,
             placement = placement,
         )
@@ -288,4 +294,27 @@ private fun RecoveryCodeBox(
             }
         }
     }
+}
+
+// Why: the account row's ⓘ, in place of the "only you see it" the row said inline (Pierre's call).
+@Composable
+private fun EmailInfoDialog(
+    onDismiss: () -> Unit,
+    placement: DialogPlacement,
+) {
+    FoldAlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.VisibilityOff,
+                contentDescription = null,
+            )
+        },
+        title = stringResource(R.string.profile_email_info_title),
+        text = { Text(stringResource(R.string.profile_email_info_body)) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_info_ok)) }
+        },
+        placement = placement,
+    )
 }

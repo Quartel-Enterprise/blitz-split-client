@@ -7,8 +7,9 @@
     <string name="profile_offline_title">Tidak ada internet.</string>
     <string name="profile_offline_body">Edit dengan bebas: tetap tersimpan di perangkat ini dan diunggah saat koneksi kembali.</string>
     <string name="profile_section_account">Akun dan sinkronisasi</string>
-    <string name="profile_account_connected_detail">%1$s · hanya kamu yang melihatnya</string>
-    <string name="profile_account_connected">Terhubung</string>
+    <string name="profile_email_info">Tentang emailmu</string>
+    <string name="profile_email_info_title">Hanya kamu yang melihat emailmu</string>
+    <string name="profile_email_info_body">Email ini ada di sini agar kamu tahu akun mana yang kamu pakai untuk masuk. Orang di grupmu melihat nama dan fotomu, tidak pernah emailmu.</string>
     <string name="profile_account_none">Tanpa akun</string>
     <string name="profile_account_none_detail">ID anonim perangkat ini</string>
     <string name="profile_account_local_detail">Untuk sementara hanya tersimpan di perangkat ini</string>
@@ -70,7 +71,7 @@
     <string name="profile_dynamic_colors_info">Tentang warna dinamis</string>
     <string name="profile_dynamic_colors_info_body">Warna dinamis menyesuaikan aplikasi dengan wallpaper-mu: tombol, latar, dan sorotan memakai warna yang dipilih Android dari wallpaper, dan berubah saat wallpaper-mu berganti.</string>
     <string name="profile_dynamic_colors_info_note">Grup, avatar, dan kategori tetap memakai warnanya sendiri, jadi kamu tetap bisa membedakannya. Ini hanya berlaku di perangkat ini.</string>
-    <string name="profile_dynamic_colors_info_ok">Mengerti</string>
+    <string name="profile_info_ok">Mengerti</string>
     <string name="profile_section_about">Privasi dan tentang</string>
     <string name="profile_privacy_policy">Kebijakan Privasi</string>
     <string name="profile_terms">Ketentuan Layanan</string>

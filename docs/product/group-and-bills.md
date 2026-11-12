@@ -188,7 +188,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     Mac). Each new bar picked by touch ticks the haptics; VoiceOver plays the series as an Audio Graph, and the web
     reads the picked bar aloud. The bars grow from the base, and the line draws in from the start side, when the
     grain, the period or the chart type changes.
-    Then the most expensive one, and "Biggest expense", which opens its Bill. A group without bills says "Nothing to show yet" with "Split a bill"; a period without bills offers "See the whole trip". "By category" draws the
+    Then the most expensive one, and "Biggest expense", which opens its Bill and draws its category's badge as the
+    group's Expenses draws the bill (its subcategory when it has one, "Other" for none). A group without bills says "Nothing to show yet" with "Split a bill"; a period without bills offers "See the whole trip". "By category" draws the
     period's spending as a ring in each main category's color (its own, or the one the person gave it), the largest in its center, then each main
     category with its amount and its bar (the ring, the legend's dots, the bars and Expenses by category's chips in the
     color's data tone, a person's bar in their face's, never the accent), and no list of subcategories under it, which would only crowd the row

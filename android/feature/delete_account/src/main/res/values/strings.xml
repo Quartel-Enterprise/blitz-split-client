@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">The link to your %1$s account</string>
     <string name="delete_account_deleted_recovery_code">Your recovery code</string>
     <string name="delete_account_deleted_device">The copy of your data on this device</string>
+    <string name="delete_account_kept_title">What stays in your groups</string>
+    <string name="delete_account_kept_groups">The groups, with their bills and payments, for the other members</string>
+    <string name="delete_account_kept_member">Your name in each group, as a member without an account</string>
+    <string name="delete_account_kept_comments">Your comments and the photos you added, under your name</string>
     <string name="delete_account_export">Export my data first</string>
     <string name="delete_account_confirm">I understand this can\'t be undone</string>
     <string name="delete_account_delete">Delete account</string>

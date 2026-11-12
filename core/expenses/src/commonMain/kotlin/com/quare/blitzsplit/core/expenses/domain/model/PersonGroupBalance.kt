@@ -8,6 +8,8 @@ data class PersonGroupBalance(
     val groupName: String,
     val groupInitials: String,
     val groupColor: AvatarColor,
+    // Why: the group's photo, drawn over its initials, null when it has none.
+    val groupPhotoUrl: String?,
     // Why: who the person is in that group, and who this device's user is, the two ends of its payment.
     val memberId: String,
     val meMemberId: String,

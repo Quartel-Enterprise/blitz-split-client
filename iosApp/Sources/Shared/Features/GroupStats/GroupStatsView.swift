@@ -700,10 +700,7 @@ private struct StatsBiggestSection: View {
                     model.send(GroupStatsUiEventOnBiggestExpenseClicked.shared)
                 } label: {
                     HStack(spacing: 12) {
-                        Image(systemName: "receipt")
-                            .foregroundStyle(Palette.accent)
-                            .frame(width: 36, height: 36)
-                            .background(Palette.groupedBackground, in: .rect(cornerRadius: 10))
+                        CategoryBadge(category: expense.category, size: 36)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(verbatim: expense.description_)
                                 .lineLimit(1)

@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">O vínculo com a conta %1$s</string>
     <string name="delete_account_deleted_recovery_code">Seu código de recuperação</string>
     <string name="delete_account_deleted_device">A cópia dos dados neste aparelho</string>
+    <string name="delete_account_kept_title">O que fica nos seus grupos</string>
+    <string name="delete_account_kept_groups">Os grupos, com as contas e os pagamentos, para os outros membros</string>
+    <string name="delete_account_kept_member">Seu nome em cada grupo, como um membro sem conta</string>
+    <string name="delete_account_kept_comments">Seus comentários e as fotos que você adicionou, com o seu nome</string>
     <string name="delete_account_export">Exportar meus dados antes</string>
     <string name="delete_account_confirm">Entendo que não dá para desfazer</string>
     <string name="delete_account_delete">Excluir conta</string>

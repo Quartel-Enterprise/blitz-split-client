@@ -45,6 +45,13 @@ internal class ProfileDialogs(
         }
     }
 
+    // Why: only while the account row shows an email, the one thing it explains.
+    fun openEmailInfo() {
+        if (uiState.value.email != null && show(ProfileDialog.EMAIL_INFO)) {
+            trackEvent("profile_email_info_clicked", emptyMap())
+        }
+    }
+
     fun openSignOut() {
         val state = uiState.value
         if (!state.canSignOut) return
