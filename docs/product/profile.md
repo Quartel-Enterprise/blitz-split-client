@@ -167,4 +167,5 @@ The profile, its photo, appearance, in-app update and Adjust photo.
   - Closing Edit profile with unsaved input asks "Discard changes?" first, on every way out ([general.md](general.md)).
   - "Keys to receive payments" follows [the Pix rule](general.md): with no Pix signal it shows the Bitcoin keys and two
     rows, "Add a Bitcoin key" and "Add a Pix key", in place of the "Add a Pix or Bitcoin key" menu, so nobody is locked
-    out of Pix (`ProfileUiState.showsPix`).
+    out of Pix (`ProfileUiState.showsPix`). Each key's row starts with its method's tile on every platform: Pix's own
+    mark (Material's Pix glyph) on the blue tile, Lightning's bolt or on-chain's link on Bitcoin's orange one.
