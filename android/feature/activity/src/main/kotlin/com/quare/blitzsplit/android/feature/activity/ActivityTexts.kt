@@ -325,8 +325,12 @@ internal fun changeValueTextOf(
 private fun splitLabelOf(mode: SplitMode): String = stringResource(
     when (mode) {
         SplitMode.EQUAL -> R.string.activity_split_equal
+
         SplitMode.AMOUNT, SplitMode.ITEMS -> R.string.activity_split_amount
-        SplitMode.PERCENT -> R.string.activity_split_percent
+
+        // Why: a bill split by income is saved by its percentages.
+        SplitMode.PERCENT, SplitMode.INCOME -> R.string.activity_split_percent
+
         SplitMode.SHARES -> R.string.activity_split_shares
     },
 )

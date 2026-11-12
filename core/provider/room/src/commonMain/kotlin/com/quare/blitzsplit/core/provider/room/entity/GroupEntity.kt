@@ -36,8 +36,9 @@ data class GroupEntity(
     @ColumnInfo(defaultValue = "NULL")
     val defaultSplit: String?,
     /*
-     * Why: the incomes "Pela renda" was typed with, as a JSON object of member id to minor units. They stay on this
-     * device: never synced, so a newer row from the server keeps them, and they go with the group.
+     * Why: where the incomes of "By income" stayed on the device that typed them, a JSON object of member id to minor
+     * units, until 45 moved them to group_member_income, which syncs them. Always null since; kept so the migration
+     * reads it.
      */
     @ColumnInfo(defaultValue = "NULL")
     val splitIncomes: String?,

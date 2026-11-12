@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepositor
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
+import com.quare.blitzsplit.core.groups.domain.repository.GroupIncomeRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PaymentKeyRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
@@ -24,6 +25,7 @@ class RemotePuller(
     private val profileRepository: ProfileRepository,
     private val paymentKeyRepository: PaymentKeyRepository,
     private val groupRepository: GroupRepository,
+    private val groupIncomeRepository: GroupIncomeRepository,
     private val categoryRepository: CategoryRepository,
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
@@ -44,6 +46,7 @@ class RemotePuller(
             listOf(
                 async { groupRepository.fetchGroupDownload(userId, groupId) },
                 async { categoryRepository.fetchGroupCategories(groupId) },
+                async { groupIncomeRepository.fetchGroupIncomes(groupId) },
                 async { expenseRepository.fetchGroupExpenses(groupId) },
                 async { settlementRepository.fetchGroupSettlements(groupId) },
             ).awaitAll()

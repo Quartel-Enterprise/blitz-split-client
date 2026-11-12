@@ -1520,20 +1520,6 @@ class GroupMapperImplTest {
     }
 
     @Test
-    fun `GIVEN incomes WHEN encoding and decoding them THEN they come back and none is null`() {
-        // Given
-        val incomes = mapOf("m-1" to 900_000L)
-
-        // When
-        val text = mapper.encodeIncomes(incomes)
-
-        // Then
-        assertEquals(incomes, mapper.decodeIncomes(text))
-        assertNull(mapper.encodeIncomes(emptyMap()))
-        assertTrue(mapper.decodeIncomes("not json").isEmpty())
-    }
-
-    @Test
     fun `GIVEN a member who joined with a photo WHEN mapping to the domain THEN the member shows that photo`() {
         // Given
         val members = listOf(

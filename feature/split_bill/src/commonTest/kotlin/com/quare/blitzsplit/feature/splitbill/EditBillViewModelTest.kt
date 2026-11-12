@@ -1498,6 +1498,7 @@ class EditBillViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { decimalSeparator },
             observeGroup = ObserveGroupUseCase(groups),
+            observeGroupIncomes = { flowOf(emptyMap()) },
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
@@ -1508,7 +1509,7 @@ class EditBillViewModelTest {
                 saveGroupCategory = { _, _, _, _, _, _, _ -> Result.success("") },
                 deleteGroupCategory = { Result.success(Unit) },
             ),
-            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
+            saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             takePickedReceipt = { null },
             readReceipt = { _, _, _ ->

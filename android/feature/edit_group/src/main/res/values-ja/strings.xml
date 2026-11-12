@@ -48,7 +48,7 @@
     <string name="default_split_list_shares">各自の口数</string>
     <string name="default_split_list_percent">各自の割合</string>
     <string name="default_split_list_income">各自の収入</string>
-    <string name="default_split_income_note">収入はこのデバイスにのみ保存されます。グループには割合だけが表示されます。</string>
+    <string name="default_split_income_note">グループのメンバーはこれらの収入を見て、支出を収入に応じて分けられます。</string>
     <string name="default_split_parts_of">%sの口数</string>
     <string name="default_split_percent_of">%sの割合</string>
     <string name="default_split_income_of">%sの収入</string>

@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -82,6 +83,7 @@ class DeleteAccountUseCaseTest {
                 notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
                 groupRepository = FakeGroupRepository(),
                 groupPinRepository = FakeGroupPinRepository(),
+                groupIncomeRepository = FakeGroupIncomeRepository(),
                 expenseRepository = FakeExpenseRepository(),
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),

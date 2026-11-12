@@ -365,4 +365,14 @@
     <string name="split_bill_as_default_body">Le nuove spese del gruppo partiranno così una volta salvata questa.</string>
     <string name="split_bill_new_group_default">Diventa la predefinita del gruppo</string>
     <string name="split_bill_new_group_exception">Diventa l’eccezione del gruppo per %s</string>
+    <string name="split_bill_mode_income">Per reddito</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="one">Per reddito tra %d</item>
+        <item quantity="many">Per reddito tra %d</item>
+        <item quantity="other">Per reddito tra %d</item>
+    </plurals>
+    <string name="split_bill_hint_income">La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa.</string>
+    <string name="split_bill_list_income">Il reddito di ognuno</string>
+    <string name="split_bill_person_income">Reddito di %s</string>
+    <string name="split_bill_default_now_income">per reddito</string>
 </resources>

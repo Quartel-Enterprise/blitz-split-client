@@ -20,6 +20,6 @@ data class DefaultSplitPerson(
     val parts: Long,
     // Why: "Porcentagem"'s field as typed, a whole number.
     val percentText: String,
-    // Why: "Pela renda"'s monthly income as typed, "9.000,00", which only this device keeps.
+    // Why: "Pela renda"'s monthly income as typed, "9.000,00", the group's to start with.
     val incomeText: String,
 )

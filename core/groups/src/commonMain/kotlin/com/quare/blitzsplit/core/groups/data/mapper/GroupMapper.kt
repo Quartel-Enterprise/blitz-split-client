@@ -76,10 +76,4 @@ interface GroupMapper {
 
     // Why: the JSON Room keeps a change of "Simplificar dívidas" in until it goes up, as the server reads it.
     fun encode(change: SimplifyDebtsChange): String
-
-    // Why: the incomes "Pela renda" was typed with, which only this device keeps; null when there are none.
-    fun encodeIncomes(incomes: Map<String, Long>): String?
-
-    // Why: empty for none, or for what this version can't read.
-    fun decodeIncomes(text: String?): Map<String, Long>
 }

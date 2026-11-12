@@ -94,7 +94,7 @@ object TypedText {
         currency: GroupCurrency,
         showsSats: Boolean,
         decimalSeparator: Char,
-    ): String = if (mode == SplitMode.AMOUNT) {
+    ): String = if (mode == SplitMode.AMOUNT || mode == SplitMode.INCOME) {
         toAmountText(previous, typed, currency, showsSats, decimalSeparator)
     } else {
         toPercentText(typed)

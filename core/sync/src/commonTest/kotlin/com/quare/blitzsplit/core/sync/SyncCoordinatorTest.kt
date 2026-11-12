@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -7405,6 +7406,7 @@ class SyncCoordinatorTest {
                 beforeDownloadGroups = { pendingAtGroupsFullDownload += firstDownload.isPending },
             ),
             groupPinRepository = FakeGroupPinRepository().also { pins = it },
+            groupIncomeRepository = FakeGroupIncomeRepository(),
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             categoryRepository = RecordingCategoryRepository(categories, calls),

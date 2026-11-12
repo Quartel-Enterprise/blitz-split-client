@@ -49,7 +49,7 @@
     <string name="default_split_list_shares">Anteile pro Person</string>
     <string name="default_split_list_percent">Prozent pro Person</string>
     <string name="default_split_list_income">Einkommen pro Person</string>
-    <string name="default_split_income_note">Einkommen bleiben nur auf diesem Gerät. Die Gruppe sieht nur die Prozentsätze.</string>
+    <string name="default_split_income_note">Die Mitglieder der Gruppe sehen diese Einkommen und können Ausgaben danach aufteilen.</string>
     <string name="default_split_parts_of">Anteile von %s</string>
     <string name="default_split_percent_of">Prozentsatz von %s</string>
     <string name="default_split_income_of">Einkommen von %s</string>

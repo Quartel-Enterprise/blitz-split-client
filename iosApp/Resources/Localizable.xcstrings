@@ -100680,71 +100680,6 @@
         }
       }
     },
-    "Incomes stay on this %@ only. The group sees only the percentages." : {
-      "comment" : "Default split, By income: %@ is iPhone, iPad or Mac",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einkommen bleiben nur auf diesem %@. Die Gruppe sieht nur die Prozente."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los ingresos quedan solo en este %@. El grupo solo ve los porcentajes."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les revenus restent sur ton %@ uniquement. Le groupe ne voit que les pourcentages."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Penghasilan hanya tersimpan di %@ ini. Grup hanya melihat persentasenya."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I redditi restano solo su questo %@. Il gruppo vede solo le percentuali."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "収入はこの%@にのみ保存されます。グループには割合だけが表示されます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inkomens blijven alleen op deze %@. De groep ziet alleen de percentages."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dochody zostają tylko na tym urządzeniu (%@). Grupa widzi tylko procenty."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "As rendas ficam só neste %@. O grupo vê só as porcentagens."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gelirler yalnızca bu %@ cihazında kalır. Grup yalnızca yüzdeleri görür."
-          }
-        }
-      }
-    },
     "No internet: the new split holds on this %@ now and reaches the others once it reconnects." : {
       "comment" : "Default split offline; %@ is iPhone, iPad or Mac",
       "localizations" : {
@@ -125651,6 +125586,201 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yorumların ve eklediğin fotoğraflar, senin adınla"
+          }
+        }
+      }
+    },
+    "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill." : {
+      "comment" : "Split: the hint under the modes while splitting by income",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La parte de cada uno sigue sus ingresos. Los ingresos son del grupo; cambiarlos aquí solo vale para este gasto."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La part de chacun suit son revenu. Les revenus sont ceux du groupe ; les changer ici ne vaut que pour cette dépense."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bagian masing-masing sesuai penghasilannya. Penghasilan ini milik grup; mengubahnya di sini hanya berlaku untuk tagihan ini."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各自の負担が収入に応じて決まります。収入はグループで共有され、ここでの変更はこの支出にだけ適用されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ieders deel volgt het inkomen. De inkomens zijn van de groep; ze hier wijzigen geldt alleen voor deze uitgave."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Część każdej osoby zależy od jej dochodu. Dochody należą do grupy; zmiana tutaj dotyczy tylko tego wydatku."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A parte de cada um segue a renda. As rendas são do grupo; mudar aqui vale só para esta conta."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir."
+          }
+        }
+      }
+    },
+    "This bill splits by income." : {
+      "comment" : "Split: this bill's way, off the group's default",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Ausgabe wird nach Einkommen aufgeteilt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este gasto se divide por ingresos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette dépense se répartit selon le revenu."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tagihan ini dibagi sesuai penghasilan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questa spesa si divide per reddito."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この支出は収入に応じて割り勘します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze uitgave wordt verdeeld op inkomen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten wydatek jest dzielony według dochodów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta fica pela renda."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu harcama gelire göre bölünüyor."
+          }
+        }
+      }
+    },
+    "The group's members see these incomes and can split bills by them." : {
+      "comment" : "Default split: under the incomes, who sees them",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Mitglieder der Gruppe sehen diese Einkommen und können Ausgaben danach aufteilen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los miembros del grupo ven estos ingresos y pueden dividir gastos con ellos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les membres du groupe voient ces revenus et peuvent répartir les dépenses selon eux."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anggota grup melihat penghasilan ini dan bisa membagi tagihan berdasarkan penghasilan."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I membri del gruppo vedono questi redditi e possono dividere le spese in base a essi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グループのメンバーはこれらの収入を見て、支出を収入に応じて分けられます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De leden van de groep zien deze inkomens en kunnen uitgaven ernaar verdelen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Członkowie grupy widzą te dochody i mogą według nich dzielić wydatki."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem está no grupo vê essas rendas e pode dividir contas por elas."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grup üyeleri bu gelirleri görür ve harcamaları bunlara göre bölüşebilir."
           }
         }
       }

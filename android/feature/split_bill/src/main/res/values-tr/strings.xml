@@ -340,4 +340,13 @@
     <string name="split_bill_as_default_body">Bu harcama kaydedilince gruptaki yeni harcamalar bu şekilde başlar.</string>
     <string name="split_bill_new_group_default">Grup varsayılanı olur</string>
     <string name="split_bill_new_group_exception">%s için grup istisnası olur</string>
+    <string name="split_bill_mode_income">Gelire göre</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="one">%d kişi arasında gelire göre</item>
+        <item quantity="other">%d kişi arasında gelire göre</item>
+    </plurals>
+    <string name="split_bill_hint_income">Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir.</string>
+    <string name="split_bill_list_income">Herkesin geliri</string>
+    <string name="split_bill_person_income">%s adlı kişinin geliri</string>
+    <string name="split_bill_default_now_income">gelire göre</string>
 </resources>

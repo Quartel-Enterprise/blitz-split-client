@@ -34,11 +34,13 @@ class JsSplitRow(
     val valueText: String,
     val parts: Double,
     val shareMinor: Double?,
+    // Why: By income's percentage the income gives, shown beside the share; null in any other mode.
+    val incomePercent: Double?,
 )
 
 // Why: amounts in the currency's minor unit, as numbers JavaScript reads exactly.
 class JsSplitEditor(
-    // Why: the SplitMode's code: "equal", "amount", "percent", "shares" or "items".
+    // Why: the SplitMode's code: "equal", "amount", "percent", "shares", "items" or "income".
     val mode: String,
     val rows: Array<JsSplitRow>,
     val totalMinor: Double,
@@ -147,6 +149,7 @@ class JsSplitBillState(
     val splitSummary: Array<JsSplitFact>,
     val defaultSplit: JsBillDefaultSplit?,
     val showsDefaultSplitNotice: Boolean,
+    val showsDefaultSplitHint: Boolean,
     val isSplitEditorOffDefault: Boolean,
     // Why: Dividir's "Usar como padrão do grupo" (beta feedback 11), shown while offered.
     val offersSplitAsDefault: Boolean,
@@ -260,6 +263,7 @@ class SplitBillPresenter(
                     )
                 },
                 showsDefaultSplitNotice = state.showsDefaultSplitNotice,
+                showsDefaultSplitHint = state.showsDefaultSplitHint,
                 isSplitEditorOffDefault = state.isSplitEditorOffDefault,
                 offersSplitAsDefault = state.offersSplitAsDefault,
                 isSplitEditorAsDefaultChecked = state.isSplitEditorAsDefaultChecked,
@@ -554,17 +558,23 @@ internal fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
     hasJoined = person.hasJoined,
 )
 
-private fun toJsSplitRow(row: SplitRow): JsSplitRow = JsSplitRow(
+private fun toJsSplitRow(
+    row: SplitRow,
+    incomePercent: Long?,
+): JsSplitRow = JsSplitRow(
     person = toJsBillPerson(row.person),
     isIncluded = row.isIncluded,
     valueText = row.valueText,
     parts = row.parts.toDouble(),
     shareMinor = row.shareMinor?.toDouble(),
+    incomePercent = incomePercent?.toDouble(),
 )
 
 private fun toJsSplitEditor(editor: SplitEditor): JsSplitEditor = JsSplitEditor(
     mode = editor.mode.code,
-    rows = editor.rows.map(::toJsSplitRow).toTypedArray(),
+    rows = editor.rows
+        .map { row -> toJsSplitRow(row, editor.incomePercents[row.person.id]) }
+        .toTypedArray(),
     totalMinor = editor.totalMinor.toDouble(),
     addsUp = editor.addsUp,
     included = editor.included.map(::toJsBillPerson).toTypedArray(),

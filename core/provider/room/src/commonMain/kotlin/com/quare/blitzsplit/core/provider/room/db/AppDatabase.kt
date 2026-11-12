@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
+import com.quare.blitzsplit.core.provider.room.dao.GroupMemberIncomeDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
 import com.quare.blitzsplit.core.provider.room.dao.LegalDocumentDao
@@ -41,6 +42,7 @@ import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupCategoryEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
+import com.quare.blitzsplit.core.provider.room.entity.GroupMemberIncomeEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
 import com.quare.blitzsplit.core.provider.room.entity.LegalDocumentEntity
@@ -70,6 +72,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         ActivityBackfillEntity::class,
         HiddenContactEntity::class,
         GroupPinEntity::class,
+        GroupMemberIncomeEntity::class,
         GroupCategoryEntity::class,
         CategoryTermEntity::class,
         MemberPhotoEntity::class,
@@ -81,7 +84,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AppCategoryColorEntity::class,
         LegalDocumentEntity::class,
     ],
-    version = 44,
+    version = 45,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -259,6 +262,11 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 43,
             to = 44,
         ),
+        AutoMigration(
+            from = 44,
+            to = 45,
+            spec = GroupIncomesMigrationSpec::class,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -286,6 +294,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun hiddenContactDao(): HiddenContactDao
 
     abstract fun groupPinDao(): GroupPinDao
+
+    abstract fun groupMemberIncomeDao(): GroupMemberIncomeDao
 
     abstract fun appCategoryColorDao(): AppCategoryColorDao
 

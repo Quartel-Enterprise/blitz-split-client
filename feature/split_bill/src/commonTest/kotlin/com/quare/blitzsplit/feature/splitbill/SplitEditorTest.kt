@@ -1132,6 +1132,169 @@ class SplitEditorTest {
         assertTrue(editor.addsUp)
     }
 
+    @Test
+    fun `GIVEN By income with 3 to 1 incomes WHEN reading the split THEN each puts in the percentage it gives`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            12_000L,
+            row(ANA, valueText = "3.000,00"),
+            row(PIERRE, valueText = "9.000,00"),
+        )
+
+        // When
+        val entries = editor.entries
+
+        // Then
+        assertEquals(listOf(25L, 75L), entries.map { it.value })
+        assertEquals(
+            listOf(
+                ExpenseShare(ANA, 3_000L, weight = 25L),
+                ExpenseShare(PIERRE, 9_000L, weight = 75L),
+            ),
+            editor.shares,
+        )
+        assertTrue(editor.addsUp)
+    }
+
+    @Test
+    fun `GIVEN By income with three equal incomes WHEN reading the percentages THEN the first takes the point left`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            10_000L,
+            row(ANA, valueText = "1.000,00"),
+            row(PIERRE, valueText = "1.000,00"),
+            row(BRUNO, valueText = "1.000,00"),
+        )
+
+        // When
+        val percentages = editor.entries.map { it.value }
+
+        // Then
+        assertEquals(listOf(34L, 33L, 33L), percentages)
+    }
+
+    @Test
+    fun `GIVEN By income with 1 to 2 to 4 incomes WHEN reading them THEN the largest remainder takes the point left`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            10_000L,
+            row(ANA, valueText = "100,00"),
+            row(PIERRE, valueText = "200,00"),
+            row(BRUNO, valueText = "400,00"),
+        )
+
+        // When
+        val percentages = editor.entries.map { it.value }
+
+        // Then
+        assertEquals(listOf(14L, 29L, 57L), percentages)
+    }
+
+    @Test
+    fun `GIVEN By income with a cent left over WHEN reading the shares THEN the payer takes it`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            10_001L,
+            row(ANA, valueText = "9.000,00"),
+            row(PIERRE, valueText = "3.000,00"),
+        )
+
+        // When
+        val shares = editor.shares
+
+        // Then
+        assertEquals(
+            listOf(
+                ExpenseShare(ANA, 7_500L, weight = 75L),
+                ExpenseShare(PIERRE, 2_501L, weight = 25L),
+            ),
+            shares,
+        )
+    }
+
+    @Test
+    fun `GIVEN By income with a blank and a zero income WHEN reading the details THEN both are out`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            12_000L,
+            row(ANA, valueText = "5.000,00"),
+            row(PIERRE, valueText = ""),
+            row(BRUNO, valueText = "0,00"),
+        )
+
+        // When
+        val details = editor.statusDetails
+
+        // Then
+        assertEquals(listOf(100L, 0L, 0L), editor.entries.map { it.value })
+        assertEquals(SplitFact.PercentAddsUp, editor.statusTitle)
+        assertEquals(
+            listOf(SplitFact.Among(12_000L, 1), SplitFact.Out(listOf(person(PIERRE), person(BRUNO)))),
+            details,
+        )
+    }
+
+    @Test
+    fun `GIVEN By income with nobody having an income WHEN reading it THEN nobody is in it and it does not add up`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            12_000L,
+            row(ANA),
+            row(PIERRE),
+        )
+
+        // When
+        val title = editor.statusTitle
+
+        // Then
+        assertEquals(SplitFact.Nobody, title)
+        assertTrue(editor.statusDetails.isEmpty())
+        assertFalse(editor.addsUp)
+        assertNull(editor.shares)
+    }
+
+    @Test
+    fun `GIVEN By income with incomes in yen WHEN reading the percentages THEN it reads them without decimals`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            1_200L,
+            row(ANA, valueText = "9.000"),
+            row(PIERRE, valueText = "3.000"),
+            currency = GroupCurrency.JPY,
+        )
+
+        // When
+        val shares = editor.shares
+
+        // Then
+        assertEquals(listOf(75L, 25L), editor.entries.map { it.value })
+        assertEquals(listOf(900L, 300L), shares?.map { it.amountMinor })
+    }
+
+    @Test
+    fun `GIVEN By income adding up with someone out WHEN reading the summary THEN only says who is out`() {
+        // Given
+        val editor = editor(
+            SplitMode.INCOME,
+            12_000L,
+            row(ANA, valueText = "5.000,00"),
+            row(PIERRE),
+        )
+
+        // When
+        val summary = editor.summary
+
+        // Then
+        assertEquals(listOf(SplitFact.Out(listOf(person(PIERRE)))), summary)
+    }
+
     private fun row(
         id: String,
         isIncluded: Boolean = true,

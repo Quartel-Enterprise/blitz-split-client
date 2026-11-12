@@ -53,6 +53,7 @@ internal fun splitTitleOf(split: SplitEditor): String {
         SplitMode.PERCENT -> R.plurals.split_bill_mode_percent_among
         SplitMode.SHARES -> R.plurals.split_bill_mode_shares_among
         SplitMode.ITEMS -> R.plurals.split_bill_mode_items_among
+        SplitMode.INCOME -> R.plurals.split_bill_mode_income_among
     }
     return pluralStringResource(plural, split.includedCount, split.includedCount)
 }

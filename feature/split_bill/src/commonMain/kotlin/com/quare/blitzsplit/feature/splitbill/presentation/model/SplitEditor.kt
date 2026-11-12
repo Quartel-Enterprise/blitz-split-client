@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.ItemsBreakdown
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.groups.domain.model.IncomePercents
 import com.quare.blitzsplit.core.model.GroupCurrency
 
 // Why: how the bill splits, the one "Rachar conta" saves and the one "Dividir" edits until "Pronto".
@@ -26,9 +27,18 @@ data class SplitEditor(
     // Why: what the items give each one, worked out once per state like the shares.
     val itemsBreakdown: ItemsBreakdown? = items?.let { BillItemsSplit.breakdownOf(it, payerIds) }
 
+    // Why: "By income"'s percentages by member id, which each one's income gives; empty in any other mode.
+    val incomePercents: Map<String, Long> = if (mode == SplitMode.INCOME) {
+        IncomePercents.of(
+            rows.map { row -> row.person.id to (AmountInput.parse(row.valueText, currency, showsSats) ?: 0L) },
+        )
+    } else {
+        emptyMap()
+    }
+
     /*
      * Why: what each row puts in the split in this mode; a row at 0 is out of it. Worked out once per state, like
-     * shares, since every UI reads them many times on each keystroke.
+     * shares, since every UI reads them many times on each keystroke. "By income" puts in the percentage it gives.
      */
     val entries: List<SplitEntry> = rows.map { row ->
         val value = when (mode) {
@@ -37,6 +47,7 @@ data class SplitEditor(
             SplitMode.PERCENT -> AmountInput.parseWhole(row.valueText) ?: 0L
             SplitMode.SHARES -> row.parts
             SplitMode.ITEMS -> itemsBreakdown?.people?.firstOrNull { it.memberId == row.person.id }?.totalMinor ?: 0L
+            SplitMode.INCOME -> incomePercents[row.person.id] ?: 0L
         }
         SplitEntry(
             memberId = row.person.id,
@@ -127,6 +138,9 @@ data class SplitEditor(
 
             SplitMode.ITEMS -> amountLeftOrNull ?: SplitFact.AmountAddsUp(totalMinor)
 
+            // Why: incomes always give 100%, so only nobody with an income is left to say.
+            SplitMode.INCOME -> if (includedCount == 0) SplitFact.Nobody else SplitFact.PercentAddsUp
+
             SplitMode.SHARES -> if (totalParts == 0L) {
                 SplitFact.Nobody
             } else {
@@ -160,6 +174,9 @@ data class SplitEditor(
 
             SplitMode.PERCENT, SplitMode.ITEMS -> listOfNotNull(among, out)
 
+            // Why: until someone has an income there is nobody to split among; the hint says to type them.
+            SplitMode.INCOME -> if (includedCount == 0) emptyList() else listOfNotNull(among, out)
+
             SplitMode.SHARES -> sharesDetails
         }
 
@@ -173,7 +190,7 @@ data class SplitEditor(
                 SplitMode.EQUAL -> SplitFact.Each(perPersonMinor).takeIf { includedCount > 0 && totalMinor > 0 }
                 SplitMode.AMOUNT -> amountLeftOrNull
                 SplitMode.PERCENT -> percentLeftOrNull
-                SplitMode.SHARES -> null
+                SplitMode.SHARES, SplitMode.INCOME -> null
                 SplitMode.ITEMS -> looseItemsOrNull ?: amountLeftOrNull
             }
             val count = items

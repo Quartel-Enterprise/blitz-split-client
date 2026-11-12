@@ -156,7 +156,6 @@ class GroupRepositoryImpl(
     override suspend fun updateDefaultSplit(
         groupId: String,
         defaultSplit: GroupDefaultSplit?,
-        incomes: Map<String, Long>,
         updatedAt: Long,
     ): Result<Unit> = suspendRunCatching {
         local.updateDefaultSplit(
@@ -167,7 +166,6 @@ class GroupRepositoryImpl(
                     over = local.getDefaultSplit(groupId),
                 )
             },
-            splitIncomes = mapper.encodeIncomes(incomes),
             updatedAt = updatedAt,
         )
     }
@@ -190,10 +188,6 @@ class GroupRepositoryImpl(
 
     override suspend fun consumeSimplifyDebtsConflict(groupId: String): Result<Unit> = suspendRunCatching {
         local.clearSimplifyDebtsConflict(groupId)
-    }
-
-    override suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>> = suspendRunCatching {
-        mapper.decodeIncomes(local.getSplitIncomes(groupId))
     }
 
     override suspend fun addMember(

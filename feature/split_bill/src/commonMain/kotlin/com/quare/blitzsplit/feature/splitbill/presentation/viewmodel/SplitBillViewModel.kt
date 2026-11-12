@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupIncomes
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -73,6 +74,7 @@ class SplitBillViewModel(
     takePickedReceipt: TakePickedReceipt,
     navigator: Navigator,
     observeGroup: ObserveGroup,
+    observeGroupIncomes: ObserveGroupIncomes,
     observeExpense: ObserveExpense,
     observeGroupsByActivity: ObserveGroupsByActivity,
     observeExpenses: ObserveExpenses,
@@ -217,7 +219,7 @@ class SplitBillViewModel(
             ?: flowOf(null)
         // Why: the form opens once bitcoin's unit is known, so nothing typed or filled in is in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
-        combine(group, expenseFlow, showsSats, ::Triple)
+        combine(group.withIncomesInto(uiState, observeGroupIncomes), expenseFlow, showsSats, ::Triple)
             .onEach { (group, expense, sats) ->
                 // Why: only as the form opens; later the live unit below rules, which a later sync must not undo.
                 if (!hasReadUnit) uiState.update { it.withShowsSats(sats, separator) }
@@ -293,7 +295,7 @@ class SplitBillViewModel(
                 if (event.mode == SplitMode.ITEMS) {
                     items.openInSplit()
                 } else {
-                    editSplit { it.toMode(event.mode, separator) }
+                    editSplit { it.toMode(event.mode, separator, uiState.value.incomes) }
                 }
             }
 

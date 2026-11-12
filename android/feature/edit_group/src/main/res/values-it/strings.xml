@@ -50,7 +50,7 @@
     <string name="default_split_list_shares">Le quote di ognuno</string>
     <string name="default_split_list_percent">La percentuale di ognuno</string>
     <string name="default_split_list_income">Il reddito di ognuno</string>
-    <string name="default_split_income_note">I redditi restano solo su questo dispositivo. Il gruppo vede solo le percentuali.</string>
+    <string name="default_split_income_note">I membri del gruppo vedono questi redditi e possono dividere le spese in base a essi.</string>
     <string name="default_split_parts_of">Quote di %s</string>
     <string name="default_split_percent_of">Percentuale di %s</string>
     <string name="default_split_income_of">Reddito di %s</string>

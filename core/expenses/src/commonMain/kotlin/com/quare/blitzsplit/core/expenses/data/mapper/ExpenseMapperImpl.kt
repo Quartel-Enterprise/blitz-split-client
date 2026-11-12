@@ -32,7 +32,9 @@ class ExpenseMapperImpl : ExpenseMapper {
      */
     override fun toDomain(row: ExpenseWithEditor): Expense? {
         val entity = row.expense
-        val storedMode = SplitMode.fromCodeOrNull(entity.splitMode)?.takeIf { it != SplitMode.ITEMS } ?: return null
+        val storedMode =
+            SplitMode.fromCodeOrNull(entity.splitMode)?.takeIf { it.savedMode == it && it != SplitMode.ITEMS }
+                ?: return null
         val payerDtos = decodeOrNull { decodePayers(entity.payersJson) } ?: return null
         val shareDtos = decodeOrNull { decodeShares(entity.sharesJson) } ?: return null
         val payers = payerDtos.map {

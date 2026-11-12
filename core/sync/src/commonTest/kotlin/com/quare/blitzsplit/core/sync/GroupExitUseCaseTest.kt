@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRep
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -224,6 +225,7 @@ class GroupExitUseCaseTest {
             notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
             groupRepository = groups,
             groupPinRepository = FakeGroupPinRepository(),
+            groupIncomeRepository = FakeGroupIncomeRepository(),
             expenseRepository = FakeExpenseRepository(),
             settlementRepository = FakeSettlementRepository(),
             categoryRepository = FakeCategoryRepository(),

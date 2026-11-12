@@ -48,7 +48,7 @@
     <string name="default_split_list_shares">Bagian masing-masing</string>
     <string name="default_split_list_percent">Persen masing-masing</string>
     <string name="default_split_list_income">Penghasilan masing-masing</string>
-    <string name="default_split_income_note">Penghasilan hanya tersimpan di perangkat ini. Grup hanya melihat persennya.</string>
+    <string name="default_split_income_note">Anggota grup melihat penghasilan ini dan bisa membagi tagihan berdasarkan penghasilan.</string>
     <string name="default_split_parts_of">Jumlah bagian %s</string>
     <string name="default_split_percent_of">Persen %s</string>
     <string name="default_split_income_of">Penghasilan %s</string>

@@ -1119,6 +1119,7 @@ class BillCategoryViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
+            observeGroupIncomes = { flowOf(emptyMap()) },
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
@@ -1129,7 +1130,7 @@ class BillCategoryViewModelTest {
                 saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
                 deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             ),
-            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
+            saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = OfferCategoryTeachUseCase(teach),
             takePickedReceipt = { null },
             readReceipt = { _, _, _ ->

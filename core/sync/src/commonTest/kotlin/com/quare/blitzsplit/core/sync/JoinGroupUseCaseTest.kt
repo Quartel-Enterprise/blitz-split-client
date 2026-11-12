@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteMember
 import com.quare.blitzsplit.core.groups.domain.model.JoinChoice
 import com.quare.blitzsplit.core.groups.domain.model.JoinOutcome
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.groups.testing.FakeInviteRepository
@@ -521,6 +522,7 @@ class JoinGroupUseCaseTest {
                 notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
                 groupRepository = groups,
                 groupPinRepository = FakeGroupPinRepository(),
+                groupIncomeRepository = FakeGroupIncomeRepository(),
                 expenseRepository = FakeExpenseRepository(),
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),

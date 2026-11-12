@@ -53,12 +53,10 @@ class FakeGroupRepository(
 
     // Why: the default splits saved, with the incomes saved along, by group id, in the order they were saved.
     val savedDefaultSplits = mutableListOf<Pair<String, GroupDefaultSplit?>>()
-    val savedIncomes = mutableMapOf<String, Map<String, Long>>()
     var defaultSplitError: Throwable? = null
 
     // Why: while set, a save of the default split waits for it, so a test can act while it is in flight.
     var defaultSplitGate: CompletableDeferred<Unit>? = null
-    var incomesError: Throwable? = null
 
     // Why: "Simplificar dívidas" turned on or off, with the change it carried and when.
     val simplifyDebtsChanges = mutableListOf<Triple<String, Boolean, SimplifyDebtsChange>>()
@@ -129,13 +127,11 @@ class FakeGroupRepository(
     override suspend fun updateDefaultSplit(
         groupId: String,
         defaultSplit: GroupDefaultSplit?,
-        incomes: Map<String, Long>,
         updatedAt: Long,
     ): Result<Unit> {
         defaultSplitGate?.await()
         defaultSplitError?.let { return Result.failure(it) }
         savedDefaultSplits += groupId to defaultSplit
-        savedIncomes[groupId] = incomes
         groups.value = groups.value.map { group ->
             if (group.id == groupId) group.copy(defaultSplit = defaultSplit) else group
         }
@@ -172,11 +168,6 @@ class FakeGroupRepository(
             if (group.id == groupId) group.copy(simplifyDebtsConflictBy = null) else group
         }
         return Result.success(Unit)
-    }
-
-    override suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>> {
-        incomesError?.let { return Result.failure(it) }
-        return Result.success(savedIncomes[groupId].orEmpty())
     }
 
     override suspend fun updateGroup(

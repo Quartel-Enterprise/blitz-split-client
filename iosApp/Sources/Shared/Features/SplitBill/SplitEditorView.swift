@@ -2,26 +2,50 @@ import Shared
 import SwiftUI
 
 /// "Split": how the bill divides, by mode, over the bill. The bill's split changes only on "Done", which waits until
-/// it adds up; "Back" leaves it as it was.
+/// it adds up; "Back" leaves it as it was. The six modes no longer fit side by side (beta feedback), so they are capsules
+/// in a row that scrolls sideways, the picked one filled and scrolled into sight.
 private struct SplitModePicker: View {
     let mode: SplitMode
     let send: (any SplitBillUiEvent) -> Void
 
     var body: some View {
-        Picker("How to split", selection: selection) {
-            ForEach(SplitBillCopy.modes, id: \.self) { mode in
-                SplitBillCopy.modeLabel(mode).tag(mode)
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(SplitBillCopy.modes, id: \.self) { option in
+                        chip(option)
+                            .id(option)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+            .onAppear { proxy.scrollTo(mode) }
+            .onChange(of: mode) { _, picked in
+                withAnimation { proxy.scrollTo(picked) }
             }
         }
-        .pickerStyle(.segmented)
-        .labelsHidden()
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text("How to split"))
     }
 
-    private var selection: Binding<SplitMode> {
-        Binding(
-            get: { mode },
-            set: { send(SplitBillUiEventOnSplitModeClicked(mode: $0)) },
-        )
+    private func chip(_ option: SplitMode) -> some View {
+        let isSelected = option == mode
+        return Button {
+            send(SplitBillUiEventOnSplitModeClicked(mode: option))
+        } label: {
+            SplitBillCopy.modeLabel(option)
+                .font(.subheadline.weight(isSelected ? .semibold : .medium))
+                .lineLimit(1)
+                .padding(.horizontal, 14)
+                .frame(minHeight: 34)
+                .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+                .background(
+                    Capsule().fill(isSelected ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.fill.tertiary)),
+                )
+                .contentShape(.capsule)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }
 
@@ -82,6 +106,7 @@ private struct DefaultSplitNotice: View {
         case .percent: String(localized: "This bill splits by percentage.", bundle: .appLanguage)
         case .shares: String(localized: "This bill splits by shares.", bundle: .appLanguage)
         case .items: String(localized: "This bill splits by items.", bundle: .appLanguage)
+        case .income: String(localized: "This bill splits by income.", bundle: .appLanguage)
         default: String(localized: "This bill splits equally.", bundle: .appLanguage)
         }
         return base + WordGap.gap + now
@@ -233,6 +258,13 @@ private struct SplitPersonRow: View {
                     .accessibilityHidden(true)
                 valueField(prompt: editor.currency.zeroPlaceholder, width: 96)
             }
+        case .income:
+            HStack(spacing: 4) {
+                Text(verbatim: editor.currency.symbol)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+                valueField(prompt: editor.currency.zeroPlaceholder, width: 96)
+            }
         case .percent:
             HStack(spacing: 4) {
                 valueField(prompt: "0", width: 52)
@@ -266,6 +298,8 @@ private struct SplitPersonRow: View {
         return KeptTextField(text: model.value(of: person.id), prompt: Text(verbatim: prompt)) {
             if editor.mode == .amount {
                 Text("Part of \(person.name)")
+            } else if editor.mode == .income {
+                Text("Income of \(person.name)")
             } else {
                 Text("Percentage of \(person.name)")
             }

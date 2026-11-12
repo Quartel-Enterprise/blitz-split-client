@@ -3586,6 +3586,7 @@ class ReceiptViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
+            observeGroupIncomes = { flowOf(emptyMap()) },
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
@@ -3596,7 +3597,7 @@ class ReceiptViewModelTest {
                 saveGroupCategory = { _, _, _, _, _, _, _ -> Result.success("") },
                 deleteGroupCategory = { Result.success(Unit) },
             ),
-            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
+            saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             takePickedReceipt = { heldReceipt.also { heldReceipt = null } },
             readReceipt = { photo, currency, hints ->

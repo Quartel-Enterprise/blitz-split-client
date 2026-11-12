@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.ReceiptPhotoSource
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
@@ -1053,6 +1054,7 @@ class SplitBillUiStateTest {
         defaultSplit = null,
         defaultSplitExceptionId = null,
         splitAsDefault = null,
+        incomes = BillIncomes.None,
         categories = CategoryTree.appOnly,
         categoryId = null,
         isCategoryPicked = false,

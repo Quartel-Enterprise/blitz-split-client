@@ -208,17 +208,16 @@ interface GroupDao {
     )
 
     /*
-     * Why: "Divisão padrão" saves only itself, so the rest of the group stays as this device last read it, and the
-     * incomes "Pela renda" was typed with stay here. Stamped after the row like "Editar grupo".
+     * Why: "Divisão padrão" saves only itself, so the rest of the group stays as this device last read it. Stamped
+     * after the row like "Editar grupo".
      */
     @Query(
-        "UPDATE split_group SET defaultSplit = :defaultSplit, splitIncomes = :splitIncomes, " +
+        "UPDATE split_group SET defaultSplit = :defaultSplit, " +
             "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
     )
     suspend fun updateDefaultSplit(
         id: String,
         defaultSplit: String?,
-        splitIncomes: String?,
         updatedAt: Long,
     )
 
@@ -279,9 +278,6 @@ interface GroupDao {
         "UPDATE split_group SET simplifyDebtsConflictBy = NULL WHERE id = :id AND simplifyDebtsConflictBy IS NOT NULL",
     )
     suspend fun clearSimplifyDebtsConflict(id: String)
-
-    @Query("SELECT splitIncomes FROM split_group WHERE id = :id")
-    suspend fun getSplitIncomes(id: String): String?
 
     @Query("SELECT defaultSplit FROM split_group WHERE id = :id")
     suspend fun getDefaultSplit(id: String): String?
