@@ -86,20 +86,24 @@ internal fun GroupTopBar(
     } else {
         stringResource(R.string.group_detail_meta_empty, members)
     }
+    val collapsedFraction = scrollBehavior.state.collapsedFraction
+    // Why: the title in sight carries the shared avatar and name, so back from a folded bar flies from the one line.
+    val isMostlyOpen = collapsedFraction < 0.5f
     TwoRowsTopAppBar(
         title = { isExpanded ->
             if (isExpanded) {
                 GroupTitle(
                     header = header,
-                    badgeSize = lerp(expandedBadgeSize, foldingBadgeSize, scrollBehavior.state.collapsedFraction),
+                    badgeSize = lerp(expandedBadgeSize, foldingBadgeSize, collapsedFraction),
                     onAction = onAction,
-                    sharedGroupId = sharedGroupId,
+                    sharedGroupId = sharedGroupId.takeIf { isMostlyOpen },
                 )
             } else {
                 GroupTitle(
                     header = header,
                     badgeSize = collapsedBadgeSize,
                     onAction = onAction,
+                    sharedGroupId = sharedGroupId.takeUnless { isMostlyOpen },
                 )
             }
         },

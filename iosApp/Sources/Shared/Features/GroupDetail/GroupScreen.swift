@@ -503,6 +503,9 @@ struct PhoneGroupScaffold<Sections: View>: View {
                     .font(.title.bold())
                     .lineLimit(2)
                     .accessibilityAddTraits(.isHeader)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                        if collapses { headerScroll.nameHeight = height }
+                    }
                 Text(verbatim: groupMeta(header, hasExpenses: hasExpenses))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -574,10 +577,14 @@ final class GroupHeaderScroll {
         1 - progress(from: 56, to: 96)
     }
 
-    /// The bar's avatar and name come in while the header's name goes under the bar (the avatar, its padding and the
-    /// name's line: 100 to 132 pt), as the large title turns into the inline one.
+    /// The header's name's height, measured: a second line or a larger text size pushes its last line further down.
+    var nameHeight: CGFloat = 32
+
+    /// The bar's avatar and name come in while the header's name's last line goes under the bar (after the avatar,
+    /// its padding and the lines above it: 100 to 132 pt for one line), as the large title turns into the inline one.
     var titleProgress: CGFloat {
-        progress(from: 100, to: 132)
+        let lastLineTop = 100 + max(0, nameHeight - 32)
+        return progress(from: lastLineTop, to: lastLineTop + 32)
     }
 
     private func progress(from start: CGFloat, to end: CGFloat) -> CGFloat {

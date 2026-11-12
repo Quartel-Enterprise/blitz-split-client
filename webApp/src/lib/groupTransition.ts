@@ -35,9 +35,12 @@ if (typeof document !== 'undefined') {
   )
 }
 
-/** The browser animated this history step itself (a swipe back), so the next change of the stack only switches. */
-export function skipNextGroupTransition() {
-  skipsNext = true
+/**
+ * Whether the browser animated this history step itself (a swipe back), so the next change of the stack only switches;
+ * false again when the step didn't move the stack after all (held for "Discard changes?").
+ */
+export function setSkipsNextGroupTransition(skips: boolean) {
+  skipsNext = skips
 }
 
 /** Whether the pages mounting now come in through a shared transition, which replaces their own fade (`page-enter`). */
@@ -117,6 +120,8 @@ function run(plan: Plan, apply: () => void) {
       isUpdating = true
       try {
         flushSync(apply)
+        // Why: the old page's marks are captured already; one still on the page would share the target's names, which aborts the transition.
+        named.splice(0).forEach((element) => (element.style.viewTransitionName = ''))
         const holder = await waitFor(target)
         if (holder) name(holder, plan.groupId)
       } finally {

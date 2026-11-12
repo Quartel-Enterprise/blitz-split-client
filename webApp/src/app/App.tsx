@@ -47,7 +47,7 @@ import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
 import { t } from '@/i18n'
 import { isBrowserBackBlocked } from '@/lib/browserBack'
-import { skipNextGroupTransition, withGroupTransition } from '@/lib/groupTransition'
+import { setSkipsNextGroupTransition, withGroupTransition } from '@/lib/groupTransition'
 import { setShowsBitcoinInSats } from '@/lib/money'
 import { applyTheme } from '@/lib/theme'
 
@@ -421,10 +421,11 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
         const from = size.current
         size.current = target
         // Why: the browser already animated this step (a swipe back), so the page only switches.
-        if (event.hasUAVisualTransition) skipNextGroupTransition()
+        setSkipsNextGroupTransition(event.hasUAVisualTransition)
         app.popTo(target)
         // Why: a form with unsaved input held the stack for "Discard changes?", so the history goes forward again.
         if (app.isDiscardPending()) {
+          setSkipsNextGroupTransition(false)
           size.current = from
           goBy.current(from - target, target)
         }

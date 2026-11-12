@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, wordGap } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { avatarStyle, GROUP_SHAPE } from '@/lib/avatar'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { formatDayTime, formatLongDayLabel, formatTime } from '@/lib/dates'
 import { cn } from '@/lib/utils'
@@ -324,8 +324,8 @@ function ItemMeta({ item }: { item: JsActivityItem }) {
 
 // Why: a deleted group is no longer on the device, so its shape goes grey.
 function GroupMark({ color }: { color: string | null | undefined }) {
-  if (!color) return <span aria-hidden className="size-3 shrink-0 rounded-[3px] bg-muted" />
-  return <span aria-hidden style={avatarStyle(color)} className="avatar-mark size-3 shrink-0 rounded-[3px]" />
+  if (!color) return <span aria-hidden className={cn('size-3 shrink-0 bg-muted', GROUP_SHAPE)} />
+  return <span aria-hidden style={avatarStyle(color)} className={cn('avatar-mark size-3 shrink-0', GROUP_SHAPE)} />
 }
 
 function kindIcon(item: JsActivityItem): ReactNode {

@@ -72,9 +72,6 @@ fun GroupBadge(
     }
 }
 
-// Why: a group's rounded square, its corners GROUP_CORNER_RATIO of its side.
-fun groupShapeOf(size: Dp): Shape = RoundedCornerShape(size * GROUP_CORNER_RATIO)
-
 // Why: Atividade still names a "Forma" an older Android build changed.
 @get:StringRes
 val GroupShape.labelRes: Int

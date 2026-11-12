@@ -16,35 +16,36 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     and opens again on a scroll up, from anywhere in the list; wider, it opens only back at the top. On iPhone the
     bars stay put (see [the bars on scroll](home-and-shell.md)).
   - The group's avatar is big in the open header and shrinks into the bar as the list scrolls (beta feedback of
-    2026-11-12, Pierre's call), following the scroll, never a timed animation. Android: the open bar (168 dp) draws
-    it at 64 dp beside the name, shrinking to 40 dp as the bar folds while the one-line bar's title, 32 dp, fades in
-    over it (Material's `TwoRowsTopAppBar`, folding by the rules above); a tabletop's one-line bar keeps 32 dp.
-    The web: one sticky header at every width, open 136 px tall on a phone (the 64 px avatar and the
-    22 px name under the bar of back, Statistics, Invite and ⋯) and 96 px from the tablet up (80 px avatar, 24 px
-    name, with Statistics, Invite, "Split a bill" and ⋯ in its row), folding over the first 80 px of scroll (40 px
-    from the tablet up) into a 56 px bar with a 32 px avatar and a 16 px name; the subtitle fades out by half the fold
-    and the bar's border fades in, and the page under it never jumps. The member faces sit right under the header.
-    iOS and iPadOS, whose bars stay put: the header in the list is centred, the group's square at 88 pt over the
-    name (two lines at most), the subtitle and the faces; over the first 88 pt of scroll the square shrinks to half,
-    fading out between 56 and 96 pt, and between 100 and 132 pt a 30 pt square and the name fade into the bar's title,
-    rising 8 pt (`GroupScreen`). Both squares open the photo big. An iPhone lying down keeps its side column, a 72 pt
-    square and no fold; the Mac keeps its 36 pt square beside the faces and the name in the window's title.
+    2026-11-12, Pierre's call), following the scroll, never a timed animation. Android: the open bar (168 dp) draws it
+    at 64 dp beside the name, shrinking to 40 dp as the bar folds while the one-line bar's title, 32 dp, fades in over
+    it (Material's `TwoRowsTopAppBar`, folding by the rules above); a tabletop's one-line bar keeps 32 dp. The web:
+    one sticky header at every width, open 136 px tall on a phone (the 64 px avatar and the 22 px name under the bar
+    of back, Statistics, Invite and ⋯) and 96 px from the tablet up (80 px avatar, 24 px name, with Statistics,
+    Invite, "Split a bill" and ⋯ in its row), folding over the first 80 px of scroll (40 px from the tablet up) into a
+    56 px bar with a 32 px avatar and a 16 px name; the subtitle fades out by half the fold and the bar's border fades
+    in, and the page under it never jumps. The member faces sit right under the header. iOS and iPadOS, whose bars
+    stay put: the header in the list is centred, the group's square at 88 pt over the name (two lines at most), the
+    subtitle and the faces; over the first 88 pt of scroll the square shrinks to half, fading out between 56 and 96
+    pt, and between 100 and 132 pt a 30 pt square and the name fade into the bar's title, rising 8 pt (`GroupScreen`).
+    Both squares open the photo big. An iPhone lying down keeps its side column, a 72 pt square and no fold; the Mac
+    keeps its 36 pt square beside the faces and the name in the window's title.
   - The group's avatar and name fly from the row or card tapped into the group's header, and back on back or the back
     gesture, following the finger (beta feedback of 2026-11-12): from Groups' list and grid and Home's group cards.
     Android: Compose's shared elements (`SharedTransitionLayout` around Navigation 3, `rememberGroupSharedModifiers`),
-    wherever the group opens over the list; beside the list (a tablet lying down, a book) nothing flies, the row
-    stays where it is, and so the group opens over Groups as over Home, a screen of its own, outside Material's
-    list-detail scene, wherever the two don't show side by side. The web: the View Transitions API (`document.startViewTransition`, `webApp/src/lib/groupTransition.ts`), naming
-    only the row clicked and the group's header for the transition, when the group opens within a second of a click on
-    its row and when back (the app's or the browser's) leaves it for Home or Groups; it waits up to 250 ms for the
-    other side to draw and otherwise crossfades, and a browser without the API, or one that already animated a swipe
-    back, just switches. iOS and iPadOS: the zoom navigation transition (`matchedTransitionSource` and `.navigationTransition(.zoom)`,
+    wherever the group opens over the list; beside the list (a tablet lying down, a book) nothing flies, the row stays
+    where it is, and so the group opens over Groups as over Home, a screen of its own, outside Material's list-detail
+    scene, wherever the two don't show side by side. The web: the View Transitions API
+    (`document.startViewTransition`, `webApp/src/lib/groupTransition.ts`), naming only the row clicked and the group's
+    header for the transition, when the group opens within a second of a click on its row and when back (the app's or
+    the browser's) leaves it for Home or Groups; it waits up to 250 ms for the other side to draw and otherwise
+    crossfades, and a browser without the API, or one that already animated a swipe back, just switches. iOS and
+    iPadOS: the zoom navigation transition (`matchedTransitionSource` and `.navigationTransition(.zoom)`,
     `GroupZoomTransition.swift`), from Groups' rows, grid cards and search results and Home's "Your groups", only out
     of a row tapped in the last second, so a group opened from a bill or Activity never zooms out of a row below it;
-    never beside the list nor on the Mac. Reduced motion turns it off
-    everywhere: Android's animations off end it at once, the web skips it under `prefers-reduced-motion`, and iOS's Reduce Motion turns the zoom into the system's crossfade and stills the header's scale and rise, keeping
-    its fades.. A bill's "Latest expenses" row on Home
-    shows the group's avatar but opens the bill, so it flies nowhere.
+    never beside the list nor on the Mac. Reduced motion turns it off everywhere: Android's animations off end it at
+    once, the web skips it under `prefers-reduced-motion`, and iOS's Reduce Motion turns the zoom into the system's
+    crossfade and stills the header's scale and rise, keeping its fades. A bill's "Latest expenses" row on Home shows
+    the group's avatar but opens the bill, so it flies nowhere.
   - The group's avatar in the header (its rounded square, the photo or the initials on the color; the web's page header, the top bar on Android, the header on iOS and the Mac) opens the photo big (Pierre's call, `Route.GroupPhoto`,
     `GroupPhotoViewModel`), as the profile's avatar does ([the profile's viewer](profile.md)): the group's square, 200 pt/dp/px (260 once both sides have 600) over the
     dimmed, blurred group, with "Camera" where there is one, "Gallery" and "Remove" (with a photo) under it. Each saves
