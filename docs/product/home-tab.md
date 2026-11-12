@@ -47,7 +47,19 @@ The home tab, its shortcuts and pinned groups.
     at first and 30 more each time the list nears its end (`AllExpensesViewModel`: a growing `LIMIT` over Room's
     `observeMyExpenses`, so a bill edited, deleted or synced in changes in place), with skeleton rows while the first
     page is read, under the last row while the next one is (or while a new device's first download may still bring
-    bills), and "No expenses yet" / "Bills you paid or take part in, in any group, show up here." when there is none.
+    bills), and "No expenses yet" / "Bills you paid or take part in, in any group, show up here." when there is none. Over the bills (Pierre's call, beta feedback): "Search expenses", which finds bills by their
+    description as the home's search does (case and accents ignored; what holds the text typed, and only when nothing
+    does, what comes a typo or two away, `TypoTolerantQuery`), then a row of menus: the order ("Newest first", the
+    default, "Oldest first", "Largest first", "Smallest first"; sorted by amount the bills read as one list with no
+    day over them, ties the most recent first), "Group" and "Category" (several at once; a main category takes its
+    subcategories' bills, as Statistics' chips do; one picked names the menu, several read "Group · 2"), "Your share"
+    ("You get back", "You owe") and "Who paid" ("You paid", alone or with others, "Others paid"), a menu filled while
+    it narrows the list, and "Clear filters" (which keeps the order) once one does; nothing matching shows "No
+    expenses match" / "Try other words or clear the filters." with "Clear filters". Android draws them as a search
+    field and a row of filter chips that scrolls sideways, iOS and the Mac the bar's own search field (`.searchable`)
+    and a row of menus, the web an input and a row of menu buttons that wraps on a phone. At their default the list
+    reads the device a page at a time; any filter, search or other order reads every bill of the device once and
+    shows them a page at a time (`AllExpensesFilters`), the page going back to the first on each change.
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
     the top bar, never floating over the tab bar: its icon alone on an iPhone upright, as on Groups, and in an iPhone
     Duo's vertical bar, under the profile; spelled out lying down and on iPad. "Search" is the home's (5.2), over

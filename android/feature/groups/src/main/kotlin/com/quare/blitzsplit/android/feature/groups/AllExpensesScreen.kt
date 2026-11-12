@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
+import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -98,7 +99,7 @@ internal fun AllExpensesContent(
                         IconButton(onClick = { onEvent(AllExpensesUiEvent.OnBackClicked) }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                                contentDescription = stringResource(R.string.groups_all_expenses_back),
+                                contentDescription = stringResource(DesignR.string.designsystem_back),
                             )
                         }
                     },
@@ -147,6 +148,15 @@ private fun AllExpensesList(
             bottom = 24.dp,
         ),
     ) {
+        if (state.isLoaded) {
+            item(key = "filters") {
+                AllExpensesFilterBar(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
+        }
         when {
             state.showsSkeleton -> item(key = "skeleton") { HomeBillsSkeleton() }
 
@@ -157,6 +167,16 @@ private fun AllExpensesList(
                     body = stringResource(R.string.groups_all_expenses_empty_body),
                     action = null,
                     onAction = {},
+                )
+            }
+
+            state.showsNoResults -> item(key = "no-results") {
+                EmptyStateColumn(
+                    icon = Icons.Outlined.SearchOff,
+                    title = stringResource(R.string.groups_all_expenses_no_results_title),
+                    body = stringResource(R.string.groups_all_expenses_no_results_body),
+                    action = stringResource(R.string.groups_all_expenses_clear),
+                    onAction = { onEvent(AllExpensesUiEvent.OnClearFiltersClicked) },
                 )
             }
 
@@ -174,7 +194,8 @@ private fun LazyListScope.billDayItems(
     onEvent: (AllExpensesUiEvent) -> Unit,
 ) {
     state.days.forEach { day ->
-        item(key = "day-${day.dayStartMillis}") { HomeBillDayHeading(day) }
+        // Why: sorted by amount the bills read as one list, with no day over them.
+        if (state.showsDayHeadings) item(key = "day-${day.dayStartMillis}") { HomeBillDayHeading(day) }
         itemsIndexed(
             items = day.bills,
             key = { _, bill -> bill.id },

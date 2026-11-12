@@ -189,5 +189,23 @@
     <string name="groups_all_expenses_title">Tutte le spese</string>
     <string name="groups_all_expenses_empty_title">Ancora nessuna spesa</string>
     <string name="groups_all_expenses_empty_body">I conti che hai pagato o a cui partecipi, in qualsiasi gruppo, compaiono qui.</string>
-    <string name="groups_all_expenses_back">Indietro</string>
+    <string name="groups_all_expenses_search">Cerca spese</string>
+    <string name="groups_all_expenses_group">Gruppo</string>
+    <string name="groups_all_expenses_category">Categoria</string>
+    <string name="groups_all_expenses_share">La tua quota</string>
+    <string name="groups_all_expenses_share_all">Qualsiasi</string>
+    <string name="groups_all_expenses_share_receive">Ti devono</string>
+    <string name="groups_all_expenses_share_pay">Devi</string>
+    <string name="groups_all_expenses_payer">Chi ha pagato</string>
+    <string name="groups_all_expenses_payer_all">Chiunque</string>
+    <string name="groups_all_expenses_payer_you">Hai pagato tu</string>
+    <string name="groups_all_expenses_payer_others">Hanno pagato altri</string>
+    <string name="groups_all_expenses_sort_newest">Più recenti</string>
+    <string name="groups_all_expenses_sort_oldest">Meno recenti</string>
+    <string name="groups_all_expenses_sort_largest">Importo più alto</string>
+    <string name="groups_all_expenses_sort_smallest">Importo più basso</string>
+    <string name="groups_all_expenses_sort">Ordina</string>
+    <string name="groups_all_expenses_clear">Cancella filtri</string>
+    <string name="groups_all_expenses_no_results_title">Nessuna spesa corrisponde</string>
+    <string name="groups_all_expenses_no_results_body">Prova altre parole o cancella i filtri.</string>
 </resources>

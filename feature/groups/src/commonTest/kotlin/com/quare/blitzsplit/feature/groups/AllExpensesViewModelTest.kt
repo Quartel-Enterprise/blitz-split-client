@@ -2,11 +2,13 @@ package com.quare.blitzsplit.feature.groups
 
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
@@ -32,9 +34,14 @@ import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
+import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
+import com.quare.blitzsplit.feature.groups.presentation.model.FilterGroupOption
+import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
+import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -950,6 +957,1134 @@ class AllExpensesViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN bills WHEN searching a description in upper case and without its accent THEN finds only that bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("market", spentAt = hoursAgo(1)),
+                    bill(
+                        "taxi",
+                        spentAt = hoursAgo(2),
+                        description = "Táxi do aeroporto",
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnQueryChanged("TAXI")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("taxi"), shownIds())
+            assertEquals("TAXI", viewModel.uiState.value.filters.query)
+            assertTrue(viewModel.uiState.value.filters.isFiltering)
+        }
+
+    @Test
+    fun `GIVEN no description holding the query WHEN searching with a typo THEN finds the bill a typo away`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("market", spentAt = hoursAgo(1)),
+                    bill(
+                        "dinner",
+                        spentAt = hoursAgo(2),
+                        description = "Dinner",
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnQueryChanged("diner")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("dinner"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN one description holding the query WHEN searching THEN leaves out the ones only a typo away`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "dinner",
+                        spentAt = hoursAgo(1),
+                        description = "Dinner",
+                    ),
+                    bill(
+                        "diner",
+                        spentAt = hoursAgo(2),
+                        description = "Diner da esquina",
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnQueryChanged("diner")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("diner"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN bills WHEN typing only spaces THEN shows every bill unfiltered and keeps reading a page`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("market", spentAt = hoursAgo(1)), bill("taxi", spentAt = hoursAgo(2))),
+            )
+            val event = AllExpensesUiEvent.OnQueryChanged("   ")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("market", "taxi"), shownIds())
+            assertFalse(viewModel.uiState.value.filters.isFiltering)
+            assertEquals(listOf(31), expenses.myExpenseLimits)
+        }
+
+    @Test
+    fun `GIVEN bills WHEN searching what none holds THEN shows no results and not the empty list`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("market")),
+            )
+            val event = AllExpensesUiEvent.OnQueryChanged("zzzz")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.days.isEmpty())
+            assertTrue(state.showsNoResults)
+            assertFalse(state.showsEmpty)
+        }
+
+    @Test
+    fun `GIVEN bills in three groups WHEN picking one group THEN shows only its bills`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio(), trio(id = "trip"), trio(id = "work")),
+            storedExpenses = listOf(
+                bill("h1", spentAt = hoursAgo(1)),
+                bill(
+                    "t1",
+                    groupId = "trip",
+                    spentAt = hoursAgo(2),
+                ),
+                bill(
+                    "w1",
+                    groupId = "work",
+                    spentAt = hoursAgo(3),
+                ),
+            ),
+        )
+        val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf("t1"), shownIds())
+        assertEquals(setOf("trip"), viewModel.uiState.value.filters.groupIds)
+        assertTrue(viewModel.uiState.value.filters.isFiltering)
+    }
+
+    @Test
+    fun `GIVEN one group picked WHEN picking a second group THEN shows the bills of both`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio(), trio(id = "trip"), trio(id = "work")),
+            storedExpenses = listOf(
+                bill("h1", spentAt = hoursAgo(1)),
+                bill(
+                    "t1",
+                    groupId = "trip",
+                    spentAt = hoursAgo(2),
+                ),
+                bill(
+                    "w1",
+                    groupId = "work",
+                    spentAt = hoursAgo(3),
+                ),
+            ),
+        )
+        viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trip"))
+        val event = AllExpensesUiEvent.OnGroupToggled("work")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf("t1", "w1"), shownIds())
+        assertEquals(setOf("trip", "work"), viewModel.uiState.value.filters.groupIds)
+    }
+
+    @Test
+    fun `GIVEN one group picked WHEN letting it go THEN shows the bills of every group`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio(), trio(id = "trip")),
+            storedExpenses = listOf(
+                bill("h1", spentAt = hoursAgo(1)),
+                bill(
+                    "t1",
+                    groupId = "trip",
+                    spentAt = hoursAgo(2),
+                ),
+            ),
+        )
+        viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trip"))
+        val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf("h1", "t1"), shownIds())
+        assertTrue(
+            viewModel.uiState.value.filters.groupIds
+                .isEmpty(),
+        )
+        assertFalse(viewModel.uiState.value.filters.isFiltering)
+    }
+
+    @Test
+    fun `GIVEN bills in Food subcategories and elsewhere WHEN picking Food THEN shows Food and its subcategories`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "market",
+                        spentAt = hoursAgo(1),
+                        categoryId = AppCategory.FOOD_MARKET.key,
+                    ),
+                    bill(
+                        "restaurant",
+                        spentAt = hoursAgo(2),
+                        categoryId = AppCategory.FOOD_RESTAURANT.key,
+                    ),
+                    bill(
+                        "food",
+                        spentAt = hoursAgo(3),
+                        categoryId = AppCategory.FOOD.key,
+                    ),
+                    bill(
+                        "fuel",
+                        spentAt = hoursAgo(4),
+                        categoryId = AppCategory.TRANSPORT_FUEL.key,
+                    ),
+                    bill("none", spentAt = hoursAgo(5)),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnCategoryToggled(AppCategory.FOOD.key)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("market", "restaurant", "food"), shownIds())
+            assertEquals(setOf(AppCategory.FOOD.key), viewModel.uiState.value.filters.categoryIds)
+        }
+
+    @Test
+    fun `GIVEN a group subcategory under Food WHEN picking Food THEN shows its bills too`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio(), trio(id = "trip")),
+            storedExpenses = listOf(
+                bill(
+                    "acai",
+                    spentAt = hoursAgo(1),
+                    categoryId = "acai",
+                ),
+                bill(
+                    "fuel",
+                    groupId = "trip",
+                    spentAt = hoursAgo(2),
+                    categoryId = AppCategory.TRANSPORT_FUEL.key,
+                ),
+            ),
+            storedCategories = listOf(
+                groupCategory("acai", parentId = AppCategory.FOOD.key),
+                groupCategory("boat", groupId = "trip"),
+            ),
+        )
+        val event = AllExpensesUiEvent.OnCategoryToggled(AppCategory.FOOD.key)
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf("acai"), shownIds())
+    }
+
+    @Test
+    fun `GIVEN a main category of a group with a subcategory WHEN picking it THEN shows the bills of both`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(
+                    bill(
+                        "bbq",
+                        spentAt = hoursAgo(1),
+                        categoryId = "bbq",
+                    ),
+                    bill(
+                        "steak",
+                        spentAt = hoursAgo(2),
+                        categoryId = "steak",
+                    ),
+                    bill(
+                        "boat",
+                        groupId = "trip",
+                        spentAt = hoursAgo(3),
+                        categoryId = "boat",
+                    ),
+                    bill(
+                        "market",
+                        spentAt = hoursAgo(4),
+                        categoryId = AppCategory.FOOD_MARKET.key,
+                    ),
+                ),
+                storedCategories = listOf(
+                    groupCategory("bbq"),
+                    groupCategory("steak", parentId = "bbq"),
+                    groupCategory("boat", groupId = "trip"),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnCategoryToggled("bbq")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("bbq", "steak"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN categories of two groups WHEN All expenses opens THEN offers the main categories of every group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedCategories = listOf(
+                    groupCategory("bbq"),
+                    groupCategory("steak", parentId = "bbq"),
+                    groupCategory("boat", groupId = "trip"),
+                ),
+            )
+
+            // When
+            val options = viewModel.uiState.value.categoryOptions
+
+            // Then
+            assertEquals(
+                AppCategory.mains.map { it.key }.dropLast(1) + listOf("bbq", "boat", AppCategory.OTHER.key),
+                options.map { it.id },
+            )
+        }
+
+    @Test
+    fun `GIVEN two groups one without bills WHEN All expenses opens THEN offers both as group options`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    trio(name = "Casa da praia"),
+                    trio(
+                        id = "trip",
+                        name = "Viagem Floripa",
+                        color = AvatarColor.GREEN,
+                    ),
+                ),
+                storedExpenses = listOf(bill("market")),
+            )
+
+            // When
+            val options = viewModel.uiState.value.groupOptions
+
+            // Then
+            assertEquals(
+                listOf(
+                    FilterGroupOption(
+                        id = "trio",
+                        name = "Casa da praia",
+                        initials = "CP",
+                        color = AvatarColor.BLUE,
+                        photoUrl = null,
+                    ),
+                    FilterGroupOption(
+                        id = "trip",
+                        name = "Viagem Floripa",
+                        initials = "VF",
+                        color = AvatarColor.GREEN,
+                        photoUrl = null,
+                    ),
+                ),
+                options,
+            )
+        }
+
+    @Test
+    fun `GIVEN bills Pierre lent owes and broke even on WHEN picking to receive THEN shows only the one he lent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("lent", spentAt = hoursAgo(1)),
+                    bill(
+                        "owe",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "even",
+                        splitOver = listOf("Pierre"),
+                        spentAt = hoursAgo(3),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.TO_RECEIVE)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("lent"), shownIds())
+            assertEquals(ShareFilter.TO_RECEIVE, viewModel.uiState.value.filters.share)
+        }
+
+    @Test
+    fun `GIVEN bills Pierre lent owes and broke even on WHEN picking to pay THEN shows only the one he owes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("lent", spentAt = hoursAgo(1)),
+                    bill(
+                        "owe",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "even",
+                        splitOver = listOf("Pierre"),
+                        spentAt = hoursAgo(3),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.TO_PAY)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("owe"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN to receive picked WHEN picking all THEN shows every bill again`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(
+                bill("lent", spentAt = hoursAgo(1)),
+                bill(
+                    "owe",
+                    paidBy = "Ana",
+                    spentAt = hoursAgo(2),
+                ),
+            ),
+        )
+        viewModel.onEvent(AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.TO_RECEIVE))
+        val event = AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.ALL)
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf("lent", "owe"), shownIds())
+        assertFalse(viewModel.uiState.value.filters.isFiltering)
+    }
+
+    @Test
+    fun `GIVEN bills Pierre paid alone with Ana and not at all WHEN picking you paid THEN shows the two he paid`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("alone", spentAt = hoursAgo(1)),
+                    bill(
+                        "together",
+                        spentAt = hoursAgo(2),
+                        payers = listOf("Pierre" to 4_500L, "Ana" to 4_500L),
+                    ),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(3),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.YOU)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("alone", "together"), shownIds())
+            assertEquals(PayerFilter.YOU, viewModel.uiState.value.filters.payer)
+        }
+
+    @Test
+    fun `GIVEN bills Pierre paid alone with Ana and not at all WHEN picking others THEN shows the one he did not`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("alone", spentAt = hoursAgo(1)),
+                    bill(
+                        "together",
+                        spentAt = hoursAgo(2),
+                        payers = listOf("Pierre" to 4_500L, "Ana" to 4_500L),
+                    ),
+                    bill(
+                        "ana",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(3),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.OTHERS)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("ana"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN bills of three days WHEN sorting by oldest THEN lists the days and their bills the oldest first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("today-late", spentAt = hoursAgo(1)),
+                    bill("today-early", spentAt = hoursAgo(2)),
+                    bill("yesterday", spentAt = hoursAgo(20)),
+                    bill("old", spentAt = daysAgo(4)),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.OLDEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                listOf(
+                    RelativeDay.OTHER to listOf("old"),
+                    RelativeDay.YESTERDAY to listOf("yesterday"),
+                    RelativeDay.TODAY to listOf("today-early", "today-late"),
+                ),
+                state.days.map { day -> day.relativeDay to day.bills.map { it.id } },
+            )
+            assertTrue(state.showsDayHeadings)
+            assertFalse(state.filters.isFiltering)
+        }
+
+    @Test
+    fun `GIVEN bills of different totals WHEN sorting by largest THEN one list the largest and newest first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "small",
+                        amountMinor = 800L,
+                        spentAt = hoursAgo(1),
+                    ),
+                    bill(
+                        "mid-new",
+                        amountMinor = 5_000L,
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "mid-old",
+                        amountMinor = 5_000L,
+                        spentAt = daysAgo(3),
+                    ),
+                    bill(
+                        "big",
+                        amountMinor = 12_000L,
+                        spentAt = daysAgo(2),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(1, state.days.size)
+            assertEquals(0L, state.days.single().dayStartMillis)
+            assertEquals(listOf("big", "mid-new", "mid-old", "small"), shownIds())
+            assertFalse(state.showsDayHeadings)
+        }
+
+    @Test
+    fun `GIVEN bills of different totals WHEN sorting by smallest THEN the smallest and newest first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "small",
+                        amountMinor = 800L,
+                        spentAt = hoursAgo(1),
+                    ),
+                    bill(
+                        "mid-new",
+                        amountMinor = 5_000L,
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "mid-old",
+                        amountMinor = 5_000L,
+                        spentAt = daysAgo(3),
+                    ),
+                    bill(
+                        "big",
+                        amountMinor = 12_000L,
+                        spentAt = daysAgo(2),
+                    ),
+                ),
+            )
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.SMALLEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("small", "mid-new", "mid-old", "big"), shownIds())
+            assertEquals(1, viewModel.uiState.value.days.size)
+        }
+
+    @Test
+    fun `GIVEN no bills WHEN sorting by largest THEN lists no day and shows the empty list`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(emptyList(), state.days)
+            assertTrue(state.showsEmpty)
+            assertFalse(state.showsNoResults)
+        }
+
+    @Test
+    fun `GIVEN sorted by largest WHEN a group with no bills is picked THEN lists no day and shows no results`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(bill("market")),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST))
+            val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(emptyList(), state.days)
+            assertTrue(state.showsNoResults)
+            assertFalse(state.showsEmpty)
+        }
+
+    @Test
+    fun `GIVEN a search filters and an order WHEN clearing the filters THEN resets all but the order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(
+                    bill("lent", spentAt = hoursAgo(1)),
+                    bill(
+                        "owe",
+                        paidBy = "Ana",
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "trip",
+                        groupId = "trip",
+                        spentAt = hoursAgo(3),
+                        description = "Barco",
+                    ),
+                ),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnSortPicked(ExpenseSort.OLDEST))
+            viewModel.onEvent(AllExpensesUiEvent.OnQueryChanged("merc"))
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            viewModel.onEvent(AllExpensesUiEvent.OnCategoryToggled(AppCategory.OTHER.key))
+            viewModel.onEvent(AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.TO_RECEIVE))
+            viewModel.onEvent(AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.YOU))
+            val event = AllExpensesUiEvent.OnClearFiltersClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(AllExpensesFilters.none.copy(sort = ExpenseSort.OLDEST), state.filters)
+            assertFalse(state.filters.isFiltering)
+            assertEquals(listOf("trip", "owe", "lent"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking a group THEN reads every bill of the device`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = manyBills(5),
+        )
+        val event = AllExpensesUiEvent.OnGroupToggled("trio")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf(31, Int.MAX_VALUE), expenses.myExpenseLimits)
+    }
+
+    @Test
+    fun `GIVEN All expenses open WHEN sorting by oldest THEN reads every bill of the device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(5),
+            )
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.OLDEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(31, Int.MAX_VALUE), expenses.myExpenseLimits)
+        }
+
+    @Test
+    fun `GIVEN 70 bills whose totals grow with age WHEN sorting by largest THEN shows the 30 largest of every bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = (0 until 70).map { index ->
+                    bill(
+                        "bill-$index",
+                        amountMinor = 100L * (index + 1),
+                        spentAt = now - (index + 1) * 60_000L,
+                    )
+                },
+            )
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals((69 downTo 40).map { "bill-$it" }, shownIds())
+            assertTrue(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN 70 bills of a group WHEN picking it THEN shows 30 and says more are left`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = manyBills(70),
+        )
+        val event = AllExpensesUiEvent.OnGroupToggled("trio")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertEquals(30, shownCount())
+        assertTrue(state.hasMore)
+        assertFalse(state.isLoadingMore)
+    }
+
+    @Test
+    fun `GIVEN exactly 30 bills of a group WHEN picking it THEN shows them all and says none are left`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(30),
+            )
+            val event = AllExpensesUiEvent.OnGroupToggled("trio")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(30, shownCount())
+            assertFalse(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN a group picked with 70 bills WHEN the list reaches its end THEN shows 60 reading nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            val readsBefore = expenses.myExpenseLimits.toList()
+            val event = AllExpensesUiEvent.OnEndReached
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(60, shownCount())
+            assertTrue(state.hasMore)
+            assertFalse(state.isLoadingMore)
+            assertFalse(state.showsMoreSkeleton)
+            assertEquals(readsBefore, expenses.myExpenseLimits)
+        }
+
+    @Test
+    fun `GIVEN a group picked and 60 of 70 shown WHEN the list reaches its end THEN shows 70 and none left`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            viewModel.onEvent(AllExpensesUiEvent.OnEndReached)
+            val event = AllExpensesUiEvent.OnEndReached
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(70, shownCount())
+            assertFalse(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN a group picked and 60 bills shown WHEN picking another group THEN shows the first 30 again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = manyBills(70) + manyBills(70, groupId = "trip"),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            viewModel.onEvent(AllExpensesUiEvent.OnEndReached)
+            val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(30, shownCount())
+            assertTrue(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN a group picked and 60 bills shown WHEN typing a search THEN shows the first 30 again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            viewModel.onEvent(AllExpensesUiEvent.OnEndReached)
+            val event = AllExpensesUiEvent.OnQueryChanged("merc")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(30, shownCount())
+            assertTrue(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN sorted by largest and 60 bills shown WHEN sorting by oldest THEN shows the first 30 again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST))
+            viewModel.onEvent(AllExpensesUiEvent.OnEndReached)
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.OLDEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(30, shownCount())
+        }
+
+    @Test
+    fun `GIVEN a group picked and 60 bills shown WHEN clearing the filters THEN reads a page of the device again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            viewModel.onEvent(AllExpensesUiEvent.OnEndReached)
+            val event = AllExpensesUiEvent.OnClearFiltersClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(31, expenses.myExpenseLimits.last())
+            assertEquals(30, shownCount())
+            assertTrue(state.hasMore)
+            assertFalse(state.isLoadingMore)
+        }
+
+    @Test
+    fun `GIVEN back at the default filters WHEN the list reaches its end THEN asks the device for 61 bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            val event = AllExpensesUiEvent.OnEndReached
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(31, 61), expenses.myExpenseLimits.takeLast(2))
+            assertEquals(60, shownCount())
+        }
+
+    @Test
+    fun `GIVEN every bill still being read WHEN sorting by largest THEN keeps the page shown until they arrive`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = (0 until 70).map { index ->
+                    bill(
+                        "bill-$index",
+                        amountMinor = 100L * (index + 1),
+                        spentAt = now - (index + 1) * 60_000L,
+                    )
+                },
+            )
+            val shownBefore = shownIds()
+            pagesRead.value = false
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(shownBefore, shownIds())
+        }
+
+    @Test
+    fun `GIVEN sorted by largest and 60 bills shown WHEN picking largest again THEN keeps showing 60`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST))
+            viewModel.onEvent(AllExpensesUiEvent.OnEndReached)
+            val readsBefore = expenses.myExpenseLimits.toList()
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(60, shownCount())
+            assertEquals(readsBefore, expenses.myExpenseLimits)
+        }
+
+    @Test
+    fun `GIVEN 60 bills shown at the default WHEN picking all for your share THEN keeps 60 and reads nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnEndReached)
+            val event = AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.ALL)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(31, 61), expenses.myExpenseLimits)
+            assertEquals(60, shownCount())
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking a group THEN tracks the group filter changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnGroupToggled("trio")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(filterChanged("group")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking a category THEN tracks the category filter changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnCategoryToggled(AppCategory.FOOD.key)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(filterChanged("category")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking your share THEN tracks the share filter changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.TO_PAY)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(filterChanged("share")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking who paid THEN tracks the payer filter changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnPayerFilterPicked(PayerFilter.OTHERS)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(filterChanged("payer")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN sorting by smallest THEN tracks the sort changed with it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.SMALLEST)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf("all_expenses_sort_changed" to mapOf<String, Any>("sort" to ExpenseSort.SMALLEST)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a group picked WHEN clearing the filters THEN tracks the filters cleared`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+        trackedEvents.clear()
+        val event = AllExpensesUiEvent.OnClearFiltersClicked
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(listOf("all_expenses_filters_cleared" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN All expenses open WHEN typing a search THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio()),
+            storedExpenses = listOf(bill("market")),
+        )
+        val event = AllExpensesUiEvent.OnQueryChanged("merc")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 
     private val fromAllExpenses: Map<String, Any> = mapOf("source" to "all_expenses")
@@ -972,20 +2107,52 @@ class AllExpensesViewModelTest {
         .flatMap { it.bills }
         .map { it.id }
 
-    // Why: that many bills of Pierre's in the trio, a minute apart, the most recent first.
-    private fun manyBills(count: Int): List<Expense> = (0 until count).map { index ->
-        bill("bill-$index", spentAt = now - (index + 1) * 60_000L)
+    private fun shownCount(): Int = viewModel.uiState.value.days
+        .sumOf { it.bills.size }
+
+    private fun filterChanged(filter: String): Pair<String, Map<String, Any>> =
+        "all_expenses_filter_changed" to mapOf("source" to "all_expenses", "filter" to filter)
+
+    // Why: that many bills of Pierre's in the group, a minute apart, the most recent first.
+    private fun manyBills(
+        count: Int,
+        groupId: String = "trio",
+    ): List<Expense> = (0 until count).map { index ->
+        bill(
+            "$groupId-$index",
+            groupId = groupId,
+            spentAt = now - (index + 1) * 60_000L,
+        )
     }
+
+    // Why: a category created in a group, a main one without parentId.
+    private fun groupCategory(
+        id: String,
+        groupId: String = "trio",
+        parentId: String? = null,
+    ): GroupCategory = GroupCategory(
+        id = id,
+        groupId = groupId,
+        parentId = parentId,
+        name = id,
+        icon = null,
+        color = null,
+        createdByMemberId = null,
+        isDeleted = false,
+        isPending = false,
+    )
 
     // Why: Pierre is this device's user, in a group with Ana and Bruno.
     private fun trio(
         id: String = "trio",
         currency: GroupCurrency = GroupCurrency.BRL,
+        name: String = "Apê 302",
+        color: AvatarColor = AvatarColor.BLUE,
     ): Group = Group(
         id = id,
-        name = "Apê 302",
+        name = name,
         type = GroupType.OTHER,
-        color = AvatarColor.BLUE,
+        color = color,
         shape = GroupShape.SQUARE,
         photo = null,
         currency = currency,
@@ -1012,7 +2179,7 @@ class AllExpensesViewModelTest {
         photoUrl = null,
     )
 
-    // Why: one payer for the whole bill, split over the members given.
+    // Why: one payer for the whole bill unless payers says otherwise, split over the members given.
     private fun bill(
         id: String,
         groupId: String = "trio",
@@ -1020,21 +2187,24 @@ class AllExpensesViewModelTest {
         amountMinor: Long = 9000L,
         splitOver: List<String> = everyone,
         spentAt: Long = daysAgo(5),
+        description: String = "Mercado",
+        categoryId: String? = null,
+        payers: List<Pair<String, Long>> = listOf(paidBy to amountMinor),
     ): Expense = Expense(
         id = id,
         groupId = groupId,
-        description = "Mercado",
+        description = description,
         currency = GroupCurrency.BRL,
         amountMinor = amountMinor,
         splitMode = SplitMode.EQUAL,
-        payers = listOf(ExpensePayer("member-$paidBy", amountMinor)),
+        payers = payers.map { (name, paid) -> ExpensePayer("member-$name", paid) },
         shares = splitOver.map { ExpenseShare("member-$it", amountMinor / splitOver.size, 1L) },
         spentAt = spentAt,
         isPending = false,
         updatedAt = spentAt,
         updatedByMemberId = null,
         items = null,
-        categoryId = null,
+        categoryId = categoryId,
     )
 
     private fun TestScope.prepareScenario(
@@ -1043,6 +2213,7 @@ class AllExpensesViewModelTest {
         myMemberIds: Set<String>? = null,
         billsRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
+        storedCategories: List<GroupCategory> = emptyList(),
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses.inCurrencyOf(storedGroups)).also {
@@ -1062,7 +2233,7 @@ class AllExpensesViewModelTest {
                 pagesRead.filter { it }.flatMapLatest { page }
             },
             observeGroups = ObserveGroupsUseCase(groups),
-            observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository()),
+            observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository(storedCategories)),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             currentTimeMillis = CurrentTimeMillis { clockMillis },
             currentTimeZone = CurrentTimeZone { TimeZone.UTC },

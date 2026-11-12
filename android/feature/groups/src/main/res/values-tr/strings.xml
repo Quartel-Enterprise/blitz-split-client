@@ -180,5 +180,23 @@
     <string name="groups_all_expenses_title">Tüm harcamalar</string>
     <string name="groups_all_expenses_empty_title">Henüz harcama yok</string>
     <string name="groups_all_expenses_empty_body">Herhangi bir grupta ödediğin veya dahil olduğun harcamalar burada görünür.</string>
-    <string name="groups_all_expenses_back">Geri</string>
+    <string name="groups_all_expenses_search">Harcama ara</string>
+    <string name="groups_all_expenses_group">Grup</string>
+    <string name="groups_all_expenses_category">Kategori</string>
+    <string name="groups_all_expenses_share">Payın</string>
+    <string name="groups_all_expenses_share_all">Hepsi</string>
+    <string name="groups_all_expenses_share_receive">Alacağın</string>
+    <string name="groups_all_expenses_share_pay">Borçlusun</string>
+    <string name="groups_all_expenses_payer">Kim ödedi</string>
+    <string name="groups_all_expenses_payer_all">Herkes</string>
+    <string name="groups_all_expenses_payer_you">Sen ödedin</string>
+    <string name="groups_all_expenses_payer_others">Başkaları ödedi</string>
+    <string name="groups_all_expenses_sort_newest">En yeni</string>
+    <string name="groups_all_expenses_sort_oldest">En eski</string>
+    <string name="groups_all_expenses_sort_largest">En yüksek tutar</string>
+    <string name="groups_all_expenses_sort_smallest">En düşük tutar</string>
+    <string name="groups_all_expenses_sort">Sırala</string>
+    <string name="groups_all_expenses_clear">Filtreleri temizle</string>
+    <string name="groups_all_expenses_no_results_title">Eşleşen harcama yok</string>
+    <string name="groups_all_expenses_no_results_body">Başka kelimeler dene veya filtreleri temizle.</string>
 </resources>

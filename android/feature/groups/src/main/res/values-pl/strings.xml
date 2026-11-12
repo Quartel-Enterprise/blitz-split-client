@@ -198,5 +198,23 @@
     <string name="groups_all_expenses_title">Wszystkie wydatki</string>
     <string name="groups_all_expenses_empty_title">Nie ma jeszcze wydatków</string>
     <string name="groups_all_expenses_empty_body">Tu pojawią się rachunki z każdej grupy, które opłacasz lub w których bierzesz udział.</string>
-    <string name="groups_all_expenses_back">Wstecz</string>
+    <string name="groups_all_expenses_search">Szukaj wydatków</string>
+    <string name="groups_all_expenses_group">Grupa</string>
+    <string name="groups_all_expenses_category">Kategoria</string>
+    <string name="groups_all_expenses_share">Twój udział</string>
+    <string name="groups_all_expenses_share_all">Dowolny</string>
+    <string name="groups_all_expenses_share_receive">Do odzyskania</string>
+    <string name="groups_all_expenses_share_pay">Jesteś winien</string>
+    <string name="groups_all_expenses_payer">Kto zapłacił</string>
+    <string name="groups_all_expenses_payer_all">Ktokolwiek</string>
+    <string name="groups_all_expenses_payer_you">Ty zapłaciłeś</string>
+    <string name="groups_all_expenses_payer_others">Zapłacili inni</string>
+    <string name="groups_all_expenses_sort_newest">Najnowsze</string>
+    <string name="groups_all_expenses_sort_oldest">Najstarsze</string>
+    <string name="groups_all_expenses_sort_largest">Najwyższa kwota</string>
+    <string name="groups_all_expenses_sort_smallest">Najniższa kwota</string>
+    <string name="groups_all_expenses_sort">Sortuj</string>
+    <string name="groups_all_expenses_clear">Wyczyść filtry</string>
+    <string name="groups_all_expenses_no_results_title">Brak pasujących wydatków</string>
+    <string name="groups_all_expenses_no_results_body">Spróbuj innych słów lub wyczyść filtry.</string>
 </resources>

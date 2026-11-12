@@ -190,7 +190,7 @@ private fun HomeCoverPreview() {
     }
 }
 
-private fun buildHomePreviewState(): HomeUiState = HomeUiState(
+internal fun buildHomePreviewState(): HomeUiState = HomeUiState(
     displayName = "Pierre",
     avatarInitial = "P",
     avatarColor = AvatarColor.BLUE,

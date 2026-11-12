@@ -27,6 +27,14 @@ final class AllExpensesModel {
         (holder.viewModel.uiState.value as? AllExpensesUiState) ?? state
     }
 
+    /// The search field's text, which finds bills by their description as the home's search does.
+    var query: Binding<String> {
+        Binding(
+            get: { self.current.filters.query },
+            set: { self.send(AllExpensesUiEventOnQueryChanged(query: $0)) },
+        )
+    }
+
     func send(_ event: any AllExpensesUiEvent) {
         holder.viewModel.onEvent(event: event)
     }
@@ -55,6 +63,7 @@ struct AllExpensesView: View {
                 .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
+        .searchable(text: model?.query ?? .constant(""), prompt: Text("Search expenses"))
         .navigationTitle(Text("All expenses"))
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
@@ -85,16 +94,31 @@ struct AllExpensesView: View {
         } else {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
+                    AllExpensesFilterBar(state: model.state, send: model.send)
+                        .padding(.horizontal, -16)
+                    if model.state.showsNoResults {
+                        ContentUnavailableView {
+                            Label("No expenses match", systemImage: "magnifyingglass")
+                        } description: {
+                            Text("Try other words or clear the filters.")
+                        } actions: {
+                            Button("Clear filters") { model.send(AllExpensesUiEventOnClearFiltersClicked.shared) }
+                        }
+                    }
                     ForEach(model.state.days, id: \.dayStartMillis) { day in
-                        Text(verbatim: ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay))
-                            .font(.footnote)
-                            .textCase(.uppercase)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 20)
-                            .padding(.top, 14)
-                            .padding(.bottom, 6)
-                            .accessibilityAddTraits(.isHeader)
+                        // Sorted by amount the bills read as one list, with no day over them
+                        if model.state.showsDayHeadings {
+                            Text(verbatim: ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay))
+                                .font(.footnote)
+                                .textCase(.uppercase)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 20)
+                                .padding(.top, 14)
+                                .padding(.bottom, 6)
+                                .accessibilityAddTraits(.isHeader)
+                        }
                         dayCard(day, model: model)
+                            .padding(.top, model.state.showsDayHeadings ? 0 : 12)
                     }
                     if model.state.showsMoreSkeleton {
                         ShimmerList(count: 2, leading: .badge)

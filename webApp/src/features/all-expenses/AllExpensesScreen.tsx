@@ -1,4 +1,4 @@
-import { ArrowLeft, ReceiptText } from 'lucide-react'
+import { ArrowLeft, ReceiptText, SearchX } from 'lucide-react'
 import { AllExpensesPresenter, type JsAllExpensesState } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { pageContentClass } from '@/components/HomeShell'
@@ -9,6 +9,7 @@ import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { HomeBillListRow } from '@/features/home/HomeSections'
 import { useEndReached } from '@/hooks/useEndReached'
+import { AllExpensesFilterBar } from './AllExpensesFilterBar'
 import { t } from '@/i18n'
 import { formatDayLabel } from '@/lib/dates'
 import { cn } from '@/lib/utils'
@@ -42,6 +43,7 @@ export function AllExpensesScreen() {
           </Button>
           <h1 className="text-2xl font-semibold tracking-tight">{t('allExpenses_title')}</h1>
         </div>
+        {!state.showsSkeleton && <AllExpensesFilterBar presenter={presenter} state={state} />}
         {state.showsSkeleton && (
           <LoadingRegion isDelayed={false}>
             <SkeletonRows count={6} leading="square" hasTrailing className="rounded-lg border bg-card" />
@@ -56,12 +58,25 @@ export function AllExpensesScreen() {
             <p className="max-w-[420px] text-sm text-muted-foreground">{t('allExpenses_emptyBody')}</p>
           </section>
         )}
+        {state.showsNoResults && (
+          <section className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-10 text-center">
+            <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <SearchX className="size-5" />
+            </span>
+            <h2 className="text-base font-semibold">{t('allExpenses_noResultsTitle')}</h2>
+            <p className="max-w-[420px] text-sm text-muted-foreground">{t('allExpenses_noResultsBody')}</p>
+            <Button variant="outline" className="mt-2" onClick={() => presenter.clearFilters()}>
+              {t('allExpenses_clear')}
+            </Button>
+          </section>
+        )}
         {!state.showsSkeleton &&
           Array.from(state.days).map((day) => {
-            const label = formatDayLabel(day.dayStartMillis, day.relativeDay)
+            // Why: sorted by amount the bills read as one list, with no day over them.
+            const label = state.showsDayHeadings ? formatDayLabel(day.dayStartMillis, day.relativeDay) : t('allExpenses_title')
             return (
               <section key={day.dayStartMillis} aria-label={label} className="flex flex-col gap-1.5">
-                <h2 className="px-1 text-[13px] font-medium text-muted-foreground">{label}</h2>
+                {state.showsDayHeadings && <h2 className="px-1 text-[13px] font-medium text-muted-foreground">{label}</h2>}
                 <ul className="divide-y overflow-hidden rounded-lg border bg-card">
                   {Array.from(day.bills).map((bill) => (
                     <HomeBillListRow key={bill.id} bill={bill} menu={presenter.billMenu} onOpen={() => presenter.openBill(bill.groupId, bill.id)} />

@@ -4,9 +4,9 @@ The feed, unread state, real time and push notifications.
 
   - "Activity" (page 12, `Route.Activity`, `ActivityViewModel`) is every group's feed and the notification center. It
     is no tab (Pierre's call: the room it left in the tab bar is iOS's search tab): a bell in Home's bar, beside the
-    profile, opens it over Home on every platform (`HomeUiEvent.OnActivityClicked`, `activity_bell_clicked`), as do
-    Home's "See all" over "Latest expenses" (with the Bills type already picked, as a removable chip:
-    `Route.Activity.showsBillsOnly`) and a push notification; back returns to Home. It has a back button and
+    profile, opens it over Home on every platform (`HomeUiEvent.OnActivityClicked`, `activity_bell_clicked`), as does
+    a push notification (Home's "See all" over "Latest expenses" opens "All expenses" now, [home-tab.md](home-tab.md);
+    `Route.Activity.showsBillsOnly`, which it opened Activity with, has no opener left); back returns to Home. It has a back button and
     neither the tabs, the profile nor the search of its own (on the web, the home's frame around it, the tab it sits
     over selected and its Search going back to that tab, and on the phone its own bar with back). Its bar's
     "Notification settings" (`ActivityUiEvent.OnNotificationSettingsClicked`, `activity_notification_settings_clicked`)

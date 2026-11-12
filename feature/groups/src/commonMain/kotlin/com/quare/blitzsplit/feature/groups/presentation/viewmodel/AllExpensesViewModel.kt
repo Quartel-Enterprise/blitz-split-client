@@ -188,14 +188,22 @@ class AllExpensesViewModel(
         )
         val window = bills.device.windowSize
         // Why: the filters just left their default and every bill is on its way; a window narrowed would show too few.
-        if (window != null && !picked.isDefault) return
+        if (window != null && !picked.isDefault) {
+            // Why: what was picked shows picked at once, the rows staying until every bill is read.
+            uiState.update { it.copy(filters = picked) }
+            return
+        }
         val mine = myExpensesOf(bills.device.expenses, bills.groups)
         val narrowed = if (window != null) mine.take(window) else narrowedOf(mine, picked, bills.categories)
         val shown = if (window != null) narrowed else narrowed.take(requested)
         val dated = homeBillsOf(shown, bills.categories)
         uiState.update {
             it.copy(
-                days = if (picked.sort.isByDate) billDaysOf(dated, clock) else listOf(undatedDayOf(dated)),
+                days = when {
+                    picked.sort.isByDate -> billDaysOf(dated, clock)
+                    dated.isEmpty() -> emptyList()
+                    else -> listOf(undatedDayOf(dated))
+                },
                 filters = picked,
                 groupOptions = groupOptionsOf(bills.groups),
                 categoryOptions = bills.categories.branches.map { branch -> branch.category },
