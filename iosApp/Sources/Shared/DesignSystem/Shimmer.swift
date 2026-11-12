@@ -126,7 +126,7 @@ struct ShimmerRow: View {
             case .circle:
                 ShimmerCircle(size: leadingSize)
             case .badge:
-                ShimmerBlock(width: leadingSize, height: leadingSize, cornerRadius: leadingSize * 0.32)
+                ShimmerBlock(width: leadingSize, height: leadingSize, cornerRadius: leadingSize * GroupAvatar.cornerRatio)
             case .none:
                 EmptyView()
             }

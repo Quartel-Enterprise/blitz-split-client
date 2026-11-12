@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
+import { GROUP_SHAPE } from '@/lib/avatar'
 
 /** A profile's photo shows in a circle, a group's in the rounded square of `GroupAvatar`. */
 export type PhotoCropFrame = 'circle' | 'rounded-square'
@@ -127,7 +128,7 @@ function PhotoCropArea({ crop, presenter, frame }: { crop: JsPhotoCropState; pre
             aria-hidden
             className={cn(
               'pointer-events-none absolute top-1/2 left-1/2 border-2 border-white/90 shadow-[0_0_0_9999px_rgba(11,11,15,0.72)]',
-              frame === 'circle' ? 'rounded-full' : 'rounded-[32%]',
+              frame === 'circle' ? 'rounded-full' : GROUP_SHAPE,
             )}
             style={{ width: side, height: side, marginLeft: -side / 2, marginTop: -side / 2 }}
           />

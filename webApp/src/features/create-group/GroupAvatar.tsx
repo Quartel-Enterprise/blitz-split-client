@@ -1,4 +1,4 @@
-import { avatarStyle } from '@/lib/avatar'
+import { avatarStyle, GROUP_SHAPE } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
 /**
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
  */
 export function GroupAvatar({ initials, color, photoUrl, className }: { initials: string; color: string; photoUrl?: string | null; className?: string }) {
   return (
-    <span aria-hidden style={avatarStyle(color)} className={cn('avatar relative flex shrink-0 items-center justify-center overflow-hidden rounded-[32%] font-extrabold', className)}>
+    <span aria-hidden style={avatarStyle(color)} className={cn('avatar relative flex shrink-0 items-center justify-center overflow-hidden font-extrabold', GROUP_SHAPE, className)}>
       {initials}
       {photoUrl && (
         <img

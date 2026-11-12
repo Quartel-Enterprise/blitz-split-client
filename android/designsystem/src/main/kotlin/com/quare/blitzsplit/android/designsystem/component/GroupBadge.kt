@@ -15,7 +15,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.quare.blitzsplit.android.designsystem.R
@@ -64,10 +63,13 @@ fun GroupBadge(
 }
 
 /*
- * Why: a group's rounded square. The corners are 16 dp from the default size up and a third of the side below it, so
- * the small badges of the lists stay squares instead of turning into circles.
+ * Why: the group photo viewer's square (16 dp corners on its 200 dp side) at every size, so a group reads as the same
+ * square in a list row, the group's header and the photo opened big (beta feedback of 2026-11-12, Pierre's call).
  */
-fun groupShapeOf(size: Dp): Shape = RoundedCornerShape(min(16.dp, size / 3))
+const val GROUP_CORNER_RATIO = 0.08f
+
+// Why: a group's rounded square, its corners GROUP_CORNER_RATIO of its side.
+fun groupShapeOf(size: Dp): Shape = RoundedCornerShape(size * GROUP_CORNER_RATIO)
 
 // Why: Atividade still names a "Forma" an older Android build changed.
 @get:StringRes

@@ -339,7 +339,7 @@ function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presente
                 )}
               >
                 <span className="flex min-w-0 flex-1 items-center gap-2.5">
-                  <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-6 rounded-md text-[10px]" />
+                  <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-6 text-[10px]" />
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{group.name}</span>
                     <span className="text-xs text-muted-foreground @md:hidden">{netWord(group.amountMinor)}</span>

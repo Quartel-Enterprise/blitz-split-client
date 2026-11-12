@@ -420,7 +420,7 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
                   onClick={() => presenter.openGroup(group.groupId)}
                   className="-mx-1 flex min-w-0 items-center gap-2.5 rounded-md px-1 py-1 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
-                  <GroupAvatar initials={group.initials} color={group.color} className="size-6 shrink-0 rounded-md text-[10px]" />
+                  <GroupAvatar initials={group.initials} color={group.color} className="size-6 shrink-0 text-[10px]" />
                   <span className="truncate">{group.name}</span>
                 </button>
                 {group.isSimplified && <SimplifiedBadge className="mb-1.5 ml-[34px]" />}

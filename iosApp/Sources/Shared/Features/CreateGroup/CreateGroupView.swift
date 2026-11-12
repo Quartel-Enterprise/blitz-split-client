@@ -378,6 +378,15 @@ private struct MemberRow: View {
 /// group never reads as a person's circle. Only Android draws the group's shape. The initials stay under
 /// the photo, so they show while it loads or when it fails to.
 struct GroupAvatar: View {
+    /// The group photo viewer's square (16 pt corners on its 200 pt side) at every size, so a group reads as the
+    /// same square in a list row, the group's header and the photo opened big (beta feedback of 2026-11-12).
+    static let cornerRatio: CGFloat = 0.08
+
+    /// A group's rounded square for a side of `size`.
+    static func shape(size: CGFloat) -> RoundedRectangle {
+        RoundedRectangle(cornerRadius: size * cornerRatio, style: .continuous)
+    }
+
     let initials: String
     let color: AvatarColor
     var photoUrl: String?
@@ -391,7 +400,7 @@ struct GroupAvatar: View {
     }
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: size * 0.32)
+        let shape = Self.shape(size: size)
         Text(verbatim: initials)
             .font(.system(size: size * 0.32, weight: .heavy))
             .foregroundStyle(color.content)
