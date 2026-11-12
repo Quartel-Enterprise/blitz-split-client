@@ -977,7 +977,7 @@ class GroupDaoTest {
     }
 
     @Test
-    fun `GIVEN a group WHEN saving its default split THEN only the split and the incomes change`() = runTest {
+    fun `GIVEN a group WHEN saving its default split THEN only the split changes`() = runTest {
         // Given
         prepareScenario(stored = entity(updatedAt = 5L))
 
@@ -985,14 +985,12 @@ class GroupDaoTest {
         dao.updateDefaultSplit(
             id = "group-1",
             defaultSplit = SHARES_JSON,
-            splitIncomes = INCOMES_JSON,
             updatedAt = 3L,
         )
 
         // Then
         val group = dao.observeGroups().first().single()
         assertEquals(SHARES_JSON, group.defaultSplit)
-        assertEquals(INCOMES_JSON, dao.getSplitIncomes("group-1"))
         assertEquals("Viagem Floripa", group.name)
         assertEquals(6L, group.updatedAt)
         assertTrue(group.pendingSync)

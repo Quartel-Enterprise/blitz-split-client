@@ -44,6 +44,12 @@ internal suspend fun SaveSplitAsDefault.saveOf(state: SplitBillUiState) {
         categoryId = asDefault.exceptionCategoryId,
         mode = mode,
         weights = state.split.entries.associate { it.memberId to it.value },
-        incomes = if (state.split.mode == SplitMode.INCOME) state.split.incomesIn(state.incomes.currency) else emptyMap(),
+        incomes = if (state.split.mode ==
+            SplitMode.INCOME
+        ) {
+            state.split.toGroupIncomes(state.incomes.currency)
+        } else {
+            emptyMap()
+        },
     )
 }

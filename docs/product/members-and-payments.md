@@ -152,8 +152,15 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     the hinge as every dialog). It sets
     how the group's new bills split: Equal (who is in it, everyone by default), Shares, Percentage
     (whole numbers adding up to 100, else "It adds up to 90%. 10% missing." and Save disabled) or By income, whose
-    incomes stay on the device that typed them (`split_group.splitIncomes`, never synced): the group keeps only the
-    percentages they give (`IncomePercents`). A new bill's Split may also save its split as the default or its
+    incomes are the group's (Pierre's call): each member's income syncs to the group's members, prefilled on any of
+    their devices (`group_member_income`, the server's `group_member_incomes`, Last-Write-Wins per member), and "The
+    group's members see these incomes and can split bills by them." says so under them. The default keeps the
+    percentages they give (`IncomePercents`); saving By income saves the incomes typed, a blank one removing that
+    person's, and saving another way leaves them as they are, for a bill's By income (in
+    [split-bill.md](split-bill.md)). The incomes are in minor units of the group's currency and only their ratio counts.
+    When the saved percentages are no longer what the incomes give (an older version's save), the screen shows the
+    percentages. Incomes an older version kept on one device (`split_group.splitIncomes`) became that device's rows
+    once, waiting to go up (Room 45, `GroupIncomesMigrationSpec`). A new bill's Split may also save its split as the default or its
     category's exception ("Use as the group default", in [split-bill.md](split-bill.md)). "On a R$ 100 bill: Pierre R$ 75 ·
     Ana R$ 25" with the bar in each one's color is always in sight, the cents as Split a bill shares them (Equal's
     example is the first round bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,

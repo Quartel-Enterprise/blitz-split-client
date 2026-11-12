@@ -49,7 +49,7 @@
     <string name="default_split_list_shares">Partes de cada um</string>
     <string name="default_split_list_percent">Porcentagem de cada um</string>
     <string name="default_split_list_income">Renda de cada um</string>
-    <string name="default_split_income_note">As rendas ficam só neste aparelho. O grupo vê só as porcentagens.</string>
+    <string name="default_split_income_note">Quem está no grupo vê essas rendas e pode dividir contas por elas.</string>
     <string name="default_split_parts_of">Partes de %s</string>
     <string name="default_split_percent_of">Porcentagem de %s</string>
     <string name="default_split_income_of">Renda de %s</string>

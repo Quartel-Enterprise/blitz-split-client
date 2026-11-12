@@ -34,11 +34,13 @@ class JsSplitRow(
     val valueText: String,
     val parts: Double,
     val shareMinor: Double?,
+    // Why: By income's percentage the income gives, shown beside the share; null in any other mode.
+    val incomePercent: Double?,
 )
 
 // Why: amounts in the currency's minor unit, as numbers JavaScript reads exactly.
 class JsSplitEditor(
-    // Why: the SplitMode's code: "equal", "amount", "percent", "shares" or "items".
+    // Why: the SplitMode's code: "equal", "amount", "percent", "shares", "items" or "income".
     val mode: String,
     val rows: Array<JsSplitRow>,
     val totalMinor: Double,
@@ -554,17 +556,25 @@ internal fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
     hasJoined = person.hasJoined,
 )
 
-private fun toJsSplitRow(row: SplitRow): JsSplitRow = JsSplitRow(
+private fun toJsSplitRow(
+    row: SplitRow,
+    incomePercent: Long?,
+): JsSplitRow = JsSplitRow(
     person = toJsBillPerson(row.person),
     isIncluded = row.isIncluded,
     valueText = row.valueText,
     parts = row.parts.toDouble(),
     shareMinor = row.shareMinor?.toDouble(),
+    incomePercent = incomePercent?.toDouble(),
 )
 
 private fun toJsSplitEditor(editor: SplitEditor): JsSplitEditor = JsSplitEditor(
     mode = editor.mode.code,
-    rows = editor.rows.map(::toJsSplitRow).toTypedArray(),
+    rows = editor.rows
+        .map { row ->
+            val percent = editor.entries.firstOrNull { it.memberId == row.person.id }?.value
+            toJsSplitRow(row, percent?.takeIf { editor.mode == SplitMode.INCOME })
+        }.toTypedArray(),
     totalMinor = editor.totalMinor.toDouble(),
     addsUp = editor.addsUp,
     included = editor.included.map(::toJsBillPerson).toTypedArray(),

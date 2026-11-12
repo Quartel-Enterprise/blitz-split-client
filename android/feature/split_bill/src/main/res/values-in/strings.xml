@@ -315,4 +315,12 @@
     <string name="split_bill_as_default_body">Tagihan baru di grup ini akan dimulai dengan cara ini setelah tagihan ini disimpan.</string>
     <string name="split_bill_new_group_default">Menjadi default grup</string>
     <string name="split_bill_new_group_exception">Menjadi pengecualian grup untuk %s</string>
+    <string name="split_bill_mode_income">Sesuai penghasilan</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="other">Sesuai penghasilan untuk %d orang</item>
+    </plurals>
+    <string name="split_bill_hint_income">Bagian masing-masing sesuai penghasilannya. Penghasilan ini milik grup; mengubahnya di sini hanya berlaku untuk tagihan ini.</string>
+    <string name="split_bill_list_income">Penghasilan masing-masing</string>
+    <string name="split_bill_person_income">Penghasilan %s</string>
+    <string name="split_bill_default_now_income">sesuai penghasilan</string>
 </resources>

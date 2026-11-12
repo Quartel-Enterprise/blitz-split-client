@@ -49,7 +49,7 @@
     <string name="default_split_list_shares">Each one\'s shares</string>
     <string name="default_split_list_percent">Each one\'s percentage</string>
     <string name="default_split_list_income">Each one\'s income</string>
-    <string name="default_split_income_note">Incomes stay on this device only. The group sees only the percentages.</string>
+    <string name="default_split_income_note">The group\'s members see these incomes and can split bills by them.</string>
     <string name="default_split_parts_of">%s\'s shares</string>
     <string name="default_split_percent_of">%s\'s percentage</string>
     <string name="default_split_income_of">%s\'s income</string>

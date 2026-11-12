@@ -54,6 +54,7 @@ granted to `anon` and called without an account goes in the plugin's list too.
 | `SupabaseProfileRemoteDataSource` | the `profiles` table (Postgrest) |
 | `SupabasePaymentKeyRemoteDataSource` | the `payment_keys` table (Postgrest): the Pix and Bitcoin keys of the profile, and those of everyone the user shares a group with ("Pagar Ana") |
 | `SupabaseGroupRemoteDataSource` | the `groups` and `group_members` tables (Postgrest): the groups the user created or joined, and their members; the `get_invite` and `join_group` functions of the invite link; the `leave_group` and `delete_group` functions and the `removed_groups` table |
+| `SupabaseGroupIncomeRemoteDataSource` | the `group_member_incomes` table (Postgrest): each member's income for "By income" in the user's groups |
 | `SupabaseExpenseRemoteDataSource` | the `expenses` table (Postgrest): the bills of the user's groups, with their payers and shares as jsonb |
 | `SupabaseSettlementRemoteDataSource` | the `settlements` table (Postgrest): the payments recorded in the user's groups |
 | `SupabaseBillCommentRemoteDataSource` | the `bill_comments` table (Postgrest): the comments on the bills of the user's groups |
@@ -430,6 +431,17 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   `deleteGoneFromServer`; deleting one is a tombstone (`isDeleted`, its subcategories too) the server keeps deleted,
   and its bills keep the id: `CategoryTree.resolve` reads them as its parent or "Outros", so a delete never rewrites
   any bill. Its pending flag and versions join the bills' and payments' in `observePendingMoneyVersions`.
+- **Members' incomes** (`:core:groups`, `GroupIncomeRepository`): the incomes of "By income" (Default split's way
+  and a bill's Split mode), one Last-Write-Wins row per member (`group_member_income`, keyed by member id, the
+  server's `group_member_incomes`), belonging to its group with the same `ON DELETE CASCADE`; 0 is an income removed,
+  so there is no tombstone. Any member writes any member's income, as themselves (`updated_by`); the server sets
+  `group_id` from the member, so its row level security checks the real group. Saving writes only the incomes that
+  changed, stamped `MAX(now, updatedAt + 1)`. They sync after the groups and their members, apart from the money like
+  the pins (a failure never holds the bills back), down then up, with `deleteGoneFromServer` for a member the server
+  dropped (a guest merged into an account); the real-time pull of a group brings them with its rows
+  (`RemotePuller.downloadGroup`), and their pending flag and versions queue a sync like a bill's. Until Room 45 they
+  stayed on the device that typed them (`split_group.splitIncomes`); `GroupIncomesMigrationSpec` turned each one of
+  a member still in its group into a pending row, so they go up once, and left the column null.
 - **Category map** (`:core:expenses`): each person's changes to the app's 60 terms (`category_term`, one row per
   folded word, `category_terms` keyed by user and word on the server), owned like the payment keys
   (`ownerUserId`, claimed by the first sync, dropped on a switch, cleared on sign out). A null category is a term

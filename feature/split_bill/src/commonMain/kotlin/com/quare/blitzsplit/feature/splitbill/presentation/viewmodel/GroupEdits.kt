@@ -9,12 +9,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupIncomes
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
@@ -22,6 +23,12 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 
 // Why: nothing is drawn until Room is read; a bill is spent now, which is today.
 internal fun createInitialBillState(
@@ -317,4 +324,19 @@ internal fun SplitBillUiState.withGroupShown(
         ),
         isLoaded = true,
     )
+}
+
+/*
+ * Why: the group's incomes for "By income", read with each group the form shows into the state, so a default by income
+ * opens on them at once; in that group's currency. Read per group, so another group's incomes never re-send one gone.
+ */
+internal fun Flow<Group?>.withIncomesInto(
+    state: MutableStateFlow<SplitBillUiState>,
+    observeGroupIncomes: ObserveGroupIncomes,
+): Flow<Group?> = flatMapLatest { group ->
+    val incomes = group?.let { observeGroupIncomes(it.id) } ?: flowOf(emptyMap())
+    incomes.map { byMemberId ->
+        state.update { it.copy(incomes = BillIncomes(byMemberId, group?.currency ?: it.incomes.currency)) }
+        group
+    }
 }

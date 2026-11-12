@@ -365,4 +365,14 @@
     <string name="split_bill_as_default_body">Los gastos nuevos del grupo empezarán así una vez que se guarde este.</string>
     <string name="split_bill_new_group_default">Pasa a ser la predeterminada del grupo</string>
     <string name="split_bill_new_group_exception">Pasa a ser la excepción del grupo para %s</string>
+    <string name="split_bill_mode_income">Por ingresos</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="one">Por ingresos entre %d</item>
+        <item quantity="many">Por ingresos entre %d</item>
+        <item quantity="other">Por ingresos entre %d</item>
+    </plurals>
+    <string name="split_bill_hint_income">La parte de cada uno sigue sus ingresos. Los ingresos son del grupo; cambiarlos aquí solo vale para este gasto.</string>
+    <string name="split_bill_list_income">Los ingresos de cada uno</string>
+    <string name="split_bill_person_income">Ingresos de %s</string>
+    <string name="split_bill_default_now_income">por ingresos</string>
 </resources>

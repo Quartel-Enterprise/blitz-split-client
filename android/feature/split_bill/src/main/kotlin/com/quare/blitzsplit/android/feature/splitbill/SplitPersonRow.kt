@@ -65,6 +65,8 @@ private val percentFieldWidth = 88.dp
 internal fun SplitPersonRow(
     row: SplitRow,
     mode: SplitMode,
+    // Why: By income's percentage the income gives, beside the share; null in any other mode.
+    incomePercent: Long?,
     isIn: Boolean,
     // Why: "Pagou a conta", or "Pagou parte da conta" for one of several payers; null for whoever didn't pay.
     @StringRes paidLabel: Int?,
@@ -144,7 +146,9 @@ internal fun SplitPersonRow(
                         paidLabel = paidLabel,
                         isWithoutValue = isWithoutValue,
                         money = money,
-                    ),
+                    ).let { subtitle ->
+                        if (incomePercent != null && row.shareMinor != null) "$subtitle · $incomePercent%" else subtitle
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isWithoutValue) {
                         MaterialTheme.colorScheme.error
@@ -168,6 +172,17 @@ internal fun SplitPersonRow(
                     prefix = money.symbol,
                     suffix = null,
                     isError = isWithoutValue,
+                    width = amountFieldWidth,
+                )
+
+                SplitMode.INCOME -> CompactNumberField(
+                    value = row.valueText,
+                    onValueChange = { onEvent(SplitBillUiEvent.OnPersonValueChanged(row.person.id, it)) },
+                    label = stringResource(R.string.split_bill_person_income, name),
+                    placeholder = money.zeroPlaceholder,
+                    prefix = money.symbol,
+                    suffix = null,
+                    isError = false,
                     width = amountFieldWidth,
                 )
 
@@ -218,7 +233,7 @@ private fun rowSubtitleOf(
         },
     )
 
-    SplitMode.PERCENT, SplitMode.SHARES, SplitMode.ITEMS -> row.shareMinor?.let(money::toText)
+    SplitMode.PERCENT, SplitMode.SHARES, SplitMode.ITEMS, SplitMode.INCOME -> row.shareMinor?.let(money::toText)
         ?: stringResource(if (isIn) R.string.split_bill_no_share else R.string.split_bill_row_out)
 }
 

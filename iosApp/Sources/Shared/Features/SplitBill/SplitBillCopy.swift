@@ -4,7 +4,7 @@ import SwiftUI
 /// The words of "Split a bill" and "Split", composed from the state: the shared code hands over people, modes and
 /// amounts, and each platform writes its own sentences.
 enum SplitBillCopy {
-    static let modes: [SplitMode] = [.equal, .amount, .percent, .shares, .items]
+    static let modes: [SplitMode] = [.equal, .amount, .percent, .shares, .items, .income]
 
     /// "Split" names both the bill's row ("Divisão") and the screen that edits it ("Dividir"): the screen's title
     /// has a key of its own.
@@ -26,6 +26,7 @@ enum SplitBillCopy {
         case .percent: Text(verbatim: "%")
         case .shares: Text("Shares")
         case .items: Text("Items")
+        case .income: Text("By income")
         default: Text("Equal")
         }
     }
@@ -37,6 +38,7 @@ enum SplitBillCopy {
         case .percent: String(localized: "By percentage", bundle: .appLanguage)
         case .shares: String(localized: "By shares", bundle: .appLanguage)
         case .items: String(localized: "By items", bundle: .appLanguage)
+        case .income: String(localized: "By income", bundle: .appLanguage)
         default: String(localized: "Equally", bundle: .appLanguage)
         }
     }
@@ -48,12 +50,20 @@ enum SplitBillCopy {
         case .percent: "Each one's percentage"
         case .shares: "Each one's shares"
         case .items: "How much each one had"
+        case .income: "Each one's income"
         default: "Who's in"
         }
     }
 
     /// Under the modes: what the mode does, or where the group's default split lives once there is one.
     static func hint(_ editor: SplitEditor, state: SplitBillUiState) -> String {
+        // Why: By income's hint says its incomes are the group's, which outweighs where the default is.
+        if editor.mode == .income {
+            return String(
+                localized: "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill.",
+                bundle: .appLanguage,
+            )
+        }
         if state.defaultSplit != nil {
             return String(
                 localized: "The default lives in Edit group › Default split. Bills already added don't change.",
@@ -342,6 +352,11 @@ enum SplitBillCopy {
         case .percent, .shares, .items:
             if isOut { return (String(localized: "Out", bundle: .appLanguage), false) }
             return (share ?? "—", false)
+        case .income:
+            if isOut { return (String(localized: "Out", bundle: .appLanguage), false) }
+            let percent = editor.entries.first { $0.memberId == person.id }.map { SplitBillCopy.percent($0.value) }
+            guard let share else { return ("—", false) }
+            return (percent.map { "\(share) · \($0)" } ?? share, false)
         default:
             if isPayer { return (paid, false) }
             return (row.isIncluded ? String(localized: "In", bundle: .appLanguage) : String(

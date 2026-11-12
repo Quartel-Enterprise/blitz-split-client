@@ -371,7 +371,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_split_clicked` | none | "Split", which opens Split | `:feature:split_bill` |
 | `receipt_source_picked` | `source` (`camera`, `photos`, `files`) | A pick on the choice "Scan receipt" opens: "Take photo", "Choose from gallery" (Android) or "Choose from Photos" (Apple), "Choose file" (Android) or "Choose File…" (Apple), or "Choose photo" (web); not sent where no camera leaves anything to choose; Home's shortcut asks the same | `:feature:split_bill`, `:feature:groups` |
 | `receipt_items_clicked` | none | "14 items" beside "Read from the receipt", which opens Items, while the receipt's items are there in the bill's currency | `:feature:split_bill` |
-| `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`) | Equal, Amounts, %, Shares or Items, another than the one picked | `:feature:split_bill` |
+| `split_bill_split_mode_selected` | `mode` (`equal`, `amount`, `percent`, `shares`, `items`, `income`) | Equal, Amounts, %, Shares, Items or By income, another than the one picked | `:feature:split_bill` |
 | `split_bill_person_toggled` | `is_included` | A person in or out of Equal, with where they ended up | `:feature:split_bill` |
 | `split_bill_everyone_toggled` | `is_included` | "Check all" or "Uncheck all" | `:feature:split_bill` |
 | `split_bill_parts_changed` | `direction` (`up`, `down`) | A part added or taken | `:feature:split_bill` |

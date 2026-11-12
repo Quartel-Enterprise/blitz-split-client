@@ -50,7 +50,7 @@
     <string name="default_split_list_shares">Parts de chacun</string>
     <string name="default_split_list_percent">Pourcentage de chacun</string>
     <string name="default_split_list_income">Revenu de chacun</string>
-    <string name="default_split_income_note">Les revenus restent uniquement sur cet appareil. Le groupe ne voit que les pourcentages.</string>
+    <string name="default_split_income_note">Les membres du groupe voient ces revenus et peuvent répartir les dépenses selon eux.</string>
     <string name="default_split_parts_of">Parts (%s)</string>
     <string name="default_split_percent_of">Pourcentage (%s)</string>
     <string name="default_split_income_of">Revenu (%s)</string>

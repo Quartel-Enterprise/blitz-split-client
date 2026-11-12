@@ -76,9 +76,14 @@ internal fun splitTitleOf(
 ): String {
     val plural = when (mode) {
         SplitMode.EQUAL -> R.plurals.bill_detail_mode_equal
+
         SplitMode.AMOUNT -> R.plurals.bill_detail_mode_amount
-        SplitMode.PERCENT -> R.plurals.bill_detail_mode_percent
+
+        // Why: a bill split by income is saved by its percentages.
+        SplitMode.PERCENT, SplitMode.INCOME -> R.plurals.bill_detail_mode_percent
+
         SplitMode.SHARES -> R.plurals.bill_detail_mode_shares
+
         SplitMode.ITEMS -> R.plurals.bill_detail_mode_items
     }
     return pluralStringResource(plural, count, count)

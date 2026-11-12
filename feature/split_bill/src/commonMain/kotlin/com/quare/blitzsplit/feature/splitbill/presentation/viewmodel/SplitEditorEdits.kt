@@ -20,6 +20,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 
 // Why: the modes whose rows keep no text: Igual's checkbox, Partes' stepper and Itens, which the items give.
 private val modesWithoutText = setOf(SplitMode.EQUAL, SplitMode.SHARES, SplitMode.ITEMS)
+private const val INCOME_SEPARATOR = '.'
 
 // Why: "Editar conta" opens the split as it was typed: who was in it, each one's value, percent or parts.
 internal fun splitEditorOf(
@@ -213,13 +214,10 @@ internal fun SplitEditor.incomeTextOf(
  * Why: "By income"'s incomes as the group keeps them, in its currency, for "Usar como padrão do grupo": 0 for a field
  * left blank, which removes that one's.
  */
-internal fun SplitEditor.incomesIn(groupCurrency: GroupCurrency): Map<String, Long> =
-    rows.associate { row ->
-        val text = TypedText.toCurrency(row.valueText, currency, groupCurrency, showsSats, INCOME_SEPARATOR)
-        row.person.id to (AmountInput.parse(text, groupCurrency, showsSats) ?: 0L)
-    }
-
-private const val INCOME_SEPARATOR = '.'
+internal fun SplitEditor.toGroupIncomes(groupCurrency: GroupCurrency): Map<String, Long> = rows.associate { row ->
+    val text = TypedText.toCurrency(row.valueText, currency, groupCurrency, showsSats, INCOME_SEPARATOR)
+    row.person.id to (AmountInput.parse(text, groupCurrency, showsSats) ?: 0L)
+}
 
 // Why: the checkbox of "Igual".
 internal fun SplitEditor.withPersonToggled(memberId: String): SplitEditor =
@@ -328,13 +326,17 @@ internal fun billDefaultSplitOf(
                 person = person,
                 isIncluded = weight > 0,
                 valueText = when {
-                    mode == SplitMode.INCOME && income != null -> AmountInput.format(
-                        amountMinor = income,
-                        currency = incomes.currency,
-                        showsSats = showsSats,
-                        decimalSeparator = decimalSeparator,
-                    ).let { TypedText.toCurrency(it, incomes.currency, currency, showsSats, decimalSeparator) }
+                    mode == SplitMode.INCOME && income != null ->
+                        AmountInput
+                            .format(
+                                amountMinor = income,
+                                currency = incomes.currency,
+                                showsSats = showsSats,
+                                decimalSeparator = decimalSeparator,
+                            ).let { TypedText.toCurrency(it, incomes.currency, currency, showsSats, decimalSeparator) }
+
                     mode == SplitMode.PERCENT && weight > 0 -> weight.toString()
+
                     else -> ""
                 },
                 parts = if (mode == SplitMode.SHARES) weight else 0L,

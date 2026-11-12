@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.domain
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import kotlinx.coroutines.test.runTest
@@ -13,7 +14,8 @@ import kotlin.test.assertTrue
 
 class UpdateDefaultSplitUseCaseTest {
     private val repository = FakeGroupRepository()
-    private val useCase = UpdateDefaultSplitUseCase(repository) { 1_000L }
+    private val incomes = FakeGroupIncomeRepository()
+    private val useCase = UpdateDefaultSplitUseCase(repository, incomes) { 1_000L }
 
     @Test
     fun `GIVEN Igual with everyone in WHEN saving THEN the group goes back to having no default`() = runTest {
@@ -25,7 +27,7 @@ class UpdateDefaultSplitUseCaseTest {
 
         // Then
         assertNull(repository.savedDefaultSplits.single().second)
-        assertTrue(repository.savedIncomes.getValue(GROUP_ID).isEmpty())
+        assertTrue(incomes.savedIncomes.isEmpty())
     }
 
     @Test
@@ -41,19 +43,23 @@ class UpdateDefaultSplitUseCaseTest {
     }
 
     @Test
-    fun `GIVEN Pela renda WHEN saving THEN the incomes typed stay along`() = runTest {
-        // Given
-        val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("a" to 75L, "b" to 25L), emptyList())
+    fun `GIVEN Pela renda WHEN saving THEN the incomes typed are saved for the group with a blank one at 0`() =
+        runTest {
+            // Given
+            val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("a" to 75L, "b" to 25L), emptyList())
 
-        // When
-        useCase(GROUP_ID, split, mapOf("a" to 900_000L, "b" to 300_000L, "c" to 0L))
+            // When
+            useCase(GROUP_ID, split, mapOf("a" to 900_000L, "b" to 300_000L, "c" to 0L))
 
-        // Then
-        assertEquals(mapOf("a" to 900_000L, "b" to 300_000L), repository.savedIncomes[GROUP_ID])
-    }
+            // Then
+            assertEquals(
+                Triple(GROUP_ID, mapOf("a" to 900_000L, "b" to 300_000L, "c" to 0L), 1_000L),
+                incomes.savedIncomes.single(),
+            )
+        }
 
     @Test
-    fun `GIVEN Partes WHEN saving THEN no income stays on the device`() = runTest {
+    fun `GIVEN Partes WHEN saving THEN the group incomes stay as they are`() = runTest {
         // Given
         val split = GroupDefaultSplit(DefaultSplitMode.SHARES, mapOf("a" to 3L, "b" to 1L), emptyList())
 
@@ -62,7 +68,7 @@ class UpdateDefaultSplitUseCaseTest {
 
         // Then
         assertEquals(split, repository.savedDefaultSplits.single().second)
-        assertTrue(repository.savedIncomes.getValue(GROUP_ID).isEmpty())
+        assertTrue(incomes.savedIncomes.isEmpty())
     }
 
     @Test

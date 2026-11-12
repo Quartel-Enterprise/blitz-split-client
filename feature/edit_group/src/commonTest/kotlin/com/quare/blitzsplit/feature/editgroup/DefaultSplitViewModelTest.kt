@@ -7,9 +7,10 @@ import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
@@ -41,6 +42,7 @@ class DefaultSplitViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
+    private var incomes = FakeGroupIncomeRepository()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: DefaultSplitViewModel
 
@@ -138,7 +140,13 @@ class DefaultSplitViewModelTest {
                 GROUP_ID to GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf(PIERRE to 75L, ANA to 25L), emptyList()),
                 groups.savedDefaultSplits.single(),
             )
-            assertEquals(mapOf(PIERRE to 900_000L, ANA to 300_000L), groups.savedIncomes[GROUP_ID])
+            assertEquals(
+                mapOf(PIERRE to 900_000L, ANA to 300_000L),
+                incomes.savedIncomes
+                    .lastOrNull()
+                    ?.second
+                    ?.filterValues { it > 0 },
+            )
             assertEquals(editGroup, navigator.backStack.value.last())
         }
 
@@ -159,7 +167,13 @@ class DefaultSplitViewModelTest {
 
             // Then
             assertEquals(100L, viewModel.uiState.value.exampleTotalMinor)
-            assertEquals(mapOf(PIERRE to 9_000L, ANA to 3_000L), groups.savedIncomes[GROUP_ID])
+            assertEquals(
+                mapOf(PIERRE to 9_000L, ANA to 3_000L),
+                incomes.savedIncomes
+                    .lastOrNull()
+                    ?.second
+                    ?.filterValues { it > 0 },
+            )
         }
 
     @Test
@@ -918,8 +932,8 @@ class DefaultSplitViewModelTest {
     ) {
         bitcoinInSats.value = showsSats
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
-            if (storedIncomes.isNotEmpty()) it.savedIncomes[GROUP_ID] = storedIncomes
         }
+        incomes = FakeGroupIncomeRepository(mapOf(GROUP_ID to storedIncomes))
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(
                 Route.GroupDetail(
@@ -936,8 +950,8 @@ class DefaultSplitViewModelTest {
             trackEvent = { name, params -> trackedEvents += name to params },
             route = defaultSplit,
             navigator = navigator,
-            updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { 1_000L },
-            getSplitIncomes = GetSplitIncomesUseCase(groups),
+            updateDefaultSplit = UpdateDefaultSplitUseCase(groups, incomes) { 1_000L },
+            observeGroupIncomes = ObserveGroupIncomesUseCase(incomes),
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),

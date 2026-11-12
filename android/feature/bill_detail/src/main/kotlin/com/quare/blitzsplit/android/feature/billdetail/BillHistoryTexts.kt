@@ -294,9 +294,14 @@ private fun payerNamesOf(names: List<String?>): String? {
 internal fun splitModeLabelOf(mode: SplitMode): String = stringResource(
     when (mode) {
         SplitMode.EQUAL -> R.string.bill_detail_split_equal
+
         SplitMode.AMOUNT -> R.string.bill_detail_split_amount
-        SplitMode.PERCENT -> R.string.bill_detail_split_percent
+
+        // Why: a bill split by income is saved by its percentages.
+        SplitMode.PERCENT, SplitMode.INCOME -> R.string.bill_detail_split_percent
+
         SplitMode.SHARES -> R.string.bill_detail_split_shares
+
         SplitMode.ITEMS -> R.string.bill_detail_split_items
     },
 )

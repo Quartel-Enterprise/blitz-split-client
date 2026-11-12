@@ -256,18 +256,11 @@ class SyncCoordinator(
         val memberKeysSynced = suspendRunCatching {
             paymentKeyRepository.downloadMemberKeys(userId).getOrThrow()
         }
-        // Why: the pins need their groups too, but only order Início, so one that fails never holds the money back.
+        // Why: the pins and the incomes of "By income" need their groups too, but never hold the money back.
         val pinsSynced = if (areGroupsSynced) {
             suspendRunCatching {
                 groupPinRepository.downloadPins(userId).getOrThrow()
                 groupPinRepository.uploadPendingPins(userId).getOrThrow()
-            }
-        } else {
-            Result.success(Unit)
-        }
-        // Why: the incomes of "By income" need their groups and members too, but never hold the money back either.
-        val incomesSynced = if (areGroupsSynced) {
-            suspendRunCatching {
                 groupIncomeRepository.download(userId).getOrThrow()
                 groupIncomeRepository.uploadPending(userId).getOrThrow()
             }
@@ -313,7 +306,6 @@ class SyncCoordinator(
         groupsSynced.getOrThrow()
         memberKeysSynced.getOrThrow()
         pinsSynced.getOrThrow()
-        incomesSynced.getOrThrow()
         commentsSynced.getOrThrow()
         attachmentsSynced.getOrThrow()
         activitySynced.getOrThrow()
