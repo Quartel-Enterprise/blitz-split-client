@@ -190,6 +190,7 @@ class ClaimGuestAsMeUseCaseTest {
         groupName = groupId,
         groupInitials = "",
         groupColor = AvatarColor.GREEN,
+        groupPhotoUrl = null,
         currency = GroupCurrency.BRL,
         memberId = memberId,
         meMemberId = "me-$groupId",

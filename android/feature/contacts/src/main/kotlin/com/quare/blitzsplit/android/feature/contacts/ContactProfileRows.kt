@@ -58,6 +58,7 @@ internal fun CommonGroupRow(
             GroupBadge(
                 initials = group.groupInitials,
                 color = group.groupColor,
+                photoUrl = group.groupPhotoUrl,
                 size = 36.dp,
             )
         },
