@@ -31,8 +31,10 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.TwoRowsTopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -86,15 +88,19 @@ internal fun GroupTopBar(
     } else {
         stringResource(R.string.group_detail_meta_empty, members)
     }
-    val collapsedFraction = scrollBehavior.state.collapsedFraction
-    // Why: the title in sight carries the shared avatar and name, so back from a folded bar flies from the one line.
-    val isMostlyOpen = collapsedFraction < 0.5f
+    /*
+     * Why: the title in sight carries the shared avatar and name, so back from a folded bar flies from the one line.
+     * Derived, and the fold read only by the open title's badge, so a scroll redraws the badge, not the whole bar.
+     */
+    val isMostlyOpen by remember(scrollBehavior) {
+        derivedStateOf { scrollBehavior.state.collapsedFraction < 0.5f }
+    }
     TwoRowsTopAppBar(
         title = { isExpanded ->
             if (isExpanded) {
                 GroupTitle(
                     header = header,
-                    badgeSize = lerp(expandedBadgeSize, foldingBadgeSize, collapsedFraction),
+                    badgeSize = lerp(expandedBadgeSize, foldingBadgeSize, scrollBehavior.state.collapsedFraction),
                     onAction = onAction,
                     sharedGroupId = sharedGroupId.takeIf { isMostlyOpen },
                 )

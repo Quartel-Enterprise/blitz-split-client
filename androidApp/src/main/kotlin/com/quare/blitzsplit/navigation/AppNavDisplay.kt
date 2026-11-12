@@ -237,7 +237,6 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
         rememberViewModelStoreNavEntryDecorator(),
         homeBarsEntryDecorator,
-        entryVisibilityDecorator,
     )
     val entries = rememberAppNavEntries(
         backStack = backStack,
@@ -248,17 +247,21 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
             entry<Route.Home>(metadata = homeTabMetadata) {
-                HomeScreen(
-                    recoveryCodeSheet = { RecoveryCodeSheet() },
-                    isPushConfigured = PushSetup.isConfigured,
-                )
+                WithEntryVisibilityScope {
+                    HomeScreen(
+                        recoveryCodeSheet = { RecoveryCodeSheet() },
+                        isPushConfigured = PushSetup.isConfigured,
+                    )
+                }
             }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
-                GroupsScreen(
-                    recoveryCodeSheet = { RecoveryCodeSheet() },
-                    onEmptyChanged = { isGroupsScreenEmpty = it },
-                )
+                WithEntryVisibilityScope {
+                    GroupsScreen(
+                        recoveryCodeSheet = { RecoveryCodeSheet() },
+                        onEmptyChanged = { isGroupsScreenEmpty = it },
+                    )
+                }
             }
             // Why: "Buscar" over Início, Saldos, Contatos or Atividade, full screen as Grupos' own takes its place.
             entry<Route.Search>(metadata = homeTabMetadata) { SearchScreen() }
@@ -313,11 +316,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane {
-                    GroupDetailScreen(
-                        route = route,
-                        membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
-                        onTabChanged = { tab -> openGroupTab = route to tab },
-                    )
+                    WithEntryVisibilityScope {
+                        GroupDetailScreen(
+                            route = route,
+                            membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
+                            onTabChanged = { tab -> openGroupTab = route to tab },
+                        )
+                    }
                 }
             }
             // Why: wider than a phone the group stays behind the form, in a book's right half on a foldable.

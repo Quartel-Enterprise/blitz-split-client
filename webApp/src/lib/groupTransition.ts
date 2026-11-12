@@ -128,7 +128,9 @@ function run(plan: Plan, apply: () => void) {
         isUpdating = false
       }
     })
-    transition.finished.finally(() => named.forEach((element) => (element.style.viewTransitionName = '')))
+    // Why: cleared whether it ended or failed; `finally` would pass a failed update on as an unhandled rejection.
+    const clear = () => named.forEach((element) => (element.style.viewTransitionName = ''))
+    transition.finished.then(clear, clear)
   } catch {
     named.forEach((element) => (element.style.viewTransitionName = ''))
     apply()

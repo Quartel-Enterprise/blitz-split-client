@@ -112,7 +112,7 @@ struct GroupsList: View {
                 }
                 // The groups still coming down hold their place under those that came
                 if let progress = state.firstDownload, progress.placeholderCount > 0 {
-                    ShimmerList(count: Int(progress.placeholderCount), leading: .badge)
+                    ShimmerList(count: Int(progress.placeholderCount), leading: .group)
                         .shimmering()
                 }
             } header: {

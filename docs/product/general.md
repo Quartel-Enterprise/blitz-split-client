@@ -81,7 +81,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     with corners at 8% of the side at every size (the group photo viewer's 16 on its 200, beta feedback of 2026-11-12,
     Pierre's call), in every list and grid, Home's cards, the group's header, Balances, a contact's groups in common,
     the pickers, Activity's group dot, "Adjust photo"'s group frame and the photo opened big. One token per platform
-    draws it: Android's `GroupBadge` (`GroupAvatarShape`, `groupShapeOf`, `GROUP_CORNER_RATIO`), Apple's
+    draws it: Android's `GroupBadge` (`GroupAvatarShape`, `GROUP_CORNER_RATIO`), Apple's
     `GroupAvatar` (`GroupAvatar.shape(size:)`, continuous corners) and the web's `GroupAvatar` (`GROUP_SHAPE`);
     a group's avatar never takes another shape at its call site.
   - No category or avatar color copies a color of the theme (Pierre's call): each one's hue stays apart from the

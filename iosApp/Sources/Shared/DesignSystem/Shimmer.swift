@@ -108,11 +108,15 @@ struct ShimmerBlock: View {
     }
 }
 
-/// A list row still coming: a face (or a group's badge), a title over a subtitle, and an amount at the end.
+/// A list row still coming: a face (or a group's square, or a bill's or a key's badge), a title over a subtitle, and
+/// an amount at the end.
 struct ShimmerRow: View {
     enum Leading {
         case circle
+        /// A bill's category or a key's badge, its corners a third of its side.
         case badge
+        /// A group's square (`GroupAvatar.shape`).
+        case group
         case none
     }
 
@@ -126,7 +130,11 @@ struct ShimmerRow: View {
             case .circle:
                 ShimmerCircle(size: leadingSize)
             case .badge:
-                ShimmerBlock(width: leadingSize, height: leadingSize, cornerRadius: leadingSize * GroupAvatar.cornerRatio)
+                ShimmerBlock(width: leadingSize, height: leadingSize, cornerRadius: leadingSize * 0.32)
+            case .group:
+                GroupAvatar.shape(size: leadingSize)
+                    .fill(.fill.tertiary)
+                    .frame(width: leadingSize, height: leadingSize)
             case .none:
                 EmptyView()
             }
@@ -265,6 +273,6 @@ struct WaitingForInternetNote: View {
     ShimmerScreen(isWaitingForInternet: true, isAboutGroups: true) {
         ShimmerCard()
             .background(Palette.card, in: .rect(cornerRadius: 28))
-        ShimmerList(count: 4, leading: .badge)
+        ShimmerList(count: 4, leading: .group)
     }
 }

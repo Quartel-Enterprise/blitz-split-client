@@ -544,9 +544,10 @@ struct PhoneGroupScaffold<Sections: View>: View {
         .listSectionSpacing(.compact)
         .scrollContentBackground(.hidden)
         // Tied to the scroll itself, frame by frame, as a large title folds into the bar; with the header beside the
-        // tabs or above the fold the bar never names the group
+        // tabs or above the fold the bar never names the group. Held at the fold's end, so a scroll further down the
+        // bills never draws the header's avatar and the bar's title again
         .onScrollGeometryChange(for: CGFloat.self) { geometry in
-            withHeader ? max(0, geometry.contentOffset.y + geometry.contentInsets.top) : 0
+            withHeader ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd) : 0
         } action: { _, offset in
             headerScroll.offset = offset
         }
@@ -583,8 +584,16 @@ final class GroupHeaderScroll {
     /// The bar's avatar and name come in while the header's name's last line goes under the bar (after the avatar,
     /// its padding and the lines above it: 100 to 132 pt for one line), as the large title turns into the inline one.
     var titleProgress: CGFloat {
-        let lastLineTop = 100 + max(0, nameHeight - 32)
-        return progress(from: lastLineTop, to: lastLineTop + 32)
+        progress(from: titleStart, to: foldEnd)
+    }
+
+    /// Where the header has gone and the bar's title is in: scrolling further changes nothing either draws.
+    var foldEnd: CGFloat {
+        titleStart + 32
+    }
+
+    private var titleStart: CGFloat {
+        100 + max(0, nameHeight - 32)
     }
 
     private func progress(from start: CGFloat, to end: CGFloat) -> CGFloat {

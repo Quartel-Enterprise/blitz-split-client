@@ -22,14 +22,18 @@ internal val homeBarsEntryDecorator: NavEntryDecorator<Route> = NavEntryDecorato
     },
 )
 
-// Why: the entry's own transition, which a group's avatar and name follow from its row to its screen and back.
-internal val entryVisibilityDecorator: NavEntryDecorator<Route> = NavEntryDecorator(
-    decorate = { entry ->
-        CompositionLocalProvider(LocalEntryVisibilityScope provides LocalNavAnimatedContentScope.current) {
-            entry.Content()
-        }
-    },
-)
+/*
+ * Why: the entry's own transition, which a group's avatar and name follow from its row to its screen and back. Only
+ * around the entries whose rows or header fly (Início, Grupos, the group), which NavDisplay draws in its animated
+ * content: a dialog's or a sheet's entry is drawn outside it, where LocalNavAnimatedContentScope has no value.
+ */
+@Composable
+internal fun WithEntryVisibilityScope(content: @Composable () -> Unit) {
+    CompositionLocalProvider(
+        LocalEntryVisibilityScope provides LocalNavAnimatedContentScope.current,
+        content = content,
+    )
+}
 
 /*
  * Why: the tabs take each other's place right above Início ([Home, Groups], [Home, Contacts]), so a tab leaving the
