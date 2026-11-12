@@ -7,23 +7,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,12 +27,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
-import com.quare.blitzsplit.android.designsystem.component.SearchQueryField
+import com.quare.blitzsplit.android.designsystem.component.SearchBarField
 import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
@@ -62,9 +55,12 @@ internal fun AllExpensesFilterBar(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        AllExpensesSearchField(
+        SearchBarField(
             query = filters.query,
+            placeholder = stringResource(R.string.groups_all_expenses_search),
+            clearLabel = stringResource(R.string.groups_search_clear),
             onQueryChange = { onEvent(AllExpensesUiEvent.OnQueryChanged(it)) },
+            height = 52.dp,
         )
         Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()),
@@ -122,51 +118,6 @@ internal fun AllExpensesFilterBar(
             if (filters.isFiltering) {
                 TextButton(onClick = { onEvent(AllExpensesUiEvent.OnClearFiltersClicked) }) {
                     Text(stringResource(R.string.groups_all_expenses_clear))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun AllExpensesSearchField(
-    query: String,
-    onQueryChange: (String) -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    Surface(
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
-        Row(
-            modifier = Modifier
-                .height(52.dp)
-                .padding(
-                    start = 16.dp,
-                    end = 4.dp,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Search,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            SearchQueryField(
-                query = query,
-                placeholder = stringResource(R.string.groups_all_expenses_search),
-                onQueryChange = onQueryChange,
-                onSearch = { focusManager.clearFocus() },
-                modifier = Modifier.weight(1f),
-            )
-            if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChange("") }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = stringResource(R.string.groups_search_clear),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
                 }
             }
         }

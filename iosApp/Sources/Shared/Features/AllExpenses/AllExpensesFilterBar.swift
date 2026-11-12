@@ -37,7 +37,7 @@ struct AllExpensesFilterBar: View {
                 }
             }
         } label: {
-            chip(Self.title(filters.sort), systemImage: "arrow.up.arrow.down", isActive: false)
+            chip(Self.text(filters.sort), systemImage: "arrow.up.arrow.down", isActive: false)
         }
         .accessibilityLabel(Text("Sort"))
     }
@@ -53,7 +53,10 @@ struct AllExpensesFilterBar: View {
         } label: {
             chip(Self.picked(String(localized: "Group", bundle: .appLanguage), names: picked.map(\.name)), isActive: !picked.isEmpty)
         }
+        #if os(iOS)
+        // Several may be picked at once, so the menu stays open while they are; the Mac's menus close on each pick
         .menuActionDismissBehavior(.disabled)
+        #endif
     }
 
     private var categoryMenu: some View {
@@ -70,7 +73,10 @@ struct AllExpensesFilterBar: View {
                 isActive: !picked.isEmpty,
             )
         }
+        #if os(iOS)
+        // Several may be picked at once, so the menu stays open while they are; the Mac's menus close on each pick
         .menuActionDismissBehavior(.disabled)
+        #endif
     }
 
     private var shareMenu: some View {
@@ -155,6 +161,15 @@ struct AllExpensesFilterBar: View {
         case .largest: "Largest first"
         case .smallest: "Smallest first"
         default: "Newest first"
+        }
+    }
+
+    private static func text(_ sort: ExpenseSort) -> String {
+        switch sort {
+        case .oldest: String(localized: "Oldest first", bundle: .appLanguage)
+        case .largest: String(localized: "Largest first", bundle: .appLanguage)
+        case .smallest: String(localized: "Smallest first", bundle: .appLanguage)
+        default: String(localized: "Newest first", bundle: .appLanguage)
         }
     }
 
