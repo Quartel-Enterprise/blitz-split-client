@@ -199,9 +199,10 @@ export function ProfileScreen() {
   )
 }
 
-function Row({ title, detail, children }: { title: string; detail?: string | null; children?: ReactNode }) {
+// Why: a Row after a leading icon takes `flex-1`, so its trailing button stays at the card's end.
+function Row({ title, detail, className, children }: { title: string; detail?: string | null; className?: string; children?: ReactNode }) {
   return (
-    <div className="flex min-h-12 items-center gap-3 py-2">
+    <div className={cn('flex min-h-12 items-center gap-3 py-2', className)}>
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="text-sm font-medium [overflow-wrap:anywhere]">{title}</span>
         {detail && <span className="text-xs text-muted-foreground">{detail}</span>}
@@ -344,7 +345,7 @@ function AccountCard({ presenter, state, className }: CardProps) {
             <span role="img" aria-label={providerLabel(provider, true)} className="flex size-4 shrink-0 items-center justify-center">
               <ProviderLogo provider={provider} />
             </span>
-            <Row title={state.email ?? providerLabel(provider, true)}>
+            <Row title={state.email ?? providerLabel(provider, true)} className="min-w-0 flex-1">
               {state.email && <EmailInfoButton presenter={presenter} isOpen={state.dialog === 'EMAIL_INFO'} />}
             </Row>
           </div>
@@ -352,7 +353,7 @@ function AccountCard({ presenter, state, className }: CardProps) {
           <div className="flex flex-col gap-3 pb-3">
             <div className="flex items-center gap-3">
               <UserX aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-              <Row title={t('profile_accountNone')} detail={t('profile_accountNoneDetail')}>
+              <Row title={t('profile_accountNone')} detail={t('profile_accountNoneDetail')} className="min-w-0 flex-1">
                 {!state.isConnectExpanded && (
                   <Button size="sm" variant="outline" disabled={!state.canConnect} onClick={() => presenter.connect()}>
                     {t('profile_connect')}

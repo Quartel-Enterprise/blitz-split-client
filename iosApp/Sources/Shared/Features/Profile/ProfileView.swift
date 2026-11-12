@@ -754,6 +754,8 @@ private struct ConnectedAccountRow: View {
         HStack(spacing: 12) {
             ProviderLogo(provider: provider, size: 20)
                 .frame(width: 24)
+                // Why: Google's logo is a decorative image, hidden from VoiceOver, so the label needs its own element.
+                .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(verbatim: provider.displayName))
             row(email: email)
         }
@@ -770,7 +772,7 @@ private struct ConnectedAccountRow: View {
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel(Text("About your email"))
-                .popover(isPresented: isEmailInfoShown, arrowEdge: .top) {
+                .popover(isPresented: model.isPresented(.emailInfo), arrowEdge: .top) {
                     EmailInfoPopover()
                 }
             }
@@ -779,21 +781,6 @@ private struct ConnectedAccountRow: View {
                 .foregroundStyle(.primary)
                 .textSelection(.enabled)
         }
-    }
-
-    /// The popover closes itself on a tap outside, which tells the ViewModel once the state still shows it.
-    private var isEmailInfoShown: Binding<Bool> {
-        Binding(
-            get: { model.state.dialog == .emailInfo },
-            set: { isShown in
-                guard !isShown else { return }
-                DispatchQueue.main.async {
-                    if model.state.dialog == .emailInfo {
-                        model.send(ProfileUiEventOnDialogDismissed.shared)
-                    }
-                }
-            },
-        )
     }
 }
 
