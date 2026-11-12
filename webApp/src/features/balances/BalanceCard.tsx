@@ -26,8 +26,6 @@ const methodLabels: Record<string, MessageKey> = {
   other: 'payment_methodOther',
 }
 
-export const paymentMethodCodes = Object.keys(methodLabels)
-
 /** "Pix", "Dinheiro", "Transferência" or "Outro". */
 export function paymentMethodLabel(code: string): string {
   return t(methodLabels[code] ?? 'payment_methodOther')

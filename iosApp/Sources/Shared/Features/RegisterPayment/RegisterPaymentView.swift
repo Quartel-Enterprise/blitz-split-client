@@ -277,10 +277,12 @@ struct PaymentFaces: View {
 /// "How it was paid": Pix, Cash, Transfer or Other.
 private struct MethodPicker: View {
     @Binding var selection: SettlementMethod
+    /// The options the Pix rule offers (state.methods).
+    let methods: [SettlementMethod]
 
     var body: some View {
         Picker("How it was paid", selection: $selection) {
-            ForEach(SettlementMethod.entries, id: \.self) { method in
+            ForEach(methods, id: \.self) { method in
                 Text(verbatim: PaymentCopy.method(method)).tag(method)
             }
         }
@@ -463,7 +465,7 @@ private struct PhoneRegisterPayment: View {
     @ViewBuilder
     private var howAndWhen: some View {
         Section("How it was paid") {
-            MethodPicker(selection: model.method)
+            MethodPicker(selection: model.method, methods: model.state.methods)
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
         }
@@ -544,7 +546,7 @@ private struct MacRegisterPayment: View {
                     }
                 }
                 LabeledContent("How it was paid:") {
-                    MethodPicker(selection: model.method)
+                    MethodPicker(selection: model.method, methods: model.state.methods)
                         .labelsHidden()
                         .fixedSize()
                 }

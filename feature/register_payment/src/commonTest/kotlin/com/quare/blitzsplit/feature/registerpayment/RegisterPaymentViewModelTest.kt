@@ -2490,6 +2490,91 @@ class RegisterPaymentViewModelTest {
             assertEquals(2_000L, state.debtMinor)
         }
 
+    @Test
+    fun `GIVEN the Pix rule on WHEN the form opens THEN the method is Pix and Pix is offered`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pixRuleOn = true)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SettlementMethod.PIX, state.method)
+            assertTrue(SettlementMethod.PIX in state.methods)
+        }
+
+    @Test
+    fun `GIVEN the Pix rule off and no method picked WHEN the form opens THEN opens on Transfer without Pix`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pixRuleOn = false)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SettlementMethod.TRANSFER, state.method)
+            assertFalse(SettlementMethod.PIX in state.methods)
+        }
+
+    @Test
+    fun `GIVEN the form open on Pix WHEN the Pix rule turns off THEN falls back to Transfer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pixRuleOn = true)
+
+            // When
+            showsPix.value = false
+
+            // Then
+            assertEquals(SettlementMethod.TRANSFER, viewModel.uiState.value.method)
+            assertFalse(viewModel.uiState.value.showsPix)
+        }
+
+    @Test
+    fun `GIVEN Cash picked WHEN the Pix rule turns off THEN keeps Cash`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(pixRuleOn = true)
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+        // When
+        showsPix.value = false
+
+        // Then
+        assertEquals(SettlementMethod.CASH, viewModel.uiState.value.method)
+    }
+
+    @Test
+    fun `GIVEN Pix picked after another method WHEN the Pix rule turns off THEN keeps Pix and still lists it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pixRuleOn = true)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.PIX))
+
+            // When
+            showsPix.value = false
+
+            // Then
+            assertEquals(SettlementMethod.PIX, viewModel.uiState.value.method)
+            assertTrue(SettlementMethod.PIX in viewModel.uiState.value.methods)
+        }
+
+    @Test
+    fun `GIVEN the form on Transfer by the rule WHEN the Pix rule turns on THEN stays on Transfer and offers Pix`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(pixRuleOn = false)
+
+            // When
+            showsPix.value = true
+
+            // Then
+            assertEquals(SettlementMethod.TRANSFER, viewModel.uiState.value.method)
+            assertTrue(SettlementMethod.PIX in viewModel.uiState.value.methods)
+        }
+
     // Why: Ana owes Pierre 20,00 in dollars, on top of the 162,30 in reais she owes him.
     // Why: a getter, since bill() reads properties declared below, which the JS target has not set yet here.
     private val dollarDinner: Expense
@@ -2647,6 +2732,7 @@ class RegisterPaymentViewModelTest {
     )
 
     private val bitcoinInSats = MutableStateFlow(false)
+    private val showsPix = MutableStateFlow(true)
 
     private fun TestScope.prepareScenario(
         from: String = ANA,
@@ -2664,8 +2750,10 @@ class RegisterPaymentViewModelTest {
         showsSats: Boolean = false,
         routeCurrency: GroupCurrency = storedGroup.currency,
         keepsBillCurrencies: Boolean = false,
+        pixRuleOn: Boolean = true,
     ) {
         bitcoinInSats.value = showsSats
+        showsPix.value = pixRuleOn
         clockMillis = nowMillis
         route = Route.RegisterPayment(
             GROUP_ID,
@@ -2729,6 +2817,7 @@ class RegisterPaymentViewModelTest {
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
             observeBitcoinInSats = { bitcoinInSats },
+            observeShowsPix = { showsPix },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

@@ -64,6 +64,7 @@ private fun createPreviewState(isOnline: Boolean = true): RegisterPaymentUiState
     areReceiverKeysUnknown = false,
     groupName = "Apê 302",
     keyMethod = PaymentMethod.PIX,
+    showsPix = true,
     offersReceiverKeys = true,
     prefersForm = false,
     pixCode = null,

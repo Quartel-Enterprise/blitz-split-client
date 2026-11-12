@@ -63,6 +63,8 @@ class FakePaymentKeyRepository(
 
     override fun observeKeysOf(userId: String): Flow<List<PaymentKey>> = memberKeys.map { it[userId].orEmpty() }
 
+    override fun observeAllMemberKeys(): Flow<List<PaymentKey>> = memberKeys.map { it.values.flatten() }
+
     override suspend fun downloadMemberKeys(userId: String): Result<Unit> {
         memberKeysDownloadedUserIds += userId
         return memberKeysError?.let { Result.failure(it) } ?: Result.success(Unit)

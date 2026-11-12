@@ -1221,6 +1221,7 @@ class PayReceiverViewModelTest {
             observePeopleBalances = { emptyFlow() },
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             observeBitcoinInSats = { flowOf(false) },
+            observeShowsPix = { flowOf(true) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

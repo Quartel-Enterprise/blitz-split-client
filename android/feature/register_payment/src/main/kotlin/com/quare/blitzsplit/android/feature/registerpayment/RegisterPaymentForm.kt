@@ -125,6 +125,7 @@ internal fun RegisterPaymentDetailsColumn(
     ) {
         MethodSection(
             method = state.method,
+            methods = state.methods,
             onEvent = onEvent,
         )
         FormPixKeysSection(
@@ -312,6 +313,7 @@ private fun FullDebtButton(
 @Composable
 private fun MethodSection(
     method: SettlementMethod,
+    methods: List<SettlementMethod>,
     onEvent: (RegisterPaymentUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -321,7 +323,7 @@ private fun MethodSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SettlementMethod.entries.forEach { option ->
+            methods.forEach { option ->
                 FilterChip(
                     selected = option == method,
                     onClick = { onEvent(RegisterPaymentUiEvent.OnMethodPicked(option)) },

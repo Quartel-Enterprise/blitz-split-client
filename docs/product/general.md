@@ -190,3 +190,16 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     and sync" row follows the same rule (`ProfileSyncStatus`): "Syncing…" only during the first full sync and the
     retry, the row at rest otherwise, "Offline" and "No response from the server" as they were.
     Activity's "Syncing…" only shows while a new device waits for the feed's first page.
+  - Pix is only in the way of people likely to use it (Pierre's call). One boolean, `PixSignals.showsPix`
+    (`ObserveShowsPix`, live), decided from signals about the person and never from where the phone is (no
+    location, no IP), so Brazilians abroad keep it. Pix is offered when any of these holds: the app's effective
+    language is Portuguese of Brazil (Profile's "Language", or the system's language, `pt` or `pt-BR`, while it is on
+    "System"; pt-PT is not); the person has a saved Pix key; the person is in a group in reais or in a group where
+    any member has a Pix key (so a foreigner in a Brazilian group can still pay by Pix; the member keys are those the
+    last sync cached); the device's region is Brazil (one extra signal, never the only path). When none holds,
+    Profile's Pix keys collapse behind an "Add a Pix key" row next to "Add a Bitcoin key" (nobody is locked out;
+    Bitcoin stays as it is) and Record payment's "How it was paid" has no Pix chip and opens on Transfer. What already
+    exists keeps showing: a payment recorded by Pix still reads Pix, a debtor's Pix keys show while they apply (a
+    saved or a member's Pix key turns the rule on), and Settle up's "Pix copy and paste" and Charge's "Include my Pix
+    key" only exist with a BRL group or a Pix key, which turn it on too. Adding a key or joining a group in reais
+    re-evaluates it at once (the device's own language and region are read each time something else changes, not watched). The website and the store screenshots follow their own rule.

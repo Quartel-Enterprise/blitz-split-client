@@ -25,6 +25,7 @@ internal fun createInitialProfileUiState(
     syncStatus = null,
     pendingChanges = emptyList(),
     paymentKeys = Loadable.Loading,
+    showsPix = true,
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
     showsDynamicColors = showsDynamicColors,

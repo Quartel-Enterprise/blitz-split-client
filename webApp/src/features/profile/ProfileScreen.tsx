@@ -221,7 +221,10 @@ const keyFormatSuffixes: Partial<Record<PaymentKeyFormat, MessageKey>> = {
   LNURL: 'profile_keyRowFormatLNURL',
 }
 
-/** "Keys to receive payments": each key masked, its default marked, and "Add" asking Pix or Bitcoin first. */
+/**
+ * "Keys to receive payments": each key masked, its default marked, and "Add" asking Pix or Bitcoin first, or one row
+ * for each where the Pix rule is off.
+ */
 function PaymentKeysCard({ presenter, state, className }: CardProps) {
   return (
     <Card className={className}>
@@ -245,23 +248,50 @@ function PaymentKeysCard({ presenter, state, className }: CardProps) {
             <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
           </button>
         ))}
-        {/* Why: a key added before the account's own came down could take the default the server already gave another. */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild disabled={!state.canAddPaymentKey}>
-            <button className="flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+        {/*
+          Why: a key added before the account's own came down could take the default the server already gave another.
+          The Pix rule: without it Pix and Bitcoin each get their own row, so Pix stays one click away.
+        */}
+        {state.showsPix ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild disabled={!state.canAddPaymentKey}>
+              <button className={addKeyClassName}>
+                <Plus className="size-4 shrink-0" />
+                {t('profile_keysAdd')}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onSelect={() => presenter.addPaymentKey('PIX')}>{t('profile_keysAddPix')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => presenter.addPaymentKey('BITCOIN')}>{t('profile_keysAddBitcoin')}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <>
+            <button
+              disabled={!state.canAddPaymentKey}
+              onClick={() => presenter.addPaymentKey('BITCOIN')}
+              className={addKeyClassName}
+            >
               <Plus className="size-4 shrink-0" />
-              {t('profile_keysAdd')}
+              {t('profile_keysAddBitcoinEntry')}
             </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onSelect={() => presenter.addPaymentKey('PIX')}>{t('profile_keysAddPix')}</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => presenter.addPaymentKey('BITCOIN')}>{t('profile_keysAddBitcoin')}</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <button
+              disabled={!state.canAddPaymentKey}
+              onClick={() => presenter.addPaymentKey('PIX')}
+              className={addKeyClassName}
+            >
+              <Plus className="size-4 shrink-0" />
+              {t('profile_keysAddPixEntry')}
+            </button>
+          </>
+        )}
       </CardContent>
     </Card>
   )
 }
+
+const addKeyClassName =
+  'flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
 
 // Why: "bc1p5d7r…sxg3297 · Taproot", since on-chain and Lightning keys come in two formats each.
 function keyRowValue(key: JsPaymentKeyItem): string {

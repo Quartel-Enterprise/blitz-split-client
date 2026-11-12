@@ -896,6 +896,8 @@ export const id: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Yang berutang ke kamu melihat kunci default-mu saat melunasi.',
   profile_keysDefault: 'Default',
   profile_keysAdd: 'Tambah kunci Pix atau Bitcoin',
+  profile_keysAddBitcoinEntry: 'Tambah kunci Bitcoin',
+  profile_keysAddPixEntry: 'Tambah kunci Pix',
   profile_keysAddPix: 'Kunci Pix',
   profile_keysAddBitcoin: 'Kunci Bitcoin',
   profile_keyRowCPF: 'Pix · CPF',

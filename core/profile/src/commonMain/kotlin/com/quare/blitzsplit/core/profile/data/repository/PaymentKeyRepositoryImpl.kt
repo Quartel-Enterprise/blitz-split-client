@@ -121,6 +121,11 @@ class PaymentKeyRepositoryImpl(
         .map(mapper::toDomainOfMember)
         .distinctUntilChanged()
 
+    override fun observeAllMemberKeys(): Flow<List<PaymentKey>> = memberLocal
+        .observeAll()
+        .map(mapper::toDomainOfMember)
+        .distinctUntilChanged()
+
     // Why: written only when something changed, so a sync with nothing new never wakes the screens that read them.
     override suspend fun downloadMemberKeys(userId: String): Result<Unit> = suspendRunCatching {
         val fresh = remote.fetchOthers(userId).map { dto ->

@@ -28,6 +28,7 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.core.sync.domain.usecase.ObserveShowsPix
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
@@ -81,6 +82,7 @@ class RegisterPaymentViewModel(
     observePeopleBalances: ObservePeopleBalances,
     observeFirstDownload: ObserveFirstDownload,
     observeBitcoinInSats: ObserveBitcoinInSats,
+    observeShowsPix: ObserveShowsPix,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<RegisterPaymentUiEvent>(trackEvent) {
@@ -98,6 +100,9 @@ class RegisterPaymentViewModel(
 
     // Why: what Room said last, read again when a save fails, since the changes meanwhile were set aside.
     private var latest: PaymentTarget? = null
+
+    // Why: a method the person picked is kept when the Pix rule turns off, never swapped for the default.
+    private var hasPickedMethod = false
 
     // Why: a save that fails before Room answered has nothing to show again.
     private var hasRead = false
@@ -135,8 +140,17 @@ class RegisterPaymentViewModel(
             .map { it?.toUserId }
             .distinctUntilChanged()
             .flatMapLatest { userId -> keysOf(userId).map { userId to it } }
-        // Why: the form opens once bitcoin's unit is known, so the debt is never filled in the other one first.
-        val showsSats = flow { emit(observeBitcoinInSats().first()) }
+        // Why: one read of the Pix rule's queries, for both the form's first answer and the live one below.
+        val showsPix = observeShowsPix().shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
+        /*
+         * Why: the form opens once bitcoin's unit is known, so the debt is never filled in the other one first, and
+         * once the Pix rule is known, so the form never draws Pix selected for a frame and jumps to Transfer, nor lets
+         * a tap on it count as a pick.
+         */
+        val showsSats = flow {
+            applyShowsPix(showsPix.first())
+            emit(observeBitcoinInSats().first())
+        }
         combine(targets, keys, observeFirstDownload(), showsSats) { target, (userId, receiverKeys), download, sats ->
             KeyedTarget(target, userId, receiverKeys, download, sats)
         }.filter { it.target?.toUserId == it.userId }
@@ -151,6 +165,13 @@ class RegisterPaymentViewModel(
         // Why: "Bitcoin em satoshis" changed while the form is open (the Mac's Ajustes): the amount keeps its value.
         observeBitcoinInSats()
             .onEach { sats -> uiState.update { it.withShowsSats(sats) } }
+            .launchIn(viewModelScope)
+        /*
+         * Why: the Pix rule (docs/product/general.md): without it "Como foi pago" has no Pix, and the form opens on
+         * Transferência unless a method was already picked; a Pix recorded already keeps reading Pix.
+         */
+        showsPix
+            .onEach(::applyShowsPix)
             .launchIn(viewModelScope)
         navigator.backStack
             .onEach { if (isDebtGone) leave() }
@@ -186,6 +207,7 @@ class RegisterPaymentViewModel(
             }
 
             is RegisterPaymentUiEvent.OnMethodPicked -> if (event.method != uiState.value.method) {
+                hasPickedMethod = true
                 trackEvent("payment_method_selected", mapOf("method" to event.method))
                 uiState.update { it.copy(method = event.method) }
             }
@@ -271,6 +293,7 @@ class RegisterPaymentViewModel(
             areReceiverKeysUnknown = false,
             groupName = null,
             keyMethod = PaymentMethod.PIX,
+            showsPix = true,
             offersReceiverKeys = (route as? Route.RegisterPayment)?.offersReceiverKeys ?: true,
             prefersForm = false,
             pixCode = null,
@@ -278,6 +301,20 @@ class RegisterPaymentViewModel(
             simplifiedNote = null,
             simplifyChange = null,
         )
+    }
+
+    // Why: the Pix rule turning off moves the form off Pix only while nobody picked it.
+    private fun applyShowsPix(showsPix: Boolean) {
+        uiState.update {
+            it.copy(
+                showsPix = showsPix,
+                method = if (!showsPix && !hasPickedMethod && it.method == SettlementMethod.PIX) {
+                    SettlementMethod.TRANSFER
+                } else {
+                    it.method
+                },
+            )
+        }
     }
 
     // Why: someone with no account (a guest, someone gone) has no key; offline, the copy the last sync left.

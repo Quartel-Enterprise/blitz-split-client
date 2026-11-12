@@ -41,6 +41,8 @@
     <string name="profile_payment_key_value_lnurl" translatable="false">%1$s · LNURL</string>
     <string name="profile_payment_key_default">Default</string>
     <string name="profile_payment_keys_add">Add a Pix or Bitcoin key</string>
+    <string name="profile_payment_keys_add_bitcoin_entry">Add a Bitcoin key</string>
+    <string name="profile_payment_keys_add_pix_entry">Add a Pix key</string>
     <string name="profile_payment_keys_add_pix">Pix key</string>
     <string name="profile_payment_keys_add_bitcoin">Bitcoin key</string>
     <string name="profile_section_preferences">Preferences</string>
