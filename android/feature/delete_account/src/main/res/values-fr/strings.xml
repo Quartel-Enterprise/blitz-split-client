@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">Le lien avec ton compte %1$s</string>
     <string name="delete_account_deleted_recovery_code">Ton code de récupération</string>
     <string name="delete_account_deleted_device">La copie de tes données sur cet appareil</string>
+    <string name="delete_account_kept_title">Ce qui reste dans tes groupes</string>
+    <string name="delete_account_kept_groups">Les groupes, avec leurs dépenses et paiements, pour les autres membres</string>
+    <string name="delete_account_kept_member">Ton nom dans chaque groupe, comme membre sans compte</string>
+    <string name="delete_account_kept_comments">Tes commentaires et les photos que tu as ajoutées, sous ton nom</string>
     <string name="delete_account_export">Exporter d’abord mes données</string>
     <string name="delete_account_confirm">Je comprends que c’est irréversible</string>
     <string name="delete_account_delete">Supprimer le compte</string>

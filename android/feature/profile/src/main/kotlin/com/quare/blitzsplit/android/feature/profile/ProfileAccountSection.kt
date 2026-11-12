@@ -6,18 +6,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.CloudSync
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Key
+import androidx.compose.material.icons.outlined.NoAccounts
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,6 +34,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 @Composable
 internal fun AccountSection(
@@ -85,22 +92,28 @@ private fun AccountRow(
 ) {
     val provider = state.accountProvider
     if (provider != null) {
-        // Why: only says which account it is; leaving it is signing out or deleting the account (beta feedback).
+        /*
+         * Why: only says which account it is, by its provider's logo and its whole email; leaving it is signing out or
+         * deleting the account (beta feedback). The ⓘ says only the person sees the email (Pierre's call).
+         */
+        val email = state.email
         SectionRow(
-            icon = Icons.Outlined.Badge,
-            headline = stringResource(provider.labelRes),
-            supporting = state.maskedEmail?.let { stringResource(R.string.profile_account_connected_detail, it) },
-            trailing = {
-                Text(
-                    text = stringResource(R.string.profile_account_connected),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                )
+            leading = { ProviderLogoIcon(provider) },
+            headline = email ?: stringResource(provider.labelRes),
+            trailing = email?.let {
+                {
+                    IconButton(onClick = { onEvent(ProfileUiEvent.OnEmailInfoClicked) }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Info,
+                            contentDescription = stringResource(R.string.profile_email_info),
+                        )
+                    }
+                }
             },
         )
     } else {
         SectionRow(
-            icon = Icons.Outlined.Badge,
+            icon = Icons.Outlined.NoAccounts,
             headline = stringResource(R.string.profile_account_none),
             supporting = if (state.hasAnonymousId) {
                 stringResource(R.string.profile_account_none_detail)
@@ -119,6 +132,22 @@ private fun AccountRow(
             },
         )
     }
+}
+
+// Why: Google's "G" keeps its four colors; Apple's follows the text, as the sign in buttons draw them.
+@Composable
+private fun ProviderLogoIcon(provider: AccountProvider) {
+    Icon(
+        painter = painterResource(
+            when (provider) {
+                AccountProvider.GOOGLE -> DesignR.drawable.ic_google_logo
+                AccountProvider.APPLE -> DesignR.drawable.ic_apple_logo
+            },
+        ),
+        contentDescription = stringResource(provider.labelRes),
+        modifier = Modifier.size(24.dp),
+        tint = if (provider == AccountProvider.GOOGLE) Color.Unspecified else LocalContentColor.current,
+    )
 }
 
 // Why: Google comes first on Android, natively; Apple signs in through the browser.

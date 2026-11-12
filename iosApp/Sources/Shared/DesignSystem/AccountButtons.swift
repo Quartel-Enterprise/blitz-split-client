@@ -1,4 +1,5 @@
 import AuthenticationServices
+import Shared
 import SwiftUI
 
 /// The native Sign in with Apple button (ASAuthorizationAppleIDButton). It only reports the tap:
@@ -132,5 +133,23 @@ struct GoogleButton: View {
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.4)
+    }
+}
+
+/// The sign in provider's own logo: Google's four-color "G", Apple's in the text's color.
+struct ProviderLogo: View {
+    let provider: AccountProvider
+    var size: CGFloat = 18
+
+    var body: some View {
+        if provider == .google {
+            Image(decorative: "GoogleLogo")
+                .resizable()
+                .frame(width: size, height: size)
+        } else {
+            Image(systemName: "apple.logo")
+                .font(.system(size: size))
+                .foregroundStyle(.primary)
+        }
     }
 }

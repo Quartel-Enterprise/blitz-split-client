@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">Die Verknüpfung mit deinem %1$s-Konto</string>
     <string name="delete_account_deleted_recovery_code">Dein Wiederherstellungscode</string>
     <string name="delete_account_deleted_device">Die Kopie deiner Daten auf diesem Gerät</string>
+    <string name="delete_account_kept_title">Was in deinen Gruppen bleibt</string>
+    <string name="delete_account_kept_groups">Die Gruppen mit ihren Ausgaben und Zahlungen, für die anderen Mitglieder</string>
+    <string name="delete_account_kept_member">Dein Name in jeder Gruppe, als Mitglied ohne Konto</string>
+    <string name="delete_account_kept_comments">Deine Kommentare und die Fotos, die du hinzugefügt hast, unter deinem Namen</string>
     <string name="delete_account_export">Erst meine Daten exportieren</string>
     <string name="delete_account_confirm">Ich verstehe, dass sich das nicht rückgängig machen lässt</string>
     <string name="delete_account_delete">Konto löschen</string>

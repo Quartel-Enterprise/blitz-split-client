@@ -307,6 +307,7 @@ private fun ColumnScope.DeleteAccountDetailsSection(
         provider = state.accountProvider,
         deletesRecoveryCode = state.deletesRecoveryCode,
     )
+    KeptItemsCard()
     // Why: the export reads the copy on this device, so it works offline too.
     TextButton(
         onClick = { onEvent(DeleteAccountUiEvent.OnExportClicked) },
@@ -377,6 +378,34 @@ private fun DeletedItemsCard(
         if (deletesRecoveryCode) add(stringResource(R.string.delete_account_deleted_recovery_code))
         add(stringResource(R.string.delete_account_deleted_device))
     }
+    ItemsCard(
+        title = stringResource(R.string.delete_account_deleted_title),
+        items = items,
+    )
+}
+
+/*
+ * Why: what the server keeps for the people the account shared groups with (testers' feedback): its groups, bills and
+ * payments, the member it was in each group, now with no account, and its comments and photos under its name.
+ */
+@Composable
+private fun KeptItemsCard() {
+    ItemsCard(
+        title = stringResource(R.string.delete_account_kept_title),
+        items = listOf(
+            stringResource(R.string.delete_account_kept_groups),
+            stringResource(R.string.delete_account_kept_member),
+            stringResource(R.string.delete_account_kept_comments),
+        ),
+    )
+}
+
+// Why: a null item is a line not read yet, which shimmers.
+@Composable
+private fun ItemsCard(
+    title: String,
+    items: List<String?>,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -390,16 +419,13 @@ private fun DeletedItemsCard(
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(
-                text = stringResource(R.string.delete_account_deleted_title),
+                text = title,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 items.forEach { item ->
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = "•",
                             style = MaterialTheme.typography.bodyMedium,

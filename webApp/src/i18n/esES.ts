@@ -116,4 +116,6 @@ export const esES: Partial<Record<MessageKey, string>> = {
   item_modeAmount: 'Importe',
   item_personAmount: 'Importe de {name}',
   splitBill_scanReceiptHelp: 'Envía la foto del recibo: rellena el importe, la fecha y la descripción.',
+  profile_emailInfoBody: 'Aparece aquí para que sepas con qué cuenta has iniciado sesión. Las personas de tus grupos ven tu nombre y tu foto, nunca tu correo.',
+  deleteAccount_keptComments: 'Tus comentarios y las fotos que has añadido, con tu nombre',
 }

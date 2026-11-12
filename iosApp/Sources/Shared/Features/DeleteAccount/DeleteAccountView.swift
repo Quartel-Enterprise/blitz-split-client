@@ -95,6 +95,17 @@ private struct DeleteAccountContent: View {
         return items
     }
 
+    /// What the server keeps for the people the account shared groups with (testers' feedback): the
+    /// groups with their bills and payments, the member it was, now with no account, and its comments
+    /// and photos under its name.
+    private var keptItems: [String] {
+        [
+            String(localized: "The groups, with their bills and payments, for the other members", bundle: .appLanguage),
+            String(localized: "Your name in each group, as a member without an account", bundle: .appLanguage),
+            String(localized: "Your comments and the photos you added, under your name", bundle: .appLanguage),
+        ]
+    }
+
     private var confirmBinding: Binding<Bool> {
         Binding(
             get: { model.state.hasConfirmed },
@@ -143,6 +154,25 @@ private struct DeleteAccountContent: View {
                         // The account not read yet: its link's line shimmers rather than being left out
                         ShimmerLine(width: 220, height: 12)
                             .shimmering()
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Palette.card, in: .rect(cornerRadius: 22))
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("What stays in your groups")
+                        .font(.footnote)
+                        .textCase(.uppercase)
+                        .foregroundStyle(.secondary)
+                    ForEach(keptItems, id: \.self) { item in
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Circle()
+                                .fill(.secondary)
+                                .frame(width: 5, height: 5)
+                                .accessibilityHidden(true)
+                            Text(verbatim: item)
+                        }
                     }
                 }
                 .padding(.horizontal, 16)
@@ -221,6 +251,18 @@ private struct DeleteAccountContent: View {
                     ShimmerLine(width: 220, height: 12)
                         .shimmering()
                 }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Palette.card, in: .rect(cornerRadius: 10))
+            VStack(alignment: .leading, spacing: 4) {
+                Text("What stays in your groups")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Text(verbatim: keptItems.joined(separator: " · "))
+                    .font(.callout)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)

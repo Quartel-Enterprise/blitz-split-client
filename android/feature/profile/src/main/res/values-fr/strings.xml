@@ -7,8 +7,9 @@
     <string name="profile_offline_title">Pas d’internet.</string>
     <string name="profile_offline_body">Modifie à ta guise : tout reste enregistré sur cet appareil et part dès le retour de la connexion.</string>
     <string name="profile_section_account">Compte et synchronisation</string>
-    <string name="profile_account_connected_detail">%1$s · visible par toi seul</string>
-    <string name="profile_account_connected">Connecté</string>
+    <string name="profile_email_info">À propos de ton e-mail</string>
+    <string name="profile_email_info_title">Toi seul vois ton e-mail</string>
+    <string name="profile_email_info_body">Il est là pour que tu saches avec quel compte tu es connecté. Les personnes de tes groupes voient ton nom et ta photo, jamais ton e-mail.</string>
     <string name="profile_account_none">Pas de compte</string>
     <string name="profile_account_none_detail">Identifiant anonyme de cet appareil</string>
     <string name="profile_account_local_detail">Enregistré uniquement sur cet appareil pour l’instant</string>
@@ -74,7 +75,7 @@
     <string name="profile_dynamic_colors_info">À propos des couleurs dynamiques</string>
     <string name="profile_dynamic_colors_info_body">Les couleurs dynamiques accordent l’app à ton fond d’écran : boutons, arrière-plans et accents prennent les couleurs qu’Android en tire, et changent quand ton fond d’écran change.</string>
     <string name="profile_dynamic_colors_info_note">Les groupes, les avatars et les catégories gardent leurs propres couleurs, pour que tu continues à les distinguer. Cela ne s’applique qu’à cet appareil.</string>
-    <string name="profile_dynamic_colors_info_ok">Compris</string>
+    <string name="profile_info_ok">Compris</string>
     <string name="profile_section_about">Confidentialité et à propos</string>
     <string name="profile_privacy_policy">Politique de confidentialité</string>
     <string name="profile_terms">Conditions d’utilisation</string>

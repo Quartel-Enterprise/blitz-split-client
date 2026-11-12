@@ -57,7 +57,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
-import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedEmail
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toProfileAppInvite
 import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
@@ -281,6 +280,8 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnDynamicColorsInfoClicked -> dialogs.openDynamicColorsInfo()
 
+            ProfileUiEvent.OnEmailInfoClicked -> dialogs.openEmailInfo()
+
             is ProfileUiEvent.OnDynamicColorsToggled -> toggleDynamicColors(event.isOn)
 
             is ProfileUiEvent.OnBitcoinInSatsToggled -> toggleBitcoinInSats(event.isOn)
@@ -376,7 +377,7 @@ class ProfileViewModel(
             it.copy(
                 accountProvider = connected?.provider,
                 hasAnonymousId = account.status is AccountStatus.Anonymous,
-                maskedEmail = account.email?.takeIf { connected != null }?.toMaskedEmail(),
+                email = account.email?.takeIf { connected != null && it.isNotBlank() },
                 formattedRecoveryCode = account.recoveryCode?.let(RecoveryCodeFormat::format),
                 showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 isSignOutScheduled = account.signOutWhenSynced,

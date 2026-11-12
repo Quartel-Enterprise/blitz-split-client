@@ -18,7 +18,7 @@ internal fun createInitialProfileUiState(
     shareLink = null,
     accountProvider = null,
     hasAnonymousId = false,
-    maskedEmail = null,
+    email = null,
     formattedRecoveryCode = null,
     showsRecoveryCodePrompt = false,
     isOnline = true,
