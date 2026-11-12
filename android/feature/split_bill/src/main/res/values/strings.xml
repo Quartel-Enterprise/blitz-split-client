@@ -340,4 +340,13 @@
     <string name="split_bill_as_default_body">New bills in the group start this way once this one is saved.</string>
     <string name="split_bill_new_group_default">Becomes the group default</string>
     <string name="split_bill_new_group_exception">Becomes the group exception for %s</string>
+    <string name="split_bill_mode_income">By income</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="one">By income among %d</item>
+        <item quantity="other">By income among %d</item>
+    </plurals>
+    <string name="split_bill_hint_income">Each one\'s part follows their income. The incomes are the group\'s; changing them here only counts for this bill.</string>
+    <string name="split_bill_list_income">Each one\'s income</string>
+    <string name="split_bill_person_income">%s\'s income</string>
+    <string name="split_bill_default_now_income">by income</string>
 </resources>

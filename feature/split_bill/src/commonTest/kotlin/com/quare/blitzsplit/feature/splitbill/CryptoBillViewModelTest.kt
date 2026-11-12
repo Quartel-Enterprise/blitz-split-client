@@ -1713,6 +1713,7 @@ class CryptoBillViewModelTest {
                 val read = ObserveGroupUseCase(groups)(id)
                 if (id == heldGroupId) heldGroupRead.filter { it }.flatMapLatest { read } else read
             },
+            observeGroupIncomes = { flowOf(emptyMap()) },
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groupsRead.filter { it }.flatMapLatest { groups.groups } },
             observeExpenses = ObserveExpensesUseCase(expenses),
@@ -1723,7 +1724,7 @@ class CryptoBillViewModelTest {
                 saveGroupCategory = { _, _, _, _, _, _, _ -> Result.success("") },
                 deleteGroupCategory = { Result.success(Unit) },
             ),
-            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
+            saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             takePickedReceipt = { null },
             readReceipt = { _, _, _ ->

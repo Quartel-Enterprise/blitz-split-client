@@ -39,23 +39,36 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     the bill's own, whatever the default became since) with a
     description; Save stays disabled until both are valid and the split adds up, and saving goes back to the
     group's screen it was split from, or opens the bill's group's Expenses in its place. "Split" splits by Equal,
-    Amounts, % (whole numbers adding up to 100), Shares or Items, and only changes the bill on "Done". A new bill starts
-    from the group's "Default split" (By income as its percentages) and follows it, and a sync's change of it,
+    Amounts, % (whole numbers adding up to 100), Shares, Items or By income, and only changes the bill on "Done". Its
+    modes are a row of capsules that scrolls sideways (Pierre's call, beta feedback: six no longer fit side by side),
+    the picked one filled and scrolled into sight, each a radio button to a screen reader (Android's `ChoiceChipRow`,
+    SwiftUI's capsules in a horizontal `ScrollView`, the Mac's too, the web's pills in an `overflow-x-auto` radiogroup).
+    "By income" (`SplitMode.INCOME`, Pierre's call: the incomes are synced) has each one's income field, prefilled with
+    the group's incomes (`group_member_income`, the same ones Default split's By income keeps, in the group's currency,
+    moved to the bill's as a total is), blank for whoever has none, and under each name their share and the
+    percentage the incomes give (`IncomePercents`, whole numbers adding up to 100); someone at 0 or blank is out.
+    Switching to it starts from who is in the split now. The hint says the incomes are the group's and that changing
+    them there only counts for that bill: the bill keeps only the percentages, saved as "%" (`SplitMode.savedMode`),
+    so "Edit bill" and every other screen read it as %, and the group's incomes change only through Default split or
+    "Use as the group default". A new bill starts
+    from the group's "Default split" (By income opens By income on the group's incomes while they still give its
+    percentages, else % with them) and follows it, and a sync's change of it,
     until "Done" picks its own (another group picked starts over from that one's); percentages someone who left
     took part of start Equal among everyone. Someone who joins while Split is open and still on the default gets
     the default's part (1 part, in Equal, 0%), so it stays "Default"; once changed there, they start as in any split
     (in Equal, out of the other modes). "Split" then says "Group default", and Split's notice above the
     modes "Apt 302 default: Shares, 3 to 1", or "Different from the group's default" with "Back to default" once
     changed for this bill (`SplitBillUiState.defaultSplit`, `isSplitEditorOffDefault`); "Edit bill" keeps its split
-    with no notice. A new bill split by Equal, Shares or % in another way than that default (or, for a group without
+    with no notice. A new bill split by Equal, Shares, % or By income in another way than that default (or, for a group without
     one, anything that doesn't split equally among everyone, Shares at 1 each included) offers "Use as the group
     default" under Split's people (beta feedback 11, Pierre's call, `offersSplitAsDefault`; never Amounts nor Items,
     which are one bill's amounts, nor on "Edit bill"): "Done" with it checked makes "Split" say "Becomes the group
     default", and saving the bill saves its split as the group's "Default split" (`SaveSplitAsDefault`), keeping its
-    exceptions, as Default split's Save does (offline too, Last-Write-Wins, a "By income" replaced dropping this
-    device's incomes). A bill whose category has an exception, even one that no longer adds up after someone in it
+    exceptions, as Default split's Save does (offline too, Last-Write-Wins); By income also saves the incomes typed for
+    the group, a blank one removing that person's. A bill whose category has an exception, even one that no longer adds up after someone in it
     left (`defaultSplitExceptionId`), offers "Use as the group default for Groceries" and replaces only that exception
-    ("Becomes the group exception for Groceries"). Closing the bill unsaved changes nothing; another group or category
+    ("Becomes the group exception for Groceries"); an exception has no By income, so a bill split by income makes it
+    its percentages. Closing the bill unsaved changes nothing; another group or category
     picked (Pierre's call: another category falls under another default) or Items' "Done" drops it, and the
     checkbox unchecks once it hides. The cents a split can't share evenly go to whoever paid, while they are in the split: one each
     to the payers in it, in the group's order, around again while some are left (one payer keeps them all).

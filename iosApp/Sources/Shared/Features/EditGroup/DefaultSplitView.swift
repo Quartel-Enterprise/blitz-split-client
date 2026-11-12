@@ -221,7 +221,7 @@ private struct DefaultSplitPeople: View {
             Text(verbatim: DefaultSplitCopy.listLabel(state.mode))
         } footer: {
             if state.mode == .income {
-                Label("Incomes stay on this \(DeviceName.current) only. The group sees only the percentages.", systemImage: "lock")
+                Label("The group's members see these incomes and can split bills by them.", systemImage: "person.2")
             }
         }
         Section {

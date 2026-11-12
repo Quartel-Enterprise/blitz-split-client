@@ -7,11 +7,15 @@ import com.quare.blitzsplit.core.model.DefaultSplitMode
  * group's "Divisão padrão", or the exception of the category it opened with, saved on this device and synced later.
  */
 fun interface SaveSplitAsDefault {
-    // Why: categoryId names the exception to replace, null for the group's own default; weights by member id.
+    /*
+     * Why: categoryId names the exception to replace, null for the group's own default; weights by member id. incomes
+     * are the ones a split by income was typed with, by member id in minor units, empty for any other way.
+     */
     suspend operator fun invoke(
         groupId: String,
         categoryId: String?,
         mode: DefaultSplitMode,
         weights: Map<String, Long>,
+        incomes: Map<String, Long>,
     ): Result<Unit>
 }

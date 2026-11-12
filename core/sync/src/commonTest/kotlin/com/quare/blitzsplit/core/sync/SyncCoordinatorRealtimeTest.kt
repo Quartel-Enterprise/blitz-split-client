@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -786,6 +787,7 @@ class SyncCoordinatorRealtimeTest {
             notificationPreferencesRepository = FakeNotificationPreferencesRepository(),
             groupRepository = gatedGroups,
             groupPinRepository = FakeGroupPinRepository(),
+            groupIncomeRepository = FakeGroupIncomeRepository(),
             expenseRepository = expenses,
             settlementRepository = settlements,
             categoryRepository = categories,

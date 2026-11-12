@@ -1,24 +1,26 @@
+import { useEffect, useRef } from 'react'
 import { ChartPie, Minus, Plus } from 'lucide-react'
 import type { JsSplitBillState, JsSplitEditor, JsSplitRow, SplitBillPresenter } from 'blitzsplit-shared'
-import { Avatar, segmentClass } from '@/components/common'
+import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useDraft } from '@/hooks/useDraft'
 import { t, wordGap, type MessageKey } from '@/i18n'
-import { amountPlaceholder, currencySymbol } from '@/lib/money'
+import { amountPlaceholder, currencySymbol, formatPercent } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { categoryName } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { defaultSplitText, personName, splitStatus, type Money } from './splitText'
 
-// Why: the five modes of the shared SplitMode; Itens opens "Itens da conta" in Dividir's place.
+// Why: the six modes of the shared SplitMode; Itens opens "Itens da conta" in Dividir's place.
 const modes: { mode: string; label: MessageKey }[] = [
   { mode: 'equal', label: 'split_modeEqual' },
   { mode: 'amount', label: 'split_modeAmount' },
   { mode: 'percent', label: 'split_modePercent' },
   { mode: 'shares', label: 'split_modeShares' },
   { mode: 'items', label: 'split_modeItems' },
+  { mode: 'income', label: 'split_modeIncome' },
 ]
 
 const listLabels: Record<string, MessageKey> = {
@@ -26,6 +28,7 @@ const listLabels: Record<string, MessageKey> = {
   amount: 'split_listAmount',
   percent: 'split_listPercent',
   shares: 'split_listShares',
+  income: 'split_listIncome',
 }
 
 const hints: Record<string, MessageKey> = {
@@ -33,6 +36,7 @@ const hints: Record<string, MessageKey> = {
   amount: 'split_hintAmount',
   percent: 'split_hintPercent',
   shares: 'split_hintShares',
+  income: 'split_hintIncome',
 }
 
 const maxParts = 99
@@ -81,25 +85,9 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
   const excludedIds = new Set(editor.excluded.map((person) => person.id))
   const missingIds = new Set(editor.addsUp ? [] : editor.withoutValue.map((person) => person.id))
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-4">
       {state.showsDefaultSplitNotice && state.defaultSplit && <DefaultSplitNotice presenter={presenter} state={state} editor={editor} />}
-      <div role="radiogroup" aria-label={t('split_modes')} className="grid h-9 grid-cols-5 rounded-lg bg-muted p-[3px] text-muted-foreground">
-        {modes.map(({ mode, label }) => (
-          <button
-            key={mode}
-            type="button"
-            role="radio"
-            aria-checked={editor.mode === mode}
-            onClick={() => presenter.changeSplitMode(mode)}
-            className={cn(
-              'flex items-center justify-center rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-              segmentClass(editor.mode === mode),
-            )}
-          >
-            {t(label)}
-          </button>
-        ))}
-      </div>
+      <SplitModeChips presenter={presenter} selected={editor.mode} />
 
       <div role="status" className={cn('flex flex-col gap-2 rounded-lg border px-4 py-3', status.isError && 'border-destructive text-destructive')}>
         <strong className="font-semibold">{status.title}</strong>
@@ -141,8 +129,42 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
       {state.offersSplitAsDefault && <SplitAsDefaultField presenter={presenter} state={state} />}
 
       <p className="text-[13px] text-muted-foreground">
-        {state.defaultSplit ? t('split_hintDefault') : t(hints[editor.mode] ?? 'split_hintEqual', { zero: money(0) })}
+        {state.showsDefaultSplitHint ? t('split_hintDefault') : t(hints[editor.mode] ?? 'split_hintEqual', { zero: money(0) })}
       </p>
+    </div>
+  )
+}
+
+/**
+ * Dividir's modes as a row of pills that scrolls sideways (beta feedback: six modes no longer fit side by side), the
+ * picked one filled and scrolled into sight.
+ */
+function SplitModeChips({ presenter, selected }: { presenter: SplitBillPresenter; selected: string }) {
+  const selectedRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    selectedRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [selected])
+  return (
+    <div role="radiogroup" aria-label={t('split_modes')} className="flex w-full min-w-0 gap-2 overflow-x-auto py-0.5 [scrollbar-width:none]">
+      {modes.map(({ mode, label }) => {
+        const isSelected = selected === mode
+        return (
+          <button
+            key={mode}
+            ref={isSelected ? selectedRef : undefined}
+            type="button"
+            role="radio"
+            aria-checked={isSelected}
+            onClick={() => presenter.changeSplitMode(mode)}
+            className={cn(
+              'flex h-8 shrink-0 items-center rounded-full border px-3.5 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+              isSelected ? 'border-primary bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-accent',
+            )}
+          >
+            {t(label)}
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -171,6 +193,7 @@ const nowKeys: Record<string, MessageKey> = {
   percent: 'split_defaultNowPercent',
   shares: 'split_defaultNowShares',
   items: 'split_defaultNowItems',
+  income: 'split_defaultNowIncome',
 }
 
 /**
@@ -253,6 +276,12 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, paidLa
         <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={isMissing} label={t('split_amountLabel', { name: ariaName })} className="w-28" />
       )
       break
+    case 'income':
+      subtitle = isOut ? t('split_out') : share && row.incomePercent != null ? `${share} · ${formatPercent(row.incomePercent)}` : share
+      control = (
+        <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={false} label={t('split_incomeLabel', { name: ariaName })} className="w-28" />
+      )
+      break
     case 'percent':
       subtitle = isOut ? t('split_out') : share
       control = <ValueField presenter={presenter} row={row} suffix="%" placeholder="0" isInvalid={false} label={t('split_percentLabel', { name: ariaName })} className="w-[72px]" />
@@ -320,7 +349,7 @@ interface ValueFieldProps {
   className?: string
 }
 
-/** The field of Valores and %: what is typed goes to the ViewModel, which filters it and hands it back. */
+/** The field of Valores, % and By income: what is typed goes to the ViewModel, which filters it and hands it back. */
 function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, label, className }: ValueFieldProps) {
   const id = row.person.id
   const [value, setValue] = useDraft(row.valueText, (next) => {

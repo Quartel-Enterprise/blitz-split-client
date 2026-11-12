@@ -10,8 +10,8 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.IncomePercents
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.groups.domain.usecase.GetSplitIncomes
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupIncomes
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateDefaultSplit
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -43,7 +43,7 @@ class DefaultSplitViewModel(
     private val route: Route.DefaultSplit,
     private val navigator: Navigator,
     private val updateDefaultSplit: UpdateDefaultSplit,
-    private val getSplitIncomes: GetSplitIncomes,
+    private val observeGroupIncomes: ObserveGroupIncomes,
     private val decimalSeparator: DeviceDecimalSeparator,
     observeGroup: ObserveGroup,
     observeCategoryTree: ObserveCategoryTree,
@@ -248,7 +248,7 @@ class DefaultSplitViewModel(
         }
     }
 
-    // Why: the incomes are only a nicety of this device, so the form opens at once and a failed read leaves them out.
+    // Why: the group's incomes only fill in By income's fields, so the form opens at once and they follow.
     private fun open(group: Group) {
         val saved = group.defaultSplit
         val split = GroupDefaultSplit(
@@ -277,7 +277,7 @@ class DefaultSplitViewModel(
             )
         }
         viewModelScope.launch {
-            val incomes = getSplitIncomes(route.groupId).getOrDefault(emptyMap())
+            val incomes = observeGroupIncomes(route.groupId).first()
             if (incomes.isEmpty() || !split.isGivenBy(incomes)) return@launch
             opened = opened?.copy(incomes = incomes.filterValues { it > 0 })
             updateForm { state ->
@@ -296,8 +296,8 @@ class DefaultSplitViewModel(
     }
 
     /*
-     * Why: another member may have saved other percentages for "Pela renda" since this device typed its incomes, which
-     * then no longer give what the group keeps: the screen shows the group's, not the stale incomes'.
+     * Why: the percentages "Pela renda" saved may no longer be what the group's incomes give (an older version's save, or
+     * one whose incomes another device hasn't sent yet): the screen shows the group's percentages, not the incomes'.
      */
     private fun GroupDefaultSplit.isGivenBy(incomes: Map<String, Long>): Boolean = mode != DefaultSplitMode.INCOME ||
         IncomePercents.of(weights.keys.map { it to (incomes[it] ?: 0L) }) == weights
@@ -386,7 +386,13 @@ class DefaultSplitViewModel(
             updateDefaultSplit(
                 groupId = route.groupId,
                 defaultSplit = state.defaultSplit,
-                incomes = state.incomes,
+                /*
+                 * Why: only what was typed or cleared here, a blank field removing that one's income; fields left
+                 * blank on the group's fallback percentages leave the group's incomes as they are.
+                 */
+                incomes = state.people
+                    .associate { it.id to (state.incomes[it.id] ?: 0L) }
+                    .filter { (id, income) -> income != (opened?.incomes?.get(id) ?: 0L) },
             ).onSuccess {
                 // Why: the screen may not be on top to leave, so it starts from what it just saved.
                 opened = Opened(

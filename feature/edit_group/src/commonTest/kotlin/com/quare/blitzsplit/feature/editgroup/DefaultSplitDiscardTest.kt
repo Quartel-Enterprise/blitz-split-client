@@ -7,9 +7,10 @@ import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
@@ -38,6 +39,7 @@ import kotlin.test.assertTrue
 class DefaultSplitDiscardTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
+    private var incomes = FakeGroupIncomeRepository()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: DefaultSplitViewModel
 
@@ -518,8 +520,8 @@ class DefaultSplitDiscardTest {
         storedIncomes: Map<String, Long> = emptyMap(),
     ) {
         groups = FakeGroupRepository(initialGroups = listOf(storedGroup)).also {
-            if (storedIncomes.isNotEmpty()) it.savedIncomes[GROUP_ID] = storedIncomes
         }
+        incomes = FakeGroupIncomeRepository(mapOf(GROUP_ID to storedIncomes))
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(groupDetail)
             it.navigate(editGroup)
@@ -529,8 +531,8 @@ class DefaultSplitDiscardTest {
             trackEvent = { _, _ -> },
             route = defaultSplit,
             navigator = navigator,
-            updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { 1_000L },
-            getSplitIncomes = GetSplitIncomesUseCase(groups),
+            updateDefaultSplit = UpdateDefaultSplitUseCase(groups, incomes) { 1_000L },
+            observeGroupIncomes = ObserveGroupIncomesUseCase(incomes),
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),

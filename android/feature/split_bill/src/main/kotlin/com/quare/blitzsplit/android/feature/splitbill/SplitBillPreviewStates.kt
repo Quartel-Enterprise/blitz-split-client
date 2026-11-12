@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
@@ -174,6 +175,7 @@ internal fun createPreviewBillState(
     defaultSplit = null,
     defaultSplitExceptionId = null,
     splitAsDefault = null,
+    incomes = BillIncomes.None,
     categories = CategoryTree.appOnly,
     categoryId = AppCategory.FOOD_MARKET.key,
     isCategoryPicked = false,

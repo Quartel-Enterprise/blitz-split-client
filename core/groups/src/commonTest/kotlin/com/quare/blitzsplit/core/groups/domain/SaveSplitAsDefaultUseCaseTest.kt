@@ -3,10 +3,10 @@ package com.quare.blitzsplit.core.groups.domain
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.SaveSplitAsDefaultUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
@@ -22,6 +22,7 @@ import kotlin.test.assertTrue
 
 class SaveSplitAsDefaultUseCaseTest {
     private lateinit var repository: FakeGroupRepository
+    private lateinit var incomeRepository: FakeGroupIncomeRepository
     private lateinit var useCase: SaveSplitAsDefaultUseCase
 
     @Test
@@ -31,7 +32,7 @@ class SaveSplitAsDefaultUseCaseTest {
         val weights = mapOf(ANA to 3L, BRUNO to 1L)
 
         // When
-        val result = useCase(GROUP_ID, null, DefaultSplitMode.SHARES, weights)
+        val result = useCase(GROUP_ID, null, DefaultSplitMode.SHARES, weights, emptyMap())
 
         // Then
         assertTrue(result.isSuccess)
@@ -48,27 +49,60 @@ class SaveSplitAsDefaultUseCaseTest {
         val weights = mapOf(ANA to 70L, BRUNO to 30L)
 
         // When
-        useCase(GROUP_ID, null, DefaultSplitMode.PERCENT, weights)
+        useCase(GROUP_ID, null, DefaultSplitMode.PERCENT, weights, emptyMap())
 
         // Then
         assertEquals(split(DefaultSplitMode.PERCENT, weights), repository.savedDefaultSplits.single().second)
     }
 
     @Test
-    fun `GIVEN a Pela renda default WHEN saving as the group default THEN the incomes leave the device`() = runTest {
+    fun `GIVEN a Pela renda default WHEN saving Partes as the group default THEN the incomes stay`() = runTest {
         // Given
-        prepareScenario(
-            defaultSplit = split(DefaultSplitMode.INCOME, mapOf(ANA to 75L, BRUNO to 25L)),
-            incomes = mapOf(ANA to 900_000L, BRUNO to 300_000L),
-        )
+        prepareScenario(defaultSplit = split(DefaultSplitMode.INCOME, mapOf(ANA to 75L, BRUNO to 25L)))
         val weights = mapOf(ANA to 2L, BRUNO to 1L)
 
         // When
-        useCase(GROUP_ID, null, DefaultSplitMode.SHARES, weights)
+        useCase(GROUP_ID, null, DefaultSplitMode.SHARES, weights, emptyMap())
 
         // Then
         assertEquals(split(DefaultSplitMode.SHARES, weights), repository.savedDefaultSplits.single().second)
-        assertTrue(repository.savedIncomes.getValue(GROUP_ID).isEmpty())
+        assertTrue(incomeRepository.savedIncomes.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a bill split by income WHEN saving as the group default THEN its incomes become the group incomes`() =
+        runTest {
+            // Given
+            prepareScenario(defaultSplit = null)
+            val weights = mapOf(ANA to 75L, BRUNO to 25L)
+            val incomes = mapOf(ANA to 900_000L, BRUNO to 300_000L)
+
+            // When
+            useCase(GROUP_ID, null, DefaultSplitMode.INCOME, weights, incomes)
+
+            // Then
+            assertEquals(split(DefaultSplitMode.INCOME, weights), repository.savedDefaultSplits.single().second)
+            assertEquals(incomes, incomeRepository.savedIncomes.single().second)
+        }
+
+    @Test
+    fun `GIVEN a bill split by income WHEN saving as an exception THEN it is its percentages`() = runTest {
+        // Given
+        prepareScenario(defaultSplit = null)
+        val weights = mapOf(ANA to 75L, BRUNO to 25L)
+
+        // When
+        useCase(GROUP_ID, MARKET, DefaultSplitMode.INCOME, weights, mapOf(ANA to 900_000L, BRUNO to 300_000L))
+
+        // Then
+        assertEquals(
+            listOf(CategorySplit(MARKET, DefaultSplitMode.PERCENT, weights)),
+            repository.savedDefaultSplits
+                .single()
+                .second!!
+                .exceptions,
+        )
+        assertTrue(incomeRepository.savedIncomes.isEmpty())
     }
 
     @Test
@@ -78,7 +112,7 @@ class SaveSplitAsDefaultUseCaseTest {
         val weights = mapOf(ANA to 1L, BRUNO to 1L)
 
         // When
-        val result = useCase(GROUP_ID, null, DefaultSplitMode.EQUAL, weights)
+        val result = useCase(GROUP_ID, null, DefaultSplitMode.EQUAL, weights, emptyMap())
 
         // Then
         assertTrue(result.isSuccess)
@@ -97,7 +131,7 @@ class SaveSplitAsDefaultUseCaseTest {
         val weights = mapOf(ANA to 1L, BRUNO to 1L)
 
         // When
-        useCase(GROUP_ID, null, DefaultSplitMode.EQUAL, weights)
+        useCase(GROUP_ID, null, DefaultSplitMode.EQUAL, weights, emptyMap())
 
         // Then
         assertEquals(split(DefaultSplitMode.EQUAL, weights, market), repository.savedDefaultSplits.single().second)
@@ -111,7 +145,7 @@ class SaveSplitAsDefaultUseCaseTest {
         val weights = mapOf(ANA to 1L, BRUNO to 0L)
 
         // When
-        val result = useCase(GROUP_ID, MARKET, DefaultSplitMode.EQUAL, weights)
+        val result = useCase(GROUP_ID, MARKET, DefaultSplitMode.EQUAL, weights, emptyMap())
 
         // Then
         assertTrue(result.isSuccess)
@@ -129,7 +163,7 @@ class SaveSplitAsDefaultUseCaseTest {
         val weights = mapOf(ANA to 50L, BRUNO to 50L)
 
         // When
-        useCase(GROUP_ID, MARKET, DefaultSplitMode.PERCENT, weights)
+        useCase(GROUP_ID, MARKET, DefaultSplitMode.PERCENT, weights, emptyMap())
 
         // Then
         assertEquals(
@@ -142,22 +176,18 @@ class SaveSplitAsDefaultUseCaseTest {
     fun `GIVEN a Pela renda default WHEN saving as an exception THEN the default and its incomes stay`() = runTest {
         // Given
         val main = split(DefaultSplitMode.INCOME, mapOf(ANA to 75L, BRUNO to 25L))
-        val incomes = mapOf(ANA to 900_000L, BRUNO to 300_000L)
-        prepareScenario(
-            defaultSplit = main,
-            incomes = incomes,
-        )
+        prepareScenario(defaultSplit = main)
         val weights = mapOf(ANA to 1L, BRUNO to 1L)
 
         // When
-        useCase(GROUP_ID, MARKET, DefaultSplitMode.EQUAL, weights)
+        useCase(GROUP_ID, MARKET, DefaultSplitMode.EQUAL, weights, emptyMap())
 
         // Then
         assertEquals(
             main.copy(exceptions = listOf(CategorySplit(MARKET, DefaultSplitMode.EQUAL, weights))),
             repository.savedDefaultSplits.single().second,
         )
-        assertEquals(incomes, repository.savedIncomes[GROUP_ID])
+        assertTrue(incomeRepository.savedIncomes.isEmpty())
     }
 
     @Test
@@ -167,7 +197,7 @@ class SaveSplitAsDefaultUseCaseTest {
         val weights = mapOf(ANA to 2L, BRUNO to 1L)
 
         // When
-        val result = useCase(GROUP_ID, MARKET, DefaultSplitMode.SHARES, weights)
+        val result = useCase(GROUP_ID, MARKET, DefaultSplitMode.SHARES, weights, emptyMap())
 
         // Then
         assertTrue(result.isSuccess)
@@ -187,7 +217,7 @@ class SaveSplitAsDefaultUseCaseTest {
         )
 
         // When
-        val result = useCase(GROUP_ID, null, DefaultSplitMode.SHARES, mapOf(ANA to 2L, BRUNO to 1L))
+        val result = useCase(GROUP_ID, null, DefaultSplitMode.SHARES, mapOf(ANA to 2L, BRUNO to 1L), emptyMap())
 
         // Then
         assertSame(error, result.exceptionOrNull())
@@ -204,24 +234,7 @@ class SaveSplitAsDefaultUseCaseTest {
         )
 
         // When
-        val result = useCase(GROUP_ID, MARKET, DefaultSplitMode.EQUAL, mapOf(ANA to 1L, BRUNO to 0L))
-
-        // Then
-        assertSame(error, result.exceptionOrNull())
-        assertTrue(repository.savedDefaultSplits.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN Pela renda incomes that cannot be read WHEN saving as an exception THEN nothing is saved`() = runTest {
-        // Given
-        val error = IllegalStateException("disk unreadable")
-        prepareScenario(
-            defaultSplit = split(DefaultSplitMode.INCOME, mapOf(ANA to 75L, BRUNO to 25L)),
-            incomesError = error,
-        )
-
-        // When
-        val result = useCase(GROUP_ID, MARKET, DefaultSplitMode.EQUAL, mapOf(ANA to 1L, BRUNO to 1L))
+        val result = useCase(GROUP_ID, MARKET, DefaultSplitMode.EQUAL, mapOf(ANA to 1L, BRUNO to 0L), emptyMap())
 
         // Then
         assertSame(error, result.exceptionOrNull())
@@ -240,9 +253,7 @@ class SaveSplitAsDefaultUseCaseTest {
 
     private fun prepareScenario(
         defaultSplit: GroupDefaultSplit?,
-        incomes: Map<String, Long> = emptyMap(),
         defaultSplitError: Throwable? = null,
-        incomesError: Throwable? = null,
     ) {
         val group = Group(
             id = GROUP_ID,
@@ -264,14 +275,12 @@ class SaveSplitAsDefaultUseCaseTest {
             simplifyDebtsConflictBy = null,
         )
         repository = FakeGroupRepository(listOf(group)).also {
-            it.savedIncomes[GROUP_ID] = incomes
             it.defaultSplitError = defaultSplitError
-            it.incomesError = incomesError
         }
+        incomeRepository = FakeGroupIncomeRepository()
         useCase = SaveSplitAsDefaultUseCase(
             observeGroup = ObserveGroupUseCase(repository),
-            getSplitIncomes = GetSplitIncomesUseCase(repository),
-            updateDefaultSplit = UpdateDefaultSplitUseCase(repository) { 1_000L },
+            updateDefaultSplit = UpdateDefaultSplitUseCase(repository, incomeRepository) { 1_000L },
         )
     }
 

@@ -15,10 +15,11 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.CropPhoto
@@ -52,6 +53,7 @@ import kotlin.test.assertTrue
 class EditGroupDiscardTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
+    private var incomes = FakeGroupIncomeRepository()
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: EditGroupViewModel
     private lateinit var defaultSplitViewModel: DefaultSplitViewModel
@@ -537,8 +539,8 @@ class EditGroupDiscardTest {
                 trackEvent = { _, _ -> },
                 route = defaultSplit,
                 navigator = navigator,
-                updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { 1_000L },
-                getSplitIncomes = GetSplitIncomesUseCase(groups),
+                updateDefaultSplit = UpdateDefaultSplitUseCase(groups, incomes) { 1_000L },
+                observeGroupIncomes = ObserveGroupIncomesUseCase(incomes),
                 decimalSeparator = { ',' },
                 observeGroup = ObserveGroupUseCase(groups),
                 observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),

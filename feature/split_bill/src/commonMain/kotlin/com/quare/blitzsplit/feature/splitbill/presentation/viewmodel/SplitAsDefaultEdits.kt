@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitAsDefault
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -43,5 +44,12 @@ internal suspend fun SaveSplitAsDefault.saveOf(state: SplitBillUiState) {
         categoryId = asDefault.exceptionCategoryId,
         mode = mode,
         weights = state.split.entries.associate { it.memberId to it.value },
+        incomes = if (state.split.mode ==
+            SplitMode.INCOME
+        ) {
+            state.split.toGroupIncomes(state.incomes.currency)
+        } else {
+            emptyMap()
+        },
     )
 }

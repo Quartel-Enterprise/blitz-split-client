@@ -49,7 +49,7 @@
     <string name="default_split_list_shares">Aandelen per persoon</string>
     <string name="default_split_list_percent">Percentage per persoon</string>
     <string name="default_split_list_income">Inkomen per persoon</string>
-    <string name="default_split_income_note">Inkomens blijven alleen op dit apparaat. De groep ziet alleen de percentages.</string>
+    <string name="default_split_income_note">De leden van de groep zien deze inkomens en kunnen uitgaven ernaar verdelen.</string>
     <string name="default_split_parts_of">Aandelen van %s</string>
     <string name="default_split_percent_of">Percentage van %s</string>
     <string name="default_split_income_of">Inkomen van %s</string>

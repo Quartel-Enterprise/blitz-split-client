@@ -51,7 +51,7 @@
     <string name="default_split_list_shares">Udziały każdej osoby</string>
     <string name="default_split_list_percent">Procent każdej osoby</string>
     <string name="default_split_list_income">Dochód każdej osoby</string>
-    <string name="default_split_income_note">Dochody zostają tylko na tym urządzeniu. Grupa widzi tylko procenty.</string>
+    <string name="default_split_income_note">Członkowie grupy widzą te dochody i mogą według nich dzielić wydatki.</string>
     <string name="default_split_parts_of">Udziały: %s</string>
     <string name="default_split_percent_of">Procent: %s</string>
     <string name="default_split_income_of">Dochód: %s</string>

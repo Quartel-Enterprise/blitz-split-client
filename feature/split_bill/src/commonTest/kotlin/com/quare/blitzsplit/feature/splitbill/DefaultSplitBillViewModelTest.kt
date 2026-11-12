@@ -24,10 +24,11 @@ import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.SaveSplitAsDefaultUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
+import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
@@ -69,6 +70,7 @@ class DefaultSplitBillViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
+    private var incomes = FakeGroupIncomeRepository()
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
@@ -896,7 +898,7 @@ class DefaultSplitBillViewModelTest {
                 GROUP_ID to GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf(PIERRE to 70L, ANA to 30L), emptyList()),
                 groups.savedDefaultSplits.single(),
             )
-            assertEquals(emptyMap(), groups.savedIncomes[GROUP_ID])
+            assertTrue(incomes.savedIncomes.isEmpty())
         }
 
     @Test
@@ -1409,6 +1411,7 @@ class DefaultSplitBillViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             decimalSeparator = { ',' },
             observeGroup = ObserveGroupUseCase(groups),
+            observeGroupIncomes = ObserveGroupIncomesUseCase(incomes),
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
@@ -1421,8 +1424,7 @@ class DefaultSplitBillViewModelTest {
             ),
             saveSplitAsDefault = SaveSplitAsDefaultUseCase(
                 observeGroup = ObserveGroupUseCase(groups),
-                getSplitIncomes = GetSplitIncomesUseCase(groups),
-                updateDefaultSplit = UpdateDefaultSplitUseCase(groups) { NOW },
+                updateDefaultSplit = UpdateDefaultSplitUseCase(groups, incomes) { NOW },
             ),
             offerCategoryTeach = {},
             takePickedReceipt = { null },

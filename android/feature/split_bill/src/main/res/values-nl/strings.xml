@@ -340,4 +340,13 @@
     <string name="split_bill_as_default_body">Nieuwe uitgaven in de groep beginnen zo zodra deze is opgeslagen.</string>
     <string name="split_bill_new_group_default">Wordt de standaard van de groep</string>
     <string name="split_bill_new_group_exception">Wordt de uitzondering van de groep voor %s</string>
+    <string name="split_bill_mode_income">Op inkomen</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="one">Op inkomen over %d</item>
+        <item quantity="other">Op inkomen over %d</item>
+    </plurals>
+    <string name="split_bill_hint_income">Ieders deel volgt het inkomen. De inkomens zijn van de groep; ze hier wijzigen geldt alleen voor deze uitgave.</string>
+    <string name="split_bill_list_income">Inkomen per persoon</string>
+    <string name="split_bill_person_income">Inkomen van %s</string>
+    <string name="split_bill_default_now_income">op inkomen</string>
 </resources>

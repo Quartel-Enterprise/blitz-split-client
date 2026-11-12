@@ -315,4 +315,12 @@
     <string name="split_bill_as_default_body">この支出を保存すると、グループの新しい支出はこの設定で始まります。</string>
     <string name="split_bill_new_group_default">グループのデフォルトになります</string>
     <string name="split_bill_new_group_exception">%sのグループ例外になります</string>
+    <string name="split_bill_mode_income">収入に応じて</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="other">%d人で収入に応じて</item>
+    </plurals>
+    <string name="split_bill_hint_income">各自の負担が収入に応じて決まります。収入はグループで共有され、ここでの変更はこの支出にだけ適用されます。</string>
+    <string name="split_bill_list_income">各自の収入</string>
+    <string name="split_bill_person_income">%sの収入</string>
+    <string name="split_bill_default_now_income">収入に応じて</string>
 </resources>

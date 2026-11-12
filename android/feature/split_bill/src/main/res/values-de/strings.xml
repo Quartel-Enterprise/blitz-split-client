@@ -340,4 +340,13 @@
     <string name="split_bill_as_default_body">Neue Ausgaben in der Gruppe starten so, sobald diese gespeichert ist.</string>
     <string name="split_bill_new_group_default">Wird zum Gruppenstandard</string>
     <string name="split_bill_new_group_exception">Wird zur Gruppenausnahme für %s</string>
+    <string name="split_bill_mode_income">Nach Einkommen</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="one">Nach Einkommen auf %d</item>
+        <item quantity="other">Nach Einkommen auf %d</item>
+    </plurals>
+    <string name="split_bill_hint_income">Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe.</string>
+    <string name="split_bill_list_income">Einkommen pro Person</string>
+    <string name="split_bill_person_income">Einkommen von %s</string>
+    <string name="split_bill_default_now_income">nach Einkommen</string>
 </resources>

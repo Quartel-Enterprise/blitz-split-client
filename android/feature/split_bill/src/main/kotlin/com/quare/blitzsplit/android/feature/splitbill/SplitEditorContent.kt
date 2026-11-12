@@ -22,12 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.ChoiceChipRow
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidBySeveralOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -93,14 +92,11 @@ internal fun SplitEditorContent(
                     exceptionName = state.defaultSplitException?.let { categoryNameOf(it) },
                 )
             }
-            ConnectedButtonRow(
+            ChoiceChipRow(
                 labels = SplitMode.entries.map { stringResource(it.labelRes) },
                 selectedIndex = SplitMode.entries.indexOf(editor.mode),
                 groupLabel = stringResource(R.string.split_bill_modes),
                 onClick = { index -> onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.entries[index])) },
-                itemRole = Role.RadioButton,
-                height = 44.dp,
-                innerRadius = innerRadius,
             )
             SplitStatusCard(
                 editor = editor,
@@ -108,7 +104,7 @@ internal fun SplitEditorContent(
             )
             if (!isTabletop) {
                 Text(
-                    text = if (state.defaultSplit != null) {
+                    text = if (state.showsDefaultSplitHint) {
                         stringResource(R.string.split_bill_hint_default)
                     } else {
                         modeHintOf(editor.mode, money)
@@ -148,6 +144,7 @@ private fun modeHintOf(
     SplitMode.PERCENT -> stringResource(R.string.split_bill_hint_percent)
     SplitMode.SHARES -> stringResource(R.string.split_bill_hint_shares)
     SplitMode.ITEMS -> stringResource(R.string.split_bill_item_hint_equal)
+    SplitMode.INCOME -> stringResource(R.string.split_bill_hint_income)
 }
 
 private val SplitMode.labelRes: Int
@@ -157,6 +154,7 @@ private val SplitMode.labelRes: Int
         SplitMode.PERCENT -> R.string.split_bill_mode_percent
         SplitMode.SHARES -> R.string.split_bill_mode_shares
         SplitMode.ITEMS -> R.string.split_bill_mode_items
+        SplitMode.INCOME -> R.string.split_bill_mode_income
     }
 
 // Why: "Mercado · você pagou" over the total being split, Dividir's and Itens da conta's.
@@ -242,6 +240,7 @@ private fun SplitPeopleList(
                     SplitMode.PERCENT -> R.string.split_bill_list_percent
                     SplitMode.SHARES -> R.string.split_bill_list_shares
                     SplitMode.ITEMS -> R.string.split_bill_list_amount
+                    SplitMode.INCOME -> R.string.split_bill_list_income
                 },
             ),
             modifier = Modifier
@@ -269,6 +268,7 @@ private fun SplitPeopleList(
             SplitPersonRow(
                 row = row,
                 mode = editor.mode,
+                incomePercent = editor.incomePercents[row.person.id],
                 isIn = row.person.id in includedIds,
                 paidLabel = when {
                     row.person.id !in editor.payerIds -> null

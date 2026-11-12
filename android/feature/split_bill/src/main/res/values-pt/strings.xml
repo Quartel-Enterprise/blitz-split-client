@@ -340,4 +340,13 @@
     <string name="split_bill_as_default_body">As novas contas do grupo começam assim quando esta for salva.</string>
     <string name="split_bill_new_group_default">Vira o padrão do grupo</string>
     <string name="split_bill_new_group_exception">Vira a exceção do grupo para %s</string>
+    <string name="split_bill_mode_income">Pela renda</string>
+    <plurals name="split_bill_mode_income_among">
+        <item quantity="one">Pela renda entre %d</item>
+        <item quantity="other">Pela renda entre %d</item>
+    </plurals>
+    <string name="split_bill_hint_income">A parte de cada um segue a renda. As rendas são do grupo; mudar aqui vale só para esta conta.</string>
+    <string name="split_bill_list_income">Renda de cada um</string>
+    <string name="split_bill_person_income">Renda de %s</string>
+    <string name="split_bill_default_now_income">pela renda</string>
 </resources>

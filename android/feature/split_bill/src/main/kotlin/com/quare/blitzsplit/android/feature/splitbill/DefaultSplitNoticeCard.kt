@@ -150,4 +150,5 @@ private val SplitMode.billWordRes: Int
         SplitMode.PERCENT -> R.string.split_bill_default_now_percent
         SplitMode.SHARES -> R.string.split_bill_default_now_shares
         SplitMode.ITEMS -> R.string.split_bill_default_now_items
+        SplitMode.INCOME -> R.string.split_bill_default_now_income
     }

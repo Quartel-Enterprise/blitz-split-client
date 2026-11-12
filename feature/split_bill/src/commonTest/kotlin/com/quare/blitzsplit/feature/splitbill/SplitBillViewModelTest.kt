@@ -3409,6 +3409,7 @@ class SplitBillViewModelTest {
             currentTimeZone = { timeZone },
             decimalSeparator = { decimalSeparator },
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },
+            observeGroupIncomes = { flowOf(emptyMap()) },
             observeExpense = ObserveExpenseUseCase(expenses),
             observeGroupsByActivity = { groups.groups },
             observeExpenses = ObserveExpensesUseCase(expenses),
@@ -3419,7 +3420,7 @@ class SplitBillViewModelTest {
                 saveGroupCategory = { _, _, _, _, _, _, _ -> Result.success("") },
                 deleteGroupCategory = { Result.success(Unit) },
             ),
-            saveSplitAsDefault = { _, _, _, _ -> Result.success(Unit) },
+            saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             takePickedReceipt = { null },
             readReceipt = { _, _, _ ->

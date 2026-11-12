@@ -17,8 +17,8 @@ data class DefaultSplitUiState(
     // Why: in the order they were added to the group, the creator first.
     val people: List<DefaultSplitPerson>,
     /*
-     * Why: the percentages "Pela renda" shows while no income is typed on this device: the ones the group saved, or
-     * the split's as it was when someone switched to it. The incomes stay with whoever typed them.
+     * Why: the percentages "Pela renda" shows while no income is typed: the ones the group saved when its incomes no
+     * longer give them, or the split's as it was when someone switched to it.
      */
     val incomeFallback: Map<String, Long>,
     val isOnline: Boolean,
@@ -151,7 +151,7 @@ data class DefaultSplitUiState(
     val exceptionModes: List<DefaultSplitMode>
         get() = CategorySplit.modes
 
-    // Why: the incomes typed, by member id in minor units, which stay on this device.
+    // Why: the incomes typed, by member id in minor units, which saving "Pela renda" keeps for the group.
     val incomes: Map<String, Long>
         get() = figures.incomes
 }

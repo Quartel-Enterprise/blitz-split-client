@@ -4487,7 +4487,7 @@ class GroupRepositoryImplTest {
     )
 
     @Test
-    fun `GIVEN a group WHEN saving its default split THEN the device holds it pending with the incomes`() = runTest {
+    fun `GIVEN a group WHEN saving its default split THEN the device holds it pending`() = runTest {
         // Given
         prepareScenario(
             storedGroups = listOf(
@@ -4500,7 +4500,7 @@ class GroupRepositoryImplTest {
         val split = GroupDefaultSplit(DefaultSplitMode.INCOME, mapOf("m-1" to 75L, "m-2" to 25L), emptyList())
 
         // When
-        val result = repository.updateDefaultSplit("group-1", split, mapOf("m-1" to 900_000L), updatedAt = 9L)
+        val result = repository.updateDefaultSplit("group-1", split, updatedAt = 9L)
 
         // Then
         assertTrue(result.isSuccess)
@@ -4512,7 +4512,6 @@ class GroupRepositoryImplTest {
                 .single()
                 .defaultSplit,
         )
-        assertEquals(mapOf("m-1" to 900_000L), repository.getSplitIncomes("group-1").getOrThrow())
         assertTrue(local.group("group-1")!!.pendingSync)
     }
 
@@ -4533,7 +4532,7 @@ class GroupRepositoryImplTest {
         val split = GroupDefaultSplit(DefaultSplitMode.PERCENT, mapOf("m-1" to 60L, "m-2" to 40L), emptyList())
 
         // When
-        repository.updateDefaultSplit("group-1", split, emptyMap(), updatedAt = 9L).getOrThrow()
+        repository.updateDefaultSplit("group-1", split, updatedAt = 9L).getOrThrow()
         repository.uploadPendingGroups("user-1").getOrThrow()
 
         // Then
@@ -4558,7 +4557,7 @@ class GroupRepositoryImplTest {
         )
 
         // When
-        val result = repository.updateDefaultSplit("group-1", null, emptyMap(), updatedAt = 9L)
+        val result = repository.updateDefaultSplit("group-1", null, updatedAt = 9L)
 
         // Then
         assertTrue(result.isFailure)
@@ -7191,7 +7190,6 @@ private class FakeGroupLocalDataSource(
     override suspend fun updateDefaultSplit(
         id: String,
         defaultSplit: String?,
-        splitIncomes: String?,
         updatedAt: Long,
     ) {
         groupWriteError?.let { throw it }
@@ -7199,7 +7197,6 @@ private class FakeGroupLocalDataSource(
             if (it.id == id) {
                 it.copy(
                     defaultSplit = defaultSplit,
-                    splitIncomes = splitIncomes,
                     updatedAt = maxOf(updatedAt, it.updatedAt + 1),
                     pendingSync = true,
                 )
@@ -7207,11 +7204,6 @@ private class FakeGroupLocalDataSource(
                 it
             }
         }
-    }
-
-    override suspend fun getSplitIncomes(id: String): String? {
-        groupWriteError?.let { throw it }
-        return group(id)?.splitIncomes
     }
 
     override suspend fun getDefaultSplit(id: String): String? {
