@@ -4,4 +4,6 @@
     <string name="profile_payment_keys_add_bitcoin_entry">Añadir una clave Bitcoin</string>
     <string name="profile_payment_keys_add_pix_entry">Añadir una clave Pix</string>
     <string name="profile_bitcoin_in_sats_detail">Muestra e introduce los importes de bitcoin en sats (1 ₿ = 100 000 000 sats).</string>
+
+    <string name="profile_email_info_body">Aparece aquí para que sepas con qué cuenta has iniciado sesión. Las personas de tus grupos ven tu nombre y tu foto, nunca tu correo.</string>
 </resources>

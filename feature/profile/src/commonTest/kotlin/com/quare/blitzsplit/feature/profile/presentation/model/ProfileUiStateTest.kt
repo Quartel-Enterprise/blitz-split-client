@@ -634,7 +634,7 @@ class ProfileUiStateTest {
         shareLink = null,
         accountProvider = accountProvider,
         hasAnonymousId = hasAnonymousId,
-        maskedEmail = null,
+        email = null,
         formattedRecoveryCode = formattedRecoveryCode,
         showsRecoveryCodePrompt = false,
         isOnline = isOnline,

@@ -106,7 +106,7 @@ internal fun DynamicColorsInfoDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_dynamic_colors_info_ok)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.profile_info_ok)) }
         },
         placement = placement,
     )

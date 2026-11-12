@@ -1,9 +1,9 @@
-import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, KeyRound, Link2, Loader2, LogOut, Plus, RotateCw, Share2, Tag, Zap } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, Info, KeyRound, Link2, Loader2, LogOut, Plus, RotateCw, Share2, Tag, UserX, Zap } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ComponentType, ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { AccountButtons, providerLabel, segmentClass } from '@/components/common'
+import { AccountButtons, ProviderLogo, providerLabel, segmentClass } from '@/components/common'
 import { pageContentClass } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { PixIcon } from '@/components/PixIcon'
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { LoadingRegion, Skeleton, SkeletonLine } from '@/components/ui/skeleton'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { NotificationSettingsCard } from '@/features/notification-settings/NotificationSettingsCard'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
@@ -198,11 +199,12 @@ export function ProfileScreen() {
   )
 }
 
-function Row({ title, detail, children }: { title: string; detail?: string | null; children?: ReactNode }) {
+// Why: a Row after a leading icon takes `flex-1`, so its trailing button stays at the card's end.
+function Row({ title, detail, className, children }: { title: string; detail?: string | null; className?: string; children?: ReactNode }) {
   return (
-    <div className="flex min-h-12 items-center gap-3 py-2">
+    <div className={cn('flex min-h-12 items-center gap-3 py-2', className)}>
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-sm font-medium">{title}</span>
+        <span className="text-sm font-medium [overflow-wrap:anywhere]">{title}</span>
         {detail && <span className="text-xs text-muted-foreground">{detail}</span>}
       </div>
       {children}
@@ -338,18 +340,33 @@ function AccountCard({ presenter, state, className }: CardProps) {
           // Why: never "Sem conta" with Conectar before the account was read.
           <RowsSkeleton count={2} />
         ) : provider ? (
-          <Row title={providerLabel(provider, true)} detail={state.maskedEmail && t('profile_accountConnectedDetail', { email: state.maskedEmail })}>
-            <Badge variant="secondary">{t('profile_accountConnected')}</Badge>
-          </Row>
+          // Why: the provider's logo and the whole email say which account it is; the ⓘ says only the person sees it.
+          <div className="flex items-center gap-3">
+            {/* Why: without an email the row's title already names the provider, which the logo's label would repeat */}
+            <span
+              role={state.email ? 'img' : undefined}
+              aria-label={state.email ? providerLabel(provider, true) : undefined}
+              aria-hidden={state.email ? undefined : true}
+              className="flex size-4 shrink-0 items-center justify-center"
+            >
+              <ProviderLogo provider={provider} />
+            </span>
+            <Row title={state.email ?? providerLabel(provider, true)} className="min-w-0 flex-1">
+              {state.email && <EmailInfoButton presenter={presenter} isOpen={state.dialog === 'EMAIL_INFO'} />}
+            </Row>
+          </div>
         ) : (
           <div className="flex flex-col gap-3 pb-3">
-            <Row title={t('profile_accountNone')} detail={t('profile_accountNoneDetail')}>
-              {!state.isConnectExpanded && (
-                <Button size="sm" variant="outline" disabled={!state.canConnect} onClick={() => presenter.connect()}>
-                  {t('profile_connect')}
-                </Button>
-              )}
-            </Row>
+            <div className="flex items-center gap-3">
+              <UserX aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+              <Row title={t('profile_accountNone')} detail={t('profile_accountNoneDetail')} className="min-w-0 flex-1">
+                {!state.isConnectExpanded && (
+                  <Button size="sm" variant="outline" disabled={!state.canConnect} onClick={() => presenter.connect()}>
+                    {t('profile_connect')}
+                  </Button>
+                )}
+              </Row>
+            </div>
             {state.showsConnectButtons && (
               <AccountButtons
                 short
@@ -386,6 +403,23 @@ function AccountCard({ presenter, state, className }: CardProps) {
         )}
       </CardContent>
     </Card>
+  )
+}
+
+/** The ⓘ next to the account's email: a popover saying only the person sees it, opened and closed through the ViewModel. */
+function EmailInfoButton({ presenter, isOpen }: { presenter: ProfilePresenter; isOpen: boolean }) {
+  return (
+    <Popover open={isOpen} onOpenChange={(open) => (open ? presenter.emailInfo() : presenter.dismissDialog())}>
+      <PopoverTrigger asChild>
+        <Button size="icon" variant="ghost" className="shrink-0" aria-label={t('profile_emailInfo')}>
+          <Info />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="flex flex-col gap-1.5 text-sm">
+        <p className="font-medium">{t('profile_emailInfoTitle')}</p>
+        <p className="text-muted-foreground">{t('profile_emailInfoBody')}</p>
+      </PopoverContent>
+    </Popover>
   )
 }
 

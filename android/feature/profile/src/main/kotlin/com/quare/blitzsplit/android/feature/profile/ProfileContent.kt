@@ -466,6 +466,33 @@ internal fun SectionRow(
     isSupportingLoading: Boolean = false,
     trailing: @Composable (() -> Unit)? = null,
 ) {
+    SectionRow(
+        leading = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+            )
+        },
+        headline = headline,
+        modifier = modifier,
+        supporting = supporting,
+        supportingLanguageTag = supportingLanguageTag,
+        isSupportingLoading = isSupportingLoading,
+        trailing = trailing,
+    )
+}
+
+// Why: a row whose leading isn't a plain icon, such as the account row's Google or Apple logo.
+@Composable
+internal fun SectionRow(
+    leading: @Composable () -> Unit,
+    headline: String,
+    modifier: Modifier = Modifier,
+    supporting: String? = null,
+    supportingLanguageTag: String? = null,
+    isSupportingLoading: Boolean = false,
+    trailing: @Composable (() -> Unit)? = null,
+) {
     FlatListItem(
         headlineContent = { Text(headline) },
         modifier = modifier,
@@ -485,12 +512,7 @@ internal fun SectionRow(
                 }
             }
         },
-        leadingContent = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-            )
-        },
+        leadingContent = leading,
         trailingContent = trailing,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
     )

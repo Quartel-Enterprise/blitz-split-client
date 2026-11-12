@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">%1$sアカウントとの連携</string>
     <string name="delete_account_deleted_recovery_code">復元コード</string>
     <string name="delete_account_deleted_device">このデバイス上のデータのコピー</string>
+    <string name="delete_account_kept_title">グループに残るもの</string>
+    <string name="delete_account_kept_groups">グループとその支出・支払い（ほかのメンバーのために残ります）</string>
+    <string name="delete_account_kept_member">各グループでのあなたの名前（アカウントのないメンバーとして）</string>
+    <string name="delete_account_kept_comments">あなたのコメントと追加した写真（あなたの名前のまま）</string>
     <string name="delete_account_export">先にデータをエクスポート</string>
     <string name="delete_account_confirm">この操作は元に戻せないことを理解しました</string>
     <string name="delete_account_delete">アカウントを削除</string>

@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">%1$s hesabınla olan bağlantı</string>
     <string name="delete_account_deleted_recovery_code">Kurtarma kodun</string>
     <string name="delete_account_deleted_device">Verilerinin bu cihazdaki kopyası</string>
+    <string name="delete_account_kept_title">Gruplarında kalanlar</string>
+    <string name="delete_account_kept_groups">Gruplar, harcamaları ve ödemeleriyle, diğer üyeler için</string>
+    <string name="delete_account_kept_member">Her gruptaki adın, hesabı olmayan bir üye olarak</string>
+    <string name="delete_account_kept_comments">Yorumların ve eklediğin fotoğraflar, senin adınla</string>
     <string name="delete_account_export">Önce verilerimi dışa aktar</string>
     <string name="delete_account_confirm">Bunun geri alınamayacağını anlıyorum</string>
     <string name="delete_account_delete">Hesabı sil</string>

@@ -1,21 +1,19 @@
 package com.quare.blitzsplit.android.feature.editprofile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AccountProviderLogoIcon
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.PhotoShortcutButton
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerContent
@@ -30,7 +28,6 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.blitzsplit.feature.editprofile.presentation.model.ProfilePhotoUiState
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: the profile's avatar opened big, in the viewer the group's photo shares (PhotoViewerContent).
 @Composable
@@ -107,20 +104,11 @@ private fun AccountPhotoShortcutButton(
     val provider = state.accountPhotoProvider ?: return
     PhotoShortcutButton(
         icon = {
-            if (provider == AccountProvider.GOOGLE) {
-                Image(
-                    painter = painterResource(DesignR.drawable.ic_google_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(PhotoViewerIconSize),
-                )
-            } else {
-                Icon(
-                    painter = painterResource(DesignR.drawable.ic_apple_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(PhotoViewerIconSize),
-                    tint = Color.Black,
-                )
-            }
+            AccountProviderLogoIcon(
+                provider = provider,
+                modifier = Modifier.size(PhotoViewerIconSize),
+                appleTint = Color.Black,
+            )
         },
         background = Color.White,
         label = stringResource(provider.labelRes),

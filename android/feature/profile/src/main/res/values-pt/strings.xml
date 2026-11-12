@@ -7,8 +7,9 @@
     <string name="profile_offline_title">Sem internet.</string>
     <string name="profile_offline_body">Pode editar à vontade: fica salvo neste aparelho e sobe quando a conexão voltar.</string>
     <string name="profile_section_account">Conta e sincronização</string>
-    <string name="profile_account_connected_detail">%1$s · só você vê</string>
-    <string name="profile_account_connected">Conectada</string>
+    <string name="profile_email_info">Sobre o seu e-mail</string>
+    <string name="profile_email_info_title">Só você vê o seu e-mail</string>
+    <string name="profile_email_info_body">Ele aparece aqui para você saber com qual conta entrou. As pessoas dos seus grupos veem seu nome e sua foto, nunca o seu e-mail.</string>
     <string name="profile_account_none">Sem conta</string>
     <string name="profile_account_none_detail">ID anônimo deste aparelho</string>
     <string name="profile_account_local_detail">Fica salvo só neste aparelho por enquanto</string>
@@ -73,7 +74,7 @@
     <string name="profile_dynamic_colors_info">Sobre as cores dinâmicas</string>
     <string name="profile_dynamic_colors_info_body">As cores dinâmicas combinam o app com o seu papel de parede: botões, fundos e destaques usam as cores que o Android tira dele, e mudam quando o papel de parede muda.</string>
     <string name="profile_dynamic_colors_info_note">Grupos, avatares e categorias mantêm as próprias cores, para você continuar distinguindo cada um. Vale só neste aparelho.</string>
-    <string name="profile_dynamic_colors_info_ok">Entendi</string>
+    <string name="profile_info_ok">Entendi</string>
     <string name="profile_section_about">Privacidade e sobre</string>
     <string name="profile_privacy_policy">Política de Privacidade</string>
     <string name="profile_terms">Termos de Serviço</string>

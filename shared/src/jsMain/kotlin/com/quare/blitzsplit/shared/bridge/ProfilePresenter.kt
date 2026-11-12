@@ -29,7 +29,7 @@ class JsProfileState(
     val hasAccount: Boolean,
     // Why: "Erase profile and sign out" in the place of "Sign out", and its dialog, when nothing brings it back.
     val erasesProfileOnSignOut: Boolean,
-    val maskedEmail: String?,
+    val email: String?,
     val formattedRecoveryCode: String?,
     val hasRecoveryCode: Boolean,
     val showsRecoveryCodeRow: Boolean,
@@ -113,7 +113,7 @@ class ProfilePresenter {
                 accountProvider = state.accountProvider?.code,
                 hasAccount = state.hasAccount,
                 erasesProfileOnSignOut = state.erasesProfileOnSignOut,
-                maskedEmail = state.maskedEmail,
+                email = state.email,
                 formattedRecoveryCode = state.formattedRecoveryCode,
                 hasRecoveryCode = state.hasRecoveryCode,
                 showsRecoveryCodeRow = state.showsRecoveryCodeRow,
@@ -207,6 +207,10 @@ class ProfilePresenter {
 
     fun dismissDialog() {
         viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+    }
+
+    fun emailInfo() {
+        viewModel.onEvent(ProfileUiEvent.OnEmailInfoClicked)
     }
 
     fun connect() {
