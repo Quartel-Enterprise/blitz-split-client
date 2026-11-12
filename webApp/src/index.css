@@ -32,6 +32,9 @@
      primaryContainer: its own token, since no avatar or category color copies a theme color. */
   --primary-container: #c9e6ff;
   --primary-container-foreground: #001e2f;
+  /* Bitcoin's tile in Profile's key rows, as the Apple app's bitcoinTile and onBitcoinTile. */
+  --bitcoin-tile: #ffdbce;
+  --bitcoin-tile-foreground: #370e00;
   --pending-container: #ffdea8;
   --pending-container-foreground: #271900;
   /* The same amber on what stays dark in both themes (the attachment viewer), as --camera-error is. */
@@ -81,6 +84,8 @@
   --destructive-foreground: #552108;
   --positive: #6edbaa;
   --pending: #f9bc3e;
+  --bitcoin-tile: #71361c;
+  --bitcoin-tile-foreground: #ffdbce;
   --primary-container: #004b6f;
   --primary-container-foreground: #c9e6ff;
   --pending-container: #5e4200;
@@ -126,6 +131,8 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-positive: var(--positive);
   --color-pending: var(--pending);
+  --color-bitcoin-tile: var(--bitcoin-tile);
+  --color-bitcoin-tile-foreground: var(--bitcoin-tile-foreground);
   --color-primary-container: var(--primary-container);
   --color-primary-container-foreground: var(--primary-container-foreground);
   --color-pending-container: var(--pending-container);
