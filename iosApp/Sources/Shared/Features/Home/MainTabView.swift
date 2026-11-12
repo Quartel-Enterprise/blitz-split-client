@@ -48,6 +48,8 @@ struct MainTabView: View {
                     HomeView(model: home)
                         .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                 }
+                // "Your groups" zooms into the group it pushes
+                .groupZoomScope()
                 #if os(macOS)
                 .measuringNarrowWindow()
                 #endif
@@ -59,6 +61,8 @@ struct MainTabView: View {
                 GroupsColumns(model: model, path: stackPath(isSearch: false), isInFront: isInFront(isSearch: false)) {
                     GroupsView(model: model)
                 }
+                // A group's row or card zooms into the group it pushes
+                .groupZoomScope()
                 #if os(macOS)
                 // What the View menu's Grid Size reads and changes, only while the groups are in front
                 .focusedSceneValue(\.groupsModel, isInFront(isSearch: false) && groupsPath.isEmpty ? model : nil)
@@ -176,6 +180,7 @@ struct MainTabView: View {
             GroupsColumns(model: model, path: stackPath(isSearch: true), isInFront: isInFront(isSearch: true)) {
                 GroupsSearchView(model: model)
             }
+            .groupZoomScope()
         }
         #endif
     }
