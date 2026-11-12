@@ -214,7 +214,7 @@ export function ContactProfileSkeleton() {
           <Skeleton className="h-9 flex-1" />
         </span>
       </div>
-      <SkeletonRows count={3} leading="square" className="rounded-lg border" />
+      <SkeletonRows count={3} leading="group" className="rounded-lg border" />
     </LoadingRegion>
   )
 }

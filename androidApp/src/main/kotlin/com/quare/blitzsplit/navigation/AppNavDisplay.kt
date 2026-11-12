@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +27,7 @@ import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
+import com.quare.blitzsplit.android.designsystem.component.LocalSharedTransitionScope
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -86,7 +90,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * Why: the back stack lives in :core:navigation and the ViewModels move it; Navigation 3 only
  * draws its entries, so Android walks the same flow as SwiftUI and React.
  */
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val uiState by appViewModel.uiState.collectAsStateWithLifecycle()
@@ -233,6 +237,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
         rememberViewModelStoreNavEntryDecorator(),
         homeBarsEntryDecorator,
+        entryVisibilityDecorator,
     )
     val entries = rememberAppNavEntries(
         backStack = backStack,
@@ -428,15 +433,29 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         },
     )
     // Why: the home's bar or rail, drawn once around the navigation, so switching tabs swaps only the content.
+    /*
+     * Why: Material's list-detail scene only where the list and the group show side by side. Elsewhere the group opens
+     * over Grupos as it does over Início, a screen of its own, so the group's avatar and name fly from the row tapped
+     * into its header (beta feedback of 2026-11-12); beside the list nothing flies, the row stays where it is.
+     */
+    val sceneStrategies = if (listDetail != null) {
+        listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy)
+    } else {
+        listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy())
+    }
     HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
-        NavDisplay(
-            entries = entries,
-            // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
-            sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
-            transitionSpec = transitionSpec,
-            popTransitionSpec = popTransitionSpec,
-            predictivePopTransitionSpec = predictivePopTransitionSpec,
-            onBack = { appViewModel.navigator.navigateBack() },
-        )
+        SharedTransitionLayout {
+            CompositionLocalProvider(LocalSharedTransitionScope provides takeIf { listDetail == null }) {
+                NavDisplay(
+                    entries = entries,
+                    // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
+                    sceneStrategies = sceneStrategies,
+                    transitionSpec = transitionSpec,
+                    popTransitionSpec = popTransitionSpec,
+                    predictivePopTransitionSpec = predictivePopTransitionSpec,
+                    onBack = { appViewModel.navigator.navigateBack() },
+                )
+            }
+        }
     }
 }

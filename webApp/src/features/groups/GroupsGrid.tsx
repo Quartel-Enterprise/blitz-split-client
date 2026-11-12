@@ -96,6 +96,7 @@ export function GroupsGrid({ presenter, groups, gridSize, menuOf, onContextMenu 
       {groups.map((group) => (
         <li
           key={group.id}
+          data-group-link={group.id}
           onClick={() => presenter.openGroup(group.id)}
           onContextMenu={(event) => {
             event.preventDefault()
@@ -104,16 +105,17 @@ export function GroupsGrid({ presenter, groups, gridSize, menuOf, onContextMenu 
           className={cn('flex min-w-0 cursor-pointer flex-col gap-2 rounded-xl border bg-card hover:bg-accent', sizes.padding)}
         >
           <span className="flex items-start gap-2">
-            <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className={sizes.avatar} />
+            <GroupAvatar data-group-avatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className={sizes.avatar} />
             {group.isPending && <QueuedBadge />}
             <span className="-mt-1.5 -mr-1.5 ml-auto">{menuOf(group)}</span>
           </span>
           <button
+            data-group-name
             onClick={(event) => {
               event.stopPropagation()
               presenter.openGroup(group.id)
             }}
-            className={cn('line-clamp-2 rounded-sm text-left leading-snug font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring', sizes.name)}
+            className={cn('line-clamp-2 self-start rounded-sm text-left leading-snug font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring', sizes.name)}
           >
             {group.name}
           </button>

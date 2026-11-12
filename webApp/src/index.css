@@ -263,3 +263,110 @@
     animation: none;
   }
 }
+
+/*
+ * The group's header (GroupPage): open at the top of the page, its photo big over the name and "2 members · R$ 3,418.31
+ * in total", and folded into a compact bar as the page scrolls, the photo shrinking to 32 px and the name to the
+ * body's title as the line under it fades. `--p` goes from 0 (open) to 1 (folded) with the scroll itself
+ * (useCollapsingHeader), never on a timer. The header stays sticky at the top while its height shrinks by what its
+ * bottom margin gains, so the page under it never jumps. A phone folds it into its own bar, between back and the
+ * icons; from the tablet up it has no bar, and its row (with Statistics, Invite, the main button and ⋯) is the bar.
+ */
+.group-header {
+  --bar: 56px;
+  --open: 136px;
+  --folded: 56px;
+  --gutter: 16px;
+  --photo-open: 64px;
+  --name-open: 22px;
+  --start-folded: 52px;
+  --end-folded: 120px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+  margin-inline: calc(-1 * var(--gutter));
+  height: calc(var(--open) - var(--p, 0) * (var(--open) - var(--folded)));
+  margin-bottom: calc(var(--p, 0) * (var(--open) - var(--folded)));
+}
+
+.group-header::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--border);
+  opacity: var(--p, 0);
+}
+
+.group-header-row {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  top: calc((1 - var(--p, 0)) * var(--bar));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-inline-start: calc(var(--gutter) + var(--p, 0) * (var(--start-folded) - var(--gutter)));
+  padding-inline-end: calc(var(--gutter) + var(--p, 0) * (var(--end-folded) - var(--gutter)));
+}
+
+.group-header-photo {
+  --size: calc(var(--photo-open) - var(--p, 0) * (var(--photo-open) - 32px));
+  width: var(--size);
+  height: var(--size);
+  font-size: calc(var(--size) * 0.3);
+}
+
+.group-header-name {
+  font-size: calc(var(--name-open) - var(--p, 0) * (var(--name-open) - 16px));
+  line-height: 1.25;
+}
+
+.group-header-meta {
+  max-height: calc((1 - var(--p, 0)) * 20px);
+  opacity: max(0, 1 - var(--p, 0) * 2);
+  overflow: hidden;
+}
+
+@media (width >= 48rem) {
+  .group-header {
+    --bar: 0px;
+    --open: 96px;
+    --gutter: 32px;
+    --photo-open: 80px;
+    --name-open: 24px;
+    --start-folded: var(--gutter);
+    --end-folded: var(--gutter);
+  }
+}
+
+@media (width >= 64rem) {
+  .group-header {
+    --gutter: 40px;
+  }
+}
+
+/*
+ * A group opened from its row, and back (lib/groupTransition): the photo and the name morph between the row and the
+ * header while the page crossfades under them. Reduced motion never starts one; this covers a preference that
+ * changes during one.
+ */
+::view-transition-group(*) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState, type ComponentProps, type ReactNode } from 'react'
 import { t } from '@/i18n'
+import { GROUP_SHAPE } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
 // Why: a read of the browser's database usually answers sooner, and a shimmer flashing for a frame reads as a glitch.
@@ -77,7 +78,7 @@ export function SkeletonCircle({ className }: { className?: string }) {
 }
 
 /**
- * A list row: the avatar (a circle, or the rounded square of a group or a category), its two lines and the amount on
+ * A list row: the avatar (a circle, a group's rounded square or a category's square), its two lines and the amount on
  * the right, as the app's rows draw them. `index` varies the lines' widths.
  */
 export function SkeletonRow({
@@ -87,7 +88,7 @@ export function SkeletonRow({
   className,
 }: {
   index?: number
-  leading?: 'circle' | 'square' | 'none'
+  leading?: 'circle' | 'square' | 'group' | 'none'
   hasTrailing?: boolean
   className?: string
 }) {
@@ -95,6 +96,7 @@ export function SkeletonRow({
     <div className={cn('flex min-h-[60px] items-center gap-3 px-4 py-2.5', className)}>
       {leading === 'circle' && <SkeletonCircle className="size-9" />}
       {leading === 'square' && <Skeleton className="size-9 rounded-lg" />}
+      {leading === 'group' && <Skeleton className={cn('size-9', GROUP_SHAPE)} />}
       <span className="flex min-w-0 flex-1 flex-col gap-2">
         <SkeletonLine className={firstLineWidths[index % firstLineWidths.length]} />
         <SkeletonLine className={cn('h-2.5', secondLineWidths[index % secondLineWidths.length])} />
@@ -113,7 +115,7 @@ export function SkeletonRows({
   rowClassName,
 }: {
   count?: number
-  leading?: 'circle' | 'square' | 'none'
+  leading?: 'circle' | 'square' | 'group' | 'none'
   hasTrailing?: boolean
   className?: string
   rowClassName?: string

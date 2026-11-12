@@ -23,11 +23,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumFlexibleTopAppBar
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TwoRowsTopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,14 +44,28 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
+import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
-import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-// Why: the canvas's medium flexible bar: the group's shape, name and totals, collapsing to one line as the list scrolls.
+// Why: the header's avatar, big while the bar is open and shrinking with it into the one-line bar (beta feedback of 2026-11-12).
+private val expandedBadgeSize = 64.dp
+private val foldingBadgeSize = 40.dp
+private val collapsedBadgeSize = 32.dp
+
+// Why: room under the one-line bar for the big avatar beside the name, and the totals under them.
+private val expandedBarHeight = 168.dp
+
+/*
+ * Why: the canvas's medium flexible bar: the group's square, name and totals, collapsing to one line as the list
+ * scrolls. Its open title draws the avatar at 64 dp, shrinking as the bar folds while the one-line title, 32 dp, fades
+ * in over it; only the open one is the group's shared avatar and name, which fly in from the row tapped.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun GroupTopBar(
@@ -61,6 +76,8 @@ internal fun GroupTopBar(
     money: MoneyFormatter,
     scrollBehavior: TopAppBarScrollBehavior,
     onAction: (GroupAction) -> Unit,
+    // Why: the group whose row the avatar and name fly from; null where nothing flies (previews, screenshots).
+    sharedGroupId: String? = null,
 ) {
     val members = pluralStringResource(R.plurals.group_detail_member_count, header.memberCount, header.memberCount)
     val meta = if (hasBills) {
@@ -68,13 +85,22 @@ internal fun GroupTopBar(
     } else {
         stringResource(R.string.group_detail_meta_empty, members)
     }
-    MediumFlexibleTopAppBar(
-        title = {
-            GroupTitle(
-                header = header,
-                badgeSize = 40.dp,
-                onAction = onAction,
-            )
+    TwoRowsTopAppBar(
+        title = { isExpanded ->
+            if (isExpanded) {
+                GroupTitle(
+                    header = header,
+                    badgeSize = lerp(expandedBadgeSize, foldingBadgeSize, scrollBehavior.state.collapsedFraction),
+                    onAction = onAction,
+                    sharedGroupId = sharedGroupId,
+                )
+            } else {
+                GroupTitle(
+                    header = header,
+                    badgeSize = collapsedBadgeSize,
+                    onAction = onAction,
+                )
+            }
         },
         // Why: the totals ellipsize short of the bar's actions instead of running into the chart button.
         subtitle = {
@@ -93,6 +119,8 @@ internal fun GroupTopBar(
                 onAction = onAction,
             )
         },
+        collapsedHeight = TopAppBarDefaults.MediumAppBarCollapsedHeight,
+        expandedHeight = expandedBarHeight,
         scrollBehavior = scrollBehavior,
     )
 }
@@ -129,7 +157,9 @@ private fun GroupTitle(
     header: GroupHeader,
     badgeSize: Dp,
     onAction: (GroupAction) -> Unit,
+    sharedGroupId: String? = null,
 ) {
+    val shared = rememberGroupSharedModifiers(sharedGroupId)
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -141,7 +171,7 @@ private fun GroupTitle(
         Box(
             modifier = Modifier
                 .minimumInteractiveComponentSize()
-                .clip(groupShapeOf(48.dp))
+                .clip(GroupAvatarShape)
                 .clickable(
                     onClickLabel = stringResource(R.string.group_detail_photo_open),
                     role = Role.Button,
@@ -153,10 +183,12 @@ private fun GroupTitle(
                 color = header.groupColor,
                 photoUrl = header.groupPhotoUrl,
                 size = badgeSize,
+                modifier = shared.avatar,
             )
         }
         Text(
             text = header.groupName,
+            modifier = shared.name,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

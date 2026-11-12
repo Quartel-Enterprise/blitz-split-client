@@ -6,6 +6,8 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.quare.blitzsplit.android.designsystem.component.LocalEntryVisibilityScope
 import com.quare.blitzsplit.android.designsystem.component.LocalHomeBarsEntryKey
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.navigation.Route
@@ -17,6 +19,15 @@ private val keptTabs: List<Route> = listOf(Route.Groups, Route.GlobalBalances(Ba
 internal val homeBarsEntryDecorator: NavEntryDecorator<Route> = NavEntryDecorator(
     decorate = { entry ->
         CompositionLocalProvider(LocalHomeBarsEntryKey provides entry.contentKey) { entry.Content() }
+    },
+)
+
+// Why: the entry's own transition, which a group's avatar and name follow from its row to its screen and back.
+internal val entryVisibilityDecorator: NavEntryDecorator<Route> = NavEntryDecorator(
+    decorate = { entry ->
+        CompositionLocalProvider(LocalEntryVisibilityScope provides LocalNavAnimatedContentScope.current) {
+            entry.Content()
+        }
     },
 )
 

@@ -96,7 +96,7 @@ export function GroupsScreen() {
         {showsPage ? (
           <GroupsPage presenter={presenter} state={state} />
         ) : !state.hasLoadedGroups ? (
-          <SummaryListPageSkeleton leading="square" />
+          <SummaryListPageSkeleton leading="group" />
         ) : (
           <>
             {state.showsEmptyState && (
