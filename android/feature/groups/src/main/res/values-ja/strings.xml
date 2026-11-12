@@ -168,4 +168,26 @@
     <string name="groups_home_cover_totals">受け取る%1$s · 支払う%2$s</string>
     <string name="groups_home_cover_hint">スマートフォンを開くとすべて表示されます</string>
     <string name="groups_waiting_for_internet">インターネットに接続されていません。オンラインに戻るとグループが表示されます。</string>
+    <string name="groups_all_expenses_title">すべての支出</string>
+    <string name="groups_all_expenses_empty_title">まだ支出はありません</string>
+    <string name="groups_all_expenses_empty_body">どのグループでも、あなたが支払った、または参加している支出がここに表示されます。</string>
+    <string name="groups_all_expenses_search">支出を検索</string>
+    <string name="groups_all_expenses_group">グループ</string>
+    <string name="groups_all_expenses_category">カテゴリ</string>
+    <string name="groups_all_expenses_share">あなたの分</string>
+    <string name="groups_all_expenses_share_all">すべて</string>
+    <string name="groups_all_expenses_share_receive">受け取る</string>
+    <string name="groups_all_expenses_share_pay">支払う</string>
+    <string name="groups_all_expenses_payer">支払った人</string>
+    <string name="groups_all_expenses_payer_all">誰でも</string>
+    <string name="groups_all_expenses_payer_you">あなたが支払った</string>
+    <string name="groups_all_expenses_payer_others">ほかの人が支払った</string>
+    <string name="groups_all_expenses_sort_newest">新しい順</string>
+    <string name="groups_all_expenses_sort_oldest">古い順</string>
+    <string name="groups_all_expenses_sort_largest">金額が大きい順</string>
+    <string name="groups_all_expenses_sort_smallest">金額が小さい順</string>
+    <string name="groups_all_expenses_sort">並べ替え</string>
+    <string name="groups_all_expenses_clear">フィルターをクリア</string>
+    <string name="groups_all_expenses_no_results_title">一致する支出はありません</string>
+    <string name="groups_all_expenses_no_results_body">別の言葉を試すか、フィルターをクリアしてください。</string>
 </resources>

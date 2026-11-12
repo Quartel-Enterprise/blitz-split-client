@@ -119,6 +119,7 @@ src/commonMain/kotlin/com/quare/blitzsplit/core/<name>/
 ├── connect/             # :core:sync only: ProviderConnector, the Google or Apple link state every screen shares
 ├── signin/              # :core:sync only: ProviderSignIn and ProviderSignInController, the Google or Apple sign in every screen shares
 ├── exit/                # :core:sync only: GroupExitController, "Sair do grupo" and "Apagar grupo" from the group and from the home
+├── billmenu/            # :core:expenses only: BillMenuController, a bill's ⋮ (Editar, Duplicar, Compartilhar, Apagar) on the group's Despesas, Início and "Todas as despesas"
 ├── photo/               # :core:profile only: ProfilePhotoPicker, the photo picked in the profile setup and "Editar perfil", and InstantPhotoSaver, which the profile's and the group's photo opened big save through
 ├── di/                  # One Koin module
 └── domain/

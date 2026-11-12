@@ -4,22 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.QrCode2
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
@@ -49,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.blitzsplit.android.designsystem.component.SearchQueryField
+import com.quare.blitzsplit.android.designsystem.component.SearchBarField
 import com.quare.blitzsplit.android.platform.ContactsPermissionStatus
 import com.quare.blitzsplit.android.platform.rememberContactsPermissionAccess
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaUiAction
@@ -193,9 +188,17 @@ private fun LazyListScope.contactItems(
     onEvent: (AgendaUiEvent) -> Unit,
 ) {
     item(key = "search") {
-        AgendaSearchField(
+        SearchBarField(
             query = state.query,
+            placeholder = stringResource(R.string.contacts_agenda_search),
+            clearLabel = stringResource(R.string.contacts_search_clear),
             onQueryChange = { onEvent(AgendaUiEvent.OnQueryChanged(it)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp,
+                ),
         )
     }
     if (state.showsNoResults) {
@@ -254,57 +257,6 @@ private fun LazyListScope.contactItems(
         keyPrefix = "agenda",
         onInvite = { onEvent(AgendaUiEvent.OnInviteClicked(it)) },
     )
-}
-
-@Composable
-private fun AgendaSearchField(
-    query: String,
-    onQueryChange: (String) -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp,
-            ),
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
-        Row(
-            modifier = Modifier
-                .height(56.dp)
-                .padding(
-                    start = 16.dp,
-                    end = 4.dp,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Search,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            SearchQueryField(
-                query = query,
-                placeholder = stringResource(R.string.contacts_agenda_search),
-                onQueryChange = onQueryChange,
-                onSearch = { focusManager.clearFocus() },
-                modifier = Modifier.weight(1f),
-            )
-            if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChange("") }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = stringResource(R.string.contacts_search_clear),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-        }
-    }
 }
 
 // Why: "Chame gente da sua agenda" before the system asks, and "Sem acesso à agenda" once refused, both with the link.

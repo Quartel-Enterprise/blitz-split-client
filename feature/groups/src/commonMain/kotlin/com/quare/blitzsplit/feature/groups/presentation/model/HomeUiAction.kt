@@ -4,6 +4,9 @@ sealed interface HomeUiAction {
     // Why: the device couldn't delete the payment "Desfazer" undoes; it still counts.
     data object ShowChangeError : HomeUiAction
 
+    // Why: a bill deleted from its ⋮ on "Últimas despesas" couldn't be, which is rare enough to just say so.
+    data object ShowBillDeleteError : HomeUiAction
+
     // Why: the card's "Turn on" while the system can still ask; each platform asks its own way and reads it again.
     data object RequestNotificationPermission : HomeUiAction
 

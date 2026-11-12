@@ -1,9 +1,8 @@
 import Shared
 import SwiftUI
 
-/// The options of a line of the group's Expenses, without opening it first: a bill's are the Bill toolbar's own
-/// (Edit, Duplicate, Share, Delete, which asks first), a payment's is Delete, which asks first too. The row's "⋯", its long press
-/// on iPhone and iPad, and its right click on the Mac all show these.
+/// The options of a line of the group's Expenses, without opening it first: a bill's are BillMenuItems, a payment's
+/// is Delete, which asks first too.
 struct DayEntryMenuItems: View {
     let entry: any DayEntry
     let model: GroupDetailModel
@@ -13,62 +12,15 @@ struct DayEntryMenuItems: View {
             Button(role: .destructive) {
                 model.delete(entry)
             } label: {
-                deleteLabel
+                BillMenuDeleteLabel()
             }
         } else {
-            Button(editTitle, systemImage: "pencil") {
-                model.send(GroupDetailUiEventOnExpenseEditClicked(expenseId: entry.id))
-            }
-            Button(duplicateTitle, systemImage: "plus.square.on.square") {
-                model.send(GroupDetailUiEventOnExpenseDuplicateClicked(expenseId: entry.id))
-            }
-            Button(shareTitle, systemImage: "square.and.arrow.up") {
-                model.send(GroupDetailUiEventOnExpenseShareClicked(expenseId: entry.id))
-            }
-            Divider()
-            Button(role: .destructive) {
-                model.delete(entry)
-            } label: {
-                deleteLabel
-            }
-        }
-    }
-
-    // The Mac's items that open a sheet or a dialog end in "…"
-    private var editTitle: LocalizedStringKey {
-        #if os(macOS)
-        "Edit…"
-        #else
-        "Edit"
-        #endif
-    }
-
-    private var duplicateTitle: LocalizedStringKey {
-        #if os(macOS)
-        "Duplicate…"
-        #else
-        "Duplicate"
-        #endif
-    }
-
-    private var shareTitle: LocalizedStringKey {
-        #if os(macOS)
-        "Share…"
-        #else
-        "Share"
-        #endif
-    }
-
-    /// "Delete" in Bill's own words, "Apagar" in Portuguese, for a bill and a payment alike.
-    private var deleteLabel: some View {
-        Label {
-            #if os(macOS)
-            Text(LocalizedStringResource("Delete… (a bill)", defaultValue: "Delete…"))
-            #else
-            Text(BillCopy.delete)
-            #endif
-        } icon: {
-            Image(systemName: "trash")
+            BillMenuItems(
+                onEdit: { model.send(GroupDetailUiEventOnExpenseEditClicked(expenseId: entry.id)) },
+                onDuplicate: { model.send(GroupDetailUiEventOnExpenseDuplicateClicked(expenseId: entry.id)) },
+                onShare: { model.send(GroupDetailUiEventOnExpenseShareClicked(expenseId: entry.id)) },
+                onDelete: { model.delete(entry) },
+            )
         }
     }
 }
@@ -79,18 +31,9 @@ struct DayEntryMenuButton: View {
     let model: GroupDetailModel
 
     var body: some View {
-        Menu {
+        RowMenuButton(title: DayEntryCopy.title(entry)) {
             DayEntryMenuItems(entry: entry, model: model)
-        } label: {
-            Image(systemName: "ellipsis")
-                .foregroundStyle(.secondary)
-                .frame(width: 32, height: 32)
-                .contentShape(.rect)
         }
-        .menuStyle(.button)
-        .buttonStyle(.borderless)
-        .menuIndicator(.hidden)
-        .accessibilityLabel(Text("Options for \(DayEntryCopy.title(entry))"))
     }
 }
 

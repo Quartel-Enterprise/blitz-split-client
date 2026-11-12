@@ -272,4 +272,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s senden sonra açtı. Son değişiklik geçerli: Borçları sadeleştir açık.</string>
     <string name="designsystem_simplify_someone">Biri</string>
     <string name="designsystem_simplify_see_activity">Etkinlik\'te gör</string>
+    <string name="designsystem_bill_menu_edit">Düzenle</string>
+    <string name="designsystem_bill_menu_duplicate">Çoğalt</string>
+    <string name="designsystem_bill_menu_share">Paylaş</string>
+    <string name="designsystem_bill_menu_delete">Sil</string>
+    <string name="designsystem_bill_menu_options">Seçenekler: %s</string>
 </resources>

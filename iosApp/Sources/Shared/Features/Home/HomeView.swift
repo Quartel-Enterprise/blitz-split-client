@@ -6,6 +6,8 @@ import SwiftUI
 final class HomeModel {
     private(set) var state: HomeUiState
     private(set) var changeErrorCount = 0
+    /// "Couldn't delete the bill. Try again.", from a bill's "⋯" on "Latest expenses".
+    private(set) var billDeleteErrorCount = 0
     /// "Notifications on", once the system allows them after not allowing them.
     private(set) var notificationsOnCount = 0
     /// "We saw you on your phone.", once a sync found the account on a phone app while the Mac's invite showed (14.1c).
@@ -30,6 +32,7 @@ final class HomeModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is HomeUiActionShowChangeError: self?.changeErrorCount += 1
+            case is HomeUiActionShowBillDeleteError: self?.billDeleteErrorCount += 1
             case is HomeUiActionShowNotificationsOn: self?.notificationsOnCount += 1
             case is HomeUiActionShowUsedOnPhone: self?.usedOnPhoneCount += 1
             case is HomeUiActionRequestNotificationPermission:
@@ -161,6 +164,13 @@ struct HomeView: View {
             state.recordedPayment,
             onUndo: { model.send(HomeUiEventOnUndoPaymentClicked.shared) },
             onShown: { model.send(HomeUiEventOnRecordedPaymentNoticeShown.shared) },
+        )
+        // A bill's "Delete" on "Latest expenses" asks what Bill asks, in the same words
+        .billDeletionAlert(
+            state.billToDelete,
+            isDeleting: state.isDeletingBill,
+            onConfirm: { model.send(BillMenuEventOnDeleteConfirmed.shared) },
+            onDismiss: { if model.current.billToDelete != nil { model.send(BillMenuEventOnDeleteDismissed.shared) } },
         )
         .navigationTitle(HomeCopy.tabTitle)
         #if os(iOS)

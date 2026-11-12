@@ -1,6 +1,6 @@
 import { ArrowLeft, BellRing, CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
 import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRoute } from 'blitzsplit-shared'
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
@@ -8,6 +8,7 @@ import { pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
+import { useEndReached } from '@/hooks/useEndReached'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, wordGap } from '@/i18n'
 import { avatarStyle, GROUP_SHAPE } from '@/lib/avatar'
@@ -190,24 +191,6 @@ function Feed({ presenter, state, isWide }: { presenter: ActivityPresenter; stat
       {state.showsOfflineEnd && <p className="px-4 text-center text-[13px] text-muted-foreground">{t('activity_offlineEnd')}</p>}
     </div>
   )
-}
-
-/** Calls `onEnd` when the end of the list scrolls into view, while there is more to show. */
-function useEndReached(isEnabled: boolean, itemCount: number, onEnd: () => void) {
-  const ref = useRef<HTMLDivElement>(null)
-  const onEndRef = useRef(onEnd)
-  onEndRef.current = onEnd
-  useEffect(() => {
-    const element = ref.current
-    if (!isEnabled || !element) return
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) onEndRef.current()
-    })
-    observer.observe(element)
-    return () => observer.disconnect()
-    // Why: a new page shown re-arms it, so a short page still asks for the next one.
-  }, [isEnabled, itemCount])
-  return ref
 }
 
 /** One item: the face with the kind's badge, "Bruno editou Jantar", its detail, the group and the time, the unread dot. */

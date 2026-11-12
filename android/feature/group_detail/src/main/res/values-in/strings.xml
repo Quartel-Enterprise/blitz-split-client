@@ -77,10 +77,5 @@
     <string name="group_detail_simplified_how">Cara kerjanya</string>
     <string name="group_detail_simplified_pair">Pasangan baru dari penyederhanaan</string>
     <string name="group_detail_balances_note_simplified">Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah menerima” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
-    <string name="group_detail_entry_edit">Edit</string>
-    <string name="group_detail_entry_duplicate">Duplikat</string>
-    <string name="group_detail_entry_share">Bagikan</string>
-    <string name="group_detail_entry_delete">Hapus</string>
-    <string name="group_detail_entry_options">Opsi untuk %s</string>
     <string name="group_detail_photo_open">Lihat foto grup</string>
 </resources>

@@ -290,4 +290,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s włączył(a) to po tobie. Liczy się ostatnia zmiana: opcja „Uprość długi” jest włączona.</string>
     <string name="designsystem_simplify_someone">Ktoś</string>
     <string name="designsystem_simplify_see_activity">Zobacz w Aktywności</string>
+    <string name="designsystem_bill_menu_edit">Edytuj</string>
+    <string name="designsystem_bill_menu_duplicate">Duplikuj</string>
+    <string name="designsystem_bill_menu_share">Udostępnij</string>
+    <string name="designsystem_bill_menu_delete">Usuń</string>
+    <string name="designsystem_bill_menu_options">Opcje: %s</string>
 </resources>

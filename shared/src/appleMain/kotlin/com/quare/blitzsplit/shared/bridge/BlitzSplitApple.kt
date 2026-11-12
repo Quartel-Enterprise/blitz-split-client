@@ -35,6 +35,7 @@ import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.ProfilePh
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.ChargeViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
+import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeSidebarViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
@@ -167,6 +168,10 @@ object BlitzSplitApple : KoinComponent {
 
     // Why: Início, the home's first tab and the root of the back stack.
     fun createHomeViewModel(): ViewModelHolder<HomeViewModel> = ViewModelHolder(HomeViewModel::class) { get() }
+
+    // Why: "Todas as despesas", which Início's "Ver tudo" opens.
+    fun createAllExpensesViewModel(): ViewModelHolder<AllExpensesViewModel> =
+        ViewModelHolder(AllExpensesViewModel::class) { get() }
 
     fun createGroupsViewModel(): ViewModelHolder<GroupsViewModel> = ViewModelHolder(GroupsViewModel::class) { get() }
 

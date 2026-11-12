@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
@@ -24,7 +25,6 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AppDownloadSource
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
@@ -63,6 +63,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.latestExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.toDownloadProgress
+import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeAppInvite
@@ -86,7 +87,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
-import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
 
@@ -125,43 +125,11 @@ class HomeViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeMapCategories: ObserveMapCategories,
+    billMenuUseCases: BillMenuUseCases,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<HomeUiEvent>(trackEvent) {
     val uiState: StateFlow<HomeUiState>
-        field = MutableStateFlow(
-            HomeUiState(
-                displayName = "",
-                avatarInitial = "",
-                avatarColor = AvatarColor.default,
-                photoUrl = null,
-                accountProvider = null,
-                syncBadge = null,
-                pendingChangeCount = 0,
-                firstDownload = null,
-                isOnline = true,
-                isLoaded = false,
-                groupCount = 0,
-                people = Loadable.Loading,
-                summary = Loadable.Loading,
-                groups = emptyList(),
-                billDays = emptyList(),
-                showsRecoveryCodeCard = false,
-                showsRecoveryCodePrompt = false,
-                recordedPayment = null,
-                deletedGroupNotice = null,
-                isRefreshing = false,
-                activityUnreadCount = 0,
-                notificationPermission = null,
-                canAskQuietly = false,
-                hasAskedQuietly = false,
-                isNotificationPromptSnoozed = true,
-                appInvite = null,
-                hasBills = false,
-                isAppBannerDismissed = false,
-                showsReceiptSourceChoice = false,
-                receiptSource = null,
-            ),
-        )
+        field = MutableStateFlow(HomeUiState.initial)
 
     val uiAction: SharedFlow<HomeUiAction>
         field = MutableSharedFlow<HomeUiAction>()
@@ -192,6 +160,25 @@ class HomeViewModel(
         trackEvent = trackEvent,
         recentGroupId = { rows.firstOrNull()?.id },
         isOnTop = ::isOnTop,
+    )
+
+    // Why: a bill's ⋮ on "Últimas despesas", as on the group's Despesas; what it opens goes over Início.
+    private val billMenu = billMenuControllerOf(
+        useCases = billMenuUseCases,
+        scope = viewModelScope,
+        navigator = navigator,
+        isOnTop = ::isOnTop,
+        trackEvent = trackEvent,
+        source = "home",
+        showDeleteError = { uiAction.emit(HomeUiAction.ShowBillDeleteError) },
+        show = { menu ->
+            uiState.update {
+                it.copy(
+                    billToDelete = menu.billToDelete,
+                    isDeletingBill = menu.isDeleting,
+                )
+            }
+        },
     )
 
     private val notificationPrompts = HomeNotificationPrompts(
@@ -400,8 +387,10 @@ class HomeViewModel(
 
             HomeUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
-            // Why: "Ver tudo" of Últimas despesas opens Atividade as the bell does, on its Contas type (a removable chip).
-            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.Activity.billsOnly)
+            // Why: "Ver tudo" of Últimas despesas opens "Todas as despesas" over Início (Pierre's call, beta feedback).
+            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.AllExpenses)
+
+            is BillMenuEvent -> billMenu.onEvent(event)
 
             HomeUiEvent.OnActivityClicked -> if (isOnTop()) {
                 trackEvent("activity_bell_clicked", emptyMap())

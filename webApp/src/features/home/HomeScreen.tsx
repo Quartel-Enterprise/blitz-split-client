@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { useRecordedPaymentNotice } from '@/features/balances/BalanceCard'
 import { useDeletedGroupNotice } from '@/features/groups/GroupsScreen'
+import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { DownloadProgressBar } from '@/features/groups/FirstDownload'
 import { showsSyncStatus, SyncStatus } from '@/features/groups/GroupsPage'
@@ -131,6 +132,15 @@ export function HomeScreen() {
           </>
         )}
       </main>
+      {/* Why: a bill's ⋮ "Delete" on "Latest expenses" asks what Bill asks, in the same words. */}
+      {state.billToDelete && (
+        <BillDeleteDialog
+          deletion={state.billToDelete}
+          isDeleting={state.isDeletingBill}
+          onConfirm={() => presenter.billMenu.confirmDelete()}
+          onDismiss={() => presenter.billMenu.dismissDelete()}
+        />
+      )}
     </HomeShell>
   )
 }

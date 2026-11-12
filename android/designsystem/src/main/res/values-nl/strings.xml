@@ -272,4 +272,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s heeft het na jou aangezet. De laatste wijziging telt: Schulden vereenvoudigen staat aan.</string>
     <string name="designsystem_simplify_someone">Iemand</string>
     <string name="designsystem_simplify_see_activity">Bekijken in Activiteit</string>
+    <string name="designsystem_bill_menu_edit">Bewerken</string>
+    <string name="designsystem_bill_menu_duplicate">Dupliceren</string>
+    <string name="designsystem_bill_menu_share">Delen</string>
+    <string name="designsystem_bill_menu_delete">Verwijderen</string>
+    <string name="designsystem_bill_menu_options">Opties voor %s</string>
 </resources>

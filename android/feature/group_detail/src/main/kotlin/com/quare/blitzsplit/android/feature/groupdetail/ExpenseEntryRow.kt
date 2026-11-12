@@ -23,7 +23,9 @@ import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
 import com.quare.blitzsplit.android.designsystem.component.EntryIconTile
 import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
+import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rowOptionsLabelOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -101,8 +103,7 @@ private fun ExpenseEntryRow(
         title = expense.description,
         shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnExpenseClicked(expense.id)) },
-        menuItems = expenseMenuItemsOf(expense.id),
-        onEvent = onEvent,
+        menuItems = expenseMenuItemsOf(expense.id, onEvent),
         modifier = modifier,
         meta = {
             ExpenseMetaLine(
@@ -126,8 +127,7 @@ internal fun EntryFrameRow(
     title: String,
     shape: Shape,
     onClick: () -> Unit,
-    menuItems: List<EntryMenuItem>,
-    onEvent: (GroupDetailUiEvent) -> Unit,
+    menuItems: List<RowMenuItem>,
     modifier: Modifier,
     meta: @Composable () -> Unit,
     // Why: a bill's category badge in place of the icon (6.1); a payment keeps its icon.
@@ -143,14 +143,13 @@ internal fun EntryFrameRow(
         leading = leading ?: { EntryIconTile(icon) },
         meta = meta,
         onLongClick = { isMenuOpen = true },
-        onLongClickLabel = stringResource(R.string.group_detail_entry_options, title),
+        onLongClickLabel = rowOptionsLabelOf(title),
         end = {
             EntryMenu(
                 title = title,
                 items = menuItems,
                 isOpen = isMenuOpen,
                 onOpenChange = { isMenuOpen = it },
-                onEvent = onEvent,
             )
         },
         trailing = trailing,

@@ -293,6 +293,12 @@ sealed interface Route {
     data object PickPayment : Route
 
     /*
+     * Why: "Todas as despesas", which Início's "Ver tudo" over "Últimas despesas" opens over Início: every bill this
+     * device's user paid or takes part in, across groups, by day, each with its ⋮ (Pierre's call, beta feedback).
+     */
+    data object AllExpenses : Route
+
+    /*
      * Why: the home's third tab, "Saldos" (flow 8): each person once, netted across every group. Right above Início,
      * in the place of the other tabs, so back returns to Início; "A receber" and "A pagar" open it already filtered.
      */

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail
 
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryRecordedPaymentRepository
@@ -22,10 +23,12 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
@@ -1134,7 +1137,11 @@ class GroupDetailBalancesViewModelTest {
             currentTimeZone = { TimeZone.UTC },
             consumeDeletedBillNotice = ConsumeDeletedBillNoticeUseCase(deletedBills),
             consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
-            deleteExpense = DeleteExpenseUseCase(expenses, deletedBills, currentTimeMillis = { nowMillis }),
+            billMenuUseCases = BillMenuUseCases(
+                observeExpense = ObserveExpenseUseCase(expenses),
+                observeBillDeletion = ObserveBillDeletionUseCase(groups, expenses, settlements),
+                deleteExpense = DeleteExpenseUseCase(expenses, deletedBills, currentTimeMillis = { nowMillis }),
+            ),
             observeDeletedBillNotice = ObserveDeletedBillNoticeUseCase(deletedBills),
             observeAddPersonRequest = ObserveAddPersonRequest { flowOf(null) },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),

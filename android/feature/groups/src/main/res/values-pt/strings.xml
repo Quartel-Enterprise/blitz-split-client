@@ -177,4 +177,26 @@
     <string name="groups_home_cover_totals">te devem %1$s · você deve %2$s</string>
     <string name="groups_home_cover_hint">Abra o celular para ver tudo</string>
     <string name="groups_waiting_for_internet">Sem internet. Seus grupos aparecem quando reconectar.</string>
+    <string name="groups_all_expenses_title">Todas as despesas</string>
+    <string name="groups_all_expenses_empty_title">Nenhuma despesa ainda</string>
+    <string name="groups_all_expenses_empty_body">As contas que você pagou ou de que participa, em qualquer grupo, aparecem aqui.</string>
+    <string name="groups_all_expenses_search">Buscar despesas</string>
+    <string name="groups_all_expenses_group">Grupo</string>
+    <string name="groups_all_expenses_category">Categoria</string>
+    <string name="groups_all_expenses_share">Sua parte</string>
+    <string name="groups_all_expenses_share_all">Qualquer parte</string>
+    <string name="groups_all_expenses_share_receive">A receber</string>
+    <string name="groups_all_expenses_share_pay">Você deve</string>
+    <string name="groups_all_expenses_payer">Quem pagou</string>
+    <string name="groups_all_expenses_payer_all">Qualquer pessoa</string>
+    <string name="groups_all_expenses_payer_you">Você pagou</string>
+    <string name="groups_all_expenses_payer_others">Outros pagaram</string>
+    <string name="groups_all_expenses_sort_newest">Mais recentes</string>
+    <string name="groups_all_expenses_sort_oldest">Mais antigas</string>
+    <string name="groups_all_expenses_sort_largest">Maior valor</string>
+    <string name="groups_all_expenses_sort_smallest">Menor valor</string>
+    <string name="groups_all_expenses_sort">Ordenar</string>
+    <string name="groups_all_expenses_clear">Limpar filtros</string>
+    <string name="groups_all_expenses_no_results_title">Nenhuma despesa encontrada</string>
+    <string name="groups_all_expenses_no_results_body">Tente outras palavras ou limpe os filtros.</string>
 </resources>

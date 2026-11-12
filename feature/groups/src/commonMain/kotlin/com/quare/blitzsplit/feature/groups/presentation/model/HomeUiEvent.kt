@@ -82,6 +82,8 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnSeeAllBillsClicked -> EventAnalytics.Automatic("home_see_all_bills_clicked")
 
+            is BillMenuEvent -> billMenuAnalyticsOf(this)
+
             // Why: only a tap that opens Atividade, never a late one over what Início opened.
             OnActivityClicked -> EventAnalytics.Manual("activity_bell_clicked")
 
@@ -233,7 +235,7 @@ sealed interface HomeUiEvent : UiEvent {
         val expenseId: String,
     ) : HomeUiEvent
 
-    // Why: "Ver tudo" over "Últimas despesas", which opens Atividade over Início on its Contas type, a removable chip.
+    // Why: "Ver tudo" over "Últimas despesas", which opens "Todas as despesas" over Início.
     data object OnSeeAllBillsClicked : HomeUiEvent
 
     // Why: the bell in Início's bar, with Atividade's unread count, which opens Atividade over Início.

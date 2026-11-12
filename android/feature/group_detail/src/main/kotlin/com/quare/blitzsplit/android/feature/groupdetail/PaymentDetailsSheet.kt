@@ -22,6 +22,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: a tap on a payment opens what it holds (who paid whom, how much, when and how) instead of asking to delete it,
@@ -76,7 +77,7 @@ internal fun PaymentDetailsSheet(
                     .padding(top = 8.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.group_detail_entry_delete),
+                    text = stringResource(DesignR.string.designsystem_bill_menu_delete),
                     color = MaterialTheme.colorScheme.error,
                 )
             }

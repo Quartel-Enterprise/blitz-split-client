@@ -190,7 +190,7 @@ private fun HomeCoverPreview() {
     }
 }
 
-private fun buildHomePreviewState(): HomeUiState = HomeUiState(
+internal fun buildHomePreviewState(): HomeUiState = HomeUiState(
     displayName = "Pierre",
     avatarInitial = "P",
     avatarColor = AvatarColor.BLUE,
@@ -321,6 +321,8 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
     isAppBannerDismissed = false,
     showsReceiptSourceChoice = false,
     receiptSource = null,
+    billToDelete = null,
+    isDeletingBill = false,
 )
 
 private fun buildPreviewPerson(

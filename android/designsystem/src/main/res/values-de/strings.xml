@@ -272,4 +272,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s hat sie nach dir eingeschaltet. Die letzte Änderung zählt: „Schulden vereinfachen“ ist an.</string>
     <string name="designsystem_simplify_someone">Jemand</string>
     <string name="designsystem_simplify_see_activity">In „Aktivität“ ansehen</string>
+    <string name="designsystem_bill_menu_edit">Bearbeiten</string>
+    <string name="designsystem_bill_menu_duplicate">Duplizieren</string>
+    <string name="designsystem_bill_menu_share">Teilen</string>
+    <string name="designsystem_bill_menu_delete">Löschen</string>
+    <string name="designsystem_bill_menu_options">Optionen für %s</string>
 </resources>

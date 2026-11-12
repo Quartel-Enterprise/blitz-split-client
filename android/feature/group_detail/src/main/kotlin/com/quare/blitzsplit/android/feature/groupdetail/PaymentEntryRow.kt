@@ -36,8 +36,7 @@ internal fun PaymentEntryRow(
         title = paymentTitleOf(payment),
         shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnPaymentClicked(payment.id)) },
-        menuItems = paymentMenuItemsOf(payment.id),
-        onEvent = onEvent,
+        menuItems = paymentMenuItemsOf(payment.id, onEvent),
         modifier = modifier,
         meta = {
             EntryMetaLine(

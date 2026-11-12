@@ -35,7 +35,7 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 | `split_bill` | `is_edit` (Edit bill) |
 | `register_payment` | `offers_keys` ("Pay Ana") |
 | `contact_invite` | `is_guest` (a guest's personal link) |
-| `activity` | `is_person` (one person's history), `is_bills_only` (Home's "See all" over "Latest expenses") |
+| `activity` | `is_person` (one person's history), `is_bills_only` (Activity opened on its bills; nothing opens it so since Home's "See all" opens All expenses) |
 | `join_invite` | `is_personal` (a personal link) |
 | `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
 | `legal_document` | `page` (`privacy_policy`, `terms_of_use`) |
@@ -234,8 +234,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Scan receipt", only while it can ask where the photo comes from (online; on Home once it is read) | `:feature:groups`, `:feature:split_bill` |
 | `record_payment_clicked` | `source` (`home`) | Home's "Record a payment" | `:feature:groups` |
 | `home_see_all_groups_clicked` | none | "See all" over "Your groups" | `:feature:groups` |
-| `bill_clicked` | `source` (`home`, `group_detail`, `group_stats`, `category_expenses`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
-| `home_see_all_bills_clicked` | none | "See all" over "Latest expenses" | `:feature:groups` |
+| `bill_clicked` | `source` (`home`, `all_expenses`, `group_detail`, `group_stats`, `category_expenses`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
+| `home_see_all_bills_clicked` | none | "See all" over "Latest expenses", which opens All expenses | `:feature:groups` |
+| `all_expenses_filter_changed` | `source` (`all_expenses`), `filter` (`group`, `category`, `share`, `payer`) | A filter of All expenses changed: a group or a main category picked or let go, "Your share" or "Who paid" picked | `:feature:groups` |
+| `all_expenses_sort_changed` | `sort` (`newest`, `oldest`, `largest`, `smallest`) | An order picked in All expenses' "Sort" | `:feature:groups` |
+| `all_expenses_filters_cleared` | none | "Clear filters" in All expenses, beside the filters or on "No expenses match"; the order stays | `:feature:groups` |
 | `activity_bell_clicked` | none | The bell in Home's bar, which opens Activity over Home | `:feature:groups` |
 | `recovery_code_card_show_clicked` | none | "See code" on "Save your recovery code" | `:feature:groups` |
 | `recovery_code_card_connect_clicked` | none | "Connect account" on that card | `:feature:groups` |
@@ -404,12 +407,12 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill`, `:feature:groups` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
-| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete bill", when its question opens; `group_detail` is a bill's ⋮ "Delete" on Expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
-| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
-| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`, `group_detail`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail` |
-| `bill_edit_clicked` | `source` (`group_detail`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" on Expenses once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail` |
-| `bill_duplicate_clicked` | `source` (`group_detail`) | A bill's ⋮ "Duplicate" on Expenses, once Split a bill opened filled in with the bill | `:feature:group_detail` |
-| `bill_share_clicked` | `source` (`group_detail`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" on Expenses once Share bill opened | `:feature:bill_detail`, `:feature:group_detail` |
+| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`) | "Delete bill", when its question opens; `group_detail`, `home` and `all_expenses` are a bill's ⋮ "Delete" on Expenses, Home's "Latest expenses" and All expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups` |
+| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups` |
+| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups` |
+| `bill_edit_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" (Expenses, Home, All expenses) once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups` |
+| `bill_duplicate_clicked` | `source` (`group_detail`, `home`, `all_expenses`) | A bill's ⋮ "Duplicate" (Expenses, Home, All expenses), once Split a bill opened filled in with the bill | `:feature:group_detail`, `:feature:groups` |
+| `bill_share_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" (Expenses, Home, All expenses) once Share bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups` |
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |

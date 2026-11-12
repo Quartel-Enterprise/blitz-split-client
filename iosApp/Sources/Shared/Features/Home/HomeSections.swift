@@ -617,7 +617,7 @@ private struct GroupBalanceLines: View {
 }
 
 /// "Latest expenses": the five latest bills you paid or take part in, by day, the most recent first. A bill opens its
-/// Bill over its group; "See everything" opens Activity on its bills. While the first download fills the device, rows
+/// Bill over its group, its "⋯" the group's options; "See everything" opens "All expenses". While the first download fills the device, rows
 /// shimmer in their place.
 struct HomeBillsSection: View {
     let days: [HomeBillDay]
@@ -669,9 +669,72 @@ struct HomeBillsSection: View {
         .background(Palette.card, in: .rect(cornerRadius: 26))
     }
 
+    private func billRow(_ bill: HomeBill) -> some View {
+        HomeBillRow(
+            bill: bill,
+            onOpen: { send(HomeUiEventOnBillClicked(groupId: bill.groupId, expenseId: bill.id)) },
+            sendMenu: { send($0) },
+        )
+    }
+}
+
+/// A bill of "Latest expenses" and "All expenses": its category's badge, the description, the group's square and who
+/// paid, its total and your share, then its "⋯" (Pierre's call, beta feedback: the group's Expenses' options), which a
+/// long press on iPhone and iPad and a right click on the Mac open too.
+struct HomeBillRow: View {
+    let bill: HomeBill
+    let onOpen: () -> Void
+    let sendMenu: (any BillMenuEvent) -> Void
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Button(action: onOpen) {
+                HStack(spacing: 12) {
+                    // The category's badge, as Despesas draws it (6.1)
+                    CategoryBadge(category: bill.category, size: 38)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(verbatim: bill.description_)
+                            .lineLimit(1)
+                        billOrigin
+                    }
+                    Spacer(minLength: 8)
+                    VStack(alignment: .trailing, spacing: 1) {
+                        Text(verbatim: bill.currency.format(bill.totalMinor))
+                            .font(.subheadline.weight(.semibold))
+                            .monospacedDigit()
+                        Text(verbatim: HomeCopy.share(bill))
+                            .font(.caption.weight(.medium))
+                            .monospacedDigit()
+                            .foregroundStyle(Palette.balance(bill.myBalanceMinor))
+                    }
+                    // The amounts stay whole; the description and the meta give way
+                    .fixedSize()
+                }
+                .padding(.leading, 16)
+                .padding(.trailing, 4)
+                .padding(.vertical, 10)
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            RowMenuButton(title: bill.description_) { items }
+                .padding(.trailing, 8)
+        }
+        .contextMenu { items }
+    }
+
+    private var items: some View {
+        BillMenuItems(
+            onEdit: { sendMenu(BillMenuEventOnEditClicked(groupId: bill.groupId, expenseId: bill.id)) },
+            onDuplicate: { sendMenu(BillMenuEventOnDuplicateClicked(groupId: bill.groupId, expenseId: bill.id)) },
+            onShare: { sendMenu(BillMenuEventOnShareClicked(groupId: bill.groupId, expenseId: bill.id)) },
+            onDelete: { sendMenu(BillMenuEventOnDeleteClicked(groupId: bill.groupId, expenseId: bill.id)) },
+        )
+    }
+
     /// The group's square, then who paid as overlapping faces and "+N" (beta feedback, as the legacy app drew them:
     /// "Floripa trip · You paid" was cut off on an iPhone), "queued" while it waits; VoiceOver still reads the line.
-    private func billOrigin(_ bill: HomeBill) -> some View {
+    private var billOrigin: some View {
         HStack(spacing: 6) {
             GroupAvatar(initials: bill.groupInitials, color: bill.groupColor, photoUrl: bill.groupPhotoUrl, size: 20)
             FaceStack(faces: bill.payerFaces, extraCount: Int(bill.extraPayerCount))
@@ -686,39 +749,6 @@ struct HomeBillsSection: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: HomeCopy.meta(bill)))
-    }
-
-    private func billRow(_ bill: HomeBill) -> some View {
-        Button {
-            send(HomeUiEventOnBillClicked(groupId: bill.groupId, expenseId: bill.id))
-        } label: {
-            HStack(spacing: 12) {
-                // The category's badge, as Despesas draws it (6.1)
-                CategoryBadge(category: bill.category, size: 38)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(verbatim: bill.description_)
-                        .lineLimit(1)
-                    billOrigin(bill)
-                }
-                Spacer(minLength: 8)
-                VStack(alignment: .trailing, spacing: 1) {
-                    Text(verbatim: bill.currency.format(bill.totalMinor))
-                        .font(.subheadline.weight(.semibold))
-                        .monospacedDigit()
-                    Text(verbatim: HomeCopy.share(bill))
-                        .font(.caption.weight(.medium))
-                        .monospacedDigit()
-                        .foregroundStyle(Palette.balance(bill.myBalanceMinor))
-                }
-                // The amounts stay whole; the description and the meta give way
-                .fixedSize()
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityElement(children: .combine)
     }
 }
 

@@ -1,9 +1,7 @@
-import { EllipsisVertical } from 'lucide-react'
 import type { JsExpenseRow } from 'blitzsplit-shared'
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { PendingDot, pendingSurfaceClass } from '@/components/common'
-import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { RowMenuButton, type RowMenuOption } from '@/components/BillRowMenu'
 import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
 import { t } from '@/i18n'
 import { formatDayLabel, formatTime } from '@/lib/dates'
@@ -68,12 +66,7 @@ export function DayRowGroup({ dayStartMillis, relativeDay, children }: { dayStar
 }
 
 /** One option of a line's ⋮: Conta's own for a bill, "Apagar" for a payment. */
-export interface DayRowOption {
-  icon: ReactNode
-  label: string
-  isDestructive?: boolean
-  onSelect: () => void
-}
+export type DayRowOption = RowMenuOption
 
 /**
  * A line of the day, a bill or a payment: its icon, title and meta (with "na fila" while it waits for the server), the
@@ -155,23 +148,7 @@ export function DayRow({
       </span>
       {/* Why: the ⋮ is its own control: its clicks and keys never reach the line, which opens the bill. */}
       <span role="cell" className="flex justify-center pr-1" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
-        {hasMenu && (
-          <DropdownMenu open={isMenuOpen} onOpenChange={setMenuOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={t('groupDetail_entryOptions', { name: title })}>
-                <EllipsisVertical />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
-              {options.map((option) => (
-                <DropdownMenuItem key={option.label} variant={option.isDestructive ? 'destructive' : 'default'} onSelect={option.onSelect}>
-                  {option.icon}
-                  {option.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        {hasMenu && <RowMenuButton title={title} options={options} open={isMenuOpen} onOpenChange={setMenuOpen} />}
       </span>
     </div>
   )

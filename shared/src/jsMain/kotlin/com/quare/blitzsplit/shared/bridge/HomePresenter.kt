@@ -156,6 +156,9 @@ class JsHomeState(
     val appInviteNeedsAccount: Boolean,
     // Why: the phone browser's banner (14.3), until its ✕ on this device.
     val showsAppBanner: Boolean,
+    // Why: "Apagar esta conta?" from a bill's ⋮ on "Últimas despesas", open while not null.
+    val billToDelete: JsBillDeletion?,
+    val isDeletingBill: Boolean,
 )
 
 // Why: what the card's QR code opens, its modules row by row (qrSize by qrSize), and StoreListing's name.
@@ -170,6 +173,9 @@ class JsAppInvite(
 class HomePresenter {
     private val holder = ViewModelHolder(HomeViewModel::class) { KoinPlatform.getKoin().get() }
     private val viewModel get() = holder.viewModel
+
+    // Why: a bill's ⋮ on "Últimas despesas", the row's right click too.
+    val billMenu: JsBillMenu = JsBillMenu { event -> viewModel.onEvent(event) }
 
     fun observeState(onChange: (JsHomeState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
@@ -214,6 +220,8 @@ class HomePresenter {
                 showsAppInviteCard = state.showsAppInviteCard,
                 appInviteNeedsAccount = state.appInviteNeedsAccount,
                 showsAppBanner = state.showsAppBanner,
+                billToDelete = state.billToDelete?.let(::toJsBillDeletion),
+                isDeletingBill = state.isDeletingBill,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -221,13 +229,15 @@ class HomePresenter {
     }
 
     /*
-     * Why: "change-error" and "notifications-on", toasts in the page's words; "request-notification-permission", the
+     * Why: "change-error", "bill-delete-error" and "notifications-on", toasts in the page's words; "request-notification-permission", the
      * browser's prompt. A browser can't open its own settings, so the blocked card only says where.
      */
     fun observeActions(onAction: (String) -> Unit): JsWatch {
         val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 HomeUiAction.ShowChangeError -> "change-error"
+
+                HomeUiAction.ShowBillDeleteError -> "bill-delete-error"
 
                 HomeUiAction.ShowNotificationsOn -> "notifications-on"
 
@@ -493,7 +503,7 @@ private fun toJsHomeGroup(group: HomeGroup): JsHomeGroup = JsHomeGroup(
     isPinned = group.isPinned,
 )
 
-private fun toJsHomeBillDay(day: HomeBillDay): JsHomeBillDay = JsHomeBillDay(
+internal fun toJsHomeBillDay(day: HomeBillDay): JsHomeBillDay = JsHomeBillDay(
     dayStartMillis = day.dayStartMillis.toDouble(),
     relativeDay = toJsRelativeDay(day.relativeDay),
     bills = day.bills.map(::toJsHomeBill).toTypedArray(),

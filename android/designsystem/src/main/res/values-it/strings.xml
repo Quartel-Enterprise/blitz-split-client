@@ -281,4 +281,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s l’ha attivato dopo di te. Vale l’ultima modifica: Semplifica debiti è attivo.</string>
     <string name="designsystem_simplify_someone">Qualcuno</string>
     <string name="designsystem_simplify_see_activity">Vedi in Attività</string>
+    <string name="designsystem_bill_menu_edit">Modifica</string>
+    <string name="designsystem_bill_menu_duplicate">Duplica</string>
+    <string name="designsystem_bill_menu_share">Condividi</string>
+    <string name="designsystem_bill_menu_delete">Elimina</string>
+    <string name="designsystem_bill_menu_options">Opzioni per %s</string>
 </resources>

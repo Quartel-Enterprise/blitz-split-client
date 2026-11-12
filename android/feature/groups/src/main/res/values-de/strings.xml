@@ -177,4 +177,26 @@
     <string name="groups_home_cover_totals">du bekommst %1$s · du schuldest %2$s</string>
     <string name="groups_home_cover_hint">Öffne das Handy, um alles zu sehen</string>
     <string name="groups_waiting_for_internet">Kein Internet. Deine Gruppen erscheinen, sobald du wieder online bist.</string>
+    <string name="groups_all_expenses_title">Alle Ausgaben</string>
+    <string name="groups_all_expenses_empty_title">Noch keine Ausgaben</string>
+    <string name="groups_all_expenses_empty_body">Rechnungen, die du bezahlt hast oder an denen du beteiligt bist, aus allen Gruppen, erscheinen hier.</string>
+    <string name="groups_all_expenses_search">Ausgaben suchen</string>
+    <string name="groups_all_expenses_group">Gruppe</string>
+    <string name="groups_all_expenses_category">Kategorie</string>
+    <string name="groups_all_expenses_share">Dein Anteil</string>
+    <string name="groups_all_expenses_share_all">Alle</string>
+    <string name="groups_all_expenses_share_receive">Du bekommst zurück</string>
+    <string name="groups_all_expenses_share_pay">Du schuldest</string>
+    <string name="groups_all_expenses_payer">Wer hat bezahlt</string>
+    <string name="groups_all_expenses_payer_all">Alle</string>
+    <string name="groups_all_expenses_payer_you">Du hast bezahlt</string>
+    <string name="groups_all_expenses_payer_others">Andere haben bezahlt</string>
+    <string name="groups_all_expenses_sort_newest">Neueste zuerst</string>
+    <string name="groups_all_expenses_sort_oldest">Älteste zuerst</string>
+    <string name="groups_all_expenses_sort_largest">Höchster Betrag</string>
+    <string name="groups_all_expenses_sort_smallest">Niedrigster Betrag</string>
+    <string name="groups_all_expenses_sort">Sortieren</string>
+    <string name="groups_all_expenses_clear">Filter zurücksetzen</string>
+    <string name="groups_all_expenses_no_results_title">Keine passenden Ausgaben</string>
+    <string name="groups_all_expenses_no_results_body">Versuch andere Wörter oder setz die Filter zurück.</string>
 </resources>

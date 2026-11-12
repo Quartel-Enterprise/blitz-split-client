@@ -168,4 +168,26 @@
     <string name="groups_home_cover_totals">utang ke kamu %1$s · kamu berutang %2$s</string>
     <string name="groups_home_cover_hint">Buka ponsel untuk melihat semuanya</string>
     <string name="groups_waiting_for_internet">Tidak ada internet. Grupmu akan muncul setelah kamu online lagi.</string>
+    <string name="groups_all_expenses_title">Semua pengeluaran</string>
+    <string name="groups_all_expenses_empty_title">Belum ada pengeluaran</string>
+    <string name="groups_all_expenses_empty_body">Tagihan yang kamu bayar atau ikuti, di grup mana pun, muncul di sini.</string>
+    <string name="groups_all_expenses_search">Cari pengeluaran</string>
+    <string name="groups_all_expenses_group">Grup</string>
+    <string name="groups_all_expenses_category">Kategori</string>
+    <string name="groups_all_expenses_share">Bagianmu</string>
+    <string name="groups_all_expenses_share_all">Semua</string>
+    <string name="groups_all_expenses_share_receive">Kamu terima</string>
+    <string name="groups_all_expenses_share_pay">Kamu berutang</string>
+    <string name="groups_all_expenses_payer">Siapa yang bayar</string>
+    <string name="groups_all_expenses_payer_all">Siapa saja</string>
+    <string name="groups_all_expenses_payer_you">Kamu yang bayar</string>
+    <string name="groups_all_expenses_payer_others">Orang lain yang bayar</string>
+    <string name="groups_all_expenses_sort_newest">Terbaru</string>
+    <string name="groups_all_expenses_sort_oldest">Terlama</string>
+    <string name="groups_all_expenses_sort_largest">Nominal terbesar</string>
+    <string name="groups_all_expenses_sort_smallest">Nominal terkecil</string>
+    <string name="groups_all_expenses_sort">Urutkan</string>
+    <string name="groups_all_expenses_clear">Hapus filter</string>
+    <string name="groups_all_expenses_no_results_title">Tidak ada pengeluaran yang cocok</string>
+    <string name="groups_all_expenses_no_results_body">Coba kata lain atau hapus filternya.</string>
 </resources>

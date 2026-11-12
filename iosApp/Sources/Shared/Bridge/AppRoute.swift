@@ -26,6 +26,8 @@ enum AppRoute: Hashable, Identifiable {
     /// Activity, pushed over Home by its bell or over a contact's profile; holds the Kotlin route itself, which its
     /// ViewModel reads the person it filters by from.
     case activity(RouteActivity)
+    /// "All expenses", pushed over Home by "See everything" of "Latest expenses".
+    case allExpenses
     /// Settling up with someone across groups; holds the Kotlin route itself, which its ViewModel reads the person from.
     case settleUp(RouteSettleUp)
     /// Request, over Balances or a contact's profile; holds the Kotlin route itself, which its ViewModel reads the
@@ -103,6 +105,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RoutePickPayment: self = .pickPayment
         case let globalBalances as RouteGlobalBalances: self = .globalBalances(globalBalances)
         case let activity as RouteActivity: self = .activity(activity)
+        case is RouteAllExpenses: self = .allExpenses
         case let settleUp as RouteSettleUp: self = .settleUp(settleUp)
         case let charge as RouteCharge: self = .charge(charge)
         case let splitBill as RouteSplitBill: self = .splitBill(splitBill)

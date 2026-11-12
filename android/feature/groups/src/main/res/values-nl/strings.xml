@@ -177,4 +177,26 @@
     <string name="groups_home_cover_totals">te ontvangen %1$s · je bent %2$s schuldig</string>
     <string name="groups_home_cover_hint">Open de telefoon om alles te zien</string>
     <string name="groups_waiting_for_internet">Geen internet. Je groepen verschijnen zodra je weer online bent.</string>
+    <string name="groups_all_expenses_title">Alle uitgaven</string>
+    <string name="groups_all_expenses_empty_title">Nog geen uitgaven</string>
+    <string name="groups_all_expenses_empty_body">Rekeningen die je betaald hebt of waar je aan meedoet, in welke groep dan ook, verschijnen hier.</string>
+    <string name="groups_all_expenses_search">Uitgaven zoeken</string>
+    <string name="groups_all_expenses_group">Groep</string>
+    <string name="groups_all_expenses_category">Categorie</string>
+    <string name="groups_all_expenses_share">Jouw deel</string>
+    <string name="groups_all_expenses_share_all">Alles</string>
+    <string name="groups_all_expenses_share_receive">Je krijgt terug</string>
+    <string name="groups_all_expenses_share_pay">Jij bent schuldig</string>
+    <string name="groups_all_expenses_payer">Wie betaalde</string>
+    <string name="groups_all_expenses_payer_all">Iedereen</string>
+    <string name="groups_all_expenses_payer_you">Jij betaalde</string>
+    <string name="groups_all_expenses_payer_others">Anderen betaalden</string>
+    <string name="groups_all_expenses_sort_newest">Nieuwste eerst</string>
+    <string name="groups_all_expenses_sort_oldest">Oudste eerst</string>
+    <string name="groups_all_expenses_sort_largest">Hoogste bedrag</string>
+    <string name="groups_all_expenses_sort_smallest">Laagste bedrag</string>
+    <string name="groups_all_expenses_sort">Sorteren</string>
+    <string name="groups_all_expenses_clear">Filters wissen</string>
+    <string name="groups_all_expenses_no_results_title">Geen uitgaven gevonden</string>
+    <string name="groups_all_expenses_no_results_body">Probeer andere woorden of wis de filters.</string>
 </resources>

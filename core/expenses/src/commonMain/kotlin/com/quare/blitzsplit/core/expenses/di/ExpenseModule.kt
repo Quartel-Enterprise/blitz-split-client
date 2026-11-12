@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.di
 
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.data.datasource.AppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentRemoteDataSource
@@ -99,6 +100,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.LocateBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillComments
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillDeletion
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
@@ -109,6 +111,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
@@ -154,6 +157,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LocateBillUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
@@ -164,6 +168,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalanc
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
@@ -197,6 +202,9 @@ val expenseModule = module {
     // Why: read on every call, so a device that changes time zone counts days in the new one.
     single<CurrentTimeZone> { CurrentTimeZone { TimeZone.currentSystemDefault() } }
     factoryOf(::ObserveExpensesUseCase).bind<ObserveExpenses>()
+    factoryOf(::ObserveMyExpensesUseCase).bind<ObserveMyExpenses>()
+    factoryOf(::ObserveBillDeletionUseCase).bind<ObserveBillDeletion>()
+    factoryOf(::BillMenuUseCases)
     factoryOf(::CreateExpenseUseCase).bind<CreateExpense>()
     factoryOf(::ObserveExpenseUseCase).bind<ObserveExpense>()
     factoryOf(::UpdateExpenseUseCase).bind<UpdateExpense>()

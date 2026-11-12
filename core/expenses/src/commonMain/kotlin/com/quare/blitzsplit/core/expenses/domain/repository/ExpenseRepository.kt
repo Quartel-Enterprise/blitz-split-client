@@ -11,6 +11,12 @@ interface ExpenseRepository {
     // Why: every group's bills at once, each group's in the order of its own list; a deleted one is gone.
     fun observeAllExpenses(): Flow<List<Expense>>
 
+    /*
+     * Why: the first `limit` bills this device's user paid or takes part in, from every group, the most recent first
+     * (Início's "Ver tudo"); a deleted one is gone.
+     */
+    fun observeMyExpenses(limit: Int): Flow<List<Expense>>
+
     // Why: one bill, null once it is deleted, here or on another device.
     fun observeExpense(id: String): Flow<Expense?>
 

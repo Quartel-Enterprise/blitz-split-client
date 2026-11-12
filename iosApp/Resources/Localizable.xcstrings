@@ -125784,6 +125784,916 @@
           }
         }
       }
+    },
+    "All expenses" : {
+      "comment" : "Title of the screen Home's See everything opens: every bill you paid or take part in",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Ausgaben"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los gastos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes les dépenses"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semua pengeluaran"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutte le spese"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての支出"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle uitgaven"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wszystkie wydatki"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todas as despesas"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm harcamalar"
+          }
+        }
+      }
+    },
+    "Bills you paid or take part in, in any group, show up here." : {
+      "comment" : "All expenses' empty state",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechnungen, die du bezahlt hast oder an denen du beteiligt bist, aus allen Gruppen, erscheinen hier."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las cuentas que pagaste o en las que participas, en cualquier grupo, aparecen aquí."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les dépenses que tu as payées ou auxquelles tu participes, dans n’importe quel groupe, apparaissent ici."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tagihan yang kamu bayar atau ikuti, di grup mana pun, muncul di sini."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I conti che hai pagato o a cui partecipi, in qualsiasi gruppo, compaiono qui."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どのグループでも、あなたが支払った、または参加している支出がここに表示されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rekeningen die je betaald hebt of waar je aan meedoet, in welke groep dan ook, verschijnen hier."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu pojawią się rachunki z każdej grupy, które opłacasz lub w których bierzesz udział."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As contas que você pagou ou de que participa, em qualquer grupo, aparecem aqui."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herhangi bir grupta ödediğin veya dahil olduğun harcamalar burada görünür."
+          }
+        }
+      }
+    },
+    "Search expenses" : {
+      "comment" : "All expenses: search",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar despesas"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar gastos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher des dépenses"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgaben suchen"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca spese"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szukaj wydatków"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uitgaven zoeken"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支出を検索"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Harcama ara"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cari pengeluaran"
+          }
+        }
+      }
+    },
+    "Any share" : {
+      "comment" : "All expenses: shareAll",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer parte"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cualquier parte"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualsiasi"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dowolny"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alles"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべて"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hepsi"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semua"
+          }
+        }
+      }
+    },
+    "You get back" : {
+      "comment" : "All expenses: shareReceive",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A receber"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te deben"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On te doit"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bekommst zurück"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ti devono"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do odzyskania"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je krijgt terug"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "受け取る"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alacağın"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamu terima"
+          }
+        }
+      }
+    },
+    "Anyone" : {
+      "comment" : "All expenses: payerAll",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualquer pessoa"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cualquiera"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N’importe qui"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiunque"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ktokolwiek"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iedereen"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "誰でも"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herkes"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siapa saja"
+          }
+        }
+      }
+    },
+    "Others paid" : {
+      "comment" : "All expenses: payerOthers",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outros pagaram"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pagaron otros"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "D’autres ont payé"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andere haben bezahlt"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hanno pagato altri"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zapłacili inni"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anderen betaalden"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ほかの人が支払った"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Başkaları ödedi"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orang lain yang bayar"
+          }
+        }
+      }
+    },
+    "Newest first" : {
+      "comment" : "All expenses: sortNewest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais recentes"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más recientes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus récentes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neueste zuerst"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Più recenti"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najnowsze"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieuwste eerst"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しい順"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En yeni"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terbaru"
+          }
+        }
+      }
+    },
+    "Oldest first" : {
+      "comment" : "All expenses: sortOldest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais antigas"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más antiguos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus anciennes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Älteste zuerst"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meno recenti"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najstarsze"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oudste eerst"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "古い順"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En eski"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terlama"
+          }
+        }
+      }
+    },
+    "Largest first" : {
+      "comment" : "All expenses: sortLargest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maior valor"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mayor importe"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montant le plus élevé"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höchster Betrag"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importo più alto"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najwyższa kwota"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoogste bedrag"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "金額が大きい順"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En yüksek tutar"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nominal terbesar"
+          }
+        }
+      }
+    },
+    "Smallest first" : {
+      "comment" : "All expenses: sortSmallest",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menor valor"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menor importe"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montant le plus bas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niedrigster Betrag"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importo più basso"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najniższa kwota"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laagste bedrag"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "金額が小さい順"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En düşük tutar"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nominal terkecil"
+          }
+        }
+      }
+    },
+    "Sort" : {
+      "comment" : "All expenses: sort",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortieren"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordina"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortuj"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sorteren"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "並べ替え"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sırala"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Urutkan"
+          }
+        }
+      }
+    },
+    "No expenses match" : {
+      "comment" : "All expenses: noResultsTitle",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma despesa encontrada"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ningún gasto coincide"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune dépense ne correspond"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine passenden Ausgaben"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessuna spesa corrisponde"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brak pasujących wydatków"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen uitgaven gevonden"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一致する支出はありません"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eşleşen harcama yok"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidak ada pengeluaran yang cocok"
+          }
+        }
+      }
+    },
+    "Try other words or clear the filters." : {
+      "comment" : "All expenses: noResultsBody",
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tente outras palavras ou limpe os filtros."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prueba otras palabras o borra los filtros."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Essaie d’autres mots ou efface les filtres."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versuch andere Wörter oder setz die Filter zurück."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prova altre parole o cancella i filtri."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spróbuj innych słów lub wyczyść filtry."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probeer andere woorden of wis de filters."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "別の言葉を試すか、フィルターをクリアしてください。"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Başka kelimeler dene veya filtreleri temizle."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coba kata lain atau hapus filternya."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

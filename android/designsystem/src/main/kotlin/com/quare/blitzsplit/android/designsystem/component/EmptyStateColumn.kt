@@ -26,7 +26,8 @@ fun EmptyStateColumn(
     icon: ImageVector,
     title: String,
     body: String,
-    action: String,
+    // Why: null for a list with nowhere better to lead ("Todas as despesas"), which draws no button.
+    action: String?,
     onAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,11 +70,13 @@ fun EmptyStateColumn(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        FilledTonalButton(
-            onClick = onAction,
-            modifier = Modifier.padding(top = 8.dp),
-        ) {
-            Text(action)
+        if (action != null) {
+            FilledTonalButton(
+                onClick = onAction,
+                modifier = Modifier.padding(top = 8.dp),
+            ) {
+                Text(action)
+            }
         }
     }
 }

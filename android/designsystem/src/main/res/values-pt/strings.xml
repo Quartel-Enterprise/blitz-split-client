@@ -273,4 +273,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s ligou depois de você. Vale a última mudança: Simplificar dívidas está ligado.</string>
     <string name="designsystem_simplify_someone">Alguém</string>
     <string name="designsystem_simplify_see_activity">Ver na Atividade</string>
+    <string name="designsystem_bill_menu_edit">Editar</string>
+    <string name="designsystem_bill_menu_duplicate">Duplicar</string>
+    <string name="designsystem_bill_menu_share">Compartilhar</string>
+    <string name="designsystem_bill_menu_delete">Apagar</string>
+    <string name="designsystem_bill_menu_options">Opções de %s</string>
 </resources>

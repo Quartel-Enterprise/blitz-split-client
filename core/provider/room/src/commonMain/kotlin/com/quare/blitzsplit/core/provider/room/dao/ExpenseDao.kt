@@ -34,6 +34,20 @@ interface ExpenseDao {
     )
     fun observeAllExpenses(): Flow<List<ExpenseWithEditor>>
 
+    /*
+     * Why: Início's "Ver tudo", the bills this device's user paid or takes part in across groups, the most recent first,
+     * as many as the list has reached (its pages grow the limit). A member's id is a UUID, so finding it quoted in the
+     * payers' or the shares' JSON finds that member; the mapper drops what it can't read, and the screen checks again.
+     */
+    @Query(
+        "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE isDeleted = 0 AND EXISTS (SELECT 1 FROM group_member " +
+            "WHERE group_member.groupId = expense.groupId AND group_member.isMe = 1 AND " +
+            "(expense.payersJson LIKE '%\"' || group_member.id || '\"%' OR " +
+            "expense.sharesJson LIKE '%\"' || group_member.id || '\"%')) " +
+            "ORDER BY spentAt DESC, addedAt DESC, id LIMIT :limit",
+    )
+    fun observeMyExpenses(limit: Int): Flow<List<ExpenseWithEditor>>
+
     // Why: "Conta" and "Editar conta", which close once the bill is deleted, here or on another device.
     @Query(
         "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE id = :id AND isDeleted = 0",

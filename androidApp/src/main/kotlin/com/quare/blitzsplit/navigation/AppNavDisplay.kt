@@ -57,6 +57,7 @@ import com.quare.blitzsplit.android.feature.editprofile.ProfilePhotoScreen
 import com.quare.blitzsplit.android.feature.globalbalances.ChargeScreen
 import com.quare.blitzsplit.android.feature.globalbalances.GlobalBalancesScreen
 import com.quare.blitzsplit.android.feature.groupdetail.GroupDetailScreen
+import com.quare.blitzsplit.android.feature.groups.AllExpensesScreen
 import com.quare.blitzsplit.android.feature.groups.GroupsScreen
 import com.quare.blitzsplit.android.feature.groups.HomeScreen
 import com.quare.blitzsplit.android.feature.groups.SearchScreen
@@ -420,6 +421,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: Atividade, pushed over Início by its bell or over a contact's profile by their history.
             entry<Route.Activity> { route -> ActivityScreen(route) }
+            // Why: "Todas as despesas", which Início's "Ver tudo" pushes over it, a page on every size.
+            entry<Route.AllExpenses> { AllExpensesScreen() }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
             entry<Route.SettleUp>(metadata = formPresentationMetadata) { route ->
                 val presentation = remember { formPresentation }

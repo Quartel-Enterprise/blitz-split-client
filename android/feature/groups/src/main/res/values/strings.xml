@@ -178,4 +178,26 @@
     <string name="groups_home_cover_totals">owed to you %1$s · you owe %2$s</string>
     <string name="groups_home_cover_hint">Open the phone to see everything</string>
     <string name="groups_waiting_for_internet">No internet. Your groups show up once you\'re back online.</string>
+    <string name="groups_all_expenses_title">All expenses</string>
+    <string name="groups_all_expenses_empty_title">No expenses yet</string>
+    <string name="groups_all_expenses_empty_body">Bills you paid or take part in, in any group, show up here.</string>
+    <string name="groups_all_expenses_search">Search expenses</string>
+    <string name="groups_all_expenses_group">Group</string>
+    <string name="groups_all_expenses_category">Category</string>
+    <string name="groups_all_expenses_share">Your share</string>
+    <string name="groups_all_expenses_share_all">Any share</string>
+    <string name="groups_all_expenses_share_receive">You get back</string>
+    <string name="groups_all_expenses_share_pay">You owe</string>
+    <string name="groups_all_expenses_payer">Who paid</string>
+    <string name="groups_all_expenses_payer_all">Anyone</string>
+    <string name="groups_all_expenses_payer_you">You paid</string>
+    <string name="groups_all_expenses_payer_others">Others paid</string>
+    <string name="groups_all_expenses_sort_newest">Newest first</string>
+    <string name="groups_all_expenses_sort_oldest">Oldest first</string>
+    <string name="groups_all_expenses_sort_largest">Largest first</string>
+    <string name="groups_all_expenses_sort_smallest">Smallest first</string>
+    <string name="groups_all_expenses_sort">Sort</string>
+    <string name="groups_all_expenses_clear">Clear filters</string>
+    <string name="groups_all_expenses_no_results_title">No expenses match</string>
+    <string name="groups_all_expenses_no_results_body">Try other words or clear the filters.</string>
 </resources>
