@@ -120,7 +120,7 @@ struct ContactProfileView: View {
                     .frame(maxWidth: .infinity)
                     ShimmerCard()
                         .background(Palette.card, in: .rect(cornerRadius: 24))
-                    ShimmerList(count: 3, leading: .badge)
+                    ShimmerList(count: 3, leading: .group)
                 }
                 .background(Palette.groupedBackground.ignoresSafeArea())
             }

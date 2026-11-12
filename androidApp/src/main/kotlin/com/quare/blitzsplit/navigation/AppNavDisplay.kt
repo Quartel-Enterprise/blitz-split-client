@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +26,9 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
+import com.quare.blitzsplit.android.designsystem.component.GroupSharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
+import com.quare.blitzsplit.android.designsystem.component.LocalSharedTransitionScope
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -86,7 +91,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * Why: the back stack lives in :core:navigation and the ViewModels move it; Navigation 3 only
  * draws its entries, so Android walks the same flow as SwiftUI and React.
  */
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val uiState by appViewModel.uiState.collectAsStateWithLifecycle()
@@ -202,6 +207,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
+    // Why: the screen right under the group is the one its row was tapped on; beside the list nothing flies.
+    val groupSharedOriginOf = { route: Route.GroupDetail ->
+        when (backStack.getOrNull(backStack.lastIndexOf(route) - 1)) {
+            Route.Home -> GroupSharedOrigin.HOME
+            Route.Groups -> GroupSharedOrigin.GROUPS.takeIf { listDetail == null }
+            else -> null
+        }
+    }
     val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     // Why: NavDisplay keeps an entry's metadata until the back stack changes, so the placeholder reads it as it draws.
     val currentIsHomeEmpty by rememberUpdatedState(isHomeEmpty)
@@ -243,17 +256,22 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
             entry<Route.Home>(metadata = homeTabMetadata) {
-                HomeScreen(
-                    recoveryCodeSheet = { RecoveryCodeSheet() },
-                    isPushConfigured = PushSetup.isConfigured,
-                )
+                EntryTransitionLayout(origin = GroupSharedOrigin.HOME) {
+                    HomeScreen(
+                        recoveryCodeSheet = { RecoveryCodeSheet() },
+                        isPushConfigured = PushSetup.isConfigured,
+                    )
+                }
             }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
-                GroupsScreen(
-                    recoveryCodeSheet = { RecoveryCodeSheet() },
-                    onEmptyChanged = { isGroupsScreenEmpty = it },
-                )
+                // Why: beside the group the list stays where it is, so its rows fly nowhere.
+                EntryTransitionLayout(origin = GroupSharedOrigin.GROUPS.takeIf { listDetail == null }) {
+                    GroupsScreen(
+                        recoveryCodeSheet = { RecoveryCodeSheet() },
+                        onEmptyChanged = { isGroupsScreenEmpty = it },
+                    )
+                }
             }
             // Why: "Buscar" over Início, Saldos, Contatos or Atividade, full screen as Grupos' own takes its place.
             entry<Route.Search>(metadata = homeTabMetadata) { SearchScreen() }
@@ -308,11 +326,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane {
-                    GroupDetailScreen(
-                        route = route,
-                        membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
-                        onTabChanged = { tab -> openGroupTab = route to tab },
-                    )
+                    EntryTransitionLayout(origin = groupSharedOriginOf(route)) {
+                        GroupDetailScreen(
+                            route = route,
+                            membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
+                            onTabChanged = { tab -> openGroupTab = route to tab },
+                        )
+                    }
                 }
             }
             // Why: wider than a phone the group stays behind the form, in a book's right half on a foldable.
@@ -427,16 +447,30 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.JoinWithLink> { route -> JoinWithLinkScreen(route) }
         },
     )
+    /*
+     * Why: Material's list-detail scene only where the list and the group show side by side. Elsewhere the group opens
+     * over Grupos as it does over Início, a screen of its own, so the group's avatar and name fly from the row tapped
+     * into its header (beta feedback of 2026-11-12); beside the list nothing flies, the row stays where it is.
+     */
+    val sceneStrategies = if (listDetail != null) {
+        listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy)
+    } else {
+        listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy())
+    }
     // Why: the home's bar or rail, drawn once around the navigation, so switching tabs swaps only the content.
     HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
-        NavDisplay(
-            entries = entries,
-            // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
-            sceneStrategies = listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy(), listDetailStrategy),
-            transitionSpec = transitionSpec,
-            popTransitionSpec = popTransitionSpec,
-            predictivePopTransitionSpec = predictivePopTransitionSpec,
-            onBack = { appViewModel.navigator.navigateBack() },
-        )
+        SharedTransitionLayout {
+            CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+                NavDisplay(
+                    entries = entries,
+                    // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
+                    sceneStrategies = sceneStrategies,
+                    transitionSpec = transitionSpec,
+                    popTransitionSpec = popTransitionSpec,
+                    predictivePopTransitionSpec = predictivePopTransitionSpec,
+                    onBack = { appViewModel.navigator.navigateBack() },
+                )
+            }
+        }
     }
 }

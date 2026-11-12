@@ -33,6 +33,7 @@ class JsPersonGroup(
     val name: String,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val amountMinor: Double,
     // Why: "Dívidas simplificadas" on the group's line of "Por grupo" (13.6).
     val isSimplified: Boolean,
@@ -259,6 +260,7 @@ internal fun toJsPersonGroup(part: PersonGroupBalance): JsPersonGroup = JsPerson
     name = part.groupName,
     initials = part.groupInitials,
     color = part.groupColor.code,
+    photoUrl = part.groupPhotoUrl,
     amountMinor = part.amountMinor.toDouble(),
     isSimplified = part.isSimplified,
 )

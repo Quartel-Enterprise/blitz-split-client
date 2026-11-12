@@ -86,8 +86,6 @@ import com.quare.blitzsplit.core.model.PhotoCropEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// Why: GroupBadge's 16 dp corners on its 48 dp side, so the frame is the badge the photo becomes, larger.
-private const val ROUNDED_SQUARE_CORNER_RATIO = 1f / 3f
 private const val FRAME_RATIO = 0.9f
 private const val VERTICAL_MIRROR_ICON_ROTATION = 90f
 private val editorBackground = Color(0xFF0B0B0F)
@@ -350,7 +348,7 @@ private fun DrawScope.drawFrame(
             color = color,
             topLeft = Offset((size.width - side) / 2, (size.height - side) / 2),
             size = Size(side, side),
-            cornerRadius = CornerRadius(side * ROUNDED_SQUARE_CORNER_RATIO),
+            cornerRadius = CornerRadius(side * GROUP_CORNER_RATIO),
             style = style,
             blendMode = blendMode,
         )

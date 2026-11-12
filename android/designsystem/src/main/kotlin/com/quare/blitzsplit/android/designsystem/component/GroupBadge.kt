@@ -15,7 +15,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.quare.blitzsplit.android.designsystem.R
@@ -24,6 +23,16 @@ import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupShape
+
+/*
+ * Why: the group photo viewer's square (16 dp corners on its 200 dp side) at every size, so a group reads as the same
+ * square in a list row, the group's header and the photo opened big (beta feedback of 2026-11-12, Pierre's call).
+ */
+private const val GROUP_CORNER_PERCENT = 8
+const val GROUP_CORNER_RATIO = GROUP_CORNER_PERCENT / 100f
+
+// Why: a share of the side, so a badge growing from a row into the group's header keeps the same square all along.
+val GroupAvatarShape: Shape = RoundedCornerShape(percent = GROUP_CORNER_PERCENT)
 
 /*
  * Why: a group's avatar, its initials ("VF") on one of the palette's colors in the group's rounded square, or its photo
@@ -39,7 +48,7 @@ fun GroupBadge(
     photoUrl: String? = null,
 ) {
     val isDark = LocalIsDarkTheme.current
-    val outline = groupShapeOf(size)
+    val outline = GroupAvatarShape
     Box(
         modifier = modifier
             .size(size)
@@ -62,12 +71,6 @@ fun GroupBadge(
         }
     }
 }
-
-/*
- * Why: a group's rounded square. The corners are 16 dp from the default size up and a third of the side below it, so
- * the small badges of the lists stay squares instead of turning into circles.
- */
-fun groupShapeOf(size: Dp): Shape = RoundedCornerShape(min(16.dp, size / 3))
 
 // Why: Atividade still names a "Forma" an older Android build changed.
 @get:StringRes

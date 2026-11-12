@@ -231,7 +231,7 @@ private struct ActivityRelatedRow: View {
             model.send(ActivityUiEventOnItemClicked(itemId: item.id))
         } label: {
             HStack(alignment: .top, spacing: 12) {
-                AvatarPhoto(initial: item.actor.initials, color: item.actor.color, photoUrl: nil, size: 32)
+                AvatarPhoto(initial: item.actor.initials, color: item.actor.color, photoUrl: item.actor.photoUrl, size: 32)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     ActivityCopy.headline(item)
@@ -455,7 +455,7 @@ struct ActivityFilterSheet: View {
             model.send(ActivityUiEventOnDraftGroupPicked(groupId: id))
         } label: {
             pickRow(isOn: isOn) {
-                RoundedRectangle(cornerRadius: 6)
+                GroupAvatar.shape(size: 20)
                     .fill(color?.data ?? .clear)
                     .frame(width: 20, height: 20)
                 Text(verbatim: name)

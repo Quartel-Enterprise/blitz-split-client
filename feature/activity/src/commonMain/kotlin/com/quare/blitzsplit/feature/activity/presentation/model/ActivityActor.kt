@@ -9,6 +9,8 @@ data class ActivityActor(
     val isMe: Boolean,
     val initials: String,
     val color: AvatarColor,
+    // Why: their profile photo over the initials, null for no photo or nobody in a group on the device.
+    val photoUrl: String?,
     // Why: PeopleBalances.keyOf while they are in a group on the device, whose profile their face opens; else null.
     val personKey: String?,
 ) {

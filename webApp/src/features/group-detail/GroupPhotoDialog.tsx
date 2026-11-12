@@ -5,6 +5,7 @@ import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
 import { PHOTO_VIEWER_SIZE, PhotoPreparing, PhotoViewerDialog, PhotoViewerError, PhotoViewerShortcuts } from '@/components/PhotoViewer'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t } from '@/i18n'
+import { GROUP_SHAPE } from '@/lib/avatar'
 
 /**
  * The group's photo big (`Route.GroupPhoto`), the profile's viewer for a group: the photo, or the initials on the
@@ -33,7 +34,7 @@ function GroupPhotoBody({ presenter, state }: { presenter: GroupPhotoPresenter; 
     <div className="m-auto flex flex-col items-center gap-7 py-4">
       <div className="relative">
         <GroupAvatar initials={state.initials} color={state.avatarColor} photoUrl={state.photoUrl} className={PHOTO_VIEWER_SIZE} />
-        {state.isPreparingPhoto && <PhotoPreparing className="rounded-[32%]" />}
+        {state.isPreparingPhoto && <PhotoPreparing className={GROUP_SHAPE} />}
       </div>
       {state.showsPhotoError && <PhotoViewerError message={t('editGroup_photoError')} />}
       <PhotoViewerShortcuts

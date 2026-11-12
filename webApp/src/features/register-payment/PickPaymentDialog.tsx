@@ -79,7 +79,7 @@ function PairsOfGroup({ group, showsCurrency, onPick }: { group: JsPickPaymentGr
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-1.5">
       <h3 id={headingId} className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
-        <GroupAvatar initials={group.initials} color={group.color} className="size-6 rounded-md text-[10px]" />
+        <GroupAvatar initials={group.initials} color={group.color} className="size-6 text-[10px]" />
         <span className="truncate">{group.name}</span>
         {showsCurrency && <span className="shrink-0 rounded-full border px-2 text-[11px] font-medium">{group.currency}</span>}
       </h3>

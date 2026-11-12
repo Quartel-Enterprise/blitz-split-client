@@ -161,7 +161,7 @@ function HomeSkeleton() {
       </div>
       <div className="flex flex-col gap-3.5 md:gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-5">
         <ListCardSkeleton rows={4} leading="square" className="rounded-lg" />
-        <ListCardSkeleton rows={3} leading="square" className="rounded-lg" />
+        <ListCardSkeleton rows={3} leading="group" className="rounded-lg" />
       </div>
     </LoadingRegion>
   )

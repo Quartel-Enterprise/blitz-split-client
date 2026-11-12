@@ -70,7 +70,7 @@ export function GroupSkeletonRows({ count }: { count: number }) {
   // Why: the server is what brings them, never a fast read, so they show at once.
   return (
     <LoadingRegion isDelayed={false}>
-      <SkeletonRows count={count} leading="square" className="rounded-xl border bg-card" rowClassName="px-3" />
+      <SkeletonRows count={count} leading="group" className="rounded-xl border bg-card" rowClassName="px-3" />
     </LoadingRegion>
   )
 }

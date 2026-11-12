@@ -222,7 +222,7 @@ class ProfileViewModelTest {
             // Then
             assertNull(state.accountProvider)
             assertFalse(state.hasAccount)
-            assertNull(state.maskedEmail)
+            assertNull(state.email)
         }
 
     @Test
@@ -239,11 +239,11 @@ class ProfileViewModelTest {
 
             // Then
             assertNull(state.accountProvider)
-            assertNull(state.maskedEmail)
+            assertNull(state.email)
         }
 
     @Test
-    fun `GIVEN an account connected with Google WHEN the profile opens THEN shows Google and the masked email`() =
+    fun `GIVEN an account connected with Google WHEN the profile opens THEN shows Google and the whole email`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -257,11 +257,11 @@ class ProfileViewModelTest {
             // Then
             assertEquals(AccountProvider.GOOGLE, state.accountProvider)
             assertTrue(state.hasAccount)
-            assertEquals("p•••@gmail.com", state.maskedEmail)
+            assertEquals("pierre@gmail.com", state.email)
         }
 
     @Test
-    fun `GIVEN an account connected with Apple WHEN the profile opens THEN shows Apple and the masked email`() =
+    fun `GIVEN an account connected with Apple WHEN the profile opens THEN shows Apple and the whole email`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -274,7 +274,7 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(AccountProvider.APPLE, state.accountProvider)
-            assertEquals("p•••@privaterelay.appleid.com", state.maskedEmail)
+            assertEquals("pierre@privaterelay.appleid.com", state.email)
         }
 
     @Test
@@ -291,7 +291,7 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(AccountProvider.GOOGLE, state.accountProvider)
-            assertNull(state.maskedEmail)
+            assertNull(state.email)
         }
 
     @Test
@@ -311,7 +311,7 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(AccountProvider.GOOGLE, viewModel.uiState.value.accountProvider)
-            assertEquals("p•••@gmail.com", viewModel.uiState.value.maskedEmail)
+            assertEquals("pierre@gmail.com", viewModel.uiState.value.email)
             assertFalse(viewModel.uiState.value.showsRecoveryCodeRow)
         }
 
@@ -1084,6 +1084,77 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Google with an email WHEN tapping the email info THEN explains it and sends the info clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                email = "pierre@gmail.com",
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnEmailInfoClicked)
+
+            // Then
+            assertEquals(ProfileDialog.EMAIL_INFO, viewModel.uiState.value.dialog)
+            assertEquals(listOf("profile_email_info_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Google with a blank email WHEN the profile opens THEN shows no email`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            email = " ",
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(AccountProvider.GOOGLE, state.accountProvider)
+        assertNull(state.email)
+    }
+
+    @Test
+    fun `GIVEN the email info open WHEN the account loses its email THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            email = "pierre@gmail.com",
+        )
+        viewModel.onEvent(ProfileUiEvent.OnEmailInfoClicked)
+
+        // When
+        account.snapshot.value = account.snapshot.value.copy(
+            status = anonymous,
+            email = null,
+        )
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN the email info arrives THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = anonymous,
+                email = "pierre@gmail.com",
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnEmailInfoClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test

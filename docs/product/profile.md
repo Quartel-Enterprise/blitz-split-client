@@ -45,9 +45,23 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     recovery code yet, `ProfileUiState.erasesProfileOnSignOut`) reads "Erase profile and sign out", whose dialog says
     it is gone for good; one the server never saw (`isLocalOnly`) has no Delete account either, while an anonymous
     account whose code isn't made yet keeps it.
-  - "Account and sync"'s Google or Apple row only says which account it is ("Connected", and the masked email): it
-    opens nothing and nothing disconnects the Google or Apple account from the user (Pierre's call, beta feedback).
-    Who wants it gone signs out or deletes the account. The server has no `unlink-identity` function any more.
+  - "Account and sync"'s Google or Apple row only says which account it is: the provider's own logo (Google's
+    four-color "G", Apple's in the text's color) and the account's whole email, unmasked so the person really sees
+    which account it is, with no "Connected" and no "Google"/"Apple" title (Pierre's call, testers' feedback,
+    November 2026). An ⓘ button next to the email explains that only the person sees it, in each platform's way
+    (Android's dialog, a popover on Apple platforms and the web, `ProfileDialog.EMAIL_INFO`); without an email the
+    row falls back to the provider's name and has no ⓘ. Without Google or Apple the row keeps "No account" and its
+    line, under an anonymous-person icon (a person with a slash). The row opens nothing and nothing disconnects the
+    Google or Apple account from the user (Pierre's call, beta feedback). Who wants it gone signs out or deletes the
+    account. The server has no `unlink-identity` function any more.
+  - Delete account lists, truthfully to the server's `delete-account` function and its migrations, "What gets
+    deleted" (the profile with its photo, the Pix and Bitcoin keys, the link to Google or Apple, an anonymous
+    account's recovery code, the copy on this device) and then "What stays in your groups" (testers' feedback,
+    November 2026): the groups with their bills and payments, for the other members (the server keeps them, even one
+    nobody else is in); the person's name in each group, as a member no longer linked to any account
+    (`group_members.user_id` is set to null); and their comments and the photos they added, under the name they had
+    (`author_user_id` and `added_by` set to null). The server also drops, without the screen naming them, the
+    notification settings, pins, hidden contacts, likes on comments and push devices (`on delete cascade`).
   - The profile ends in a discreet, centered legal footer, as Bible Planner's (Pierre's call, beta feedback 18):
     "Privacy Policy • Terms of Service", two links to the legal texts (below), and "Version X" under them
     in small, secondary text. It closes the column that ends with Delete account: Android's single column and the
@@ -154,7 +168,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Edit profile, the Mac's Settings) or a group (New group, Edit group) opens it before it becomes the avatar,
     never the Google or Apple account's photo. Dark, full screen on Android, iOS and a phone's browser, a 560×720
     sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
-    for a profile and a rounded square for a group (the group's one shape, its badge's 32% corners): drag,
+    for a profile and a rounded square for a group (the group's one shape, its corners 8% of the side, see [General rules](general.md)): drag,
     pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Rotate" turns it 90°
     clockwise, "Horizontal" and "Vertical" mirror it; the photo always covers the frame. "Done" makes the 512x512
     JPEG of what the frame holds; ✕, Cancel or back leave the photo shown as it was. The framing is the shared
@@ -169,3 +183,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     rows, "Add a Bitcoin key" and "Add a Pix key", in place of the "Add a Pix or Bitcoin key" menu, so nobody is locked
     out of Pix (`ProfileUiState.showsPix`). Each key's row starts with its method's tile on every platform: Pix's own
     mark (Material's Pix glyph) on the blue tile, Lightning's bolt or on-chain's link on Bitcoin's orange one.
+  - A key's "Default Pix key" (or "Default Bitcoin key") switch is locked on for the method's default key and for its
+    first key, since a default only gives way to another key made default (`PaymentKeyUiState.isDefaultLocked`).
+    Locked, it still reads as on: Android keeps the switch's "on" colors, faded, instead of Material's disabled gray
+    one, which read as off in the dark theme (testers' feedback, November 2026); iOS and the web dim the "on" switch.

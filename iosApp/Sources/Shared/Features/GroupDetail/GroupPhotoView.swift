@@ -63,7 +63,7 @@ struct GroupPhotoView: View {
                     .shadow(color: .black.opacity(0.35), radius: 20, y: 8)
                     .overlay {
                         if state.isPreparingPhoto {
-                            RoundedRectangle(cornerRadius: size * 0.32).fill(.black.opacity(0.4))
+                            GroupAvatar.shape(size: size).fill(.black.opacity(0.4))
                             ProgressView().controlSize(.large)
                         }
                     }

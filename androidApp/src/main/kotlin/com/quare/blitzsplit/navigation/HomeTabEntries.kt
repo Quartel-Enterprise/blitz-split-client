@@ -6,6 +6,10 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.quare.blitzsplit.android.designsystem.component.GroupSharedOrigin
+import com.quare.blitzsplit.android.designsystem.component.LocalEntryVisibilityScope
+import com.quare.blitzsplit.android.designsystem.component.LocalGroupSharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.LocalHomeBarsEntryKey
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.navigation.Route
@@ -19,6 +23,24 @@ internal val homeBarsEntryDecorator: NavEntryDecorator<Route> = NavEntryDecorato
         CompositionLocalProvider(LocalHomeBarsEntryKey provides entry.contentKey) { entry.Content() }
     },
 )
+
+/*
+ * Why: the entry's own transition, which a group's avatar and name follow from its row to its screen and back. Only
+ * around the entries whose rows or header fly (Início, Grupos, the group), which NavDisplay draws in its animated
+ * content: a dialog's or a sheet's entry is drawn outside it, where LocalNavAnimatedContentScope has no value. `origin`
+ * keys the flight by the screen the group opens from, null where nothing flies.
+ */
+@Composable
+internal fun EntryTransitionLayout(
+    origin: GroupSharedOrigin?,
+    content: @Composable () -> Unit,
+) {
+    CompositionLocalProvider(
+        LocalEntryVisibilityScope provides LocalNavAnimatedContentScope.current,
+        LocalGroupSharedOrigin provides origin,
+        content = content,
+    )
+}
 
 /*
  * Why: the tabs take each other's place right above Início ([Home, Groups], [Home, Contacts]), so a tab leaving the

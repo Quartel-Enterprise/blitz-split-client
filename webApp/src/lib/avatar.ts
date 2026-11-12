@@ -71,3 +71,9 @@ export function categoryColorLabel(code: string): string {
 export function categoryStyle(code: string): React.CSSProperties {
   return colorStyle(categoryColors[code] ?? categoryColors.blue)
 }
+
+/**
+ * A group's rounded square: the group photo viewer's (16 px corners on its 200 px side) at every size, so a group reads
+ * as the same square in a list row, the group's header and the photo opened big (beta feedback of 2026-11-12).
+ */
+export const GROUP_SHAPE = 'rounded-[8%]'

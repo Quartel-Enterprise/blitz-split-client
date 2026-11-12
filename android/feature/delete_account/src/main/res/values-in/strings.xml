@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">Tautan ke akun %1$s kamu</string>
     <string name="delete_account_deleted_recovery_code">Kode pemulihanmu</string>
     <string name="delete_account_deleted_device">Salinan datamu di perangkat ini</string>
+    <string name="delete_account_kept_title">Yang tetap ada di grupmu</string>
+    <string name="delete_account_kept_groups">Grup, beserta tagihan dan pembayarannya, untuk anggota lain</string>
+    <string name="delete_account_kept_member">Namamu di setiap grup, sebagai anggota tanpa akun</string>
+    <string name="delete_account_kept_comments">Komentarmu dan foto yang kamu tambahkan, dengan namamu</string>
     <string name="delete_account_export">Ekspor dataku dulu</string>
     <string name="delete_account_confirm">Saya paham ini tidak bisa dibatalkan</string>
     <string name="delete_account_delete">Hapus akun</string>

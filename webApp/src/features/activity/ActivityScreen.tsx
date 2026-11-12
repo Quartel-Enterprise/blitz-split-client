@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, wordGap } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { avatarStyle, GROUP_SHAPE } from '@/lib/avatar'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { formatDayTime, formatLongDayLabel, formatTime } from '@/lib/dates'
 import { cn } from '@/lib/utils'
@@ -324,8 +324,8 @@ function ItemMeta({ item }: { item: JsActivityItem }) {
 
 // Why: a deleted group is no longer on the device, so its shape goes grey.
 function GroupMark({ color }: { color: string | null | undefined }) {
-  if (!color) return <span aria-hidden className="size-3 shrink-0 rounded-[3px] bg-muted" />
-  return <span aria-hidden style={avatarStyle(color)} className="avatar-mark size-3 shrink-0 rounded-[3px]" />
+  if (!color) return <span aria-hidden className={cn('size-3 shrink-0 bg-muted', GROUP_SHAPE)} />
+  return <span aria-hidden style={avatarStyle(color)} className={cn('avatar-mark size-3 shrink-0', GROUP_SHAPE)} />
 }
 
 function kindIcon(item: JsActivityItem): ReactNode {
@@ -381,7 +381,7 @@ function ActorFace({ item, className, badgeClassName }: { item: JsActivityItem; 
   const tone = badgeTone(item)
   return (
     <span className="relative shrink-0 self-start">
-      <Avatar initial={item.actorInitials} color={item.actorColor} className={className} />
+      <Avatar initial={item.actorInitials} color={item.actorColor} photoUrl={item.actorPhotoUrl} className={className} />
       <span
         aria-hidden
         style={tone.style}
@@ -527,7 +527,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
               onClick={() => presenter.clickItem(other.id)}
               className="flex items-start gap-3 rounded-md p-2 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
-              <Avatar initial={other.actorInitials} color={other.actorColor} className="size-7 text-[11px]" />
+              <Avatar initial={other.actorInitials} color={other.actorColor} photoUrl={other.actorPhotoUrl} className="size-7 text-[11px]" />
               <span className="flex min-w-0 flex-1 flex-col">
                 <HeadlineLine item={other} className="text-[13px]" />
                 {detailLine(other) && <span className="truncate text-xs text-muted-foreground">{detailLine(other)}</span>}

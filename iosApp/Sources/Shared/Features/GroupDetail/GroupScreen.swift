@@ -1,3 +1,4 @@
+import Observation
 import Shared
 import SwiftUI
 
@@ -54,7 +55,7 @@ extension View {
         header: GroupHeader?,
         hasExpenses: Bool,
         showsSplitBill: Bool,
-        showsInlineTitle: Bool,
+        headerScroll: GroupHeaderScroll,
         exit: GroupExitState?,
         actions: GroupScreenActions,
     ) -> some View {
@@ -65,7 +66,7 @@ extension View {
                 header: header,
                 hasExpenses: hasExpenses,
                 showsSplitBill: showsSplitBill,
-                showsInlineTitle: showsInlineTitle,
+                headerScroll: headerScroll,
                 isOnline: exit?.isOnline ?? true,
                 actions: actions,
             ),
@@ -82,7 +83,7 @@ private struct GroupScreenBars: ViewModifier {
     let header: GroupHeader?
     let hasExpenses: Bool
     let showsSplitBill: Bool
-    let showsInlineTitle: Bool
+    let headerScroll: GroupHeaderScroll
     let isOnline: Bool
     let actions: GroupScreenActions
 
@@ -122,13 +123,11 @@ private struct GroupScreenBars: ViewModifier {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         #if os(iOS)
-        // The large title shows the name; the bar only names the group once it scrolls away
-        ToolbarItem(placement: .principal) {
-            Text(verbatim: header?.groupName ?? "")
-                .font(.headline)
-                .lineLimit(1)
-                .opacity(showsInlineTitle ? 1 : 0)
-                .accessibilityAddTraits(.isHeader)
+        // The header shows the avatar and the name; the bar only shows them small once the header scrolls away
+        if let header {
+            ToolbarItem(placement: .principal) {
+                GroupInlineTitle(header: header, scroll: headerScroll, onPhoto: actions.photo)
+            }
         }
         #else
         // A narrow window draws them below the toolbar instead (`MacGroupTop`)
@@ -441,7 +440,8 @@ struct PhoneGroupScaffold<Sections: View>: View {
     let hasExpenses: Bool
     let tab: GroupTab
     let usesTwoColumns: Bool
-    @Binding var showsInlineTitle: Bool
+    /// Only the header's avatar and the bar's title read it, so a scroll never draws the rest of the screen again.
+    let headerScroll: GroupHeaderScroll
     let actions: GroupScreenActions
     @ViewBuilder let sections: Sections
 
@@ -478,7 +478,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
     private var summary: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                top
+                top(collapses: false)
                 balanceCard
             }
             .padding(.horizontal, 20)
@@ -486,23 +486,34 @@ struct PhoneGroupScaffold<Sections: View>: View {
         }
     }
 
-    private var top: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 14) {
-                GroupPhotoButton(header: header, size: 56, action: actions.photo)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: header.groupName)
-                        .font(.title.bold())
-                        .lineLimit(2)
-                        .accessibilityAddTraits(.isHeader)
-                    Text(verbatim: groupMeta(header, hasExpenses: hasExpenses))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+    /// The group's avatar big, its name and "2 members · R$ 3,418.31 in total" under it, then its faces, centred.
+    /// Over the list the avatar shrinks as the header scrolls under the bar (`collapses`); beside the tabs or above
+    /// the fold it stays, a little smaller to leave the card its room.
+    private func top(collapses: Bool) -> some View {
+        VStack(spacing: 14) {
+            VStack(spacing: 4) {
+                GroupHeaderAvatar(
+                    header: header,
+                    size: collapses ? GroupHeaderScroll.avatarSize : 72,
+                    scroll: collapses ? headerScroll : nil,
+                    action: actions.photo,
+                )
+                .padding(.bottom, 8)
+                Text(verbatim: header.groupName)
+                    .font(.title.bold())
+                    .lineLimit(2)
+                    .accessibilityAddTraits(.isHeader)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                        if collapses { headerScroll.nameHeight = height }
+                    }
+                Text(verbatim: groupMeta(header, hasExpenses: hasExpenses))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
+            .multilineTextAlignment(.center)
             GroupFaces(header: header, size: 28) { actions.select(.members) }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
     }
 
     private var balanceCard: some View {
@@ -519,7 +530,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
         List {
             if withHeader {
                 Section {
-                    top
+                    top(collapses: true)
                     balanceCard
                 }
                 .listRowBackground(Color.clear)
@@ -532,11 +543,105 @@ struct PhoneGroupScaffold<Sections: View>: View {
         .listStyle(.insetGrouped)
         .listSectionSpacing(.compact)
         .scrollContentBackground(.hidden)
-        .onScrollGeometryChange(for: Bool.self) { geometry in
-            withHeader && geometry.contentOffset.y + geometry.contentInsets.top > 64
-        } action: { _, isPastHeader in
-            withAnimation(.easeOut(duration: 0.15)) { showsInlineTitle = isPastHeader }
+        // Tied to the scroll itself, frame by frame, as a large title folds into the bar; with the header beside the
+        // tabs or above the fold the bar never names the group. Held at the fold's end, so a scroll further down the
+        // bills never draws the header's avatar and the bar's title again
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            withHeader ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd) : 0
+        } action: { _, offset in
+            headerScroll.offset = offset
         }
+    }
+}
+#endif
+
+/// How far the group's list scrolled past its top. Only the header's avatar and the bar's title read it, so the
+/// rest of the screen isn't drawn again on every frame of a scroll.
+@Observable
+final class GroupHeaderScroll {
+    /// The header's avatar at the top of the list on iPhone and iPad (Pierre's beta feedback of 2026-11-12: bigger,
+    /// shrinking as it goes to the top bar).
+    static let avatarSize: CGFloat = 88
+    /// The avatar beside the name in the bar once the header scrolled away.
+    static let inlineAvatarSize: CGFloat = 30
+
+    /// Scrolled past the top, in points, 0 at the top.
+    var offset: CGFloat = 0
+
+    /// The header's avatar shrinks to half its side over the first 88 pt of scroll, the time it takes to go under
+    /// the bar, and fades as its last part goes.
+    var avatarScale: CGFloat {
+        1 - 0.5 * progress(from: 0, to: Self.avatarSize)
+    }
+
+    var avatarOpacity: CGFloat {
+        1 - progress(from: 56, to: 96)
+    }
+
+    /// The header's name's height, measured: a second line or a larger text size pushes its last line further down.
+    var nameHeight: CGFloat = 32
+
+    /// The bar's avatar and name come in while the header's name's last line goes under the bar (after the avatar,
+    /// its padding and the lines above it: 100 to 132 pt for one line), as the large title turns into the inline one.
+    var titleProgress: CGFloat {
+        progress(from: titleStart, to: foldEnd)
+    }
+
+    /// Where the header has gone and the bar's title is in: scrolling further changes nothing either draws.
+    var foldEnd: CGFloat {
+        titleStart + 32
+    }
+
+    private var titleStart: CGFloat {
+        100 + max(0, nameHeight - 32)
+    }
+
+    private func progress(from start: CGFloat, to end: CGFloat) -> CGFloat {
+        min(max((offset - start) / (end - start), 0), 1)
+    }
+}
+
+#if os(iOS)
+/// The header's avatar, shrinking towards the name as the list scrolls (`scroll`, nil where it stays). With Reduce
+/// Motion on it only fades.
+private struct GroupHeaderAvatar: View {
+    let header: GroupHeader
+    let size: CGFloat
+    let scroll: GroupHeaderScroll?
+    let action: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        GroupPhotoButton(header: header, size: size, action: action)
+            .scaleEffect(reduceMotion ? 1 : scroll?.avatarScale ?? 1, anchor: .bottom)
+            .opacity(Double(scroll?.avatarOpacity ?? 1))
+    }
+}
+
+/// The group's avatar and name in the bar, coming in as the header goes under it. The avatar opens the photo big, as
+/// the header's does.
+private struct GroupInlineTitle: View {
+    let header: GroupHeader
+    let scroll: GroupHeaderScroll
+    let onPhoto: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        let progress = scroll.titleProgress
+        HStack(spacing: 8) {
+            GroupPhotoButton(header: header, size: GroupHeaderScroll.inlineAvatarSize, action: onPhoto)
+            Text(verbatim: header.groupName)
+                .font(.headline)
+                .lineLimit(1)
+                .accessibilityAddTraits(.isHeader)
+        }
+        .opacity(progress)
+        // Rises into place with the scroll, as the inline title does; Reduce Motion only fades it
+        .offset(y: reduceMotion ? 0 : (1 - progress) * 8)
+        .allowsHitTesting(progress > 0.5)
+        .accessibilityHidden(progress < 0.5)
     }
 }
 #endif

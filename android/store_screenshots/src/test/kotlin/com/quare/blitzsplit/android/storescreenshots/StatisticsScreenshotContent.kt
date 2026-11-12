@@ -123,6 +123,7 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
             payers = biggest.payers.map { StatsPayer(people[it.person], isMe = it.person == me) },
             amountMinor = biggest.totalMinor,
             isPending = false,
+            category = categoryOf(biggest.categoryKey),
         ),
         settling = null,
         categories = categories.map { (category, amount) ->

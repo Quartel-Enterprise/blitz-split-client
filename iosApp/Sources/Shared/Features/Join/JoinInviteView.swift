@@ -173,7 +173,7 @@ private struct JoinInviteContent: View {
             VStack(alignment: .leading, spacing: 20) {
                 ShimmerLine(width: 220, height: 24)
                 ShimmerLine(width: 160, height: 12)
-                ShimmerRow(leading: .badge, leadingSize: 56, showsTrailing: false)
+                ShimmerRow(leading: .group, leadingSize: 56, showsTrailing: false)
                     .padding(16)
                     .background(Palette.card, in: .rect(cornerRadius: 24))
                 ShimmerBlock(height: 50, cornerRadius: 25)

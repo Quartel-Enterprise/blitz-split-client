@@ -7,8 +7,9 @@
     <string name="profile_offline_title">İnternet yok.</string>
     <string name="profile_offline_body">Rahatça düzenle: değişiklikler bu cihazda kayıtlı kalır ve bağlantı gelince yüklenir.</string>
     <string name="profile_section_account">Hesap ve eşitleme</string>
-    <string name="profile_account_connected_detail">%1$s · yalnızca sen görürsün</string>
-    <string name="profile_account_connected">Bağlı</string>
+    <string name="profile_email_info">E-postan hakkında</string>
+    <string name="profile_email_info_title">E-postanı yalnızca sen görürsün</string>
+    <string name="profile_email_info_body">Hangi hesapla giriş yaptığını bilmen için burada. Gruplarındaki kişiler adını ve fotoğrafını görür, e-postanı asla görmez.</string>
     <string name="profile_account_none">Hesap yok</string>
     <string name="profile_account_none_detail">Bu cihazın anonim kimliği</string>
     <string name="profile_account_local_detail">Şimdilik yalnızca bu cihazda kayıtlı</string>
@@ -72,7 +73,7 @@
     <string name="profile_dynamic_colors_info">Dinamik renkler hakkında</string>
     <string name="profile_dynamic_colors_info_body">Dinamik renkler uygulamayı duvar kağıdına uydurur: düğmeler, arka planlar ve vurgular Android\'in duvar kağıdından seçtiği renkleri alır ve duvar kağıdın değişince onlar da değişir.</string>
     <string name="profile_dynamic_colors_info_note">Gruplar, avatarlar ve kategoriler kendi renklerini korur, böylece onları yine ayırt edersin. Bu yalnızca bu cihazda geçerlidir.</string>
-    <string name="profile_dynamic_colors_info_ok">Anladım</string>
+    <string name="profile_info_ok">Anladım</string>
     <string name="profile_section_about">Gizlilik ve hakkında</string>
     <string name="profile_privacy_policy">Gizlilik Politikası</string>
     <string name="profile_terms">Hizmet Şartları</string>

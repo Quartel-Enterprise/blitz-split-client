@@ -93,6 +93,8 @@ class JsActivityItem(
     val actorIsMe: Boolean,
     val actorInitials: String,
     val actorColor: String,
+    // Why: the actor's profile photo over the initials, null for none.
+    val actorPhotoUrl: String?,
     // Why: the actor's face opens their profile, or Perfil for actorIsMe (openActor).
     val actorOpensProfile: Boolean,
     val groupId: String,
@@ -431,6 +433,7 @@ private fun toJsActivityItem(
     actorIsMe = item.actor.isMe,
     actorInitials = item.actor.initials,
     actorColor = item.actor.color.code,
+    actorPhotoUrl = item.actor.photoUrl,
     actorOpensProfile = item.actor.opensProfile,
     groupId = item.groupId,
     groupName = item.groupName,

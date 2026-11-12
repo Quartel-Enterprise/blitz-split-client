@@ -89,6 +89,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnDynamicColorsInfoClicked -> EventAnalytics.Manual("profile_dynamic_colors_info_clicked")
 
+            OnEmailInfoClicked -> EventAnalytics.Manual("profile_email_info_clicked")
+
             is OnDynamicColorsToggled -> EventAnalytics.Manual("dynamic_colors_toggled")
 
             OnCheckForUpdatesClicked -> EventAnalytics.Manual("check_for_updates_clicked")
@@ -174,6 +176,9 @@ sealed interface ProfileUiEvent : UiEvent {
     ) : ProfileUiEvent
 
     data object OnDynamicColorsInfoClicked : ProfileUiEvent
+
+    // Why: the ⓘ next to the account's email, which says only the person sees it.
+    data object OnEmailInfoClicked : ProfileUiEvent
 
     data class OnDynamicColorsToggled(
         val isOn: Boolean,

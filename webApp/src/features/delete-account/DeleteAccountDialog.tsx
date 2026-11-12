@@ -123,6 +123,17 @@ function DeleteAccountContent({ presenter, state }: { presenter: DeleteAccountPr
           ))}
         </ul>
       </section>
+      {/* What the server keeps for the people the account shared groups with (testers' feedback) */}
+      <section aria-labelledby="delete-account-kept" className="flex flex-col gap-1.5 rounded-lg border p-3 text-sm">
+        <h3 id="delete-account-kept" className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          {t('deleteAccount_kept')}
+        </h3>
+        <ul className="flex flex-col gap-1.5">
+          <li>{t('deleteAccount_keptGroups')}</li>
+          <li>{t('deleteAccount_keptMember')}</li>
+          <li>{t('deleteAccount_keptComments')}</li>
+        </ul>
+      </section>
       {/* Built from this browser's copy, so it works offline too */}
       <Button variant="link" className="self-start px-0" onClick={() => presenter.export()}>
         {t('deleteAccount_export')}

@@ -77,6 +77,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     tone, Material tone 50 light and 75 dark of the color's hue (4:1 and 7:1 on a card), since the container reads at
     under 2:1 there. A bar measures in the color of what it measures, never the accent, and a picked icon in the
     category form sits on the category's color, not the accent's.
+  - A group is always its rounded square, a person always a circle: the group's photo, or its initials on its color,
+    with corners at 8% of the side at every size (the group photo viewer's 16 on its 200, beta feedback of 2026-11-12,
+    Pierre's call), in every list and grid, Home's cards, the group's header, Balances, a contact's groups in common,
+    the pickers, Activity's group dot, "Adjust photo"'s group frame and the photo opened big. One token per platform
+    draws it: Android's `GroupBadge` (`GroupAvatarShape`, `GROUP_CORNER_RATIO`), Apple's
+    `GroupAvatar` (`GroupAvatar.shape(size:)`, continuous corners) and the web's `GroupAvatar` (`GROUP_SHAPE`);
+    a group's avatar never takes another shape at its call site.
   - No category or avatar color copies a color of the theme (Pierre's call): each one's hue stays apart from the
     accent's blues, the orange of what you owe, the green of what comes back, the pending amber and Android Dynamic's
     red, so a slice, a badge or a face never reads as a status or a link. Blue is a royal blue (HCT hue 264), Orange a

@@ -1084,6 +1084,7 @@ class RegisterPaymentUiStateTest {
             groupName = groupId,
             groupInitials = "GR",
             groupColor = AvatarColor.BLUE,
+            groupPhotoUrl = null,
             memberId = "member-1",
             meMemberId = "member-2",
             amountMinor = 8_115L,
