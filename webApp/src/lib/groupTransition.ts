@@ -20,7 +20,9 @@ const CLICK_WINDOW_MS = 1000
 const WAIT_FOR_TARGET_MS = 250
 
 let clickedLink: { element: HTMLElement; at: number } | null = null
-let skipsNext = false
+// Why: a swipe back that left the stack as it was must not keep the next change from its transition.
+const SKIP_WINDOW_MS = 1000
+let skipsUntil = 0
 let isUpdating = false
 
 if (typeof document !== 'undefined') {
@@ -36,11 +38,11 @@ if (typeof document !== 'undefined') {
 }
 
 /**
- * Whether the browser animated this history step itself (a swipe back), so the next change of the stack only switches;
- * false again when the step didn't move the stack after all (held for "Discard changes?").
+ * Whether the browser animated this history step itself (a swipe back), so the change of the stack it makes, within a
+ * second, only switches; false again when the step didn't move the stack after all (held for "Discard changes?").
  */
 export function setSkipsNextGroupTransition(skips: boolean) {
-  skipsNext = skips
+  skipsUntil = skips ? performance.now() + SKIP_WINDOW_MS : 0
 }
 
 /** Whether the pages mounting now come in through a shared transition, which replaces their own fade (`page-enter`). */
@@ -80,8 +82,8 @@ export function withGroupTransition(apply: (routes: JsRoute[]) => void): (routes
 }
 
 function planOf(previous: JsRoute[], next: JsRoute[]): Plan | null {
-  const skips = skipsNext
-  skipsNext = false
+  const skips = performance.now() < skipsUntil
+  skipsUntil = 0
   const click = clickedLink
   clickedLink = null
   if (skips || !canTransition()) return null

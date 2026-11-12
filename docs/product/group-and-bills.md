@@ -32,9 +32,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
   - The group's avatar and name fly from the row or card tapped into the group's header, and back on back or the back
     gesture, following the finger (beta feedback of 2026-11-12): from Groups' list and grid and Home's group cards.
     Android: Compose's shared elements (`SharedTransitionLayout` around Navigation 3, `rememberGroupSharedModifiers`),
-    wherever the group opens over the list; beside the list (a tablet lying down, a book) nothing flies, the row stays
-    where it is, and so the group opens over Groups as over Home, a screen of its own, outside Material's list-detail
-    scene, wherever the two don't show side by side. The web: the View Transitions API
+    keyed by the screen the group opens from (`GroupSharedOrigin`), so a tab switch between Home and Groups flies
+    nothing. From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
+    over the list, while beside it (a tablet lying down, a book) the row stays where it is. So the group opens over
+    Groups as over Home, a screen of its own, outside Material's list-detail scene, wherever the two don't show side by
+    side. The web: the View Transitions API
     (`document.startViewTransition`, `webApp/src/lib/groupTransition.ts`), naming only the row clicked and the group's
     header for the transition, when the group opens within a second of a click on its row and when back (the app's or
     the browser's) leaves it for Home or Groups; it waits up to 250 ms for the other side to draw and otherwise

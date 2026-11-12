@@ -26,6 +26,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
+import com.quare.blitzsplit.android.designsystem.component.GroupSharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
 import com.quare.blitzsplit.android.designsystem.component.LocalSharedTransitionScope
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
@@ -206,6 +207,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
+    // Why: the screen right under the group is the one its row was tapped on; beside the list nothing flies.
+    val groupSharedOriginOf = { route: Route.GroupDetail ->
+        when (backStack.getOrNull(backStack.lastIndexOf(route) - 1)) {
+            Route.Home -> GroupSharedOrigin.HOME
+            Route.Groups -> GroupSharedOrigin.GROUPS.takeIf { listDetail == null }
+            else -> null
+        }
+    }
     val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     // Why: NavDisplay keeps an entry's metadata until the back stack changes, so the placeholder reads it as it draws.
     val currentIsHomeEmpty by rememberUpdatedState(isHomeEmpty)
@@ -247,7 +256,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
             entry<Route.Home>(metadata = homeTabMetadata) {
-                WithEntryVisibilityScope {
+                EntryTransitionLayout(origin = GroupSharedOrigin.HOME) {
                     HomeScreen(
                         recoveryCodeSheet = { RecoveryCodeSheet() },
                         isPushConfigured = PushSetup.isConfigured,
@@ -256,7 +265,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
-                WithEntryVisibilityScope {
+                // Why: beside the group the list stays where it is, so its rows fly nowhere.
+                EntryTransitionLayout(origin = GroupSharedOrigin.GROUPS.takeIf { listDetail == null }) {
                     GroupsScreen(
                         recoveryCodeSheet = { RecoveryCodeSheet() },
                         onEmptyChanged = { isGroupsScreenEmpty = it },
@@ -316,7 +326,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
                 InGroupPane {
-                    WithEntryVisibilityScope {
+                    EntryTransitionLayout(origin = groupSharedOriginOf(route)) {
                         GroupDetailScreen(
                             route = route,
                             membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
@@ -450,7 +460,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     // Why: the home's bar or rail, drawn once around the navigation, so switching tabs swaps only the content.
     HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
         SharedTransitionLayout {
-            CompositionLocalProvider(LocalSharedTransitionScope provides takeIf { listDetail == null }) {
+            CompositionLocalProvider(LocalSharedTransitionScope provides this) {
                 NavDisplay(
                     entries = entries,
                     // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.

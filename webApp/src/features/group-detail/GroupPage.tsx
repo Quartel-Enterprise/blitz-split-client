@@ -221,6 +221,36 @@ function BalanceCardSkeleton() {
  * avatar and lines, the balance card, the tabs and a few rows, after 150 ms. Estatísticas gives its own `children`.
  */
 export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { groupId: string; homeTab: HomeTab; onBack: () => void; children?: ReactNode }) {
+  // Why: the group's own page shimmers its open header where the loaded one draws it, so nothing jumps once it loads.
+  if (!children) {
+    return (
+      <PageShell selected={homeTab} groups={{ selectedId: groupId }} phoneBars="none">
+        <div className="flex min-h-dvh flex-col">
+          <main className={cn(groupPageContentClass, 'gap-4 sm:gap-5')}>
+            <SkeletonLine className="-mb-1 hidden w-40 md:block" />
+            <div aria-hidden className="-mt-4 -mb-4 sm:-mb-5 md:mt-0" />
+            <header className="group-header bg-background/95 backdrop-blur">
+              <div className="group-header-row">
+                <Skeleton className={cn('group-header-photo shrink-0', GROUP_SHAPE)} />
+                <span className="flex flex-1 flex-col gap-2">
+                  <SkeletonLine className="h-5 w-48" />
+                  <SkeletonLine className="w-36" />
+                </span>
+              </div>
+              <div className="absolute inset-x-0 top-0 flex h-14 items-center gap-1 px-2 md:hidden">
+                <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={onBack}>
+                  <ArrowLeft />
+                </Button>
+              </div>
+            </header>
+            <LoadingRegion className="flex flex-col gap-4 sm:gap-5">
+              <GroupBodySkeleton />
+            </LoadingRegion>
+          </main>
+        </div>
+      </PageShell>
+    )
+  }
   return (
     <PageShell selected={homeTab} groups={{ selectedId: groupId }} phoneBars="none">
       <div className="flex min-h-dvh flex-col">
@@ -232,7 +262,7 @@ export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { grou
         <main className={groupPageContentClass}>
           <LoadingRegion className="flex flex-col gap-4 sm:gap-5">
             <SkeletonLine className="hidden w-40 md:block" />
-            {children ?? <GroupHeaderSkeleton />}
+            {children}
           </LoadingRegion>
         </main>
       </div>
@@ -240,22 +270,15 @@ export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { grou
   )
 }
 
-/** The group's avatar, name, meta and faces, the balance card, the tabs and a few bills. */
-function GroupHeaderSkeleton() {
+/** Under the group's header: its faces, the balance card, the tabs and a few bills. */
+function GroupBodySkeleton() {
   return (
     <>
-      <div className="flex items-start gap-4">
-        <Skeleton className={cn('size-16 md:size-20', GROUP_SHAPE)} />
-        <span className="flex flex-1 flex-col gap-2.5">
-          <SkeletonLine className="h-5 w-48" />
-          <SkeletonLine className="w-36" />
-          <span className="flex">
-            {[0, 1, 2].map((index) => (
-              <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
-            ))}
-          </span>
-        </span>
-      </div>
+      <span className="-mt-1 flex">
+        {[0, 1, 2].map((index) => (
+          <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
+        ))}
+      </span>
       <Skeleton className="h-[72px] w-full rounded-xl" />
       <Skeleton className="h-9 w-full max-w-sm rounded-lg" />
       <SkeletonRows count={4} leading="square" className="rounded-xl border bg-card" />
