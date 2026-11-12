@@ -84,10 +84,10 @@
   --destructive-foreground: #552108;
   --positive: #6edbaa;
   --pending: #f9bc3e;
-  --bitcoin-tile: #71361c;
-  --bitcoin-tile-foreground: #ffdbce;
   --primary-container: #004b6f;
   --primary-container-foreground: #c9e6ff;
+  --bitcoin-tile: #71361c;
+  --bitcoin-tile-foreground: #ffdbce;
   --pending-container: #5e4200;
   --pending-container-foreground: #ffdea8;
   --border: #27272a;
