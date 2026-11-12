@@ -13,7 +13,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 data class DefaultSplitFigures(
     // Why: each one's weight as Salvar saves it.
     val weights: Map<String, Long>,
-    // Why: the incomes typed, by member id in minor units, which stay on this device.
+    // Why: the incomes typed, by member id in minor units, which saving "Pela renda" keeps for the group.
     val incomes: Map<String, Long>,
     val exampleTotalMinor: Long,
     val rows: List<DefaultSplitRow>,

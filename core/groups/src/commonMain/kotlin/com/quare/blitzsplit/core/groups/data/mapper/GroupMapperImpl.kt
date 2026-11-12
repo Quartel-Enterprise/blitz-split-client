@@ -217,7 +217,7 @@ class GroupMapperImpl : GroupMapper {
         ownerUserId = ownerUserId,
         inviteCode = dto.inviteCode,
         defaultSplit = dto.defaultSplit?.toString(),
-        // Why: never on the server; applyRemoteGroup leaves the ones this device has alone.
+        // Why: no longer used since the incomes sync in group_member_income; applyRemoteGroup leaves it alone.
         splitIncomes = null,
         pendingPhoto = null,
         simplifyDebts = dto.simplifyDebts ?: false,
@@ -302,14 +302,6 @@ class GroupMapperImpl : GroupMapper {
         amount = pair.amountMinor,
         currency = pair.currency,
     )
-
-    override fun encodeIncomes(incomes: Map<String, Long>): String? = incomes.takeIf { it.isNotEmpty() }?.let {
-        json.encodeToString(it)
-    }
-
-    override fun decodeIncomes(text: String?): Map<String, Long> = text
-        ?.let { runCatching { json.decodeFromString<Map<String, Long>>(it) }.getOrNull() }
-        .orEmpty()
 
     // Why: a split a newer app wrote in a mode this version doesn't know splits equally, as a group without one.
     private fun defaultSplitOf(text: String?): GroupDefaultSplit? {

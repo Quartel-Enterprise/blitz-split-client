@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
@@ -64,6 +65,7 @@ internal fun createInitialBillState(
         defaultSplit = null,
         defaultSplitExceptionId = null,
         splitAsDefault = null,
+        incomes = BillIncomes.None,
         categories = CategoryTree.appOnly,
         categoryId = null,
         isCategoryPicked = false,

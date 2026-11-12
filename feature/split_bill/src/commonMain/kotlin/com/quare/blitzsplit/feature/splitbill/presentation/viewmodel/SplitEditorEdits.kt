@@ -8,9 +8,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.TypedText
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.IncomePercents
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillDefaultSplit
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -87,7 +89,7 @@ internal fun SplitEditor.withPeople(
 ): SplitEditor {
     val byId = rows
         .map { row ->
-            if (mode != SplitMode.AMOUNT) return@map row
+            if (mode != SplitMode.AMOUNT && mode != SplitMode.INCOME) return@map row
             row.copy(
                 valueText = TypedText.toCurrency(row.valueText, this.currency, currency, showsSats, decimalSeparator),
             )
@@ -141,11 +143,13 @@ internal fun SplitEditor.withTotal(
 
 /*
  * Why: a new mode starts from who is in the split now, everyone when nobody is: "Valores" with the equal parts,
- * "%" with 100 shared as evenly as whole numbers allow and "Partes" with one each.
+ * "%" with 100 shared as evenly as whole numbers allow, "Partes" with one each and "By income" with the group's incomes
+ * of who is in, blank for whoever has none yet.
  */
 internal fun SplitEditor.toMode(
     mode: SplitMode,
     decimalSeparator: Char,
+    incomes: BillIncomes,
 ): SplitEditor {
     if (mode == this.mode) return this
     val inSplit = entries
@@ -167,6 +171,8 @@ internal fun SplitEditor.toMode(
 
         SplitMode.PERCENT -> splitEvenly(BillSplit.FULL_PERCENT, equalEntries)
 
+        SplitMode.INCOME -> incomes.byMemberId.filterKeys { it in inSplit }
+
         // Why: Itens opens "Itens da conta" instead, whose "Pronto" sets the split.
         SplitMode.ITEMS -> return this
     }
@@ -180,6 +186,7 @@ internal fun SplitEditor.toMode(
             valueText = when {
                 value <= 0 -> ""
                 mode == SplitMode.AMOUNT -> formatAmount(value, decimalSeparator)
+                mode == SplitMode.INCOME -> incomeTextOf(value, incomes, decimalSeparator)
                 else -> value.toString()
             },
             parts = if (mode == SplitMode.SHARES) value else row.parts,
@@ -188,6 +195,31 @@ internal fun SplitEditor.toMode(
 }
 
 internal fun SplitEditor.withRows(change: (SplitRow) -> SplitRow): SplitEditor = copy(rows = rows.map(change))
+
+// Why: a group's income in the bill's currency, the same number with its decimals cut, as a total moved to it is.
+internal fun SplitEditor.incomeTextOf(
+    incomeMinor: Long,
+    incomes: BillIncomes,
+    decimalSeparator: Char,
+): String = TypedText.toCurrency(
+    text = AmountInput.format(incomeMinor, incomes.currency, showsSats, decimalSeparator),
+    from = incomes.currency,
+    to = currency,
+    showsSats = showsSats,
+    decimalSeparator = decimalSeparator,
+)
+
+/*
+ * Why: "By income"'s incomes as the group keeps them, in its currency, for "Usar como padrão do grupo": 0 for a field
+ * left blank, which removes that one's.
+ */
+internal fun SplitEditor.incomesIn(groupCurrency: GroupCurrency): Map<String, Long> =
+    rows.associate { row ->
+        val text = TypedText.toCurrency(row.valueText, currency, groupCurrency, showsSats, INCOME_SEPARATOR)
+        row.person.id to (AmountInput.parse(text, groupCurrency, showsSats) ?: 0L)
+    }
+
+private const val INCOME_SEPARATOR = '.'
 
 // Why: the checkbox of "Igual".
 internal fun SplitEditor.withPersonToggled(memberId: String): SplitEditor =
@@ -274,21 +306,37 @@ internal fun billDefaultSplitOf(
     payerIds: List<String>,
     totalMinor: Long,
     exceptionCategoryId: String?,
+    incomes: BillIncomes,
+    decimalSeparator: Char,
 ): BillDefaultSplit? {
     if (default == null || people.isEmpty()) return null
     val weights = people.associate { it.id to default.weightOf(it.id) }
-    val mode = SplitMode.of(default.mode)
+    val mode = SplitMode.of(default.mode).let { mode ->
+        // Why: "By income" only while the group's incomes still give its percentages, which stay what it splits by.
+        val isGivenByIncomes = IncomePercents.of(people.map { it.id to (incomes.byMemberId[it.id] ?: 0L) }) == weights
+        if (mode == SplitMode.INCOME && !isGivenByIncomes) SplitMode.PERCENT else mode
+    }
     val isValid = weights.values.any { it > 0 } &&
-        (mode != SplitMode.PERCENT || weights.values.sum() == BillSplit.FULL_PERCENT)
+        (mode.savedMode != SplitMode.PERCENT || weights.values.sum() == BillSplit.FULL_PERCENT)
     if (!isValid) return null
     val editor = SplitEditor(
         mode = mode,
         rows = people.map { person ->
             val weight = weights.getValue(person.id)
+            val income = incomes.byMemberId[person.id]
             SplitRow(
                 person = person,
                 isIncluded = weight > 0,
-                valueText = if (mode == SplitMode.PERCENT && weight > 0) weight.toString() else "",
+                valueText = when {
+                    mode == SplitMode.INCOME && income != null -> AmountInput.format(
+                        amountMinor = income,
+                        currency = incomes.currency,
+                        showsSats = showsSats,
+                        decimalSeparator = decimalSeparator,
+                    ).let { TypedText.toCurrency(it, incomes.currency, currency, showsSats, decimalSeparator) }
+                    mode == SplitMode.PERCENT && weight > 0 -> weight.toString()
+                    else -> ""
+                },
                 parts = if (mode == SplitMode.SHARES) weight else 0L,
                 shareMinor = null,
             )
@@ -336,6 +384,8 @@ internal fun SplitBillUiState.withSplitAmong(
             payerIds = payerIds,
             totalMinor = split.totalMinor,
             exceptionCategoryId = exception?.categoryId,
+            incomes = incomes,
+            decimalSeparator = decimalSeparator,
         )
     }
     val bill = if (followsDefault) {

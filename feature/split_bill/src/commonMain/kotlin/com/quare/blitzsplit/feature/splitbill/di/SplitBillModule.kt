@@ -29,6 +29,7 @@ val splitBillModule = module {
             takePickedReceipt = get(),
             navigator = get(),
             observeGroup = get(),
+            observeGroupIncomes = get(),
             observeExpense = get(),
             observeGroupsByActivity = get(),
             observeExpenses = get(),

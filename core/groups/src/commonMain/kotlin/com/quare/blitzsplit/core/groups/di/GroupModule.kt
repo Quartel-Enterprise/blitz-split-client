@@ -2,11 +2,15 @@ package com.quare.blitzsplit.core.groups.di
 
 import com.quare.blitzsplit.core.groups.data.datasource.GroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupPhotoRemoteDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.GroupIncomeLocalDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.GroupIncomeRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupPinLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupPinRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.RoomGroupIncomeLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.RoomGroupLocalDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.RoomGroupPinLocalDataSource
+import com.quare.blitzsplit.core.groups.data.datasource.SupabaseGroupIncomeRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.SupabaseGroupPhotoRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.SupabaseGroupPinRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.datasource.SupabaseGroupRemoteDataSource
@@ -14,6 +18,7 @@ import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapperImpl
 import com.quare.blitzsplit.core.groups.data.mapper.InviteMapper
 import com.quare.blitzsplit.core.groups.data.mapper.InviteMapperImpl
+import com.quare.blitzsplit.core.groups.data.repository.GroupIncomeRepositoryImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupPinRepositoryImpl
 import com.quare.blitzsplit.core.groups.data.repository.GroupRepositoryImpl
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryAddPersonRequestRepository
@@ -21,6 +26,7 @@ import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRep
 import com.quare.blitzsplit.core.groups.data.repository.InviteRepositoryImpl
 import com.quare.blitzsplit.core.groups.domain.repository.AddPersonRequestRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupDeletionRepository
+import com.quare.blitzsplit.core.groups.domain.repository.GroupIncomeRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupPinRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.repository.InviteRepository
@@ -32,7 +38,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConfl
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
-import com.quare.blitzsplit.core.groups.domain.usecase.GetSplitIncomes
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupIncomes
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupDeletions
@@ -56,7 +62,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebts
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
-import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetSplitIncomesUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveAddPersonRequestUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupDeletionsUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
@@ -104,7 +110,7 @@ val groupModule = module {
     factoryOf(::UpdateGroupPhotoUseCase).bind<UpdateGroupPhoto>()
     factoryOf(::UpdateDefaultSplitUseCase).bind<UpdateDefaultSplit>()
     factoryOf(::SaveSplitAsDefaultUseCase).bind<SaveSplitAsDefault>()
-    factoryOf(::GetSplitIncomesUseCase).bind<GetSplitIncomes>()
+    factoryOf(::ObserveGroupIncomesUseCase).bind<ObserveGroupIncomes>()
     factoryOf(::GetInviteUseCase).bind<GetInvite>()
     factoryOf(::ObserveGroupDeletionsUseCase).bind<ObserveGroupDeletions>()
     factoryOf(::ConsumeGroupDeletionUseCase).bind<ConsumeGroupDeletion>()
@@ -112,6 +118,9 @@ val groupModule = module {
     singleOf(::RoomGroupPinLocalDataSource).bind<GroupPinLocalDataSource>()
     singleOf(::SupabaseGroupPinRemoteDataSource).bind<GroupPinRemoteDataSource>()
     singleOf(::GroupPinRepositoryImpl).bind<GroupPinRepository>()
+    singleOf(::RoomGroupIncomeLocalDataSource).bind<GroupIncomeLocalDataSource>()
+    singleOf(::SupabaseGroupIncomeRemoteDataSource).bind<GroupIncomeRemoteDataSource>()
+    singleOf(::GroupIncomeRepositoryImpl).bind<GroupIncomeRepository>()
     factoryOf(::ObservePinnedGroupIdsUseCase).bind<ObservePinnedGroupIds>()
     factoryOf(::SetGroupPinnedUseCase).bind<SetGroupPinned>()
 }

@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermReposito
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
+import com.quare.blitzsplit.core.groups.domain.repository.GroupIncomeRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupPinRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -52,6 +53,7 @@ class SyncCoordinator(
     private val appInviteRepository: AppInviteRepository,
     private val groupRepository: GroupRepository,
     private val groupPinRepository: GroupPinRepository,
+    private val groupIncomeRepository: GroupIncomeRepository,
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
@@ -80,6 +82,7 @@ class SyncCoordinator(
         profileRepository = profileRepository,
         paymentKeyRepository = paymentKeyRepository,
         groupRepository = groupRepository,
+        groupIncomeRepository = groupIncomeRepository,
         categoryRepository = categoryRepository,
         expenseRepository = expenseRepository,
         settlementRepository = settlementRepository,
@@ -262,6 +265,15 @@ class SyncCoordinator(
         } else {
             Result.success(Unit)
         }
+        // Why: the incomes of "By income" need their groups and members too, but never hold the money back either.
+        val incomesSynced = if (areGroupsSynced) {
+            suspendRunCatching {
+                groupIncomeRepository.download(userId).getOrThrow()
+                groupIncomeRepository.uploadPending(userId).getOrThrow()
+            }
+        } else {
+            Result.success(Unit)
+        }
         // Why: the bills' comments after the bills they are on, which the server needs to take them; never the money's.
         val commentsSynced = if (groupsSynced.isSuccess) {
             suspendRunCatching {
@@ -301,6 +313,7 @@ class SyncCoordinator(
         groupsSynced.getOrThrow()
         memberKeysSynced.getOrThrow()
         pinsSynced.getOrThrow()
+        incomesSynced.getOrThrow()
         commentsSynced.getOrThrow()
         attachmentsSynced.getOrThrow()
         activitySynced.getOrThrow()
@@ -452,18 +465,21 @@ class SyncCoordinator(
         settlementRepository.observeHasPendingChanges(),
         categoryRepository.observeHasPendingChanges(),
         groupPinRepository.observeHasPendingChanges(),
+        groupIncomeRepository.observeHasPendingChanges(),
         hiddenContactRepository.observeHasPendingChanges(),
     )
 
     /*
-     * Why: the versions of the bills, the payments and the group categories waiting to go up, which change with each
-     * one saved. Kept apart, so a bill going up while a payment of the same version is saved still counts as a change.
+     * Why: the versions of the bills, the payments, the group categories and the members' incomes waiting to go up,
+     * which change with each one saved. Kept apart, so a bill going up while a payment of the same version is saved
+     * still counts as a change.
      */
     private fun observePendingMoneyVersions(): Flow<List<List<Long>>> = combine(
         expenseRepository.observePendingVersions(),
         settlementRepository.observePendingVersions(),
         categoryRepository.observePendingVersions(),
-    ) { expenses, settlements, categories -> listOf(expenses, settlements, categories) }
+        groupIncomeRepository.observePendingVersions(),
+    ) { expenses, settlements, categories, incomes -> listOf(expenses, settlements, categories, incomes) }
 
     private suspend fun offerRecoveryCodeIfDue() {
         val account = accountRepository.observeAccount().first()

@@ -39,7 +39,7 @@ object BillSplit {
                         )
                     }
 
-            SplitMode.PERCENT ->
+            SplitMode.PERCENT, SplitMode.INCOME ->
                 included
                     .takeIf { percentages -> percentages.sumOf { it.value } == FULL_PERCENT }
                     ?.let {

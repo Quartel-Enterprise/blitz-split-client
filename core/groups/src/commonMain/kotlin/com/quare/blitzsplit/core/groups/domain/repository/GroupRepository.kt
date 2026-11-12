@@ -53,12 +53,11 @@ interface GroupRepository {
 
     /*
      * Why: "Divisão padrão" (6.7), by any member, offline too: only the split changes, null back to splitting equally
-     * among everyone. The incomes "Pela renda" was typed with, by member id in minor units, stay on this device.
+     * among everyone. The incomes of "By income" are GroupIncomeRepository's.
      */
     suspend fun updateDefaultSplit(
         groupId: String,
         defaultSplit: GroupDefaultSplit?,
-        incomes: Map<String, Long>,
         updatedAt: Long,
     ): Result<Unit>
 
@@ -75,9 +74,6 @@ interface GroupRepository {
 
     // Why: "Ana desligou depois de você" (13.1e) was shown.
     suspend fun consumeSimplifyDebtsConflict(groupId: String): Result<Unit>
-
-    // Why: the incomes this device typed for "Pela renda", empty when it typed none.
-    suspend fun getSplitIncomes(groupId: String): Result<Map<String, Long>>
 
     suspend fun addMember(
         groupId: String,

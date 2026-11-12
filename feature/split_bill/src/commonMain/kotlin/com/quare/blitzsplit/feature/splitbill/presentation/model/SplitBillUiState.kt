@@ -73,6 +73,8 @@ data class SplitBillUiState(
     val defaultSplitExceptionId: String?,
     // Why: the bill's split becomes the group's default when it is saved, set by Dividir's "Pronto"; null for none.
     val splitAsDefault: SplitAsDefault?,
+    // Why: the group's incomes, which "By income" starts from and "Usar como padrão do grupo" saves back.
+    val incomes: BillIncomes,
     // Why: the app's categories with the group's (7.7), which the bill's category resolves in.
     val categories: CategoryTree,
     // Why: the bill's category, an app key or a group category's id; null for "Outros".

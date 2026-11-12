@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
+import com.quare.blitzsplit.core.provider.room.dao.GroupMemberIncomeDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
 import com.quare.blitzsplit.core.provider.room.dao.LegalDocumentDao
@@ -48,6 +49,7 @@ val roomModule: Module = module {
     single<ActivityDao> { get<AppDatabase>().activityDao() }
     single<HiddenContactDao> { get<AppDatabase>().hiddenContactDao() }
     single<GroupPinDao> { get<AppDatabase>().groupPinDao() }
+    single<GroupMemberIncomeDao> { get<AppDatabase>().groupMemberIncomeDao() }
     single<AppCategoryColorDao> { get<AppDatabase>().appCategoryColorDao() }
     single<GroupCategoryDao> { get<AppDatabase>().groupCategoryDao() }
     single<CategoryTermDao> { get<AppDatabase>().categoryTermDao() }

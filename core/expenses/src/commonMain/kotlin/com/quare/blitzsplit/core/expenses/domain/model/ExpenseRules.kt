@@ -52,7 +52,7 @@ object ExpenseRules {
         shares.all { it.amountMinor >= 0 && it.weight >= 0 } &&
         payers.sumOf { it.amountMinor } == amountMinor &&
         shares.sumOf { it.amountMinor } == amountMinor &&
-        (splitMode != SplitMode.PERCENT || shares.sumOf { it.weight } == BillSplit.FULL_PERCENT)
+        (splitMode.savedMode != SplitMode.PERCENT || shares.sumOf { it.weight } == BillSplit.FULL_PERCENT)
 
     // Why: a bill split by its items holds them well formed, with the very shares they give; any other holds none.
     private fun areItemsValid(

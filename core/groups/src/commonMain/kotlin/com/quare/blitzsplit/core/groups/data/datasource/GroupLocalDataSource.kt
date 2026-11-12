@@ -56,11 +56,10 @@ interface GroupLocalDataSource {
         updatedAt: Long,
     )
 
-    // Why: "Divisão padrão" and the incomes "Pela renda" was typed with, which only this device keeps.
+    // Why: "Divisão padrão" alone; the incomes of "By income" are GroupIncomeLocalDataSource's.
     suspend fun updateDefaultSplit(
         id: String,
         defaultSplit: String?,
-        splitIncomes: String?,
         updatedAt: Long,
     )
 
@@ -79,8 +78,6 @@ interface GroupLocalDataSource {
     )
 
     suspend fun clearSimplifyDebtsConflict(id: String)
-
-    suspend fun getSplitIncomes(id: String): String?
 
     // Why: the stored JSON, so a new "Divisão padrão" keeps the keys a newer app wrote in it.
     suspend fun getDefaultSplit(id: String): String?

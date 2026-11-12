@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroupIncomes
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -33,6 +34,7 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -73,6 +75,7 @@ class SplitBillViewModel(
     takePickedReceipt: TakePickedReceipt,
     navigator: Navigator,
     observeGroup: ObserveGroup,
+    observeGroupIncomes: ObserveGroupIncomes,
     observeExpense: ObserveExpense,
     observeGroupsByActivity: ObserveGroupsByActivity,
     observeExpenses: ObserveExpenses,
@@ -217,8 +220,14 @@ class SplitBillViewModel(
             ?: flowOf(null)
         // Why: the form opens once bitcoin's unit is known, so nothing typed or filled in is in the other one first.
         val showsSats = flow { emit(observeBitcoinInSats().first()) }
-        combine(group, expenseFlow, showsSats, ::Triple)
-            .onEach { (group, expense, sats) ->
+        // Why: the group's incomes for "By income", read with the group, so a default by income opens on them at once.
+        val incomes = groupId.flatMapLatest { observeGroupIncomes(it) }
+        combine(group, expenseFlow, showsSats, incomes) { group, expense, sats, byMemberId ->
+            uiState.update { state ->
+                state.copy(incomes = BillIncomes(byMemberId, group?.currency ?: state.incomes.currency))
+            }
+            Triple(group, expense, sats)
+        }.onEach { (group, expense, sats) ->
                 // Why: only as the form opens; later the live unit below rules, which a later sync must not undo.
                 if (!hasReadUnit) uiState.update { it.withShowsSats(sats, separator) }
                 hasReadUnit = true
@@ -293,7 +302,7 @@ class SplitBillViewModel(
                 if (event.mode == SplitMode.ITEMS) {
                     items.openInSplit()
                 } else {
-                    editSplit { it.toMode(event.mode, separator) }
+                    editSplit { it.toMode(event.mode, separator, uiState.value.incomes) }
                 }
             }
 
