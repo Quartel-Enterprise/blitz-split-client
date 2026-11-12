@@ -85,7 +85,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
   const excludedIds = new Set(editor.excluded.map((person) => person.id))
   const missingIds = new Set(editor.addsUp ? [] : editor.withoutValue.map((person) => person.id))
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-4">
       {state.showsDefaultSplitNotice && state.defaultSplit && <DefaultSplitNotice presenter={presenter} state={state} editor={editor} />}
       <SplitModeChips presenter={presenter} selected={editor.mode} />
 
@@ -146,7 +146,7 @@ function SplitModeChips({ presenter, selected }: { presenter: SplitBillPresenter
     selectedRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }, [selected])
   return (
-    <div role="radiogroup" aria-label={t('split_modes')} className="-mx-1 flex gap-2 overflow-x-auto px-1 py-0.5 [scrollbar-width:none]">
+    <div role="radiogroup" aria-label={t('split_modes')} className="flex w-full min-w-0 gap-2 overflow-x-auto py-0.5 [scrollbar-width:none]">
       {modes.map(({ mode, label }) => {
         const isSelected = selected === mode
         return (
