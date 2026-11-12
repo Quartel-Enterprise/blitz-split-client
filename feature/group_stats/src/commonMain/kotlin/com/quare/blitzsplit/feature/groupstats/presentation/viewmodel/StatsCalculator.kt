@@ -226,6 +226,7 @@ internal class StatsCalculator(
             },
             amountMinor = expense.amountMinor,
             isPending = expense.isPending,
+            category = categories.resolve(expense.categoryId),
         )
     }
 

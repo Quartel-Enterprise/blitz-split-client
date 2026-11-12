@@ -381,7 +381,7 @@ function ActorFace({ item, className, badgeClassName }: { item: JsActivityItem; 
   const tone = badgeTone(item)
   return (
     <span className="relative shrink-0 self-start">
-      <Avatar initial={item.actorInitials} color={item.actorColor} className={className} />
+      <Avatar initial={item.actorInitials} color={item.actorColor} photoUrl={item.actorPhotoUrl} className={className} />
       <span
         aria-hidden
         style={tone.style}
@@ -527,7 +527,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
               onClick={() => presenter.clickItem(other.id)}
               className="flex items-start gap-3 rounded-md p-2 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
-              <Avatar initial={other.actorInitials} color={other.actorColor} className="size-7 text-[11px]" />
+              <Avatar initial={other.actorInitials} color={other.actorColor} photoUrl={other.actorPhotoUrl} className="size-7 text-[11px]" />
               <span className="flex min-w-0 flex-1 flex-col">
                 <HeadlineLine item={other} className="text-[13px]" />
                 {detailLine(other) && <span className="truncate text-xs text-muted-foreground">{detailLine(other)}</span>}

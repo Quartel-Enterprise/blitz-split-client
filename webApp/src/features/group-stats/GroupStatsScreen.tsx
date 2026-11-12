@@ -1,4 +1,4 @@
-import { BarChart3, CalendarDays, Check, ChevronDown, LineChart, ReceiptText } from 'lucide-react'
+import { BarChart3, CalendarDays, Check, ChevronDown, LineChart } from 'lucide-react'
 import { GroupStatsPresenter, type JsGroupStatsState, type JsRoute, type JsStatsPeriodOption, type JsStatsSettling } from 'blitzsplit-shared'
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
@@ -19,6 +19,7 @@ import { GroupPageSkeleton } from '@/features/group-detail/GroupPage'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { avatarStyle } from '@/lib/avatar'
+import { CategoryBadge } from '@/lib/categories'
 import { formatDayTime, fromDateTimeInputs, toDateInputValue } from '@/lib/dates'
 import { formatMoney, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -168,9 +169,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                   onClick={() => presenter.openBiggestExpense()}
                   className="-m-2 flex items-center gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
                 >
-                  <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
-                    <ReceiptText className="size-4" />
-                  </span>
+                  <CategoryBadge category={state.biggestExpense.category} className="size-9" />
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate font-medium">{state.biggestExpense.description}</span>
                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
