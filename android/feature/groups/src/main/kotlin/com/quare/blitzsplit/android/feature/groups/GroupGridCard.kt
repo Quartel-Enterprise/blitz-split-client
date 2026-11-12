@@ -26,6 +26,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
+import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -98,6 +99,7 @@ internal fun GroupGridCard(
     val metrics = cardMetricsOf(size)
     val money = rememberMoneyFormatter(group.currency)
     val dates = rememberDateTimeTextFormatter()
+    val shared = rememberGroupSharedModifiers(group.id)
     TappableCard(
         onClick = { onEvent(GroupsUiEvent.OnGroupClicked(group.id)) },
         onLongClick = onLongPress,
@@ -120,10 +122,13 @@ internal fun GroupGridCard(
                     color = group.color,
                     photoUrl = group.photoUrl,
                     size = metrics.badge,
-                    modifier = Modifier.padding(bottom = 4.dp),
+                    modifier = Modifier
+                        .padding(bottom = 4.dp)
+                        .then(shared.avatar),
                 )
                 Text(
                     text = group.name,
+                    modifier = shared.name,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = metrics.name,
                         lineHeight = metrics.nameLineHeight,

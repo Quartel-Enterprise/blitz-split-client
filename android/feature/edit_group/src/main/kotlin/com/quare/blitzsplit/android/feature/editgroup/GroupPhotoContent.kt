@@ -10,12 +10,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerContent
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerErrorText
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerPreparingOverlay
 import com.quare.blitzsplit.android.designsystem.component.PhotoViewerShortcutsRow
-import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -66,7 +66,7 @@ private fun LargeGroupBadge(
     size: Dp,
 ) {
     val description = stringResource(R.string.group_photo_title)
-    val shape = groupShapeOf(size)
+    val shape = GroupAvatarShape
     Box(contentAlignment = Alignment.Center) {
         GroupBadge(
             initials = state.initials,

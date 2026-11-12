@@ -28,8 +28,6 @@ struct PhotoCropView: View {
     private static let frameRatio: CGFloat = 0.9
     private static let maxFrameSide: CGFloat = 360
     private static let panelWidth: CGFloat = 360
-    /// GroupAvatar's corners, a share of its side.
-    private static let roundedSquareCornerRatio: CGFloat = 0.32
 
     var body: some View {
         GeometryReader { proxy in
@@ -123,7 +121,7 @@ struct PhotoCropView: View {
     private func frameMask(side: CGFloat) -> some View {
         let frameShape = frame == .circle
             ? AnyShape(Circle())
-            : AnyShape(RoundedRectangle(cornerRadius: side * Self.roundedSquareCornerRatio))
+            : AnyShape(GroupAvatar.shape(size: side))
         return ZStack {
             Rectangle()
                 .fill(Self.background.opacity(0.72))

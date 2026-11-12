@@ -455,7 +455,7 @@ struct ActivityFilterSheet: View {
             model.send(ActivityUiEventOnDraftGroupPicked(groupId: id))
         } label: {
             pickRow(isOn: isOn) {
-                RoundedRectangle(cornerRadius: 6)
+                GroupAvatar.shape(size: 20)
                     .fill(color?.data ?? .clear)
                     .frame(width: 20, height: 20)
                 Text(verbatim: name)

@@ -1,6 +1,6 @@
 import { ArrowLeft, BarChart3, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { Avatar, GroupTabs, SplitBillIcon, type GroupTab } from '@/components/common'
 import { CurrencyChips } from '@/components/CurrencyChips'
 import { groupPageContentClass, HomeTabCrumb, type HomeTab } from '@/components/HomeShell'
@@ -16,7 +16,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { BalanceCard } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { useCollapsingHeader } from '@/hooks/useCollapsingHeader'
 import { t } from '@/i18n'
+import { GROUP_SHAPE } from '@/lib/avatar'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { GroupExitDialog, type GroupExitEvents } from './GroupExitDialog'
@@ -40,7 +42,9 @@ export interface GroupPageEvents extends GroupExitEvents {
  * The group's page around the tab picked, in the home's frame with the group selected among the open ones: the
  * breadcrumb, the group's name, total and faces (which pick Membros), "Estatísticas", "Convidar", "Rachar conta" (the
  * main button on every tab, Membros included) and the ⋯ menu beside them, "Seu saldo neste grupo" and the
- * tabs. The phone has no frame: back, the name and the icons on top, the main button at the bottom.
+ * tabs. The phone has no frame: back and the icons on top, the main button at the bottom. The header (the group's
+ * photo, name and meta) opens big at the top and folds into a compact bar as the page scrolls (`.group-header`), and
+ * its photo and name are where the row that opened the group lands (`data-group-header`, lib/groupTransition).
  */
 export function GroupPage({
   groupId,
@@ -79,25 +83,13 @@ export function GroupPage({
       ? t(header.notJoinedCount === 1 ? 'groupDetail_notJoinedOne' : 'groupDetail_notJoinedOther', { count: header.notJoinedCount })
       : null
   const openHomeTab = useOpenHomeTab()
+  const headerPlace = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+  useCollapsingHeader(headerPlace, headerRef)
 
   return (
     <PageShell selected={homeTab} groups={{ selectedId: groupId }} phoneBars="none">
       <div className="flex min-h-dvh flex-col">
-        {/* Why: the page names the group in its heading from the tablet up; the phone's bar names it instead. */}
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-1 border-b bg-background/95 px-2 backdrop-blur md:hidden">
-          <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => events.back()}>
-            <ArrowLeft />
-          </Button>
-          <span className="mr-auto truncate font-semibold">{header.groupName}</span>
-          <Button variant="ghost" size="icon" aria-label={t('stats_title')} onClick={() => events.stats()}>
-            <BarChart3 />
-          </Button>
-          <Button variant="ghost" size="icon" aria-label={t('groupDetail_invitePeople')} onClick={() => events.invite()}>
-            <UserPlus />
-          </Button>
-          <GroupMenu isOnline={exit.isOnline} isPinned={header.isPinned} events={events} />
-        </header>
-
         <main className={cn(groupPageContentClass, 'gap-4 sm:gap-5')}>
           <nav aria-label={t('groupDetail_breadcrumb')} className="-mb-1 hidden items-center gap-1.5 text-[13px] md:flex">
             <HomeTabCrumb tab={homeTab} onOpen={openHomeTab} />
@@ -105,56 +97,78 @@ export function GroupPage({
               {header.groupName}
             </span>
           </nav>
-          <div className="flex items-start gap-4">
-            {/* Why: the avatar opens the group's photo big, as the profile's avatar opens its own. */}
-            <button
-              type="button"
-              aria-label={t('groupPhoto_open')}
-              onClick={() => events.photo()}
-              className="block shrink-0 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
-            >
-              <GroupAvatar initials={header.groupInitials} color={header.groupColor} photoUrl={header.groupPhotoUrl} className="size-12 rounded-xl text-base md:size-14 md:text-lg" />
-            </button>
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <h1 className="sr-only text-2xl leading-[30px] font-semibold tracking-tight md:not-sr-only md:truncate">{header.groupName}</h1>
-              <span className="text-sm text-muted-foreground">{meta}</span>
+          {/* Why: where the header sits in the page, which its fold counts from; it takes no room (the gap after it is undone). */}
+          <div ref={headerPlace} aria-hidden className="-mt-4 -mb-4 sm:-mb-5 md:mt-0" />
+          <header ref={headerRef} data-group-header={groupId} className="group-header bg-background/95 backdrop-blur">
+            <div className="group-header-row pointer-events-none">
+              {/* Why: the avatar opens the group's photo big, as the profile's avatar opens its own. */}
               <button
                 type="button"
-                onClick={() => onSelectTab('members')}
-                aria-label={[members, notJoined, t('groupDetail_seeMembers')].filter(Boolean).join(' · ')}
-                className="flex items-center gap-2 self-start rounded-md text-[13px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+                aria-label={t('groupPhoto_open')}
+                onClick={() => events.photo()}
+                className={cn('group-header-photo pointer-events-auto block shrink-0 outline-none focus-visible:ring-[3px] focus-visible:ring-ring', GROUP_SHAPE)}
               >
-                <span aria-hidden className="flex">
-                  {header.faces.map((face, index) => (
-                    <Avatar key={index} initial={face.initials} color={face.color} photoUrl={face.photoUrl} className={cn('size-7 border-2 border-background text-[11px]', index > 0 && '-ml-1.5')} />
-                  ))}
-                  {header.extraMemberCount > 0 && (
-                    <span className="-ml-1.5 flex h-7 min-w-7 items-center justify-center rounded-full border-2 border-background bg-muted px-1.5 text-[11px] font-semibold">
-                      +{header.extraMemberCount}
-                    </span>
-                  )}
-                </span>
-                {notJoined}
+                <GroupAvatar data-group-avatar initials={header.groupInitials} color={header.groupColor} photoUrl={header.groupPhotoUrl} className="size-full" />
               </button>
-            </div>
-            <div className="hidden items-center gap-2 md:flex">
-              <Button variant="outline" onClick={() => events.stats()}>
-                <BarChart3 />
-                {t('stats_title')}
-              </Button>
-              <Button variant="outline" onClick={() => events.invite()}>
-                <UserPlus />
-                {t('groupDetail_invite')}
-              </Button>
-              {showsSplitBillButton && (
-                <Button onClick={() => events.splitBill()}>
-                  <SplitBillIcon />
-                  {t('groupDetail_splitBill')}
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <h1 className="group-header-name flex min-w-0 font-semibold tracking-tight">
+                  <span data-group-name className="truncate">
+                    {header.groupName}
+                  </span>
+                </h1>
+                <span className="group-header-meta truncate text-sm text-muted-foreground">{meta}</span>
+              </div>
+              <div className="pointer-events-auto hidden items-center gap-2 md:flex">
+                <Button variant="outline" onClick={() => events.stats()}>
+                  <BarChart3 />
+                  {t('stats_title')}
                 </Button>
-              )}
-              <GroupMenu isOnline={exit.isOnline} isPinned={header.isPinned} events={events} isOutlined />
+                <Button variant="outline" onClick={() => events.invite()}>
+                  <UserPlus />
+                  {t('groupDetail_invite')}
+                </Button>
+                {showsSplitBillButton && (
+                  <Button onClick={() => events.splitBill()}>
+                    <SplitBillIcon />
+                    {t('groupDetail_splitBill')}
+                  </Button>
+                )}
+                <GroupMenu isOnline={exit.isOnline} isPinned={header.isPinned} events={events} isOutlined />
+              </div>
             </div>
-          </div>
+            {/* Why: the phone's bar, back and the icons, between which the header folds; from the tablet up the header's row is the bar. */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 flex h-14 items-center gap-1 px-2 md:hidden [&>button]:pointer-events-auto">
+              <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => events.back()}>
+                <ArrowLeft />
+              </Button>
+              <span className="flex-1" />
+              <Button variant="ghost" size="icon" aria-label={t('stats_title')} onClick={() => events.stats()}>
+                <BarChart3 />
+              </Button>
+              <Button variant="ghost" size="icon" aria-label={t('groupDetail_invitePeople')} onClick={() => events.invite()}>
+                <UserPlus />
+              </Button>
+              <GroupMenu isOnline={exit.isOnline} isPinned={header.isPinned} events={events} />
+            </div>
+          </header>
+          <button
+            type="button"
+            onClick={() => onSelectTab('members')}
+            aria-label={[members, notJoined, t('groupDetail_seeMembers')].filter(Boolean).join(' · ')}
+            className="-mt-1 flex items-center gap-2 self-start rounded-md text-[13px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+          >
+            <span aria-hidden className="flex">
+              {header.faces.map((face, index) => (
+                <Avatar key={index} initial={face.initials} color={face.color} photoUrl={face.photoUrl} className={cn('size-7 border-2 border-background text-[11px]', index > 0 && '-ml-1.5')} />
+              ))}
+              {header.extraMemberCount > 0 && (
+                <span className="-ml-1.5 flex h-7 min-w-7 items-center justify-center rounded-full border-2 border-background bg-muted px-1.5 text-[11px] font-semibold">
+                  +{header.extraMemberCount}
+                </span>
+              )}
+            </span>
+            {notJoined}
+          </button>
 
           {/* Why: Membros keeps its own chips over its balances; these pick the currency of the header's amounts and Saldos. */}
           {tab !== 'members' && <CurrencyChips currencies={header.currencies} selected={header.currency} onSelect={(code) => events.selectCurrency(code)} />}
@@ -207,6 +221,36 @@ function BalanceCardSkeleton() {
  * avatar and lines, the balance card, the tabs and a few rows, after 150 ms. Estatísticas gives its own `children`.
  */
 export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { groupId: string; homeTab: HomeTab; onBack: () => void; children?: ReactNode }) {
+  // Why: the group's own page shimmers its open header where the loaded one draws it, so nothing jumps once it loads.
+  if (!children) {
+    return (
+      <PageShell selected={homeTab} groups={{ selectedId: groupId }} phoneBars="none">
+        <div className="flex min-h-dvh flex-col">
+          <main className={cn(groupPageContentClass, 'gap-4 sm:gap-5')}>
+            <SkeletonLine className="-mb-1 hidden w-40 md:block" />
+            <div aria-hidden className="-mt-4 -mb-4 sm:-mb-5 md:mt-0" />
+            <header className="group-header bg-background/95 backdrop-blur">
+              <div className="group-header-row">
+                <Skeleton className={cn('group-header-photo shrink-0', GROUP_SHAPE)} />
+                <span className="flex flex-1 flex-col gap-2">
+                  <SkeletonLine className="h-5 w-48" />
+                  <SkeletonLine className="w-36" />
+                </span>
+              </div>
+              <div className="absolute inset-x-0 top-0 flex h-14 items-center gap-1 px-2 md:hidden">
+                <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={onBack}>
+                  <ArrowLeft />
+                </Button>
+              </div>
+            </header>
+            <LoadingRegion className="flex flex-col gap-4 sm:gap-5">
+              <GroupBodySkeleton />
+            </LoadingRegion>
+          </main>
+        </div>
+      </PageShell>
+    )
+  }
   return (
     <PageShell selected={homeTab} groups={{ selectedId: groupId }} phoneBars="none">
       <div className="flex min-h-dvh flex-col">
@@ -218,7 +262,7 @@ export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { grou
         <main className={groupPageContentClass}>
           <LoadingRegion className="flex flex-col gap-4 sm:gap-5">
             <SkeletonLine className="hidden w-40 md:block" />
-            {children ?? <GroupHeaderSkeleton />}
+            {children}
           </LoadingRegion>
         </main>
       </div>
@@ -226,22 +270,15 @@ export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { grou
   )
 }
 
-/** The group's avatar, name, meta and faces, the balance card, the tabs and a few bills. */
-function GroupHeaderSkeleton() {
+/** Under the group's header: its faces, the balance card, the tabs and a few bills. */
+function GroupBodySkeleton() {
   return (
     <>
-      <div className="flex items-start gap-4">
-        <Skeleton className="size-12 rounded-xl md:size-14" />
-        <span className="flex flex-1 flex-col gap-2.5">
-          <SkeletonLine className="h-5 w-48" />
-          <SkeletonLine className="w-36" />
-          <span className="flex">
-            {[0, 1, 2].map((index) => (
-              <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
-            ))}
-          </span>
-        </span>
-      </div>
+      <span className="-mt-1 flex">
+        {[0, 1, 2].map((index) => (
+          <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
+        ))}
+      </span>
       <Skeleton className="h-[72px] w-full rounded-xl" />
       <Skeleton className="h-9 w-full max-w-sm rounded-lg" />
       <SkeletonRows count={4} leading="square" className="rounded-xl border bg-card" />

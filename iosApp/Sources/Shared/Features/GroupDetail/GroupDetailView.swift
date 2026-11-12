@@ -139,7 +139,8 @@ struct GroupDetailView: View {
     @State private var model: GroupDetailModel?
     /// Members' own ViewModel, made with the group's, so the people are already read when the tab is picked.
     @State private var members: MembersModel?
-    @State private var showsInlineTitle = false
+    /// How far the list scrolled under the bar, which shrinks the header's avatar and brings the bar's title in.
+    @State private var headerScroll = GroupHeaderScroll()
 
     #if os(iOS)
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -161,7 +162,7 @@ struct GroupDetailView: View {
                     hasExpenses: model.state.hasBills,
                     tab: model.tab,
                     usesTwoColumns: verticalSizeClass == .compact,
-                    showsInlineTitle: $showsInlineTitle,
+                    headerScroll: headerScroll,
                     actions: model.actions,
                 ) {
                     switch model.tab {
@@ -175,13 +176,24 @@ struct GroupDetailView: View {
             } else {
                 // The group not read yet: its header, its balance and its bills shimmer in place
                 ShimmerScreen {
+                    #if os(iOS)
+                    // The header's big avatar with the name and the summary under it, as `PhoneGroupScaffold` draws them
+                    VStack(spacing: 10) {
+                        let side = verticalSizeClass == .compact ? 72 : GroupHeaderScroll.avatarSize
+                        ShimmerBlock(width: side, height: side, cornerRadius: side * GroupAvatar.cornerRatio)
+                        ShimmerLine(width: 180, height: 22)
+                        ShimmerLine(width: 120, height: 12)
+                    }
+                    .frame(maxWidth: .infinity)
+                    #else
                     HStack(spacing: 14) {
-                        ShimmerBlock(width: 56, height: 56, cornerRadius: 18)
+                        ShimmerBlock(width: 56, height: 56, cornerRadius: 56 * GroupAvatar.cornerRatio)
                         VStack(alignment: .leading, spacing: 8) {
                             ShimmerLine(width: 180, height: 22)
                             ShimmerLine(width: 120, height: 12)
                         }
                     }
+                    #endif
                     ShimmerCard(showsButtons: false)
                         .background(Palette.card, in: .rect(cornerRadius: 26))
                     ShimmerBlock(height: 32, cornerRadius: 16)
@@ -196,7 +208,7 @@ struct GroupDetailView: View {
             header: model?.state.isLoaded == true ? model?.state.header : nil,
             hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
-            showsInlineTitle: showsInlineTitle,
+            headerScroll: headerScroll,
             exit: model?.state.exit,
             actions: model?.actions ?? .disabled,
         )
@@ -263,6 +275,8 @@ struct GroupDetailView: View {
             if model == nil { model = GroupDetailModel(route: route) }
             if members == nil { members = MembersModel(route: route) }
         }
+        // Out of the group's row or card that pushed it, on a tab's stack
+        .groupZoomDestination(groupId: route.groupId)
     }
 
     /// "Teach the map" (9.3f) while the person picks the word; closing it any way is "Not now".

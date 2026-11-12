@@ -47,6 +47,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -289,6 +290,7 @@ private fun GroupListRow(
 ) {
     val money = rememberMoneyFormatter(group.currency)
     val dates = rememberDateTimeTextFormatter()
+    val shared = rememberGroupSharedModifiers(group.id)
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -315,6 +317,7 @@ private fun GroupListRow(
                 initials = group.initials,
                 color = group.color,
                 photoUrl = group.photoUrl,
+                modifier = shared.avatar,
             )
             Column(
                 modifier = Modifier.weight(1f),
@@ -322,6 +325,7 @@ private fun GroupListRow(
             ) {
                 Text(
                     text = group.name,
+                    modifier = shared.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = if (group.usesTwoNameLines) 2 else 1,

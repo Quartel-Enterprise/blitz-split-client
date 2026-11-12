@@ -49,6 +49,8 @@ private val fabClearance = 96.dp
 // Why: the group's header, the same over every tab.
 internal class GroupTabFrame(
     val header: GroupHeader,
+    // Why: the group whose row its avatar and name fly from into the bar; null where nothing flies.
+    val sharedGroupId: String?,
     val selectedTab: GroupTab,
     // Why: "nenhuma despesa ainda" in the bar before the first bill.
     val hasBills: Boolean,
@@ -130,6 +132,7 @@ private fun GroupTabScaffoldContent(
                     money = frame.money,
                     scrollBehavior = scrollBehavior,
                     onAction = onAction,
+                    sharedGroupId = frame.sharedGroupId,
                 )
             } else {
                 GroupLoadingTopBar(onAction)

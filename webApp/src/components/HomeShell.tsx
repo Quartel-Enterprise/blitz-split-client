@@ -7,6 +7,8 @@ import { balanceTone } from '@/features/balances/BalanceCard'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { usePhoneBarsHidden } from '@/hooks/usePhoneBarsHidden'
 import { t, type MessageKey } from '@/i18n'
+import { GROUP_SHAPE } from '@/lib/avatar'
+import { isGroupTransitionUpdating } from '@/lib/groupTransition'
 import { formatSignedPlainMoney } from '@/lib/money'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -91,8 +93,9 @@ let enteredPageKey: string | null = null
  */
 function useEntersAnimated(): boolean {
   const pageKey = useContext(PageKeyContext)
-  // Why: decided once at mount, so a page that changes its key without remounting never fades.
-  const [entersAnimated] = useState(() => pageKey !== enteredPageKey)
+  // Why: decided once at mount, so a page that changes its key without remounting never fades. A page that comes in
+  // through a shared transition (a group from its row and back) has the transition's crossfade instead.
+  const [entersAnimated] = useState(() => pageKey !== enteredPageKey && !isGroupTransitionUpdating())
   useEffect(() => {
     enteredPageKey = pageKey
   }, [pageKey])
@@ -402,7 +405,7 @@ function SidebarGroups({ openGroups }: { openGroups: ShellOpenGroups }) {
               group.id === openGroups.selectedId && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground',
             )}
           >
-            <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-[22px] rounded-md text-[9px]" />
+            <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-[22px] text-[9px]" />
             <span className="min-w-0 flex-1 truncate">{group.name}</span>
             <span className={cn('text-xs font-medium tabular-nums', balanceTone(group.netMinor))}>{formatSignedPlainMoney(group.netMinor, group.fractionDigits, group.currency)}</span>
           </button>
@@ -419,7 +422,7 @@ function SidebarGroupsSkeleton() {
       <SkeletonLine className="h-2.5 w-16" />
       {[0, 1, 2].map((index) => (
         <span key={index} className="flex items-center gap-2.5">
-          <Skeleton className="size-[22px] rounded-md" />
+          <Skeleton className={cn('size-[22px]', GROUP_SHAPE)} />
           <SkeletonLine className="flex-1" />
           <SkeletonLine className="w-10" />
         </span>
