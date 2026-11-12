@@ -866,7 +866,7 @@ private struct PaymentKeyRow: View {
     var body: some View {
         let isPix = key.type.method == .pix
         HStack(spacing: 12) {
-            Image(systemName: key.type.symbol)
+            PaymentKeyIcon(type: key.type)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(isPix ? Palette.onPixTile : Palette.onBitcoinTile)
                 .frame(width: 30, height: 30)
@@ -914,14 +914,6 @@ private extension PaymentKeyType {
         case .random: Text("Pix · Random key")
         case .lightning: Text(verbatim: "Bitcoin · Lightning")
         default: Text(verbatim: "Bitcoin · On-chain")
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .lightning: "bolt.fill"
-        case .onchain: "link"
-        default: "rhombus"
         }
     }
 }
@@ -1162,5 +1154,20 @@ private struct CategoryMapRow: View {
             }
         }
         .foregroundStyle(.primary)
+    }
+}
+
+/// Pix's own mark (`PixKey` in the asset catalog, Material's Pix glyph, as Android draws it), the bolt and the link of
+/// the two Bitcoin networks. The mark scales with Dynamic Type as the symbols beside it do.
+private struct PaymentKeyIcon: View {
+    let type: PaymentKeyType
+    @ScaledMetric(relativeTo: .subheadline) private var markSize = 18.0
+
+    var body: some View {
+        switch type {
+        case .lightning: Image(systemName: "bolt.fill")
+        case .onchain: Image(systemName: "link")
+        default: Image(decorative: "PixKey").resizable().scaledToFit().frame(width: markSize, height: markSize)
+        }
     }
 }

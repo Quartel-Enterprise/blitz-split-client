@@ -1,11 +1,12 @@
-import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, KeyRound, Loader2, LogOut, Plus, RotateCw, Share2, Tag } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, KeyRound, Link2, Loader2, LogOut, Plus, RotateCw, Share2, Tag, Zap } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, providerLabel, segmentClass } from '@/components/common'
 import { pageContentClass } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
+import { PixIcon } from '@/components/PixIcon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -240,6 +241,7 @@ function PaymentKeysCard({ presenter, state, className }: CardProps) {
             onClick={() => presenter.clickPaymentKey(key.id)}
             className="flex min-h-14 items-center gap-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
           >
+            <KeyMethodIcon type={key.type as PaymentKeyType} />
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="text-sm font-medium">{t(`profile_keyRow${key.type as PaymentKeyType}`)}</span>
               <span className="truncate font-mono text-[13px] text-muted-foreground">{keyRowValue(key)}</span>
@@ -287,6 +289,31 @@ function PaymentKeysCard({ presenter, state, className }: CardProps) {
         )}
       </CardContent>
     </Card>
+  )
+}
+
+// Why: a Record, so a key type added later can't fall through to Pix's mark on the Bitcoin tile.
+const keyMethodIcons: Record<PaymentKeyType, { Icon: ComponentType<{ className?: string }>; isBitcoin: boolean }> = {
+  CPF: { Icon: PixIcon, isBitcoin: false },
+  PHONE: { Icon: PixIcon, isBitcoin: false },
+  EMAIL: { Icon: PixIcon, isBitcoin: false },
+  RANDOM: { Icon: PixIcon, isBitcoin: false },
+  LIGHTNING: { Icon: Zap, isBitcoin: true },
+  ONCHAIN: { Icon: Link2, isBitcoin: true },
+}
+
+/** The key's method in a tile, Pix's mark on the blue one, the bolt or the link of a Bitcoin network on the orange one. */
+function KeyMethodIcon({ type }: { type: PaymentKeyType }) {
+  const { Icon, isBitcoin } = keyMethodIcons[type]
+  return (
+    <span
+      className={cn(
+        'flex size-10 shrink-0 items-center justify-center rounded-xl',
+        isBitcoin ? 'bg-bitcoin-tile text-bitcoin-tile-foreground' : 'bg-primary-container text-primary-container-foreground',
+      )}
+    >
+      <Icon className="size-6" />
+    </span>
   )
 }
 
