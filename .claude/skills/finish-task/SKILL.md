@@ -116,7 +116,16 @@ git remote update origin --prune
 is gone, and any left behind by a dropped task. Every task device has a local branch while its task
 is alive, because a device is only ever created after its task's branch. The name is the branch's
 short description with `-` turned into `_` (see the "Name" section of
-[`start-task`](../start-task/SKILL.md#name)).
+[`start-task`](../start-task/SKILL.md#name)). A session the Claude app starts has a branch like
+`claude/home-latest-expenses-see-all-70f315`, with a `-<6 hex>` suffix its device name may or may
+not carry (`BoraRachar_home_latest_expenses_see_all`). So both sides are compared without that
+suffix: `KEEP` lists every local branch with its `<type>/` prefix and its `_<6 hex>` suffix stripped,
+and a device is kept when its name, stripped the same way, is in that list.
+
+```bash
+KEEP=$(git for-each-ref --format='%(refname:lstrip=2)' refs/heads \
+  | sed -E 's#^[^/]*/##; s#-#_#g; s#_[0-9a-f]{6}$##')
+```
 
 Android emulators. After its first boot an AVD takes about 2.3 GB of disk, freed only when the AVD
 is deleted:
@@ -125,9 +134,10 @@ is deleted:
 setopt null_glob 2>/dev/null
 for INI in ~/.android/avd/BoraRachar_*.ini; do
   [ -e "$INI" ] || continue
+  [ -n "$KEEP" ] || continue
   AVD=$(basename "$INI" .ini)
-  git for-each-ref --format='%(refname:short)' refs/heads \
-    | sed 's#^[^/]*/##; s#-#_#g' | grep -qx "${AVD#BoraRachar_}" && continue
+  printf '%s\n' "$KEEP" \
+    | grep -qxF "$(printf '%s' "${AVD#BoraRachar_}" | sed -E 's#_[0-9a-f]{6}$##')" && continue
   pkill -f -- "-avd $AVD( |$)"
   while pgrep -f -- "-avd $AVD( |$)" > /dev/null; do sleep 1; done
   rm -rf ~/.android/avd/"$AVD".avd "$INI"
@@ -140,8 +150,9 @@ iOS simulators:
 ```bash
 xcrun simctl list devices | sed -nE 's/^ +(BoraRachar_[A-Za-z0-9_]+) \(([0-9A-F-]{36})\).*/\1 \2/p' \
   | while read -r SIM UDID; do
-      git for-each-ref --format='%(refname:short)' refs/heads \
-        | sed 's#^[^/]*/##; s#-#_#g' | grep -qx "${SIM#BoraRachar_}" && continue
+      [ -n "$KEEP" ] || continue
+      printf '%s\n' "$KEEP" \
+        | grep -qxF "$(printf '%s' "${SIM#BoraRachar_}" | sed -E 's#_[0-9a-f]{6}$##')" && continue
       xcrun simctl shutdown "$UDID" 2>/dev/null
       xcrun simctl delete "$UDID" && echo "deleted $SIM"
     done
@@ -155,6 +166,12 @@ xcrun simctl list devices | sed -nE 's/^ +(BoraRachar_[A-Za-z0-9_]+) \(([0-9A-F-
   belong to the user or to another project.
 - A task whose branch still exists keeps its devices, even if nobody is working on it. Finishing or
   deleting that branch is what frees them.
+- Run the `KEEP` line in the same shell as the loops, after the branch is deleted. The loops skip
+  every device while it is empty (the command failed), since an empty list would delete every
+  task's devices.
+- Stripping the suffix only ever keeps more devices, never fewer: at worst a dropped task whose name
+  differs from a live one only by a 6-hex-looking last word keeps its device until that live branch
+  goes too.
 
 ### 5. Verify cleanup
 

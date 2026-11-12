@@ -222,6 +222,13 @@ device gets its own.
 the iOS simulator of a task share the name. The name follows from the branch, so `finish-task`
 finds them without anything written down.
 
+A session the Claude app starts already has its branch, `claude/<description>-<6 hex>` (for example
+`claude/home-latest-expenses-see-all-70f315`). Name its devices from the branch the same way, after
+`claude/`, with or without the hex suffix: `BoraRachar_home_latest_expenses_see_all` or
+`BoraRachar_home_latest_expenses_see_all_70f315`. `finish-task` ignores a trailing `_<6 hex>` on
+both sides when it matches a device to a branch. Never name a device after anything but the
+task's branch: a name no branch matches is deleted by the next `finish-task` of any task.
+
 ### Android emulator
 
 **Create.** Copy `Pixel_9`'s config, an API 36 phone with Google Play (Credential Manager needs
