@@ -136,49 +136,13 @@ private struct DeleteAccountContent: View {
                         .accessibilityAddTraits(.isHeader)
                 }
                 .padding(.top, 10)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("What gets deleted")
-                        .font(.footnote)
-                        .textCase(.uppercase)
-                        .foregroundStyle(.secondary)
-                    ForEach(deletedItems, id: \.self) { item in
-                        HStack(spacing: 8) {
-                            Circle()
-                                .fill(Palette.negative)
-                                .frame(width: 5, height: 5)
-                                .accessibilityHidden(true)
-                            Text(verbatim: item)
-                        }
-                    }
-                    if state.accountProvider.isLoading {
-                        // The account not read yet: its link's line shimmers rather than being left out
-                        ShimmerLine(width: 220, height: 12)
-                            .shimmering()
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Palette.card, in: .rect(cornerRadius: 22))
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("What stays in your groups")
-                        .font(.footnote)
-                        .textCase(.uppercase)
-                        .foregroundStyle(.secondary)
-                    ForEach(keptItems, id: \.self) { item in
-                        HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            Circle()
-                                .fill(.secondary)
-                                .frame(width: 5, height: 5)
-                                .accessibilityHidden(true)
-                            Text(verbatim: item)
-                        }
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Palette.card, in: .rect(cornerRadius: 22))
+                ItemsCard(
+                    title: "What gets deleted",
+                    items: deletedItems,
+                    bullet: Palette.negative,
+                    isLoading: state.accountProvider.isLoading,
+                )
+                ItemsCard(title: "What stays in your groups", items: keptItems, bullet: .secondary)
                 exportButton
             }
             .padding(.horizontal, 16)
@@ -240,34 +204,12 @@ private struct DeleteAccountContent: View {
             if state.showsOfflineNotice {
                 offlineNotice
             }
-            VStack(alignment: .leading, spacing: 4) {
-                Text("What gets deleted")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Text(verbatim: deletedItems.joined(separator: " · "))
-                    .font(.callout)
-                    .fixedSize(horizontal: false, vertical: true)
-                if state.accountProvider.isLoading {
-                    ShimmerLine(width: 220, height: 12)
-                        .shimmering()
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Palette.card, in: .rect(cornerRadius: 10))
-            VStack(alignment: .leading, spacing: 4) {
-                Text("What stays in your groups")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Text(verbatim: keptItems.joined(separator: " · "))
-                    .font(.callout)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Palette.card, in: .rect(cornerRadius: 10))
+            MacItemsBox(
+                title: "What gets deleted",
+                items: deletedItems,
+                isLoading: state.accountProvider.isLoading,
+            )
+            MacItemsBox(title: "What stays in your groups", items: keptItems)
             Toggle("I understand this can't be undone", isOn: confirmBinding)
                 .toggleStyle(.checkbox)
                 .disabled(!state.isConfirmEnabled)
@@ -340,3 +282,69 @@ private struct WarningTile<TileShape: Shape>: View {
             .accessibilityHidden(true)
     }
 }
+
+#if os(iOS)
+/// One of the iOS lists ("What gets deleted", "What stays in your groups"): a title and a bullet per item. A
+/// line still being read shimmers under them.
+private struct ItemsCard: View {
+    let title: LocalizedStringKey
+    let items: [String]
+    let bullet: Color
+    var isLoading = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.footnote)
+                .textCase(.uppercase)
+                .foregroundStyle(.secondary)
+            ForEach(items, id: \.self) { item in
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Circle()
+                        .fill(bullet)
+                        .frame(width: 5, height: 5)
+                        .accessibilityHidden(true)
+                    Text(verbatim: item)
+                }
+            }
+            if isLoading {
+                // The account not read yet: its link's line shimmers rather than being left out
+                ShimmerLine(width: 220, height: 12)
+                    .shimmering()
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Palette.card, in: .rect(cornerRadius: 22))
+    }
+}
+#endif
+
+#if os(macOS)
+/// One of the Mac's compact lists: a title and the items in one line, as the canvas draws them.
+private struct MacItemsBox: View {
+    let title: LocalizedStringKey
+    let items: [String]
+    var isLoading = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(verbatim: items.joined(separator: " · "))
+                .font(.callout)
+                .fixedSize(horizontal: false, vertical: true)
+            if isLoading {
+                ShimmerLine(width: 220, height: 12)
+                    .shimmering()
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Palette.card, in: .rect(cornerRadius: 10))
+    }
+}
+#endif

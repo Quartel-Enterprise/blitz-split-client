@@ -431,7 +431,8 @@ private fun ItemsCard(
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         if (item == null) {
-                            ShimmerBox {
+                            // Why: the rows align wrapped text to the top, but the shimmer sits on the bullet's line.
+                            ShimmerBox(modifier = Modifier.align(Alignment.CenterVertically)) {
                                 ShimmerLine(
                                     width = 200.dp,
                                     height = 14.dp,

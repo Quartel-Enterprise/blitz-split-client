@@ -342,7 +342,13 @@ function AccountCard({ presenter, state, className }: CardProps) {
         ) : provider ? (
           // Why: the provider's logo and the whole email say which account it is; the ⓘ says only the person sees it.
           <div className="flex items-center gap-3">
-            <span role="img" aria-label={providerLabel(provider, true)} className="flex size-4 shrink-0 items-center justify-center">
+            {/* Why: without an email the row's title already names the provider, which the logo's label would repeat */}
+            <span
+              role={state.email ? 'img' : undefined}
+              aria-label={state.email ? providerLabel(provider, true) : undefined}
+              aria-hidden={state.email ? undefined : true}
+              className="flex size-4 shrink-0 items-center justify-center"
+            >
               <ProviderLogo provider={provider} />
             </span>
             <Row title={state.email ?? providerLabel(provider, true)} className="min-w-0 flex-1">

@@ -16,17 +16,15 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AccountProviderLogoIcon
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.labelRes
@@ -34,7 +32,6 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 @Composable
 internal fun AccountSection(
@@ -98,7 +95,14 @@ private fun AccountRow(
          */
         val email = state.email
         SectionRow(
-            leading = { ProviderLogoIcon(provider) },
+            leading = {
+                AccountProviderLogoIcon(
+                    provider = provider,
+                    modifier = Modifier.size(24.dp),
+                    // Why: without an email the headline already names the provider, which a label would repeat.
+                    contentDescription = email?.let { stringResource(provider.labelRes) },
+                )
+            },
             headline = email ?: stringResource(provider.labelRes),
             trailing = email?.let {
                 {
@@ -132,22 +136,6 @@ private fun AccountRow(
             },
         )
     }
-}
-
-// Why: Google's "G" keeps its four colors; Apple's follows the text, as the sign in buttons draw them.
-@Composable
-private fun ProviderLogoIcon(provider: AccountProvider) {
-    Icon(
-        painter = painterResource(
-            when (provider) {
-                AccountProvider.GOOGLE -> DesignR.drawable.ic_google_logo
-                AccountProvider.APPLE -> DesignR.drawable.ic_apple_logo
-            },
-        ),
-        contentDescription = stringResource(provider.labelRes),
-        modifier = Modifier.size(24.dp),
-        tint = if (provider == AccountProvider.GOOGLE) Color.Unspecified else LocalContentColor.current,
-    )
 }
 
 // Why: Google comes first on Android, natively; Apple signs in through the browser.

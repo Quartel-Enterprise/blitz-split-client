@@ -757,6 +757,8 @@ private struct ConnectedAccountRow: View {
                 // Why: Google's logo is a decorative image, hidden from VoiceOver, so the label needs its own element.
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(verbatim: provider.displayName))
+                // Without an email the row's text already names the provider, which the logo would repeat
+                .accessibilityHidden(email == nil)
             row(email: email)
         }
     }
