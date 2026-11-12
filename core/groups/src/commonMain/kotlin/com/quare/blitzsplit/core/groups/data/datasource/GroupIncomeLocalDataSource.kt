@@ -22,6 +22,9 @@ interface GroupIncomeLocalDataSource {
 
     suspend fun markSynced(pushed: List<GroupMemberIncomeEntity>)
 
+    // Why: the incomes of members the device no longer has, pending ones too, which the server would refuse.
+    suspend fun deleteOfGoneMembers()
+
     suspend fun deleteGoneFromServer(
         ownerUserId: String,
         serverMemberIds: Set<String>,

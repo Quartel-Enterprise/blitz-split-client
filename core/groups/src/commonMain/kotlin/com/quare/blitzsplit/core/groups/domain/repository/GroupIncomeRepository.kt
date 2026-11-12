@@ -31,6 +31,9 @@ interface GroupIncomeRepository {
     // Why: after the groups and their members went up, which the server checks an income against.
     suspend fun uploadPending(userId: String): Result<Unit>
 
+    // Why: down then up, as one part of the sync that never holds the others back.
+    suspend fun sync(userId: String): Result<Unit>
+
     // Why: one group's incomes for a first download or real time, read now and written with the group's other rows.
     suspend fun fetchGroupIncomes(groupId: String): Result<suspend () -> Unit>
 }

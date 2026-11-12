@@ -35,6 +35,10 @@ class RoomGroupIncomeLocalDataSource(
         dao.markAllSynced(pushed)
     }
 
+    override suspend fun deleteOfGoneMembers() {
+        dao.deleteOfGoneMembers()
+    }
+
     override suspend fun deleteGoneFromServer(
         ownerUserId: String,
         serverMemberIds: Set<String>,

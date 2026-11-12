@@ -44,8 +44,9 @@ class GroupIncomeRepositoryImpl(
         )
     }
 
-    // Why: only the incomes of this user's groups, which went up before them in the same sync.
+    // Why: only the incomes of this user's groups and members, which went up before them in the same sync.
     override suspend fun uploadPending(userId: String): Result<Unit> = suspendRunCatching {
+        local.deleteOfGoneMembers()
         val pending = local.getPending(userId)
         if (pending.isEmpty()) return@suspendRunCatching
         remote.upsertIncomes(
@@ -60,6 +61,11 @@ class GroupIncomeRepositoryImpl(
             },
         )
         local.markSynced(pending)
+    }
+
+    override suspend fun sync(userId: String): Result<Unit> = suspendRunCatching {
+        download(userId).getOrThrow()
+        uploadPending(userId).getOrThrow()
     }
 
     override suspend fun fetchGroupIncomes(groupId: String): Result<suspend () -> Unit> = suspendRunCatching {

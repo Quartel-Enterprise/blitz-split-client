@@ -245,6 +245,27 @@ class DefaultSplitViewModelTest {
         }
 
     @Test
+    fun `GIVEN the group percentages shown for stale incomes WHEN saving an exception THEN no income changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(defaultSplit = percent(60L, 40L).copy(mode = DefaultSplitMode.INCOME)),
+                storedIncomes = mapOf(PIERRE to 900_000L, ANA to 300_000L),
+            )
+            viewModel.onEvent(DefaultSplitUiEvent.OnAddExceptionClicked)
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(AppCategory.FOOD.key))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionCategoryPicked(AppCategory.FOOD_MARKET.key))
+            viewModel.onEvent(DefaultSplitUiEvent.OnExceptionSaveClicked)
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(1, groups.savedDefaultSplits.size)
+            assertTrue(incomes.savedIncomes.all { it.second.isEmpty() })
+        }
+
+    @Test
     fun `GIVEN someone who joined since WHEN the screen opens THEN they start with 1 part until saved`() =
         runTest(testDispatcher) {
             // Given

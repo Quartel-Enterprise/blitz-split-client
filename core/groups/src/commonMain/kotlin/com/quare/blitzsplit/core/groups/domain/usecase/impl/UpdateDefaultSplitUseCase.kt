@@ -25,14 +25,15 @@ class UpdateDefaultSplitUseCase(
     ): Result<Unit> = suspendRunCatching {
         val isEveryoneEqually = defaultSplit.isEveryoneEqually && defaultSplit.exceptions.isEmpty()
         val now = currentTimeMillis()
+        // Why: the incomes first, so a failure leaves the default as it was rather than without the incomes it gives.
+        if (defaultSplit.mode == DefaultSplitMode.INCOME && incomes.isNotEmpty()) {
+            incomeRepository.saveIncomes(groupId, incomes, now).getOrThrow()
+        }
         repository
             .updateDefaultSplit(
                 groupId = groupId,
                 defaultSplit = defaultSplit.takeUnless { isEveryoneEqually },
                 updatedAt = now,
             ).getOrThrow()
-        if (defaultSplit.mode == DefaultSplitMode.INCOME && incomes.isNotEmpty()) {
-            incomeRepository.saveIncomes(groupId, incomes, now).getOrThrow()
-        }
     }
 }

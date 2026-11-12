@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useDraft } from '@/hooks/useDraft'
 import { t, wordGap, type MessageKey } from '@/i18n'
-import { amountPlaceholder, currencySymbol } from '@/lib/money'
+import { amountPlaceholder, currencySymbol, formatPercent } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { categoryName } from '@/lib/categories'
 import { cn } from '@/lib/utils'
@@ -129,8 +129,7 @@ function SplitBody({ presenter, state, editor, money }: { presenter: SplitBillPr
       {state.offersSplitAsDefault && <SplitAsDefaultField presenter={presenter} state={state} />}
 
       <p className="text-[13px] text-muted-foreground">
-        {/* Why: By income's hint says its incomes are the group's, which outweighs where the default is. */}
-        {state.defaultSplit && editor.mode !== 'income' ? t('split_hintDefault') : t(hints[editor.mode] ?? 'split_hintEqual', { zero: money(0) })}
+        {state.showsDefaultSplitHint ? t('split_hintDefault') : t(hints[editor.mode] ?? 'split_hintEqual', { zero: money(0) })}
       </p>
     </div>
   )
@@ -278,7 +277,7 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, paidLa
       )
       break
     case 'income':
-      subtitle = isOut ? t('split_out') : share && row.incomePercent != null ? `${share} · ${row.incomePercent}%` : share
+      subtitle = isOut ? t('split_out') : share && row.incomePercent != null ? `${share} · ${formatPercent(row.incomePercent)}` : share
       control = (
         <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={false} label={t('split_incomeLabel', { name: ariaName })} className="w-28" />
       )

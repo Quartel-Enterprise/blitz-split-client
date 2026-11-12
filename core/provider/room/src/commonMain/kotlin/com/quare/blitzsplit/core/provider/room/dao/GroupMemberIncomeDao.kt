@@ -48,7 +48,7 @@ interface GroupMemberIncomeDao {
         incomes: Map<String, Long>,
         now: Long,
     ) {
-        if (!hasGroup(groupId)) return
+        check(hasGroup(groupId)) { "No group $groupId" }
         incomes.forEach { (memberId, incomeMinor) ->
             insertIfAbsent(
                 GroupMemberIncomeEntity(
@@ -128,6 +128,13 @@ interface GroupMemberIncomeDao {
             .chunked(MAX_MEMBER_IDS_PER_QUERY)
             .forEach { deleteIncomes(it) }
     }
+
+    /*
+     * Why: an income, even one waiting to go up, of a member the device no longer has (merged into an account, gone
+     * from the server): the server would refuse it, and the whole push with it.
+     */
+    @Query("DELETE FROM group_member_income WHERE memberId NOT IN (SELECT id FROM group_member)")
+    suspend fun deleteOfGoneMembers()
 
     @Query("DELETE FROM group_member_income WHERE memberId IN (:memberIds)")
     suspend fun deleteIncomes(memberIds: List<String>)

@@ -59,6 +59,10 @@ class FakeGroupIncomeRepository(
         return Result.success(Unit)
     }
 
+    override suspend fun sync(userId: String): Result<Unit> = download(userId).mapCatching {
+        uploadPending(userId).getOrThrow()
+    }
+
     override suspend fun fetchGroupIncomes(groupId: String): Result<suspend () -> Unit> {
         fetchedGroupIds += groupId
         return Result.success {}

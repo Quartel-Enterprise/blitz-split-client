@@ -348,6 +348,26 @@ class GroupIncomeRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN an income waiting for a member the device no longer has WHEN uploading THEN only the others go up`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(memberId = MEMBER_A, incomeMinor = 900_000L, updatedAt = 2_000L, pendingSync = true),
+                    entity(memberId = MEMBER_B, incomeMinor = 300_000L, updatedAt = 2_000L, pendingSync = true),
+                ),
+            )
+            local.goneMemberIds = setOf(MEMBER_B)
+
+            // When
+            val result = repository.uploadPending(USER_ID)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(MEMBER_A), remote.upserted.single().map { it.memberId })
+        }
+
+    @Test
     fun `GIVEN incomes waiting WHEN uploading THEN marks exactly those as synced`() = runTest {
         // Given
         val waiting = listOf(
@@ -575,6 +595,9 @@ private class FakeGroupIncomeLocalDataSource(
     val deletedGoneFromServer = mutableListOf<Pair<String, Set<String>>>()
     val operations = mutableListOf<String>()
 
+    // Why: the members the device no longer has, whose incomes deleteOfGoneMembers drops.
+    var goneMemberIds: Set<String> = emptySet()
+
     override fun observeIncomes(groupId: String): Flow<List<GroupMemberIncomeEntity>> = rows.map { incomes ->
         incomes.filter { it.groupId == groupId }
     }
@@ -608,6 +631,11 @@ private class FakeGroupIncomeLocalDataSource(
     override suspend fun markSynced(pushed: List<GroupMemberIncomeEntity>) {
         operations += "markSynced"
         markedSynced += pushed
+    }
+
+    override suspend fun deleteOfGoneMembers() {
+        operations += "deleteOfGoneMembers"
+        rows.update { incomes -> incomes.filterNot { it.memberId in goneMemberIds } }
     }
 
     override suspend fun deleteGoneFromServer(

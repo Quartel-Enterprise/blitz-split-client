@@ -149,6 +149,7 @@ class JsSplitBillState(
     val splitSummary: Array<JsSplitFact>,
     val defaultSplit: JsBillDefaultSplit?,
     val showsDefaultSplitNotice: Boolean,
+    val showsDefaultSplitHint: Boolean,
     val isSplitEditorOffDefault: Boolean,
     // Why: Dividir's "Usar como padrão do grupo" (beta feedback 11), shown while offered.
     val offersSplitAsDefault: Boolean,
@@ -262,6 +263,7 @@ class SplitBillPresenter(
                     )
                 },
                 showsDefaultSplitNotice = state.showsDefaultSplitNotice,
+                showsDefaultSplitHint = state.showsDefaultSplitHint,
                 isSplitEditorOffDefault = state.isSplitEditorOffDefault,
                 offersSplitAsDefault = state.offersSplitAsDefault,
                 isSplitEditorAsDefaultChecked = state.isSplitEditorAsDefaultChecked,
@@ -571,10 +573,8 @@ private fun toJsSplitRow(
 private fun toJsSplitEditor(editor: SplitEditor): JsSplitEditor = JsSplitEditor(
     mode = editor.mode.code,
     rows = editor.rows
-        .map { row ->
-            val percent = editor.entries.firstOrNull { it.memberId == row.person.id }?.value
-            toJsSplitRow(row, percent?.takeIf { editor.mode == SplitMode.INCOME })
-        }.toTypedArray(),
+        .map { row -> toJsSplitRow(row, editor.incomePercents[row.person.id]) }
+        .toTypedArray(),
     totalMinor = editor.totalMinor.toDouble(),
     addsUp = editor.addsUp,
     included = editor.included.map(::toJsBillPerson).toTypedArray(),

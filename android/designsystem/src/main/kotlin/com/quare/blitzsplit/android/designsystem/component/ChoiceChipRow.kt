@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -23,6 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.first
 
 /*
  * Why: a single choice among more options than fit side by side (Dividir's six modes, beta feedback): a row of pill
@@ -42,10 +44,10 @@ fun ChoiceChipRow(
     val listState = rememberLazyListState()
     LaunchedEffect(selectedIndex) {
         if (selectedIndex < 0) return@LaunchedEffect
-        val visible = listState.layoutInfo.visibleItemsInfo
-        val item = visible.firstOrNull { it.index == selectedIndex }
-        val viewportEnd = listState.layoutInfo.viewportEndOffset
-        val isFullyVisible = item != null && item.offset >= 0 && item.offset + item.size <= viewportEnd
+        // Why: waits for the first layout, so a chip already in sight never scrolls the ones before it away.
+        val layout = snapshotFlow { listState.layoutInfo }.first { it.visibleItemsInfo.isNotEmpty() }
+        val item = layout.visibleItemsInfo.firstOrNull { it.index == selectedIndex }
+        val isFullyVisible = item != null && item.offset >= 0 && item.offset + item.size <= layout.viewportEndOffset
         if (!isFullyVisible) listState.animateScrollToItem(selectedIndex)
     }
     LazyRow(

@@ -27,8 +27,8 @@ data class SplitEditor(
     // Why: what the items give each one, worked out once per state like the shares.
     val itemsBreakdown: ItemsBreakdown? = items?.let { BillItemsSplit.breakdownOf(it, payerIds) }
 
-    // Why: "By income"'s percentages, which each one's income gives; empty in any other mode.
-    private val incomePercents: Map<String, Long> = if (mode == SplitMode.INCOME) {
+    // Why: "By income"'s percentages by member id, which each one's income gives; empty in any other mode.
+    val incomePercents: Map<String, Long> = if (mode == SplitMode.INCOME) {
         IncomePercents.of(
             rows.map { row -> row.person.id to (AmountInput.parse(row.valueText, currency, showsSats) ?: 0L) },
         )

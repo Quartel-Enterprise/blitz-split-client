@@ -147,7 +147,8 @@ internal fun SplitPersonRow(
                         isWithoutValue = isWithoutValue,
                         money = money,
                     ).let { subtitle ->
-                        if (incomePercent != null && row.shareMinor != null) "$subtitle · $incomePercent%" else subtitle
+                        val percent = incomePercent?.let { stringResource(R.string.split_bill_default_percent, it) }
+                        if (percent != null && row.shareMinor != null) "$subtitle · $percent" else subtitle
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isWithoutValue) {

@@ -155,8 +155,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     incomes are the group's (Pierre's call): each member's income syncs to the group's members, prefilled on any of
     their devices (`group_member_income`, the server's `group_member_incomes`, Last-Write-Wins per member), and "The
     group's members see these incomes and can split bills by them." says so under them. The default keeps the
-    percentages they give (`IncomePercents`); saving By income saves the incomes typed, a blank one removing that
-    person's, and saving another way leaves them as they are, for a bill's By income (in
+    percentages they give (`IncomePercents`); saving By income saves the incomes typed or cleared there, a field cleared removing that
+    person's (fields left blank while it shows the saved percentages change nothing), and saving another way leaves them as they are, for a bill's By income (in
     [split-bill.md](split-bill.md)). The incomes are in minor units of the group's currency and only their ratio counts.
     When the saved percentages are no longer what the incomes give (an older version's save), the screen shows the
     percentages. Incomes an older version kept on one device (`split_group.splitIncomes`) became that device's rows

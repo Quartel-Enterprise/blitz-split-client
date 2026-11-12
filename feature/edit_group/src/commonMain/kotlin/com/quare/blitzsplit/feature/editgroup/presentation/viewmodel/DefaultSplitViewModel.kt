@@ -386,8 +386,13 @@ class DefaultSplitViewModel(
             updateDefaultSplit(
                 groupId = route.groupId,
                 defaultSplit = state.defaultSplit,
-                // Why: a field left blank removes that one's income for the group.
-                incomes = state.people.associate { it.id to (state.incomes[it.id] ?: 0L) },
+                /*
+                 * Why: only what was typed or cleared here, a blank field removing that one's income; fields left
+                 * blank on the group's fallback percentages leave the group's incomes as they are.
+                 */
+                incomes = state.people
+                    .associate { it.id to (state.incomes[it.id] ?: 0L) }
+                    .filter { (id, income) -> income != (opened?.incomes?.get(id) ?: 0L) },
             ).onSuccess {
                 // Why: the screen may not be on top to leave, so it starts from what it just saved.
                 opened = Opened(

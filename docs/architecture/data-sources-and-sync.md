@@ -436,9 +436,10 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   server's `group_member_incomes`), belonging to its group with the same `ON DELETE CASCADE`; 0 is an income removed,
   so there is no tombstone. Any member writes any member's income, as themselves (`updated_by`); the server sets
   `group_id` from the member, so its row level security checks the real group. Saving writes only the incomes that
-  changed, stamped `MAX(now, updatedAt + 1)`. They sync after the groups and their members, apart from the money like
-  the pins (a failure never holds the bills back), down then up, with `deleteGoneFromServer` for a member the server
-  dropped (a guest merged into an account); the real-time pull of a group brings them with its rows
+  changed, stamped `MAX(now, updatedAt + 1)`. They sync right after the groups and their members go up, so the group's
+  real-time event finds them there, with a result of their own (a failure never holds the bills back), down then up,
+  with `deleteGoneFromServer` for a member the server dropped (a guest merged into an account); a pending income of a
+  member the device no longer has is dropped before the push, which the server would refuse whole; the real-time pull of a group brings them with its rows
   (`RemotePuller.downloadGroup`), and their pending flag and versions queue a sync like a bill's. Until Room 45 they
   stayed on the device that typed them (`split_group.splitIncomes`); `GroupIncomesMigrationSpec` turned each one of
   a member still in its group into a pending row, so they go up once, and left the column null.

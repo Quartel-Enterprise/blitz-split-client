@@ -330,6 +330,13 @@ data class SplitBillUiState(
             SplitFact.NewGroupDefault.takeIf { splitAsDefault != null },
         ) + split.summary
 
+    /*
+     * Why: Dividir's hint says where the group's default lives once there is one, but By income's says its incomes are
+     * the group's, which matters more there.
+     */
+    val showsDefaultSplitHint: Boolean
+        get() = defaultSplit != null && splitEditor?.mode != SplitMode.INCOME
+
     // Why: Dividir's notice above the modes, "Padrão do Apê 302: Partes, 3 para 1", for a group with a default.
     val showsDefaultSplitNotice: Boolean
         get() = defaultSplit != null && splitEditor != null

@@ -104,8 +104,7 @@ internal fun SplitEditorContent(
             )
             if (!isTabletop) {
                 Text(
-                    // Why: By income's hint says its incomes are the group's, which outweighs where the default is.
-                    text = if (state.defaultSplit != null && editor.mode != SplitMode.INCOME) {
+                    text = if (state.showsDefaultSplitHint) {
                         stringResource(R.string.split_bill_hint_default)
                     } else {
                         modeHintOf(editor.mode, money)
@@ -264,13 +263,12 @@ private fun SplitPeopleList(
             }
         }
     }
-    val percents = editor.entries.associate { it.memberId to it.value }
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         editor.rows.forEachIndexed { index, row ->
             SplitPersonRow(
                 row = row,
                 mode = editor.mode,
-                incomePercent = percents[row.person.id]?.takeIf { editor.mode == SplitMode.INCOME },
+                incomePercent = editor.incomePercents[row.person.id],
                 isIn = row.person.id in includedIds,
                 paidLabel = when {
                     row.person.id !in editor.payerIds -> null

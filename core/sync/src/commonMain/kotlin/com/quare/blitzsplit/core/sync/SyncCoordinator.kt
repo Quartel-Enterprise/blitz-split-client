@@ -233,6 +233,7 @@ class SyncCoordinator(
          * another device before the category it is in.
          */
         var areGroupsSynced = false
+        var incomesSynced = Result.success(Unit)
         groupReadsStarted.update { it + 1 }
         val groupsSynced = suspendRunCatching {
             if (firstDownload.isPending) {
@@ -242,6 +243,8 @@ class SyncCoordinator(
             groupRepository.downloadGroups(userId).getOrThrow()
             groupRepository.uploadPendingGroups(userId).getOrThrow()
             areGroupsSynced = true
+            // Why: right after their group, which real time tells the members of, but never holding the money back.
+            incomesSynced = groupIncomeRepository.sync(userId)
             categoryRepository.download(userId).getOrThrow()
             categoryRepository.uploadPending(userId).getOrThrow()
             expenseRepository.downloadExpenses(userId).getOrThrow()
@@ -256,13 +259,11 @@ class SyncCoordinator(
         val memberKeysSynced = suspendRunCatching {
             paymentKeyRepository.downloadMemberKeys(userId).getOrThrow()
         }
-        // Why: the pins and the incomes of "By income" need their groups too, but never hold the money back.
+        // Why: the pins need their groups too, but only order Início, so one that fails never holds the money back.
         val pinsSynced = if (areGroupsSynced) {
             suspendRunCatching {
                 groupPinRepository.downloadPins(userId).getOrThrow()
                 groupPinRepository.uploadPendingPins(userId).getOrThrow()
-                groupIncomeRepository.download(userId).getOrThrow()
-                groupIncomeRepository.uploadPending(userId).getOrThrow()
             }
         } else {
             Result.success(Unit)
@@ -306,6 +307,7 @@ class SyncCoordinator(
         groupsSynced.getOrThrow()
         memberKeysSynced.getOrThrow()
         pinsSynced.getOrThrow()
+        incomesSynced.getOrThrow()
         commentsSynced.getOrThrow()
         attachmentsSynced.getOrThrow()
         activitySynced.getOrThrow()
@@ -462,9 +464,8 @@ class SyncCoordinator(
     )
 
     /*
-     * Why: the versions of the bills, the payments, the group categories and the members' incomes waiting to go up,
-     * which change with each one saved. Kept apart, so a bill going up while a payment of the same version is saved
-     * still counts as a change.
+     * Why: the versions of the bills, payments, group categories and incomes waiting to go up, which change with each
+     * one saved. Kept apart, so a bill going up while a payment of the same version is saved still counts as a change.
      */
     private fun observePendingMoneyVersions(): Flow<List<List<Long>>> = combine(
         expenseRepository.observePendingVersions(),

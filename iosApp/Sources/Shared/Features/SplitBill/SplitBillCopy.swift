@@ -57,14 +57,7 @@ enum SplitBillCopy {
 
     /// Under the modes: what the mode does, or where the group's default split lives once there is one.
     static func hint(_ editor: SplitEditor, state: SplitBillUiState) -> String {
-        // Why: By income's hint says its incomes are the group's, which outweighs where the default is.
-        if editor.mode == .income {
-            return String(
-                localized: "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill.",
-                bundle: .appLanguage,
-            )
-        }
-        if state.defaultSplit != nil {
+        if state.showsDefaultSplitHint {
             return String(
                 localized: "The default lives in Edit group › Default split. Bills already added don't change.",
                 bundle: .appLanguage,
@@ -81,6 +74,10 @@ enum SplitBillCopy {
         )
         case .shares: return String(
             localized: "Use shares when someone has more, like who brought a plus-one.",
+            bundle: .appLanguage,
+        )
+        case .income: return String(
+            localized: "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill.",
             bundle: .appLanguage,
         )
         default: return String(
@@ -354,7 +351,7 @@ enum SplitBillCopy {
             return (share ?? "—", false)
         case .income:
             if isOut { return (String(localized: "Out", bundle: .appLanguage), false) }
-            let percent = editor.entries.first { $0.memberId == person.id }.map { SplitBillCopy.percent($0.value) }
+            let percent = editor.incomePercents[person.id].map { SplitBillCopy.percent($0.int64Value) }
             guard let share else { return ("—", false) }
             return (percent.map { "\(share) · \($0)" } ?? share, false)
         default:
