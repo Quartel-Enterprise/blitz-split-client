@@ -169,7 +169,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                   onClick={() => presenter.openBiggestExpense()}
                   className="-m-2 flex items-center gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
                 >
-                  <CategoryBadge category={state.biggestExpense.category} className="size-9 shrink-0" />
+                  <CategoryBadge category={state.biggestExpense.category} className="size-9" />
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate font-medium">{state.biggestExpense.description}</span>
                     <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
