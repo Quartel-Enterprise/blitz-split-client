@@ -353,8 +353,18 @@ class GroupIncomeRepositoryImplTest {
             // Given
             prepareScenario(
                 stored = listOf(
-                    entity(memberId = MEMBER_A, incomeMinor = 900_000L, updatedAt = 2_000L, pendingSync = true),
-                    entity(memberId = MEMBER_B, incomeMinor = 300_000L, updatedAt = 2_000L, pendingSync = true),
+                    entity(
+                        memberId = MEMBER_A,
+                        incomeMinor = 900_000L,
+                        updatedAt = 2_000L,
+                        pendingSync = true,
+                    ),
+                    entity(
+                        memberId = MEMBER_B,
+                        incomeMinor = 300_000L,
+                        updatedAt = 2_000L,
+                        pendingSync = true,
+                    ),
                 ),
             )
             local.goneMemberIds = setOf(MEMBER_B)
