@@ -432,7 +432,6 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.JoinWithLink> { route -> JoinWithLinkScreen(route) }
         },
     )
-    // Why: the home's bar or rail, drawn once around the navigation, so switching tabs swaps only the content.
     /*
      * Why: Material's list-detail scene only where the list and the group show side by side. Elsewhere the group opens
      * over Grupos as it does over Início, a screen of its own, so the group's avatar and name fly from the row tapped
@@ -443,6 +442,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy())
     }
+    // Why: the home's bar or rail, drawn once around the navigation, so switching tabs swaps only the content.
     HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
         SharedTransitionLayout {
             CompositionLocalProvider(LocalSharedTransitionScope provides takeIf { listDetail == null }) {

@@ -21,14 +21,6 @@ val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?
 // Why: the transition of the back stack entry a screen draws in, which the shared elements follow, back gesture too.
 val LocalEntryVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null }
 
-// Why: one key per group and element, so only the same group's avatar and name fly from its row to its screen.
-private data class GroupSharedKey(
-    val groupId: String,
-    val element: GroupSharedElement,
-)
-
-private enum class GroupSharedElement { AVATAR, NAME }
-
 // Why: the modifiers a group's avatar and name take to fly between its row or card and its screen's header.
 @Immutable
 class GroupSharedModifiers(
@@ -46,8 +38,9 @@ class GroupSharedModifiers(
 /*
  * Why: the group's photo (or initials) and name move from the row tapped into the group's header and back (beta
  * feedback of 2026-11-12). The avatar keeps its square as it grows, the name scales from the row's size to the bar's.
- * Without a group or a scope (beside the list, previews) nothing is shared. A system with animations off ends it at
- * once, as Compose scales every animation by the system's animator duration.
+ * Keyed by the group, so only the same group's avatar and name fly. Without a group or a scope (beside the list,
+ * previews) nothing is shared. A system with animations off ends it at once, as Compose scales every animation by the
+ * system's animator duration.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -58,11 +51,11 @@ fun rememberGroupSharedModifiers(groupId: String?): GroupSharedModifiers {
     return with(transitionScope) {
         GroupSharedModifiers(
             avatar = Modifier.sharedElement(
-                sharedContentState = rememberSharedContentState(GroupSharedKey(groupId, GroupSharedElement.AVATAR)),
+                sharedContentState = rememberSharedContentState("group-avatar-$groupId"),
                 animatedVisibilityScope = visibilityScope,
             ),
             name = Modifier.sharedBounds(
-                sharedContentState = rememberSharedContentState(GroupSharedKey(groupId, GroupSharedElement.NAME)),
+                sharedContentState = rememberSharedContentState("group-name-$groupId"),
                 animatedVisibilityScope = visibilityScope,
                 resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
                     contentScale = ContentScale.Fit,

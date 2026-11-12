@@ -53,12 +53,13 @@ import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-// Why: the header's avatar, big while the bar is open and shrinking with it into the one-line bar (beta feedback of 2026-11-12).
+/*
+ * Why: the header's avatar, big while the bar is open and shrinking with it into the one-line bar (beta feedback of
+ * 2026-11-12), and the open bar's height, room under the one-line bar for it beside the name and the totals under them.
+ */
 private val expandedBadgeSize = 64.dp
 private val foldingBadgeSize = 40.dp
 private val collapsedBadgeSize = 32.dp
-
-// Why: room under the one-line bar for the big avatar beside the name, and the totals under them.
 private val expandedBarHeight = 168.dp
 
 /*

@@ -25,6 +25,16 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupShape
 
 /*
+ * Why: the group photo viewer's square (16 dp corners on its 200 dp side) at every size, so a group reads as the same
+ * square in a list row, the group's header and the photo opened big (beta feedback of 2026-11-12, Pierre's call).
+ */
+private const val GROUP_CORNER_PERCENT = 8
+const val GROUP_CORNER_RATIO = GROUP_CORNER_PERCENT / 100f
+
+// Why: a share of the side, so a badge growing from a row into the group's header keeps the same square all along.
+val GroupAvatarShape: Shape = RoundedCornerShape(percent = GROUP_CORNER_PERCENT)
+
+/*
  * Why: a group's avatar, its initials ("VF") on one of the palette's colors in the group's rounded square, or its photo
  * in that square. Every group is that square, whatever shape an older build stored. The initials stay under the
  * photo, so they show while it loads or when it fails to.
@@ -61,16 +71,6 @@ fun GroupBadge(
         }
     }
 }
-
-/*
- * Why: the group photo viewer's square (16 dp corners on its 200 dp side) at every size, so a group reads as the same
- * square in a list row, the group's header and the photo opened big (beta feedback of 2026-11-12, Pierre's call).
- */
-private const val GROUP_CORNER_PERCENT = 8
-const val GROUP_CORNER_RATIO = GROUP_CORNER_PERCENT / 100f
-
-// Why: a share of the side, so a badge growing from a row into the group's header keeps the same square all along.
-val GroupAvatarShape: Shape = RoundedCornerShape(percent = GROUP_CORNER_PERCENT)
 
 // Why: a group's rounded square, its corners GROUP_CORNER_RATIO of its side.
 fun groupShapeOf(size: Dp): Shape = RoundedCornerShape(size * GROUP_CORNER_RATIO)
