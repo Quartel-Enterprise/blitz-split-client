@@ -32,9 +32,22 @@ The home tab, its shortcuts and pinned groups.
     waits, as the legacy Bora Rachar drew the payer and the group; TalkBack, VoiceOver and the web's screen readers
     still read "Floripa trip · You paid". The web's list keeps the day after the faces, and its desktop table draws the
     group's square in its Group column and only the faces under the description. Inside the group, Expenses keeps its
-    rows as they are, the group being implied there. A bill opens its Bill over its group, and "See all" opens
-    Activity over Home as the bell in Home's bar does, but with its Bills type already picked, a chip it can remove
-    (Pierre's call, beta feedback; `Route.Activity.showsBillsOnly`).
+    rows as they are, the group being implied there. A bill opens its Bill over its group. Each line ends in the
+    group's Expenses' ⋮ (⋯ on iOS and macOS), a long press (Android, iPhone, iPad) or a right click (the Mac, the web)
+    on the line opening it too, with the same options in the same order: "Edit", "Duplicate", "Share" and "Delete",
+    which asks the same "Delete this bill?" and stays on Home, the bill leaving the list (Pierre's call, beta feedback,
+    reversing "no ⋮ on Home"; [group-and-bills.md](group-and-bills.md) has what each does). They open over Home, not
+    over the group (`BillMenuController` in `:core:expenses`, which the group's Expenses shares). The web's desktop table
+    has the ⋮ in a last column. "See all" opens "All expenses" over Home (Pierre's call, beta feedback; it opened
+    Activity on its bills before), `Route.AllExpenses`: every bill you paid or take part in, across groups, by day,
+    drawn as Home's rows, each with the same ⋮, a tap opening its Bill over its group as from Home. A page on every
+    platform and size, back on the left (a long list read a page at a time reads better full height than in a
+    dialog): Android a column of up to 640 dp centered, iOS and the Mac pushed over Home in its tab, a column of up to
+    520 pt, the web a page in the home's frame with Home's tab selected. It reads the device only, a page of 30 bills
+    at first and 30 more each time the list nears its end (`AllExpensesViewModel`: a growing `LIMIT` over Room's
+    `observeMyExpenses`, so a bill edited, deleted or synced in changes in place), with skeleton rows while the first
+    page is read, under the last row while the next one is (or while a new device's first download may still bring
+    bills), and "No expenses yet" / "Bills you paid or take part in, in any group, show up here." when there is none.
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
     the top bar, never floating over the tab bar: its icon alone on an iPhone upright, as on Groups, and in an iPhone
     Duo's vertical bar, under the profile; spelled out lying down and on iPad. "Search" is the home's (5.2), over

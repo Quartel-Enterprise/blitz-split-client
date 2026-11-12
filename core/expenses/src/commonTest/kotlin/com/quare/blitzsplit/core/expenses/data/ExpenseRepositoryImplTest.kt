@@ -870,6 +870,11 @@ private class FakeExpenseLocalDataSource(
         list.filter { !it.isDeleted }.map { ExpenseWithEditor(it, editors[it.id]) }
     }
 
+    // Why: who takes part is Room's query, covered in core/provider/room; here every bill reads as the user's.
+    override fun observeMyExpenses(limit: Int): Flow<List<ExpenseWithEditor>> = entities.map { list ->
+        list.filter { !it.isDeleted }.take(limit).map { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->
         list.firstOrNull { it.id == id && !it.isDeleted }?.let { ExpenseWithEditor(it, editors[it.id]) }
     }

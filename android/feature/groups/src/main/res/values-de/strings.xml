@@ -177,4 +177,8 @@
     <string name="groups_home_cover_totals">du bekommst %1$s · du schuldest %2$s</string>
     <string name="groups_home_cover_hint">Öffne das Handy, um alles zu sehen</string>
     <string name="groups_waiting_for_internet">Kein Internet. Deine Gruppen erscheinen, sobald du wieder online bist.</string>
+    <string name="groups_all_expenses_title">Alle Ausgaben</string>
+    <string name="groups_all_expenses_empty_title">Noch keine Ausgaben</string>
+    <string name="groups_all_expenses_empty_body">Rechnungen, die du bezahlt hast oder an denen du beteiligt bist, aus allen Gruppen, erscheinen hier.</string>
+    <string name="groups_all_expenses_back">Zurück</string>
 </resources>

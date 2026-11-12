@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityUnreadCount
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.domain.RecordedPaymentNotices
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
@@ -63,6 +64,7 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.latestExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.pendingChangeCountOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.rowsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.toDownloadProgress
+import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.DeletedGroupNotice
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeAppInvite
@@ -125,6 +127,7 @@ class HomeViewModel(
     connectivityObserver: NetworkConnectivityObserver,
     observeActivityUnreadCount: ObserveActivityUnreadCount,
     observeMapCategories: ObserveMapCategories,
+    billMenuUseCases: BillMenuUseCases,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<HomeUiEvent>(trackEvent) {
     val uiState: StateFlow<HomeUiState>
@@ -160,6 +163,8 @@ class HomeViewModel(
                 isAppBannerDismissed = false,
                 showsReceiptSourceChoice = false,
                 receiptSource = null,
+                billToDelete = null,
+                isDeletingBill = false,
             ),
         )
 
@@ -192,6 +197,17 @@ class HomeViewModel(
         trackEvent = trackEvent,
         recentGroupId = { rows.firstOrNull()?.id },
         isOnTop = ::isOnTop,
+    )
+
+    // Why: a bill's ⋮ on "Últimas despesas", as on the group's Despesas; what it opens goes over Início.
+    private val billMenu = billMenuControllerOf(
+        useCases = billMenuUseCases,
+        scope = viewModelScope,
+        navigator = navigator,
+        isOnTop = ::isOnTop,
+        trackEvent = trackEvent,
+        source = "home",
+        showDeleteError = { uiAction.emit(HomeUiAction.ShowBillDeleteError) },
     )
 
     private val notificationPrompts = HomeNotificationPrompts(
@@ -273,6 +289,15 @@ class HomeViewModel(
             minuteTicks = minuteTicks,
             isHomeOnTop = navigator.backStack.map { it.lastOrNull() == Route.Home },
         )
+        billMenu.state
+            .onEach { menu ->
+                uiState.update {
+                    it.copy(
+                        billToDelete = menu.billToDelete,
+                        isDeletingBill = menu.isDeleting,
+                    )
+                }
+            }.launchIn(viewModelScope)
         observeAppInvite()
             .onEach(::showAppInvite)
             .launchIn(viewModelScope)
@@ -400,8 +425,10 @@ class HomeViewModel(
 
             HomeUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
-            // Why: "Ver tudo" of Últimas despesas opens Atividade as the bell does, on its Contas type (a removable chip).
-            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.Activity.billsOnly)
+            // Why: "Ver tudo" of Últimas despesas opens "Todas as despesas" over Início (Pierre's call, beta feedback).
+            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.AllExpenses)
+
+            is BillMenuEvent -> billMenu.onEvent(event)
 
             HomeUiEvent.OnActivityClicked -> if (isOnTop()) {
                 trackEvent("activity_bell_clicked", emptyMap())

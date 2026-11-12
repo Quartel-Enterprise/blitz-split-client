@@ -177,4 +177,8 @@
     <string name="groups_home_cover_totals">te ontvangen %1$s · je bent %2$s schuldig</string>
     <string name="groups_home_cover_hint">Open de telefoon om alles te zien</string>
     <string name="groups_waiting_for_internet">Geen internet. Je groepen verschijnen zodra je weer online bent.</string>
+    <string name="groups_all_expenses_title">Alle uitgaven</string>
+    <string name="groups_all_expenses_empty_title">Nog geen uitgaven</string>
+    <string name="groups_all_expenses_empty_body">Rekeningen die je betaald hebt of waar je aan meedoet, in welke groep dan ook, verschijnen hier.</string>
+    <string name="groups_all_expenses_back">Terug</string>
 </resources>

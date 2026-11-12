@@ -186,4 +186,8 @@
     <string name="groups_home_cover_totals">ti devono %1$s · devi %2$s</string>
     <string name="groups_home_cover_hint">Apri il telefono per vedere tutto</string>
     <string name="groups_waiting_for_internet">Nessuna connessione a internet. I tuoi gruppi appariranno quando tornerai online.</string>
+    <string name="groups_all_expenses_title">Tutte le spese</string>
+    <string name="groups_all_expenses_empty_title">Ancora nessuna spesa</string>
+    <string name="groups_all_expenses_empty_body">I conti che hai pagato o a cui partecipi, in qualsiasi gruppo, compaiono qui.</string>
+    <string name="groups_all_expenses_back">Indietro</string>
 </resources>

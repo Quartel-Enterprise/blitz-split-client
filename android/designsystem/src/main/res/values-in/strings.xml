@@ -263,4 +263,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s menyalakannya setelah kamu. Perubahan terakhir yang berlaku: Sederhanakan utang aktif.</string>
     <string name="designsystem_simplify_someone">Seseorang</string>
     <string name="designsystem_simplify_see_activity">Lihat di Aktivitas</string>
+    <string name="designsystem_bill_menu_edit">Edit</string>
+    <string name="designsystem_bill_menu_duplicate">Duplikat</string>
+    <string name="designsystem_bill_menu_share">Bagikan</string>
+    <string name="designsystem_bill_menu_delete">Hapus</string>
+    <string name="designsystem_bill_menu_options">Opsi untuk %s</string>
 </resources>

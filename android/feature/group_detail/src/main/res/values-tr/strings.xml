@@ -81,10 +81,5 @@
     <string name="group_detail_simplified_how">Nasıl çalışır</string>
     <string name="group_detail_simplified_pair">Sadeleştirmeden gelen yeni ikili</string>
     <string name="group_detail_balances_note_simplified">Borçlar sadeleştirildiğinde uygulama en az sayıda ödemeyi önerir. “Ödeme aldım” ve “Zaten ödedim” uygulama dışında yapılan bir ödemeyi (Pix, nakit, havale) kaydeder.</string>
-    <string name="group_detail_entry_edit">Düzenle</string>
-    <string name="group_detail_entry_duplicate">Çoğalt</string>
-    <string name="group_detail_entry_share">Paylaş</string>
-    <string name="group_detail_entry_delete">Sil</string>
-    <string name="group_detail_entry_options">Seçenekler: %s</string>
     <string name="group_detail_photo_open">Grup fotoğrafını gör</string>
 </resources>

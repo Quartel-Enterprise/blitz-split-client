@@ -25,6 +25,8 @@ internal fun toRouteName(route: Route): String = when (route) {
 
     Route.PickPayment -> "pick-payment"
 
+    Route.AllExpenses -> "all-expenses"
+
     is Route.GlobalBalances -> "global-balances"
 
     is Route.Charge -> "charge"

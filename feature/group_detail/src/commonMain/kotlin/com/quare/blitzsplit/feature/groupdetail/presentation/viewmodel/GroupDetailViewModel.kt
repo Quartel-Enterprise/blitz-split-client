@@ -2,14 +2,12 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
-import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
-import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
@@ -17,7 +15,10 @@ import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.expenses.domain.model.findSelected
 import com.quare.blitzsplit.core.expenses.domain.model.hasBills
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
-import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuController
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuOption
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuStep
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -62,7 +63,7 @@ class GroupDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     private val consumeSimplifyDebtsConflict: ConsumeSimplifyDebtsConflict,
-    private val deleteExpense: DeleteExpense,
+    billMenuUseCases: BillMenuUseCases,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
     observeAddPersonRequest: ObserveAddPersonRequest,
     observeCategoryTree: ObserveCategoryTree,
@@ -140,13 +141,22 @@ class GroupDetailViewModel(
         showError = { uiAction.emit(GroupDetailUiAction.ShowTeachError) },
     )
 
-    /*
-     * Why: the bill "Apagar esta conta?" asks about from its ⋮ on the list, and what it was shown with, so the question
-     * follows a sync (the bill gone, a payment made after it) as Conta's does.
-     */
-    private var billToDeleteId: String? = null
-    private var shownExpenses: List<Expense> = emptyList()
-    private var shownSettlements: List<Settlement> = emptyList()
+    // Why: a bill's ⋮ on the list, as Início's and "Todas as despesas"' do: Editar, Duplicar, Compartilhar, Apagar.
+    private val billMenu = BillMenuController(
+        useCases = billMenuUseCases,
+        scope = viewModelScope,
+        openOption = { option, _, expenseId ->
+            screen.open(
+                when (option) {
+                    BillMenuOption.EDIT -> Route.SplitBill.createEditing(route.groupId, expenseId)
+                    BillMenuOption.DUPLICATE -> Route.SplitBill.createDuplicating(route.groupId, expenseId)
+                    BillMenuOption.SHARE -> Route.ShareBill(groupId = route.groupId, expenseId = expenseId)
+                },
+            )
+        },
+        track = ::trackBillMenuStep,
+        showDeleteError = { uiAction.emit(GroupDetailUiAction.ShowBillDeleteError) },
+    )
 
     // Why: Membros was picked for the ask waiting now, which picks it only once.
     private var isAddPersonAskShown = false
@@ -188,6 +198,15 @@ class GroupDetailViewModel(
         screen.exit.state
             .onEach { exit -> uiState.update { it.copy(exit = exit) } }
             .launchIn(viewModelScope)
+        billMenu.state
+            .onEach { menu ->
+                uiState.update {
+                    it.copy(
+                        billToDelete = menu.billToDelete,
+                        isDeletingBill = menu.isDeleting,
+                    )
+                }
+            }.launchIn(viewModelScope)
         // Why: the notice waits until this screen is on top again, under the bill's screen that closed.
         combine(observeDeletedBillNotice(route.groupId), useCases.navigator.backStack, ::Pair)
             .onEach { (isOwed, _) -> if (isOwed && screen.isOnTop()) showBillDeleted() }
@@ -233,35 +252,20 @@ class GroupDetailViewModel(
                 ),
             )
 
-            is GroupDetailUiEvent.OnExpenseEditClicked -> {
-                val isOpened = openBill(event.expenseId, needsKnownCurrency = true) {
-                    Route.SplitBill.createEditing(route.groupId, event.expenseId)
-                }
-                if (isOpened) trackEvent("bill_edit_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
-            }
+            is GroupDetailUiEvent.OnExpenseEditClicked ->
+                billMenu.open(BillMenuOption.EDIT, route.groupId, event.expenseId)
 
-            is GroupDetailUiEvent.OnExpenseDuplicateClicked -> {
-                val isOpened = openBill(event.expenseId, needsKnownCurrency = true) {
-                    Route.SplitBill.createDuplicating(route.groupId, event.expenseId)
-                }
-                if (isOpened) trackEvent("bill_duplicate_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
-            }
+            is GroupDetailUiEvent.OnExpenseDuplicateClicked ->
+                billMenu.open(BillMenuOption.DUPLICATE, route.groupId, event.expenseId)
 
-            is GroupDetailUiEvent.OnExpenseShareClicked -> {
-                val isOpened = openBill(event.expenseId) {
-                    Route.ShareBill(
-                        groupId = route.groupId,
-                        expenseId = event.expenseId,
-                    )
-                }
-                if (isOpened) trackEvent("bill_share_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
-            }
+            is GroupDetailUiEvent.OnExpenseShareClicked ->
+                billMenu.open(BillMenuOption.SHARE, route.groupId, event.expenseId)
 
-            is GroupDetailUiEvent.OnExpenseDeleteClicked -> askToDeleteBill(event.expenseId)
+            is GroupDetailUiEvent.OnExpenseDeleteClicked -> billMenu.askToDelete(route.groupId, event.expenseId)
 
-            GroupDetailUiEvent.OnExpenseDeleteConfirmed -> deleteBill()
+            GroupDetailUiEvent.OnExpenseDeleteConfirmed -> billMenu.confirmDelete()
 
-            GroupDetailUiEvent.OnExpenseDeleteDismissed -> dismissBillDeletion()
+            GroupDetailUiEvent.OnExpenseDeleteDismissed -> billMenu.dismissDelete()
 
             GroupDetailUiEvent.OnInviteClicked -> screen.open(Route.Invite(route.groupId, isNewGroup = false))
 
@@ -386,8 +390,6 @@ class GroupDetailViewModel(
     ) {
         showAgain = { show(group, expenses, settlements, byCurrency) }
         shownGroup = group
-        shownExpenses = expenses
-        shownSettlements = settlements
         showConflict(group)
         val timeZone = currentTimeZone()
         val now = currentTimeMillis()
@@ -417,8 +419,6 @@ class GroupDetailViewModel(
                     entries = dayEntries.map { (_, entry) -> entry },
                 )
             }
-        // Why: read before the update, whose lambda may run again, since it forgets a bill that is gone.
-        val billDeletion = billDeletionOrNull()
         uiState.update {
             it.copy(
                 header = groupHeaderOf(
@@ -433,8 +433,6 @@ class GroupDetailViewModel(
                 // Why: the payment as it is now; one someone else undid meanwhile has nothing left to show or delete.
                 paymentToView = it.paymentToView?.let { shown -> paymentRowOrNull(days, shown.id) },
                 paymentToDelete = it.paymentToDelete?.let { asked -> paymentRowOrNull(days, asked.id) },
-                // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
-                billToDelete = if (it.isDeletingBill) it.billToDelete else billDeletion,
                 // Why: what this person owes comes first, then what they're owed.
                 myDebts = mine
                     .sortedBy { debt -> debt.fromMemberId != meId }
@@ -485,67 +483,16 @@ class GroupDetailViewModel(
         screen.deletePayment(payment.id) { uiAction.emit(GroupDetailUiAction.ShowChangeError) }
     }
 
-    // Why: a bill's Editar or Compartilhar from its ⋮, only while it is still in the group; says whether it opened.
-    private fun openBill(
-        expenseId: String,
-        // Why: a bill in a currency this version doesn't know is read-only; the bill's own screen says so.
-        needsKnownCurrency: Boolean = false,
-        next: () -> Route,
-    ): Boolean {
-        val expense = shownExpenses.firstOrNull { it.id == expenseId } ?: return false
-        return (!needsKnownCurrency || expense.currency.isKnown) && screen.open(next())
-    }
-
-    // Why: a second tap before the question draws opens it once; a bill already gone has nothing to delete.
-    private fun askToDeleteBill(expenseId: String) {
-        if (uiState.value.billToDelete != null) return
-        billToDeleteId = expenseId
-        val deletion = billDeletionOrNull() ?: return
-        trackEvent("bill_delete_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
-        uiState.update { it.copy(billToDelete = deletion) }
-    }
-
-    // Why: "Apagar esta conta?" worded from the bill as it is now; null, and the question closed, once it is gone.
-    private fun billDeletionOrNull(): BillDeletion? {
-        val expenseId = billToDeleteId ?: return null
-        val expense = shownExpenses.firstOrNull { it.id == expenseId }
-        if (expense == null) {
-            billToDeleteId = null
-            return null
+    private fun trackBillMenuStep(step: BillMenuStep) {
+        val params = mapOf("source" to GROUP_DETAIL_SOURCE)
+        when (step) {
+            BillMenuStep.EDIT_OPENED -> trackEvent("bill_edit_clicked", params)
+            BillMenuStep.DUPLICATE_OPENED -> trackEvent("bill_duplicate_clicked", params)
+            BillMenuStep.SHARE_OPENED -> trackEvent("bill_share_clicked", params)
+            BillMenuStep.DELETE_ASKED -> trackEvent("bill_delete_clicked", params)
+            BillMenuStep.DELETE_CONFIRMED -> trackEvent("bill_delete_confirmed", params)
+            BillMenuStep.DELETE_CANCELLED -> trackEvent("bill_delete_cancelled", params)
         }
-        return BillDeletion.of(
-            expense = expense,
-            myMemberId = shownGroup?.members?.firstOrNull { it.isMe }?.id,
-            settledPair = SettledPairChange.findDeletionOrNull(expenseId, shownGroup, shownExpenses, shownSettlements),
-        )
-    }
-
-    // Why: it stays on the group, where the bill leaves the list; a failure closes the question and says so.
-    private fun deleteBill() {
-        val state = uiState.value
-        val expenseId = billToDeleteId
-        if (state.billToDelete == null || state.isDeletingBill || expenseId == null) return
-        trackEvent("bill_delete_confirmed", mapOf("source" to GROUP_DETAIL_SOURCE))
-        uiState.update { it.copy(isDeletingBill = true) }
-        viewModelScope.launch {
-            val result = deleteExpense(expenseId)
-            billToDeleteId = null
-            uiState.update {
-                it.copy(
-                    billToDelete = null,
-                    isDeletingBill = false,
-                )
-            }
-            result.onFailure { uiAction.emit(GroupDetailUiAction.ShowBillDeleteError) }
-        }
-    }
-
-    private fun dismissBillDeletion() {
-        val state = uiState.value
-        if (state.billToDelete == null || state.isDeletingBill) return
-        trackEvent("bill_delete_cancelled", mapOf("source" to GROUP_DETAIL_SOURCE))
-        billToDeleteId = null
-        uiState.update { it.copy(billToDelete = null) }
     }
 
     private fun showBillDeleted() {

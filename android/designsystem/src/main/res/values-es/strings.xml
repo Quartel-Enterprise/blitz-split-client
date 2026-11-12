@@ -281,4 +281,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s lo activó después de ti. Cuenta el último cambio: Simplificar deudas está activado.</string>
     <string name="designsystem_simplify_someone">Alguien</string>
     <string name="designsystem_simplify_see_activity">Ver en Actividad</string>
+    <string name="designsystem_bill_menu_edit">Editar</string>
+    <string name="designsystem_bill_menu_duplicate">Duplicar</string>
+    <string name="designsystem_bill_menu_share">Compartir</string>
+    <string name="designsystem_bill_menu_delete">Eliminar</string>
+    <string name="designsystem_bill_menu_options">Opciones de %s</string>
 </resources>

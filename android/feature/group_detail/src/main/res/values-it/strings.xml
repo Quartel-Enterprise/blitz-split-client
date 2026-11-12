@@ -85,10 +85,5 @@
     <string name="group_detail_simplified_how">Come funziona</string>
     <string name="group_detail_simplified_pair">Nuova coppia dalla semplificazione</string>
     <string name="group_detail_balances_note_simplified">Con i debiti semplificati, l’app suggerisce il minimo di pagamenti. «Ho ricevuto» e «Ho già pagato» registrano un pagamento fatto fuori dall’app (Pix, contanti, bonifico).</string>
-    <string name="group_detail_entry_edit">Modifica</string>
-    <string name="group_detail_entry_duplicate">Duplica</string>
-    <string name="group_detail_entry_share">Condividi</string>
-    <string name="group_detail_entry_delete">Elimina</string>
-    <string name="group_detail_entry_options">Opzioni per %s</string>
     <string name="group_detail_photo_open">Vedi foto del gruppo</string>
 </resources>

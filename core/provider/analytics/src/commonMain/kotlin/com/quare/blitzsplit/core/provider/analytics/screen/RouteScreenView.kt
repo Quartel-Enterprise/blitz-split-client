@@ -40,6 +40,7 @@ internal fun Route.toScreenView(): ScreenView = when (this) {
     is Route.ProfileLink -> ScreenView("profile_link", emptyMap())
     is Route.RegisterPayment -> ScreenView("register_payment", mapOf("offers_keys" to offersReceiverKeys))
     Route.PickPayment -> ScreenView("pick_payment", emptyMap())
+    Route.AllExpenses -> ScreenView("all_expenses", emptyMap())
     is Route.GlobalBalances -> ScreenView("global_balances", emptyMap())
     is Route.Charge -> ScreenView("charge", emptyMap())
     Route.Contacts -> ScreenView("contacts", emptyMap())

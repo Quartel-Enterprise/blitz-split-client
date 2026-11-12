@@ -1,4 +1,4 @@
-import { ChevronRight, CircleCheck, Copy, HandCoins, Pencil, ReceiptText, Share2, ShieldCheck, Trash2, X } from 'lucide-react'
+import { ChevronRight, CircleCheck, HandCoins, ReceiptText, ShieldCheck, Trash2, X } from 'lucide-react'
 import {
   GroupDetailPresenter,
   type JsExpenseRow,
@@ -10,6 +10,7 @@ import { useContext, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
+import { billMenuOptions } from '@/components/BillRowMenu'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { PageKeyContext, type HomeTab } from '@/components/HomeShell'
@@ -200,12 +201,12 @@ function ExpenseRowItem({ presenter, expense }: { presenter: GroupDetailPresente
       currency={expense.currency}
       fractionDigits={expense.fractionDigits}
       onOpen={() => presenter.openExpense(expense.id)}
-      options={[
-        { icon: <Pencil />, label: t('groupDetail_entryEdit'), onSelect: () => presenter.editExpense(expense.id) },
-        { icon: <Copy />, label: t('groupDetail_entryDuplicate'), onSelect: () => presenter.duplicateExpense(expense.id) },
-        { icon: <Share2 />, label: t('groupDetail_entryShare'), onSelect: () => presenter.shareExpense(expense.id) },
-        { icon: <Trash2 />, label: t('groupDetail_entryDelete'), isDestructive: true, onSelect: () => presenter.askToDeleteExpense(expense.id) },
-      ]}
+      options={billMenuOptions({
+        onEdit: () => presenter.editExpense(expense.id),
+        onDuplicate: () => presenter.duplicateExpense(expense.id),
+        onShare: () => presenter.shareExpense(expense.id),
+        onDelete: () => presenter.askToDeleteExpense(expense.id),
+      })}
     />
   )
 }

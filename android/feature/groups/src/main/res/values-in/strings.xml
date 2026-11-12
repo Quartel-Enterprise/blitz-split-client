@@ -168,4 +168,8 @@
     <string name="groups_home_cover_totals">utang ke kamu %1$s · kamu berutang %2$s</string>
     <string name="groups_home_cover_hint">Buka ponsel untuk melihat semuanya</string>
     <string name="groups_waiting_for_internet">Tidak ada internet. Grupmu akan muncul setelah kamu online lagi.</string>
+    <string name="groups_all_expenses_title">Semua pengeluaran</string>
+    <string name="groups_all_expenses_empty_title">Belum ada pengeluaran</string>
+    <string name="groups_all_expenses_empty_body">Tagihan yang kamu bayar atau ikuti, di grup mana pun, muncul di sini.</string>
+    <string name="groups_all_expenses_back">Kembali</string>
 </resources>

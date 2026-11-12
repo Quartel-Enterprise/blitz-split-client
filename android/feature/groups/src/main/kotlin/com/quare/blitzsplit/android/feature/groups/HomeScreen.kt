@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.platform.ReceiptCameraTaps
@@ -32,6 +33,8 @@ fun HomeScreen(
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {
             HomeUiAction.ShowChangeError -> R.string.groups_change_error
+
+            HomeUiAction.ShowBillDeleteError -> DesignR.string.designsystem_delete_bill_error
 
             HomeUiAction.ShowNotificationsOn -> R.string.groups_home_notifications_on
 
@@ -64,6 +67,12 @@ fun HomeScreen(
     ReceiptSourceComponent(
         state = state,
         snackbarHostState = snackbarHostState,
+        onEvent = viewModel::onEvent,
+    )
+    // Why: a bill's ⋮ "Apagar" on "Últimas despesas" asks what Conta asks, in the same words.
+    BillDeleteQuestion(
+        deletion = state.billToDelete,
+        isDeleting = state.isDeletingBill,
         onEvent = viewModel::onEvent,
     )
     if (state.showsRecoveryCodePrompt) recoveryCodeSheet()
@@ -116,6 +125,7 @@ private fun NotificationPermissionEffect(viewModel: HomeViewModel) {
 
                 // Why: Android has no quiet delivery, and never reports it can ask quietly.
                 HomeUiAction.ShowChangeError,
+                HomeUiAction.ShowBillDeleteError,
                 HomeUiAction.ShowNotificationsOn,
                 HomeUiAction.RequestQuietNotifications,
                 HomeUiAction.ShowUsedOnPhone,

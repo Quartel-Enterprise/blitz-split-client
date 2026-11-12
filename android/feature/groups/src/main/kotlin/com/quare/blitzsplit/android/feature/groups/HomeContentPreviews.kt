@@ -321,6 +321,8 @@ private fun buildHomePreviewState(): HomeUiState = HomeUiState(
     isAppBannerDismissed = false,
     showsReceiptSourceChoice = false,
     receiptSource = null,
+    billToDelete = null,
+    isDeletingBill = false,
 )
 
 private fun buildPreviewPerson(

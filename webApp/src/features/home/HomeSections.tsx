@@ -1,6 +1,7 @@
 import { ChevronRight, Pin } from 'lucide-react'
-import type { HomePresenter, JsHomeBill, JsHomeGroup, JsHomePerson, JsHomeState, JsHomeTotal } from 'blitzsplit-shared'
+import type { HomePresenter, JsBillMenu, JsHomeBill, JsHomeGroup, JsHomePerson, JsHomeState, JsHomeTotal } from 'blitzsplit-shared'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react'
+import { homeBillMenuOptions, RowMenuButton } from '@/components/BillRowMenu'
 import { Avatar, PendingDot } from '@/components/common'
 import { SummaryCardSkeleton } from '@/components/PageSkeletons'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
@@ -418,7 +419,7 @@ function ShareCell({ bill }: { bill: JsHomeBill }) {
  * laptop's screen) leaves the table no room for "Sua parte", so the card stays a list until the table fits. There the
  * description takes what the other columns leave, the group's name is capped, tighter the narrower the card, and Sua
  * parte's word sits under its amount; a hundred million of another year in the narrowest card scrolls the table
- * sideways rather than cutting it. A bill opens its Conta over its group; "Ver tudo" opens Atividade on its bills.
+ * sideways rather than cutting it. A bill opens its Conta over its group, its ⋮ (or a right click) the group's options; "Ver tudo" opens "Todas as despesas".
  */
 export function RecentBills({ presenter, state }: SectionProps) {
   const rows = Array.from(state.billDays).flatMap((day) => Array.from(day.bills).map((bill) => ({ bill, day: formatDayLabel(day.dayStartMillis, day.relativeDay) })))
@@ -445,70 +446,26 @@ export function RecentBills({ presenter, state }: SectionProps) {
                   <th scope="col" className="px-3 py-2 text-right font-medium">
                     {t('groupDetail_columnTotal')}
                   </th>
-                  <th scope="col" className="px-4 py-2 text-right font-medium">
+                  <th scope="col" className="py-2 pl-3 text-right font-medium">
                     {t('home_columnShare')}
+                  </th>
+                  <th scope="col" className="w-12 py-2 pr-1">
+                    <span className="sr-only">{t('groupDetail_columnOptions')}</span>
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {rows.map(({ bill, day }) => (
-                  <tr key={bill.id} onClick={() => open(bill)} className="cursor-pointer hover:bg-accent">
-                    <td className="w-full max-w-0 px-4 py-2.5">
-                      <span className="flex min-w-0 items-center gap-2.5">
-                        <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
-                        <span className="flex min-w-0 flex-col">
-                          <button
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              open(bill)
-                            }}
-                            title={bill.description}
-                            className="truncate rounded-sm text-left font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
-                          >
-                            {bill.description}
-                          </button>
-                          <BillOrigin bill={bill} showsGroup={false} />
-                        </span>
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5">
-                      <span className="flex items-center gap-2">
-                        <GroupAvatar initials={bill.groupInitials} color={bill.groupColor} photoUrl={bill.groupPhotoUrl} className="size-5 text-[7px]" />
-                        <span title={bill.groupName} className="block max-w-24 truncate @3xl:max-w-32 @4xl:max-w-48 @5xl:max-w-64">
-                          {bill.groupName}
-                        </span>
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 whitespace-nowrap text-muted-foreground">{day}</td>
-                    <td className="px-3 py-2.5 text-right whitespace-nowrap tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      <ShareCell bill={bill} />
-                    </td>
-                  </tr>
+                  <HomeBillTableRow key={bill.id} bill={bill} day={day} menu={presenter.billMenu} onOpen={() => open(bill)} />
                 ))}
               </tbody>
             </table>
           </div>
           <ul className="divide-y border-t lg:@min-[40rem]:hidden">
             {rows.map(({ bill, day }) => (
-              <li key={bill.id}>
-                <button
-                  onClick={() => open(bill)}
-                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
-                >
-                  <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="truncate font-medium">{bill.description}</span>
-                    <BillOrigin bill={bill} showsGroup>
-                      <span className="truncate">{day}</span>
-                    </BillOrigin>
-                  </span>
-                  <span className="flex shrink-0 flex-col items-end gap-0.5">
-                    <span className="tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</span>
-                    <span className={cn('text-xs font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor))}>{shareText(bill)}</span>
-                  </span>
-                </button>
-              </li>
+              <HomeBillListRow key={bill.id} bill={bill} menu={presenter.billMenu} onOpen={() => open(bill)}>
+                <span className="truncate">{day}</span>
+              </HomeBillListRow>
             ))}
           </ul>
         </>
@@ -519,6 +476,97 @@ export function RecentBills({ presenter, state }: SectionProps) {
         </LoadingRegion>
       )}
     </section>
+  )
+}
+
+/**
+ * A bill as a row of the desktop table of "Latest expenses", ending in its ⋮ (Pierre's call, beta feedback: the group's
+ * Expenses' options), which a right click on the row opens too.
+ */
+function HomeBillTableRow({ bill, day, menu, onOpen }: { bill: JsHomeBill; day: string; menu: JsBillMenu; onOpen: () => void }) {
+  const [isMenuOpen, setMenuOpen] = useState(false)
+  return (
+    <tr
+      onClick={onOpen}
+      onContextMenu={(event) => {
+        event.preventDefault()
+        setMenuOpen(true)
+      }}
+      className="cursor-pointer hover:bg-accent"
+    >
+      <td className="w-full max-w-0 px-4 py-2.5">
+        <span className="flex min-w-0 items-center gap-2.5">
+          <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
+          <span className="flex min-w-0 flex-col">
+            <button
+              onClick={(event) => {
+                event.stopPropagation()
+                onOpen()
+              }}
+              title={bill.description}
+              className="truncate rounded-sm text-left font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+            >
+              {bill.description}
+            </button>
+            <BillOrigin bill={bill} showsGroup={false} />
+          </span>
+        </span>
+      </td>
+      <td className="px-3 py-2.5">
+        <span className="flex items-center gap-2">
+          <GroupAvatar initials={bill.groupInitials} color={bill.groupColor} photoUrl={bill.groupPhotoUrl} className="size-5 text-[7px]" />
+          <span title={bill.groupName} className="block max-w-24 truncate @3xl:max-w-32 @4xl:max-w-48 @5xl:max-w-64">
+            {bill.groupName}
+          </span>
+        </span>
+      </td>
+      <td className="px-3 py-2.5 whitespace-nowrap text-muted-foreground">{day}</td>
+      <td className="px-3 py-2.5 text-right whitespace-nowrap tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</td>
+      <td className="py-2.5 pl-3 text-right">
+        <ShareCell bill={bill} />
+      </td>
+      <td className="py-1 pr-1" onClick={(event) => event.stopPropagation()}>
+        <RowMenuButton title={bill.description} options={homeBillMenuOptions(menu, bill)} open={isMenuOpen} onOpenChange={setMenuOpen} />
+      </td>
+    </tr>
+  )
+}
+
+/**
+ * A bill as a list row (Home's "Latest expenses" below the desktop, and "All expenses"): its category, the group's
+ * square and the payers' faces under the description, what follows them (the day, on Home), its total and your share,
+ * then its ⋮, which a right click on the row opens too.
+ */
+export function HomeBillListRow({ bill, menu, onOpen, children }: { bill: JsHomeBill; menu: JsBillMenu; onOpen: () => void; children?: ReactNode }) {
+  const [isMenuOpen, setMenuOpen] = useState(false)
+  return (
+    <li
+      className="flex items-center hover:bg-accent"
+      onContextMenu={(event) => {
+        event.preventDefault()
+        setMenuOpen(true)
+      }}
+    >
+      <button
+        onClick={onOpen}
+        className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pr-1 pl-4 text-left text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
+      >
+        <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
+          <span className="truncate font-medium">{bill.description}</span>
+          <BillOrigin bill={bill} showsGroup>
+            {children}
+          </BillOrigin>
+        </span>
+        <span className="flex shrink-0 flex-col items-end gap-0.5">
+          <span className="tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</span>
+          <span className={cn('text-xs font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor))}>{shareText(bill)}</span>
+        </span>
+      </button>
+      <span className="shrink-0 pr-1">
+        <RowMenuButton title={bill.description} options={homeBillMenuOptions(menu, bill)} open={isMenuOpen} onOpenChange={setMenuOpen} />
+      </span>
+    </li>
   )
 }
 

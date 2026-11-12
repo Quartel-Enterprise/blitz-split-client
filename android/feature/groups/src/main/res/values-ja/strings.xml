@@ -168,4 +168,8 @@
     <string name="groups_home_cover_totals">受け取る%1$s · 支払う%2$s</string>
     <string name="groups_home_cover_hint">スマートフォンを開くとすべて表示されます</string>
     <string name="groups_waiting_for_internet">インターネットに接続されていません。オンラインに戻るとグループが表示されます。</string>
+    <string name="groups_all_expenses_title">すべての支出</string>
+    <string name="groups_all_expenses_empty_title">まだ支出はありません</string>
+    <string name="groups_all_expenses_empty_body">どのグループでも、あなたが支払った、または参加している支出がここに表示されます。</string>
+    <string name="groups_all_expenses_back">戻る</string>
 </resources>

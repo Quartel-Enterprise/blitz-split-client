@@ -272,4 +272,9 @@
     <string name="designsystem_simplify_conflict_on">%1$s turned it on after you. The last change counts: Simplify debts is on.</string>
     <string name="designsystem_simplify_someone">Someone</string>
     <string name="designsystem_simplify_see_activity">See in Activity</string>
+    <string name="designsystem_bill_menu_edit">Edit</string>
+    <string name="designsystem_bill_menu_duplicate">Duplicate</string>
+    <string name="designsystem_bill_menu_share">Share</string>
+    <string name="designsystem_bill_menu_delete">Delete</string>
+    <string name="designsystem_bill_menu_options">Options for %s</string>
 </resources>

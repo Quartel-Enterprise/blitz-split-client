@@ -34,9 +34,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     its tablets and foldables' halves, a sheet on iOS and the Mac, a dialog on the web, with "Delete" in it (the web's
     also "Close"), which closes the details and asks the same "Delete this payment?" (`OnPaymentDeleteClicked`).
     The Mac's items end in "…", and the Mac's table shows the menu only for one line picked, whose Delete
-    key (⌫) asks the same "Delete this bill?" or "Delete this payment?". Home's "Latest expenses" and
-    Activity have no ⋮: their lines open the bill, whose options are a tap away (Pierre's beta feedback asked for
-    the group's list, where the bills are managed).
+    key (⌫) asks the same "Delete this bill?" or "Delete this payment?". Home's "Latest expenses" and its
+    "All expenses" have the same ⋮, long press and right click, their options opening over Home (Pierre's call, beta
+    feedback, [home-tab.md](home-tab.md)); Activity has none: its lines open the bill, whose options are a tap away.
+    One controller does it for all three lists (`BillMenuController`, `:core:expenses`).
   - A bill tapped there opens "Bill" (`Route.BillDetail`): the bill, "Your share" and the split over every member,
     with its category over the title and Share, Edit and Delete in the top bar. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the
@@ -190,8 +191,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     take the place of either. A main category takes its subcategories' bills
     (Food takes Restaurant and Market), and there are no subcategory chips: each line names its own subcategory in its
     meta ("21:30 · Bruno paid · Restaurant"). Under the chips "R$ 610 · 4 expenses" adds up the bills shown, then the
-    bills by day as the group's Expenses draws them, never the payments, with no ⋮ (as the home's "Latest
-    expenses": a tap opens Bill, as from Expenses, where its options are). The chips are only this screen's: opening it
+    bills by day as the group's Expenses draws them, never the payments, with no ⋮ (a tap opens Bill, as
+    from Expenses, where its options are). The chips are only this screen's: opening it
     again starts from the category tapped. It lays out as Statistics: in the group's pane beside the groups on an
     Android tablet and an iPad lying down, one column of up to 624 dp elsewhere on Android (a book's chips before the
     hinge and the bills after it), a List on iOS and the Mac, a page in the home's frame on the web, under the

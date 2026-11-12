@@ -131,6 +131,7 @@ struct MainTabView: View {
                 GlassToastMessage(text: "Coming soon", trigger: model.comingSoonCount),
                 GlassToastMessage(text: "Notifications on", trigger: home.notificationsOnCount),
                 GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: home.changeErrorCount),
+                GlassToastMessage(text: "Couldn't delete the bill. Try again.", trigger: home.billDeleteErrorCount),
             ]
                 + GroupExitCopy.errorToasts(
                     leave: model.leaveErrorCount,
@@ -370,6 +371,8 @@ struct MainTabView: View {
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         // Home's bell, or a contact's "See all", pushes Activity
         case let .activity(route): ActivityView(route: route).id(route)
+        // Home's "See everything" over "Latest expenses" pushes All expenses
+        case .allExpenses: AllExpensesView()
         // The search over Home, Balances or Contacts; every platform here has the search tab instead
         case .search: SearchView()
         default:

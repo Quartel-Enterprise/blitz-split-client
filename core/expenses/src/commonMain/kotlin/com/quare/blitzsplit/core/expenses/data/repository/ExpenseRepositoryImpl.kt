@@ -27,6 +27,11 @@ class ExpenseRepositoryImpl(
         .map { entities -> entities.mapNotNull(mapper::toDomain) }
         .distinctUntilChanged()
 
+    override fun observeMyExpenses(limit: Int): Flow<List<Expense>> = local
+        .observeMyExpenses(limit)
+        .map { entities -> entities.mapNotNull(mapper::toDomain) }
+        .distinctUntilChanged()
+
     override fun observePendingDeletionGroupIds(): Flow<List<String>> = local
         .observePendingDeletionGroupIds()
         .distinctUntilChanged()

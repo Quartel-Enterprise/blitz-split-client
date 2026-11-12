@@ -186,4 +186,8 @@
     <string name="groups_home_cover_totals">on te doit %1$s · tu dois %2$s</string>
     <string name="groups_home_cover_hint">Ouvre le téléphone pour tout voir</string>
     <string name="groups_waiting_for_internet">Pas d’internet. Tes groupes s’affichent dès que tu es de nouveau en ligne.</string>
+    <string name="groups_all_expenses_title">Toutes les dépenses</string>
+    <string name="groups_all_expenses_empty_title">Aucune dépense pour l’instant</string>
+    <string name="groups_all_expenses_empty_body">Les dépenses que tu as payées ou auxquelles tu participes, dans n’importe quel groupe, apparaissent ici.</string>
+    <string name="groups_all_expenses_back">Retour</string>
 </resources>

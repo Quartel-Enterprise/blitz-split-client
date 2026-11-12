@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
@@ -76,7 +77,7 @@ internal fun PaymentDetailsSheet(
                     .padding(top = 8.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.group_detail_entry_delete),
+                    text = stringResource(DesignR.string.designsystem_bill_menu_delete),
                     color = MaterialTheme.colorScheme.error,
                 )
             }

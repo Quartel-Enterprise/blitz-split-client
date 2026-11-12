@@ -28,6 +28,11 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalan
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.expenses.testing.inCurrencyOf
@@ -872,7 +877,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Atividade on its bills above Inicio`() =
+    fun `GIVEN Inicio WHEN tapping Ver tudo THEN opens Todas as despesas above Inicio`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
@@ -881,7 +886,7 @@ class HomeViewModelTest {
             viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.Activity.billsOnly), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
             assertTrue(actions.isEmpty())
         }
 
@@ -6238,6 +6243,11 @@ class HomeViewModelTest {
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             observeActivityUnreadCount = ObserveActivityUnreadCount { activityUnread },
             observeMapCategories = ObserveMapCategoriesUseCase(categories),
+            billMenuUseCases = BillMenuUseCases(
+                observeExpense = ObserveExpenseUseCase(expenses),
+                observeBillDeletion = ObserveBillDeletionUseCase(groups, expenses, settlements),
+                deleteExpense = DeleteExpenseUseCase(expenses, InMemoryDeletedBillRepository()) { clockMillis },
+            ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

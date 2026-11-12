@@ -82,6 +82,7 @@ internal val everyRouteKind: List<Route> = listOf(
         offersReceiverKeys = true,
     ),
     Route.PickPayment,
+    Route.AllExpenses,
     Route.GlobalBalances(filter = BalancesFilter.OWES_YOU),
     Route.Charge(
         personKey = "secret-person",

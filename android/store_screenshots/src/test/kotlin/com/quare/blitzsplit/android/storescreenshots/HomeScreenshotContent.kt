@@ -143,6 +143,8 @@ private fun SampleTrip.homeState(): HomeUiState {
         isAppBannerDismissed = true,
         showsReceiptSourceChoice = false,
         receiptSource = null,
+        billToDelete = null,
+        isDeletingBill = false,
     )
 }
 

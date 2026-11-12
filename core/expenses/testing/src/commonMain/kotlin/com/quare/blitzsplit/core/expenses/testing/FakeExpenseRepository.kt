@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
@@ -49,6 +50,13 @@ class FakeExpenseRepository(
     // Why: while set, an update waits for it, so a test can act while the save is in flight.
     var updateGate: CompletableDeferred<Unit>? = null
     var pushError: Throwable? = null
+
+    /*
+     * Why: who this device's user is in each group, as Room's member rows say; null reads every bill as theirs. The
+     * limits observeMyExpenses was asked for, in order, so a test sees the pages grow.
+     */
+    val myMemberIds = MutableStateFlow<Set<String>?>(null)
+    val myExpenseLimits = mutableListOf<Int>()
     var pullError: Throwable? = null
 
     // Why: like Room, the group's bills with the most recent first.
@@ -59,6 +67,20 @@ class FakeExpenseRepository(
     // Why: like Room, each group's bills together, the most recent first.
     override fun observeAllExpenses(): Flow<List<Expense>> = expenses.map { list ->
         list.sortedWith(compareBy<Expense> { it.groupId }.thenByDescending { it.spentAt })
+    }
+
+    // Why: like Room, the bills this device's user paid or takes part in, the most recent first, up to the limit.
+    override fun observeMyExpenses(limit: Int): Flow<List<Expense>> {
+        myExpenseLimits += limit
+        return combine(expenses, myMemberIds) { list, meIds ->
+            list
+                .filter { expense ->
+                    meIds == null ||
+                        expense.payers.any { it.memberId in meIds } ||
+                        expense.shares.any { it.memberId in meIds }
+                }.sortedWith(compareByDescending<Expense> { it.spentAt }.thenBy { it.id })
+                .take(limit)
+        }
     }
 
     override fun observeExpense(id: String): Flow<Expense?> = expenses.map { list -> list.firstOrNull { it.id == id } }

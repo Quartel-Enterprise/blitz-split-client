@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.di
 
+import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeSidebarViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
@@ -76,9 +77,11 @@ val groupsModule = module {
             connectivityObserver = get(),
             observeActivityUnreadCount = get(),
             observeMapCategories = get(),
+            billMenuUseCases = get(),
             trackEvent = get(),
         )
     }
+    viewModelOf(::AllExpensesViewModel)
     viewModelOf(::HomeSidebarViewModel)
     viewModelOf(::SearchViewModel)
     // Why: Início's recovery code card stays closed until the next launch, whichever Início is drawn.

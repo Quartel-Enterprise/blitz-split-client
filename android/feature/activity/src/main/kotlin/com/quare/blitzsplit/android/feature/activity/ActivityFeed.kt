@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
@@ -26,10 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -51,11 +46,9 @@ import com.quare.blitzsplit.feature.activity.presentation.model.ActivityEmptySta
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityStatus
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiEvent
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityUiState
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 private const val PLACEHOLDER_COUNT = 5
-private const val END_THRESHOLD = 4
 
 @Composable
 internal fun typeLabelOf(type: ActivityType): String = stringResource(
@@ -404,24 +397,4 @@ private fun EmptyActivityContent(
         ),
         onAction = onAction,
     )
-}
-
-// Why: the list's end asks for the next page, of the device's items first, then online the server's older ones.
-@Composable
-internal fun EndReachedEffect(
-    listState: LazyListState,
-    hasMore: Boolean,
-    onEndReached: () -> Unit,
-) {
-    val currentHasMore by rememberUpdatedState(hasMore)
-    val currentOnEndReached by rememberUpdatedState(onEndReached)
-    LaunchedEffect(listState) {
-        snapshotFlow {
-            val info = listState.layoutInfo
-            val last = info.visibleItemsInfo.lastOrNull()?.index ?: -1
-            info.totalItemsCount > 0 && last >= info.totalItemsCount - END_THRESHOLD
-        }.distinctUntilChanged()
-            .filter { it && currentHasMore }
-            .collect { currentOnEndReached() }
-    }
 }

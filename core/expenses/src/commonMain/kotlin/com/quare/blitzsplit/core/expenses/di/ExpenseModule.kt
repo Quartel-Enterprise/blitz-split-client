@@ -80,6 +80,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotic
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
@@ -105,6 +106,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillDeletion
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
@@ -160,6 +163,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTre
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
@@ -197,6 +202,9 @@ val expenseModule = module {
     // Why: read on every call, so a device that changes time zone counts days in the new one.
     single<CurrentTimeZone> { CurrentTimeZone { TimeZone.currentSystemDefault() } }
     factoryOf(::ObserveExpensesUseCase).bind<ObserveExpenses>()
+    factoryOf(::ObserveMyExpensesUseCase).bind<ObserveMyExpenses>()
+    factoryOf(::ObserveBillDeletionUseCase).bind<ObserveBillDeletion>()
+    factoryOf(::BillMenuUseCases)
     factoryOf(::CreateExpenseUseCase).bind<CreateExpense>()
     factoryOf(::ObserveExpenseUseCase).bind<ObserveExpense>()
     factoryOf(::UpdateExpenseUseCase).bind<UpdateExpense>()

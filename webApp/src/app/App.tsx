@@ -7,6 +7,7 @@ import { AppSkeleton } from '@/components/PageSkeletons'
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Toaster } from '@/components/ui/sonner'
+import { AllExpensesScreen } from '@/features/all-expenses/AllExpensesScreen'
 import { ActivityScreen } from '@/features/activity/ActivityScreen'
 import { BillDetailSheet } from '@/features/bill-detail/BillDetailSheet'
 import { ShareBillDialog } from '@/features/bill-detail/ShareBillDialog'
@@ -163,6 +164,7 @@ const FRAME_PAGES = new Set([
   'global-balances',
   'contacts',
   'activity',
+  'all-expenses',
   'group-detail',
   'group-stats',
   'category-expenses',
@@ -320,6 +322,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <ActivityScreen key={`${route.personKey ?? ''}:${route.showsBillsOnly}`} route={route} /> : null
     // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it;
     // one opened from Saldos draws the same page.
+    // Why: Início's "Ver tudo" over "Últimas despesas", a page over the home.
+    case 'all-expenses':
+      return <AllExpensesScreen />
     case 'contacts':
       return <ContactsScreen />
     case 'contact-profile':

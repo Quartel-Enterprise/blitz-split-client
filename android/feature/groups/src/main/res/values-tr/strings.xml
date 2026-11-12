@@ -177,4 +177,8 @@
     <string name="groups_home_cover_totals">alacağın %1$s · borcun %2$s</string>
     <string name="groups_home_cover_hint">Her şeyi görmek için telefonu aç</string>
     <string name="groups_waiting_for_internet">İnternet yok. Grupların tekrar çevrimiçi olduğunda görünür.</string>
+    <string name="groups_all_expenses_title">Tüm harcamalar</string>
+    <string name="groups_all_expenses_empty_title">Henüz harcama yok</string>
+    <string name="groups_all_expenses_empty_body">Herhangi bir grupta ödediğin veya dahil olduğun harcamalar burada görünür.</string>
+    <string name="groups_all_expenses_back">Geri</string>
 </resources>

@@ -263,4 +263,9 @@
     <string name="designsystem_simplify_conflict_on">あなたの後に%1$sがオンにしました。最後の変更が有効なため、「精算をシンプルに」はオンです。</string>
     <string name="designsystem_simplify_someone">誰か</string>
     <string name="designsystem_simplify_see_activity">アクティビティで見る</string>
+    <string name="designsystem_bill_menu_edit">編集</string>
+    <string name="designsystem_bill_menu_duplicate">複製</string>
+    <string name="designsystem_bill_menu_share">共有</string>
+    <string name="designsystem_bill_menu_delete">削除</string>
+    <string name="designsystem_bill_menu_options">%sのオプション</string>
 </resources>

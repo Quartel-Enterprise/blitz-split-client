@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -75,6 +76,10 @@ data class HomeUiState(
     val showsReceiptSourceChoice: Boolean,
     // Why: the camera, the gallery or the file picker picked on that choice, until a photo comes or it closes.
     val receiptSource: ReceiptPhotoSource?,
+    // Why: "Apagar esta conta?" from a bill's ⋮ on "Últimas despesas", open while not null, as on the group's Despesas.
+    val billToDelete: BillDeletion?,
+    // Why: its "Apagar" waits while the device deletes the bill.
+    val isDeletingBill: Boolean,
 ) {
     val isFirstDownload: Boolean
         get() = firstDownload != null

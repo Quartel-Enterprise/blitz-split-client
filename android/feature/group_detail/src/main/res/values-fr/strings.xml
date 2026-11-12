@@ -85,10 +85,5 @@
     <string name="group_detail_simplified_how">Comment ça marche</string>
     <string name="group_detail_simplified_pair">Nouveau duo grâce à la simplification</string>
     <string name="group_detail_balances_note_simplified">Avec les dettes simplifiées, l’app suggère le moins de paiements possible. « Reçu » et « Déjà payé » enregistrent un paiement fait hors de l’app (Pix, espèces, virement).</string>
-    <string name="group_detail_entry_edit">Modifier</string>
-    <string name="group_detail_entry_duplicate">Dupliquer</string>
-    <string name="group_detail_entry_share">Partager</string>
-    <string name="group_detail_entry_delete">Supprimer</string>
-    <string name="group_detail_entry_options">Options pour %s</string>
     <string name="group_detail_photo_open">Vois la photo du groupe</string>
 </resources>

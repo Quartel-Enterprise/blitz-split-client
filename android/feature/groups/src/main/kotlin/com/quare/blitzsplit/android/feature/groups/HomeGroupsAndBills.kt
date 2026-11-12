@@ -1,5 +1,15 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
+import com.quare.blitzsplit.android.designsystem.component.RowMenuButton
+import com.quare.blitzsplit.android.designsystem.component.billMenuItemsOf
+import com.quare.blitzsplit.android.designsystem.component.rowOptionsLabelOf
+import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -233,6 +243,23 @@ private fun BillDayColumn(
     metrics: HomeMetrics,
     onEvent: (HomeUiEvent) -> Unit,
 ) {
+    HomeBillDayHeading(day)
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        day.bills.forEachIndexed { index, bill ->
+            HomeBillRow(
+                bill = bill,
+                shape = groupedRowShapeOf(index, day.bills.size),
+                isCompact = metrics.isCompact,
+                onClick = { onEvent(HomeUiEvent.OnBillClicked(bill.groupId, bill.id)) },
+                onMenuEvent = onEvent,
+            )
+        }
+    }
+}
+
+// Why: "Hoje", "Ontem" or the date over a day's bills, on Início and on "Todas as despesas".
+@Composable
+internal fun HomeBillDayHeading(day: HomeBillDay) {
     val dates = rememberDateTimeTextFormatter()
     Text(
         text = when (day.relativeDay) {
@@ -248,22 +275,13 @@ private fun BillDayColumn(
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        day.bills.forEachIndexed { index, bill ->
-            HomeBillRow(
-                bill = bill,
-                shape = groupedRowShapeOf(index, day.bills.size),
-                isCompact = metrics.isCompact,
-                onClick = { onEvent(HomeUiEvent.OnBillClicked(bill.groupId, bill.id)) },
-            )
-        }
-    }
 }
 
 /*
  * Why: a bill: its category's badge, "Mercado", the group's square and the faces of who paid (beta feedback, as the
  * legacy app drew them: the line "Viagem Floripa · Você pagou" cut off on a phone; TalkBack still reads it), the amber
- * dot and "na fila" while it waits to go up, its total and what it does to your balance.
+ * dot and "na fila" while it waits to go up, its total and what it does to your balance. With onMenuEvent it ends in the
+ * group's ⋮ (Pierre's call, beta feedback), which a long press on the row opens too; the cover screen has none.
  */
 @Composable
 internal fun HomeBillRow(
@@ -271,7 +289,19 @@ internal fun HomeBillRow(
     shape: Shape,
     isCompact: Boolean,
     onClick: (() -> Unit)?,
+    onMenuEvent: ((BillMenuEvent) -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
+    var isMenuOpen by rememberSaveable(bill.id) { mutableStateOf(false) }
+    val menuItems = onMenuEvent?.let { send ->
+        billMenuItemsOf(
+            onEdit = { send(BillMenuEvent.OnEditClicked(bill.groupId, bill.id)) },
+            onDuplicate = { send(BillMenuEvent.OnDuplicateClicked(bill.groupId, bill.id)) },
+            onShare = { send(BillMenuEvent.OnShareClicked(bill.groupId, bill.id)) },
+            onDelete = { send(BillMenuEvent.OnDeleteClicked(bill.groupId, bill.id)) },
+        )
+    }
+    val optionsLabel = rowOptionsLabelOf(bill.description)
     val money = rememberMoneyFormatter(bill.currency)
     val paidBy = paidTextOrNull(
         bill.payers,
@@ -281,10 +311,14 @@ internal fun HomeBillRow(
     val origin = paidBy?.let { stringResource(R.string.groups_search_bill_meta, bill.groupName, it) } ?: bill.groupName
     val meta = if (bill.isPending) stringResource(R.string.groups_meta_queued_bill, origin) else origin
     val content: @Composable () -> Unit = {
+        val padding = if (isCompact) 14.dp else 16.dp
         Row(
             modifier = Modifier.padding(
-                horizontal = if (isCompact) 14.dp else 16.dp,
-                vertical = if (isCompact) 10.dp else 12.dp,
+                start = padding,
+                // Why: the ⋮ brings its own touch target's room.
+                end = if (menuItems != null) 4.dp else padding,
+                top = if (isCompact) 10.dp else 12.dp,
+                bottom = if (isCompact) 10.dp else 12.dp,
             ),
             horizontalArrangement = Arrangement.spacedBy(if (isCompact) 12.dp else 14.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -337,18 +371,36 @@ internal fun HomeBillRow(
                     )
                 }
             }
+            if (menuItems != null) {
+                RowMenuButton(
+                    contentDescription = optionsLabel,
+                    items = menuItems,
+                    isOpen = isMenuOpen,
+                    onOpenChange = { isMenuOpen = it },
+                )
+            }
         }
     }
-    val rowModifier = Modifier.fillMaxWidth()
+    val rowModifier = modifier.fillMaxWidth()
     val color = MaterialTheme.colorScheme.surfaceContainerLowest
     if (onClick != null) {
+        // Why: the Surface clips the ripple to the row's shape.
         Surface(
-            onClick = onClick,
             modifier = rowModifier,
             shape = shape,
             color = color,
-            content = content,
-        )
+        ) {
+            Box(
+                modifier = Modifier.combinedClickable(
+                    role = Role.Button,
+                    onClick = onClick,
+                    onLongClick = menuItems?.let { { isMenuOpen = true } },
+                    onLongClickLabel = optionsLabel.takeIf { menuItems != null },
+                ),
+            ) {
+                content()
+            }
+        }
     } else {
         Surface(
             modifier = rowModifier,
