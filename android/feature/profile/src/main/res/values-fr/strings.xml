@@ -39,6 +39,8 @@
     <string name="profile_payment_key_onchain">Bitcoin · On-chain</string>
     <string name="profile_payment_key_default">Par défaut</string>
     <string name="profile_payment_keys_add">Ajouter une clé Pix ou Bitcoin</string>
+    <string name="profile_payment_keys_add_bitcoin_entry">Ajouter une clé Bitcoin</string>
+    <string name="profile_payment_keys_add_pix_entry">Ajouter une clé Pix</string>
     <string name="profile_payment_keys_add_pix">Clé Pix</string>
     <string name="profile_payment_keys_add_bitcoin">Clé Bitcoin</string>
     <string name="profile_section_preferences">Préférences</string>

@@ -36,6 +36,8 @@ export const esES: Partial<Record<MessageKey, string>> = {
   profile_bitcoinInSatsDetail: 'Muestra e introduce los importes de bitcoin en sats (1 ₿ = 100 000 000 sats).',
   editProfile_takePhoto: 'Hacer foto',
   profile_keysAdd: 'Añadir una clave de Pix o de Bitcoin',
+  profile_keysAddBitcoinEntry: 'Añadir una clave Bitcoin',
+  profile_keysAddPixEntry: 'Añadir una clave Pix',
   paymentKey_labelPHONE: 'Número de móvil con código de área',
   paymentKey_errorINVALID_PHONE: 'Número de móvil incompleto: usa el código de área y 9 dígitos, empezando con 9.',
   paymentKey_footerBITCOIN: 'Al saldar cuentas, mostramos el importe en sats a la cotización actual. Es solo una estimación: quien paga la confirma en su cartera.',

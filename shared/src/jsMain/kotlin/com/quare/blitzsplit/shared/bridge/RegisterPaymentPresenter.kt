@@ -73,6 +73,8 @@ class JsRegisterPaymentState(
     val amountText: String,
     // Why: the SettlementMethod's code: "pix", "cash", "transfer" or "other".
     val method: String,
+    // Why: the Pix rule: the codes "Como foi pago" offers, Pix only where the rule says so or while it is picked.
+    val methods: Array<String>,
     val paidAt: Double,
     // Why: "today", "yesterday" or "other", when the page writes the date.
     val paidDay: String,
@@ -134,6 +136,7 @@ class RegisterPaymentPresenter(
                 isAmountLocked = state.isAmountLocked,
                 amountText = state.amountText,
                 method = state.method.code,
+                methods = state.methods.map { it.code }.toTypedArray(),
                 paidAt = state.paidAt.toDouble(),
                 paidDay = toJsRelativeDay(state.paidDay),
                 latestPaidAt = state.latestPaidAt.toDouble(),

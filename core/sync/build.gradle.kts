@@ -12,6 +12,7 @@ kotlin {
             implementation(projects.core.account)
             implementation(projects.core.profile)
             implementation(projects.core.groups)
+            implementation(projects.core.settings)
             implementation(projects.core.expenses)
             implementation(projects.core.activity)
             implementation(projects.core.contacts)

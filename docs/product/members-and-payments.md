@@ -72,6 +72,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
   - "Record payment" (`Route.RegisterPayment`) records a payment made outside the app, which any member may
     record between any two members, with no confirmation by whoever received it: up to the pair's debt, never over
     ("Ana owes you R$ 162,30. Use up to that amount."), partial payments allowed, Pix / Cash / Transfer / Other
+    (Pix only where [the Pix rule](general.md) offers it, else the chips are Cash / Transfer / Other, opening on Transfer; a payment recorded by Pix still reads Pix)
     and "When" (date and time, never after now). With Pix picked, when this device's user is the one who pays (beta
     feedback 3 item 26, `RegisterPaymentUiState.formPixKeys`), the form lists "Ana's Pix keys" under "How it was paid",
     her default first, each with its type and a copy button (the "Copied" confirmation as in "Pay Ana", below), or

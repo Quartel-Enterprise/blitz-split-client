@@ -165,3 +165,6 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     is open.
   - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
   - Closing Edit profile with unsaved input asks "Discard changes?" first, on every way out ([general.md](general.md)).
+  - "Keys to receive payments" follows [the Pix rule](general.md): with no Pix signal it shows the Bitcoin keys and two
+    rows, "Add a Bitcoin key" and "Add a Pix key", in place of the "Add a Pix or Bitcoin key" menu, so nobody is locked
+    out of Pix (`ProfileUiState.showsPix`).

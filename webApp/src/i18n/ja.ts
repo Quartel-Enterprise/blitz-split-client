@@ -897,6 +897,8 @@ export const ja: Record<MessageKey, string> = {
   profile_keysSubtitle: 'あなたに支払う人には、精算時にデフォルトのキーが表示されます。',
   profile_keysDefault: 'デフォルト',
   profile_keysAdd: 'PixまたはBitcoinのキーを追加',
+  profile_keysAddBitcoinEntry: 'Bitcoinキーを追加',
+  profile_keysAddPixEntry: 'Pixキーを追加',
   profile_keysAddPix: 'Pixキー',
   profile_keysAddBitcoin: 'Bitcoinキー',
   profile_keyRowCPF: 'Pix · CPF',

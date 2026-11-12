@@ -10,7 +10,7 @@ import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { nameOrFormer, paymentMethodCodes, paymentMethodLabel } from '@/features/balances/BalanceCard'
+import { nameOrFormer, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { ProfileFace } from '@/features/register-payment/PaymentFaces'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -227,7 +227,7 @@ function PaymentForm({
           {t('registerPayment_method')}
         </span>
         <div role="radiogroup" aria-labelledby={methodId} className="flex flex-wrap gap-2">
-          {paymentMethodCodes.map((code) => (
+          {state.methods.map((code) => (
             <Chip key={code} isSelected={state.method === code} onClick={() => presenter.pickMethod(code)}>
               {paymentMethodLabel(code)}
             </Chip>

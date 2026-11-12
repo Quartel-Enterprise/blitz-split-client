@@ -641,6 +641,7 @@ class ProfileUiStateTest {
         syncStatus = syncStatus,
         pendingChanges = pendingChanges,
         paymentKeys = emptyList<PaymentKeyItem>().toLoaded(),
+        showsPix = true,
         isSignOutScheduled = isSignOutScheduled,
         theme = ThemePreference.SYSTEM,
         showsDynamicColors = true,

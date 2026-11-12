@@ -55,6 +55,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKeyInput
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAllMemberPaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
@@ -80,6 +81,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.DismissAppInviteUse
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyInputUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.LoadCropPhotoUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveAllMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveAppInviteUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveNotificationPreferencesUseCase
@@ -128,6 +130,7 @@ val profileModule = module {
     singleOf(::PaymentKeyRepositoryImpl).bind<PaymentKeyRepository>()
     factoryOf(::ObservePaymentKeysUseCase).bind<ObservePaymentKeys>()
     factoryOf(::ObserveMemberPaymentKeysUseCase).bind<ObserveMemberPaymentKeys>()
+    factoryOf(::ObserveAllMemberPaymentKeysUseCase).bind<ObserveAllMemberPaymentKeys>()
     factoryOf(::ObservePendingPaymentKeyChangesUseCase).bind<ObservePendingPaymentKeyChanges>()
     factoryOf(::SavePaymentKeyUseCase).bind<SavePaymentKey>()
     factoryOf(::DeletePaymentKeyUseCase).bind<DeletePaymentKey>()

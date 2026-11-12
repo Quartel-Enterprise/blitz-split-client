@@ -900,6 +900,8 @@ export const pl: Record<MessageKey, string> = {
   profile_keysSubtitle: 'Kto ma ci coś do oddania, zobaczy twój domyślny klucz przy rozliczaniu.',
   profile_keysDefault: 'Domyślny',
   profile_keysAdd: 'Dodaj klucz Pix lub Bitcoin',
+  profile_keysAddBitcoinEntry: 'Dodaj klucz Bitcoin',
+  profile_keysAddPixEntry: 'Dodaj klucz Pix',
   profile_keysAddPix: 'Klucz Pix',
   profile_keysAddBitcoin: 'Klucz Bitcoin',
   profile_keyRowCPF: 'Pix · CPF',

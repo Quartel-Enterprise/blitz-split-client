@@ -38,6 +38,8 @@
     <string name="profile_payment_key_onchain">Bitcoin · On-chain</string>
     <string name="profile_payment_key_default">Varsayılan</string>
     <string name="profile_payment_keys_add">Pix ya da Bitcoin anahtarı ekle</string>
+    <string name="profile_payment_keys_add_bitcoin_entry">Bitcoin anahtarı ekle</string>
+    <string name="profile_payment_keys_add_pix_entry">Pix anahtarı ekle</string>
     <string name="profile_payment_keys_add_pix">Pix anahtarı</string>
     <string name="profile_payment_keys_add_bitcoin">Bitcoin anahtarı</string>
     <string name="profile_section_preferences">Tercihler</string>

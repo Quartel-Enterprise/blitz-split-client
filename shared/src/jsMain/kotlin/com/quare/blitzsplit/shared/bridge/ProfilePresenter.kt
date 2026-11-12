@@ -68,6 +68,8 @@ class JsProfileState(
     // Why: Pix first, each method's default first; null while they load (shimmer), never "no key" before it.
     val paymentKeys: Array<JsPaymentKeyItem>?,
     val canAddPaymentKey: Boolean,
+    // Why: the Pix rule (docs/product/general.md): false collapses the Pix keys behind "Add a Pix key".
+    val showsPix: Boolean,
     /*
      * Why: "App on your phone" (14.4): ProfileAppInviteStatus's name, "ACTIVE", "DISMISSED" or "IN_USE"; null where it
      * never shows.
@@ -155,6 +157,7 @@ class ProfilePresenter {
                         )
                     }?.toTypedArray(),
                 canAddPaymentKey = state.canAddPaymentKey,
+                showsPix = state.showsPix,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

@@ -9,6 +9,8 @@ class RoomMemberPaymentKeyLocalDataSource(
 ) : MemberPaymentKeyLocalDataSource {
     override fun observeOf(userId: String): Flow<List<MemberPaymentKeyEntity>> = dao.observeOf(userId)
 
+    override fun observeAll(): Flow<List<MemberPaymentKeyEntity>> = dao.observeAll()
+
     override suspend fun getAll(): List<MemberPaymentKeyEntity> = dao.getAll()
 
     override suspend fun replaceAll(entities: List<MemberPaymentKeyEntity>) {

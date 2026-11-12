@@ -36,6 +36,8 @@ data class RegisterPaymentUiState(
     val paidAt: Long,
     // Why: the time the form opened with, what a "Quando" picked is compared against.
     val openedPaidAt: Long,
+    // Why: the method the form opened with, Pix or the one the Pix rule starts it on; a pick is compared with it.
+    val openedMethod: SettlementMethod,
     val paidDay: RelativeDay,
     // Why: a payment was made by now, so "Quando" picks nothing later; the time of the last change, which pickers cap at.
     val latestPaidAt: Long,
@@ -59,6 +61,8 @@ data class RegisterPaymentUiState(
     val groupName: String?,
     // Why: Pix or Bitcoin, the method picked in "Forma de pagamento"; one the receiver has no key of reads as the other.
     val keyMethod: PaymentMethod,
+    // Why: the Pix rule (docs/product/general.md); false hides Pix from "Como foi pago" unless it is the one picked.
+    val showsPix: Boolean,
     // Why: Início's "Quem pagou a quem?" only records a payment; every Acertar offers the receiver's keys.
     val offersReceiverKeys: Boolean,
     /*
@@ -77,6 +81,10 @@ data class RegisterPaymentUiState(
     // Why: 13.5c, which takes the place of the form or "Pagar Ana" until closed or paid anyway.
     val simplifyChange: SimplifyChangedNotice?,
 ) {
+    // Why: "Como foi pago", Pix only where the rule offers it or while it is the method already picked.
+    val methods: List<SettlementMethod>
+        get() = SettlementMethod.entries.filter { it != SettlementMethod.PIX || showsPix || method == it }
+
     val canPayAnyway: Boolean
         get() = simplifyChange != null && !isSaving
 
@@ -199,11 +207,11 @@ data class RegisterPaymentUiState(
 
     /*
      * Why: closing asks "Discard changes?" only when the form holds something the person changed: an amount other
-     * than the whole debt, a method other than Pix, or another "Quando". Untouched, or put back, it closes silently.
+     * than the whole debt, a method other than the opened one, or another "Quando". Untouched, or put back, it closes silently.
      */
     val hasUnsavedInput: Boolean
         get() = isLoaded &&
-            ((hasEditedAmount && amountMinor != debtMinor) || method != SettlementMethod.PIX || paidAt != openedPaidAt)
+            ((hasEditedAmount && amountMinor != debtMinor) || method != openedMethod || paidAt != openedPaidAt)
 
     val canConfirm: Boolean
         get() = isLoaded && isAmountValid && !isSaving && !isLoadingReceiverKeys

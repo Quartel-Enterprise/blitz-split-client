@@ -1114,6 +1114,107 @@ class PaymentKeyRepositoryImplTest {
         assertEquals(0, memberLocal.writes)
     }
 
+    @Test
+    fun `GIVEN keys of Ana and Bruno cached WHEN observing every member key THEN maps the keys of both`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "ana-phone",
+                    userId = "ana",
+                    type = "phone",
+                    value = "+5521987654321",
+                ),
+                memberEntity(
+                    id = "bruno-lightning",
+                    userId = "bruno",
+                    type = "lightning",
+                    value = "bruno@getalby.com",
+                ),
+            ),
+        )
+
+        // When
+        val keys = repository.observeAllMemberKeys().first()
+
+        // Then
+        assertEquals(
+            mapOf("ana-phone" to PaymentKeyType.PHONE, "bruno-lightning" to PaymentKeyType.LIGHTNING),
+            keys.associate { it.id to it.type },
+        )
+    }
+
+    @Test
+    fun `GIVEN no member key cached WHEN observing every member key THEN gives none`() = runTest {
+        // Given
+        prepareScenario(storedMemberKeys = emptyList())
+
+        // When
+        val keys = repository.observeAllMemberKeys().first()
+
+        // Then
+        assertTrue(keys.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN every member key observed WHEN a key of Bruno is cached THEN emits the longer list`() = runTest {
+        // Given
+        prepareScenario(
+            storedMemberKeys = listOf(
+                memberEntity(
+                    id = "ana-cpf",
+                    userId = "ana",
+                ),
+            ),
+        )
+        val emitted = mutableListOf<List<PaymentKey>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeAllMemberKeys().collect(emitted::add)
+        }
+
+        // When
+        memberLocal.rows.value = memberLocal.rows.value + memberEntity(
+            id = "bruno-cpf",
+            userId = "bruno",
+        )
+
+        // Then
+        assertEquals(
+            listOf(listOf("ana-cpf"), listOf("ana-cpf", "bruno-cpf")),
+            emitted.map { keys -> keys.map { it.id } },
+        )
+    }
+
+    @Test
+    fun `GIVEN every member key observed WHEN a row changes only in a column no key shows THEN emits nothing new`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedMemberKeys = listOf(
+                    memberEntity(
+                        id = "ana-cpf",
+                        userId = "ana",
+                    ),
+                ),
+            )
+            val emitted = mutableListOf<List<PaymentKey>>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                repository.observeAllMemberKeys().collect(emitted::add)
+            }
+
+            // When
+            memberLocal.rows.value = listOf(
+                memberEntity(
+                    id = "ana-cpf",
+                    userId = "ana",
+                    viewerUserId = "user-2",
+                ),
+            )
+
+            // Then
+            assertEquals(1, emitted.size)
+        }
+
     private fun memberEntity(
         id: String,
         userId: String,
@@ -1291,6 +1392,8 @@ private class FakeMemberPaymentKeyLocalDataSource(
     }
 
     var writes = 0
+
+    override fun observeAll(): Flow<List<MemberPaymentKeyEntity>> = rows
 
     override suspend fun getAll(): List<MemberPaymentKeyEntity> = rows.value
 

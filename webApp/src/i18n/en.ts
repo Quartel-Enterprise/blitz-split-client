@@ -895,6 +895,8 @@ export const en = {
   profile_keysSubtitle: 'Whoever owes you sees your default key when settling up.',
   profile_keysDefault: 'Default',
   profile_keysAdd: 'Add a Pix or Bitcoin key',
+  profile_keysAddBitcoinEntry: 'Add a Bitcoin key',
+  profile_keysAddPixEntry: 'Add a Pix key',
   profile_keysAddPix: 'Pix key',
   profile_keysAddBitcoin: 'Bitcoin key',
   profile_keyRowCPF: 'Pix · CPF',

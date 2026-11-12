@@ -760,7 +760,8 @@ private struct ConnectedAccountRow: View {
 }
 
 /// "Keys to receive payments": each key masked, its default marked, and a menu that asks Pix or Bitcoin
-/// first. The Mac adds a key with the + under the list, as its settings lists do.
+/// first, or one row for each where the Pix rule is off. The Mac adds a key with the + under the list, as its
+/// settings lists do.
 private struct PaymentKeysSection: View {
     let model: ProfileModel
 
@@ -789,12 +790,31 @@ private struct PaymentKeysSection: View {
                     .shimmering()
             }
             if model.state.canAddPaymentKey {
-                addKey
+                if model.state.showsPix {
+                    addKey
+                } else {
+                    // The Pix rule: no Pix signal, so Pix and Bitcoin each get a row and Pix stays one tap away
+                    addKeyRows
+                }
             }
         } header: {
             Text("Keys to receive payments")
         } footer: {
             Text("Whoever owes you sees your default key when settling up.")
+        }
+    }
+
+    @ViewBuilder
+    private var addKeyRows: some View {
+        Button {
+            model.send(ProfileUiEventOnAddPaymentKeyClicked(method: .bitcoin))
+        } label: {
+            Label("Add a Bitcoin key", systemImage: "plus.circle.fill")
+        }
+        Button {
+            model.send(ProfileUiEventOnAddPaymentKeyClicked(method: .pix))
+        } label: {
+            Label("Add a Pix key", systemImage: "plus.circle.fill")
         }
     }
 
