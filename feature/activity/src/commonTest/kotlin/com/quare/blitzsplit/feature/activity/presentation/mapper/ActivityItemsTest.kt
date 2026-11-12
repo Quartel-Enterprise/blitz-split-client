@@ -93,6 +93,22 @@ class ActivityItemsTest {
     }
 
     @Test
+    fun `GIVEN a queued bill by a user with a photo WHEN mapping the feed THEN the actor carries the photo`() {
+        // Given
+        val photoUrl = "https://example.com/pierre.jpg"
+        val withPhoto = groups.map { group ->
+            group.copy(members = group.members.map { if (it.isMe) it.copy(photoUrl = photoUrl) else it })
+        }
+        val feed = feed(queued = listOf(queued(id = BILL_MERCADO)))
+
+        // When
+        val actor = entriesOf(feed, withPhoto).single().item.actor
+
+        // Then
+        assertEquals(photoUrl, actor.photoUrl)
+    }
+
+    @Test
     fun `GIVEN a payment in the queue WHEN mapping the feed THEN names its payer and receiver`() {
         // Given
         val feed = feed(
