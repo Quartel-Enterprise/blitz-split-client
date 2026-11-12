@@ -2,6 +2,10 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuController
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuOption
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuStep
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrencyBalances
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
@@ -15,10 +19,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.debtRowOf
 import com.quare.blitzsplit.core.expenses.domain.model.findSelected
 import com.quare.blitzsplit.core.expenses.domain.model.hasBills
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotice
-import com.quare.blitzsplit.core.expenses.billmenu.BillMenuController
-import com.quare.blitzsplit.core.expenses.billmenu.BillMenuOption
-import com.quare.blitzsplit.core.expenses.billmenu.BillMenuStep
-import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -149,8 +149,13 @@ class GroupDetailViewModel(
             screen.open(
                 when (option) {
                     BillMenuOption.EDIT -> Route.SplitBill.createEditing(route.groupId, expenseId)
+
                     BillMenuOption.DUPLICATE -> Route.SplitBill.createDuplicating(route.groupId, expenseId)
-                    BillMenuOption.SHARE -> Route.ShareBill(groupId = route.groupId, expenseId = expenseId)
+
+                    BillMenuOption.SHARE -> Route.ShareBill(
+                        groupId = route.groupId,
+                        expenseId = expenseId,
+                    )
                 },
             )
         },

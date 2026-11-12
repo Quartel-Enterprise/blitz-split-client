@@ -7,7 +7,16 @@ enum class BillMenuOption(
     // Why: a bill in a currency this version doesn't know is read-only; the bill's own screen says so.
     val needsKnownCurrency: Boolean,
 ) {
-    EDIT(openedStep = BillMenuStep.EDIT_OPENED, needsKnownCurrency = true),
-    DUPLICATE(openedStep = BillMenuStep.DUPLICATE_OPENED, needsKnownCurrency = true),
-    SHARE(openedStep = BillMenuStep.SHARE_OPENED, needsKnownCurrency = false),
+    EDIT(
+        openedStep = BillMenuStep.EDIT_OPENED,
+        needsKnownCurrency = true,
+    ),
+    DUPLICATE(
+        openedStep = BillMenuStep.DUPLICATE_OPENED,
+        needsKnownCurrency = true,
+    ),
+    SHARE(
+        openedStep = BillMenuStep.SHARE_OPENED,
+        needsKnownCurrency = false,
+    ),
 }

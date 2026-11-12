@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.labelRes
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
@@ -23,6 +22,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: a tap on a payment opens what it holds (who paid whom, how much, when and how) instead of asking to delete it,

@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -53,21 +55,22 @@ class BillMenuController(
         val bill = AskedBill(groupId, expenseId)
         asked = bill
         var isFirst = true
-        questionJob = useCases.observeBillDeletion(groupId, expenseId)
+        questionJob = useCases
+            .observeBillDeletion(groupId, expenseId)
+            // Why: the delete in flight takes the bill out of Room, which must not close the question shown.
+            .takeWhile { deletion -> deletion != null || state.value.isDeleting }
             .onEach { deletion ->
-                when {
-                    // Why: the delete in flight takes the bill out of Room, which must not close the question shown.
-                    state.value.isDeleting -> Unit
-
-                    deletion == null -> close()
-
-                    else -> {
-                        if (isFirst) track(BillMenuStep.DELETE_ASKED)
-                        isFirst = false
-                        state.update { it.copy(billToDelete = deletion) }
-                    }
-                }
-            }.launchIn(scope)
+                if (deletion == null || state.value.isDeleting) return@onEach
+                if (isFirst) track(BillMenuStep.DELETE_ASKED)
+                isFirst = false
+                state.update { it.copy(billToDelete = deletion) }
+            }
+            /*
+             * Why: the bill is gone, here or elsewhere, even before the question drew: the flow ends, so a sync bringing
+             * it back never opens a question nobody is asking.
+             */
+            .onCompletion { cause -> if (cause == null && asked == bill) close() }
+            .launchIn(scope)
     }
 
     // Why: the question's "Apagar": the bill leaves the list it was on; a failure closes the question and says so.

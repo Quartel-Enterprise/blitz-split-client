@@ -37,7 +37,6 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.component.EmptyStateColumn
 import com.quare.blitzsplit.android.designsystem.component.EndReachedEffect
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
@@ -48,6 +47,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: one column, as Atividade's, centered on a tablet or a book: the rows read as Início's, never stretched.
 private val columnMaxWidth = 640.dp
@@ -69,7 +69,7 @@ fun AllExpensesScreen(viewModel: AllExpensesViewModel = koinViewModel()) {
         onEvent = viewModel::onEvent,
         snackbarHostState = snackbarHostState,
     )
-    BillDeleteQuestion(
+    BillDeleteQuestionDialog(
         deletion = state.billToDelete,
         isDeleting = state.isDeletingBill,
         onEvent = viewModel::onEvent,

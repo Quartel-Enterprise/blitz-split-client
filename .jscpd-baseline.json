@@ -1,1 +1,4 @@
-{}
+{
+  "feature/group_detail/src/commonMain/kotlin/com/quare/blitzsplit/feature/groupdetail/presentation/viewmodel/GroupDetailViewModel.kt": 9,
+  "feature/groups/src/commonMain/kotlin/com/quare/blitzsplit/feature/groups/presentation/viewmodel/BillMenus.kt": 9
+}

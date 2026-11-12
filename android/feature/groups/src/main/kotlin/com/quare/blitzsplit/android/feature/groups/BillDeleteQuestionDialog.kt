@@ -7,7 +7,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
 
 // Why: "Apagar esta conta?" from a bill's ⋮ on Início or "Todas as despesas", as the group's Despesas asks it.
 @Composable
-internal fun BillDeleteQuestion(
+internal fun BillDeleteQuestionDialog(
     deletion: BillDeletion?,
     isDeleting: Boolean,
     onEvent: (BillMenuEvent) -> Unit,

@@ -78,6 +78,14 @@ class AllExpensesViewModel(
         trackEvent = trackEvent,
         source = ALL_EXPENSES_SOURCE,
         showDeleteError = { uiAction.emit(AllExpensesUiAction.ShowBillDeleteError) },
+        show = { menu ->
+            uiState.update {
+                it.copy(
+                    billToDelete = menu.billToDelete,
+                    isDeletingBill = menu.isDeleting,
+                )
+            }
+        },
     )
 
     init {
@@ -86,7 +94,12 @@ class AllExpensesViewModel(
             observeMyExpenses(size + 1).map { expenses -> size to expenses }
         }
         // Why: the days again each minute, so "Hoje" turns into "Ontem" at midnight with no change to the bills.
-        combine(page, observeGroups(), observeMapCategories(), minuteTicks()) { (size, expenses), groups, categories, _ ->
+        combine(
+            page,
+            observeGroups(),
+            observeMapCategories(),
+            minuteTicks(),
+        ) { (size, expenses), groups, categories, _ ->
             val clock = ActivityClock(
                 nowMillis = currentTimeMillis(),
                 timeZone = currentTimeZone(),
@@ -104,15 +117,6 @@ class AllExpensesViewModel(
         observeFirstDownload()
             .onEach { download -> uiState.update { it.copy(isFirstDownload = download != null) } }
             .launchIn(viewModelScope)
-        billMenu.state
-            .onEach { menu ->
-                uiState.update {
-                    it.copy(
-                        billToDelete = menu.billToDelete,
-                        isDeletingBill = menu.isDeleting,
-                    )
-                }
-            }.launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: AllExpensesUiEvent) {

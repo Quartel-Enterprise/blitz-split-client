@@ -102,6 +102,56 @@ class ExpenseRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN my bills of two groups one pending WHEN observing my bills THEN shows them as bills`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(id = "bill-1"),
+                entity(
+                    id = "bill-2",
+                    groupId = OTHER_GROUP_ID,
+                    pendingSync = true,
+                ),
+            ),
+            editors = mapOf("bill-1" to "ana"),
+        )
+
+        // When
+        val expenses = repository.observeMyExpenses(limit = 10).first()
+
+        // Then
+        assertEquals(
+            listOf(
+                Triple("bill-1", GROUP_ID, false),
+                Triple("bill-2", OTHER_GROUP_ID, true),
+            ),
+            expenses.map { Triple(it.id, it.groupId, it.isPending) },
+        )
+        assertEquals(listOf("ana", null), expenses.map { it.updatedByMemberId })
+    }
+
+    @Test
+    fun `GIVEN one of my bills this version cannot read WHEN observing my bills THEN shows the rest`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(id = "bill-1"),
+                entity(
+                    id = "bill-new-mode",
+                    splitMode = "itemized",
+                ),
+                entity(id = "bill-2"),
+            ),
+        )
+
+        // When
+        val expenses = repository.observeMyExpenses(limit = 10).first()
+
+        // Then
+        assertEquals(listOf("bill-1", "bill-2"), expenses.map { it.id })
+    }
+
+    @Test
     fun `GIVEN bills deleted here and elsewhere WHEN observing pending deletions THEN gives the first group`() =
         runTest {
             // Given

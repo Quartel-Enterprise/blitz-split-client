@@ -182,4 +182,42 @@ data class HomeUiState(
             !showsRecoveryCodeCard &&
             !showsRecoveryCodePrompt &&
             notificationPrompt == null
+
+    companion object {
+        // Why: before Room is read: nothing loaded, no card shown, the notification card snoozed so it never flashes.
+        val initial = HomeUiState(
+            displayName = "",
+            avatarInitial = "",
+            avatarColor = AvatarColor.default,
+            photoUrl = null,
+            accountProvider = null,
+            syncBadge = null,
+            pendingChangeCount = 0,
+            firstDownload = null,
+            isOnline = true,
+            isLoaded = false,
+            groupCount = 0,
+            people = Loadable.Loading,
+            summary = Loadable.Loading,
+            groups = emptyList(),
+            billDays = emptyList(),
+            showsRecoveryCodeCard = false,
+            showsRecoveryCodePrompt = false,
+            recordedPayment = null,
+            deletedGroupNotice = null,
+            isRefreshing = false,
+            activityUnreadCount = 0,
+            notificationPermission = null,
+            canAskQuietly = false,
+            hasAskedQuietly = false,
+            isNotificationPromptSnoozed = true,
+            appInvite = null,
+            hasBills = false,
+            isAppBannerDismissed = false,
+            showsReceiptSourceChoice = false,
+            receiptSource = null,
+            billToDelete = null,
+            isDeletingBill = false,
+        )
+    }
 }

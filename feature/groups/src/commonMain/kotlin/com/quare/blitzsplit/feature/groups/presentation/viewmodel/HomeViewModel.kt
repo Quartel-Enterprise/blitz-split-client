@@ -25,7 +25,6 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.groups.domain.usecase.ObservePinnedGroupIds
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AppDownloadSource
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
@@ -88,7 +87,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
-import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import software.quare.loadable.valueOrNull
 
@@ -131,42 +129,7 @@ class HomeViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<HomeUiEvent>(trackEvent) {
     val uiState: StateFlow<HomeUiState>
-        field = MutableStateFlow(
-            HomeUiState(
-                displayName = "",
-                avatarInitial = "",
-                avatarColor = AvatarColor.default,
-                photoUrl = null,
-                accountProvider = null,
-                syncBadge = null,
-                pendingChangeCount = 0,
-                firstDownload = null,
-                isOnline = true,
-                isLoaded = false,
-                groupCount = 0,
-                people = Loadable.Loading,
-                summary = Loadable.Loading,
-                groups = emptyList(),
-                billDays = emptyList(),
-                showsRecoveryCodeCard = false,
-                showsRecoveryCodePrompt = false,
-                recordedPayment = null,
-                deletedGroupNotice = null,
-                isRefreshing = false,
-                activityUnreadCount = 0,
-                notificationPermission = null,
-                canAskQuietly = false,
-                hasAskedQuietly = false,
-                isNotificationPromptSnoozed = true,
-                appInvite = null,
-                hasBills = false,
-                isAppBannerDismissed = false,
-                showsReceiptSourceChoice = false,
-                receiptSource = null,
-                billToDelete = null,
-                isDeletingBill = false,
-            ),
-        )
+        field = MutableStateFlow(HomeUiState.initial)
 
     val uiAction: SharedFlow<HomeUiAction>
         field = MutableSharedFlow<HomeUiAction>()
@@ -208,6 +171,14 @@ class HomeViewModel(
         trackEvent = trackEvent,
         source = "home",
         showDeleteError = { uiAction.emit(HomeUiAction.ShowBillDeleteError) },
+        show = { menu ->
+            uiState.update {
+                it.copy(
+                    billToDelete = menu.billToDelete,
+                    isDeletingBill = menu.isDeleting,
+                )
+            }
+        },
     )
 
     private val notificationPrompts = HomeNotificationPrompts(
@@ -289,15 +260,6 @@ class HomeViewModel(
             minuteTicks = minuteTicks,
             isHomeOnTop = navigator.backStack.map { it.lastOrNull() == Route.Home },
         )
-        billMenu.state
-            .onEach { menu ->
-                uiState.update {
-                    it.copy(
-                        billToDelete = menu.billToDelete,
-                        isDeletingBill = menu.isDeleting,
-                    )
-                }
-            }.launchIn(viewModelScope)
         observeAppInvite()
             .onEach(::showAppInvite)
             .launchIn(viewModelScope)

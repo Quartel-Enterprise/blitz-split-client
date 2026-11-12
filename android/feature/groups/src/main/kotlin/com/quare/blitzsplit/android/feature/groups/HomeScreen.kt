@@ -6,7 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.platform.ReceiptCameraTaps
@@ -18,6 +17,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: Início, the root of the back stack. The recovery code sheet comes in as a slot, as on Grupos, since features
@@ -70,7 +70,7 @@ fun HomeScreen(
         onEvent = viewModel::onEvent,
     )
     // Why: a bill's ⋮ "Apagar" on "Últimas despesas" asks what Conta asks, in the same words.
-    BillDeleteQuestion(
+    BillDeleteQuestionDialog(
         deletion = state.billToDelete,
         isDeleting = state.isDeletingBill,
         onEvent = viewModel::onEvent,

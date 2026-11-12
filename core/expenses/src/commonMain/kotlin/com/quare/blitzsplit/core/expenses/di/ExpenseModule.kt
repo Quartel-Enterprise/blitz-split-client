@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.di
 
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.data.datasource.AppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentRemoteDataSource
@@ -80,7 +81,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotic
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
-import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
@@ -100,18 +100,18 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.LocateBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillComments
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillDeletion
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillDeletion
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettledUp
@@ -157,18 +157,18 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LocateBillUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesUseCase
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettledUpUseCase

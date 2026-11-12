@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuController
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuOption
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuState
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuStep
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -9,6 +10,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 /*
  * Why: a bill's ⋮ on Início and "Todas as despesas", whose options open over the list itself (not over the group, as
@@ -22,6 +25,8 @@ internal fun billMenuControllerOf(
     trackEvent: TrackEvent,
     source: String,
     showDeleteError: suspend () -> Unit,
+    // Why: where the screen keeps "Apagar esta conta?", copied from the controller each time it changes.
+    show: (BillMenuState) -> Unit,
 ): BillMenuController = BillMenuController(
     useCases = useCases,
     scope = scope,
@@ -31,8 +36,13 @@ internal fun billMenuControllerOf(
                 navigator.navigate(
                     when (option) {
                         BillMenuOption.EDIT -> Route.SplitBill.createEditing(groupId, expenseId)
+
                         BillMenuOption.DUPLICATE -> Route.SplitBill.createDuplicating(groupId, expenseId)
-                        BillMenuOption.SHARE -> Route.ShareBill(groupId = groupId, expenseId = expenseId)
+
+                        BillMenuOption.SHARE -> Route.ShareBill(
+                            groupId = groupId,
+                            expenseId = expenseId,
+                        )
                     },
                 )
             }
@@ -40,7 +50,7 @@ internal fun billMenuControllerOf(
     },
     track = { step -> trackBillMenuStep(trackEvent, step, mapOf("source" to source)) },
     showDeleteError = showDeleteError,
-)
+).also { controller -> controller.state.onEach(show).launchIn(scope) }
 
 private fun trackBillMenuStep(
     trackEvent: TrackEvent,

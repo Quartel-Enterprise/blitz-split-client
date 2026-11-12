@@ -35,9 +35,9 @@ import com.quare.blitzsplit.feature.editprofile.presentation.viewmodel.ProfilePh
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.ChargeViewModel
 import com.quare.blitzsplit.feature.globalbalances.presentation.viewmodel.GlobalBalancesViewModel
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
+import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.GroupsViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeSidebarViewModel
-import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.HomeViewModel
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.SearchViewModel
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.CategoryExpensesViewModel
