@@ -1025,6 +1025,20 @@ class EditBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN Editar conta opened over Inicio WHEN the bill is deleted elsewhere THEN goes back with no notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(underneath = listOf(Route.Home, Route.AllExpenses))
+
+            // When
+            expenses.expenses.value = emptyList()
+
+            // Then
+            assertNull(deletedBills.observeNoticeGroupId().first())
+            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN Editar conta opened without Conta under it WHEN the bill is deleted elsewhere THEN goes back once`() =
         runTest(testDispatcher) {
             // Given

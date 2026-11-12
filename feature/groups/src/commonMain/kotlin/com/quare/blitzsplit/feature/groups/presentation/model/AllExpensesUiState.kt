@@ -1,14 +1,23 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.Category
 
 /*
  * Why: "Todas as despesas", which Início's "Ver tudo" opens: every bill this device's user paid or takes part in, across
  * groups, by day, drawn as Início's rows, read from the device a page at a time as the list nears its end.
  */
 data class AllExpensesUiState(
-    // Why: the bills read so far, the most recent first, under "Hoje", "Ontem" or their date.
+    /*
+     * Why: the bills read so far in the order picked, under "Hoje", "Ontem" or their date while sorted by date; sorted
+     * by amount, one entry whose day no UI writes (showsDayHeadings).
+     */
     val days: List<HomeBillDay>,
+    // Why: the search's text, the filters and the order, as the UIs draw them.
+    val filters: AllExpensesFilters,
+    // Why: what the Group and Category filters offer: the device's groups, the main categories.
+    val groupOptions: List<FilterGroupOption>,
+    val categoryOptions: List<Category>,
     // Why: the first page was read; skeletons until then.
     val isLoaded: Boolean,
     // Why: the device holds more bills than the list shows; reaching its end reads the next page.
@@ -26,8 +35,16 @@ data class AllExpensesUiState(
     val showsSkeleton: Boolean
         get() = !isLoaded || (days.isEmpty() && isFirstDownload)
 
+    // Why: no bill at all yet: "No expenses yet".
     val showsEmpty: Boolean
-        get() = isLoaded && days.isEmpty() && !isFirstDownload
+        get() = isLoaded && days.isEmpty() && !isFirstDownload && !filters.isFiltering
+
+    // Why: bills exist but none is what the search and filters ask for: "No expenses match", with "Clear filters".
+    val showsNoResults: Boolean
+        get() = isLoaded && days.isEmpty() && filters.isFiltering
+
+    val showsDayHeadings: Boolean
+        get() = filters.sort.isByDate
 
     // Why: a skeleton row under the last one while the next page is read or the first download still runs.
     val showsMoreSkeleton: Boolean
@@ -36,6 +53,9 @@ data class AllExpensesUiState(
     companion object {
         val initial = AllExpensesUiState(
             days = emptyList(),
+            filters = AllExpensesFilters.none,
+            groupOptions = emptyList(),
+            categoryOptions = emptyList(),
             isLoaded = false,
             hasMore = false,
             isLoadingMore = false,

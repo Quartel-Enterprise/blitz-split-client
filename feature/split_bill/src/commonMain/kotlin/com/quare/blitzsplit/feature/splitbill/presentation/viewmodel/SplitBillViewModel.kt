@@ -427,7 +427,9 @@ class SplitBillViewModel(
         if (uiState.value.isDeleting || isBillGone) return
         isBillGone = true
         val expenseId = route.expenseId
-        if (editedExpense != null && expenseId != null) noticeBillGone(route.groupId, expenseId)
+        if (editedExpense != null && expenseId != null && exits.isOverGroupScreen(route.groupId)) {
+            noticeBillGone(route.groupId, expenseId)
+        }
         exits.leaveToGroup()
     }
 

@@ -34,6 +34,15 @@ internal class SplitBillExits(
         return true
     }
 
+    /*
+     * Why: "Esta conta foi apagada" waits for the bill's group to come back on top, so it is only posted when the group
+     * is under this form; "Editar" from Início's or "Todas as despesas"' ⋮ has no group under it, and a notice left
+     * there would show out of context the next time that group opens.
+     */
+    fun isOverGroupScreen(groupId: String): Boolean = navigator.backStack.value
+        .dropLast(1)
+        .any { groupScreenIdOrNull(it) == groupId }
+
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     fun leave() {
         if (isOnTop()) navigator.navigateBack()

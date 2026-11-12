@@ -2,8 +2,10 @@ package com.quare.blitzsplit.feature.groups.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -18,19 +20,25 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.groups.presentation.mapper.ActivityClock
-import com.quare.blitzsplit.feature.groups.presentation.mapper.LatestExpense
+import com.quare.blitzsplit.feature.groups.presentation.mapper.DatedHomeBill
 import com.quare.blitzsplit.feature.groups.presentation.mapper.billDaysOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.groupOptionsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillsOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.myExpensesOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.narrowedOf
 import com.quare.blitzsplit.feature.groups.presentation.model.ALL_EXPENSES_SOURCE
+import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
+import com.quare.blitzsplit.feature.groups.presentation.model.HomeBillDay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -48,12 +56,12 @@ internal const val ALL_EXPENSES_PAGE_SIZE = 30
  */
 class AllExpensesViewModel(
     private val navigator: Navigator,
+    private val currentTimeMillis: CurrentTimeMillis,
+    private val currentTimeZone: CurrentTimeZone,
     observeMyExpenses: ObserveMyExpenses,
     observeGroups: ObserveGroups,
     observeMapCategories: ObserveMapCategories,
     observeFirstDownload: ObserveFirstDownload,
-    currentTimeMillis: CurrentTimeMillis,
-    currentTimeZone: CurrentTimeZone,
     minuteTicks: MinuteTicks,
     billMenuUseCases: BillMenuUseCases,
     trackEvent: TrackEvent,
@@ -67,8 +75,9 @@ class AllExpensesViewModel(
     val stateWatcher: FlowWatcher<AllExpensesUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<AllExpensesUiAction> = FlowWatcher(uiAction)
 
-    // Why: how many bills the list asks the device for; grows a page at a time.
+    // Why: how many bills the list shows; grows a page at a time, back to one page when the filters change.
     private val limit = MutableStateFlow(ALL_EXPENSES_PAGE_SIZE)
+    private val filters = MutableStateFlow(AllExpensesFilters.none)
 
     private val billMenu = billMenuControllerOf(
         useCases = billMenuUseCases,
@@ -89,31 +98,29 @@ class AllExpensesViewModel(
     )
 
     init {
-        val page = limit.flatMapLatest { size ->
-            // Why: one more than the page, which only says whether more are left.
-            observeMyExpenses(size + 1).map { expenses -> size to expenses }
-        }
-        // Why: the days again each minute, so "Hoje" turns into "Ontem" at midnight with no change to the bills.
-        combine(
-            page,
-            observeGroups(),
-            observeMapCategories(),
-            minuteTicks(),
-        ) { (size, expenses), groups, categories, _ ->
-            val clock = ActivityClock(
-                nowMillis = currentTimeMillis(),
-                timeZone = currentTimeZone(),
-            )
-            val days = billDaysOf(homeBillsOf(latestOf(expenses.take(size), groups), categories), clock)
-            uiState.update {
-                it.copy(
-                    days = days,
-                    isLoaded = true,
-                    hasMore = expenses.size > size,
-                    isLoadingMore = false,
-                )
+        /*
+         * Why: at their default, a window of the device's bills that grows a page at a time (one more to know whether
+         * more are left); narrowed or sorted otherwise, every bill, which the list then shows a page at a time.
+         */
+        val source = filters
+            .map { it.isDefault }
+            .distinctUntilChanged()
+            .flatMapLatest { isDefault ->
+                if (isDefault) {
+                    limit.flatMapLatest { size -> observeMyExpenses(size + 1).map { DeviceBills(size, it) } }
+                } else {
+                    observeMyExpenses(Int.MAX_VALUE).map {
+                        DeviceBills(
+                            windowSize = null,
+                            expenses = it,
+                        )
+                    }
+                }
             }
-        }.launchIn(viewModelScope)
+        val read = combine(source, observeGroups(), observeMapCategories(), ::ReadBills)
+        // Why: the days again each minute, so "Hoje" turns into "Ontem" at midnight with no change to the bills.
+        combine(read, filters, limit, minuteTicks()) { bills, picked, requested, _ -> show(bills, picked, requested) }
+            .launchIn(viewModelScope)
         observeFirstDownload()
             .onEach { download -> uiState.update { it.copy(isFirstDownload = download != null) } }
             .launchIn(viewModelScope)
@@ -131,6 +138,22 @@ class AllExpensesViewModel(
 
             AllExpensesUiEvent.OnEndReached -> loadMore()
 
+            is AllExpensesUiEvent.OnQueryChanged -> narrow { it.copy(query = event.query) }
+
+            is AllExpensesUiEvent.OnGroupToggled -> narrow { it.copy(groupIds = it.groupIds.toToggled(event.groupId)) }
+
+            is AllExpensesUiEvent.OnCategoryToggled -> narrow {
+                it.copy(categoryIds = it.categoryIds.toToggled(event.categoryId))
+            }
+
+            is AllExpensesUiEvent.OnShareFilterPicked -> narrow { it.copy(share = event.share) }
+
+            is AllExpensesUiEvent.OnPayerFilterPicked -> narrow { it.copy(payer = event.payer) }
+
+            is AllExpensesUiEvent.OnSortPicked -> narrow { it.copy(sort = event.sort) }
+
+            AllExpensesUiEvent.OnClearFiltersClicked -> narrow { AllExpensesFilters.none.copy(sort = it.sort) }
+
             is BillMenuEvent -> billMenu.onEvent(event)
         }
     }
@@ -139,29 +162,70 @@ class AllExpensesViewModel(
     private fun loadMore() {
         val state = uiState.value
         if (!state.isLoaded || !state.hasMore || state.isLoadingMore) return
-        uiState.update { it.copy(isLoadingMore = true) }
         limit.update { it + ALL_EXPENSES_PAGE_SIZE }
+    }
+
+    // Why: the list starts again from its first page under what was just picked.
+    private fun narrow(change: (AllExpensesFilters) -> AllExpensesFilters) {
+        val next = change(filters.value)
+        if (next == filters.value) return
+        limit.value = ALL_EXPENSES_PAGE_SIZE
+        filters.value = next
+    }
+
+    /*
+     * Why: a window of the device shows what it read, still loading while the list asked for more than came; every
+     * bill narrowed here shows as many as the list asked for.
+     */
+    private fun show(
+        bills: ReadBills,
+        picked: AllExpensesFilters,
+        requested: Int,
+    ) {
+        val clock = ActivityClock(
+            nowMillis = currentTimeMillis(),
+            timeZone = currentTimeZone(),
+        )
+        val window = bills.device.windowSize
+        // Why: the filters just left their default and every bill is on its way; a window narrowed would show too few.
+        if (window != null && !picked.isDefault) return
+        val mine = myExpensesOf(bills.device.expenses, bills.groups)
+        val narrowed = if (window != null) mine.take(window) else narrowedOf(mine, picked, bills.categories)
+        val shown = if (window != null) narrowed else narrowed.take(requested)
+        val dated = homeBillsOf(shown, bills.categories)
+        uiState.update {
+            it.copy(
+                days = if (picked.sort.isByDate) billDaysOf(dated, clock) else listOf(undatedDayOf(dated)),
+                filters = picked,
+                groupOptions = groupOptionsOf(bills.groups),
+                categoryOptions = bills.categories.branches.map { branch -> branch.category },
+                isLoaded = true,
+                hasMore = if (window != null) bills.device.expenses.size > window else narrowed.size > requested,
+                isLoadingMore = window != null && requested > window,
+            )
+        }
     }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.AllExpenses
 }
 
-/*
- * Why: each bill with its group and what it does to this device's user's balance; a bill whose group isn't read yet, or
- * which they aren't in after all, is left out.
- */
-private fun latestOf(
-    expenses: List<Expense>,
-    groups: List<Group>,
-): List<LatestExpense> {
-    val groupsById = groups.associateBy { it.id }
-    return expenses.mapNotNull { expense ->
-        val group = groupsById[expense.groupId] ?: return@mapNotNull null
-        val meId = group.members.firstOrNull { it.isMe }?.id ?: return@mapNotNull null
-        LatestExpense(
-            group = group,
-            expense = expense,
-            myBalanceMinor = expense.balanceOf(meId) ?: return@mapNotNull null,
-        )
-    }
-}
+// Why: what the device gave: a window of its bills (windowSize) or every one of them (null).
+private class DeviceBills(
+    val windowSize: Int?,
+    val expenses: List<Expense>,
+)
+
+private class ReadBills(
+    val device: DeviceBills,
+    val groups: List<Group>,
+    val categories: CategoryTree,
+)
+
+private fun Set<String>.toToggled(id: String): Set<String> = if (id in this) this - id else this + id
+
+// Why: sorted by amount the bills read as one list, whose day no UI writes (AllExpensesUiState.showsDayHeadings).
+private fun undatedDayOf(bills: List<DatedHomeBill>): HomeBillDay = HomeBillDay(
+    dayStartMillis = 0L,
+    relativeDay = RelativeDay.OTHER,
+    bills = bills.map { it.bill },
+)

@@ -236,6 +236,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `home_see_all_groups_clicked` | none | "See all" over "Your groups" | `:feature:groups` |
 | `bill_clicked` | `source` (`home`, `all_expenses`, `group_detail`, `group_stats`, `category_expenses`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `home_see_all_bills_clicked` | none | "See all" over "Latest expenses", which opens All expenses | `:feature:groups` |
+| `all_expenses_filter_changed` | `source` (`all_expenses`), `filter` (`group`, `category`, `share`, `payer`) | A filter of All expenses changed: a group or a main category picked or let go, "Your share" or "Who paid" picked | `:feature:groups` |
+| `all_expenses_sort_changed` | `sort` (`newest`, `oldest`, `largest`, `smallest`) | An order picked in All expenses' "Sort" | `:feature:groups` |
+| `all_expenses_filters_cleared` | none | "Clear filters" in All expenses, beside the filters or on "No expenses match"; the order stays | `:feature:groups` |
 | `activity_bell_clicked` | none | The bell in Home's bar, which opens Activity over Home | `:feature:groups` |
 | `recovery_code_card_show_clicked` | none | "See code" on "Save your recovery code" | `:feature:groups` |
 | `recovery_code_card_connect_clicked` | none | "Connect account" on that card | `:feature:groups` |
