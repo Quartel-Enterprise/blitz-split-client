@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">Brak internetu</string>
     <string name="bill_link_offline_message">Otwórz link ponownie, gdy znów będziesz online.</string>
     <string name="bill_link_go_home">Przejdź do Startu</string>
+    <string name="discard_changes_title">Odrzucić zmiany?</string>
+    <string name="discard_changes_message">Niezapisane zmiany zostaną utracone.</string>
+    <string name="discard_changes_discard">Odrzuć</string>
+    <string name="discard_changes_keep_editing">Kontynuuj edycję</string>
 </resources>

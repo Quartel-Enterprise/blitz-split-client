@@ -30,6 +30,9 @@ final class AppModel {
     /// How many times the shared code opened the profile, its notifications or the category map on the Mac, which live in Ajustes (⌘,):
     /// each one opens the Settings window (`RootView`) instead of pushing it over the groups.
     private(set) var settingsRequestCount = 0
+    /// How many ways out the shared back stack held for "Discard changes?": a swipe or a back button the page already
+    /// followed, which every binding that reads this draws again from the stack, as it stands.
+    private(set) var refusedDismissals = 0
     #if os(macOS)
     /// The section of Ajustes the last of those asked for (the profile, Notifications from Activity, or Categories for the map), until Ajustes picks
     /// it (`SettingsView`).
@@ -72,6 +75,9 @@ final class AppModel {
         watches.add(viewModel.billLinkNoticeWatcher.observe { [weak self] state in
             self?.billLinkNotice = state.notice
         })
+        watches.add(viewModel.discardWatcher.observe { [weak self] isPending in
+            self?.discardChanged(isPending.boolValue)
+        })
         watches.add(viewModel.bitcoinInSatsWatcher.observe { showsSats in
             BitcoinUnit.shared.showsSats = showsSats.boolValue
         })
@@ -100,6 +106,20 @@ final class AppModel {
         #endif
         backStack = routes
         redrawMainWindowIfFree()
+    }
+
+    /// A way out of a form with unsaved input is held in the shared back stack until "Discard changes?" is answered.
+    private func discardChanged(_ isPending: Bool) {
+        guard isPending else { return }
+        let navigator = holder.viewModel.navigator
+        DiscardPrompt.present(
+            onDiscard: { navigator.confirmDiscard() },
+            onKeep: { [weak self] in
+                navigator.cancelDiscard()
+                // A swipe or a back button already moved the page the stack kept, so every screen draws it again.
+                self?.refusedDismissals += 1
+            },
+        )
     }
 
     private func redrawMainWindowIfFree() {
@@ -192,6 +212,7 @@ final class AppModel {
     /// the shared back stack catches up with how many entries remain.
     var path: [AppRoute] {
         get {
+            _ = refusedDismissals
             let entries = pathEntries
             let hidden = hiddenUnderScreen(entries)
             return entries.indices.filter { !hidden[$0] }.map { entries[$0] }
@@ -201,7 +222,7 @@ final class AppModel {
             let visible = hidden.indices.filter { !hidden[$0] }
             guard newValue.count < visible.count else { return }
             // Keeps a hidden bill or payment right under the first entry popped, so it shows again
-            holder.viewModel.navigator.popTo(size: Int32(visible[newValue.count] + 1))
+            popTo(visible[newValue.count] + 1)
         }
     }
 
@@ -248,6 +269,7 @@ final class AppModel {
     /// Closing the sheet (a swipe down, Esc) pops it, as the back button pops a pushed screen.
     var sheet: AppRoute? {
         get {
+            _ = refusedDismissals
             if isSheetStacked { return windowStack[sheetBaseIndex - 1] }
             if sheetPushCount > 0 { return windowStack[sheetBaseIndex] }
             guard windowStack.count > 1, let top = windowStack.last, presentsAsSheet(top), invitePopover == nil else {
@@ -258,21 +280,27 @@ final class AppModel {
         set {
             guard newValue == nil, sheet != nil else { return }
             let shown = (isSheetStacked ? 2 : 1) + sheetPushCount
-            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - shown))
+            popTo(windowStack.count - shown)
         }
     }
 
     /// The entries pushed inside the sheet (the default split inside Edit group's): its own NavigationStack's path.
     /// Its back button shortens it, and the shared back stack catches up.
     var sheetPath: [AppRoute] {
-        get { isSheetStacked ? [] : pushedInSheet }
+        get {
+            _ = refusedDismissals
+            return isSheetStacked ? [] : pushedInSheet
+        }
         set { popPushedInSheet(keeping: newValue.count) }
     }
 
     /// The entries pushed inside a sheet stacked over another (on the Mac, Quem é você inside an invite link's sheet
     /// that opened over Edit group's): the stacked sheet's own path, so the sheet under it stays where it is.
     var stackedSheetPath: [AppRoute] {
-        get { isSheetStacked ? pushedInSheet : [] }
+        get {
+            _ = refusedDismissals
+            return isSheetStacked ? pushedInSheet : []
+        }
         set { popPushedInSheet(keeping: newValue.count) }
     }
 
@@ -282,7 +310,7 @@ final class AppModel {
 
     private func popPushedInSheet(keeping count: Int) {
         guard count < sheetPushCount else { return }
-        holder.viewModel.navigator.popTo(size: Int32(windowStack.count - sheetPushCount + count))
+        popTo(windowStack.count - sheetPushCount + count)
     }
 
     /// Whether the entry at `index` is pushed inside the sheet under it: a route that always is
@@ -326,7 +354,7 @@ final class AppModel {
         get { isSheetStacked ? windowStack[sheetBaseIndex] : nil }
         set {
             guard newValue == nil, stackedSheet != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1 - sheetPushCount))
+            popTo(windowStack.count - 1 - sheetPushCount)
         }
     }
 
@@ -355,10 +383,13 @@ final class AppModel {
     /// neither window moves the back stack under the other's top. Closing it pops it, as closing the main window's
     /// sheets does. Nil off the Mac.
     var settingsSheet: AppRoute? {
-        get { settingsEntryCount > 0 ? backStack.last : nil }
+        get {
+            _ = refusedDismissals
+            return settingsEntryCount > 0 ? backStack.last : nil
+        }
         set {
             guard newValue == nil, settingsSheet != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(windowStack.count))
+            popTo(windowStack.count)
         }
     }
 
@@ -379,7 +410,7 @@ final class AppModel {
         }
         set {
             guard newValue == nil, invitePopover != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1))
+            popTo(windowStack.count - 1)
         }
     }
 
@@ -387,11 +418,14 @@ final class AppModel {
     /// rather than a sheet, the top entry or the one right under what opens as a sheet over it (editing the bill), so
     /// the screen behind it still takes clicks. Closing it pops it and whatever is over it. Nil off the Mac.
     var billInspector: RouteBillDetail? {
-        get { inspectorBill(above: modalCount) }
+        get {
+            _ = refusedDismissals
+            return inspectorBill(above: modalCount)
+        }
         set {
             let modals = modalCount
             guard newValue == nil, inspectorBill(above: modals) != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1 - modals))
+            popTo(windowStack.count - 1 - modals)
         }
     }
 
@@ -411,13 +445,22 @@ final class AppModel {
     /// The top entry when it covers the whole screen (the invite reader on iPhone and iPad). Closing it pops it.
     var cover: AppRoute? {
         get {
+            _ = refusedDismissals
             guard windowStack.count > 1, let top = windowStack.last, top.presentsFullScreen else { return nil }
             return top
         }
         set {
             guard newValue == nil, cover != nil else { return }
-            holder.viewModel.navigator.popTo(size: Int32(windowStack.count - 1))
+            popTo(windowStack.count - 1)
         }
+    }
+
+    /// A page, a sheet or a cover closed by the person (not by a ViewModel): the shared back stack follows, or holds it
+    /// for "Discard changes?", in which case the screens draw it again.
+    private func popTo(_ size: Int) {
+        let navigator = holder.viewModel.navigator
+        navigator.popTo(size: Int32(size))
+        if (navigator.pendingDiscard.value as? KotlinBoolean)?.boolValue == true { refusedDismissals += 1 }
     }
 
     isolated deinit {

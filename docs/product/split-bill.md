@@ -238,3 +238,4 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     A bottom sheet on Android, a sheet on iOS and the Mac, a dialog over the bill on the web (in its place on a
     phone's drawer). Saving a bill from the home, or moved to a group other than the one it was split from, opens
     that group's Expenses in Split a bill's place.
+  - Closing Split a bill with unsaved input asks "Discard changes?" first, on every way out ([general.md](general.md)).

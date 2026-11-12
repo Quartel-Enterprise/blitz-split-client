@@ -98,7 +98,10 @@ struct EditGroupView: View {
                 }
             }
         }
-        .interactiveDismissDisabled(model?.state.isSaving == true || model?.state.isChangingSimplifyDebts == true)
+        .interactiveDismissDisabled(
+            model?.state.isSaving == true || model?.state.isChangingSimplifyDebts == true
+                || model?.state.hasUnsavedInput == true
+        )
         // "Ana turned it off after you" (13.1e), over the form
         .simplifyConflictBanner(
             model?.state.simplifyConflict,

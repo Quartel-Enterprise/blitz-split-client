@@ -205,3 +205,4 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
   row pays that row's currency, and "Who paid whom?" (`PickPayment`) lists a group once for each currency it has an
   open pair in. "Leave group" and "Delete group" wait for every currency to be settled, and their lists of what is
   still open write each pair in its own currency.
+  - Closing Edit group, Default split or Record payment with unsaved input asks "Discard changes?" first, on every way out ([general.md](general.md)).

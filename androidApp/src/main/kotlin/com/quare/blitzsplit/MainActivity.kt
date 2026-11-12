@@ -88,6 +88,7 @@ class MainActivity : ComponentActivity() {
                     FoldLayoutRoot {
                         AppNavDisplay(appViewModel = appViewModel)
                         BillLinkNoticeDialog(appViewModel = appViewModel)
+                        DiscardChangesDialog(appViewModel = appViewModel)
                         InAppUpdateDownloadOverlay()
                     }
                 }

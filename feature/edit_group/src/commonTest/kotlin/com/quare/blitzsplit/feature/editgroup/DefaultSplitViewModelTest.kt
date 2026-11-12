@@ -413,6 +413,7 @@ class DefaultSplitViewModelTest {
 
             // When
             viewModel.onEvent(DefaultSplitUiEvent.OnBackClicked)
+            navigator.confirmDiscard()
 
             // Then
             assertEquals(editGroup, navigator.backStack.value.last())

@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.uuid.Uuid
@@ -60,6 +62,8 @@ class CreateGroupViewModel(
                 draft = "",
                 isCreating = false,
                 showsCreateError = false,
+                openedColor = AvatarColor.default,
+                openedCurrency = GroupCurrency.ofRegion(deviceRegion()),
             ),
         )
 
@@ -93,12 +97,18 @@ class CreateGroupViewModel(
                 isMe = true,
             )
             uiState.update { state ->
+                val color = AvatarColor.entries.first { it != profile.avatarColor }
                 state.copy(
-                    color = AvatarColor.entries.first { it != profile.avatarColor },
+                    color = color,
+                    openedColor = color,
                     members = listOf(me) + state.members,
                 )
             }
         }
+    }
+
+    init {
+        navigator.guardUnsavedInput(viewModelScope, Route.CreateGroup, uiState.map { it.hasUnsavedInput })
     }
 
     override fun handleEvent(event: CreateGroupUiEvent) {
@@ -275,6 +285,8 @@ class CreateGroupViewModel(
 
     // Why: "Convidar" takes the form's place, so back goes to the home; only while the form is still on top, as leave.
     private fun openInvite(groupId: String) {
+        // Why: the group is saved, so the form's input is no longer unsaved and closing it asks nothing.
+        navigator.markUnsaved(Route.CreateGroup, false)
         if (isOnTop()) navigator.replaceTop(Route.Invite(groupId, isNewGroup = true))
     }
 

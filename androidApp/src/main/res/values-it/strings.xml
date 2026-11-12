@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">Nessuna connessione</string>
     <string name="bill_link_offline_message">Apri di nuovo il link quando torni online.</string>
     <string name="bill_link_go_home">Vai alla Home</string>
+    <string name="discard_changes_title">Scartare le modifiche?</string>
+    <string name="discard_changes_message">Le modifiche non salvate andranno perse.</string>
+    <string name="discard_changes_discard">Scarta</string>
+    <string name="discard_changes_keep_editing">Continua a modificare</string>
 </resources>

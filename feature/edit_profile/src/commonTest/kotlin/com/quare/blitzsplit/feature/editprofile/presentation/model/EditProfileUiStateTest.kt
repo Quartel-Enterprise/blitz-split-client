@@ -394,6 +394,51 @@ class EditProfileUiStateTest {
         assertFalse(canSave)
     }
 
+    @Test
+    fun `GIVEN a loaded form with changes WHEN reading unsaved input THEN there is some`() {
+        // Given
+        val uiState = state(
+            isLoaded = true,
+            hasChanges = true,
+        )
+
+        // When
+        val hasUnsavedInput = uiState.hasUnsavedInput
+
+        // Then
+        assertTrue(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a loaded form as saved WHEN reading unsaved input THEN there is none`() {
+        // Given
+        val uiState = state(
+            isLoaded = true,
+            hasChanges = false,
+        )
+
+        // When
+        val hasUnsavedInput = uiState.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the saved profile not read yet WHEN reading unsaved input THEN there is none`() {
+        // Given
+        val uiState = state(
+            isLoaded = false,
+            hasChanges = true,
+        )
+
+        // When
+        val hasUnsavedInput = uiState.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
     private fun state(
         isLoaded: Boolean = true,
         name: String = "Pierre",

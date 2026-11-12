@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">インターネットに接続されていません</string>
     <string name="bill_link_offline_message">オンラインに戻ってから、もう一度リンクを開いてください。</string>
     <string name="bill_link_go_home">ホームへ</string>
+    <string name="discard_changes_title">変更を破棄しますか?</string>
+    <string name="discard_changes_message">保存されていない変更は失われます。</string>
+    <string name="discard_changes_discard">破棄</string>
+    <string name="discard_changes_keep_editing">編集を続ける</string>
 </resources>

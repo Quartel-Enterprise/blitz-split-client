@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">Sem internet</string>
     <string name="bill_link_offline_message">Abra o link de novo quando reconectar.</string>
     <string name="bill_link_go_home">Ir para o início</string>
+    <string name="discard_changes_title">Descartar alterações?</string>
+    <string name="discard_changes_message">As alterações não salvas serão perdidas.</string>
+    <string name="discard_changes_discard">Descartar</string>
+    <string name="discard_changes_keep_editing">Continuar editando</string>
 </resources>

@@ -40,12 +40,26 @@ internal class SplitBillExits(
     }
 
     /*
+     * Why: the bill was saved or deleted, or its group or the bill went: there is nothing left to save, so leaving
+     * never asks "Discard changes?".
+     */
+    fun leaveSettled() {
+        settle()
+        leave()
+    }
+
+    private fun settle() {
+        navigator.markUnsaved(route, false)
+    }
+
+    /*
      * Why: a new bill goes back to the group's screen it was split from (a tab, or its Estatísticas' empty "Rachar
      * conta", which sits over a tab), or opens its group's Despesas in its place: from the home, or once another
      * group was picked.
      */
     fun leaveToBillGroup(groupId: String) {
         if (!isOnTop()) return
+        settle()
         if (isBackOnGroupScreen(groupId)) {
             navigator.navigateBack()
         } else {
@@ -75,6 +89,7 @@ internal class SplitBillExits(
     // Why: back to Despesas do grupo past "Conta", which would show a bill that is gone.
     fun leaveToGroup() {
         if (!isOnTop()) return
+        settle()
         val stack = navigator.backStack.value
         val detailIndex = stack.indexOfLast { it is Route.BillDetail && it.expenseId == route.expenseId }
         if (detailIndex > 0) navigator.popTo(detailIndex) else navigator.navigateBack()

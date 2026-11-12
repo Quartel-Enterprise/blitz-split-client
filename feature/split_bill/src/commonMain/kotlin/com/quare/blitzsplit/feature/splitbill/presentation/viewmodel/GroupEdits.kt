@@ -86,6 +86,7 @@ internal fun createInitialBillState(
         isSaving = false,
         isDeleting = false,
         isLoaded = false,
+        openedInputs = null,
     )
 }
 

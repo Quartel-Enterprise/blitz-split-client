@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -130,6 +131,7 @@ class RegisterPaymentViewModel(
      * either person or the whole group, which leaves nothing to pay.
      */
     init {
+        navigator.guardUnsavedInput(viewModelScope, route, uiState.map { it.hasUnsavedInput })
         val targets = observeTarget(observeGroup, observeGroupBalances, observePeopleBalances)
             .shareIn(viewModelScope, SharingStarted.Eagerly, replay = 1)
         /*
@@ -174,7 +176,7 @@ class RegisterPaymentViewModel(
             .onEach(::applyShowsPix)
             .launchIn(viewModelScope)
         navigator.backStack
-            .onEach { if (isDebtGone) leave() }
+            .onEach { if (isDebtGone) leave(isSettled = true) }
             .launchIn(viewModelScope)
         connectivityObserver
             .observe()
@@ -283,7 +285,9 @@ class RegisterPaymentViewModel(
             amountText = "",
             hasEditedAmount = false,
             method = SettlementMethod.PIX,
+            openedMethod = SettlementMethod.PIX,
             paidAt = now,
+            openedPaidAt = now,
             paidDay = relativeDayOf(now),
             latestPaidAt = now,
             isOnline = true,
@@ -306,13 +310,13 @@ class RegisterPaymentViewModel(
     // Why: the Pix rule turning off moves the form off Pix only while nobody picked it.
     private fun applyShowsPix(showsPix: Boolean) {
         uiState.update {
+            val isMoved = !showsPix && !hasPickedMethod && it.method == SettlementMethod.PIX
+            val method = if (isMoved) SettlementMethod.TRANSFER else it.method
+            // Why: the form opens on the method the rule picks, so that one is not a change.
             it.copy(
                 showsPix = showsPix,
-                method = if (!showsPix && !hasPickedMethod && it.method == SettlementMethod.PIX) {
-                    SettlementMethod.TRANSFER
-                } else {
-                    it.method
-                },
+                method = method,
+                openedMethod = if (hasPickedMethod) it.openedMethod else method,
             )
         }
     }
@@ -367,7 +371,7 @@ class RegisterPaymentViewModel(
         // Why: a currency this version doesn't know takes no new payment (see `GroupCurrency.fromCode`), wherever from.
         isDebtGone = target == null || target.debtMinor == 0L || !target.currency.isKnown
         if (target == null || isDebtGone) {
-            leave()
+            leave(isSettled = true)
             return
         }
         shownDebtMinor = target.debtMinor
@@ -533,7 +537,7 @@ class RegisterPaymentViewModel(
                         ),
                     )
                     dropNoticeOfGoneOpener(settlementIds)
-                    leave()
+                    leave(isSettled = true)
                 }.onFailure {
                     uiState.update { it.copy(isSaving = false) }
                     if (hasRead) handle(latest)
@@ -584,8 +588,9 @@ class RegisterPaymentViewModel(
         if (navigator.backStack.value.none { it === opener }) consumeRecordedPayment(settlementId)
     }
 
-    // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
-    private fun leave() {
+    // Why: only while still on top (a native back may have closed it); settled (paid, debt gone) asks nothing.
+    private fun leave(isSettled: Boolean = false) {
+        if (isSettled) navigator.markUnsaved(route, false)
         if (isOnTop()) navigator.navigateBack()
     }
 

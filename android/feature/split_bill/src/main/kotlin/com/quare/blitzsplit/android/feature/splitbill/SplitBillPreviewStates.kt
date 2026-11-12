@@ -199,6 +199,7 @@ internal fun createPreviewBillState(
     isSaving = false,
     isDeleting = false,
     isLoaded = true,
+    openedInputs = null,
 )
 
 internal fun createPreviewEqualEditor(

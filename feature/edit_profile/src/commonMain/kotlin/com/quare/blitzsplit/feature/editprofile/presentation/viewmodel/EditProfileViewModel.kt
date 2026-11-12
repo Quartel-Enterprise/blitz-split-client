@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -80,6 +82,7 @@ class EditProfileViewModel(
     val stateWatcher: FlowWatcher<EditProfileUiState> = FlowWatcher(uiState)
 
     init {
+        navigator.guardUnsavedInput(viewModelScope, Route.EditProfile, uiState.map { it.hasUnsavedInput })
         observeProfile()
             .filterNotNull()
             .onEach(::onSavedProfileChanged)
@@ -246,6 +249,8 @@ class EditProfileViewModel(
             saved = profile
             // Why: what was typed while saving stays, compared with what was just saved.
             edit { it.copy(isSaving = false) }
+            // Why: saved, so leaving asks nothing; said now, since the state's own report reaches the stack later.
+            navigator.markUnsaved(Route.EditProfile, false)
             navigator.navigateBackFrom(Route.EditProfile)
         }
     }

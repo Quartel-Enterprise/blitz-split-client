@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">Tidak ada internet</string>
     <string name="bill_link_offline_message">Buka tautannya lagi setelah kamu online.</string>
     <string name="bill_link_go_home">Ke Beranda</string>
+    <string name="discard_changes_title">Buang perubahan?</string>
+    <string name="discard_changes_message">Perubahan yang belum disimpan akan hilang.</string>
+    <string name="discard_changes_discard">Buang</string>
+    <string name="discard_changes_keep_editing">Lanjutkan mengedit</string>
 </resources>

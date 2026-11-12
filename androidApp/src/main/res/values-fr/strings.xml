@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">Pas d’internet</string>
     <string name="bill_link_offline_message">Rouvre le lien dès que tu es de nouveau en ligne.</string>
     <string name="bill_link_go_home">Aller à l’accueil</string>
+    <string name="discard_changes_title">Abandonner les modifications ?</string>
+    <string name="discard_changes_message">Les modifications non enregistrées seront perdues.</string>
+    <string name="discard_changes_discard">Abandonner</string>
+    <string name="discard_changes_keep_editing">Continuer la modification</string>
 </resources>

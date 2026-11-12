@@ -2073,6 +2073,10 @@ export const nl: Record<MessageKey, string> = {
   billLinkNotice_offlineTitle: 'Geen internet',
   billLinkNotice_offlineBody: 'Open de link opnieuw zodra je weer online bent.',
   billLinkNotice_goHome: 'Naar Start',
+  discardChanges_title: 'Wijzigingen negeren?',
+  discardChanges_body: 'Niet-bewaarde wijzigingen gaan verloren.',
+  discardChanges_discard: 'Negeer',
+  discardChanges_keepEditing: 'Verder bewerken',
   // "Simplificar dívidas" (page 13)
   simplify_title: 'Schulden vereenvoudigen',
   simplify_howItWorks: 'Hoe het werkt',

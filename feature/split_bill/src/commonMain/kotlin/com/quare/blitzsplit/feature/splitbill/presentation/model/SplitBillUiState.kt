@@ -121,7 +121,30 @@ data class SplitBillUiState(
     val isDeleting: Boolean,
     // Why: nothing is drawn until Room is read.
     val isLoaded: Boolean,
+    // Why: the inputs as the form opened, once it was filled; what unsaved input is compared against.
+    val openedInputs: SplitBillInputs?,
 ) {
+    // Why: what the person can change now, compared with openedInputs.
+    val inputs: SplitBillInputs
+        get() = SplitBillInputs(
+            groupId = groupId,
+            amountMinor = amountMinor,
+            description = description.trim(),
+            currency = currency,
+            payers = payersToSave,
+            spentAt = spentAt,
+            splitMode = split.mode,
+            // Why: a member at 0 is not in the split, so someone who joined the group meanwhile changes nothing.
+            splitEntries = split.entries.filter { it.value != 0L },
+            categoryId = categoryId,
+            hasReceipt = receipt != null,
+            splitsAsDefault = splitAsDefault != null,
+        )
+
+    // Why: closing asks "Discard changes?" only while the form differs from how it opened; saving puts it back.
+    val hasUnsavedInput: Boolean
+        get() = isLoaded && openedInputs != null && inputs != openedInputs
+
     val amountMinor: Long?
         get() = AmountInput.parse(amountText, currency, showsSats)
 

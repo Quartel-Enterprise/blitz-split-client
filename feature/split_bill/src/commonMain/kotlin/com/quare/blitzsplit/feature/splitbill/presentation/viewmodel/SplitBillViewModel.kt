@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
@@ -48,6 +49,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.take
@@ -222,7 +224,10 @@ class SplitBillViewModel(
                 hasReadUnit = true
                 handle(group, expense)
                 settledPairs?.refresh(uiState.value)
+                // Why: the form is as it opened once filled in; nothing typed after that is unsaved until it differs.
+                uiState.update { if (it.isLoaded && it.openedInputs == null) it.copy(openedInputs = it.inputs) else it }
             }.launchIn(viewModelScope)
+        navigator.guardUnsavedInput(viewModelScope, route, uiState.map { it.hasUnsavedInput })
         categoryEditing.observe(groupId)
         observeBitcoinInSats()
             .onEach { sats -> uiState.update { it.withShowsSats(sats, separator) } }
@@ -237,7 +242,7 @@ class SplitBillViewModel(
         navigator.backStack
             .onEach {
                 if (isGroupGone) {
-                    exits.leave()
+                    exits.leaveSettled()
                 } else if (isBillGone) {
                     exits.leaveToGroup()
                 }
@@ -408,7 +413,7 @@ class SplitBillViewModel(
     // Why: a new bill whose picked group went goes back to the group it was opened for, and closes once that one went.
     private fun handleGroupGone() {
         isGroupGone = route.expenseId != null || groupId.value == route.groupId
-        if (isGroupGone) return exits.leave()
+        if (isGroupGone) return exits.leaveSettled()
         uiState.update { it.copy(pickedGroupId = route.groupId) }
         groupId.value = route.groupId
     }
@@ -547,7 +552,7 @@ class SplitBillViewModel(
                     if (expenseId == null && exits.isLandingOnGroup(state.groupId)) {
                         teachOffer?.let(offerCategoryTeach::invoke)
                     }
-                    if (expenseId == null) exits.leaveToBillGroup(state.groupId) else exits.leave()
+                    if (expenseId == null) exits.leaveToBillGroup(state.groupId) else exits.leaveSettled()
                 }.onFailure {
                     uiState.update { it.copy(isSaving = false) }
                     uiAction.emit(SplitBillUiAction.ShowSaveError)

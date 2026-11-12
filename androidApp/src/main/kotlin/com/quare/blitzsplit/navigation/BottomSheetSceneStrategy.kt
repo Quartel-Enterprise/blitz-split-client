@@ -15,6 +15,7 @@ import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import com.quare.blitzsplit.android.designsystem.layout.LocalSheetBlockedDismiss
 import com.quare.blitzsplit.android.designsystem.layout.LocalSheetDismissLock
 import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 
@@ -35,13 +36,22 @@ private class BottomSheetScene<T : Any>(
 
     override val content: @Composable () -> Unit = {
         val lock = remember { mutableStateOf(false) }
+        val blockedDismiss = remember { mutableStateOf<(() -> Unit)?>(null) }
         ModalBottomSheet(
             onDismissRequest = onBack,
             sheetState = rememberFullSheetState(
-                confirmValueChange = { value -> value != SheetValue.Hidden || !lock.value },
+                confirmValueChange = { value ->
+                    val isAllowed = value != SheetValue.Hidden || !lock.value
+                    // Why: a form with unsaved input answers the dismissal itself, by asking "Discard changes?".
+                    if (!isAllowed) blockedDismiss.value?.invoke()
+                    isAllowed
+                },
             ),
         ) {
-            CompositionLocalProvider(LocalSheetDismissLock provides lock) {
+            CompositionLocalProvider(
+                LocalSheetDismissLock provides lock,
+                LocalSheetBlockedDismiss provides blockedDismiss,
+            ) {
                 entry.Content()
             }
         }

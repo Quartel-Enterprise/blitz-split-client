@@ -74,6 +74,10 @@ data class EditProfileUiState(
     val accountPhotoProvider: AccountProvider?
         get() = accountProvider.takeIf { showsUseAccountPhoto }
 
+    // Why: closing asks "Discard changes?" only while the name, color or photo differ from the saved profile.
+    val hasUnsavedInput: Boolean
+        get() = isLoaded && hasChanges
+
     val canSave: Boolean
         get() = isLoaded && isNameValid && hasChanges && !isSaving && !isPreparingPhoto
 

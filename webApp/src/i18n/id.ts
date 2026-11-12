@@ -2071,6 +2071,10 @@ export const id: Record<MessageKey, string> = {
   billLinkNotice_offlineTitle: 'Tidak ada internet',
   billLinkNotice_offlineBody: 'Buka tautannya lagi setelah kamu online.',
   billLinkNotice_goHome: 'Ke Beranda',
+  discardChanges_title: 'Buang perubahan?',
+  discardChanges_body: 'Perubahan yang belum disimpan akan hilang.',
+  discardChanges_discard: 'Buang',
+  discardChanges_keepEditing: 'Lanjutkan mengedit',
   // "Simplificar dívidas" (page 13)
   simplify_title: 'Sederhanakan utang',
   simplify_howItWorks: 'Cara kerjanya',

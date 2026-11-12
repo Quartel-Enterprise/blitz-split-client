@@ -102,6 +102,9 @@ class AppViewModel(
 
     val stateWatcher: FlowWatcher<AppUiState> = FlowWatcher(uiState)
     val backStackWatcher: FlowWatcher<List<Route>> = FlowWatcher(navigator.backStack)
+
+    // Why: true while a way out of a form with unsaved input waits for "Discard" or "Keep editing".
+    val discardWatcher: FlowWatcher<Boolean> = FlowWatcher(navigator.pendingDiscard)
     val themeWatcher: FlowWatcher<ThemePreference> = FlowWatcher(theme)
     val bitcoinInSatsWatcher: FlowWatcher<Boolean> = FlowWatcher(showsBitcoinInSats)
     val languageWatcher: FlowWatcher<AppLanguage> = FlowWatcher(language)

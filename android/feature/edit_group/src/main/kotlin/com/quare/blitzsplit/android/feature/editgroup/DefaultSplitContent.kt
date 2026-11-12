@@ -364,6 +364,7 @@ private fun createPreviewState(
     isSaving = false,
     showsSaveError = false,
     hasChanges = true,
+    hasEdits = true,
     figures = DefaultSplitFigures.of(
         mode = mode,
         people = people,

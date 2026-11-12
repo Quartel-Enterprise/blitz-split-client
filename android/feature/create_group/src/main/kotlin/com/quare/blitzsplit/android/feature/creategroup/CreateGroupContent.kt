@@ -527,4 +527,6 @@ private fun buildPreviewState(draft: String): CreateGroupUiState = CreateGroupUi
     draft = draft,
     isCreating = false,
     showsCreateError = false,
+    openedColor = AvatarColor.PEACH,
+    openedCurrency = GroupCurrency.BRL,
 )

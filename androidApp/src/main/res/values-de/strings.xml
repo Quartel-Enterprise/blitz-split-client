@@ -29,4 +29,8 @@
     <string name="bill_link_offline_title">Kein Internet</string>
     <string name="bill_link_offline_message">Öffne den Link erneut, sobald du wieder online bist.</string>
     <string name="bill_link_go_home">Zum Start</string>
+    <string name="discard_changes_title">Änderungen verwerfen?</string>
+    <string name="discard_changes_message">Nicht gespeicherte Änderungen gehen verloren.</string>
+    <string name="discard_changes_discard">Verwerfen</string>
+    <string name="discard_changes_keep_editing">Weiter bearbeiten</string>
 </resources>

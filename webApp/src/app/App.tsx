@@ -60,6 +60,8 @@ export function App() {
   const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(onChange))
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
   const billLinkNotice = useWatch(app, (presenter, onChange: (notice: JsBillLinkNotice) => void) => presenter.observeBillLinkNotice(onChange))?.notice
+  const isDiscardPending = useWatch(app, (presenter, onChange: (isPending: boolean) => void) => presenter.observeDiscardPending(onChange))
+  const hasUnsavedInput = useWatch(app, (presenter, onChange: (hasInput: boolean) => void) => presenter.observeHasUnsavedInput(onChange))
   const showsBitcoinInSats = useWatch(app, (presenter, onChange: (isOn: boolean) => void) => presenter.observeBitcoinInSats(onChange))
   // Why: set before the screens under it draw, so this render's amounts already follow it; a change redraws them all.
   setShowsBitcoinInSats(showsBitcoinInSats ?? false)
@@ -68,6 +70,7 @@ export function App() {
     if (isReady && theme) applyTheme(theme)
   }, [isReady, theme])
   useBrowserHistory(app, backStack)
+  useWarnBeforeUnload(hasUnsavedInput ?? false)
   useEffect(() => {
     if (backStack) forgetClosedPickedTabs(backStack)
   }, [backStack])
@@ -78,10 +81,53 @@ export function App() {
       <HomeSidebarProvider isActive={backStack.some((route) => FRAME_PAGES.has(route.name))}>
         <StackLayers backStack={backStack} />
       </HomeSidebarProvider>
+      {app && isDiscardPending && <DiscardChangesDialog onDiscard={() => app.confirmDiscard()} onKeep={() => app.cancelDiscard()} />}
       {app && billLinkNotice && <BillLinkNoticeDialog notice={billLinkNotice} onDismiss={() => app.dismissBillLinkNotice()} />}
       <Toaster position="top-center" theme={theme === 'light' || theme === 'dark' ? theme : 'system'} />
     </>
   )
+}
+
+/**
+ * "Descartar alterações?", asked while a way out of a form with unsaved input waits in the shared back stack (its ✕,
+ * Esc, the browser's back button, the sidebar): "Descartar" applies it, "Continuar editando" or Esc drops it.
+ */
+function DiscardChangesDialog({ onDiscard, onKeep }: { onDiscard: () => void; onKeep: () => void }) {
+  return (
+    <AlertDialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onKeep()
+      }}
+    >
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('discardChanges_title')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('discardChanges_body')}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button variant="outline" onClick={onKeep}>
+            {t('discardChanges_keepEditing')}
+          </Button>
+          <Button variant="destructive" onClick={onDiscard}>
+            {t('discardChanges_discard')}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
+/** Why: closing or reloading the tab with a form holding unsaved input asks first, through the browser's own prompt. */
+function useWarnBeforeUnload(hasUnsavedInput: boolean) {
+  useEffect(() => {
+    if (!hasUnsavedInput) return
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [hasUnsavedInput])
 }
 
 /**
@@ -370,8 +416,14 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
         return
       }
       if (target < size.current) {
+        const from = size.current
         size.current = target
         app.popTo(target)
+        // Why: a form with unsaved input held the stack for "Discard changes?", so the history goes forward again.
+        if (app.isDiscardPending()) {
+          size.current = from
+          goBy.current(from - target, target)
+        }
       } else if (target > size.current) {
         // Why: the forward button names screens the stack no longer has.
         goBy.current(size.current - target, target)

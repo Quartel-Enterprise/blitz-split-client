@@ -75,7 +75,7 @@ struct CreateGroupView: View {
                 .disabled(model?.state.canCreate != true)
             }
         }
-        .interactiveDismissDisabled(model?.state.isCreating == true)
+        .interactiveDismissDisabled(model?.state.isCreating == true || model?.state.hasUnsavedInput == true)
         #if os(iOS)
         // The canvas' 540 pt form sheet with an iPad's room; an iPhone's sheet keeps the system's width
         .formSheetSizing()

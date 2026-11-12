@@ -37,7 +37,11 @@ fun RegisterPaymentScreen(
     }
     var isPickingPaidAt by rememberSaveable { mutableStateOf(false) }
     BackHandler { viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked) }
-    SheetDismissLockEffect(isLocked = state.isSaving)
+    // Why: with unsaved input a drag down or the scrim asks "Discard changes?" instead of closing the sheet.
+    SheetDismissLockEffect(
+        isLocked = state.isSaving || state.hasUnsavedInput,
+        onBlockedDismiss = if (state.isSaving) null else ({ viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked) }),
+    )
     RegisterPaymentContent(
         state = state,
         presentation = presentation,

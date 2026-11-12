@@ -2072,6 +2072,10 @@ export const ja: Record<MessageKey, string> = {
   billLinkNotice_offlineTitle: 'インターネットに接続されていません',
   billLinkNotice_offlineBody: 'オンラインに戻ってから、もう一度リンクを開いてください。',
   billLinkNotice_goHome: 'ホームへ',
+  discardChanges_title: '変更を破棄しますか?',
+  discardChanges_body: '保存されていない変更は失われます。',
+  discardChanges_discard: '破棄',
+  discardChanges_keepEditing: '編集を続ける',
   // "Simplificar dívidas" (page 13)
   simplify_title: '精算をシンプルに',
   simplify_howItWorks: '仕組み',

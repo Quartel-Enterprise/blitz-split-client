@@ -2072,6 +2072,10 @@ export const tr: Record<MessageKey, string> = {
   billLinkNotice_offlineTitle: 'İnternet yok',
   billLinkNotice_offlineBody: 'Tekrar çevrimiçi olunca bağlantıyı yeniden aç.',
   billLinkNotice_goHome: "Ana Sayfa'ya git",
+  discardChanges_title: 'Değişiklikler silinsin mi?',
+  discardChanges_body: 'Kaydedilmemiş değişiklikler kaybolacak.',
+  discardChanges_discard: 'Sil',
+  discardChanges_keepEditing: 'Düzenlemeye devam et',
   // "Simplificar dívidas" (page 13)
   simplify_title: 'Borçları sadeleştir',
   simplify_howItWorks: 'Nasıl çalışır',

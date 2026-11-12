@@ -912,6 +912,154 @@ class RegisterPaymentUiStateTest {
         assertTrue(state.formPixKeys.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a form not loaded yet with everything changed WHEN reading the unsaved input THEN there is none`() {
+        // Given
+        val state = state(
+            isLoaded = false,
+            hasEditedAmount = true,
+            amountText = "10,00",
+            method = SettlementMethod.CASH,
+            paidAt = 5L,
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a form just opened WHEN reading the unsaved input THEN there is none`() {
+        // Given
+        val state = state()
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a part of the debt typed WHEN reading the unsaved input THEN there is some`() {
+        // Given
+        val state = state(
+            hasEditedAmount = true,
+            amountText = "10,00",
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertTrue(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the amount cleared WHEN reading the unsaved input THEN there is some`() {
+        // Given
+        val state = state(
+            hasEditedAmount = true,
+            amountText = "",
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertTrue(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the whole debt typed again WHEN reading the unsaved input THEN there is none`() {
+        // Given
+        val state = state(
+            hasEditedAmount = true,
+            amountText = "162,30",
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN an amount that differs but was never edited WHEN reading the unsaved input THEN there is none`() {
+        // Given
+        val state = state(
+            hasEditedAmount = false,
+            amountText = "10,00",
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN another method WHEN reading the unsaved input THEN there is some`() {
+        // Given
+        val state = state(
+            method = SettlementMethod.CASH,
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertTrue(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN Pix WHEN reading the unsaved input THEN there is none`() {
+        // Given
+        val state = state(
+            method = SettlementMethod.PIX,
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN another Quando than the one the form opened with WHEN reading the unsaved input THEN there is some`() {
+        // Given
+        val state = state(
+            paidAt = 5L,
+            openedPaidAt = 10L,
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertTrue(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the Quando the form opened with WHEN reading the unsaved input THEN there is none`() {
+        // Given
+        val state = state(
+            paidAt = 10L,
+            openedPaidAt = 10L,
+        )
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
     private val me = PaymentPerson(
         "member-2",
         "Pierre",
@@ -1050,6 +1198,10 @@ class RegisterPaymentUiStateTest {
         offersReceiverKeys: Boolean = true,
         simplifyChange: SimplifyChangedNotice? = null,
         areReceiverKeysUnknown: Boolean = false,
+        hasEditedAmount: Boolean = false,
+        paidAt: Long = 0L,
+        openedPaidAt: Long = 0L,
+        openedMethod: SettlementMethod = SettlementMethod.PIX,
         showsPix: Boolean = true,
     ): RegisterPaymentUiState = RegisterPaymentUiState(
         currency = currency,
@@ -1059,9 +1211,11 @@ class RegisterPaymentUiStateTest {
         debtMinor = debtMinor,
         groupParts = groupParts,
         amountText = amountText,
-        hasEditedAmount = false,
+        hasEditedAmount = hasEditedAmount,
         method = method,
-        paidAt = 0L,
+        paidAt = paidAt,
+        openedPaidAt = openedPaidAt,
+        openedMethod = openedMethod,
         paidDay = RelativeDay.TODAY,
         latestPaidAt = 0L,
         isOnline = isOnline,

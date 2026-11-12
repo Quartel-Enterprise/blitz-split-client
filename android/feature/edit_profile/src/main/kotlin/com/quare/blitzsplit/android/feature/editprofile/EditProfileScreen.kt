@@ -29,7 +29,10 @@ fun EditProfileScreen(
     )
     BackHandler { viewModel.onEvent(EditProfileUiEvent.OnBackClicked) }
     // Why: a drag down or a tap on the scrim waits while it saves, as iOS's sheet does.
-    SheetDismissLockEffect(isLocked = state.isSaving)
+    SheetDismissLockEffect(
+        isLocked = state.isSaving || state.hasUnsavedInput,
+        onBlockedDismiss = if (state.isSaving) null else ({ viewModel.onEvent(EditProfileUiEvent.OnBackClicked) }),
+    )
     EditProfileContent(
         state = state,
         presentation = presentation,

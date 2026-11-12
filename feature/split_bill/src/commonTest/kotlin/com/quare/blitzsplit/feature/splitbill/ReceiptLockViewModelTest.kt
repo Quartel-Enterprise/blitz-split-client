@@ -381,27 +381,29 @@ class ReceiptLockViewModelTest {
         }
 
     @Test
-    fun `GIVEN a receipt being read WHEN closing the form THEN it leaves to the group`() = runTest(testDispatcher) {
-        // Given
-        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+    fun `GIVEN a receipt being read WHEN closing the form and discarding THEN it leaves to the group`() =
+        runTest(testDispatcher) {
+            // Given
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
 
-        // When
-        viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
+            navigator.confirmDiscard()
 
-        // Then
-        assertEquals(
-            listOf(
-                Route.Groups,
-                Route.GroupDetail(
-                    GROUP_ID,
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                    isOverBill = false,
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Groups,
+                    Route.GroupDetail(
+                        GROUP_ID,
+                        joinedAs = null,
+                        tab = GroupTab.EXPENSES,
+                        isOverBill = false,
+                    ),
                 ),
-            ),
-            navigator.backStack.value,
-        )
-    }
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN a receipt read WHEN typing in the fields THEN they change`() = runTest(testDispatcher) {
