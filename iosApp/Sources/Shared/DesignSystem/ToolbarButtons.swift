@@ -134,8 +134,10 @@ private struct TabTitleDisplayMode: ViewModifier {
 }
 
 extension View {
-    /// On an iPhone upright, the tab bar shrinks to a compact floating control on a scroll down and opens on a scroll
-    /// up, as Apple's guideline has it. Never on an iPad nor on a phone lying down, whose bars stay put.
+    /// On an iPhone upright, the tab bar shrinks to a compact floating control on a scroll down, as Apple's guideline
+    /// has it. iOS opens it again at the top of the list or on a tap, not on a scroll up (iOS 27.2, although the
+    /// documentation says otherwise); Pierre kept Apple's behavior over forcing it open. Never on an iPad nor on a
+    /// phone lying down, whose bars stay put.
     func phoneMinimizesTabBar() -> some View {
         modifier(PhoneBarMinimization(bar: .tabBar))
     }
