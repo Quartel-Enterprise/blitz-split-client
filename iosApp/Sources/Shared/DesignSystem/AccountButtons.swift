@@ -118,9 +118,7 @@ struct GoogleButton: View {
                 if isLoading {
                     ProgressView().controlSize(.small)
                 } else {
-                    Image(decorative: "GoogleLogo")
-                        .resizable()
-                        .frame(width: 18, height: 18)
+                    ProviderLogo(provider: .google)
                 }
                 Text(title)
             }

@@ -373,11 +373,14 @@ class ProfileViewModel(
     private fun updateAccount(account: AccountSnapshot) {
         recoveryCodePrompt = account.recoveryCodePrompt
         val connected = account.status as? AccountStatus.Connected
+        val email = account.email?.takeIf { connected != null && it.isNotBlank() }
         uiState.update {
             it.copy(
                 accountProvider = connected?.provider,
                 hasAnonymousId = account.status is AccountStatus.Anonymous,
-                email = account.email?.takeIf { connected != null && it.isNotBlank() },
+                email = email,
+                // Why: the email's info explains a row that is gone once the account no longer shows an email.
+                dialog = it.dialog.takeUnless { dialog -> dialog == ProfileDialog.EMAIL_INFO && email == null },
                 formattedRecoveryCode = account.recoveryCode?.let(RecoveryCodeFormat::format),
                 showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 isSignOutScheduled = account.signOutWhenSynced,

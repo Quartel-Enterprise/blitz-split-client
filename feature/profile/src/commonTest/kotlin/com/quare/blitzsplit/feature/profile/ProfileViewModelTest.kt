@@ -1105,6 +1105,41 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN Google with a blank email WHEN the profile opens THEN shows no email`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            email = " ",
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(AccountProvider.GOOGLE, state.accountProvider)
+        assertNull(state.email)
+    }
+
+    @Test
+    fun `GIVEN the email info open WHEN the account loses its email THEN closes it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = connectedWithGoogle,
+            email = "pierre@gmail.com",
+        )
+        viewModel.onEvent(ProfileUiEvent.OnEmailInfoClicked)
+
+        // When
+        account.snapshot.value = account.snapshot.value.copy(
+            status = anonymous,
+            email = null,
+        )
+
+        // Then
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
     fun `GIVEN an anonymous account WHEN the email info arrives THEN opens nothing and sends nothing`() =
         runTest(testDispatcher) {
             // Given
