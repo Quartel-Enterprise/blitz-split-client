@@ -64,6 +64,7 @@ fun PersonGroupsCard(
                     GroupBadge(
                         initials = part.groupInitials,
                         color = part.groupColor,
+                        photoUrl = part.groupPhotoUrl,
                         size = 28.dp,
                     )
                     Column(modifier = Modifier.weight(1f)) {

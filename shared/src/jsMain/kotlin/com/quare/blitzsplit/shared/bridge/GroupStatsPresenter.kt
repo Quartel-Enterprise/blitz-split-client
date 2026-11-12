@@ -96,6 +96,7 @@ class JsStatsBiggestExpense(
     val payers: Array<JsStatsPayer>,
     val amountMinor: Double,
     val isPending: Boolean,
+    val category: JsCategory,
 )
 
 /*
@@ -303,6 +304,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
             payers = expense.payers.map { JsStatsPayer(it.name, it.isMe) }.toTypedArray(),
             amountMinor = expense.amountMinor.toDouble(),
             isPending = expense.isPending,
+            category = toJsCategory(expense.category),
         )
     },
     settling = state.settling?.let { JsStatsSettling(toJsStatsSettler(it.fastest), toJsStatsSettler(it.slowest)) },

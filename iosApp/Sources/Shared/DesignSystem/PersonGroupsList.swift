@@ -53,7 +53,7 @@ struct PersonGroupsList: View {
 
     private func groupRow(_ part: PersonGroupBalance) -> some View {
         HStack(spacing: 10) {
-            GroupAvatar(initials: part.groupInitials, color: part.groupColor, size: 28)
+            GroupAvatar(initials: part.groupInitials, color: part.groupColor, photoUrl: part.groupPhotoUrl, size: 28)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 0) {
                 Text(verbatim: part.groupName)
