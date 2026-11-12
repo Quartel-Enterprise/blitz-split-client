@@ -11,6 +11,7 @@ import SwiftUI
 struct GroupsList: View {
     let model: GroupsModel
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
+    @Environment(\.groupZoomScope) private var zoomScope
     @State private var layout = ScreenLayout()
 
     /// Lying down short of an iPad's room, the list alone: an iPhone lying down (an iPad's list column is upright).
@@ -111,7 +112,7 @@ struct GroupsList: View {
                 }
                 // The groups still coming down hold their place under those that came
                 if let progress = state.firstDownload, progress.placeholderCount > 0 {
-                    ShimmerList(count: Int(progress.placeholderCount), leading: .badge)
+                    ShimmerList(count: Int(progress.placeholderCount), leading: .group)
                         .shimmering()
                 }
             } header: {
@@ -160,9 +161,11 @@ struct GroupsList: View {
         let isOnline = model.state.exit.isOnline
         return HStack(spacing: 0) {
             Button {
+                zoomScope?.zoom.arm(group.id)
                 model.send(GroupsUiEventOnGroupClicked(groupId: group.id))
             } label: {
                 GroupListRow(group: group)
+                    .groupZoomSource(groupId: group.id)
             }
             .buttonStyle(.plain)
             GroupRowMenuButton(group: group, isOnline: isOnline, send: { model.send($0) })

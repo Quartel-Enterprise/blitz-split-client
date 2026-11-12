@@ -7,8 +7,9 @@
     <string name="profile_offline_title">Geen internet.</string>
     <string name="profile_offline_body">Bewerk gerust: het blijft opgeslagen op dit apparaat en wordt geüpload zodra de verbinding terug is.</string>
     <string name="profile_section_account">Account en synchronisatie</string>
-    <string name="profile_account_connected_detail">%1$s · alleen jij ziet dit</string>
-    <string name="profile_account_connected">Gekoppeld</string>
+    <string name="profile_email_info">Over je e-mailadres</string>
+    <string name="profile_email_info_title">Alleen jij ziet je e-mailadres</string>
+    <string name="profile_email_info_body">Het staat hier zodat je weet met welk account je bent ingelogd. De mensen in je groepen zien je naam en foto, nooit je e-mailadres.</string>
     <string name="profile_account_none">Geen account</string>
     <string name="profile_account_none_detail">Anonieme ID van dit apparaat</string>
     <string name="profile_account_local_detail">Voorlopig alleen op dit apparaat opgeslagen</string>
@@ -72,7 +73,7 @@
     <string name="profile_dynamic_colors_info">Over dynamische kleuren</string>
     <string name="profile_dynamic_colors_info_body">Dynamische kleuren stemmen de app af op je achtergrond: knoppen, achtergronden en accenten nemen de kleuren over die Android eruit kiest, en veranderen mee als je achtergrond verandert.</string>
     <string name="profile_dynamic_colors_info_note">Groepen, avatars en categorieën houden hun eigen kleuren, zodat je ze nog steeds uit elkaar houdt. Dit geldt alleen voor dit apparaat.</string>
-    <string name="profile_dynamic_colors_info_ok">Begrepen</string>
+    <string name="profile_info_ok">Begrepen</string>
     <string name="profile_section_about">Privacy en info</string>
     <string name="profile_privacy_policy">Privacybeleid</string>
     <string name="profile_terms">Servicevoorwaarden</string>

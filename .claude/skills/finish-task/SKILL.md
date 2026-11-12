@@ -116,35 +116,42 @@ git remote update origin --prune
 is gone, and any left behind by a dropped task. Every task device has a local branch while its task
 is alive, because a device is only ever created after its task's branch. The name is the branch's
 short description with `-` turned into `_` (see the "Name" section of
-[`start-task`](../start-task/SKILL.md#name)).
+[`start-task`](../start-task/SKILL.md#name)). A session the Claude app starts has a branch like
+`claude/home-latest-expenses-see-all-70f315`: its devices carry the `_<6 hex>` suffix
+(`BoraRachar_home_latest_expenses_see_all_70f315`), but older ones were named without it
+(`BoraRachar_home_latest_expenses_see_all`). So `KEEP` lists every local branch with its `<type>/`
+prefix stripped and `-` turned into `_`, plus, for a `claude/` branch only, the same name without its
+suffix. A device is kept when its name after `BoraRachar_` is in that list.
 
-Android emulators. After its first boot an AVD takes about 2.3 GB of disk, freed only when the AVD
-is deleted:
+Run the whole block in one shell call: `KEEP` doesn't survive from one Bash call to the next, and
+loops run apart from it would find it empty and skip the cleanup. After its first
+boot an AVD takes about 2.3 GB of disk, freed only when the AVD is deleted.
 
 ```bash
 setopt null_glob 2>/dev/null
-for INI in ~/.android/avd/BoraRachar_*.ini; do
-  [ -e "$INI" ] || continue
-  AVD=$(basename "$INI" .ini)
-  git for-each-ref --format='%(refname:short)' refs/heads \
-    | sed 's#^[^/]*/##; s#-#_#g' | grep -qx "${AVD#BoraRachar_}" && continue
-  pkill -f -- "-avd $AVD( |$)"
-  while pgrep -f -- "-avd $AVD( |$)" > /dev/null; do sleep 1; done
-  rm -rf ~/.android/avd/"$AVD".avd "$INI"
-  echo "deleted $AVD"
-done
-```
-
-iOS simulators:
-
-```bash
-xcrun simctl list devices | sed -nE 's/^ +(BoraRachar_[A-Za-z0-9_]+) \(([0-9A-F-]{36})\).*/\1 \2/p' \
-  | while read -r SIM UDID; do
-      git for-each-ref --format='%(refname:short)' refs/heads \
-        | sed 's#^[^/]*/##; s#-#_#g' | grep -qx "${SIM#BoraRachar_}" && continue
-      xcrun simctl shutdown "$UDID" 2>/dev/null
-      xcrun simctl delete "$UDID" && echo "deleted $SIM"
-    done
+KEEP=$(git for-each-ref --format='%(refname:lstrip=2)' refs/heads \
+  | sed -E '/^claude\//{p;s#-[0-9a-f]{6}$##;}' | sed -E 's#^[^/]*/##; s#-#_#g')
+if [ -z "$KEEP" ]; then
+  echo 'No local branch listed: skipping the device cleanup' >&2
+else
+  # Android emulators.
+  for INI in ~/.android/avd/BoraRachar_*.ini; do
+    [ -e "$INI" ] || continue
+    AVD=$(basename "$INI" .ini)
+    printf '%s\n' "$KEEP" | grep -qxF "${AVD#BoraRachar_}" && continue
+    pkill -f -- "-avd $AVD( |$)"
+    while pgrep -f -- "-avd $AVD( |$)" > /dev/null; do sleep 1; done
+    rm -rf ~/.android/avd/"$AVD".avd "$INI"
+    echo "deleted $AVD"
+  done
+  # iOS simulators.
+  xcrun simctl list devices | sed -nE 's/^ +(BoraRachar_[A-Za-z0-9_]+) \(([0-9A-F-]{36})\).*/\1 \2/p' \
+    | while read -r SIM UDID; do
+        printf '%s\n' "$KEEP" | grep -qxF "${SIM#BoraRachar_}" && continue
+        xcrun simctl shutdown "$UDID" 2>/dev/null
+        xcrun simctl delete "$UDID" && echo "deleted $SIM"
+      done
+fi
 ```
 
 - `setopt null_glob` is for zsh, the default shell here: without it, a glob with no match aborts the
@@ -155,6 +162,8 @@ xcrun simctl list devices | sed -nE 's/^ +(BoraRachar_[A-Za-z0-9_]+) \(([0-9A-F-
   belong to the user or to another project.
 - A task whose branch still exists keeps its devices, even if nobody is working on it. Finishing or
   deleting that branch is what frees them.
+- Only a `claude/` branch has its suffix stripped, so an ordinary branch whose last word looks like
+  hex (`chore/bump-libraries-202611`) never keeps a device it doesn't own.
 
 ### 5. Verify cleanup
 
@@ -167,8 +176,11 @@ xcrun simctl list devices | grep 'BoraRachar_'
 ```
 
 None of them should show the removed task anymore, and every `BoraRachar_*` emulator or simulator
-left should belong to a branch that still exists. Report the result to the user, including which
-devices were deleted.
+left should belong to a branch that still exists: its name after `BoraRachar_` is that branch's name
+after `<type>/` with `-` turned into `_`, or, for a `claude/` branch, the same without the `_<6 hex>`
+suffix. If the removed task's devices are still listed, the cleanup didn't run (it printed "No local
+branch listed", or ran in a shell apart from `KEEP`): run its block again. Report the result to the
+user, including which devices were deleted.
 
 ## Edge cases
 

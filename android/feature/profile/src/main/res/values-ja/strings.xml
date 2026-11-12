@@ -7,8 +7,9 @@
     <string name="profile_offline_title">インターネットに接続されていません。</string>
     <string name="profile_offline_body">自由に編集できます。このデバイスに保存され、接続が戻るとアップロードされます。</string>
     <string name="profile_section_account">アカウントと同期</string>
-    <string name="profile_account_connected_detail">%1$s · あなただけに表示</string>
-    <string name="profile_account_connected">連携済み</string>
+    <string name="profile_email_info">メールアドレスについて</string>
+    <string name="profile_email_info_title">メールアドレスはあなただけに表示されます</string>
+    <string name="profile_email_info_body">どのアカウントでログインしているか分かるように表示しています。グループのメンバーにはあなたの名前と写真が表示され、メールアドレスは表示されません。</string>
     <string name="profile_account_none">アカウントなし</string>
     <string name="profile_account_none_detail">このデバイスの匿名ID</string>
     <string name="profile_account_local_detail">今はこのデバイスにだけ保存されています</string>
@@ -70,7 +71,7 @@
     <string name="profile_dynamic_colors_info">ダイナミックカラーについて</string>
     <string name="profile_dynamic_colors_info_body">ダイナミックカラーは、アプリを壁紙に合わせます。ボタン、背景、ハイライトにAndroidが壁紙から選んだ色が使われ、壁紙を変えると変わります。</string>
     <string name="profile_dynamic_colors_info_note">グループ、アバター、カテゴリは独自の色のままなので、引き続き見分けられます。この設定はこのデバイスにのみ適用されます。</string>
-    <string name="profile_dynamic_colors_info_ok">OK</string>
+    <string name="profile_info_ok">OK</string>
     <string name="profile_section_about">プライバシーとアプリ情報</string>
     <string name="profile_privacy_policy">プライバシーポリシー</string>
     <string name="profile_terms">利用規約</string>

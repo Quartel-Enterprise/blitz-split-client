@@ -650,20 +650,26 @@ private struct AccountSection: View {
             if let provider = state.accountProvider {
                 ConnectedAccountRow(model: model, provider: provider)
             } else {
-                LabeledContent {
-                    if !state.isConnectExpanded {
-                        Button("Connect") {
-                            withAnimation { model.send(ProfileUiEventOnConnectClicked.shared) }
+                HStack(spacing: 12) {
+                    Image(systemName: "person.slash")
+                        .foregroundStyle(.secondary)
+                        .frame(width: 24)
+                        .accessibilityHidden(true)
+                    LabeledContent {
+                        if !state.isConnectExpanded {
+                            Button("Connect") {
+                                withAnimation { model.send(ProfileUiEventOnConnectClicked.shared) }
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(!state.canConnect)
                         }
-                        .buttonStyle(.bordered)
-                        .disabled(!state.canConnect)
-                    }
-                } label: {
-                    Text("No account")
-                    if state.hasAnonymousId {
-                        Text("Anonymous ID of this \(DeviceName.current)")
-                    } else {
-                        Text("Saved only on this \(DeviceName.current) for now")
+                    } label: {
+                        Text("No account")
+                        if state.hasAnonymousId {
+                            Text("Anonymous ID of this \(DeviceName.current)")
+                        } else {
+                            Text("Saved only on this \(DeviceName.current) for now")
+                        }
                     }
                 }
                 if state.showsConnectButtons {
@@ -737,25 +743,62 @@ private struct AccountSection: View {
 }
 
 /// The Google or Apple row only says which account it is: leaving it is signing out or deleting the
-/// account (Pierre's call, beta feedback), so it opens nothing.
+/// account (Pierre's call, beta feedback), so it opens nothing. Its provider's logo and the whole email
+/// say which account; the ⓘ next to it says only the person sees the email (testers' feedback).
 private struct ConnectedAccountRow: View {
     let model: ProfileModel
     let provider: AccountProvider
 
     var body: some View {
-        LabeledContent {
-            Text("Connected").foregroundStyle(Palette.accent)
-        } label: {
-            label
+        let email = model.state.email
+        HStack(spacing: 12) {
+            ProviderLogo(provider: provider, size: 20)
+                .frame(width: 24)
+                // Why: Google's logo is a decorative image, hidden from VoiceOver, so the label needs its own element.
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(verbatim: provider.displayName))
+                // Without an email the row's text already names the provider, which the logo would repeat
+                .accessibilityHidden(email == nil)
+            row(email: email)
         }
     }
 
-    @ViewBuilder
-    private var label: some View {
-        Text(verbatim: provider.displayName).foregroundStyle(.primary)
-        if let email = model.state.maskedEmail {
-            Text("\(email) · only you see it")
+    private func row(email: String?) -> some View {
+        LabeledContent {
+            if email != nil {
+                Button {
+                    model.send(ProfileUiEventOnEmailInfoClicked.shared)
+                } label: {
+                    Image(systemName: "info.circle")
+                        .imageScale(.large)
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel(Text("About your email"))
+                .popover(isPresented: model.isPresented(.emailInfo), arrowEdge: .top) {
+                    EmailInfoPopover()
+                }
+            }
+        } label: {
+            Text(verbatim: email ?? provider.displayName)
+                .foregroundStyle(.primary)
+                .textSelection(.enabled)
         }
+    }
+}
+
+private struct EmailInfoPopover: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Only you see your email")
+                .font(.headline)
+            Text("It's here so you know which account you're signed in with. The people in your groups see your name and photo, never your email.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .padding(14)
+        .frame(width: 280, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
+        .presentationCompactAdaptation(.popover)
     }
 }
 

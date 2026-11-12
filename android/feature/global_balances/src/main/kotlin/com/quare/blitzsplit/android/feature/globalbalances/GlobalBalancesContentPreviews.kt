@@ -104,6 +104,7 @@ private fun createPreviewPart(
     groupName = name,
     groupInitials = initials,
     groupColor = AvatarColor.PEACH,
+    groupPhotoUrl = null,
     memberId = "member",
     meMemberId = "me",
     amountMinor = amountMinor,

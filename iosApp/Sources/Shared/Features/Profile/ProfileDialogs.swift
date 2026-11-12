@@ -55,22 +55,26 @@ private struct ProfileDialogsModifier: ViewModifier {
         Text("\(count) changes haven't uploaded yet")
     }
 
-    /// An alert closes itself on any of its buttons, so the close waits for the button's own event to
-    /// reach the ViewModel first, and the sign out alerts, which can't show progress, stay hidden while
-    /// it runs; a failure brings the alert back with the error.
+    /// The sign out alerts, which can't show progress, stay hidden while it runs; a failure brings the
+    /// alert back with the error.
     private func isPresented(_ dialog: ProfileDialog) -> Binding<Bool> {
+        let isSignOutAlert = dialog == .signOut || dialog == .signOutPending
+        return model.isPresented(dialog) { isSignOutAlert && model.state.isSigningOut }
+    }
+}
+
+extension ProfileModel {
+    /// A dialog of the shared state as a binding. An alert or a popover closes itself (one of its buttons,
+    /// a tap outside), so the close waits for the button's own event to reach the ViewModel first, and
+    /// tells it only while the state still shows that dialog.
+    func isPresented(_ dialog: ProfileDialog, unless isHidden: @escaping () -> Bool = { false }) -> Binding<Bool> {
         Binding(
-            get: {
-                let state = model.state
-                let isSignOutAlert = dialog == .signOut || dialog == .signOutPending
-                let isBusy = isSignOutAlert && state.isSigningOut
-                return state.dialog == dialog && !isBusy
-            },
+            get: { self.state.dialog == dialog && !isHidden() },
             set: { isPresented in
                 guard !isPresented else { return }
                 DispatchQueue.main.async {
-                    if model.state.dialog == dialog {
-                        model.send(ProfileUiEventOnDialogDismissed.shared)
+                    if self.state.dialog == dialog {
+                        self.send(ProfileUiEventOnDialogDismissed.shared)
                     }
                 }
             },

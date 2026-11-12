@@ -10,6 +10,10 @@
     <string name="delete_account_deleted_provider">De koppeling met je %1$s-account</string>
     <string name="delete_account_deleted_recovery_code">Je herstelcode</string>
     <string name="delete_account_deleted_device">De kopie van je gegevens op dit apparaat</string>
+    <string name="delete_account_kept_title">Wat in je groepen blijft</string>
+    <string name="delete_account_kept_groups">De groepen, met hun uitgaven en betalingen, voor de andere leden</string>
+    <string name="delete_account_kept_member">Je naam in elke groep, als lid zonder account</string>
+    <string name="delete_account_kept_comments">Je reacties en de foto’s die je hebt toegevoegd, onder je naam</string>
     <string name="delete_account_export">Eerst mijn gegevens exporteren</string>
     <string name="delete_account_confirm">Ik begrijp dat dit niet ongedaan kan worden gemaakt</string>
     <string name="delete_account_delete">Account verwijderen</string>

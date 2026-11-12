@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { locale, t } from '@/i18n'
+import { GROUP_SHAPE } from '@/lib/avatar'
+import { cn } from '@/lib/utils'
 
 const shownFaces = 3
 
@@ -150,7 +152,7 @@ function InviteSkeleton() {
         <SkeletonLine className="h-7 w-1/2" />
       </span>
       <div className="flex items-center gap-4 rounded-2xl border bg-card p-5">
-        <Skeleton className="size-14 rounded-xl" />
+        <Skeleton className={cn('size-14', GROUP_SHAPE)} />
         <span className="flex flex-1 flex-col gap-2.5">
           <SkeletonLine className="h-4 w-1/2" />
           <SkeletonLine className="w-2/3" />

@@ -24,7 +24,7 @@ internal fun createPreviewProfileState(
     shareLink = "https://blitzsplit.com/u/7Hk2pQ8xZa",
     accountProvider = accountProvider,
     hasAnonymousId = true,
-    maskedEmail = accountProvider?.let { "p•••@gmail.com" },
+    email = accountProvider?.let { "pierre@gmail.com" },
     formattedRecoveryCode = if (accountProvider == null) "K7QM-4XPA-9TRE" else null,
     showsRecoveryCodePrompt = false,
     isOnline = isOnline,

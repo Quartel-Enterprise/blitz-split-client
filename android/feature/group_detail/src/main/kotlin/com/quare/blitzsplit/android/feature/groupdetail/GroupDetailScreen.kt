@@ -102,6 +102,7 @@ fun GroupDetailScreen(
         snackbarHostState = snackbarHostState,
         membersTab = membersTab(snackbarHostState),
         onEvent = onEvent,
+        sharedGroupId = route.groupId,
     )
     state.teach?.takeIf { it.isPickingWord }?.let {
         CategoryTeachDialog(

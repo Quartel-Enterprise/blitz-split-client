@@ -27,7 +27,7 @@ export function SummaryCardsSkeleton({ className }: { className?: string }) {
 }
 
 /** A card of rows under its title, as Início's sections, Saldos' people and Contatos' list draw them. */
-export function ListCardSkeleton({ rows = 4, leading = 'circle', className }: { rows?: number; leading?: 'circle' | 'square' | 'none'; className?: string }) {
+export function ListCardSkeleton({ rows = 4, leading = 'circle', className }: { rows?: number; leading?: 'circle' | 'square' | 'group' | 'none'; className?: string }) {
   return (
     <div className={cn('overflow-hidden rounded-xl border bg-card', className)}>
       <div className="px-4 pt-4 pb-3">
@@ -39,7 +39,7 @@ export function ListCardSkeleton({ rows = 4, leading = 'circle', className }: { 
 }
 
 /** A page of the home's tabs still being read: the summary cards over a list, after 150 ms. */
-export function SummaryListPageSkeleton({ rows = 5, leading = 'circle', isWaitingForInternet = false }: { rows?: number; leading?: 'circle' | 'square'; isWaitingForInternet?: boolean }) {
+export function SummaryListPageSkeleton({ rows = 5, leading = 'circle', isWaitingForInternet = false }: { rows?: number; leading?: 'circle' | 'square' | 'group'; isWaitingForInternet?: boolean }) {
   return (
     <LoadingRegion isWaitingForInternet={isWaitingForInternet} className="flex flex-col gap-5">
       <SummaryCardsSkeleton />

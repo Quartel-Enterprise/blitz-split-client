@@ -36,6 +36,8 @@ fun GroupDetailContent(
     membersTab: LazyListScope.() -> Unit,
     onEvent: (GroupDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    // Why: the group whose row its avatar and name fly from into the bar; null where nothing flies.
+    sharedGroupId: String? = null,
 ) {
     val money = rememberMoneyFormatter(state.header.currency)
     val onAction: (GroupAction) -> Unit = { action -> onEvent(eventOf(action)) }
@@ -55,6 +57,7 @@ fun GroupDetailContent(
     GroupTabScaffold(
         frame = GroupTabFrame(
             header = state.header,
+            sharedGroupId = sharedGroupId,
             selectedTab = state.tab,
             hasBills = state.hasBills,
             isLoaded = state.isLoaded,

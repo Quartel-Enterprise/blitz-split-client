@@ -26,11 +26,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -49,6 +51,7 @@ import com.quare.blitzsplit.feature.paymentkey.presentation.model.PaymentKeyUiSt
 private val optionGap = 2.dp
 private val optionInnerCorner = 8.dp
 private val rowShape = RoundedCornerShape(20.dp)
+private const val LOCKED_TRACK_ALPHA = 0.6f
 
 // Why: each Pix type or Bitcoin network is one connected button, the picked one fully round.
 @Composable
@@ -345,6 +348,7 @@ internal fun DefaultKeySwitchRow(
                 checked = state.isDefault,
                 onCheckedChange = null,
                 enabled = !state.isDefaultLocked,
+                colors = lockedOnSwitchColors(),
                 thumbContent = if (state.isDefault) {
                     {
                         Icon(
@@ -427,3 +431,19 @@ private val PaymentKeyType.networkDetailRes: Int?
         PaymentKeyType.ONCHAIN -> R.string.payment_key_network_onchain_detail
         PaymentKeyType.CPF, PaymentKeyType.PHONE, PaymentKeyType.EMAIL, PaymentKeyType.RANDOM -> null
     }
+
+/*
+ * Why: the default key's switch is locked on, and Material's disabled "on" (a gray track, the thumb in the surface's
+ * color) read as off in the dark theme ("às vezes vem deselecionado", testers' feedback). Locked, it keeps the "on"
+ * colors, only faded; the text under the title says how to change it.
+ */
+@Composable
+private fun lockedOnSwitchColors(): SwitchColors {
+    val colors = SwitchDefaults.colors()
+    return colors.copy(
+        disabledCheckedThumbColor = colors.checkedThumbColor,
+        disabledCheckedTrackColor = colors.checkedTrackColor.copy(alpha = LOCKED_TRACK_ALPHA),
+        disabledCheckedBorderColor = Color.Transparent,
+        disabledCheckedIconColor = colors.checkedIconColor,
+    )
+}

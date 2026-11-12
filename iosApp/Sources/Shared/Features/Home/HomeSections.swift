@@ -460,6 +460,8 @@ struct HomeGroupsSection: View {
     let style: HomeGroupsStyle
     let send: (any HomeUiEvent) -> Void
 
+    @Environment(\.groupZoomScope) private var zoomScope
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HomeSectionHeader(title: String(
@@ -496,14 +498,17 @@ struct HomeGroupsSection: View {
     }
 
     private func card(_ group: HomeGroup) -> some View {
-        open(group) { HomeGroupCard(group: group) }
+        open(group, cornerRadius: 22) { HomeGroupCard(group: group) }
     }
 
-    private func open(_ group: HomeGroup, @ViewBuilder label: () -> some View) -> some View {
+    /// The group's card or row, which its screen zooms out of where it is pushed.
+    private func open(_ group: HomeGroup, cornerRadius: CGFloat = 0, @ViewBuilder label: () -> some View) -> some View {
         Button {
+            zoomScope?.zoom.arm(group.row.id)
             send(HomeUiEventOnGroupClicked(groupId: group.row.id))
         } label: {
             label()
+                .groupZoomSource(groupId: group.row.id, cornerRadius: cornerRadius)
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)

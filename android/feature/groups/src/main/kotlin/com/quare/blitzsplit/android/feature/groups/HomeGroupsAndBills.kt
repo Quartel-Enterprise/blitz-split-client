@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.billMenuItemsOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rowOptionsLabelOf
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -111,6 +112,7 @@ private fun HomeGroupCard(
     val dates = rememberDateTimeTextFormatter()
     val amount = money.toSignedText(row.netMinor)
     val word = stringResource(balanceLabelOf(row.balanceKind))
+    val shared = rememberGroupSharedModifiers(row.id)
     val description = stringResource(
         if (group.isPinned) R.string.groups_home_pinned_group_description else R.string.groups_home_group_description,
         row.name,
@@ -142,6 +144,7 @@ private fun HomeGroupCard(
                     color = row.color,
                     photoUrl = row.photoUrl,
                     size = if (metrics.isCompact) 36.dp else 40.dp,
+                    modifier = shared.avatar,
                 )
                 if (group.isPinned) {
                     Box(modifier = Modifier.weight(1f)) {
@@ -159,6 +162,7 @@ private fun HomeGroupCard(
             Column {
                 Text(
                     text = row.name,
+                    modifier = shared.name,
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontSize = if (metrics.isCompact) 14.sp else 15.sp,
                     ),

@@ -28,6 +28,8 @@ extension GroupsModel: SearchSource {
 struct GroupsSearchResultsList: View {
     let model: any SearchSource
 
+    @Environment(\.groupZoomScope) private var zoomScope
+
     var body: some View {
         let search = model.search
         if search.showsNoResults {
@@ -76,9 +78,11 @@ struct GroupsSearchResultsList: View {
                 Section("Groups") {
                     ForEach(results.groups, id: \.group.id) { hit in
                         Button {
+                            zoomScope?.zoom.arm(hit.group.id)
                             model.sendSearch(SearchUiEventOnGroupClicked(groupId: hit.group.id))
                         } label: {
                             SearchGroupRow(hit: hit)
+                                .groupZoomSource(groupId: hit.group.id)
                         }
                         .buttonStyle(.plain)
                     }

@@ -495,6 +495,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_language_clicked` | none | Android's "Language" row, once the profile was read | `:feature:profile` |
 | `language_selected` | `language` (`system`, `english`, `portuguese`, `spanish`) | A language, another than the one picked | `:feature:profile` |
 | `profile_dynamic_colors_info_clicked` | none | The ⓘ of "Dynamic colors", over Appearance | `:feature:profile` |
+| `profile_email_info_clicked` | none | The ⓘ next to the account's email in "Account and sync", while it shows one | `:feature:profile` |
 | `dynamic_colors_toggled` | `is_on` | "Dynamic colors", where the device draws them (Android 12 and later) | `:feature:profile` |
 | `check_for_updates_clicked` | none | "Check for updates", while not already checking | `:feature:profile` |
 | `sign_out_clicked` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | "Sign out" or "Erase profile and sign out", with the dialog it opens | `:feature:profile` |

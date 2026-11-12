@@ -587,7 +587,7 @@ private struct ActivityRowMeta: View {
 
     var body: some View {
         HStack(spacing: 5) {
-            RoundedRectangle(cornerRadius: 3)
+            GroupAvatar.shape(size: 10)
                 .fill(item.groupColor?.data ?? Color.secondary.opacity(0.2))
                 .frame(width: 10, height: 10)
                 .accessibilityHidden(true)
@@ -712,7 +712,7 @@ struct ActivityFace: View {
     var body: some View {
         let colors = ActivityCopy.iconColors(item)
         let badge = (size * 0.5).rounded()
-        AvatarPhoto(initial: item.actor.initials, color: item.actor.color, photoUrl: nil, size: size)
+        AvatarPhoto(initial: item.actor.initials, color: item.actor.color, photoUrl: item.actor.photoUrl, size: size)
             .overlay(alignment: .bottomTrailing) {
                 Image(systemName: ActivityCopy.icon(item))
                     .font(.system(size: badge * 0.5, weight: .bold))

@@ -98,8 +98,11 @@ private struct GroupGridCard: View {
     let isSelected: Bool
     let send: (any GroupsUiEvent) -> Void
 
+    @Environment(\.groupZoomScope) private var zoomScope
+
     var body: some View {
         Button {
+            zoomScope?.zoom.arm(group.id)
             send(GroupsUiEventOnGroupClicked(groupId: group.id))
         } label: {
             VStack(alignment: .leading, spacing: 8) {
@@ -121,6 +124,7 @@ private struct GroupGridCard: View {
                 in: .rect(cornerRadius: GroupCardMetrics.cornerRadius),
             )
             .contentShape(.rect(cornerRadius: GroupCardMetrics.cornerRadius))
+            .groupZoomSource(groupId: group.id, cornerRadius: GroupCardMetrics.cornerRadius)
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])

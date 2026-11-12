@@ -394,7 +394,7 @@ function GroupField({ presenter, state }: { presenter: SplitBillPresenter; state
           onClick={() => presenter.openGroupScreen()}
           className={cn(controlClass, 'flex-1')}
         >
-          <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-5 rounded-md text-[9px]" />
+          <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-5 text-[9px]" />
           <span className="flex-1 truncate text-left">{state.groupName}</span>
           <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
         </button>

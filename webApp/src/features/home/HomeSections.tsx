@@ -603,13 +603,16 @@ function GroupRowButton({ group, onOpen }: { group: JsHomeGroup; onOpen: () => v
   const row = group.row
   return (
     <button
+      data-group-link={row.id}
       onClick={onOpen}
       className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
     >
-      <GroupAvatar initials={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-9 rounded-lg text-xs" />
+      <GroupAvatar data-group-avatar initials={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-9 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex min-w-0 items-center gap-1.5 font-medium">
-          <span className="truncate">{row.name}</span>
+          <span data-group-name className="truncate">
+            {row.name}
+          </span>
           {group.isPinned && <Pin role="img" aria-label={t('home_pinned')} className="size-[13px] shrink-0 text-muted-foreground" />}
         </span>
         <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">

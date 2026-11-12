@@ -487,6 +487,38 @@ class GroupStatsViewModelTest {
     }
 
     @Test
+    fun `GIVEN a biggest bill in a subcategory WHEN the statistics open THEN its badge is that subcategory`() =
+        runTest(testDispatcher) {
+            // Given
+            val at = millisOf("2026-10-28T12:00:00Z")
+            prepareScenario(
+                stored = listOf(
+                    expense("rent", 7_000, at, categoryId = AppCategory.HOME_RENT.key),
+                    expense("market", 1_500, at, categoryId = AppCategory.FOOD_MARKET.key),
+                ),
+            )
+
+            // When
+            val biggest = viewModel.uiState.value.biggestExpense
+
+            // Then
+            assertEquals(AppCategory.HOME_RENT.key, biggest?.category?.id)
+        }
+
+    @Test
+    fun `GIVEN a biggest bill with no category WHEN the statistics open THEN its badge is Other`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val biggest = viewModel.uiState.value.biggestExpense
+
+            // Then
+            assertEquals(AppCategory.OTHER.key, biggest?.category?.id)
+        }
+
+    @Test
     fun `GIVEN the statistics WHEN tapping the biggest bill THEN opens it`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

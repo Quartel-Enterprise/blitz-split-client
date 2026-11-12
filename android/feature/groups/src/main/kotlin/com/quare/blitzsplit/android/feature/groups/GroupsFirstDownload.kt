@@ -16,11 +16,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerCardSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
-import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.feature.groups.presentation.model.DownloadProgress
 
@@ -163,7 +163,7 @@ internal fun GroupsListSkeleton(
             repeat(count) { index ->
                 ShimmerRowSkeleton(
                     leadingSize = 48.dp,
-                    leadingShape = groupShapeOf(48.dp),
+                    leadingShape = GroupAvatarShape,
                     containerShape = groupedRowShapeOf(index, count),
                     verticalPadding = 14.dp,
                 )

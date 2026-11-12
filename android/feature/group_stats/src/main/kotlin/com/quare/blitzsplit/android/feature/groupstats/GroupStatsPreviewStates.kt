@@ -109,6 +109,7 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
             payers = listOf(StatsPayer("Pierre", isMe = true)),
             amountMinor = 72_000L,
             isPending = false,
+            category = CategoryTree.appOnly.resolve(AppCategory.LEISURE.key),
         ),
         settling = StatsSettling(
             fastest = createPreviewSettler(

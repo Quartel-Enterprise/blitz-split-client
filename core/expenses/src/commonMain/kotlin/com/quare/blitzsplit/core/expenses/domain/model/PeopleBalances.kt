@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.toImageUrl
 import kotlin.math.abs
 
 // Why: the global Saldos, everyone this device's user has an open balance with, worked out from the device's data.
@@ -102,6 +103,7 @@ data class PeopleBalances(
                         groupName = group.name,
                         groupInitials = Initials.of(group.name),
                         groupColor = group.color,
+                        groupPhotoUrl = group.photo?.toImageUrl(),
                         memberId = otherId,
                         meMemberId = me.id,
                         amountMinor = if (debt.toMemberId == me.id) debt.amountMinor else -debt.amountMinor,

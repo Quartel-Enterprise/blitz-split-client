@@ -43,9 +43,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
-import com.quare.blitzsplit.android.designsystem.component.groupShapeOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
@@ -116,6 +116,7 @@ internal fun ActorAvatarIcon(
         AvatarBadge(
             initial = item.actor.initials,
             color = item.actor.color,
+            photoUrl = item.actor.photoUrl,
             modifier = Modifier
                 .clip(CircleShape)
                 .semantics { if (item.actor.opensProfile) contentDescription = name }
@@ -156,7 +157,7 @@ internal fun GroupDotIcon(
             .size(groupDotSize)
             .background(
                 color?.toDataColor(isDark) ?: MaterialTheme.colorScheme.outlineVariant,
-                groupShapeOf(groupDotSize),
+                GroupAvatarShape,
             ),
     )
 }

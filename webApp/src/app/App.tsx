@@ -48,6 +48,7 @@ import { SplitBillDialog } from '@/features/split-bill/SplitBillDialog'
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
 import { t } from '@/i18n'
 import { isBrowserBackBlocked } from '@/lib/browserBack'
+import { setSkipsNextGroupTransition, withGroupTransition } from '@/lib/groupTransition'
 import { setShowsBitcoinInSats } from '@/lib/money'
 import { applyTheme } from '@/lib/theme'
 
@@ -58,7 +59,8 @@ import { applyTheme } from '@/lib/theme'
 export function App() {
   const app = usePresenter(() => new AppPresenter())
   const isReady = useWatch(app, (presenter, onChange: (ready: boolean) => void) => presenter.observeIsReady(onChange))
-  const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(onChange))
+  // Why: a group opened from its row, or left back to it, swaps the page inside a view transition (groupTransition).
+  const backStack = useWatch(app, (presenter, onChange: (routes: JsRoute[]) => void) => presenter.observeBackStack(withGroupTransition(onChange)))
   const theme = useWatch(app, (presenter, onChange: (theme: string) => void) => presenter.observeTheme(onChange))
   const billLinkNotice = useWatch(app, (presenter, onChange: (notice: JsBillLinkNotice) => void) => presenter.observeBillLinkNotice(onChange))?.notice
   const isDiscardPending = useWatch(app, (presenter, onChange: (isPending: boolean) => void) => presenter.observeDiscardPending(onChange))
@@ -423,9 +425,12 @@ function useBrowserHistory(app: AppPresenter | null, backStack: JsRoute[] | null
       if (target < size.current) {
         const from = size.current
         size.current = target
+        // Why: the browser already animated this step (a swipe back), so the page only switches.
+        setSkipsNextGroupTransition(event.hasUAVisualTransition)
         app.popTo(target)
         // Why: a form with unsaved input held the stack for "Discard changes?", so the history goes forward again.
         if (app.isDiscardPending()) {
+          setSkipsNextGroupTransition(false)
           size.current = from
           goBy.current(from - target, target)
         }

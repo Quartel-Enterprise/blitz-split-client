@@ -104,7 +104,7 @@ struct GroupsView: View {
                 ShimmerScreen(isWaitingForInternet: state.firstDownload?.isWaitingForInternet == true, isAboutGroups: true) {
                     ShimmerCard()
                         .background(Palette.card, in: .rect(cornerRadius: 28))
-                    ShimmerList(count: 4, leading: .badge)
+                    ShimmerList(count: 4, leading: .group)
                 }
             }
         }
