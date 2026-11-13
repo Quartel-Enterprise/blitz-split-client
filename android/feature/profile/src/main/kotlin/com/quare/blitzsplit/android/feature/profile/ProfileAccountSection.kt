@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.profile
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,7 +36,8 @@ import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 
-private const val LARGE_FONT_SCALE = 1.3f
+// Why: the width the row needs at the default font for its texts to read beside the button.
+private val minWidthBesideButton = 300.dp
 
 @Composable
 internal fun AccountSection(
@@ -121,34 +123,39 @@ private fun AccountRow(
         )
     } else {
         /*
-         * Why: at a large font the button beside the texts left them a sliver that broke "Anonymous" in the middle, so
-         * there it goes under them, aligned with the texts.
+         * Why: beside the texts the button left them a sliver that broke "Anonymous" in the middle wherever the row is
+         * narrow for its font (a 360 dp phone from a 1.15 scale, a small phone at any). There it goes under them,
+         * aligned with the texts; a tablet's row keeps it beside them at any font.
          */
-        val isButtonBelow = LocalDensity.current.fontScale >= LARGE_FONT_SCALE
-        val connectButton: @Composable () -> Unit = {
-            FilledTonalButton(
-                onClick = { onEvent(ProfileUiEvent.OnConnectClicked) },
-                enabled = state.canConnect,
-            ) { Text(stringResource(R.string.profile_connect)) }
-        }
-        SectionRow(
-            icon = Icons.Outlined.NoAccounts,
-            headline = stringResource(R.string.profile_account_none),
-            supporting = if (state.hasAnonymousId) {
-                stringResource(R.string.profile_account_none_detail)
-            } else {
-                stringResource(R.string.profile_account_local_detail)
-            },
-            trailing = connectButton.takeUnless { state.isConnectExpanded || isButtonBelow },
-        )
-        if (isButtonBelow && !state.isConnectExpanded) {
-            Box(
-                modifier = Modifier.padding(
-                    start = 56.dp,
-                    end = 16.dp,
-                    bottom = 12.dp,
-                ),
-            ) { connectButton() }
+        BoxWithConstraints {
+            val isButtonBelow = maxWidth < minWidthBesideButton * LocalDensity.current.fontScale
+            val connectButton: @Composable () -> Unit = {
+                FilledTonalButton(
+                    onClick = { onEvent(ProfileUiEvent.OnConnectClicked) },
+                    enabled = state.canConnect,
+                ) { Text(stringResource(R.string.profile_connect)) }
+            }
+            Column {
+                SectionRow(
+                    icon = Icons.Outlined.NoAccounts,
+                    headline = stringResource(R.string.profile_account_none),
+                    supporting = if (state.hasAnonymousId) {
+                        stringResource(R.string.profile_account_none_detail)
+                    } else {
+                        stringResource(R.string.profile_account_local_detail)
+                    },
+                    trailing = connectButton.takeUnless { state.isConnectExpanded || isButtonBelow },
+                )
+                if (isButtonBelow && !state.isConnectExpanded) {
+                    Box(
+                        modifier = Modifier.padding(
+                            start = 56.dp,
+                            end = 16.dp,
+                            bottom = 12.dp,
+                        ),
+                    ) { connectButton() }
+                }
+            }
         }
     }
 }

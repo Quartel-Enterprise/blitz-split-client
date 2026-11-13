@@ -52,8 +52,7 @@ internal class FormatterCache(
     fun isFor(
         locale: Locale,
         showsSats: Boolean,
-        satsText: SatsText,
-    ): Boolean = locale == this.locale && showsSats == this.showsSats && satsText == this.satsText
+    ): Boolean = locale == this.locale && showsSats == this.showsSats
 
     fun isFor(locale: Locale): Boolean = locale == this.locale
 }

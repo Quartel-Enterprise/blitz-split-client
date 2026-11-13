@@ -70,18 +70,22 @@ struct GroupedCard<Content: View>: View {
 }
 
 extension View {
-    /// A finger's 44 pt around a small control on iPhone and iPad (Apple's minimum), on a button's label: the hit
-    /// area grows to 44 pt while the layout keeps what the overlaps give back, so nothing around it moves. The
+    /// A finger's 44 pt around a small control on iPhone and iPad (Apple's minimum), on a button's label: only what
+    /// answers a tap grows, from the label's own measured size, so the layout is the same at every text size. The
     /// Mac's pointer needs none.
-    func fingerTarget(horizontalOverlap: CGFloat = 0, verticalOverlap: CGFloat = 0) -> some View {
+    func fingerTarget() -> some View {
         #if os(iOS)
-        frame(minWidth: 44, minHeight: 44)
-            .contentShape(.rect)
-            .padding(.horizontal, -horizontalOverlap)
-            .padding(.vertical, -verticalOverlap)
+        contentShape(.interaction, FingerTargetShape())
         #else
         self
         #endif
+    }
+}
+
+/// The label's bounds grown to at least 44 pt on each side, centered on it; never smaller than the label.
+private nonisolated struct FingerTargetShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path(rect.insetBy(dx: min(0, (rect.width - 44) / 2), dy: min(0, (rect.height - 44) / 2)))
     }
 }
 

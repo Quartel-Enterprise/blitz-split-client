@@ -141,7 +141,6 @@ private fun HomeGroupCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .heightIn(min = metrics.groupCardHeight)
                 .clearAndSetSemantics {}
                 .padding(
                     horizontal = if (metrics.isCompact) 14.dp else 16.dp,

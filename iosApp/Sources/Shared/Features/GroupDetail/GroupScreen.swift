@@ -332,7 +332,7 @@ struct GroupFaces: View {
                 }
             }
             .contentShape(.rect)
-            .fingerTarget(verticalOverlap: max(0, (44 - size) / 2))
+            .fingerTarget()
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)

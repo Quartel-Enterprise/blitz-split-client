@@ -73,7 +73,7 @@ struct RowMenuButton<Items: View>: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 32, height: 32)
                 .contentShape(.rect)
-                .fingerTarget(horizontalOverlap: 6, verticalOverlap: 6)
+                .fingerTarget()
         }
         .menuStyle(.button)
         .buttonStyle(.borderless)
