@@ -396,6 +396,8 @@ private struct PhoneBillDetail: View {
     /// The comment a link opened Bill at, tinted for a moment.
     @State private var highlightedCommentId: String?
     @FocusState private var isComposing: Bool
+    /// The total's 40 pt, growing with the text size.
+    @ScaledMetric(relativeTo: .largeTitle) private var totalSize: CGFloat = 40
 
     private var state: BillDetailUiState {
         model.state
@@ -504,7 +506,7 @@ private struct PhoneBillDetail: View {
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(verbatim: state.currency.format(state.totalMinor))
-                        .font(.system(size: 40, weight: .bold))
+                        .font(.system(size: totalSize, weight: .bold))
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)

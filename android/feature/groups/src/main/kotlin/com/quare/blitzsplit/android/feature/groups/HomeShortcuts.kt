@@ -32,16 +32,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-private const val DISABLED_ALPHA = 0.6f
 private val outerCorner = 24.dp
 private val innerCorner = 8.dp
 
@@ -109,7 +108,10 @@ internal fun HomeShortcutsRow(
     }
 }
 
-// Why: lying down there is no height for a column, so the icon goes beside the label.
+/*
+ * Why: the icon always sits over the label: beside it, in a compact tile (a book's half, a phone lying down), the label
+ * kept a sliver that broke its words in the middle ("Scan a receip/t"). Compact only shrinks the icon and the margins.
+ */
 @Composable
 private fun ShortcutTile(
     shortcut: Shortcut,
@@ -118,48 +120,6 @@ private fun ShortcutTile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val icon: @Composable () -> Unit = {
-        Box(
-            modifier = Modifier
-                .size(if (isCompact) 36.dp else 40.dp)
-                .background(
-                    if (shortcut.isEnabled) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.surfaceContainerHigh
-                    },
-                    CircleShape,
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = shortcut.icon,
-                contentDescription = null,
-                modifier = Modifier.size(22.dp),
-                tint = if (shortcut.isEnabled) {
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            )
-        }
-    }
-    val label: @Composable () -> Unit = {
-        Column(horizontalAlignment = if (isCompact) Alignment.Start else Alignment.CenterHorizontally) {
-            Text(
-                text = stringResource(shortcut.label),
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = if (isCompact) TextAlign.Start else TextAlign.Center,
-            )
-            if (!shortcut.isEnabled) {
-                Text(
-                    text = stringResource(DesignR.string.designsystem_group_exit_needs_internet),
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = if (isCompact) TextAlign.Start else TextAlign.Center,
-                )
-            }
-        }
-    }
     Surface(
         onClick = onClick,
         enabled = shortcut.isEnabled,
@@ -172,29 +132,56 @@ private fun ShortcutTile(
             MaterialTheme.colorScheme.onSurfaceVariant
         },
     ) {
-        val contentModifier = Modifier
-            .alpha(if (shortcut.isEnabled) 1f else DISABLED_ALPHA)
-            .padding(
+        // Why: off, the tile still says "needs internet", so it is muted (Surface's content color), never faded.
+        Column(
+            modifier = Modifier.padding(
                 horizontal = 6.dp,
                 vertical = if (isCompact) 8.dp else 12.dp,
-            )
-        if (isCompact) {
-            Row(
-                modifier = contentModifier,
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(if (isCompact) 36.dp else 40.dp)
+                    .background(
+                        if (shortcut.isEnabled) {
+                            MaterialTheme.colorScheme.secondaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        },
+                        CircleShape,
+                    ),
+                contentAlignment = Alignment.Center,
             ) {
-                icon()
-                label()
+                Icon(
+                    imageVector = shortcut.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = if (shortcut.isEnabled) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
             }
-        } else {
-            Column(
-                modifier = contentModifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
-            ) {
-                icon()
-                label()
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(shortcut.label),
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (!shortcut.isEnabled) {
+                    Text(
+                        text = stringResource(DesignR.string.designsystem_group_exit_needs_internet),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }

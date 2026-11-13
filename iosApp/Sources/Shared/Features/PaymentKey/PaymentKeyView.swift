@@ -510,8 +510,11 @@ private struct DeleteSection: View {
 
     var body: some View {
         Section {
-            Button("Delete key", role: .destructive) {
+            Button(role: .destructive) {
                 model.send(PaymentKeyUiEventOnDeleteClicked.shared)
+            } label: {
+                Text("Delete key")
+                    .destructiveRowLabel()
             }
             .disabled(model.state.isSaving)
             // Anchored to the button, so the iPad shows it as a popover over it

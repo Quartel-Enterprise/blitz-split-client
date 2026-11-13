@@ -128,7 +128,7 @@ export function SearchDialog({ search, actions }: { search: JsGroupsSearch; acti
             aria-controls="groups-search-results"
             aria-activedescendant={items.length > 0 ? `groups-search-${activeIndex}` : undefined}
             aria-label={t('groups_search')}
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            className="min-w-0 flex-1 bg-transparent text-base outline-none md:text-sm placeholder:text-muted-foreground"
           />
           <kbd className="flex h-5 items-center rounded border bg-muted px-1.5 font-sans text-[11px] text-muted-foreground">Esc</kbd>
         </div>

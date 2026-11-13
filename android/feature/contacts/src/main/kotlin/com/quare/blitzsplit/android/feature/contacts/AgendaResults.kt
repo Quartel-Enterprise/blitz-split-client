@@ -35,10 +35,17 @@ internal fun LazyListScope.agendaResultItems(
     onInvite: (contactId: String) -> Unit,
 ) {
     if (results.isEmpty()) return
-    item(key = "$keyPrefix-title") {
+    item(
+        key = "$keyPrefix-title",
+        contentType = "title",
+    ) {
         SectionTitle(stringResource(R.string.contacts_search_in_agenda, results.size))
     }
-    itemsIndexed(results, key = { _, match -> "$keyPrefix-${match.contact.id}" }) { index, match ->
+    itemsIndexed(
+        items = results,
+        key = { _, match -> "$keyPrefix-${match.contact.id}" },
+        contentType = { _, _ -> "contact" },
+    ) { index, match ->
         AgendaContactRow(
             match = match,
             index = index,

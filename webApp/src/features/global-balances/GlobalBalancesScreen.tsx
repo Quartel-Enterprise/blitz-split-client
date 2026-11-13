@@ -166,7 +166,7 @@ function FilterCards({ presenter, state }: { presenter: GlobalBalancesPresenter;
             aria-pressed={isOn}
             onClick={() => presenter.changeFilter(filter)}
             className={cn(
-              'flex flex-col gap-1 rounded-xl border bg-card p-4 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50',
+              'flex flex-col gap-1 rounded-xl border bg-card p-4 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
               isOn && 'border-primary ring-1 ring-primary',
             )}
           >
@@ -349,7 +349,7 @@ function PersonPickRow({ presenter, row, isSelected }: { presenter: GlobalBalanc
       aria-current={isSelected}
       onClick={() => presenter.selectPerson(row.id)}
       className={cn(
-        'block w-full border-b px-4 py-2.5 outline-none last:border-b-0 hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50',
+        'block w-full border-b px-4 py-2.5 outline-none last:border-b-0 hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring',
         isSelected && 'bg-muted',
       )}
     >
@@ -418,7 +418,7 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
                 <button
                   type="button"
                   onClick={() => presenter.openGroup(group.groupId)}
-                  className="-mx-1 flex min-w-0 items-center gap-2.5 rounded-md px-1 py-1 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="-mx-1 flex min-w-0 items-center gap-2.5 rounded-md px-1 py-1 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring"
                 >
                   <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-6 shrink-0 text-[10px]" />
                   <span className="truncate">{group.name}</span>

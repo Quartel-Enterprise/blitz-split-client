@@ -25,7 +25,8 @@ struct PhotoViewer<Content: View>: View {
             }
             .scrollBounceBehavior(.basedOnSize)
         }
-        .background(Color.black.opacity(0.3).ignoresSafeArea())
+        // 0.75, so the white captions (10:1) and "Remove" in the dark negative (6:1) read even over a white page
+        .background(Color.black.opacity(0.75).ignoresSafeArea())
         .overlay(alignment: .topTrailing) {
             Button("Close", systemImage: "xmark", action: dismiss)
                 .labelStyle(.iconOnly)

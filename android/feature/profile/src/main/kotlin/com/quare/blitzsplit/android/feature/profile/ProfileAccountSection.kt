@@ -2,6 +2,8 @@ package com.quare.blitzsplit.android.feature.profile
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,6 +35,9 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+
+// Why: the width the row needs at the default font for its texts to read beside the button.
+private val minWidthBesideButton = 300.dp
 
 @Composable
 internal fun AccountSection(
@@ -116,25 +122,41 @@ private fun AccountRow(
             },
         )
     } else {
-        SectionRow(
-            icon = Icons.Outlined.NoAccounts,
-            headline = stringResource(R.string.profile_account_none),
-            supporting = if (state.hasAnonymousId) {
-                stringResource(R.string.profile_account_none_detail)
-            } else {
-                stringResource(R.string.profile_account_local_detail)
-            },
-            trailing = if (state.isConnectExpanded) {
-                null
-            } else {
-                {
-                    FilledTonalButton(
-                        onClick = { onEvent(ProfileUiEvent.OnConnectClicked) },
-                        enabled = state.canConnect,
-                    ) { Text(stringResource(R.string.profile_connect)) }
+        /*
+         * Why: beside the texts the button left them a sliver that broke "Anonymous" in the middle wherever the row is
+         * narrow for its font (a 360 dp phone from a 1.15 scale, a small phone at any). There it goes under them,
+         * aligned with the texts; a tablet's row keeps it beside them at any font.
+         */
+        BoxWithConstraints {
+            val isButtonBelow = maxWidth < minWidthBesideButton * LocalDensity.current.fontScale
+            val connectButton: @Composable () -> Unit = {
+                FilledTonalButton(
+                    onClick = { onEvent(ProfileUiEvent.OnConnectClicked) },
+                    enabled = state.canConnect,
+                ) { Text(stringResource(R.string.profile_connect)) }
+            }
+            Column {
+                SectionRow(
+                    icon = Icons.Outlined.NoAccounts,
+                    headline = stringResource(R.string.profile_account_none),
+                    supporting = if (state.hasAnonymousId) {
+                        stringResource(R.string.profile_account_none_detail)
+                    } else {
+                        stringResource(R.string.profile_account_local_detail)
+                    },
+                    trailing = connectButton.takeUnless { state.isConnectExpanded || isButtonBelow },
+                )
+                if (isButtonBelow && !state.isConnectExpanded) {
+                    Box(
+                        modifier = Modifier.padding(
+                            start = 56.dp,
+                            end = 16.dp,
+                            bottom = 12.dp,
+                        ),
+                    ) { connectButton() }
                 }
-            },
-        )
+            }
+        }
     }
 }
 

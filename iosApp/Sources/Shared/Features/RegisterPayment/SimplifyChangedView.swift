@@ -45,6 +45,7 @@ private struct SimplifyChangedPayee: View {
         HStack(spacing: 14) {
             if let to {
                 AvatarPhoto(initial: to.initials, color: to.avatarColor, photoUrl: to.photoUrl, size: size)
+                    .opacity(0.6)
                     .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -67,7 +68,8 @@ private struct SimplifyChangedPayee: View {
                 .foregroundStyle(.secondary)
                 .accessibilityLabel(Text("was \(amount)", comment: "13.5c: the amount owed before, struck through"))
         }
-        .opacity(0.6)
+        // No opacity over the row: its secondary lines and the strikethrough already say it is the old debt, and a
+        // dimmed secondary read at under 2:1
         .accessibilityElement(children: .combine)
     }
 }

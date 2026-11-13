@@ -437,7 +437,7 @@ private struct StatsSummaryPanels: View {
 
     private func panel(_ title: String, _ value: String, _ hint: String, isPending: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(verbatim: title).font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
+            Text(verbatim: title).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             Text(verbatim: value).font(.title2.bold()).monospacedDigit().lineLimit(1).minimumScaleFactor(0.7)
             HStack(spacing: 5) {
                 if isPending { PendingDot(size: 7) }
@@ -854,6 +854,8 @@ private struct StatsDatesSheet: View {
         }
         #if os(iOS)
         .presentationDetents([.medium])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
         #else
         .frame(width: 360, height: 220)
         #endif

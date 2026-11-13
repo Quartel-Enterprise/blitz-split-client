@@ -175,7 +175,10 @@ private fun ActivityPane(
             onEvent = onEvent,
             modifier = Modifier.widthIn(max = columnMaxWidth),
             header = {
-                item(key = "tools") {
+                item(
+                    key = "tools",
+                    contentType = "tools",
+                ) {
                     ActivityToolsSection(
                         state = state,
                         onEvent = onEvent,
@@ -209,7 +212,10 @@ private fun ActivityListDetailLayout(
                 .width(listDetail.listPaneWidth)
                 .fillMaxHeight(),
             header = {
-                item(key = "tools") {
+                item(
+                    key = "tools",
+                    contentType = "tools",
+                ) {
                     ActivityToolsSection(
                         state = state,
                         onEvent = onEvent,

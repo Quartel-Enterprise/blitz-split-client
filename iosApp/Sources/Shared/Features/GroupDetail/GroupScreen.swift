@@ -332,6 +332,7 @@ struct GroupFaces: View {
                 }
             }
             .contentShape(.rect)
+            .fingerTarget()
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .ignore)
@@ -394,22 +395,43 @@ struct BalanceCard: View {
             Text("\(currency.format(0)) · you're settled up")
                 .font(.title3.weight(.semibold))
         } else {
-            // What this person gets back and owes may cancel out: "$0.00", muted, with both in the details
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Text(verbatim: currency.formatSigned(balance.netMinor))
-                    .font(.title2.bold())
-                    .monospacedDigit()
-                    .foregroundStyle(Palette.balance(balance.netMinor))
-                if balance.netMinor > 0 {
-                    Text("to get back")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else if balance.netMinor < 0 {
-                    Text("you owe")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            // What this person gets back and owes may cancel out: "$0.00", muted, with both in the details. Beside
+            // "Settle up" in a narrow column (an iPhone Duo closed, with its vertical bar) the word goes under the
+            // amount, which stays on one line and shrinks before it would break
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    netAmount
+                    netWord
+                }
+                VStack(alignment: .leading, spacing: 0) {
+                    netAmount
+                    netWord
                 }
             }
+        }
+    }
+
+    private var netAmount: some View {
+        Text(verbatim: currency.formatSigned(balance.netMinor))
+            .font(.title2.bold())
+            .monospacedDigit()
+            .foregroundStyle(Palette.balance(balance.netMinor))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+    }
+
+    @ViewBuilder
+    private var netWord: some View {
+        if balance.netMinor > 0 {
+            Text("to get back")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        } else if balance.netMinor < 0 {
+            Text("you owe")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
         }
     }
 

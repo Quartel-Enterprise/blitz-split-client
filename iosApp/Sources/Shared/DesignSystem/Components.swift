@@ -69,6 +69,26 @@ struct GroupedCard<Content: View>: View {
     }
 }
 
+extension View {
+    /// A finger's 44 pt around a small control on iPhone and iPad (Apple's minimum), on a button's label: only what
+    /// answers a tap grows, from the label's own measured size, so the layout is the same at every text size. The
+    /// Mac's pointer needs none.
+    func fingerTarget() -> some View {
+        #if os(iOS)
+        contentShape(.interaction, FingerTargetShape())
+        #else
+        self
+        #endif
+    }
+}
+
+/// The label's bounds grown to at least 44 pt on each side, centered on it; never smaller than the label.
+private nonisolated struct FingerTargetShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path(rect.insetBy(dx: min(0, (rect.width - 44) / 2), dy: min(0, (rect.height - 44) / 2)))
+    }
+}
+
 /// The "or" between the account buttons and "Use without an account".
 struct OrDivider: View {
     var body: some View {

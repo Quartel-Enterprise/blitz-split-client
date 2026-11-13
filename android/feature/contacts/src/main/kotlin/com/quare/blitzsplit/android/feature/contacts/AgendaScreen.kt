@@ -156,7 +156,10 @@ private fun LazyListScope.agendaItems(
 ) {
     val onInviteWithLink = { onEvent(AgendaUiEvent.OnInviteWithLinkClicked) }
     when {
-        state.showsAskAccess -> item(key = "ask") {
+        state.showsAskAccess -> item(
+            key = "ask",
+            contentType = "ask",
+        ) {
             AccessCard(
                 title = stringResource(R.string.contacts_agenda_ask_title),
                 body = stringResource(R.string.contacts_agenda_ask_body),
@@ -166,7 +169,10 @@ private fun LazyListScope.agendaItems(
             )
         }
 
-        state.showsDenied -> item(key = "denied") {
+        state.showsDenied -> item(
+            key = "denied",
+            contentType = "denied",
+        ) {
             AccessCard(
                 title = stringResource(R.string.contacts_agenda_denied_title),
                 body = stringResource(R.string.contacts_agenda_denied_body),
@@ -187,7 +193,10 @@ private fun LazyListScope.contactItems(
     state: AgendaUiState,
     onEvent: (AgendaUiEvent) -> Unit,
 ) {
-    item(key = "search") {
+    item(
+        key = "search",
+        contentType = "search",
+    ) {
         SearchBarField(
             query = state.query,
             placeholder = stringResource(R.string.contacts_agenda_search),
@@ -202,7 +211,10 @@ private fun LazyListScope.contactItems(
         )
     }
     if (state.showsNoResults) {
-        item(key = "no-results") {
+        item(
+            key = "no-results",
+            contentType = "no-results",
+        ) {
             NoResultsMessage(
                 title = stringResource(R.string.contacts_no_results_title, state.query.trim()),
                 body = stringResource(R.string.contacts_agenda_no_results_body),
@@ -211,7 +223,10 @@ private fun LazyListScope.contactItems(
         }
         return
     }
-    item(key = "link") {
+    item(
+        key = "link",
+        contentType = "link",
+    ) {
         InviteActionRow(
             icon = Icons.Outlined.QrCode2,
             title = stringResource(R.string.contacts_invite_link),
@@ -227,7 +242,10 @@ private fun LazyListScope.contactItems(
         )
     }
     if (state.isLoadingContacts) {
-        item(key = "skeleton") {
+        item(
+            key = "skeleton",
+            contentType = "skeleton",
+        ) {
             ContactRowsSkeleton(
                 count = AGENDA_SKELETON_ROWS,
                 modifier = contactsSkeletonPadding.padding(top = 8.dp),
@@ -236,7 +254,10 @@ private fun LazyListScope.contactItems(
         return
     }
     if (state.showsEmptyAgenda) {
-        item(key = "empty") {
+        item(
+            key = "empty",
+            contentType = "empty",
+        ) {
             Text(
                 text = stringResource(R.string.contacts_agenda_empty),
                 modifier = Modifier

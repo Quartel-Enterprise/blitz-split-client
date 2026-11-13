@@ -41,7 +41,7 @@ export function AddToGroupDialog({ presenter, draft, contact }: { presenter: Con
                     aria-checked={isChecked}
                     disabled={option.isAlreadyIn}
                     onClick={() => presenter.pickAddGroup(option.groupId)}
-                    className="flex items-center gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset disabled:pointer-events-none disabled:opacity-60"
+                    className="flex items-center gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset disabled:pointer-events-none disabled:opacity-60"
                   >
                     <GroupAvatar initials={option.initials} color={option.color} className="size-8 text-xs" />
                     <span className="flex min-w-0 flex-1 flex-col">
@@ -193,7 +193,7 @@ function MergeOption({ isChecked, title, body, onClick }: { isChecked: boolean; 
       aria-checked={isChecked}
       onClick={onClick}
       className={cn(
-        'flex items-start gap-3 rounded-lg border px-3.5 py-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        'flex items-start gap-3 rounded-lg border px-3.5 py-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
         isChecked ? 'border-primary ring-1 ring-primary' : 'hover:bg-accent/50',
       )}
     >

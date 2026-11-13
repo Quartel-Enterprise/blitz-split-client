@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -280,7 +279,7 @@ internal fun CompactNumberField(
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
-                    .height(44.dp)
+                    .heightIn(min = 44.dp)
                     .border(
                         border = BorderStroke(if (isError || isFocused) 2.dp else 1.dp, borderColor),
                         shape = RoundedCornerShape(8.dp),

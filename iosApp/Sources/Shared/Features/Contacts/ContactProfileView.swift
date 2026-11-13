@@ -443,6 +443,8 @@ private struct PendingMergeCard: View {
 private struct NetCard: View {
     let model: ContactProfileModel
     let contact: Contact
+    /// The net's 40 pt, growing with the text size.
+    @ScaledMetric(relativeTo: .largeTitle) private var amountSize: CGFloat = 40
 
     private var state: ContactProfileUiState {
         model.state
@@ -455,7 +457,7 @@ private struct NetCard: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Text(verbatim: ContactsCopy.amount(contact.net))
-                    .font(.system(size: 40, weight: .bold))
+                    .font(.system(size: amountSize, weight: .bold))
                     .monospacedDigit()
                     .foregroundStyle(Palette.balance(contact.net.amountMinor))
                     .lineLimit(1)
@@ -736,6 +738,8 @@ private struct AddToGroupSheet: View {
         }
         #if os(iOS)
         .presentationDetents([.medium, .large])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
         #else
         .frame(width: 440, height: 440)
         #endif
@@ -889,6 +893,8 @@ private struct MergeGuestSheet: View {
         ])
         #if os(iOS)
         .presentationDetents([.large])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
         #else
         .frame(width: 480, height: 520)
         #endif

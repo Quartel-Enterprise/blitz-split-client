@@ -52,6 +52,7 @@ import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
+import com.quare.blitzsplit.android.designsystem.theme.neutralDataColorOf
 import com.quare.blitzsplit.android.designsystem.theme.pendingColor
 import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.activity.domain.model.ActivityKind
@@ -156,7 +157,8 @@ internal fun GroupDotIcon(
         modifier = modifier
             .size(groupDotSize)
             .background(
-                color?.toDataColor(isDark) ?: MaterialTheme.colorScheme.outlineVariant,
+                // Why: a group with no color still shows its dot at 3:1, in the neutral's data tone.
+                color?.toDataColor(isDark) ?: neutralDataColorOf(isDark),
                 GroupAvatarShape,
             ),
     )

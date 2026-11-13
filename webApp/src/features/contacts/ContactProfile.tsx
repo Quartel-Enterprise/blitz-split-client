@@ -334,7 +334,7 @@ function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presente
                 type="button"
                 onClick={() => presenter.openGroup(group.groupId)}
                 className={cn(
-                  'flex min-h-13 w-full items-center gap-3 px-3.5 py-2 text-left text-sm outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50 @md:h-12 @md:min-h-0 @md:px-4 @md:py-0',
+                  'flex min-h-13 w-full items-center gap-3 px-3.5 py-2 text-left text-sm outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring @md:h-12 @md:min-h-0 @md:px-4 @md:py-0',
                   columns,
                 )}
               >

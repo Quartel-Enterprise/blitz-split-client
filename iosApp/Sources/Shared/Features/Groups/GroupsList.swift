@@ -397,6 +397,9 @@ struct SummaryButton: View {
                             .font(.subheadline.bold())
                             .monospacedDigit()
                             .foregroundStyle(isEnabled ? color : .secondary)
+                            // An amount never breaks in two lines: it shrinks in a narrow button
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                     }
                 }
                 Spacer(minLength: 4)

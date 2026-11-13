@@ -204,7 +204,7 @@ function ModePicker({ presenter, state }: { presenter: DefaultSplitPresenter; st
               aria-checked={isSelected}
               onClick={() => presenter.selectMode(mode)}
               className={cn(
-                'flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                'flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                 isSelected ? 'border-primary bg-primary/5' : 'hover:bg-accent/60',
               )}
             >
@@ -367,7 +367,7 @@ function NumberField({
     <label
       className={cn(
         'flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-field-border bg-card px-2.5 text-sm focus-within:ring-[3px] dark:bg-input/30',
-        isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
+        isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring',
         className,
       )}
     >
@@ -384,7 +384,7 @@ function NumberField({
         aria-label={label}
         aria-invalid={isInvalid}
         onChange={(event) => setDraft(event.target.value)}
-        className="min-w-0 flex-1 bg-transparent text-right font-semibold tabular-nums outline-none placeholder:text-muted-foreground"
+        className="min-w-0 flex-1 bg-transparent text-right text-base font-semibold tabular-nums outline-none md:text-sm placeholder:text-muted-foreground"
       />
       {suffix && (
         <span aria-hidden className="text-muted-foreground">

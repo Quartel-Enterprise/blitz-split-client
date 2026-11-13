@@ -44,7 +44,10 @@ internal fun LazyListScope.expenseDayItems(
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
     days.forEach { day ->
-        item(key = "day-${day.dayStartMillis}") {
+        item(
+            key = "day-${day.dayStartMillis}",
+            contentType = "day",
+        ) {
             EntryDayHeading(
                 text = when (day.relativeDay) {
                     RelativeDay.TODAY -> stringResource(R.string.group_detail_today)
@@ -56,6 +59,7 @@ internal fun LazyListScope.expenseDayItems(
         itemsIndexed(
             items = day.entries,
             key = { _, entry -> entry.id },
+            contentType = { _, entry -> entry::class },
         ) { index, entry ->
             val shape = groupedRowShapeOf(
                 index = index,

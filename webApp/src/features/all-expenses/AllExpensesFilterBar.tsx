@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { useDraft } from '@/hooks/useDraft'
 import { t, type MessageKey } from '@/i18n'
 import { CategoryBadge, categoryName } from '@/lib/categories'
 import { cn } from '@/lib/utils'
@@ -44,14 +45,15 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
   const categoryIds = Array.from(state.categoryIds)
   const groups = Array.from(state.groupOptions)
   const categories = Array.from(state.categoryOptions)
+  const [query, setQuery] = useDraft(state.query, (next) => presenter.search(next))
   return (
     <div className="flex flex-col gap-2.5">
       <div className="relative">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="search"
-          value={state.query}
-          onChange={(event) => presenter.search(event.target.value)}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
           placeholder={t('allExpenses_search')}
           aria-label={t('allExpenses_search')}
           className="pl-9"

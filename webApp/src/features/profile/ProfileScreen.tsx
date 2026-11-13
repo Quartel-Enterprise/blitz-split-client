@@ -509,7 +509,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
                     {/* lang, so a screen reader reads "日本語" as Japanese and the font draws it as Japan's */}
                     <span lang={nativeName ? code : undefined}>{nativeName ?? name}</span>
                     {/* The app's own name for it, unless both read the same ("Italiano") */}
-                    {nativeName && nativeName !== name && <span className="text-xs font-normal opacity-80">{name}</span>}
+                    {nativeName && nativeName !== name && <span className="text-xs font-normal">{name}</span>}
                   </button>
                 )
               })}

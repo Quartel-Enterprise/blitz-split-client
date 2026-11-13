@@ -20,7 +20,6 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,9 +45,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.CategoryColorPicker
+import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -160,9 +161,10 @@ private fun ChangeColorButton(
         )
     }
     if (isOpen) {
-        AlertDialog(
+        FoldAlertDialog(
             onDismissRequest = { isOpen = false },
-            title = { Text(stringResource(R.string.category_map_change_color, categoryName(category))) },
+            title = stringResource(R.string.category_map_change_color, categoryName(category)),
+            placement = rememberDialogPlacement(),
             text = {
                 CategoryColorPicker(
                     selected = category.color,

@@ -82,7 +82,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 private val dialogWidth = 560.dp
-private const val DISABLED_ALPHA = 0.38f
 private const val DISABLED_BORDER_ALPHA = 0.12f
 
 /*
@@ -425,7 +424,8 @@ private fun VisibilityOption(
     isEnabled: Boolean,
     onClick: () -> Unit,
 ) {
-    val alpha = if (isEnabled) 1f else DISABLED_ALPHA
+    // Why: off, the options still say who can open the link, so their texts stay readable in the muted color.
+    val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -457,12 +457,12 @@ private fun VisibilityOption(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
+                color = titleColor,
             )
             Text(
                 text = detail,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

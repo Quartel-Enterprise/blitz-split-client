@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -128,6 +129,8 @@ private fun CategoryExpensesScaffold(
     val money = rememberMoneyFormatter(state.currency)
     val times = rememberDateTimeTextFormatter()
     val isBook = rememberFoldLayout().bookSplit != null
+    // Why: one list for both layouts, so folding and unfolding keeps the place.
+    val listState = rememberLazyListState()
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -141,6 +144,8 @@ private fun CategoryExpensesScaffold(
                     if (state.isLoaded) {
                         Text(
                             text = subtitleOf(state),
+                            // Why: the bar lays the texts out to its very edge, where a long name lost its ellipsis.
+                            modifier = Modifier.padding(end = 16.dp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -177,7 +182,10 @@ private fun CategoryExpensesScaffold(
                     )
                 },
                 end = {
-                    LazyColumn(contentPadding = listPadding) {
+                    LazyColumn(
+                        state = listState,
+                        contentPadding = listPadding,
+                    ) {
                         categoryExpenseItems(state, money, times, onEvent)
                     }
                 },
@@ -196,9 +204,13 @@ private fun CategoryExpensesScaffold(
                     modifier = Modifier
                         .widthIn(max = listMaxWidth)
                         .fillMaxWidth(),
+                    state = listState,
                     contentPadding = listPadding,
                 ) {
-                    item(key = "header") {
+                    item(
+                        key = "header",
+                        contentType = "header",
+                    ) {
                         CategoryFilterHeader(
                             state = state,
                             money = money,
@@ -307,7 +319,10 @@ private fun LazyListScope.categoryExpenseItems(
     onEvent: (CategoryExpensesUiEvent) -> Unit,
 ) {
     if (!state.isLoaded || state.isLoadingBills) {
-        item(key = "loading") {
+        item(
+            key = "loading",
+            contentType = "loading",
+        ) {
             ShimmerListSkeleton(
                 count = 4,
                 leadingShape = RoundedCornerShape(14.dp),
@@ -318,7 +333,10 @@ private fun LazyListScope.categoryExpenseItems(
         }
     }
     if (state.isEmpty || state.isPeriodEmpty) {
-        item(key = "empty") {
+        item(
+            key = "empty",
+            contentType = "empty",
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -351,7 +369,10 @@ private fun LazyListScope.categoryExpenseItems(
         }
     }
     state.days.forEach { day ->
-        item(key = "day-${day.dayStartMillis}") {
+        item(
+            key = "day-${day.dayStartMillis}",
+            contentType = "day",
+        ) {
             EntryDayHeading(
                 text = when (day.relativeDay) {
                     RelativeDay.TODAY -> stringResource(R.string.category_expenses_today)
@@ -363,6 +384,7 @@ private fun LazyListScope.categoryExpenseItems(
         itemsIndexed(
             items = day.expenses,
             key = { _, expense -> expense.id },
+            contentType = { _, _ -> "expense" },
         ) { index, expense ->
             CategoryExpenseLine(
                 expense = expense,

@@ -273,18 +273,18 @@ function SplitPersonRow({ presenter, row, mode, currency, fractionDigits, paidLa
             ? t('splitBill_notJoined')
             : t('split_theirPart')
       control = (
-        <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={isMissing} label={t('split_amountLabel', { name: ariaName })} className="w-28" />
+        <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={isMissing} label={t('split_amountLabel', { name: ariaName })} className="w-32 md:w-28" />
       )
       break
     case 'income':
       subtitle = isOut ? t('split_out') : share && row.incomePercent != null ? `${share} · ${formatPercent(row.incomePercent)}` : share
       control = (
-        <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={false} label={t('split_incomeLabel', { name: ariaName })} className="w-28" />
+        <ValueField presenter={presenter} row={row} prefix={currencySymbol(currency)} placeholder={amountPlaceholder(fractionDigits, currency)} isInvalid={false} label={t('split_incomeLabel', { name: ariaName })} className="w-32 md:w-28" />
       )
       break
     case 'percent':
       subtitle = isOut ? t('split_out') : share
-      control = <ValueField presenter={presenter} row={row} suffix="%" placeholder="0" isInvalid={false} label={t('split_percentLabel', { name: ariaName })} className="w-[72px]" />
+      control = <ValueField presenter={presenter} row={row} suffix="%" placeholder="0" isInvalid={false} label={t('split_percentLabel', { name: ariaName })} className="w-20 md:w-[72px]" />
       break
     case 'shares':
       subtitle = isOut ? t('split_out') : share
@@ -360,7 +360,7 @@ function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, la
     <span
       className={cn(
         'flex h-8 shrink-0 items-center gap-1 rounded-md border border-field-border bg-card px-2 focus-within:ring-[3px] dark:bg-input/30',
-        isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
+        isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring',
         className,
       )}
     >
@@ -377,7 +377,7 @@ function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, la
         aria-label={label}
         aria-invalid={isInvalid}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground"
+        className="w-full min-w-0 bg-transparent text-right font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
       />
       {suffix && (
         <span aria-hidden className="text-xs text-muted-foreground">

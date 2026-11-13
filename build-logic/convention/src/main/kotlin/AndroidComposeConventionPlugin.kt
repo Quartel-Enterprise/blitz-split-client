@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 /**
  * An Android library that draws with Jetpack Compose: the design system and the native UI of
@@ -28,6 +29,13 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
                 defaultConfig {
                     minSdk = sdkVersions.minSdk
                 }
+            }
+
+            // The shared models listed there compare by equals, so a row whose model didn't change skips.
+            extensions.configure<ComposeCompilerGradlePluginExtension> {
+                stabilityConfigurationFiles.add(
+                    rootProject.layout.projectDirectory.file("build-logic/compose_stability.conf"),
+                )
             }
 
             dependencies {

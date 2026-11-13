@@ -50,7 +50,7 @@ export function PersonGroupsList({
             key={group.groupId}
             type="button"
             onClick={() => onGroupClick(group.groupId)}
-            className="-mx-3 flex items-center gap-2.5 border-b px-3 py-2 text-sm outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
+            className="-mx-3 flex items-center gap-2.5 border-b px-3 py-2 text-sm outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring"
           >
             {content}
           </button>

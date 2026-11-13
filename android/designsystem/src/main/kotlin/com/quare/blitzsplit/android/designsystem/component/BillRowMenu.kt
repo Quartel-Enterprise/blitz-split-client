@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.R
 
@@ -19,44 +20,58 @@ fun billMenuItemsOf(
     onDuplicate: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
-): List<RowMenuItem> = listOf(
-    RowMenuItem(
-        label = stringResource(R.string.designsystem_bill_menu_edit),
-        icon = Icons.Outlined.Edit,
-        hint = null,
-        isEnabled = true,
-        isDestructive = false,
-        onClick = onEdit,
-    ),
-    RowMenuItem(
-        label = stringResource(R.string.designsystem_bill_menu_duplicate),
-        icon = Icons.Outlined.ContentCopy,
-        hint = null,
-        isEnabled = true,
-        isDestructive = false,
-        onClick = onDuplicate,
-    ),
-    RowMenuItem(
-        label = stringResource(R.string.designsystem_bill_menu_share),
-        icon = Icons.Outlined.Share,
-        hint = null,
-        isEnabled = true,
-        isDestructive = false,
-        onClick = onShare,
-    ),
-    deleteMenuItemOf(onDelete),
-)
+): List<RowMenuItem> {
+    val editLabel = stringResource(R.string.designsystem_bill_menu_edit)
+    val duplicateLabel = stringResource(R.string.designsystem_bill_menu_duplicate)
+    val shareLabel = stringResource(R.string.designsystem_bill_menu_share)
+    val deleteItem = deleteMenuItemOf(onDelete)
+    // Why: a row of a long list hands the same list to its menu until one of its parts changes, so the menu skips.
+    return remember(editLabel, duplicateLabel, shareLabel, deleteItem, onEdit, onDuplicate, onShare) {
+        listOf(
+            RowMenuItem(
+                label = editLabel,
+                icon = Icons.Outlined.Edit,
+                hint = null,
+                isEnabled = true,
+                isDestructive = false,
+                onClick = onEdit,
+            ),
+            RowMenuItem(
+                label = duplicateLabel,
+                icon = Icons.Outlined.ContentCopy,
+                hint = null,
+                isEnabled = true,
+                isDestructive = false,
+                onClick = onDuplicate,
+            ),
+            RowMenuItem(
+                label = shareLabel,
+                icon = Icons.Outlined.Share,
+                hint = null,
+                isEnabled = true,
+                isDestructive = false,
+                onClick = onShare,
+            ),
+            deleteItem,
+        )
+    }
+}
 
 // Why: a payment's only option, and a bill's last: deleting, which asks first, drawn in the error color.
 @Composable
-fun deleteMenuItemOf(onDelete: () -> Unit): RowMenuItem = RowMenuItem(
-    label = stringResource(R.string.designsystem_bill_menu_delete),
-    icon = Icons.Outlined.Delete,
-    hint = null,
-    isEnabled = true,
-    isDestructive = true,
-    onClick = onDelete,
-)
+fun deleteMenuItemOf(onDelete: () -> Unit): RowMenuItem {
+    val label = stringResource(R.string.designsystem_bill_menu_delete)
+    return remember(label, onDelete) {
+        RowMenuItem(
+            label = label,
+            icon = Icons.Outlined.Delete,
+            hint = null,
+            isEnabled = true,
+            isDestructive = true,
+            onClick = onDelete,
+        )
+    }
+}
 
 // Why: "Opções de Mercado", what TalkBack says for the row's ⋮ and its long press.
 @Composable

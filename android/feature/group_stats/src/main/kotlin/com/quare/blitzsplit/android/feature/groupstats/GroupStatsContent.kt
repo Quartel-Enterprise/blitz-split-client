@@ -25,28 +25,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
-import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
-import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
-import com.quare.blitzsplit.android.designsystem.layout.tabletopFoldLayoutOf
-import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 
@@ -156,6 +150,8 @@ private fun GroupStatsScaffold(
             val subtitle = @Composable {
                 Text(
                     text = state.groupName,
+                    // Why: the bar lays the texts out to its very edge, where a long name lost its ellipsis.
+                    modifier = Modifier.padding(end = 16.dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -348,35 +344,55 @@ private fun StatsColumn(
             bottom = 24.dp,
         ),
     ) {
-        item(key = "period") { chip() }
-        item(key = "summary") {
+        item(
+            key = "period",
+            contentType = "period",
+        ) {
+            chip()
+        }
+        item(
+            key = "summary",
+            contentType = "summary",
+        ) {
             StatsSummaryHero(
                 state = state,
                 money = money,
             )
         }
-        item(key = "categories") {
+        item(
+            key = "categories",
+            contentType = "categories",
+        ) {
             StatsCategoriesSection(
                 state = state,
                 money = money,
                 onEvent = onEvent,
             )
         }
-        item(key = "people") {
+        item(
+            key = "people",
+            contentType = "people",
+        ) {
             StatsPeopleSection(
                 state = state,
                 money = money,
                 onEvent = onEvent,
             )
         }
-        item(key = "settling") {
+        item(
+            key = "settling",
+            contentType = "settling",
+        ) {
             StatsSettlingSection(
                 state = state,
                 money = money,
                 onEvent = onEvent,
             )
         }
-        item(key = "time") {
+        item(
+            key = "time",
+            contentType = "time",
+        ) {
             StatsOverTimeSection(
                 state = state,
                 money = money,
@@ -385,7 +401,10 @@ private fun StatsColumn(
                 modifier = Modifier.padding(top = 8.dp),
             )
         }
-        item(key = "biggest") {
+        item(
+            key = "biggest",
+            contentType = "biggest",
+        ) {
             StatsBiggestSection(
                 state = state,
                 money = money,
@@ -536,61 +555,4 @@ private fun StatsTabletopLayout(
         },
         modifier = Modifier.fillMaxSize(),
     )
-}
-
-@DevicePreviews
-@Composable
-private fun GroupStatsContentPreview() {
-    BlitzSplitTheme {
-        GroupStatsContent(
-            state = createPreviewGroupStatsState(),
-            onEvent = {},
-            onPickDates = {},
-        )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun GroupStatsContentEmptyPreview() {
-    BlitzSplitTheme {
-        GroupStatsContent(
-            state = createPreviewGroupStatsState(hasBills = false),
-            onEvent = {},
-            onPickDates = {},
-        )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun GroupStatsContentFirstDownloadPreview() {
-    BlitzSplitTheme {
-        GroupStatsContent(
-            state = createPreviewGroupStatsState(hasBills = false).copy(
-                isFirstDownload = true,
-                isWaitingForInternet = true,
-            ),
-            onEvent = {},
-            onPickDates = {},
-        )
-    }
-}
-
-// Why: a preview's window reports no fold, so the tabletop's hinge is handed in.
-@Preview(
-    name = "Tabletop",
-    device = "spec:width=841dp,height=673dp,orientation=landscape",
-)
-@Composable
-private fun GroupStatsContentTabletopPreview() {
-    CompositionLocalProvider(LocalFoldLayout provides tabletopFoldLayoutOf(841.dp, 673.dp)) {
-        BlitzSplitTheme {
-            GroupStatsContent(
-                state = createPreviewGroupStatsState(),
-                onEvent = {},
-                onPickDates = {},
-            )
-        }
-    }
 }

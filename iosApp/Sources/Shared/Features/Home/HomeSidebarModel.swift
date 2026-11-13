@@ -40,7 +40,7 @@ struct SidebarOpenGroups: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Open")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.secondary)
                     .padding(.horizontal, 8)
                     .padding(.bottom, 4)
                     .accessibilityAddTraits(.isHeader)

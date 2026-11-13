@@ -63,7 +63,16 @@ internal fun ProfilePhotoContent(
             onTakePhotoClick = onTakePhotoClick,
             onChoosePhotoClick = onChoosePhotoClick,
             onRemoveClick = { onEvent(ProfilePhotoUiEvent.OnPhotoRemoved) }.takeIf { state.hasPhoto },
-            leading = { AccountPhotoShortcutButton(state, onEvent) },
+            leading = {
+                AccountPhotoShortcutButton(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier.weight(
+                        weight = 1f,
+                        fill = false,
+                    ),
+                )
+            },
         )
     }
 }
@@ -100,6 +109,7 @@ private fun LargeAvatarImage(
 private fun AccountPhotoShortcutButton(
     state: ProfilePhotoUiState,
     onEvent: (ProfilePhotoUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val provider = state.accountPhotoProvider ?: return
     PhotoShortcutButton(
@@ -117,6 +127,7 @@ private fun AccountPhotoShortcutButton(
             stringResource(provider.labelRes),
         ),
         onClick = { onEvent(ProfilePhotoUiEvent.OnAccountPhotoSelected) },
+        modifier = modifier,
     )
 }
 

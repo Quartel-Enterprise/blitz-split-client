@@ -26,8 +26,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
@@ -42,9 +40,6 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupRow
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.android.designsystem.R as DesignR
-
-// Why: the M3 alpha of a disabled item, as the ⋮ menu's own DropdownMenuItem draws it.
-private const val DISABLED_ALPHA = 0.38f
 
 /*
  * Why: the ⋮ at the end of every row (5.4), with the same items as its long press, so nobody depends on the long
@@ -189,7 +184,12 @@ private fun GroupActionSheetRow(
     item: GroupActionItem,
     onClick: () -> Unit,
 ) {
-    val color = if (item.isDestructive && item.isEnabled) MaterialTheme.colorScheme.error else Color.Unspecified
+    // Why: an action that is off still says why under it ("needs internet"), so it is muted, never faded out.
+    val color = when {
+        !item.isEnabled -> MaterialTheme.colorScheme.onSurfaceVariant
+        item.isDestructive -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.onSurface
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -197,8 +197,7 @@ private fun GroupActionSheetRow(
             .clickable(
                 enabled = item.isEnabled,
                 onClick = onClick,
-            ).alpha(if (item.isEnabled) 1f else DISABLED_ALPHA)
-            .padding(
+            ).padding(
                 horizontal = 24.dp,
                 vertical = 8.dp,
             ),
@@ -208,7 +207,7 @@ private fun GroupActionSheetRow(
         Icon(
             imageVector = item.icon,
             contentDescription = null,
-            tint = if (color == Color.Unspecified) MaterialTheme.colorScheme.onSurface else color,
+            tint = color,
         )
         Column(
             modifier = Modifier.weight(1f),

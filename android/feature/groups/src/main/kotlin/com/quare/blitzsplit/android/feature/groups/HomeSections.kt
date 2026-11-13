@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -195,13 +196,12 @@ private fun PersonFaceItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
+            AmountText(
                 text = money.toSignedText(person.netMinor),
                 modifier = Modifier.padding(top = 4.dp),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 color = amountColorOf(person.netMinor),
-                maxLines = 1,
             )
             Text(
                 text = stringResource(
@@ -377,11 +377,10 @@ internal fun HomeSummaryCard(
 private fun ExtraCurrencyText(totals: List<PeopleTotal>) {
     totals.forEach { total ->
         val money = rememberMoneyFormatter(total.currency)
-        Text(
+        AmountText(
             text = money.toSignedText(total.netMinor),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            maxLines = 1,
         )
     }
 }

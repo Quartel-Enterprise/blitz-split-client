@@ -340,8 +340,8 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
     <span
       className={cn(
         'flex h-8 shrink-0 items-center gap-1 rounded-md border border-field-border bg-card px-2 focus-within:ring-[3px] dark:bg-input/30',
-        line.isError ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring/50',
-        editor.mode === 'amount' ? 'w-28' : 'w-[72px]',
+        line.isError ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring',
+        editor.mode === 'amount' ? 'w-32 md:w-28' : 'w-20 md:w-[72px]',
       )}
     >
       {editor.mode === 'amount' && (
@@ -357,7 +357,7 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
         aria-label={label}
         aria-invalid={line.isError}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground"
+        className="w-full min-w-0 bg-transparent text-right font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
       />
       {editor.mode === 'percent' && (
         <span aria-hidden className="text-xs text-muted-foreground">

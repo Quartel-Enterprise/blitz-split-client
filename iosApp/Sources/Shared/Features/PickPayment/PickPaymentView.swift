@@ -69,9 +69,9 @@ private struct PickPaymentList: View {
     var body: some View {
         let state = model.state
         list {
-            ForEach(state.groups, id: \.self) { group in
+            ForEach(state.groups, id: \.stableId) { group in
                 Section {
-                    ForEach(group.pairs, id: \.self) { pair in
+                    ForEach(group.pairs, id: \.stableId) { pair in
                         let choice = PairChoice(
                             groupId: group.groupId,
                             fromMemberId: pair.fromMemberId,
@@ -213,5 +213,19 @@ private struct PairRow: View {
 
     private func name(_ person: PaymentPerson?) -> String {
         PaymentCopy.name(person?.name)
+    }
+}
+
+private extension PickPaymentGroup {
+    /// The group and its currency, which stay the same while its pairs change, so a section updates in place.
+    var stableId: String {
+        "\(groupId)|\(currency.code)"
+    }
+}
+
+private extension PickPaymentPair {
+    /// Who owes whom: it stays the same while the amount changes.
+    var stableId: String {
+        "\(fromMemberId)|\(toMemberId)"
     }
 }

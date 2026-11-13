@@ -23,7 +23,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
@@ -43,8 +42,6 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKi
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiEvent
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiState
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.SimplifyChangedNotice
-
-private const val DIMMED_ALPHA = 0.6f
 
 /*
  * Why: 13.5c in place of the form or "Pagar Ana", in the same sheet, dialog or tabletop: someone turned "Simplificar
@@ -227,9 +224,7 @@ private fun PreviousDebtHeader(
     val amount = money.toText(notice.previousDebtMinor)
     val oldAmount = stringResource(R.string.register_payment_simplify_old_amount, amount)
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .alpha(DIMMED_ALPHA),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -247,6 +242,8 @@ private fun PreviousDebtHeader(
                 modifier = Modifier.semantics { heading() },
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
+                // Why: what was owed reads as past in the muted color and the struck amount, never faded under 4.5:1.
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = previousDebtTextOf(state, notice),

@@ -351,7 +351,7 @@ private struct ItemPersonRowView: View {
                     .foregroundStyle(
                         line.row.isIncluded
                             ? AnyShapeStyle(Palette.accent)
-                            : editor.isStatusError ? AnyShapeStyle(Palette.negative) : AnyShapeStyle(.tertiary),
+                            : editor.isStatusError ? AnyShapeStyle(Palette.negative) : AnyShapeStyle(.secondary),
                     )
                     .accessibilityHidden(true)
             }

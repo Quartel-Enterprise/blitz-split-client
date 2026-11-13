@@ -119,13 +119,14 @@ export function GroupPage({
                 <span className="group-header-meta truncate text-sm text-muted-foreground">{meta}</span>
               </div>
               <div className="pointer-events-auto hidden items-center gap-2 md:flex">
-                <Button variant="outline" onClick={() => events.stats()}>
+                {/* Why: below the desktop the two are icons, as on the phone's bar, so the group's name keeps its room. */}
+                <Button variant="outline" aria-label={t('stats_title')} title={t('stats_title')} onClick={() => events.stats()}>
                   <BarChart3 />
-                  {t('stats_title')}
+                  <span className="hidden lg:inline">{t('stats_title')}</span>
                 </Button>
-                <Button variant="outline" onClick={() => events.invite()}>
+                <Button variant="outline" aria-label={t('groupDetail_invite')} title={t('groupDetail_invite')} onClick={() => events.invite()}>
                   <UserPlus />
-                  {t('groupDetail_invite')}
+                  <span className="hidden lg:inline">{t('groupDetail_invite')}</span>
                 </Button>
                 {showsSplitBillButton && (
                   <Button onClick={() => events.splitBill()}>

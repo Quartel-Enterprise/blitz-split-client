@@ -3,7 +3,7 @@ package com.quare.blitzsplit.android.designsystem.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -72,7 +72,7 @@ fun ChoiceChipRow(
                     )
                 },
                 modifier = Modifier
-                    .height(height)
+                    .heightIn(min = height)
                     .semantics { role = Role.RadioButton },
                 shape = CircleShape,
                 colors = FilterChipDefaults.filterChipColors(

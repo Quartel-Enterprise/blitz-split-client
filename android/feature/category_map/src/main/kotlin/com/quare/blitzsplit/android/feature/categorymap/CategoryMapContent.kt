@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.categorymap
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
@@ -48,6 +50,8 @@ private val singleColumnMaxWidth = 560.dp
 private val landscapeListWidth = 320.dp
 private val tabletListWidth = 360.dp
 private val tabletContainerWidth = 920.dp
+private val itemGap = 12.dp
+private val rowGap = 2.dp
 
 /*
  * Why: "Mapa de categorias" (9.1): one column of cards on a phone, centered at 560dp upright on a tablet and a
@@ -261,15 +265,14 @@ private fun MapListColumn(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+        contentPadding = PaddingValues(
             start = 16.dp,
             end = 16.dp,
             top = 8.dp,
-            bottom = 24.dp,
+            bottom = 24.dp - itemGap,
         ),
     ) {
-        item(key = "search") {
+        gapItem(key = "search") {
             MapSearchField(
                 state = state,
                 onEvent = onEvent,
@@ -285,9 +288,9 @@ private fun MapListColumn(
                 onEvent = onEvent,
             )
 
-            !state.isLoaded -> item(key = "skeleton") { CategoryMapSkeleton(showsCards = showsCards) }
+            !state.isLoaded -> gapItem(key = "skeleton") { CategoryMapSkeleton(showsCards = showsCards) }
 
-            state.isEmpty -> item(key = "empty") { EmptyMapContent(onEvent = onEvent) }
+            state.isEmpty -> gapItem(key = "empty") { EmptyMapContent(onEvent = onEvent) }
 
             showsCards -> mapCards(
                 state = state,
@@ -299,6 +302,23 @@ private fun MapListColumn(
                 onEvent = onEvent,
             )
         }
+    }
+}
+
+/*
+ * Why: a card's rows sit 2 dp apart and everything else 12, which one arrangement for the whole list can't say, so
+ * each item brings the gap under it and every row of a long card is an item of its own.
+ */
+private fun LazyListScope.gapItem(
+    key: String,
+    contentType: String = key,
+    content: @Composable () -> Unit,
+) {
+    item(
+        key = key,
+        contentType = contentType,
+    ) {
+        Box(modifier = Modifier.padding(bottom = itemGap)) { content() }
     }
 }
 
@@ -330,12 +350,12 @@ private fun LazyListScope.mapNotices(
     state: CategoryMapUiState,
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
-    if (state.showsOfflineNotice) item(key = "offline") { OfflineQueueBanner(count = state.map.pendingCount) }
+    if (state.showsOfflineNotice) gapItem(key = "offline") { OfflineQueueBanner(count = state.map.pendingCount) }
     if (state.showsDeviceOnlyNotice && !state.isSearching) {
-        item(key = "device-only") { DeviceOnlyCard(onEvent = onEvent) }
+        gapItem(key = "device-only") { DeviceOnlyCard(onEvent = onEvent) }
     }
     if (state.isLoaded && !state.isSearching && !state.isEmpty) {
-        item(key = "intro") { MapIntroText(isOffline = !state.isOnline) }
+        gapItem(key = "intro") { MapIntroText(isOffline = !state.isOnline) }
     }
 }
 
@@ -344,7 +364,10 @@ private fun LazyListScope.mapCards(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     state.sections.forEach { section ->
-        item(key = "card-${section.category.id}") {
+        gapItem(
+            key = "card-${section.category.id}",
+            contentType = "card",
+        ) {
             SectionCard(
                 section = section,
                 state = state,
@@ -359,17 +382,20 @@ private fun LazyListScope.mapCategoryList(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     val selectedId = state.selectedSection?.category?.id
-    item(key = "categories") {
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            state.sections.forEachIndexed { index, section ->
-                SectionListRow(
-                    section = section,
-                    isSelected = section.category.id == selectedId,
-                    index = index,
-                    count = state.sections.size,
-                    onEvent = onEvent,
-                )
-            }
+    val sections = state.sections
+    itemsIndexed(
+        items = sections,
+        key = { _, section -> "category-${section.category.id}" },
+        contentType = { _, _ -> "category" },
+    ) { index, section ->
+        Box(modifier = Modifier.padding(bottom = if (index == sections.lastIndex) itemGap else rowGap)) {
+            SectionListRow(
+                section = section,
+                isSelected = section.category.id == selectedId,
+                index = index,
+                count = sections.size,
+                onEvent = onEvent,
+            )
         }
     }
 }
@@ -379,7 +405,7 @@ private fun LazyListScope.mapSearchResults(
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     if (state.showsNoResult) {
-        item(key = "no-result") {
+        gapItem(key = "no-result") {
             NoTermFoundContent(
                 query = state.query.trim(),
                 onEvent = onEvent,
@@ -387,10 +413,30 @@ private fun LazyListScope.mapSearchResults(
         }
         return
     }
-    item(key = "results") {
-        SearchResultsList(
-            state = state,
-            onEvent = onEvent,
+    val results = state.searchResults
+    item(
+        key = "results-title",
+        contentType = "results-title",
+    ) {
+        SearchResultsTitle(
+            count = results.size,
+            query = state.query.trim(),
         )
     }
+    itemsIndexed(
+        items = results,
+        key = { _, result -> "result-${result.term.key}" },
+        contentType = { _, _ -> "result" },
+    ) { index, result ->
+        val isLast = index == results.lastIndex
+        Box(modifier = Modifier.padding(bottom = if (isLast && results.size == 1) itemGap else rowGap)) {
+            SearchResultRow(
+                result = result,
+                index = index,
+                count = results.size,
+                onEvent = onEvent,
+            )
+        }
+    }
+    if (results.size > 1) gapItem(key = "longest-wins") { LongestTermWinsText() }
 }

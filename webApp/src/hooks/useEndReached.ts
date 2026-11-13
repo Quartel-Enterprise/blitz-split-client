@@ -8,9 +8,13 @@ export function useEndReached(isEnabled: boolean, itemCount: number, onEnd: () =
   useEffect(() => {
     const element = ref.current
     if (!isEnabled || !element) return
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) onEndRef.current()
-    })
+    // Why: the next page is asked for before the end shows, so a steady scroll never stops at the skeleton.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) onEndRef.current()
+      },
+      { rootMargin: '600px 0px' },
+    )
     observer.observe(element)
     return () => observer.disconnect()
     // Why: a new page shown re-arms it, so a short page still asks for the next one.

@@ -98,6 +98,17 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `#95CDF7` it is `#00344E` (the system's white reads at 1.7:1, so every prominent button on Apple sets
     `.prominentLabel()`, which a build phase checks), and on the dark negative `#FFB599` it is `#552108`. Android's
     scheme sets every Material role, the fixed ones included, so none falls back to Material's baseline purple.
+    Dimming never takes a text that still informs below that (the contrast sweep of 2026-11-12, chosen without
+    Pierre, for him to confirm): a disabled control may fade, but the line that says why ("Needs internet"), a status
+    drawn as done ("Full debt") or a setting it still states keeps its full muted color. The web's focus ring is the
+    solid accent (`--ring`, `#266489` light and `#95CDF7` dark, 3 px), never a translucent one, and its unchecked
+    switch is the field's edge color in the light theme. The photo opened big sits on a scrim dark enough for its
+    captions over a white page: 80% on the web, 75% black on Apple. A selected chip's label takes the color made
+    for the accent (`Palette.onAccent` on Apple), and on the Mac a money color in a selected row gives way to the
+    row's own label color.
+  - A money amount is never broken in two lines nor cut to its sign (the same sweep): it stays on one line and
+    shrinks to fit its card (Android's auto size, Apple's `minimumScaleFactor`, the web's `truncate`), and the words
+    beside it ("to get back") drop under it when the row is too narrow.
   - The currency belongs to each bill and each payment, not to the group (Pierre's call, as Splitwise does it, made
     before the app is in production): `Expense.currency`, `Settlement.currency` and `SettlementLeg.currency`, stored
     on the `expense` and `settlement` rows (Room 40, which gave every row its group's) and synced as the API's

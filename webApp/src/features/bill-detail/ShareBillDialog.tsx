@@ -155,7 +155,7 @@ function VisibilityOption({ value, title, body, isChecked, isEnabled }: { value:
     <label
       className={cn(
         'flex items-start gap-3 rounded-lg border px-3.5 py-3',
-        isEnabled ? 'cursor-pointer hover:bg-accent/50' : 'cursor-not-allowed opacity-70',
+        isEnabled ? 'cursor-pointer hover:bg-accent/50' : 'cursor-not-allowed',
         isChecked && 'border-primary ring-1 ring-primary',
       )}
     >

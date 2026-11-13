@@ -5,11 +5,16 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -36,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
@@ -80,10 +87,12 @@ internal fun HomeGroupsSection(
             onAction = { onEvent(HomeUiEvent.OnSeeAllGroupsClicked) },
             modifier = Modifier.padding(horizontal = metrics.gutter),
         )
+        // Why: a larger font makes a card taller than its board's height, and every card takes the tallest one's.
         Row(
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = metrics.gutter),
+                .padding(horizontal = metrics.gutter)
+                .height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             state.groups.forEach { group ->
@@ -91,6 +100,7 @@ internal fun HomeGroupsSection(
                     group = group,
                     metrics = metrics,
                     onClick = { onEvent(HomeUiEvent.OnGroupClicked(group.row.id)) },
+                    modifier = Modifier.fillMaxHeight(),
                 )
             }
         }
@@ -106,6 +116,7 @@ private fun HomeGroupCard(
     group: HomeGroup,
     metrics: HomeMetrics,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val row = group.row
     val money = rememberMoneyFormatter(row.currency)
@@ -121,11 +132,10 @@ private fun HomeGroupCard(
     )
     TappableCard(
         onClick = onClick,
-        modifier = Modifier
-            .size(
-                width = metrics.groupCardWidth,
-                height = metrics.groupCardHeight,
-            ).semantics { contentDescription = description },
+        modifier = modifier
+            .width(metrics.groupCardWidth)
+            .heightIn(min = metrics.groupCardHeight)
+            .semantics { contentDescription = description },
         shape = groupCardShape,
     ) {
         Column(
@@ -189,20 +199,20 @@ private fun HomeGroupCard(
                 }
             }
             Column {
-                Text(
+                AmountText(
                     text = amount,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = if (metrics.isCompact) 16.sp else 17.sp,
                     ),
                     fontWeight = FontWeight.Bold,
                     color = amountColorOf(row.netMinor),
-                    maxLines = 1,
                 )
                 Text(
                     text = word,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
@@ -346,6 +356,7 @@ internal fun HomeBillRow(
                 )
             }
             Column(
+                modifier = Modifier.cappedAtHalfWidth(),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
@@ -353,7 +364,9 @@ internal fun HomeBillRow(
                     text = money.toText(bill.totalMinor),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
+                    softWrap = false,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 if (bill.myBalanceMinor != 0L) {
                     Text(
@@ -371,7 +384,9 @@ internal fun HomeBillRow(
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = amountColorOf(bill.myBalanceMinor),
+                        softWrap = false,
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -413,6 +428,21 @@ internal fun HomeBillRow(
             content = content,
         )
     }
+}
+
+/*
+ * Why: the amounts are measured before the description, with all the room after the badge; at a large font they took
+ * it all and the description had none left. Capped at half of it, they end in an ellipsis instead.
+ */
+private fun Modifier.cappedAtHalfWidth(): Modifier = layout { measurable, constraints ->
+    val maxWidth = if (constraints.hasBoundedWidth) constraints.maxWidth / 2 else constraints.maxWidth
+    val placeable = measurable.measure(
+        constraints.copy(
+            minWidth = 0,
+            maxWidth = maxWidth,
+        ),
+    )
+    layout(placeable.width, placeable.height) { placeable.place(0, 0) }
 }
 
 // Why: the group's square, then who paid as overlapping faces and "+N"; nothing here to cut off on a narrow phone.

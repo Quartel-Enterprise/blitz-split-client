@@ -105,7 +105,10 @@ internal fun LazyListScope.groupRowsSkeletonItem(
     isWaitingForInternet: Boolean,
     isBadgeSquare: Boolean,
 ) {
-    item(key = key) {
+    item(
+        key = key,
+        contentType = "skeleton",
+    ) {
         GroupRowsSkeleton(
             isWaitingForInternet = isWaitingForInternet,
             isBadgeSquare = isBadgeSquare,

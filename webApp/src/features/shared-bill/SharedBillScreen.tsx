@@ -37,7 +37,7 @@ export function SharedBillScreen({ route }: { route: JsRoute }) {
           <button
             type="button"
             onClick={() => presenter.close()}
-            className="mr-auto rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="mr-auto rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
           >
             <BrandMark />
           </button>

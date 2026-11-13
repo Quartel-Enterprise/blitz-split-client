@@ -128,6 +128,8 @@ export function Avatar({ initial, color, photoUrl, className }: { initial: strin
           src={photoUrl}
           alt=""
           referrerPolicy="no-referrer"
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover"
           onError={(event) => (event.currentTarget.hidden = true)}
         />
@@ -161,7 +163,7 @@ export function PersonButton({
       aria-label={label}
       onClick={onOpen}
       className={cn(
-        'cursor-pointer text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        'cursor-pointer text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
         isRound ? 'rounded-full' : 'rounded-md',
         className,
       )}

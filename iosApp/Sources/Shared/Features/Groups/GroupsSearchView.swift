@@ -98,7 +98,7 @@ struct GroupsSearchResultsList: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    ForEach(results.people, id: \.self) { hit in
+                    ForEach(results.people, id: \.stableId) { hit in
                         Button {
                             model.sendSearch(SearchUiEventOnPersonClicked(groupId: hit.groupId))
                         } label: {
@@ -453,5 +453,12 @@ private struct SearchBillRow: View {
                 .monospacedDigit()
         }
         .contentShape(.rect)
+    }
+}
+
+private extension SearchPersonHit {
+    /// The member in their group, which stays the same while the match's highlight changes with the query.
+    var stableId: String {
+        "\(groupId)|\(memberId)"
     }
 }

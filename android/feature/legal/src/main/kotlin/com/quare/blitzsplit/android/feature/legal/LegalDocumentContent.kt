@@ -142,7 +142,10 @@ private fun DocumentList(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        item(key = "updated") {
+        item(
+            key = "updated",
+            contentType = "updated",
+        ) {
             Text(
                 text = stringResource(page.updatedRes, document.updated.toLongDateText()),
                 style = MaterialTheme.typography.bodyMedium,
@@ -150,7 +153,11 @@ private fun DocumentList(
                 modifier = Modifier.textColumn(),
             )
         }
-        items(document.blocks) { block ->
+        // Why: the blocks never move and a link scrolls to one by its place, so only its kind is told, for reuse.
+        items(
+            items = document.blocks,
+            contentType = { block -> block::class },
+        ) { block ->
             LegalBlockItem(
                 block = block,
                 onLinkClick = onLinkClick,

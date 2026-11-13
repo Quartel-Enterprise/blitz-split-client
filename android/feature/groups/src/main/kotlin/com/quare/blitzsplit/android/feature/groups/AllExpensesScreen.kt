@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
@@ -43,6 +46,8 @@ import com.quare.blitzsplit.android.designsystem.component.EndReachedEffect
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
@@ -110,18 +115,49 @@ internal fun AllExpensesContent(
             containerColor = MaterialTheme.colorScheme.surface,
             contentWindowInsets = WindowInsets.safeDrawing,
         ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                AllExpensesList(
-                    state = state,
-                    onEvent = onEvent,
-                    modifier = Modifier.widthIn(max = columnMaxWidth),
+            val bodyModifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .consumeWindowInsets(padding)
+            // Why: one list for both layouts, so folding and unfolding keeps the place.
+            val listState = rememberLazyListState()
+            if (rememberFoldLayout().bookSplit != null) {
+                // Why: on a book the column would cross the hinge, so the filters keep its left and the bills its right.
+                TwoHalvesLayout(
+                    start = {
+                        if (state.isLoaded) {
+                            AllExpensesFilterBar(
+                                state = state,
+                                onEvent = onEvent,
+                                modifier = Modifier
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(horizontal = 16.dp),
+                            )
+                        }
+                    },
+                    end = {
+                        AllExpensesList(
+                            state = state,
+                            listState = listState,
+                            showsFilters = false,
+                            onEvent = onEvent,
+                        )
+                    },
+                    modifier = bodyModifier,
                 )
+            } else {
+                Box(
+                    modifier = bodyModifier,
+                    contentAlignment = Alignment.TopCenter,
+                ) {
+                    AllExpensesList(
+                        state = state,
+                        listState = listState,
+                        showsFilters = true,
+                        onEvent = onEvent,
+                        modifier = Modifier.widthIn(max = columnMaxWidth),
+                    )
+                }
             }
         }
     }
@@ -130,10 +166,11 @@ internal fun AllExpensesContent(
 @Composable
 private fun AllExpensesList(
     state: AllExpensesUiState,
+    listState: LazyListState,
+    showsFilters: Boolean,
     onEvent: (AllExpensesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val listState = rememberLazyListState()
     EndReachedEffect(
         listState = listState,
         hasMore = state.hasMore,
@@ -148,8 +185,11 @@ private fun AllExpensesList(
             bottom = 24.dp,
         ),
     ) {
-        if (state.isLoaded) {
-            item(key = "filters") {
+        if (state.isLoaded && showsFilters) {
+            item(
+                key = "filters",
+                contentType = "filters",
+            ) {
                 AllExpensesFilterBar(
                     state = state,
                     onEvent = onEvent,
@@ -158,9 +198,17 @@ private fun AllExpensesList(
             }
         }
         when {
-            state.showsSkeleton -> item(key = "skeleton") { HomeBillsSkeleton() }
+            state.showsSkeleton -> item(
+                key = "skeleton",
+                contentType = "skeleton",
+            ) {
+                HomeBillsSkeleton()
+            }
 
-            state.showsEmpty -> item(key = "empty") {
+            state.showsEmpty -> item(
+                key = "empty",
+                contentType = "empty",
+            ) {
                 EmptyStateColumn(
                     icon = Icons.AutoMirrored.Outlined.ReceiptLong,
                     title = stringResource(R.string.groups_all_expenses_empty_title),
@@ -170,7 +218,10 @@ private fun AllExpensesList(
                 )
             }
 
-            state.showsNoResults -> item(key = "no-results") {
+            state.showsNoResults -> item(
+                key = "no-results",
+                contentType = "no-results",
+            ) {
                 EmptyStateColumn(
                     icon = Icons.Outlined.SearchOff,
                     title = stringResource(R.string.groups_all_expenses_no_results_title),
@@ -195,10 +246,18 @@ private fun LazyListScope.billDayItems(
 ) {
     state.days.forEach { day ->
         // Why: sorted by amount the bills read as one list, with no day over them.
-        if (state.showsDayHeadings) item(key = "day-${day.dayStartMillis}") { HomeBillDayHeading(day) }
+        if (state.showsDayHeadings) {
+            item(
+                key = "day-${day.dayStartMillis}",
+                contentType = "day",
+            ) {
+                HomeBillDayHeading(day)
+            }
+        }
         itemsIndexed(
             items = day.bills,
             key = { _, bill -> bill.id },
+            contentType = { _, _ -> "bill" },
         ) { index, bill ->
             HomeBillRow(
                 bill = bill,
@@ -210,5 +269,12 @@ private fun LazyListScope.billDayItems(
             )
         }
     }
-    if (state.showsMoreSkeleton) item(key = "more") { HomeBillsSkeleton() }
+    if (state.showsMoreSkeleton) {
+        item(
+            key = "more",
+            contentType = "more",
+        ) {
+            HomeBillsSkeleton()
+        }
+    }
 }

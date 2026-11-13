@@ -100,7 +100,7 @@ function ProfileOverList({ personKey }: { personKey: string }) {
 /** The desktop's pane: the person picked, else what will show there. */
 function DetailPane({ state }: { state: JsContactsState }) {
   return (
-    <div className="sticky top-8 flex max-h-[calc(100dvh-4rem)] min-h-[480px] min-w-0 flex-col overflow-y-auto rounded-xl border bg-card p-6">
+    <div className="sticky top-8 flex max-h-[calc(100dvh-4rem)] min-h-[min(480px,calc(100dvh-4rem))] min-w-0 flex-col overflow-y-auto rounded-xl border bg-card p-6">
       {state.selectedKey ? (
         <ContactPanel key={state.selectedKey} personKey={state.selectedKey} />
       ) : state.isLoading ? (
@@ -184,7 +184,7 @@ function SummaryCard({ presenter, state }: { presenter: ContactsPresenter; state
             type="button"
             disabled={item.minor === 0}
             onClick={item.onClick}
-            className="flex flex-col gap-0.5 rounded-lg px-2.5 py-1.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none"
+            className="flex flex-col gap-0.5 rounded-lg px-2.5 py-1.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none"
           >
             <span className="text-xs font-medium text-muted-foreground">{item.label}</span>
             <strong className={cn('text-lg font-bold tracking-tight whitespace-nowrap tabular-nums', item.minor === 0 ? 'text-muted-foreground' : item.tone)}>
@@ -209,7 +209,7 @@ function ContactRowButton({ row, isSelected, onClick }: { row: JsContactRow; isS
       aria-current={isSelected || undefined}
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-3 border-b px-3.5 py-2.5 text-left outline-none last:border-b-0 hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset sm:px-4',
+        'flex w-full items-center gap-3 border-b px-3.5 py-2.5 text-left outline-none last:border-b-0 hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset sm:px-4',
         isSelected && 'bg-muted',
       )}
     >
@@ -234,7 +234,7 @@ function InviteRow({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-3 rounded-xl border bg-card py-3 pr-3 pl-3.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      className="flex items-center gap-3 rounded-xl border bg-card py-3 pr-3 pl-3.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
     >
       <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
         <QrCode className="size-[18px]" />
@@ -271,7 +271,7 @@ function HiddenSection({ presenter, state }: { presenter: ContactsPresenter; sta
                 <button
                   type="button"
                   onClick={() => presenter.openContact(row.key)}
-                  className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-2.5 py-1.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-2.5 py-1.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
                 >
                   <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
                   <span className="flex min-w-0 flex-col">

@@ -21,7 +21,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     it (Material's `TwoRowsTopAppBar`, folding by the rules above); a tabletop's one-line bar keeps 32 dp. The web:
     one sticky header at every width, open 136 px tall on a phone (the 64 px avatar and the 22 px name under the bar
     of back, Statistics, Invite and ⋯) and 96 px from the tablet up (80 px avatar, 24 px name, with Statistics,
-    Invite, "Split a bill" and ⋯ in its row), folding over the first 80 px of scroll (40 px from the tablet up) into a
+    Invite, "Split a bill" and ⋯ in its row, Statistics and Invite as icons alone under 1024 px so the name keeps
+    its room), folding over the first 80 px of scroll (40 px from the tablet up) into a
     56 px bar with a 32 px avatar and a 16 px name; the subtitle fades out by half the fold and the bar's border fades
     in, and the page under it never jumps. The member faces sit right under the header. iOS and iPadOS, whose bars
     stay put: the header in the list is centred, the group's square at 88 pt over the name (two lines at most), the
@@ -64,7 +65,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     leaving the list; a payment's is "Delete", which asks "Delete this payment?" at
     once. A tap on a payment never asks to delete: it opens the payment's details (`GroupDetailUiState.paymentToView`:
     who paid whom, the amount, when ("Today, Nov 6 · 10:20 AM", "Yesterday, …", or the weekday and date, as a bill's "When"), how, "queued" while it waits), a bottom sheet on an Android phone, a dialog on
-    its tablets and foldables' halves, a sheet on iOS and the Mac, a dialog on the web, with "Delete" in it (the web's
+    its tablets and foldables' halves, a sheet on iOS and the Mac, a dialog on the web (a drawer under 768 px, as its other dialogs), with "Delete" in it (the web's
     also "Close"), which closes the details and asks the same "Delete this payment?" (`OnPaymentDeleteClicked`).
     The Mac's items end in "…", and the Mac's table shows the menu only for one line picked, whose Delete
     key (⌫) asks the same "Delete this bill?" or "Delete this payment?". Home's "Latest expenses" and its

@@ -144,14 +144,35 @@ export function formatPlainMoney(minor: number, fractionDigits: number, currency
   return format.format(shownNumber(minor, fractionDigits, currency))
 }
 
+// Why: an amount field's symbol and placeholder are asked for by every row of a split, on each keystroke.
+const texts = new Map<string, string>()
+
+/** The value kept under `key`, built once on the first ask. */
+function cached<T>(cache: Map<string, T>, key: string, build: () => T): T {
+  let value = cache.get(key)
+  if (value === undefined) {
+    value = build()
+    cache.set(key, value)
+  }
+  return value
+}
+
+function cachedText(key: string, build: () => string): string {
+  return cached(texts, key, build)
+}
+
+let namesFormat: Intl.ListFormat | undefined
+
 /** The symbol before an amount field: "R$", "$", or "US$" for dollars in Portuguese; "₿", "Ξ" or "sats". */
 export function currencySymbol(currency: string): string {
   if (isSats(currency)) return t('money_satsSymbol')
   const crypto = cryptoSymbols[currency]
   if (crypto !== undefined) return crypto
   try {
-    const parts = new Intl.NumberFormat(uiTag, { style: 'currency', currency }).formatToParts(0)
-    return parts.find((part) => part.type === 'currency')?.value.trim() || currency
+    return cachedText(`symbol:${currency}`, () => {
+      const parts = new Intl.NumberFormat(uiTag, { style: 'currency', currency }).formatToParts(0)
+      return parts.find((part) => part.type === 'currency')?.value.trim() || currency
+    })
   } catch {
     return currency
   }
@@ -164,7 +185,9 @@ export function currencySymbol(currency: string): string {
 export function amountPlaceholder(fractionDigits: number, currency?: string): string {
   if (isSats(currency)) return '0'
   try {
-    return new Intl.NumberFormat(uiTag, { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }).format(0)
+    return cachedText(`placeholder:${fractionDigits}`, () =>
+      new Intl.NumberFormat(uiTag, { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }).format(0),
+    )
   } catch {
     return (0).toFixed(fractionDigits)
   }
@@ -172,13 +195,14 @@ export function amountPlaceholder(fractionDigits: number, currency?: string): st
 
 /** "15%" in the UI's language. */
 export function formatPercent(value: number): string {
-  return new Intl.NumberFormat(uiTag, { style: 'percent', maximumFractionDigits: 0 }).format(value / 100)
+  return cached(formatters, 'percent', () => new Intl.NumberFormat(uiTag, { style: 'percent', maximumFractionDigits: 0 })).format(value / 100)
 }
 
 /** "Diego", "Diego e Elisa", "Ana, Diego e Elisa": names in the UI's language. */
 export function formatNames(names: string[]): string {
   try {
-    return new Intl.ListFormat(uiTag, { type: 'conjunction' }).format(names)
+    namesFormat ??= new Intl.ListFormat(uiTag, { type: 'conjunction' })
+    return namesFormat.format(names)
   } catch {
     return names.join(', ')
   }

@@ -444,6 +444,8 @@ private struct MemberNameSheet: View {
                 }
             }
             .presentationDetents([.medium])
+            // An iPhone Duo open: in the half before the fold, never over it
+            .foldSheetPlacement()
             #if os(macOS)
             .frame(minWidth: 360, minHeight: 220)
             #endif
@@ -563,6 +565,8 @@ private struct PhonePersonalInvite: View {
             }
         }
         .presentationDetents([.medium, .large])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
     }
 }
 #endif

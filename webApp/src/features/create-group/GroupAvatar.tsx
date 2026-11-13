@@ -23,6 +23,8 @@ export function GroupAvatar({
           key={photoUrl}
           src={photoUrl}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover"
           onError={(event) => (event.currentTarget.hidden = true)}
         />

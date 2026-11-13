@@ -164,6 +164,8 @@ private struct EraseProfileSheet: View {
         }
         #if os(iOS)
         .presentationDetents([.medium, .large])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
         #else
         .frame(width: 460, height: 420)
         #endif

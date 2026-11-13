@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -185,7 +186,9 @@ private fun RecoveryCodeBox(
         )
         FilledTonalIconButton(
             onClick = { onEvent(RecoveryCodeUiEvent.OnCopyClicked) },
-            modifier = Modifier.size(44.dp),
+            modifier = Modifier
+                .minimumInteractiveComponentSize()
+                .size(44.dp),
         ) {
             Icon(
                 imageVector = Icons.Outlined.ContentCopy,

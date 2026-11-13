@@ -15,6 +15,9 @@ fun AvatarColor.toContentColor(isDark: Boolean): Color = categoryColor.toContent
 // Why: a mark that stands for a person (a bar, a segment of a split) takes this tone, as a category's does.
 fun AvatarColor.toDataColor(isDark: Boolean): Color = categoryColor.toDataColor(isDark)
 
+// Why: a mark of something with no color of its own (a group's dot before its color is read) still reads at 3:1.
+fun neutralDataColorOf(isDark: Boolean): Color = CategoryColor.GRAY.toDataColor(isDark)
+
 private val AvatarColor.categoryColor: CategoryColor
     get() = when (this) {
         AvatarColor.BLUE -> CategoryColor.BLUE
