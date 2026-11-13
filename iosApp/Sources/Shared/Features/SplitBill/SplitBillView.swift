@@ -700,6 +700,8 @@ private struct GroupSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
     }
 }
 
@@ -792,6 +794,8 @@ private struct PayerSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
     }
 }
 
@@ -841,6 +845,8 @@ private struct SeveralPayersSheet: View {
                 }
             }
             .presentationDetents([.medium, .large])
+            // An iPhone Duo open: in the half before the fold, never over it
+            .foldSheetPlacement()
         }
     }
 }
@@ -953,7 +959,9 @@ private struct PayerAmountField: View {
         }
         #if os(iOS)
         .padding(.horizontal, 10)
-        .frame(width: 128, height: 36)
+        .frame(width: 128)
+        // At least 36, so the largest text sizes are never cut
+        .frame(minHeight: 36)
         .background(.fill.tertiary, in: .rect(cornerRadius: 10))
         #else
         .frame(width: 128)

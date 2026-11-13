@@ -73,7 +73,7 @@ Checked on the Pixel Fold emulator: Registrar pagamento in a book's right half (
 tabletop (`TopBottomHalvesLayout`), and the group's Saldos drawn alone on a tabletop; the Galaxy Z Fold and the phone
 lying down are still preview only for them.
 
-Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
+Not checked on a device yet: `isOnCoverScreen` (the Galaxy Z Flip's and the Razr's cover screens), `TwoHalvesLayout` (All expenses, Boas-vindas, Seu perfil, Recuperar, Convidar, Convite and Quem é você,
 Perfil, Editar perfil, the keys and Estatísticas on a book), `FoldDialog`'s halves (the recovery code, Novo grupo, "Trocar o link?",
 "Não estou na lista", the profile's dialogs, Excluir conta, Cobrar, Editar grupo, Divisão padrão and its exception, Membros' dialogs),
 `TopBottomHalvesLayout` (Convidar, Convite and Estatísticas on a tabletop, `TabletopForm`), `tabletopFoldLayoutOf` and `FoldHinge.isSeparating`:

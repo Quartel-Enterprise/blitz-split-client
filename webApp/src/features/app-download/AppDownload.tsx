@@ -223,18 +223,19 @@ function showsSmartAppBanner(stores: string): boolean {
 export function AppBanner({ invite, onOpen, onDismiss }: { invite: JsAppInvite; onOpen: () => void; onDismiss: () => void }) {
   if (showsSmartAppBanner(invite.stores)) return null
   return (
-    <aside aria-label={t('appBanner_title')} className="flex min-h-16 items-center gap-2 rounded-lg border bg-muted py-2 pr-3 pl-1 md:hidden">
+    <aside aria-label={t('appBanner_title')} className="flex min-h-16 flex-wrap items-center gap-2 rounded-lg border bg-muted py-2 pr-3 pl-1 md:hidden">
       <Button variant="ghost" size="icon" aria-label={t('appInvite_dismiss')} className="shrink-0 text-muted-foreground" onClick={onDismiss}>
         <X />
       </Button>
       <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
         <span className="size-6 bg-current mask-[url(/icon.svg)] mask-contain mask-center mask-no-repeat" />
       </span>
-      <span className="flex min-w-0 flex-1 flex-col">
+      {/* Why: the text keeps a readable width, so on a narrow phone the button wraps under it. */}
+      <span className="flex min-w-24 flex-1 flex-col">
         <strong className="text-sm font-semibold">{t('appBanner_title')}</strong>
         <span className="text-xs text-muted-foreground">{t('appBanner_body')}</span>
       </span>
-      <Button asChild size="sm" className="shrink-0">
+      <Button asChild size="sm" className="ml-auto shrink-0">
         <a href={invite.link} onClick={onOpen}>
           {t('appBanner_open')}
         </a>

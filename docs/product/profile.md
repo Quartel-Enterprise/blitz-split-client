@@ -51,7 +51,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     November 2026). An ⓘ button next to the email explains that only the person sees it, in each platform's way
     (Android's dialog, a popover on Apple platforms and the web, `ProfileDialog.EMAIL_INFO`); without an email the
     row falls back to the provider's name and has no ⓘ. Without Google or Apple the row keeps "No account" and its
-    line, under an anonymous-person icon (a person with a slash). The row opens nothing and nothing disconnects the
+    line, under an anonymous-person icon (a person with a slash). On Android its "Connect" button drops under the
+    texts from a font scale of 1.3, so the line beside it never breaks inside a word. The row opens nothing and nothing disconnects the
     Google or Apple account from the user (Pierre's call, beta feedback). Who wants it gone signs out or deletes the
     account. The server has no `unlink-identity` function any more.
   - Delete account lists, truthfully to the server's `delete-account` function and its migrations, "What gets

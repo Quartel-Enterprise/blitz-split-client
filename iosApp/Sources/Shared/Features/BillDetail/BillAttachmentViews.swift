@@ -352,7 +352,9 @@ private struct BillAddPhotoTile: View {
             Text("Camera or photos", comment: "Under the tile that adds a photo to a bill")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
+                // Two lines: the tile's 100 pt cut "Camera or photos" short on every device
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(width: metrics.tile.width, alignment: .leading)
         #endif

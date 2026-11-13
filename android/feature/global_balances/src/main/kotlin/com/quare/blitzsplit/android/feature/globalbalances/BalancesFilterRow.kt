@@ -18,6 +18,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
@@ -102,11 +103,10 @@ private fun SegmentAmountText(
 ) {
     val money = rememberMoneyFormatter(total.currency)
     val amountMinor = amountOf(filter, total)
-    Text(
+    AmountText(
         text = segmentTextOf(filter, amountMinor, money),
         style = MaterialTheme.typography.titleSmall,
         fontWeight = FontWeight.Bold,
-        maxLines = 1,
         color = when {
             isSelected -> MaterialTheme.colorScheme.onPrimary
             amountMinor == 0L -> MaterialTheme.colorScheme.onSurfaceVariant

@@ -134,7 +134,7 @@ export function BillAttachments({ presenter, state, localUrls }: { presenter: At
 }
 
 const tileClass =
-  'relative flex h-[66px] w-[88px] items-center justify-center overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+  'relative flex h-[66px] w-[88px] items-center justify-center overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring'
 
 /** "Adicionar foto": the file chooser, or a menu with the camera where the browser has one. */
 function AddPhoto({ presenter, state }: { presenter: AttachmentsPresenter; state: AttachmentsState }) {
@@ -188,6 +188,8 @@ function AttachmentTile({ attachment, src, onClick }: { attachment: JsBillAttach
         <img
           src={src}
           alt=""
+          loading="lazy"
+          decoding="async"
           onLoad={() => setLoadedSrc(src)}
           onError={() => setFailedSrc(src)}
           className={cn('relative size-full object-cover', isDownloading && 'opacity-0')}

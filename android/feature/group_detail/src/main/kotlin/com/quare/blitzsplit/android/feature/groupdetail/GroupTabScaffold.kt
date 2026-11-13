@@ -193,7 +193,10 @@ private fun GroupTabScaffoldContent(
                     state = listState,
                     contentPadding = PaddingValues(bottom = fabClearance),
                 ) {
-                    item(key = "header") {
+                    item(
+                        key = "header",
+                        contentType = "header",
+                    ) {
                         GroupSideHeader(
                             frame = frame,
                             onAction = onAction,

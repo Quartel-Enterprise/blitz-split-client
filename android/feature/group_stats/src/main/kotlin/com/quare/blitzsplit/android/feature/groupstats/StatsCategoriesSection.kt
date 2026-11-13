@@ -133,7 +133,11 @@ internal fun StatsCategoriesSection(
                 pick = pick,
                 periodKey = state.periodStartMillis to state.periodEndMillis,
             )
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            // Why: the legend keeps what the pie leaves, so on a narrow phone a name ends short of its percentage.
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
                 rows.forEachIndexed { index, row -> LegendLine(row, index, pick) }
             }
         }
@@ -321,6 +325,10 @@ private fun LegendLine(
         )
         Text(
             text = categoryName(row.category),
+            modifier = Modifier.weight(
+                weight = 1f,
+                fill = false,
+            ),
             style = MaterialTheme.typography.bodySmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -329,6 +337,8 @@ private fun LegendLine(
             text = stringResource(R.string.group_stats_category_percent, row.percent),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            softWrap = false,
+            maxLines = 1,
         )
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Groups
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.outlined.MonetizationOn
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -25,11 +27,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
+import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.model.HomeTab
+
+private val minLabelFontSize = 9.sp
+private val labelFontStep = 0.5.sp
 
 // Why: the words and icons of the home's four tabs, Início first, which the one bar draws with the tab in front selected.
 private val HomeTab.label: Int
@@ -71,7 +79,7 @@ fun HomeNavigationBar(
                         contentDescription = null,
                     )
                 },
-                label = { Text(stringResource(tab.label)) },
+                label = { NavigationLabelText(stringResource(tab.label)) },
             )
         }
         if (onSearchClick != null || selected == null) {
@@ -84,10 +92,34 @@ fun HomeNavigationBar(
                         contentDescription = null,
                     )
                 },
-                label = { Text(stringResource(R.string.designsystem_search)) },
+                label = { NavigationLabelText(stringResource(R.string.designsystem_search)) },
             )
         }
     }
+}
+
+/*
+ * Why: a tab's name never breaks in the middle ("Balanc/es" at a large font on a 360 dp phone): one line that shrinks
+ * to the item's width, and only then ends in an ellipsis.
+ */
+@Composable
+private fun NavigationLabelText(text: String) {
+    val maxFontSize = LocalTextStyle.current.fontSize
+    Text(
+        text = text,
+        autoSize = if (maxFontSize.isSpecified && maxFontSize > minLabelFontSize) {
+            TextAutoSize.StepBased(
+                minFontSize = minLabelFontSize,
+                maxFontSize = maxFontSize,
+                stepSize = labelFontStep,
+            )
+        } else {
+            null
+        },
+        overflow = TextOverflow.Ellipsis,
+        softWrap = false,
+        maxLines = 1,
+    )
 }
 
 /*
@@ -135,7 +167,7 @@ fun HomeNavigationRail(
                             contentDescription = label.takeIf { isShort },
                         )
                     },
-                    label = if (isShort) null else ({ Text(label) }),
+                    label = if (isShort) null else ({ NavigationLabelText(label) }),
                 )
             }
             if (onSearchClick != null || selected == null) {
@@ -149,7 +181,7 @@ fun HomeNavigationRail(
                             contentDescription = label.takeIf { isShort },
                         )
                     },
-                    label = if (isShort) null else ({ Text(label) }),
+                    label = if (isShort) null else ({ NavigationLabelText(label) }),
                 )
             }
         }

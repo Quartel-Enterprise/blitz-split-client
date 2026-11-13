@@ -165,7 +165,10 @@ private fun LazyListScope.profileItems(
     avatarSize: Dp,
     onEvent: (ContactProfileUiEvent) -> Unit,
 ) {
-    item(key = "header") {
+    item(
+        key = "header",
+        contentType = "header",
+    ) {
         ProfileHeader(
             state = state,
             contact = contact,
@@ -173,7 +176,10 @@ private fun LazyListScope.profileItems(
         )
     }
     if (state.showsOfflineNotice) {
-        item(key = "offline") {
+        item(
+            key = "offline",
+            contentType = "offline",
+        ) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
@@ -183,7 +189,10 @@ private fun LazyListScope.profileItems(
         }
     }
     if (state.showsGuestCard) {
-        item(key = "guest") {
+        item(
+            key = "guest",
+            contentType = "guest",
+        ) {
             GuestCard(
                 name = contact.name,
                 state = state,
@@ -193,7 +202,10 @@ private fun LazyListScope.profileItems(
     }
     val pending = state.pendingMerge.valueOrNull()
     if (state.showsPendingMerge && pending != null) {
-        item(key = "pending") {
+        item(
+            key = "pending",
+            contentType = "pending",
+        ) {
             PendingMergeCard(
                 name = contact.name,
                 requestedAt = pending.requestedAt,
@@ -202,22 +214,27 @@ private fun LazyListScope.profileItems(
             )
         }
     }
-    item(key = "balance") {
+    item(
+        key = "balance",
+        contentType = "balance",
+    ) {
         BalanceCard(
             state = state,
             contact = contact,
             onEvent = onEvent,
         )
     }
-    item(key = "groups-title") {
+    item(
+        key = "groups-title",
+        contentType = "groups-title",
+    ) {
         ProfileSectionTitle(stringResource(R.string.contacts_groups_title, contact.groups.size))
     }
-    itemsIndexed(contact.groups, key = {
-        _,
-        group,
-        ->
-        "group-${group.groupId}-${group.currency.code}"
-    }) { index, group ->
+    itemsIndexed(
+        items = contact.groups,
+        key = { _, group -> "group-${group.groupId}-${group.currency.code}" },
+        contentType = { _, _ -> "group" },
+    ) { index, group ->
         CommonGroupRow(
             group = group,
             index = index,
@@ -226,7 +243,10 @@ private fun LazyListScope.profileItems(
         )
     }
     if (state.history.isNotEmpty()) {
-        item(key = "history-title") {
+        item(
+            key = "history-title",
+            contentType = "history-title",
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ProfileSectionTitle(
                     text = stringResource(R.string.contacts_history_title, contact.name),
@@ -239,7 +259,11 @@ private fun LazyListScope.profileItems(
                 }
             }
         }
-        itemsIndexed(state.history, key = { _, item -> "history-${item.id}" }) { index, item ->
+        itemsIndexed(
+            items = state.history,
+            key = { _, item -> "history-${item.id}" },
+            contentType = { _, _ -> "history" },
+        ) { index, item ->
             HistoryRow(
                 item = item,
                 name = contact.name,

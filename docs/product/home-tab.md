@@ -10,7 +10,9 @@ The home tab, its shortcuts and pinned groups.
     "Overall balance" as Groups' (both are the global Balances' totals, `PeopleBalances.totals`, so the three never differ: big in the first currency with a net, a line for each other one with a net,
     `HomeSummary.main` and `others`), with "Owed to you" and "You owe", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Balances filtered (You owe straight to settling up while only
-    one person is in it), disabled at zero. Three shortcuts: "Scan receipt", which first asks right on Home where the
+    one person is in it), disabled at zero. Three shortcuts (on Android each tile has its icon above its label at
+    every size, a book's half and a phone lying down included, where a label beside the icon broke inside a word:
+    chosen in the sweep of 2026-11-12 without Pierre, for him to confirm): "Scan receipt", which first asks right on Home where the
     receipt's photo comes from, as the form's "Scan receipt" asks (the same sheet, dialog or drawer: the camera, the
     gallery and a file, as each platform has them; straight to the gallery or the file chooser without a camera),
     then, once a photo is picked, opens Split a bill as "Split a bill" does (asking the group first) with that photo
@@ -41,7 +43,9 @@ The home tab, its shortcuts and pinned groups.
     has the ⋮ in a last column. "See all" opens "All expenses" over Home (Pierre's call, beta feedback; it opened
     Activity on its bills before), `Route.AllExpenses`: every bill you paid or take part in, across groups, by day,
     drawn as Home's rows, each with the same ⋮, a tap opening its Bill over its group as from Home. A page on every
-    platform and size, back on the left (a long list read a page at a time reads better full height than in a
+    platform and size (on an Android book the filters sit before the hinge and the bills after it, as a category's
+    expenses do; on an iPhone Duo open the column keeps to the leading half, off the fold, as Activity's; the contrast
+    and responsiveness sweep of 2026-11-12), back on the left (a long list read a page at a time reads better full height than in a
     dialog): Android a column of up to 640 dp centered, iOS and the Mac pushed over Home in its tab, a column of up to
     520 pt, the web a page in the home's frame with Home's tab selected. It reads the device only, a page of 30 bills
     at first and 30 more each time the list nears its end (`AllExpensesViewModel`: a growing `LIMIT` over Room's

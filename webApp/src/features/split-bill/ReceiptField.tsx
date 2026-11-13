@@ -44,7 +44,7 @@ export function ReceiptReadChips({ presenter, receipt }: { presenter: SplitBillP
       {receipt.itemCount > 0 && (
         <button
           type="button"
-          className="relative flex h-[22px] items-center gap-0.5 rounded-md border border-border pr-1 pl-2 text-xs after:absolute after:-inset-y-2.5 after:inset-x-0 after:content-[''] hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+          className="relative flex h-[22px] items-center gap-0.5 rounded-md border border-border pr-1 pl-2 text-xs after:absolute after:-inset-y-2.5 after:inset-x-0 after:content-[''] hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none"
           onClick={() => presenter.openReceiptItems()}
         >
           {t(receipt.itemCount === 1 ? 'splitBill_receiptItemsOne' : 'splitBill_receiptItemsOther', { count: receipt.itemCount })}

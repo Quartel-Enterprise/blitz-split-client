@@ -100,8 +100,13 @@ private fun BalanceHeading(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.Bottom,
     ) {
-        Text(
+        AmountText(
             text = money.toSignedText(net),
+            // Why: the word after it keeps its room and the amount shrinks into what is left.
+            modifier = Modifier.weight(
+                weight = 1f,
+                fill = false,
+            ),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = if (net < 0) MaterialTheme.colorScheme.error else positiveAmountColor(),

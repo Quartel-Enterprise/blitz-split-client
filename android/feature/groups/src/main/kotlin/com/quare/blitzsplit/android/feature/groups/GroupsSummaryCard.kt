@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatters
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -138,7 +139,7 @@ private fun SummaryAmountColumn(
             style = MaterialTheme.typography.titleSmall,
         )
         amountsOf(summary.totals, BalanceTotal::netMinor).forEach { (currency, minor) ->
-            Text(
+            AmountText(
                 text = signed(currency, minor),
                 style = when {
                     summary.totals.size > 1 -> MaterialTheme.typography.headlineSmall
@@ -146,7 +147,6 @@ private fun SummaryAmountColumn(
                     else -> MaterialTheme.typography.headlineLarge
                 },
                 fontWeight = FontWeight.ExtraBold,
-                maxLines = 1,
             )
         }
         Text(
@@ -201,12 +201,11 @@ internal fun SummaryButton(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 amounts.forEach { amount ->
-                    Text(
+                    AmountText(
                         text = amount,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (isEnabled) amountColor else MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
                     )
                 }
             }

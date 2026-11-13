@@ -191,6 +191,8 @@ private struct OfflineNotice: View {
 private struct BalancesSummary: View {
     let model: GlobalBalancesModel
     let amountSize: CGFloat
+    /// The amount's size grows with the text size, as a text style does.
+    @ScaledMetric(relativeTo: .title) private var amountScale: CGFloat = 1
 
     private var state: GlobalBalancesUiState {
         model.state
@@ -208,8 +210,10 @@ private struct BalancesSummary: View {
                     .foregroundStyle(.secondary)
                 ForEach(state.totals.loaded(as: [PeopleTotal].self) ?? [], id: \.currency) { total in
                     Text(verbatim: total.currency.formatSigned(total.netMinor))
-                        .font(.system(size: amountSize, weight: .bold))
+                        .font(.system(size: amountSize * amountScale, weight: .bold))
                         .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                         .foregroundStyle(Palette.balance(total.netMinor))
                 }
                 Text(hint)
@@ -661,9 +665,11 @@ private struct PersonDetail: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Text(verbatim: row.currency.formatSigned(row.netMinor))
-                    .font(.system(size: 34, weight: .bold))
+                    .font(.largeTitle.bold())
                     .monospacedDigit()
                     .foregroundStyle(row.owesYou ? Palette.positive : Palette.negative)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                 HStack(spacing: 8) {
                     Spacer()
                     PersonActions(model: model, row: row, name: name)

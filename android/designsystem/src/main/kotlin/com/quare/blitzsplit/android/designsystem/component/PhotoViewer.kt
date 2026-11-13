@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -29,6 +31,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
@@ -108,6 +111,7 @@ fun PhotoViewerContent(
                 .align(Alignment.TopEnd)
                 .safeDrawingPadding()
                 .padding(14.dp)
+                .minimumInteractiveComponentSize()
                 .size(closeButtonSize)
                 .clip(CircleShape)
                 .background(closeButtonBackground)
@@ -163,9 +167,22 @@ fun PhotoViewerShortcutsRow(
     onTakePhotoClick: (() -> Unit)?,
     onChoosePhotoClick: () -> Unit,
     onRemoveClick: (() -> Unit)?,
-    leading: @Composable () -> Unit = {},
+    leading: @Composable RowScope.() -> Unit = {},
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    /*
+     * Why: four shortcuts are wider than a 320 dp phone, so each gives up the same width instead of the last one being
+     * squeezed. The row keeps its own width where it fits (its intrinsic one), so a tap beside it still closes the viewer.
+     */
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .width(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        val shortcutModifier = Modifier.weight(
+            weight = 1f,
+            fill = false,
+        )
         leading()
         if (onTakePhotoClick != null) {
             PhotoShortcutButton(
@@ -173,6 +190,7 @@ fun PhotoViewerShortcutsRow(
                 label = cameraLabel,
                 accessibilityLabel = cameraDescription,
                 onClick = onTakePhotoClick,
+                modifier = shortcutModifier,
             )
         }
         PhotoShortcutButton(
@@ -180,6 +198,7 @@ fun PhotoViewerShortcutsRow(
             label = galleryLabel,
             accessibilityLabel = galleryDescription,
             onClick = onChoosePhotoClick,
+            modifier = shortcutModifier,
         )
         if (onRemoveClick != null) {
             PhotoShortcutButton(
@@ -187,6 +206,7 @@ fun PhotoViewerShortcutsRow(
                 label = removeLabel,
                 accessibilityLabel = removeDescription,
                 onClick = onRemoveClick,
+                modifier = shortcutModifier,
                 background = destructiveShortcutBackground,
                 content = destructiveContent,
             )
@@ -224,11 +244,12 @@ fun PhotoShortcutButton(
     label: String,
     accessibilityLabel: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     background: Color = neutralShortcutBackground,
     content: Color = Color.White,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(shortcutLabelWidth)
             .clip(RoundedCornerShape(12.dp))
             .clickable(

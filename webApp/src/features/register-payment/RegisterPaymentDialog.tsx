@@ -319,7 +319,7 @@ function Chip({ isSelected, onClick, children }: { isSelected: boolean; onClick:
       aria-checked={isSelected}
       onClick={onClick}
       className={cn(
-        'inline-flex h-8 items-center gap-1.5 self-start rounded-full border px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        'inline-flex h-8 items-center gap-1.5 self-start rounded-full border px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
         isSelected ? 'border-primary bg-primary/10 text-primary' : 'hover:bg-accent/60',
       )}
     >

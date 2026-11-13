@@ -94,7 +94,7 @@ struct BalancesSections: View {
     }
 
     private func debtRows(_ rows: [DebtRow]) -> some View {
-        ForEach(rows, id: \.self) { row in
+        ForEach(rows, id: \.stableId) { row in
             DebtRowView(row: row) {
                 model.send(GroupDetailUiEventOnDebtClicked(fromMemberId: row.fromMemberId, toMemberId: row.toMemberId))
             }
@@ -262,5 +262,12 @@ private struct DebtFaces: View {
                 .fill(.fill.tertiary)
                 .frame(width: size, height: size)
         }
+    }
+}
+
+private extension DebtRow {
+    /// Who owes whom, in which currency: it stays the same while the amount changes, so a row updates in place.
+    var stableId: String {
+        "\(fromMemberId)|\(toMemberId)|\(currency.code)"
     }
 }

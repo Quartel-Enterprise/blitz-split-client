@@ -48,7 +48,7 @@ struct HomePeopleSection: View {
                         HomeFacesPlaceholder(faceSize: faceSize)
                             .shimmering()
                     }
-                    ForEach(people ?? [], id: \.self) { person in
+                    ForEach(people ?? [], id: \.stableId) { person in
                         PersonFace(person: person, size: faceSize) {
                             send(HomeUiEventOnPersonClicked(key: person.key, currency: person.currency))
                         }
@@ -93,6 +93,8 @@ private struct PersonFace: View {
                     .monospacedDigit()
                     .foregroundStyle(Palette.balance(person.netMinor))
                     .lineLimit(1)
+                    // The amount stays whole in the face's 76 pt, whatever the currency and the text size
+                    .minimumScaleFactor(0.7)
                 Text(verbatim: HomeCopy.word(person))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -137,6 +139,13 @@ private struct PersonFace: View {
     }
 }
 
+private extension HomePerson {
+    /// The person and the currency, which stay the same while the net changes, so a face updates in place.
+    var stableId: String {
+        "\(key)|\(currency.code)"
+    }
+}
+
 /// Five faces still coming, as "Balances with people" draws them; the caller makes them shimmer.
 struct HomeFacesPlaceholder: View {
     let faceSize: CGFloat
@@ -165,13 +174,19 @@ struct HomeSummaryCard: View {
     let stacksButtons: Bool
     let send: (any HomeUiEvent) -> Void
 
+    /// The balance's 30 pt, growing with the text size.
+    @ScaledMetric(relativeTo: .title) private var heroSize: CGFloat = 30
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        let layout = stacksButtons
+        // At the accessibility sizes the buttons' 146 pt column has no room for an amount: they go under the balance
+        let stacks = stacksButtons || dynamicTypeSize.isAccessibilitySize
+        let layout = stacks
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
             : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
         layout {
             balance
-            if stacksButtons {
+            if stacks {
                 HStack(spacing: 6) { buttons }
             } else {
                 Spacer(minLength: 0)
@@ -192,7 +207,7 @@ struct HomeSummaryCard: View {
                 .foregroundStyle(.secondary)
             if let hero = HomeCopy.hero(summary) {
                 Text(verbatim: hero)
-                    .font(.system(size: 30, weight: .bold))
+                    .font(.system(size: heroSize, weight: .bold))
                     .monospacedDigit()
                     .foregroundStyle(Palette.balance(summary.main?.netMinor ?? 0))
                     .lineLimit(1)
@@ -275,14 +290,18 @@ private struct ShortcutTile: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 6) {
+                // Dimmed while disabled, the icon and the title only: "Needs internet" explains it, so it keeps its
+                // full secondary color
                 Image(systemName: systemImage)
                     .font(.title3)
                     .foregroundStyle(isEnabled ? Palette.accent : .secondary)
                     .frame(width: 38, height: 38)
                     .background(isEnabled ? AnyShapeStyle(Palette.accent.opacity(0.12)) : AnyShapeStyle(.fill.tertiary), in: .circle)
+                    .opacity(isEnabled ? 1 : 0.7)
                 Text(title)
                     .font(.footnote.weight(.medium))
                     .multilineTextAlignment(.center)
+                    .opacity(isEnabled ? 1 : 0.7)
                 if !isEnabled {
                     Text("Needs internet")
                         .font(.caption2)
@@ -299,7 +318,6 @@ private struct ShortcutTile: View {
                         .fill(Palette.accent.opacity(0.08))
                 }
             }
-            .opacity(isEnabled ? 1 : 0.7)
             .contentShape(.rect)
         }
         .buttonStyle(ShortcutTileStyle())
@@ -421,6 +439,16 @@ struct HomeActionCard: View {
                         .buttonStyle(.bordered)
                         .buttonBorderShape(.circle)
                         .controlSize(.small)
+                        #if os(iOS)
+                        // The same small circle, with a finger's 44 pt around it: a tap beside it closes the card too
+                        .background {
+                            Color.clear
+                                .frame(width: 44, height: 44)
+                                .contentShape(.rect)
+                                .onTapGesture(perform: onDismiss)
+                                .accessibilityHidden(true)
+                        }
+                        #endif
                 }
             }
             HStack(spacing: 8) {
@@ -609,6 +637,8 @@ private struct GroupBalanceLines: View {
                 .font(.headline)
                 .monospacedDigit()
                 .foregroundStyle(Palette.balance(row.netMinor))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             Text(verbatim: GroupsCopy.balanceLabel(row.balanceKind))
                 .font(.caption)
                 .foregroundStyle(.secondary)

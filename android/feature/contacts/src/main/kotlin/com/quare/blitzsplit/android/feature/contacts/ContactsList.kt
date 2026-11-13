@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.EmptyGroupsImage
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
@@ -68,7 +69,10 @@ internal fun LazyListScope.contactsListItems(
     onEvent: (ContactsUiEvent) -> Unit,
 ) {
     if (state.showsOfflineNotice) {
-        item(key = "offline") {
+        item(
+            key = "offline",
+            contentType = "offline",
+        ) {
             OfflineChip(
                 text = stringResource(R.string.contacts_offline),
                 modifier = Modifier.padding(
@@ -88,7 +92,10 @@ internal fun LazyListScope.contactsListItems(
                 onEvent = onEvent,
             )
         } else {
-            item(key = "empty") {
+            item(
+                key = "empty",
+                contentType = "empty",
+            ) {
                 EmptyContactsContent(
                     onEvent = onEvent,
                     modifier = Modifier.padding(16.dp),
@@ -110,7 +117,10 @@ private fun LazyListScope.peopleItems(
     onEvent: (ContactsUiEvent) -> Unit,
 ) {
     if (state.showsSummary) {
-        item(key = "summary") {
+        item(
+            key = "summary",
+            contentType = "summary",
+        ) {
             BalancesSummaryCard(
                 state = state,
                 onEvent = onEvent,
@@ -123,10 +133,17 @@ private fun LazyListScope.peopleItems(
         }
     }
     if (state.contacts.isNotEmpty()) {
-        item(key = "people-title") {
+        item(
+            key = "people-title",
+            contentType = "people-title",
+        ) {
             SectionTitle(stringResource(R.string.contacts_people_title, state.contacts.size))
         }
-        itemsIndexed(state.contacts, key = { _, row -> "person-${row.key}" }) { index, row ->
+        itemsIndexed(
+            items = state.contacts,
+            key = { _, row -> "person-${row.key}" },
+            contentType = { _, _ -> "person" },
+        ) { index, row ->
             ContactListRow(
                 row = row,
                 isSelected = isPaneShown && row.key == state.selectedKey,
@@ -237,7 +254,7 @@ private fun SummaryTotalCell(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text(
+        AmountText(
             text = amount,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
@@ -246,7 +263,6 @@ private fun SummaryTotalCell(
                 isOwed -> positiveAmountColor()
                 else -> MaterialTheme.colorScheme.error
             },
-            maxLines = 1,
         )
     }
 }
@@ -256,8 +272,16 @@ private fun LazyListScope.inviteActionItems(
     isAgendaSelected: Boolean,
     onEvent: (ContactsUiEvent) -> Unit,
 ) {
-    item(key = "invite-title") { SectionTitle(stringResource(R.string.contacts_invite_more)) }
-    item(key = "invite-agenda") {
+    item(
+        key = "invite-title",
+        contentType = "invite-title",
+    ) {
+        SectionTitle(stringResource(R.string.contacts_invite_more))
+    }
+    item(
+        key = "invite-agenda",
+        contentType = "invite-agenda",
+    ) {
         InviteActionRow(
             icon = Icons.Outlined.Contacts,
             title = stringResource(R.string.contacts_agenda),
@@ -269,7 +293,10 @@ private fun LazyListScope.inviteActionItems(
             modifier = rowPadding,
         )
     }
-    item(key = "invite-link") {
+    item(
+        key = "invite-link",
+        contentType = "invite-link",
+    ) {
         InviteActionRow(
             icon = Icons.Outlined.QrCode2,
             title = stringResource(R.string.contacts_invite_link),
@@ -289,7 +316,10 @@ private fun LazyListScope.hiddenItems(
     isPaneShown: Boolean,
     onEvent: (ContactsUiEvent) -> Unit,
 ) {
-    item(key = "hidden-title") {
+    item(
+        key = "hidden-title",
+        contentType = "hidden-title",
+    ) {
         val toggle = stringResource(
             if (state.isHiddenExpanded) R.string.contacts_hidden_collapse else R.string.contacts_hidden_expand,
         )
@@ -316,7 +346,11 @@ private fun LazyListScope.hiddenItems(
         }
     }
     if (!state.isHiddenExpanded) return
-    itemsIndexed(state.hiddenContacts, key = { _, row -> "hidden-${row.key}" }) { index, row ->
+    itemsIndexed(
+        items = state.hiddenContacts,
+        key = { _, row -> "hidden-${row.key}" },
+        contentType = { _, _ -> "hidden" },
+    ) { index, row ->
         HiddenContactRow(
             row = row,
             isSelected = isPaneShown && row.key == state.selectedKey,
@@ -326,7 +360,10 @@ private fun LazyListScope.hiddenItems(
             modifier = rowPadding,
         )
     }
-    item(key = "hidden-note") {
+    item(
+        key = "hidden-note",
+        contentType = "hidden-note",
+    ) {
         Text(
             text = stringResource(R.string.contacts_hidden_note),
             modifier = Modifier.padding(
@@ -406,7 +443,10 @@ private fun HiddenContactRow(
  * "Sem internet. Seus dados aparecem quando reconectar." under them while that copy waits offline.
  */
 private fun LazyListScope.skeletonItems(isWaitingForInternet: Boolean) {
-    item(key = "skeleton-summary") {
+    item(
+        key = "skeleton-summary",
+        contentType = "skeleton-summary",
+    ) {
         ContactsSummarySkeleton(
             modifier = Modifier.padding(
                 start = 16.dp,
@@ -415,15 +455,26 @@ private fun LazyListScope.skeletonItems(isWaitingForInternet: Boolean) {
             ),
         )
     }
-    item(key = "skeleton-title") { SectionTitle(stringResource(R.string.contacts_people_loading)) }
-    item(key = "skeleton-rows") {
+    item(
+        key = "skeleton-title",
+        contentType = "skeleton-title",
+    ) {
+        SectionTitle(stringResource(R.string.contacts_people_loading))
+    }
+    item(
+        key = "skeleton-rows",
+        contentType = "skeleton-rows",
+    ) {
         ContactRowsSkeleton(
             count = SKELETON_ROWS,
             modifier = contactsSkeletonPadding,
         )
     }
     if (isWaitingForInternet) {
-        item(key = "waiting-for-internet") {
+        item(
+            key = "waiting-for-internet",
+            contentType = "waiting-for-internet",
+        ) {
             WaitingForInternetMessage(
                 modifier = Modifier.padding(
                     horizontal = 20.dp,

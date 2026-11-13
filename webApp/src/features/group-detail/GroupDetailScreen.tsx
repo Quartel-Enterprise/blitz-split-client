@@ -12,7 +12,7 @@ import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import type { GroupTab } from '@/components/common'
 import { billMenuOptions } from '@/components/BillRowMenu'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { PageKeyContext, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
@@ -21,6 +21,7 @@ import { BalancesTab } from '@/features/balances/BalancesTab'
 import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
 import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { formatTime, formatWhen } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
@@ -241,31 +242,30 @@ function paymentTitle(payment: JsPaymentRow): string {
 /** What a tap on a payment opens instead of asking to delete it: the amount, when and how; Apagar still asks first. */
 function PaymentDetailsDialog({ presenter, payment }: { presenter: GroupDetailPresenter; payment: JsPaymentRow }) {
   const title = paymentTitle(payment)
+  const isDesktop = useMediaQuery('(min-width: 768px)')
   return (
-    <Dialog open onOpenChange={(open) => !open && presenter.dismissPaymentDetails()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {t('payment_detailsMeta', {
-              when: formatWhen(payment.paidAt, payment.paidDay),
-              method: paymentMethodLabel(payment.method),
-            })}
-            {payment.isPending ? ` · ${t('groupDetail_pending')}` : ''}
-          </DialogDescription>
-        </DialogHeader>
-        <p className="text-3xl font-semibold tabular-nums">
-          {formatMoney(payment.amountMinor, payment.currency, payment.fractionDigits)}
-        </p>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => presenter.dismissPaymentDetails()}>
-            {t('common_close')}
-          </Button>
-          <Button variant="destructive" onClick={() => presenter.askToDeletePayment(payment.id)}>
-            {t('groupDetail_entryDelete')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <ResponsiveDialog
+      isDesktop={isDesktop}
+      onOpenChange={(open) => !open && presenter.dismissPaymentDetails()}
+      pane={{
+        title,
+        description:
+          t('payment_detailsMeta', {
+            when: formatWhen(payment.paidAt, payment.paidDay),
+            method: paymentMethodLabel(payment.method),
+          }) + (payment.isPending ? ` · ${t('groupDetail_pending')}` : ''),
+        body: <p className="text-3xl font-semibold tabular-nums">{formatMoney(payment.amountMinor, payment.currency, payment.fractionDigits)}</p>,
+        footer: (
+          <>
+            <Button variant="outline" onClick={() => presenter.dismissPaymentDetails()}>
+              {t('common_close')}
+            </Button>
+            <Button variant="destructive" onClick={() => presenter.askToDeletePayment(payment.id)}>
+              {t('groupDetail_entryDelete')}
+            </Button>
+          </>
+        ),
+      }}
+    />
   )
 }

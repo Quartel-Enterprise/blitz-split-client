@@ -162,7 +162,7 @@ export function ActiveFilters({ presenter, state }: { presenter: ActivityPresent
             <button
               aria-label={t('activity_removeFilter', { label: chip.label })}
               onClick={chip.onRemove}
-              className="flex size-4 items-center justify-center rounded-sm outline-none hover:bg-foreground/10 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="flex size-6 items-center justify-center rounded-sm outline-none hover:bg-foreground/10 focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               <X className="size-3" />
             </button>

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -73,7 +74,14 @@ internal fun EditProfileFullScreen(
         },
     ) { padding ->
         val isBook = rememberFoldLayout().bookSplit != null
-        AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) { layout ->
+        AdaptiveScreen(
+            // Why: the keyboard's inset holds the navigation bar's, which the Scaffold's padding already counted.
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .imePadding(),
+        ) { layout ->
             if (isBook) {
                 EditProfileBookLayout(
                     state = state,

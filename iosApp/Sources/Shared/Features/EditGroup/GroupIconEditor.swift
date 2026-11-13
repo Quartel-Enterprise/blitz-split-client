@@ -186,6 +186,8 @@ private struct GroupIconSheet: View {
             }
         }
         .presentationDetents([.medium])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
     }
 
     private func colorTile(_ color: AvatarColor) -> some View {

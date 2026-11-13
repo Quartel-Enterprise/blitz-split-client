@@ -266,7 +266,7 @@ function CommentLikes({ row, canChange, presenter }: { row: JsBillCommentRow; ca
           aria-label={countLabel}
           title={row.likers.map(likerName).join(', ')}
           onClick={() => presenter.openLikes(row.id)}
-          className="rounded-sm px-0.5 text-[13px] text-muted-foreground tabular-nums outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="rounded-sm px-0.5 text-[13px] text-muted-foreground tabular-nums outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           {row.likeCount}
         </button>

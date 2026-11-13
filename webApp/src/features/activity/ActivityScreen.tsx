@@ -205,7 +205,7 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
         aria-current={isSelected || undefined}
         onClick={() => presenter.clickItem(item.id)}
         className={cn(
-          'flex w-full gap-3 px-4 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50',
+          'flex w-full gap-3 px-4 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring',
           showsChanges ? 'pt-3 pb-1.5' : 'py-3',
         )}
       >
@@ -436,7 +436,7 @@ function whenText(item: JsActivityItem): string {
 function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter; item: JsActivityItem; related: JsActivityItem[] }) {
   const meta = [item.groupName, whenText(item)].filter(Boolean).join(' · ')
   return (
-    <section aria-label={headlineText(item)} className="sticky top-8 flex min-w-0 flex-col gap-5 rounded-xl border bg-card p-6">
+    <section aria-label={headlineText(item)} className="sticky top-8 flex max-h-[calc(100dvh-4rem)] min-w-0 flex-col gap-5 overflow-y-auto rounded-xl border bg-card p-6">
       <header className="flex items-start gap-3">
         <PersonButton
           isRound
@@ -454,7 +454,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
             <button
               type="button"
               onClick={() => presenter.openGroup(item.id)}
-              className="self-start rounded-sm text-left text-[13px] text-muted-foreground outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="self-start rounded-sm text-left text-[13px] text-muted-foreground outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               {meta}
             </button>
@@ -508,7 +508,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
               key={other.id}
               type="button"
               onClick={() => presenter.clickItem(other.id)}
-              className="flex items-start gap-3 rounded-md p-2 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="flex items-start gap-3 rounded-md p-2 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               <Avatar initial={other.actorInitials} color={other.actorColor} photoUrl={other.actorPhotoUrl} className="size-7 text-[11px]" />
               <span className="flex min-w-0 flex-1 flex-col">

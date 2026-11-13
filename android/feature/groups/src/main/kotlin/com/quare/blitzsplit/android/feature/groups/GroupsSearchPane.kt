@@ -116,7 +116,10 @@ private fun LazyListScope.searchResultItems(
     val results = search.results
     val suggestion = results.suggestion
     if (search.showsSuggestion && suggestion != null) {
-        item(key = "suggestion") {
+        item(
+            key = "suggestion",
+            contentType = "suggestion",
+        ) {
             SearchSuggestionRow(
                 suggestion = suggestion,
                 onClick = { onEvent(SearchUiEvent.OnSuggestionClicked(suggestion)) },
@@ -124,8 +127,17 @@ private fun LazyListScope.searchResultItems(
         }
     }
     if (results.groups.isNotEmpty()) {
-        item(key = "groups-header") { SearchSectionHeader(stringResource(R.string.groups_search_section_groups)) }
-        itemsIndexed(results.groups, key = { _, hit -> "group-${hit.group.id}" }) { index, hit ->
+        item(
+            key = "groups-header",
+            contentType = "groups-header",
+        ) {
+            SearchSectionHeader(stringResource(R.string.groups_search_section_groups))
+        }
+        itemsIndexed(
+            items = results.groups,
+            key = { _, hit -> "group-${hit.group.id}" },
+            contentType = { _, _ -> "group" },
+        ) { index, hit ->
             SearchGroupRow(
                 hit = hit,
                 shape = groupedRowShapeOf(index, results.groups.size),
@@ -136,15 +148,28 @@ private fun LazyListScope.searchResultItems(
     // Why: each person once, opening their profile, then their row in each group, opening its Members.
     val peopleCount = results.contacts.size + results.people.size
     if (peopleCount > 0) {
-        item(key = "people-header") { SearchSectionHeader(stringResource(R.string.groups_search_section_people)) }
-        itemsIndexed(results.contacts, key = { _, hit -> "contact-${hit.personKey}" }) { index, hit ->
+        item(
+            key = "people-header",
+            contentType = "people-header",
+        ) {
+            SearchSectionHeader(stringResource(R.string.groups_search_section_people))
+        }
+        itemsIndexed(
+            items = results.contacts,
+            key = { _, hit -> "contact-${hit.personKey}" },
+            contentType = { _, _ -> "contact" },
+        ) { index, hit ->
             SearchContactRow(
                 hit = hit,
                 shape = groupedRowShapeOf(index, peopleCount),
                 onClick = { onEvent(SearchUiEvent.OnContactClicked(hit.personKey)) },
             )
         }
-        itemsIndexed(results.people, key = { _, hit -> "person-${hit.groupId}-${hit.memberId}" }) { index, hit ->
+        itemsIndexed(
+            items = results.people,
+            key = { _, hit -> "person-${hit.groupId}-${hit.memberId}" },
+            contentType = { _, _ -> "person" },
+        ) { index, hit ->
             SearchPersonRow(
                 hit = hit,
                 shape = groupedRowShapeOf(results.contacts.size + index, peopleCount),
@@ -153,8 +178,17 @@ private fun LazyListScope.searchResultItems(
         }
     }
     if (results.bills.isNotEmpty()) {
-        item(key = "bills-header") { SearchSectionHeader(stringResource(R.string.groups_search_section_bills)) }
-        itemsIndexed(results.bills, key = { _, hit -> "bill-${hit.id}" }) { index, hit ->
+        item(
+            key = "bills-header",
+            contentType = "bills-header",
+        ) {
+            SearchSectionHeader(stringResource(R.string.groups_search_section_bills))
+        }
+        itemsIndexed(
+            items = results.bills,
+            key = { _, hit -> "bill-${hit.id}" },
+            contentType = { _, _ -> "bill" },
+        ) { index, hit ->
             SearchBillRow(
                 hit = hit,
                 shape = groupedRowShapeOf(index, results.bills.size),

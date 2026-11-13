@@ -447,6 +447,9 @@ internal fun FacesRow(
                 modifier = Modifier.padding(start = 10.dp),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                // Why: in a narrow pane "+1" broke into "+" over "1".
+                softWrap = false,
+                maxLines = 1,
             )
         }
     }

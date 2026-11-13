@@ -81,6 +81,23 @@ extension View {
     }
 }
 
+/// A destructive row of a form ("Sign out", "Delete key") in the brand's negative (6.4:1 on a card) rather than the
+/// system's red (3.5:1), going back to the system's muted label while the row is disabled.
+struct DestructiveRowStyle: ShapeStyle {
+    let color: Color
+
+    func resolve(in environment: EnvironmentValues) -> Color.Resolved {
+        (environment.isEnabled ? color : Color.secondary).resolve(in: environment)
+    }
+}
+
+extension View {
+    /// Goes on the label of a destructive row of a form.
+    func destructiveRowLabel() -> some View {
+        foregroundStyle(DestructiveRowStyle(color: Palette.negative))
+    }
+}
+
 /// The five avatar colors share the values of the category color of the same hue on every platform (see the canvas
 /// rules), so a face and a slice of one hue never drift apart.
 extension AvatarColor {

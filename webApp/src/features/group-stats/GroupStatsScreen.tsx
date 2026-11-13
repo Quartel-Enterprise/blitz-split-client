@@ -309,7 +309,10 @@ function SummaryCards({ state, money }: { state: JsGroupStatsState; money: (mino
       {cards.map((card) => (
         <section key={card.label} className="flex min-w-0 flex-col gap-1 rounded-xl border bg-card px-3.5 py-3 md:px-5 md:py-4">
           <span className="text-[13px] font-medium text-muted-foreground">{card.label}</span>
-          <strong className="text-xl leading-tight font-bold tracking-tight whitespace-nowrap tabular-nums md:text-2xl">{card.value}</strong>
+          {/* Why: a large amount in half a 320 px phone takes a smaller size, and is cut rather than leaving its card. */}
+          <strong title={card.value} className="truncate text-base leading-tight font-bold tracking-tight tabular-nums min-[360px]:text-xl md:text-2xl">
+            {card.value}
+          </strong>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             {card.isPending && <PendingDot />}
             <span className="truncate">{card.hint}</span>
@@ -361,7 +364,7 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
               className="flex items-center gap-2.5"
             >
               <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
-              <span className="w-[108px] shrink-0 truncate font-medium">{name}</span>
+              <span className="w-[72px] shrink-0 truncate font-medium min-[360px]:w-[108px]">{name}</span>
               <span role="img" aria-label={`${name}: ${money(person.amountMinor)}`} className="flex h-2 min-w-0 flex-1 rounded-full bg-muted">
                 {/* Why: the bar takes the person's color, as their face, never the accent. */}
                 <span className="avatar-mark rounded-full" style={{ ...avatarStyle(person.color), width: `${person.barFraction * 100}%` }} />

@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SearchOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,9 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.format.wordGapUi
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiState
 import com.quare.blitzsplit.feature.categorymap.presentation.model.MapSearchResult
@@ -204,47 +205,38 @@ internal fun NoTermFoundContent(
     }
 }
 
-// Why: "2 termos com “uber”", each with what it matched marked and where it sends a title (9.1b).
+// Why: "2 termos com “uber”", over the terms found, each with what it matched marked and where it sends a title (9.1b).
 @Composable
-internal fun SearchResultsList(
-    state: CategoryMapUiState,
-    onEvent: (CategoryMapUiEvent) -> Unit,
+internal fun SearchResultsTitle(
+    count: Int,
+    query: String,
 ) {
-    val results = state.searchResults
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(
-            text = pluralStringResource(R.plurals.category_map_results, results.size, results.size, state.query.trim()),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(
-                start = 4.dp,
-                bottom = 8.dp,
-            ),
-        )
-        results.forEachIndexed { index, result ->
-            SearchResultRow(
-                result = result,
-                index = index,
-                count = results.size,
-                onEvent = onEvent,
-            )
-        }
-        if (results.size > 1) {
-            Text(
-                text = stringResource(R.string.category_map_longest_wins),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(
-                    start = 4.dp,
-                    top = 8.dp,
-                ),
-            )
-        }
-    }
+    Text(
+        text = pluralStringResource(R.plurals.category_map_results, count, count, query),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(
+            start = 4.dp,
+            bottom = 10.dp,
+        ),
+    )
 }
 
 @Composable
-private fun SearchResultRow(
+internal fun LongestTermWinsText() {
+    Text(
+        text = stringResource(R.string.category_map_longest_wins),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(
+            start = 4.dp,
+            top = 8.dp,
+        ),
+    )
+}
+
+@Composable
+internal fun SearchResultRow(
     result: MapSearchResult,
     index: Int,
     count: Int,
@@ -313,9 +305,10 @@ internal fun RestoreMapDialog(
         1 -> gap + stringResource(R.string.category_map_restore_own_one, own.first().term)
         else -> gap + pluralStringResource(R.plurals.category_map_restore_own_many, own.size, own.size)
     }
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = { onEvent(CategoryMapUiEvent.OnRestoreDismissed) },
-        title = { Text(stringResource(R.string.category_map_restore_title)) },
+        title = stringResource(R.string.category_map_restore_title),
+        placement = rememberDialogPlacement(),
         text = { Text(stringResource(R.string.category_map_restore_body) + ownText) },
         confirmButton = {
             TextButton(onClick = { onEvent(CategoryMapUiEvent.OnRestoreConfirmed) }) {

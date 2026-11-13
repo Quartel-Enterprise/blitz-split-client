@@ -363,7 +363,10 @@ export function HomeShellView({
                 key={tab}
                 aria-current={current(tab)}
                 onClick={() => select(tab)}
-                className={cn('flex flex-col items-center justify-center gap-1 text-[11px] font-medium', tab === selected ? 'text-foreground' : 'text-muted-foreground')}
+                className={cn(
+                  'flex flex-col items-center justify-center gap-1 text-[11px] font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset',
+                  tab === selected ? 'text-foreground' : 'text-muted-foreground',
+                )}
               >
                 {icon}
                 {t(label)}
@@ -371,7 +374,10 @@ export function HomeShellView({
             ))}
             {/* Why: last, under the thumb and where iOS keeps its search tab; it opens the search over this tab. */}
             {search && (
-              <button onClick={search.onOpen} className="flex flex-col items-center justify-center gap-1 text-[11px] font-medium text-muted-foreground">
+              <button
+                onClick={search.onOpen}
+                className="flex flex-col items-center justify-center gap-1 text-[11px] font-medium text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
+              >
                 <Search aria-hidden className="size-4" />
                 {t('groups_search')}
               </button>

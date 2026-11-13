@@ -157,6 +157,7 @@ struct BillCommentView: View {
                     .foregroundStyle(.secondary)
                     .frame(minWidth: 28, minHeight: 22)
                     .contentShape(.rect)
+                    .fingerTarget(horizontalOverlap: 8, verticalOverlap: 11)
             }
             .menuIndicator(.hidden)
             #if os(macOS)
@@ -178,6 +179,7 @@ struct BillCommentView: View {
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(comment.isLikedByMe ? Color.red : Color.secondary)
                     .contentTransition(.symbolEffect(.replace))
+                    .fingerTarget(horizontalOverlap: 9, verticalOverlap: 14)
             }
             .accessibilityLabel(comment.isLikedByMe ? Text("Unlike") : Text("Like"))
             .help(comment.isLikedByMe ? Text("Unlike") : Text("Like"))
@@ -299,6 +301,8 @@ struct BillLikesSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+        // An iPhone Duo open: in the half before the fold, never over it
+        .foldSheetPlacement()
     }
 }
 #endif

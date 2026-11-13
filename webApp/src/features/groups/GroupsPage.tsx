@@ -291,7 +291,7 @@ function StatusTab({ isSelected, count, onSelect, children }: { isSelected: bool
 function GroupsFilter({ presenter, query }: { presenter: GroupsPresenter; query: string }) {
   const [draft, setDraft] = useDraft(query, (next) => presenter.filter(next))
   return (
-    <label className="ml-auto hidden h-9 w-60 items-center gap-1.5 rounded-md border border-field-border px-2.5 text-muted-foreground focus-within:ring-[3px] focus-within:ring-ring/50 md:flex">
+    <label className="ml-auto hidden h-9 w-60 items-center gap-1.5 rounded-md border border-field-border px-2.5 text-muted-foreground focus-within:ring-[3px] focus-within:ring-ring md:flex">
       <ListFilter aria-hidden className="size-3.5 shrink-0" />
       <input
         value={draft}

@@ -418,11 +418,17 @@ struct MyBalanceText: View {
     let minor: Int64?
     let currency: GroupCurrency
 
+    /// A Mac table's selected row is filled with the accent, where the green and the orange read at 1:1: the sign
+    /// still says which way the money goes, so the amount takes the row's own label color there.
+    @Environment(\.backgroundProminence) private var backgroundProminence
+
     var body: some View {
         if let minor {
             Text(verbatim: currency.formatSigned(minor))
                 .monospacedDigit()
-                .foregroundStyle(Palette.balance(minor))
+                .foregroundStyle(
+                    backgroundProminence == .increased ? AnyShapeStyle(.primary) : AnyShapeStyle(Palette.balance(minor)),
+                )
         }
     }
 }

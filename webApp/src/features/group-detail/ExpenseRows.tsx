@@ -1,5 +1,5 @@
 import type { JsExpenseRow } from 'blitzsplit-shared'
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import { PendingDot, pendingSurfaceClass } from '@/components/common'
 import { RowMenuButton, type RowMenuOption } from '@/components/BillRowMenu'
 import { balanceTone, nameOrFormer } from '@/features/balances/BalanceCard'
@@ -30,8 +30,9 @@ const OpenRowMenuContext = createContext<{ openId: string | null; setOpenId: (id
  */
 export function DayRowsTable({ label, children }: { label: string; children: ReactNode }) {
   const [openId, setOpenId] = useState<string | null>(null)
+  const openMenu = useMemo(() => ({ openId, setOpenId }), [openId])
   return (
-    <OpenRowMenuContext.Provider value={{ openId, setOpenId }}>
+    <OpenRowMenuContext.Provider value={openMenu}>
       <div role="table" aria-label={label} className="flex flex-col overflow-hidden rounded-xl border bg-card">
         <div role="row" className={cn(rowColumns, 'hidden h-10 items-center border-b text-[13px] font-medium text-muted-foreground md:grid')}>
           <span role="columnheader" className="px-4">
@@ -56,7 +57,7 @@ export function DayRowsTable({ label, children }: { label: string; children: Rea
 /** A day of the table: "Today", "Yesterday" or its date over its rows. */
 export function DayRowGroup({ dayStartMillis, relativeDay, children }: { dayStartMillis: number; relativeDay: string; children: ReactNode }) {
   return (
-    <div role="rowgroup" className="border-b last:border-b-0">
+    <div role="rowgroup" className="border-b [contain-intrinsic-size:auto_300px] [content-visibility:auto] last:border-b-0">
       <div role="row" className="flex h-8 items-center border-b bg-sidebar px-4 text-xs font-medium text-muted-foreground">
         <span role="rowheader">{formatDayLabel(dayStartMillis, relativeDay)}</span>
       </div>

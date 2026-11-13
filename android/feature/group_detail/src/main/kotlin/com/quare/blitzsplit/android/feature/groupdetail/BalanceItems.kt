@@ -60,9 +60,17 @@ internal fun LazyListScope.balancesStateItems(
             isBadgeSquare = false,
         )
 
-        state.isBalancesEmpty -> item(key = "balances-empty") { EmptyBalancesCard() }
+        state.isBalancesEmpty -> item(
+            key = "balances-empty",
+            contentType = "balances-empty",
+        ) {
+            EmptyBalancesCard()
+        }
 
-        state.header.isEveryoneSettled -> item(key = "balances-settled") {
+        state.header.isEveryoneSettled -> item(
+            key = "balances-settled",
+            contentType = "balances-settled",
+        ) {
             EveryoneSettledCard(
                 canDelete = state.exit.canLeaveOrDelete,
                 onAction = onAction,
@@ -77,7 +85,10 @@ internal fun LazyListScope.simplificationItems(
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
     val simplification = state.simplification?.takeIf { state.showsSimplificationCard } ?: return
-    item(key = "balances-simplified") {
+    item(
+        key = "balances-simplified",
+        contentType = "balances-simplified",
+    ) {
         SimplificationCard(
             simplification = simplification,
             onHowItWorksClick = { onEvent(GroupDetailUiEvent.OnSimplifyDebtsInfoClicked) },
@@ -123,7 +134,10 @@ internal fun LazyListScope.betweenOthersItems(
         },
     )
     if (state.showsDebtNote) {
-        item(key = "balances-note") {
+        item(
+            key = "balances-note",
+            contentType = "balances-note",
+        ) {
             Text(
                 text = stringResource(
                     if (state.simplification != null) {
@@ -153,7 +167,10 @@ private fun LazyListScope.debtSection(
     hint: @Composable () -> String?,
 ) {
     if (debts.isEmpty()) return
-    item(key = "$key-title") {
+    item(
+        key = "$key-title",
+        contentType = "title",
+    ) {
         SectionTitle(
             title = title(),
             hint = hint(),
@@ -162,6 +179,7 @@ private fun LazyListScope.debtSection(
     itemsIndexed(
         items = debts,
         key = { _, debt -> "$key-${debt.fromMemberId}-${debt.toMemberId}" },
+        contentType = { _, _ -> "debt" },
     ) { index, debt ->
         DebtEntryRow(
             debt = debt,

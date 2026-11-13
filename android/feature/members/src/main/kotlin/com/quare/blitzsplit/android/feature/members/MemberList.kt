@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -50,56 +49,17 @@ import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
 
-@Composable
-internal fun MemberList(
-    members: List<MembersMember>,
-    money: MoneyFormatter,
-    onEvent: (MembersUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        members.forEachIndexed { index, member ->
-            MemberRow(
-                member = member,
-                money = money,
-                shape = rowShapeOf(
-                    index = index,
-                    count = members.size,
-                ),
-                onEvent = onEvent,
-            )
-        }
-    }
-}
-
-// Why: the list reads as one card, its first and last rows rounder than the ones between.
-private fun rowShapeOf(
-    index: Int,
-    count: Int,
-): Shape {
-    val outer = 20.dp
-    val inner = 6.dp
-    return RoundedCornerShape(
-        topStart = if (index == 0) outer else inner,
-        topEnd = if (index == 0) outer else inner,
-        bottomStart = if (index == count - 1) outer else inner,
-        bottomEnd = if (index == count - 1) outer else inner,
-    )
-}
-
 // Why: the row opens the member's profile (Perfil for this device's user); the ⋮ keeps their menu.
 @Composable
-private fun MemberRow(
+internal fun MemberRow(
     member: MembersMember,
     money: MoneyFormatter,
     shape: Shape,
     onEvent: (MembersUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
@@ -165,7 +125,8 @@ private fun MemberBalanceText(
         },
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.SemiBold,
-        color = if (balance.isSettled) MaterialTheme.colorScheme.outline else amountColorOf(net),
+        // Why: settled is zero's muted color, which reads at 4.5:1; the outline's gray falls just short of it.
+        color = if (balance.isSettled) MaterialTheme.colorScheme.onSurfaceVariant else amountColorOf(net),
         textAlign = TextAlign.End,
     )
 }

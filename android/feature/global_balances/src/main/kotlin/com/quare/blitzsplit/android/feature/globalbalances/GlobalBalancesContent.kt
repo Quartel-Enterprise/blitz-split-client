@@ -212,7 +212,10 @@ private fun BalancesPane(
             bottomPadding = bottomPadding,
             modifier = Modifier.widthIn(max = columnMaxWidth),
             header = {
-                item(key = "filter") {
+                item(
+                    key = "filter",
+                    contentType = "filter",
+                ) {
                     FilterHeaderColumn(
                         state = state,
                         onEvent = onEvent,
@@ -242,7 +245,10 @@ private fun BalancesListDetailLayout(
                 .fillMaxHeight(),
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
-            item(key = "filter") {
+            item(
+                key = "filter",
+                contentType = "filter",
+            ) {
                 FilterHeaderColumn(
                     state = state,
                     onEvent = onEvent,
@@ -255,7 +261,12 @@ private fun BalancesListDetailLayout(
                     onEvent = onEvent,
                 )
             } else {
-                item(key = "skeleton") { PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet) }
+                item(
+                    key = "skeleton",
+                    contentType = "skeleton",
+                ) {
+                    PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet)
+                }
             }
         }
         Box(
@@ -295,8 +306,17 @@ private fun LazyListScope.pickableSections(
     onEvent: (GlobalBalancesUiEvent) -> Unit,
 ) {
     state.sections.forEach { section ->
-        item(key = "section-${section.isYouOwe}") { SectionTitle(section) }
-        itemsIndexed(section.rows, key = { _, row -> row.id }) { index, row ->
+        item(
+            key = "section-${section.isYouOwe}",
+            contentType = "section",
+        ) {
+            SectionTitle(section)
+        }
+        itemsIndexed(
+            items = section.rows,
+            key = { _, row -> row.id },
+            contentType = { _, _ -> "person" },
+        ) { index, row ->
             PersonPickRow(
                 row = row,
                 isSelected = row.id == selectedId,
@@ -380,13 +400,21 @@ private fun PeopleList(
     ) {
         header()
         if (!state.isLoaded) {
-            item(key = "skeleton") { PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet) }
+            item(
+                key = "skeleton",
+                contentType = "skeleton",
+            ) {
+                PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet)
+            }
             return@LazyColumn
         }
         val emptyState = state.emptyState
         val emptyTotal = state.emptyStateTotal
         if (emptyState != null && emptyTotal != null) {
-            item(key = "empty") {
+            item(
+                key = "empty",
+                contentType = "empty",
+            ) {
                 EmptyBalancesSection(
                     emptyState = emptyState,
                     total = emptyTotal,
@@ -395,8 +423,17 @@ private fun PeopleList(
             }
         }
         state.sections.forEach { section ->
-            item(key = "section-${section.isYouOwe}") { SectionTitle(section) }
-            itemsIndexed(section.rows, key = { _, row -> row.id }) { index, row ->
+            item(
+                key = "section-${section.isYouOwe}",
+                contentType = "section",
+            ) {
+                SectionTitle(section)
+            }
+            itemsIndexed(
+                items = section.rows,
+                key = { _, row -> row.id },
+                contentType = { _, _ -> "person" },
+            ) { index, row ->
                 PersonBalanceCard(
                     row = row,
                     index = index,

@@ -46,10 +46,15 @@ final class AllExpensesModel {
 
 /// "All expenses", which Home's "See everything" pushes over it: every bill you paid or take part in, across groups,
 /// by day, drawn as Home's rows with their "⋯" (a long press, a right click on the Mac). A page on every size, one
-/// column centered on an iPad and a wide Mac window; the next page is read as the last row comes into view.
+/// column centered on an iPad and a wide Mac window, and in the half before the fold of an iPhone Duo open lying
+/// down, so no card crosses it; the next page is read as the last row comes into view.
 struct AllExpensesView: View {
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: AllExpensesModel?
+    /// The iPhone Duo's fold over the list, in the list's own coordinates.
+    @State private var division: FoldDivision?
+
+    private static let cardRadius: CGFloat = 26
 
     var body: some View {
         Group {
@@ -117,8 +122,11 @@ struct AllExpensesView: View {
                                 .padding(.bottom, 6)
                                 .accessibilityAddTraits(.isHeader)
                         }
-                        dayCard(day, model: model)
-                            .padding(.top, model.state.showsDayHeadings ? 0 : 12)
+                        // Each bill is a row of the lazy stack itself, so a long day (every bill, sorted by amount)
+                        // builds only the rows on screen and the last one appears only once it is reached
+                        ForEach(day.bills, id: \.id) { bill in
+                            billRow(bill, in: day, model: model)
+                        }
                     }
                     if model.state.showsMoreSkeleton {
                         ShimmerList(count: 2, leading: .badge)
@@ -132,32 +140,56 @@ struct AllExpensesView: View {
                 .frame(maxWidth: ScreenLayout.singleColumnMaxWidth)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
-                .frame(maxWidth: .infinity)
+                // With a fold running down the list (an iPhone Duo open lying down) the column stays in the half
+                // before it, as Activity's feed does; everywhere else it is centered
+                .frame(maxWidth: foldStart ?? .infinity)
+                .frame(maxWidth: .infinity, alignment: foldStart == nil ? .center : .leading)
             }
             .background(Palette.groupedBackground.ignoresSafeArea())
+            .readingFoldDivision($division)
         }
     }
 
-    /// One day's bills in a card, a hairline between them, as on Home; the last bill read asks for the next page.
-    private func dayCard(_ day: HomeBillDay, model: AllExpensesModel) -> some View {
-        let lastId = model.state.days.last?.bills.last?.id
-        return VStack(spacing: 0) {
-            ForEach(Array(day.bills.enumerated()), id: \.element.id) { index, bill in
-                HomeBillRow(
-                    bill: bill,
-                    onOpen: { model.send(AllExpensesUiEventOnBillClicked(groupId: bill.groupId, expenseId: bill.id)) },
-                    sendMenu: { model.send($0) },
-                )
-                .onAppear {
-                    if bill.id == lastId, model.state.hasMore { model.send(AllExpensesUiEventOnEndReached.shared) }
-                }
-                if index < day.bills.count - 1 {
-                    // Under the text: 16 of padding, the 38 pt badge and 12 of spacing
-                    Divider()
-                        .padding(.leading, 66)
-                }
+    /// Where the fold starts across the list, nil without one running down it.
+    private var foldStart: CGFloat? {
+        guard let fold = division?.verticalFrame else { return nil }
+        return max(0, fold.minX)
+    }
+
+    /// A bill of a day's card, drawn row by row: the card's rounded corners on the day's first and last bills and a
+    /// hairline under every bill but the last, as on Home; the last bill read asks for the next page.
+    private func billRow(_ bill: HomeBill, in day: HomeBillDay, model: AllExpensesModel) -> some View {
+        let isFirst = bill.id == day.bills.first?.id
+        let isLast = bill.id == day.bills.last?.id
+        let isEnd = bill.id == model.state.days.last?.bills.last?.id
+        let top = isFirst ? Self.cardRadius : 0
+        let bottom = isLast ? Self.cardRadius : 0
+        return HomeBillRow(
+            bill: bill,
+            onOpen: { model.send(AllExpensesUiEventOnBillClicked(groupId: bill.groupId, expenseId: bill.id)) },
+            sendMenu: { model.send($0) },
+        )
+        .overlay(alignment: .bottom) {
+            if !isLast {
+                // Under the text: 16 of padding, the 38 pt badge and 12 of spacing
+                Divider()
+                    .padding(.leading, 66)
             }
         }
-        .background(Palette.card, in: .rect(cornerRadius: 26))
+        .background(
+            Palette.card,
+            in: UnevenRoundedRectangle(
+                topLeadingRadius: top,
+                bottomLeadingRadius: bottom,
+                bottomTrailingRadius: bottom,
+                topTrailingRadius: top,
+                style: .continuous,
+            ),
+        )
+        // Without day headings the one card keeps its 12 pt from the filters
+        .padding(.top, isFirst && !model.state.showsDayHeadings ? 12 : 0)
+        .onAppear {
+            if isEnd, model.state.hasMore { model.send(AllExpensesUiEventOnEndReached.shared) }
+        }
     }
 }

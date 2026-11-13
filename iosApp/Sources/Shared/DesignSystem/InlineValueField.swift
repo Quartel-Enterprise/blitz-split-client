@@ -8,7 +8,9 @@ extension View {
             .monospacedDigit()
             #if os(iOS)
             .padding(.horizontal, 10)
-            .frame(width: width, height: 36)
+            .frame(width: width)
+            // At least 36, so the largest text sizes are never cut
+            .frame(minHeight: 36)
             .background(.fill.tertiary, in: .rect(cornerRadius: 10))
             .overlay {
                 if isError {

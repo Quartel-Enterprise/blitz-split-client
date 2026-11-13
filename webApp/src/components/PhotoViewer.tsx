@@ -26,7 +26,7 @@ export function PhotoViewerDialog({
   return (
     <DialogPrimitive.Root open onOpenChange={(open) => !open && onDismiss()}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[#08080e]/55 backdrop-blur-md data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[#08080e]/80 backdrop-blur-md data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           // Why: m-auto centers the photo and still scrolls it whole where the window is short (a phone lying down).
           className="fixed inset-0 z-50 flex overflow-y-auto p-4 text-white outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"

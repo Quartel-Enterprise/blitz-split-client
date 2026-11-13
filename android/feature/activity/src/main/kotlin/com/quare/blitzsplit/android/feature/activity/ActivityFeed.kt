@@ -267,14 +267,20 @@ internal fun LazyListScope.feedItems(
     onEvent: (ActivityUiEvent) -> Unit,
 ) {
     if (!state.isLoaded || state.showsPlaceholders || state.isLoadingOlderItems) {
-        item(key = "placeholders") {
+        item(
+            key = "placeholders",
+            contentType = "placeholders",
+        ) {
             ActivityFeedSkeleton(
                 count = PLACEHOLDER_COUNT,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
         if (state.showsPlaceholders && state.isWaitingForInternet) {
-            item(key = "waiting-for-internet") {
+            item(
+                key = "waiting-for-internet",
+                contentType = "waiting-for-internet",
+            ) {
                 WaitingForInternetMessage(
                     modifier = Modifier.padding(
                         horizontal = 20.dp,
@@ -286,7 +292,10 @@ internal fun LazyListScope.feedItems(
         return
     }
     state.emptyState?.let { emptyState ->
-        item(key = "empty") {
+        item(
+            key = "empty",
+            contentType = "empty",
+        ) {
             EmptyActivityContent(
                 emptyState = emptyState,
                 onAction = {
@@ -302,7 +311,10 @@ internal fun LazyListScope.feedItems(
         }
     }
     state.days.forEach { day ->
-        item(key = "day-${day.dayStartMillis}") {
+        item(
+            key = "day-${day.dayStartMillis}",
+            contentType = "day",
+        ) {
             Text(
                 text = dayTitleOf(day.dayStartMillis, day.relativeDay, dates),
                 modifier = Modifier
@@ -317,7 +329,11 @@ internal fun LazyListScope.feedItems(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        itemsIndexed(day.items, key = { _, item -> item.id }) { index, item ->
+        itemsIndexed(
+            items = day.items,
+            key = { _, item -> item.id },
+            contentType = { _, _ -> "activity" },
+        ) { index, item ->
             ActivityRow(
                 item = item,
                 index = index,
@@ -334,7 +350,10 @@ internal fun LazyListScope.feedItems(
         }
     }
     if (state.isLoadingMore) {
-        item(key = "loading-more") {
+        item(
+            key = "loading-more",
+            contentType = "loading-more",
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -355,7 +374,10 @@ internal fun LazyListScope.feedItems(
         }
     }
     if (state.showsOfflineEnd) {
-        item(key = "offline-end") {
+        item(
+            key = "offline-end",
+            contentType = "offline-end",
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -120,7 +121,14 @@ private fun PaymentKeyFullScreenScaffold(
         },
     ) { padding ->
         val isBook = rememberFoldLayout().bookSplit != null
-        AdaptiveScreen(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) { layout ->
+        AdaptiveScreen(
+            // Why: the keyboard's inset holds the navigation bar's, which the Scaffold's padding already counted.
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .imePadding(),
+        ) { layout ->
             when {
                 // Why: a saved key fills the form once read, so the form shimmers instead of flashing empty first.
                 !body.state.isLoaded -> Box(

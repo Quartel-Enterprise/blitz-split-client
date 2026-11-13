@@ -50,6 +50,8 @@ class DateTimeTextFormatter(
 @Composable
 fun rememberDateTimeTextFormatter(): DateTimeTextFormatter {
     val locale = LocalLocale.current.platformLocale
+    val cache = LocalFormatterCache.current
+    if (cache != null && cache.isFor(locale)) return cache.dates
     val context = LocalContext.current
     val is24Hour = DateFormat.is24HourFormat(context)
     return remember(locale, is24Hour) {

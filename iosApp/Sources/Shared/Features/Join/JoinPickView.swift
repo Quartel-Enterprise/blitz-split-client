@@ -364,6 +364,8 @@ private struct NewMemberSheet: View {
                 }
             }
             .presentationDetents([.medium])
+            // An iPhone Duo open: in the half before the fold, never over it
+            .foldSheetPlacement()
             .interactiveDismissDisabled(model.state.isJoiningAsNewMember)
             #if os(macOS)
             .frame(minWidth: 380, minHeight: 240)

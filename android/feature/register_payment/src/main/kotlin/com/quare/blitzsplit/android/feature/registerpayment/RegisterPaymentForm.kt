@@ -293,7 +293,7 @@ private fun FullDebtButton(
         enabled = !isFullDebt,
         // Why: done, not unavailable, so its check reads in the primary color, as on the web.
         colors = ButtonDefaults.textButtonColors(
-            disabledContentColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+            disabledContentColor = MaterialTheme.colorScheme.primary,
         ),
         contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
     ) {

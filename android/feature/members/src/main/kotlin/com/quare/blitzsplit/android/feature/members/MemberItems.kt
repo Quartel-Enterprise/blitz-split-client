@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CurrencyChipRow
+import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
@@ -50,14 +52,20 @@ internal fun LazyListScope.memberItems(
     onEvent: (MembersUiEvent) -> Unit,
 ) {
     if (!state.isLoaded) {
-        item(key = "members-skeleton") {
+        item(
+            key = "members-skeleton",
+            contentType = "members-skeleton",
+        ) {
             MembersSkeleton(
                 modifier = Modifier.padding(16.dp),
             )
         }
         return
     }
-    item(key = "members-link") {
+    item(
+        key = "members-link",
+        contentType = "members-link",
+    ) {
         LinkCard(
             displayLink = state.displayLink,
             canCopyLink = state.canCopyLink,
@@ -71,7 +79,10 @@ internal fun LazyListScope.memberItems(
     }
     // Why: the balances below follow the currency picked, a chip per currency the group has money in.
     if (state.currencies.size > 1) {
-        item(key = "members-currencies") {
+        item(
+            key = "members-currencies",
+            contentType = "members-currencies",
+        ) {
             CurrencyChipRow(
                 currencies = state.currencies,
                 selected = state.currency,
@@ -81,15 +92,22 @@ internal fun LazyListScope.memberItems(
             )
         }
     }
-    item(key = "members-list") {
-        MemberList(
-            members = state.members,
+    // Why: the people read as one card, its first and last rows rounder than the ones between, 2 dp apart.
+    val members = state.members
+    itemsIndexed(
+        items = members,
+        key = { _, member -> "member-${member.id}" },
+        contentType = { _, _ -> "member" },
+    ) { index, member ->
+        MemberRow(
+            member = member,
             money = money,
+            shape = groupedRowShapeOf(index, members.size),
             onEvent = onEvent,
             modifier = Modifier.padding(
                 start = 16.dp,
                 end = 16.dp,
-                top = 16.dp,
+                top = if (index == 0) 16.dp else 2.dp,
             ),
         )
     }

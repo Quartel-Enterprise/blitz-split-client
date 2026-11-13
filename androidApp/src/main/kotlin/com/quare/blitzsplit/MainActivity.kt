@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.quare.blitzsplit.android.designsystem.format.FormattersRoot
 import com.quare.blitzsplit.android.designsystem.format.LocalShowsBitcoinInSats
 import com.quare.blitzsplit.android.designsystem.layout.FoldLayoutRoot
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -85,11 +86,13 @@ class MainActivity : ComponentActivity() {
                 usesDynamicColors = usesDynamicColors,
             ) {
                 CompositionLocalProvider(LocalShowsBitcoinInSats provides showsBitcoinInSats) {
-                    FoldLayoutRoot {
-                        AppNavDisplay(appViewModel = appViewModel)
-                        BillLinkNoticeDialog(appViewModel = appViewModel)
-                        DiscardChangesDialog(appViewModel = appViewModel)
-                        InAppUpdateDownloadOverlay()
+                    FormattersRoot {
+                        FoldLayoutRoot {
+                            AppNavDisplay(appViewModel = appViewModel)
+                            BillLinkNoticeDialog(appViewModel = appViewModel)
+                            DiscardChangesDialog(appViewModel = appViewModel)
+                            InAppUpdateDownloadOverlay()
+                        }
                     }
                 }
             }

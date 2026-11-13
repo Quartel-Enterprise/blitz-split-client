@@ -152,6 +152,8 @@ fun rememberMoneyFormatter(currency: GroupCurrency): MoneyFormatter {
     val locale = LocalLocale.current.platformLocale
     val showsSats = LocalShowsBitcoinInSats.current
     val satsText = rememberSatsText()
+    val cache = LocalFormatterCache.current
+    if (cache != null && cache.isFor(locale, showsSats, satsText)) return cache.moneyOf(currency)
     return remember(currency, locale, showsSats, satsText) {
         MoneyFormatter(
             currency = currency,

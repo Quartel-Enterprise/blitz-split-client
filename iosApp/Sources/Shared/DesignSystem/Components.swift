@@ -69,6 +69,22 @@ struct GroupedCard<Content: View>: View {
     }
 }
 
+extension View {
+    /// A finger's 44 pt around a small control on iPhone and iPad (Apple's minimum), on a button's label: the hit
+    /// area grows to 44 pt while the layout keeps what the overlaps give back, so nothing around it moves. The
+    /// Mac's pointer needs none.
+    func fingerTarget(horizontalOverlap: CGFloat = 0, verticalOverlap: CGFloat = 0) -> some View {
+        #if os(iOS)
+        frame(minWidth: 44, minHeight: 44)
+            .contentShape(.rect)
+            .padding(.horizontal, -horizontalOverlap)
+            .padding(.vertical, -verticalOverlap)
+        #else
+        self
+        #endif
+    }
+}
+
 /// The "or" between the account buttons and "Use without an account".
 struct OrDivider: View {
     var body: some View {

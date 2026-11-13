@@ -572,6 +572,7 @@ private struct SignOutSection: View {
             } label: {
                 // Only a profile nothing brings back is erased for good; any account signs out (beta feedback 17)
                 Text(state.erasesProfileOnSignOut ? "Erase profile and sign out" : "Sign out")
+                    .destructiveRowLabel()
                     .frame(maxWidth: .infinity)
             }
             .disabled(!state.canSignOut)
@@ -1132,8 +1133,10 @@ private struct DeleteAccountSection: View {
             Button(role: .destructive) {
                 model.send(ProfileUiEventOnDeleteAccountClicked.shared)
             } label: {
+                // The brand's negative, not the system's red, which reads at 3:1 on this tint
                 Text("Delete account and data")
                     .fontWeight(.semibold)
+                    .foregroundStyle(Palette.negative)
                     .frame(maxWidth: .infinity)
             }
             .listRowBackground(Palette.negative.opacity(0.12))

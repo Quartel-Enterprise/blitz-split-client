@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 
 /*
  * Why: the bare field of a search bar (the home's Buscar, Contatos' and the agenda's), the placeholder standing in
@@ -42,6 +43,9 @@ fun SearchQueryField(
                         text = placeholder,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        // Why: a long placeholder at a large font wrapped to a second line the bar cut off.
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
                 field()

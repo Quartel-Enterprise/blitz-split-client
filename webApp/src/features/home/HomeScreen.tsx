@@ -217,7 +217,7 @@ function Shortcuts({
             aria-disabled={!shortcut.isEnabled}
             title={hint(shortcut)}
             onClick={() => shortcut.isEnabled && shortcut.onClick()}
-            className={cn(!shortcut.isEnabled && 'text-muted-foreground opacity-60 hover:bg-background')}
+            className={cn(!shortcut.isEnabled && 'text-muted-foreground hover:bg-background')}
           >
             {shortcut.icon}
             {t(shortcut.label)}
@@ -235,7 +235,7 @@ function Shortcuts({
           onClick={() => shortcut.isEnabled && shortcut.onClick()}
           className={cn(
             'flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-lg border bg-card px-1.5 py-2 text-center text-[13px] leading-4 font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring md:min-h-16 md:flex-row md:gap-2 [&_svg]:size-[18px] [&_svg]:shrink-0',
-            shortcut.isEnabled ? 'hover:bg-accent' : 'text-muted-foreground opacity-70',
+            shortcut.isEnabled ? 'hover:bg-accent' : 'text-muted-foreground',
           )}
         >
           {shortcut.icon}

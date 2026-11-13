@@ -36,6 +36,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.component.logoIcon
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatters
@@ -170,7 +171,7 @@ private fun CoverBalanceCard(state: GroupsUiState) {
                 style = MaterialTheme.typography.labelLarge,
             )
             amountsOf(summary.totals, BalanceTotal::netMinor).forEach { (currency, minor) ->
-                Text(
+                AmountText(
                     text = formatters.getValue(currency).toSignedText(minor),
                     style = if (summary.totals.size > 1) {
                         MaterialTheme.typography.headlineSmall
@@ -178,7 +179,6 @@ private fun CoverBalanceCard(state: GroupsUiState) {
                         MaterialTheme.typography.headlineLarge
                     },
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1,
                 )
             }
             Text(

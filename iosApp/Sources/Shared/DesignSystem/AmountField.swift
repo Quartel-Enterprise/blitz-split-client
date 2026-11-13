@@ -18,7 +18,7 @@ struct AmountField: View {
             KeptTextField(text: $text, prompt: Text(verbatim: currency.zeroPlaceholder)) {
                 Text(label)
             }
-            .font(.system(size: 34, weight: .bold))
+            .font(.largeTitle.bold())
             .monospacedDigit()
             .keyboardType(.numberPad)
         }

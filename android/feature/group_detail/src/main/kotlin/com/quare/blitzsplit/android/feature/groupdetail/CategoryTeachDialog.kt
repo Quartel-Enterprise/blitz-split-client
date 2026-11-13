@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarDuration
@@ -23,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
 import com.quare.blitzsplit.android.designsystem.format.categoryName
+import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.CategoryTeach
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -82,9 +83,10 @@ internal fun CategoryTeachDialog(
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
     val target = pathOf(teach.category, teach.categoryParent)
-    AlertDialog(
+    FoldAlertDialog(
         onDismissRequest = { onEvent(GroupDetailUiEvent.OnTeachDismissed) },
-        title = { Text(stringResource(R.string.group_detail_teach_title)) },
+        title = stringResource(R.string.group_detail_teach_title),
+        placement = rememberDialogPlacement(),
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(stringResource(R.string.group_detail_teach_question, teach.title, target))

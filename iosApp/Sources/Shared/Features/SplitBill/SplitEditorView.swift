@@ -38,7 +38,7 @@ private struct SplitModePicker: View {
                 .lineLimit(1)
                 .padding(.horizontal, 14)
                 .frame(minHeight: 34)
-                .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+                .foregroundStyle(isSelected ? AnyShapeStyle(Palette.onAccent) : AnyShapeStyle(.primary))
                 .background(
                     Capsule().fill(isSelected ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.fill.tertiary)),
                 )
@@ -245,7 +245,7 @@ private struct SplitPersonRow: View {
 
     private var checkboxStyle: AnyShapeStyle {
         if row.isIncluded { return AnyShapeStyle(Palette.accent) }
-        return editor.includedCount == 0 ? AnyShapeStyle(Palette.negative) : AnyShapeStyle(.tertiary)
+        return editor.includedCount == 0 ? AnyShapeStyle(Palette.negative) : AnyShapeStyle(.secondary)
     }
 
     @ViewBuilder

@@ -96,7 +96,10 @@ private fun expensesTabOf(
     return GroupTabBody(
         listContent = {
             state.joinedAs?.let { name ->
-                item(key = "joined") {
+                item(
+                    key = "joined",
+                    contentType = "joined",
+                ) {
                     JoinedBanner(
                         name = name,
                         showsProtectAccess = state.showsProtectAccess,
@@ -117,7 +120,12 @@ private fun expensesTabOf(
                     isBadgeSquare = true,
                 )
             } else if (state.isEmpty) {
-                item(key = "empty") { EmptyExpensesCard(onAction = onAction) }
+                item(
+                    key = "empty",
+                    contentType = "empty",
+                ) {
+                    EmptyExpensesCard(onAction = onAction)
+                }
             } else {
                 expenseDayItems(
                     days = state.days,

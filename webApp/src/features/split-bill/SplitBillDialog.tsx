@@ -601,7 +601,7 @@ function SplitSummary({
     <button
       type="button"
       onClick={() => presenter.openSplit()}
-      className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+      className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
     >
       <span aria-hidden className="flex shrink-0">
         {faces.map((person, index) => (
@@ -689,7 +689,7 @@ function PayerRow({ isSelected, onPick, children }: { isSelected: boolean; onPic
       role="radio"
       aria-checked={isSelected}
       onClick={onPick}
-      className="flex min-h-12 items-center gap-3 px-3 py-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset"
+      className="flex min-h-12 items-center gap-3 px-3 py-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
     >
       {children}
       <span
@@ -775,7 +775,7 @@ function PayerAmountField({ presenter, row, currency, fractionDigits }: { presen
   // Why: "Quanto Pierre pagou" reads better to a screen reader than "Quanto Você pagou".
   const name = row.person?.name ?? t('splitBill_formerMember')
   return (
-    <span className="flex h-8 w-28 shrink-0 items-center gap-1 rounded-md border border-field-border bg-card px-2 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 dark:bg-input/30">
+    <span className="flex h-8 w-32 shrink-0 items-center gap-1 rounded-md border border-field-border md:w-28 bg-card px-2 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring dark:bg-input/30">
       <span aria-hidden className="text-xs text-muted-foreground">
         {currencySymbol(currency)}
       </span>
@@ -786,7 +786,7 @@ function PayerAmountField({ presenter, row, currency, fractionDigits }: { presen
         placeholder={amountPlaceholder(fractionDigits, currency)}
         aria-label={t('splitBill_payerAmountLabel', { name })}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-[13px] tabular-nums outline-none placeholder:text-muted-foreground"
+        className="w-full min-w-0 bg-transparent text-right font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
       />
     </span>
   )

@@ -272,7 +272,7 @@ private struct DefaultSplitPersonRow: View {
             if mode == .equal {
                 Image(systemName: person.isIncluded ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(person.isIncluded ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.tertiary))
+                    .foregroundStyle(person.isIncluded ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.secondary))
                     .accessibilityHidden(true)
             }
             AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: 32)

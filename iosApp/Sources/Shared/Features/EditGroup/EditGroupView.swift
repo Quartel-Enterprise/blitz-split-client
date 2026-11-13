@@ -204,6 +204,8 @@ private struct EditGroupForm: View {
                     onDismiss: { model.send(EditGroupUiEventOnSimplifyDebtsDismissed.shared) },
                 )
                 .presentationDetents(confirmation.people.isEmpty ? [.medium, .large] : [.large])
+                // An iPhone Duo open: in the half before the fold, never over it
+                .foldSheetPlacement()
                 .presentationDragIndicator(.visible)
                 .interactiveDismissDisabled(state.isChangingSimplifyDebts)
             }
