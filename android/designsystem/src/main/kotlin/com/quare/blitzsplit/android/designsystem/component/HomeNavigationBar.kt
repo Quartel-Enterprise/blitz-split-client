@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Groups
@@ -22,14 +21,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
@@ -104,21 +100,11 @@ fun HomeNavigationBar(
  */
 @Composable
 private fun NavigationLabelText(text: String) {
-    val maxFontSize = LocalTextStyle.current.fontSize
-    Text(
+    OneLineShrinkingText(
         text = text,
-        autoSize = if (maxFontSize.isSpecified && maxFontSize > minLabelFontSize) {
-            TextAutoSize.StepBased(
-                minFontSize = minLabelFontSize,
-                maxFontSize = maxFontSize,
-                stepSize = labelFontStep,
-            )
-        } else {
-            null
-        },
-        overflow = TextOverflow.Ellipsis,
-        softWrap = false,
-        maxLines = 1,
+        style = LocalTextStyle.current,
+        minFontSize = minLabelFontSize,
+        stepSize = labelFontStep,
     )
 }
 

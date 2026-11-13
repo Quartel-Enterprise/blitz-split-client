@@ -1136,7 +1136,7 @@ private struct DeleteAccountSection: View {
                 // The brand's negative, not the system's red, which reads at 3:1 on this tint
                 Text("Delete account and data")
                     .fontWeight(.semibold)
-                    .foregroundStyle(Palette.negative)
+                    .destructiveRowLabel()
                     .frame(maxWidth: .infinity)
             }
             .listRowBackground(Palette.negative.opacity(0.12))

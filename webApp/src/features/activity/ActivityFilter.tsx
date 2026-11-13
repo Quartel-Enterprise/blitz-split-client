@@ -157,12 +157,13 @@ export function ActiveFilters({ presenter, state }: { presenter: ActivityPresent
     <ul aria-label={t('activity_activeFilters')} className="contents">
       {chips.map((chip) => (
         <li key={chip.key} className="flex">
-          <Badge variant="secondary" className="h-6 gap-1 rounded-md pr-1">
+          {/* Why: visible overflow, so the ✕'s 24 px target and its focus ring aren't clipped to the 24 px badge's padding box. */}
+          <Badge variant="secondary" className="h-6 gap-1 overflow-visible rounded-md pr-1">
             {chip.label}
             <button
               aria-label={t('activity_removeFilter', { label: chip.label })}
               onClick={chip.onRemove}
-              className="flex size-6 items-center justify-center rounded-sm outline-none hover:bg-foreground/10 focus-visible:ring-[3px] focus-visible:ring-ring"
+              className="relative flex size-4 items-center justify-center rounded-sm outline-none after:absolute after:-inset-1 after:content-[''] hover:bg-foreground/10 focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               <X className="size-3" />
             </button>

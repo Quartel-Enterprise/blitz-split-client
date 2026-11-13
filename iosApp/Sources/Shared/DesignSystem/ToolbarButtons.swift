@@ -160,11 +160,15 @@ private struct PhoneBarMinimization: ViewModifier {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @Environment(\.windowLayout) private var window
 
-    /// An iPhone's room upright, by the window's size, never the idiom: short of an iPad's room (an iPhone Duo open
-    /// keeps its bars, as an iPad does) and a regular height, as an Android phone and the web keep their bars lying
-    /// down. Not before the root's first measure, so an iPad never starts with a phone's behavior.
+    /// An iPhone upright in an iPhone's room: the idiom (Apple supports minimizing on iPhone only, so an iPad in a
+    /// narrow Split View or Slide Over keeps its bars), short of an iPad's room by the window's size (an iPhone Duo
+    /// open keeps its bars, as an iPad does) and a regular height, as an Android phone and the web keep their bars
+    /// lying down. Not before the root's first measure.
     private var isPhoneUpright: Bool {
-        window.size != .zero && !window.isLarge && verticalSizeClass != .compact
+        UIDevice.current.userInterfaceIdiom == .phone
+            && window.size != .zero
+            && !window.isLarge
+            && verticalSizeClass != .compact
     }
 
     @ViewBuilder

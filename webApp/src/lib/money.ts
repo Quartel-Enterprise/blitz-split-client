@@ -147,13 +147,18 @@ export function formatPlainMoney(minor: number, fractionDigits: number, currency
 // Why: an amount field's symbol and placeholder are asked for by every row of a split, on each keystroke.
 const texts = new Map<string, string>()
 
-function cachedText(key: string, build: () => string): string {
-  let text = texts.get(key)
-  if (text === undefined) {
-    text = build()
-    texts.set(key, text)
+/** The value kept under `key`, built once on the first ask. */
+function cached<T>(cache: Map<string, T>, key: string, build: () => T): T {
+  let value = cache.get(key)
+  if (value === undefined) {
+    value = build()
+    cache.set(key, value)
   }
-  return text
+  return value
+}
+
+function cachedText(key: string, build: () => string): string {
+  return cached(texts, key, build)
 }
 
 let namesFormat: Intl.ListFormat | undefined
@@ -190,12 +195,7 @@ export function amountPlaceholder(fractionDigits: number, currency?: string): st
 
 /** "15%" in the UI's language. */
 export function formatPercent(value: number): string {
-  let format = formatters.get('percent')
-  if (!format) {
-    format = new Intl.NumberFormat(uiTag, { style: 'percent', maximumFractionDigits: 0 })
-    formatters.set('percent', format)
-  }
-  return format.format(value / 100)
+  return cached(formatters, 'percent', () => new Intl.NumberFormat(uiTag, { style: 'percent', maximumFractionDigits: 0 })).format(value / 100)
 }
 
 /** "Diego", "Diego e Elisa", "Ana, Diego e Elisa": names in the UI's language. */

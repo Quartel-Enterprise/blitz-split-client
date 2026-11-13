@@ -9,6 +9,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
 
@@ -29,16 +30,40 @@ fun AmountText(
     fontWeight: FontWeight? = null,
     textAlign: TextAlign? = null,
 ) {
+    OneLineShrinkingText(
+        text = text,
+        style = style,
+        minFontSize = minAmountFontSize,
+        stepSize = amountFontStep,
+        modifier = modifier,
+        color = color,
+        fontWeight = fontWeight,
+        textAlign = textAlign,
+    )
+}
+
+// Why: one line that shrinks from its style's size to the width it gets, down to minFontSize, then ends in an ellipsis.
+@Composable
+internal fun OneLineShrinkingText(
+    text: String,
+    style: TextStyle,
+    minFontSize: TextUnit,
+    stepSize: TextUnit,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    fontWeight: FontWeight? = null,
+    textAlign: TextAlign? = null,
+) {
     val maxFontSize = style.fontSize
     Text(
         text = text,
         modifier = modifier,
         color = color,
-        autoSize = if (maxFontSize.isSpecified && maxFontSize > minAmountFontSize) {
+        autoSize = if (maxFontSize.isSpecified && maxFontSize > minFontSize) {
             TextAutoSize.StepBased(
-                minFontSize = minAmountFontSize,
+                minFontSize = minFontSize,
                 maxFontSize = maxFontSize,
-                stepSize = amountFontStep,
+                stepSize = stepSize,
             )
         } else {
             null

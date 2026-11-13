@@ -120,52 +120,6 @@ private fun ShortcutTile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val icon: @Composable () -> Unit = {
-        Box(
-            modifier = Modifier
-                .size(if (isCompact) 36.dp else 40.dp)
-                .background(
-                    if (shortcut.isEnabled) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.surfaceContainerHigh
-                    },
-                    CircleShape,
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = shortcut.icon,
-                contentDescription = null,
-                modifier = Modifier.size(22.dp),
-                tint = if (shortcut.isEnabled) {
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            )
-        }
-    }
-    val label: @Composable () -> Unit = {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = stringResource(shortcut.label),
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (!shortcut.isEnabled) {
-                Text(
-                    text = stringResource(DesignR.string.designsystem_group_exit_needs_internet),
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = TextAlign.Center,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-    }
     Surface(
         onClick = onClick,
         enabled = shortcut.isEnabled,
@@ -187,8 +141,48 @@ private fun ShortcutTile(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
         ) {
-            icon()
-            label()
+            Box(
+                modifier = Modifier
+                    .size(if (isCompact) 36.dp else 40.dp)
+                    .background(
+                        if (shortcut.isEnabled) {
+                            MaterialTheme.colorScheme.secondaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        },
+                        CircleShape,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = shortcut.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = if (shortcut.isEnabled) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(shortcut.label),
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (!shortcut.isEnabled) {
+                    Text(
+                        text = stringResource(DesignR.string.designsystem_group_exit_needs_internet),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
         }
     }
 }
