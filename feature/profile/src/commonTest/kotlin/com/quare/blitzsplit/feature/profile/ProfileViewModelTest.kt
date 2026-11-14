@@ -1529,6 +1529,140 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile WHEN it opens THEN has no language search typed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals("", state.languageQuery)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN typing a search THEN keeps what was typed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
+
+        // Then
+        assertEquals("portu", viewModel.uiState.value.languageQuery)
+        assertEquals(ProfileDialog.LANGUAGE, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN typing a search THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("alemao"))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no dialog open WHEN a language search arrives THEN keeps the search empty`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
+
+        // Then
+        assertEquals("", viewModel.uiState.value.languageQuery)
+        assertNull(viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the language sheet dismissed WHEN a late search arrives THEN keeps the search empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
+
+            // Then
+            assertEquals("", viewModel.uiState.value.languageQuery)
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Appearance open WHEN a language search arrives THEN keeps the search empty`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
+
+        // Then
+        assertEquals("", viewModel.uiState.value.languageQuery)
+        assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN a search left in a dismissed language sheet WHEN tapping Language again THEN opens it with no search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+            // Then
+            assertEquals(ProfileDialog.LANGUAGE, viewModel.uiState.value.dialog)
+            assertEquals("", viewModel.uiState.value.languageQuery)
+        }
+
+    @Test
+    fun `GIVEN a language search typed WHEN picking Portuguese THEN closes the sheet and clears the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertEquals("", viewModel.uiState.value.languageQuery)
+            assertEquals(listOf(AppLanguage.PORTUGUESE), languageWrites)
+        }
+
+    @Test
+    fun `GIVEN a language search typed on Portuguese WHEN picking Portuguese again THEN clears the search`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(language = AppLanguage.PORTUGUESE)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertEquals("", viewModel.uiState.value.languageQuery)
+            assertTrue(languageWrites.isEmpty())
+        }
+
+    @Test
     fun `GIVEN English picked elsewhere WHEN picking English THEN stores and applies nothing`() =
         runTest(testDispatcher) {
             // Given
