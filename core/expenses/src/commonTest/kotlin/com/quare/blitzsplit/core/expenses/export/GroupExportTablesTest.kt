@@ -196,6 +196,21 @@ class GroupExportTablesTest {
     }
 
     @Test
+    fun `GIVEN two members named Ana WHEN naming the members THEN the second reads Ana 2`() {
+        // Given
+        val group = exportGroup(
+            members = listOf(exportMember(PIERRE), exportMember(ANA), exportMember("ana-two", name = "Ana")),
+        )
+        val export = exportOf(group = group)
+
+        // When
+        val names = GroupExportTables.namesOf(export, words)
+
+        // Then
+        assertEquals(mapOf(PIERRE to "Pierre", ANA to "Ana", "ana-two" to "Ana 2"), names)
+    }
+
+    @Test
     fun `GIVEN two members who left WHEN drawing the bills THEN they read Former member and Former member 2`() {
         // Given
         val bill = exportBill(

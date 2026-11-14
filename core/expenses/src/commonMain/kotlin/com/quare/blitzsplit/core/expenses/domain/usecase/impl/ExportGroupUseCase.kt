@@ -32,7 +32,10 @@ class ExportGroupUseCase(
     private val categoryRepository: CategoryRepository,
     private val currentTimeZone: CurrentTimeZone,
     private val currentTimeMillis: CurrentTimeMillis,
-    // Why: where the file is written, off the main thread; Dispatchers.Default in the app, the test's in tests.
+    /*
+     * Why: where the file is written: Dispatchers.Default, off the main thread on Android and Apple; the web has one
+     * thread, where a group's export is small enough to write at once. The test's dispatcher in tests.
+     */
     private val encodeDispatcher: CoroutineDispatcher,
 ) : ExportGroup {
     /*

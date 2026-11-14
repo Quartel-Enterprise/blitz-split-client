@@ -18,19 +18,27 @@ internal object GroupExportTables {
         )
     }
 
-    // Why: a member's name, or "Former member" (numbered from the second on) for whoever left the group.
+    /*
+     * Why: a member's name, or "Former member" for whoever left the group; a label two members would share gets a
+     * number from the second on ("Ana", "Ana 2", "Former member", "Former member 2"), so no two columns or rows read
+     * the same.
+     */
     fun namesOf(
         export: GroupExport,
         words: GroupExportWords,
     ): Map<String, String> {
-        val formerIds = export.members.filter { it.name == null }.map { it.id }
+        val counts = mutableMapOf<String, Int>()
+        val used = mutableSetOf<String>()
         return export.members.associate { member ->
-            val formerIndex = formerIds.indexOf(member.id)
-            member.id to when {
-                member.name != null -> member.name
-                formerIndex == 0 -> words.formerMember
-                else -> "${words.formerMember} ${formerIndex + 1}"
+            val base = member.name ?: words.formerMember
+            var count = counts.getOrElse(base) { 0 } + 1
+            var label = if (count == 1) base else "$base $count"
+            while (!used.add(label)) {
+                count++
+                label = "$base $count"
             }
+            counts[base] = count
+            member.id to label
         }
     }
 

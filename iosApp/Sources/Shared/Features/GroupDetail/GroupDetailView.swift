@@ -37,7 +37,7 @@ final class GroupDetailModel {
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             case is GroupDetailUiActionShowTeachError: self?.teachErrorCount += 1
             case is GroupDetailUiActionShowBillDeleteError: self?.billDeleteErrorCount += 1
-            case let export as GroupDetailUiActionSaveExport: self?.exportFile = export.file
+            case let export as GroupDetailUiActionSaveExport: self?.presentExport(export.file)
             case is GroupDetailUiActionShowExportError: self?.exportErrorCount += 1
             default: break
             }
@@ -87,6 +87,15 @@ final class GroupDetailModel {
     /// A format picked on "Export group data", with the file's headers in the app's language.
     func export(_ format: GroupExportFormat) {
         send(GroupDetailUiEventOnExportFormatPicked(format: format, words: GroupExportCopy.words))
+    }
+
+    /// The file made, handed to the exporter once the formats' dialog has finished leaving the screen: SwiftUI drops a
+    /// presentation asked while another is still dismissing, which would leave the file never shown.
+    private func presentExport(_ file: GroupExportFile) {
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(450))
+            self?.exportFile = file
+        }
     }
 
     /// "Export group data" closed without a format (Cancel, a tap outside). Apple's dialog also closes itself after a

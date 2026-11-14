@@ -27,14 +27,16 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
       each member, empty when the member neither paid nor is in the split), Payments (date, from, to, amount,
       currency) and Balances (each member's balance per currency, positive when owed, settled members at 0), bills
       and payments oldest first. Members who left read "Former member" ("Former member 2" from the second on, by
-      their oldest bill). Headers, section names and category names come in the app's language; JSON keeps English
+      their oldest bill), and a name two members share is numbered the same way ("Ana", "Ana 2"). Headers, section names and category names come in the app's language; JSON keeps English
       keys, with each member's id, the category's id and the payment's method code.
     - Formats: dates are ISO (2026-11-14) in CSV, JSON and the text, the device's day; Excel writes real dates (the
       reader's short date) and numbers, a sheet per section, its header row bold and frozen. Amounts carry every
       decimal of their currency with a dot and no grouping (120.50, yen 1500), so they read the same in any language;
       JSON writes them as numbers beside `amountMinor`. CSV is UTF-8 with a BOM (so Excel reads accents), RFC 4180
       (commas, CRLF), the sections one under the other with a blank line between, and a typed text starting with =,
-      +, - or @ gets a leading apostrophe so no spreadsheet runs it as a formula. The text file is the group's name,
+      +, - or @ gets a leading apostrophe so no spreadsheet runs it as a formula. The CSV keeps commas and dots in every language (no `sep=` line, which scripts and Google Sheets would read as
+      a row): Excel in a language whose decimals take a comma opens it in one column, and "Excel (XLSX)" is the format
+      for it. The text file is the group's name,
       the day, then each section in aligned columns.
     - The file is named after the group and the day, "Trip-to-Rio-2026-11-14.xlsx" (characters a file system refuses
       dropped, spaces as dashes, at most 60 characters of name).
