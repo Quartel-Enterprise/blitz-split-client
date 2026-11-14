@@ -77,9 +77,14 @@ runs:
         sudo xcode-select -s "$xcode"
         xcodebuild -version
 
-    # The toolchain only changes with the Kotlin version and the runner, so that is the key. As with
-    # Gradle's cache, only main saves it: an entry a pull request saves is readable by that branch
-    # alone, and a gigabyte each would push main's entries out of the repository's cache.
+    # ~/.konan holds the toolchain, which changes with the Kotlin version and the runner, and the
+    # native code Kotlin/Native compiles each library to on its first link (klib/cache), which changes
+    # with the libraries' versions. So the key has both: keyed by the Kotlin version alone, the entry
+    # was never saved again after a library bump, and every run compiled the bumped libraries again.
+    # A new version catalog starts from the newest entry of the same Kotlin version (restore-keys) and
+    # compiles only what changed. As with Gradle's cache, only main saves it: an entry a pull request
+    # saves is readable by that branch alone, and a gigabyte each would push main's entries out of the
+    # repository's cache.
     - name: Read the Kotlin version
       id: kotlin
       if: inputs.kotlin-native == 'true'
@@ -99,7 +104,9 @@ runs:
       uses: actions/cache@v6
       with:
         path: ~/.konan
-        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}
+        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
+        restore-keys: |
+          konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}-
 
     - name: Restore the Kotlin/Native toolchain
       if: >-
@@ -108,4 +115,6 @@ runs:
       uses: actions/cache/restore@v6
       with:
         path: ~/.konan
-        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}
+        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
+        restore-keys: |
+          konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}-

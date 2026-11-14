@@ -207,7 +207,7 @@ reproduce a CI failure (step 12).
 
 | Area | The branch changes | Local checks | Left to CI |
 |---|---|---|---|
-| Shared Kotlin | `core/`, `feature/`, `shared/`, or the build: `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | Tests and coverage, main and test code compiled for the iOS simulator and JS, the debug APK; the module graph for a build change | The tests on JS, the iOS simulator and macOS; the release APK; both Apple schemes |
+| Shared Kotlin | `core/`, `feature/`, `shared/`, or the build: `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | Tests and coverage, main and test code compiled for the iOS simulator and JS, the debug APK; the module graph for a build change | The tests on JS and macOS (on the iOS simulator, only on `main`); the release APK; both Apple schemes |
 | Android UI | `android/`, `androidApp/` | The debug APK | Android lint, the release APK |
 | Apple UI | `iosApp/` | Regenerate the Xcode project, build the scheme the Swift change reaches | The other scheme |
 | Web UI | `webApp/`, `shared/src/jsMain` | The production build of the web app | |
@@ -505,7 +505,7 @@ When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
     locally, and fix it as above; the label stays on, so the green checks of the fix commit merge
     the pull request. Reproduce it with that area's step 8 check or, for a check step 8 leaves to
     CI, on the failing module or scheme alone, through `heavy-check.sh`: `:<module>:jsTest` for
-    a `js-tests` shard, `:<module>:iosSimulatorArm64Test` or `:<module>:macosArm64Test` for `apple-tests`,
+    a `js-tests` shard, `:<module>:macosArm64Test` for `apple-tests`,
     `:android:<module>:lintDebug` for `android-lint`, `:androidApp:assembleRelease` for `android` (the
     release APK, the only build R8 runs on), the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
     runner, the network, a cancelled run), re-run it once (`gh run rerun <run> --failed`) and wait
