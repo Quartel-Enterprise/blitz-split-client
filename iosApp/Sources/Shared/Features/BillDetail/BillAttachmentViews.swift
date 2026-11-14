@@ -110,13 +110,42 @@ enum BillAttachmentToasts {
                 trigger: model?.noRoomPhotoCount ?? 0,
             ),
             GlassToastMessage(text: "Couldn't attach the photo. Try again.", trigger: model?.failedPhotoCount ?? 0),
-            removeError(model),
+            removeError(model?.removePhotoErrorCount ?? 0),
         ]
     }
 
-    static func removeError(_ model: BillDetailModel?) -> GlassToastMessage {
-        GlassToastMessage(text: "Couldn't remove the photo. Try again.", trigger: model?.removePhotoErrorCount ?? 0)
+    static func removeError(_ count: Int) -> GlassToastMessage {
+        GlassToastMessage(text: "Couldn't remove the photo. Try again.", trigger: count)
     }
+}
+
+/// A bill's Attachments as its page draws them, on Bill and on a bill's link page.
+struct BillAttachmentsValues {
+    /// Not read yet: tiles shimmer in their place.
+    var isLoading = false
+    /// The receipt first, then the photos in the order they were added.
+    let tiles: [BillAttachmentTile]
+    /// "2 of 5 photos"; nil on a bill's link page, which takes no photo.
+    var photoCount: String?
+    let onOpen: (String) -> Void
+}
+
+/// What the viewer shows and does, on Bill and on a bill's link page.
+struct BillViewerValues {
+    let tiles: [BillAttachmentTile]
+    /// The attachment shown; nil once the last one was removed and the viewer is closing.
+    let viewed: BillAttachmentTile?
+    let viewedIndex: Int?
+    let photoCount: Int32
+    let isOnline: Bool
+    /// The viewer's page, which a swipe or an arrow moves.
+    let page: Binding<String>
+    var removeErrorCount = 0
+    let onClose: () -> Void
+    /// The platform saves the photo itself, so the ViewModel only counts it.
+    let onDownload: () -> Void
+    /// "Remove photo"; nil on a bill's link page, where nothing is removed.
+    var onRemove: ((String) -> Void)?
 }
 
 /// The sizes of Attachments: the iPhone's and iPad's tiles with their name and who added them under, or the Mac's
@@ -133,19 +162,19 @@ struct BillAttachmentMetrics {
     #endif
 }
 
-/// "Attachments" with "2 of 5 photos" on its right.
+/// "Attachments" with "2 of 5 photos" on its right, where the page counts them.
 struct BillAttachmentsHeader: View {
-    let state: BillDetailUiState
+    let attachments: BillAttachmentsValues
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text("Attachments", comment: "The bill's photos section")
             Spacer(minLength: 8)
-            if let count = BillCopy.photoCount(state) {
+            if let count = attachments.photoCount {
                 Text(verbatim: count)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
-            } else {
+            } else if attachments.isLoading {
                 ShimmerLine(width: 80, height: 10)
                     .shimmering()
             }
@@ -153,12 +182,13 @@ struct BillAttachmentsHeader: View {
     }
 }
 
-/// The receipt first, then the photos in the order they were added, then "Add" while the bill has room: a strip that
-/// scrolls sideways in one column, wrapping onto a second line where the bill has a column of its own.
-struct BillAttachmentStrip: View {
-    let model: BillDetailModel
+/// The receipt first, then the photos in the order they were added, then `add` (Bill's "Add" while the bill has room):
+/// a strip that scrolls sideways in one column, wrapping onto a second line where the bill has a column of its own.
+struct BillAttachmentStrip<Add: View>: View {
+    let attachments: BillAttachmentsValues
     let wraps: Bool
     let metrics: BillAttachmentMetrics
+    @ViewBuilder let add: Add
 
     var body: some View {
         if wraps {
@@ -174,24 +204,41 @@ struct BillAttachmentStrip: View {
 
     @ViewBuilder
     private var tiles: some View {
-        let state = model.state
-        if state.attachments.isLoading {
+        if attachments.isLoading {
             // The attachments not read yet: tiles shimmer in their place, and "Add" waits for the count
             ForEach(0..<2, id: \.self) { _ in
                 ShimmerBlock(width: metrics.tile.width, height: metrics.tile.height, cornerRadius: metrics.cornerRadius)
                     .shimmering()
             }
         }
-        ForEach(state.loadedAttachments ?? [], id: \.id) { attachment in
+        ForEach(attachments.tiles, id: \.id) { attachment in
             BillAttachmentTileView(attachment: attachment, metrics: metrics) {
-                model.send(BillDetailUiEventOnAttachmentClicked(id: attachment.id))
+                attachments.onOpen(attachment.id)
             }
         }
-        if state.showsAddPhoto {
-            BillAddPhotoTile(model: model, metrics: metrics)
-        }
+        add
     }
 }
+
+#if os(iOS)
+/// Attachments in a bill's list, as the canvas draws them: a strip in one column, wrapping in the bill's own one.
+struct BillAttachmentsSection<Add: View>: View {
+    let attachments: BillAttachmentsValues
+    let wraps: Bool
+    @ViewBuilder let add: Add
+
+    var body: some View {
+        Section {
+            BillAttachmentStrip(attachments: attachments, wraps: wraps, metrics: .standard) { add }
+                .padding(.vertical, 4)
+        } header: {
+            BillAttachmentsHeader(attachments: attachments)
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: wraps ? 4 : 0))
+    }
+}
+#endif
 
 /// One attachment, cropped to fill its tile: "Photo 2" with "Ana · Yesterday" under it (in the tooltip on the Mac),
 /// the receipt's badge, or the amber dot of a photo still waiting to go up.
@@ -294,7 +341,7 @@ private struct AttachmentBadge: View {
 
 /// "Add" with a dashed border: take a photo (where there is a camera) or choose one from Photos, and on the Mac a
 /// file too. A spinner while the photo picked is being made ready.
-private struct BillAddPhotoTile: View {
+struct BillAddPhotoTile: View {
     let model: BillDetailModel
     let metrics: BillAttachmentMetrics
 

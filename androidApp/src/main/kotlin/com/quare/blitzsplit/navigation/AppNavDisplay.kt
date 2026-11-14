@@ -38,6 +38,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberUsesFormDialog
 import com.quare.blitzsplit.android.feature.activity.ActivityScreen
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.billdetail.ShareBillScreen
+import com.quare.blitzsplit.android.feature.billdetail.SharedBillScreen
 import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
 import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
@@ -436,6 +437,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.ContactProfile> { route -> ContactProfileScreen(route) }
             // Why: a profile link opened, until it gives way to the contact's profile or Profile.
             entry<Route.ProfileLink> { route -> ProfileLinkScreen(route) }
+            // Why: a bill's link opened, its own page over wherever the app is, full screen at every size.
+            entry<Route.SharedBill> { route -> SharedBillScreen(route) }
             entry<Route.ContactsAgenda> { AgendaScreen() }
             // Why: a sheet on a phone, a dialog elsewhere, and the code above the hinge on a tabletop.
             entry<Route.ContactInvite>(metadata = formPresentationMetadata) { route ->

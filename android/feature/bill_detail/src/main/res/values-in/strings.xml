@@ -186,4 +186,21 @@
     <string name="share_bill_message">Tagihan “%1$s” di Blitz Split: %2$s</string>
     <string name="share_bill_update_error">Tidak bisa mengubah siapa yang bisa membuka. Coba lagi.</string>
     <string name="share_bill_disable_error">Tautan tidak bisa dinonaktifkan. Coba lagi.</string>
+    <string name="shared_bill_sign_in">Masuk</string>
+    <string name="shared_bill_open_in_app">Buka di aplikasi</string>
+    <string name="shared_bill_group_banner">Tagihan ini dari grup %1$s. Siapa pun di grup juga melihat bagiannya sendiri dan riwayatnya.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Mau berkomentar? Masuk dengan akun. Kamu tidak perlu ada di grup.</string>
+    <string name="shared_bill_sign_in_to_comment">Masuk untuk berkomentar</string>
+    <string name="shared_bill_not_found_title">Tautan ini sudah tidak bisa dibuka</string>
+    <string name="shared_bill_not_found_body">Yang membagikannya mungkin sudah menonaktifkan tautan atau menghapus tagihannya.</string>
+    <string name="shared_bill_members_only_title">Hanya orang di grup yang bisa membuka tagihan ini</string>
+    <string name="shared_bill_members_only_body">Masuk dengan akun yang kamu pakai di grup.</string>
+    <string name="shared_bill_members_only_outside_body">Akunmu tidak ada di grup tagihan ini. Minta yang membagikannya untuk mengundangmu.</string>
+    <string name="shared_bill_failed_title">Tidak bisa membuka tagihan</string>
+    <string name="shared_bill_offline">Tidak ada internet.</string>
+    <string name="shared_bill_retry">Coba lagi</string>
+    <string name="shared_bill_go_to_app">Ke Blitz Split</string>
+    <string name="shared_bill_comment_error">Tidak bisa mengirim komentar. Coba lagi.</string>
+    <string name="shared_bill_needs_name">Buat profilmu untuk berkomentar.</string>
+    <string name="shared_bill_comment_change_error">Tidak bisa menyimpan perubahan komentar. Coba lagi.</string>
 </resources>

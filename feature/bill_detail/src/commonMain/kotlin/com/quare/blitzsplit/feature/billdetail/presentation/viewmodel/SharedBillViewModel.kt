@@ -54,7 +54,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.uuid.Uuid
 
 /*
- * Why: a bill's link opened on the web (7.3h). The server answers what it shows, so it is read once online, and again
+ * Why: a bill's link opened (7.3h). The server answers what it shows, so it is read once online, and again
  * after a comment goes up. Signing in is the app's own (the welcome, or the profile's Google or Apple), and whoever is
  * in the group with the bill on this device may open it in the app instead.
  */

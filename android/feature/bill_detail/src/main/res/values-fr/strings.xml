@@ -208,4 +208,21 @@
     <string name="share_bill_message">Dépense « %1$s » sur Blitz Split : %2$s</string>
     <string name="share_bill_update_error">Impossible de changer qui peut l’ouvrir. Réessaie.</string>
     <string name="share_bill_disable_error">Impossible de désactiver le lien. Réessaie.</string>
+    <string name="shared_bill_sign_in">Connecte-toi</string>
+    <string name="shared_bill_open_in_app">Ouvre dans l’appli</string>
+    <string name="shared_bill_group_banner">Cette dépense vient du groupe %1$s. Les membres du groupe voient aussi leur propre part et l’historique.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Tu veux commenter ? Connecte-toi avec un compte. Pas besoin d’être dans le groupe.</string>
+    <string name="shared_bill_sign_in_to_comment">Connecte-toi pour commenter</string>
+    <string name="shared_bill_not_found_title">Ce lien ne s’ouvre plus</string>
+    <string name="shared_bill_not_found_body">La personne qui l’a partagé a peut-être désactivé le lien ou supprimé la dépense.</string>
+    <string name="shared_bill_members_only_title">Seules les personnes du groupe ouvrent cette dépense</string>
+    <string name="shared_bill_members_only_body">Connecte-toi avec le compte que tu utilises dans le groupe.</string>
+    <string name="shared_bill_members_only_outside_body">Ton compte n’est pas dans le groupe de cette dépense. Demande à la personne qui l’a partagée de t’inviter.</string>
+    <string name="shared_bill_failed_title">Impossible d’ouvrir la dépense</string>
+    <string name="shared_bill_offline">Pas d’internet.</string>
+    <string name="shared_bill_retry">Réessaie</string>
+    <string name="shared_bill_go_to_app">Va sur Blitz Split</string>
+    <string name="shared_bill_comment_error">Impossible d’envoyer le commentaire. Réessaie.</string>
+    <string name="shared_bill_needs_name">Crée ton profil pour commenter.</string>
+    <string name="shared_bill_comment_change_error">Impossible d’enregistrer la modification du commentaire. Réessaie.</string>
 </resources>

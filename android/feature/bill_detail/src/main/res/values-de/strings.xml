@@ -197,4 +197,21 @@
     <string name="share_bill_message">Ausgabe „%1$s“ auf Blitz Split: %2$s</string>
     <string name="share_bill_update_error">Ändern, wer sie öffnen kann, war nicht möglich. Versuch es noch einmal.</string>
     <string name="share_bill_disable_error">Der Link konnte nicht deaktiviert werden. Versuch es noch einmal.</string>
+    <string name="shared_bill_sign_in">Anmelden</string>
+    <string name="shared_bill_open_in_app">In der App öffnen</string>
+    <string name="shared_bill_group_banner">Diese Ausgabe gehört zur Gruppe %1$s. Wer in der Gruppe ist, sieht auch den eigenen Anteil und den Verlauf.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Möchtest du kommentieren? Melde dich mit einem Konto an. Du musst nicht in der Gruppe sein.</string>
+    <string name="shared_bill_sign_in_to_comment">Zum Kommentieren anmelden</string>
+    <string name="shared_bill_not_found_title">Dieser Link öffnet sich nicht mehr</string>
+    <string name="shared_bill_not_found_body">Wer ihn geteilt hat, hat den Link vielleicht deaktiviert oder die Ausgabe gelöscht.</string>
+    <string name="shared_bill_members_only_title">Nur Personen der Gruppe können diese Ausgabe öffnen</string>
+    <string name="shared_bill_members_only_body">Melde dich mit dem Konto an, das du in der Gruppe nutzt.</string>
+    <string name="shared_bill_members_only_outside_body">Dein Konto ist nicht in der Gruppe dieser Ausgabe. Bitte die Person, die sie geteilt hat, dich einzuladen.</string>
+    <string name="shared_bill_failed_title">Die Ausgabe konnte nicht geöffnet werden</string>
+    <string name="shared_bill_offline">Kein Internet.</string>
+    <string name="shared_bill_retry">Erneut versuchen</string>
+    <string name="shared_bill_go_to_app">Zu Blitz Split</string>
+    <string name="shared_bill_comment_error">Der Kommentar konnte nicht gesendet werden. Versuch es noch mal.</string>
+    <string name="shared_bill_needs_name">Erstelle dein Profil, um zu kommentieren.</string>
+    <string name="shared_bill_comment_change_error">Die Änderung am Kommentar konnte nicht gespeichert werden. Versuch es noch mal.</string>
 </resources>

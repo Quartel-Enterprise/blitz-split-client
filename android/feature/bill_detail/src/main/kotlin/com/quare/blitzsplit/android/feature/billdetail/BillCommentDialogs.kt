@@ -25,17 +25,24 @@ import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
 
-// Why: "Apagar comentário?", asked before the user's own comment leaves the bill; a book draws it in its right half.
+/*
+ * Why: "Apagar comentário?", asked before the user's own comment leaves the bill; a book draws it in its right half.
+ * Busy on a bill's link page while the deletion is on its way to the server; Conta's goes to the queue at once.
+ */
 @Composable
-internal fun DeleteCommentDialog(onEvent: (BillDetailUiEvent) -> Unit) {
+internal fun DeleteCommentDialog(
+    isBusy: Boolean,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     ConfirmDialog(
         title = stringResource(R.string.bill_detail_delete_comment_title),
         message = stringResource(R.string.bill_detail_delete_comment_message),
         confirmLabel = stringResource(R.string.bill_detail_delete_comment_confirm),
-        onConfirm = { onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed) },
-        onDismiss = { onEvent(BillDetailUiEvent.OnCommentDeleteDismissed) },
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        isBusy = isBusy,
         placement = rememberDialogPlacement(),
     )
 }
@@ -47,12 +54,12 @@ internal fun DeleteCommentDialog(onEvent: (BillDetailUiEvent) -> Unit) {
 @Composable
 internal fun CommentLikesSheet(
     comment: BillCommentRow,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     val title = stringResource(R.string.bill_detail_likes_title)
     AdaptiveSheet(
         title = title,
-        onDismissRequest = { onEvent(BillDetailUiEvent.OnCommentLikesDismissed) },
+        onDismissRequest = onDismiss,
         dialogShape = MaterialTheme.shapes.extraLarge,
     ) {
         Column(

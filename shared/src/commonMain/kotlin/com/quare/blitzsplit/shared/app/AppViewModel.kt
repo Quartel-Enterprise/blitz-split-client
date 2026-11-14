@@ -50,7 +50,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 class AppViewModel(
     private val observeProfile: ObserveProfile,
@@ -115,6 +118,9 @@ class AppViewModel(
 
     val billLinkNoticeWatcher: FlowWatcher<BillLinkNoticeState> = FlowWatcher(billLinkNotice)
 
+    // Why: as long as the web keeps a bill's link it left to sign in (BlitzSplitWeb).
+    private val signInWindow = 15.minutes
+
     // Why: the Mac's mouse back and forward buttons, and Go › Back and Forward.
     private val forwardHistory = ForwardHistory(navigator, viewModelScope)
 
@@ -128,6 +134,7 @@ class AppViewModel(
         returnToProfileOnBrowserSignIn()
         returnToWelcomeOnceErased()
         openInviteLinks()
+        reopenSharedBillLeftForWelcome()
         offerUpdatesInFront()
     }
 
@@ -232,6 +239,32 @@ class AppViewModel(
                     it is Route.JoinInvite && it.code == invite.code && it.memberCode == invite.memberCode
                 }
                 if (openIndex < 0) navigator.navigate(invite) else navigator.popTo(openIndex + 1)
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: "Entrar" on a bill's link page without a profile leaves it for the welcome, which takes the whole stack. Once
+     * the welcome puts the home in place, within the 15 minutes the web gives its own sign in, the page opens again
+     * over it, on every platform.
+     */
+    private fun reopenSharedBillLeftForWelcome() {
+        var previous = navigator.backStack.value
+        var left: Pair<Route.SharedBill, TimeMark>? = null
+        navigator.backStack
+            .onEach { stack ->
+                val leftPage = previous.lastOrNull() as? Route.SharedBill
+                previous = stack
+                val kept = left
+                when {
+                    leftPage != null && stack == listOf(Route.Welcome) ->
+                        left = leftPage to TimeSource.Monotonic.markNow()
+
+                    kept != null && stack.firstOrNull() == Route.Home -> {
+                        left = null
+                        val (page, since) = kept
+                        if (since.elapsedNow() <= signInWindow) openSharedBill(page.code, page.commentId)
+                    }
+                }
             }.launchIn(viewModelScope)
     }
 

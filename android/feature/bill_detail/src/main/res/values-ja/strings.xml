@@ -186,4 +186,21 @@
     <string name="share_bill_message">Blitz Splitの支出「%1$s」：%2$s</string>
     <string name="share_bill_update_error">開ける人を変更できませんでした。もう一度お試しください。</string>
     <string name="share_bill_disable_error">リンクをオフにできませんでした。もう一度お試しください。</string>
+    <string name="shared_bill_sign_in">ログイン</string>
+    <string name="shared_bill_open_in_app">アプリで開く</string>
+    <string name="shared_bill_group_banner">この支出はグループ「%1$s」のものです。グループのメンバーは、自分の分と履歴も見られます。</string>
+    <string name="shared_bill_sign_in_to_comment_body">コメントするにはアカウントでログインしてください。グループに参加している必要はありません。</string>
+    <string name="shared_bill_sign_in_to_comment">ログインしてコメント</string>
+    <string name="shared_bill_not_found_title">このリンクはもう開けません</string>
+    <string name="shared_bill_not_found_body">共有した人がリンクをオフにしたか、支出を削除した可能性があります。</string>
+    <string name="shared_bill_members_only_title">この支出はグループのメンバーだけが開けます</string>
+    <string name="shared_bill_members_only_body">グループで使っているアカウントでログインしてください。</string>
+    <string name="shared_bill_members_only_outside_body">あなたのアカウントはこの支出のグループに入っていません。共有した人に招待を頼んでください。</string>
+    <string name="shared_bill_failed_title">支出を開けませんでした</string>
+    <string name="shared_bill_offline">インターネットに接続されていません。</string>
+    <string name="shared_bill_retry">再試行</string>
+    <string name="shared_bill_go_to_app">Blitz Splitへ</string>
+    <string name="shared_bill_comment_error">コメントを送信できませんでした。もう一度お試しください。</string>
+    <string name="shared_bill_needs_name">コメントするにはプロフィールを作成してください。</string>
+    <string name="shared_bill_comment_change_error">コメントの変更を保存できませんでした。もう一度お試しください。</string>
 </resources>

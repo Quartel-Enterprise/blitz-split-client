@@ -6,20 +6,16 @@ import UniformTypeIdentifiers
 /// and when at the bottom. iPhone and iPad open it full screen and swipe between the attachments; the Mac opens it as
 /// a Quick Look-like sheet, moving with its arrows or the ← → keys.
 struct BillAttachmentViewer: View {
-    let model: BillDetailModel
+    let viewer: BillViewerValues
 
     #if os(macOS)
     @State private var exportsFile = false
     @FocusState private var isFocused: Bool
     #endif
 
-    private var state: BillDetailUiState {
-        model.state
-    }
-
     var body: some View {
         VStack(spacing: 0) {
-            if let attachment = state.viewedAttachment {
+            if let attachment = viewer.viewed {
                 topBar(attachment)
                 pages
                 footer(attachment)
@@ -30,7 +26,7 @@ struct BillAttachmentViewer: View {
         }
         .background(Color.black.ignoresSafeArea())
         .environment(\.colorScheme, .dark)
-        .glassToast([BillAttachmentToasts.removeError(model)])
+        .glassToast([BillAttachmentToasts.removeError(viewer.removeErrorCount)])
         #if os(macOS)
         .frame(minWidth: 560, idealWidth: 760, minHeight: 460, idealHeight: 620)
         // The arrow keys move while the focus is in it, which it takes as it opens
@@ -45,15 +41,13 @@ struct BillAttachmentViewer: View {
 
     private func topBar(_ attachment: BillAttachmentTile) -> some View {
         HStack(spacing: 10) {
-            Button("Close", systemImage: "xmark") {
-                model.send(BillDetailUiEventOnViewerDismissed.shared)
-            }
-            .keyboardShortcut(.cancelAction)
+            Button("Close", systemImage: "xmark", action: viewer.onClose)
+                .keyboardShortcut(.cancelAction)
             Spacer(minLength: 8)
             download(attachment)
-            if attachment.canRemove {
+            if attachment.canRemove, let onRemove = viewer.onRemove {
                 Button("Remove photo", systemImage: "trash", role: .destructive) {
-                    model.send(BillDetailUiEventOnRemoveAttachmentClicked(id: attachment.id))
+                    onRemove(attachment.id)
                 }
             }
         }
@@ -71,7 +65,7 @@ struct BillAttachmentViewer: View {
         .padding(.top, 8)
         #endif
         .overlay {
-            Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: state.photoCount?.int32Value ?? 0))
+            Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: viewer.photoCount))
                 .font(.headline)
                 .lineLimit(1)
                 .accessibilityAddTraits(.isHeader)
@@ -86,7 +80,7 @@ struct BillAttachmentViewer: View {
         if let file = AttachmentFile(attachment, fileName: BillCopy.attachmentFileName(attachment)) {
             #if os(macOS)
             Button {
-                model.send(BillDetailUiEventOnDownloadClicked.shared)
+                viewer.onDownload()
                 exportsFile = true
             } label: {
                 label
@@ -99,10 +93,10 @@ struct BillAttachmentViewer: View {
                 defaultFilename: file.fileName,
             ) { _ in }
             #else
-            ShareLink(item: file, preview: SharePreview(BillCopy.viewerTitle(attachment, photoCount: state.photoCount?.int32Value ?? 0))) {
+            ShareLink(item: file, preview: SharePreview(BillCopy.viewerTitle(attachment, photoCount: viewer.photoCount))) {
                 label
             }
-            .onShareTap { model.send(BillDetailUiEventOnDownloadClicked.shared) }
+            .onShareTap(viewer.onDownload)
             #endif
         } else {
             // Offline and never loaded here: nothing to save yet
@@ -114,7 +108,7 @@ struct BillAttachmentViewer: View {
     @ViewBuilder
     private var pages: some View {
         #if os(macOS)
-        if let attachment = state.viewedAttachment {
+        if let attachment = viewer.viewed {
             page(attachment)
                 .id(attachment.id)
                 .overlay {
@@ -127,8 +121,8 @@ struct BillAttachmentViewer: View {
                 }
         }
         #else
-        TabView(selection: model.viewedAttachmentId) {
-            ForEach(state.loadedAttachments ?? [], id: \.id) { attachment in
+        TabView(selection: viewer.page) {
+            ForEach(viewer.tiles, id: \.id) { attachment in
                 page(attachment)
                     .tag(attachment.id)
             }
@@ -140,7 +134,7 @@ struct BillAttachmentViewer: View {
     private func page(_ attachment: BillAttachmentTile) -> some View {
         AttachmentImage(attachment: attachment, contentMode: .fit) { _ in
             // Online, a nil URL is a signed URL on the way (or tried again each minute)
-            if attachment.localImage == nil, attachment.imageUrl == nil, !state.isOnline {
+            if attachment.localImage == nil, attachment.imageUrl == nil, !viewer.isOnline {
                 VStack(spacing: 10) {
                     Image(systemName: "icloud.slash")
                         .font(.largeTitle)
@@ -155,7 +149,7 @@ struct BillAttachmentViewer: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: state.photoCount?.int32Value ?? 0)))
+        .accessibilityLabel(Text(verbatim: BillCopy.viewerTitle(attachment, photoCount: viewer.photoCount)))
         .accessibilityAddTraits(.isImage)
     }
 
@@ -187,7 +181,7 @@ struct BillAttachmentViewer: View {
             localized: "Anyone in the group can remove it.",
             bundle: .appLanguage,
         )) }
-        if (state.loadedAttachments?.count ?? 0) > 1 {
+        if viewer.tiles.count > 1 {
             #if os(macOS)
             parts.append(String(localized: "Use the arrow keys to see the next one.", bundle: .appLanguage))
             #else
@@ -201,7 +195,7 @@ struct BillAttachmentViewer: View {
     private func arrow(by offset: Int, systemImage: String) -> some View {
         let target = targetId(by: offset)
         return Button {
-            if let target { model.send(BillDetailUiEventOnViewerPageChanged(id: target)) }
+            if let target { viewer.page.wrappedValue = target }
         } label: {
             Image(systemName: systemImage)
                 .font(.title2.weight(.semibold))
@@ -216,16 +210,15 @@ struct BillAttachmentViewer: View {
 
     private func move(by offset: Int) -> KeyPress.Result {
         guard let target = targetId(by: offset) else { return .ignored }
-        model.send(BillDetailUiEventOnViewerPageChanged(id: target))
+        viewer.page.wrappedValue = target
         return .handled
     }
 
     /// The attachment before or after the one shown, nil past either end.
     private func targetId(by offset: Int) -> String? {
-        guard let index = state.viewedAttachmentIndex?.intValue else { return nil }
+        guard let index = viewer.viewedIndex else { return nil }
         let target = index + offset
-        let attachments = state.loadedAttachments ?? []
-        return attachments.indices.contains(target) ? attachments[target].id : nil
+        return viewer.tiles.indices.contains(target) ? viewer.tiles[target].id : nil
     }
     #endif
 }

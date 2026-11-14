@@ -9,7 +9,13 @@ import io.ktor.http.encodedPath
 private const val REST_PATH = "/rest/v1/"
 private const val FUNCTIONS_PATH = "/rest/v1/rpc/"
 private const val BEARER_PREFIX = "Bearer "
-private val anonymousFunctions = setOf("get_invite", "get_shared_bill", "unregister_push_device")
+private val anonymousFunctions = setOf(
+    "get_invite",
+    "get_shared_bill",
+    // Why: a profile link opened signed out (the welcome, a profile kept on the device only) still shows its person.
+    "get_profile_by_share_code",
+    "unregister_push_device",
+)
 
 // Why: supabase-kt rethrows it as an HttpRequestException, which the sync counts as a connection failure.
 internal class UserSessionRequiredException(
@@ -22,8 +28,9 @@ internal class UserSessionRequiredException(
  * level security then answers a read with no rows instead of an error, and a sync took that as everything gone from
  * the server: the groups and their bills left the device until the next sync brought them back. A database function
  * that reads the user's rows (first_download_groups, pending_guest_merges) answers the same way. So every request to
- * the database fails here without a user, but the functions the API grants to anon (an invite's preview), and the
- * device keeps what it has. The paths follow the project's URL, which a self-hosted server may serve under a prefix.
+ * the database fails here without a user, but the functions the API grants to anon (an invite's preview, a bill's
+ * link, a profile's), and the device keeps what it has. The paths follow the project's URL, which a self-hosted server
+ * may serve under a prefix.
  */
 internal fun createSignedInRestAccess(
     supabaseUrl: String,
