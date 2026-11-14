@@ -115,6 +115,21 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Esc close it. Android draws it as a dialog over the whole window (a book's right half), iOS covers the screen,
     the Mac opens it as a sheet on Settings and the web as a dialog over the profile. The group's own photo opens the same
     way from its header ([The group screen](group-and-bills.md)).
+  - "Release notes" (`Route.ReleaseNotes`, `:core:release_notes`, `:feature:release_notes`), a row of "Privacy and
+    about" right before "Check for updates" (the About card's last row on the web), lists what each version changed
+    on the platform the app runs on: a card per version, newest first, with its number, its date and its notes, the
+    version this app is marked "This version". The notes are written once, in `blitz-split-site`
+    (`release-notes/<language>/<version>.json`), and each app downloads its language's feed
+    (`https://blitzsplit.com/release-notes/<language>.json`, English when the site lacks the language) at launch and
+    when the screen opens, keeps it in Room for offline and asks again at most once a day with the saved feed's
+    `ETag`, as the legal texts (the web, which asks from another origin, never sees the `ETag` and leaves that to the
+    browser's own cache). Each note names the platforms it is for, and an app shows only its own: the web never
+    shows a note written for Android and iOS alone, and a version with no note for the platform isn't listed. Nor is a
+    version newer than the app itself, which a store may not offer yet (Pierre's call). "Show beta versions", a switch
+    over the list kept per device like the theme, is off in a stable version and on in a beta build, until switched
+    (Pierre's call): off, only stable versions show. A device that never saved the notes and can't download them
+    shows "Couldn't load the release notes" with "Try again". An Android or iOS screen of its own, a sheet on the
+    Mac's Settings, a page on the web. The language is the one the app speaks (`ObserveSpokenLanguage`).
   - In-app update, as Bible Planner's (`:core:in_app_update`, `:feature:in_app_update`): each time the app comes to
     the front (`AppViewModel`, once the first screen is in place) a newer version is offered at most once an hour,
     kept per device (`lastUpdatePromptAt` in `device_settings`), and the offer waits until a home tab or a group's
@@ -125,7 +140,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     and Mac apps are one purchase with one listing, whose version both read) and open "Update available"
     ("Version 3.1.0", "Open in the App Store", "Not now", only its buttons and Esc closing it) over the app, a sheet as
     tall as its content on an iPhone, a form sheet with an iPad's room, a sheet on the Mac (on Settings when its check
-    opened it). Profile's "Privacy and about" ("Export my data") ends in "Check for updates" with
+    opened it). Profile's "Privacy and about" ("Export my data", "Release notes") ends in "Check for updates" with
     "Version <versionName>" under it (Pierre's call; the Mac's row keeps "Version <versionName>" with the button), as
     Bible Planner's keeps it next to its footer's version, "Checking…" while it
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update

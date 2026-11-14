@@ -78,6 +78,7 @@ import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
 import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
 import com.quare.blitzsplit.android.feature.registerpayment.PickPaymentScreen
 import com.quare.blitzsplit.android.feature.registerpayment.RegisterPaymentScreen
+import com.quare.blitzsplit.android.feature.releasenotes.ReleaseNotesScreen
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
@@ -312,6 +313,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }
             entry<Route.CategoryMap> { CategoryMapScreen() }
             entry<Route.LegalDocument> { route -> LegalDocumentScreen(route = route) }
+            entry<Route.ReleaseNotes> { ReleaseNotesScreen() }
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
             entry<Route.PaymentKey>(metadata = formDialogMetadata) { route ->
                 PaymentKeyScreen(

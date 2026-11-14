@@ -531,6 +531,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `terms_clicked` | `source` (`profile`, `welcome`) | "Terms of Service", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
 | `legal_document_retry_clicked` | none | "Try again" on a legal text that couldn't be downloaded (Android, iOS, macOS) | `:feature:legal` |
 | `legal_document_link_clicked` | `target` (`external`, `privacy_policy`, `terms_of_use`) | A link inside a legal text: one that leaves the app, or the other text | `:feature:legal` |
+| `release_notes_clicked` | none | "Release notes", in Profile's "Privacy and about" | `:feature:profile` |
+| `release_notes_retry_clicked` | none | "Try again" on release notes that couldn't be downloaded | `:feature:release_notes` |
+| `release_notes_beta_toggled` | `is_on` | "Show beta versions" on Release notes, when it changes | `:feature:release_notes` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_share_clicked` | none | The top bar's "Share profile", while the account has a link (it opens the system share) | `:feature:profile` |

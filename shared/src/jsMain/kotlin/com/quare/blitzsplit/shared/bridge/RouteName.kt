@@ -91,6 +91,8 @@ internal fun toRouteName(route: Route): String = when (route) {
     // Why: never on the web's stack, where Profile's footer opens the site's page.
     is Route.LegalDocument -> "legal-document"
 
+    Route.ReleaseNotes -> "release-notes"
+
     is Route.PaymentKey -> "payment-key"
 
     is Route.PayingMethod -> "paying-method"

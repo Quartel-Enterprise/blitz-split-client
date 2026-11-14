@@ -2306,4 +2306,13 @@ export const pl: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1} wyłączył(a) „Uprość długi”. Teraz {2} płaci ci {3}.',
   push_debtsUnsimplifiedFromYou: '{1} wyłączył(a) „Uprość długi”. Teraz płacisz {3} osobie {2}.',
   push_debtsUnsimplifiedOther: '{1} wyłączył(a) „Uprość długi”. Zobacz, jak to wygląda u ciebie.',
+  releaseNotes_title: 'Informacje o wersji',
+  releaseNotes_showBeta: 'Pokaż wersje beta',
+  releaseNotes_beta: 'Beta {number}',
+  releaseNotes_thisVersion: 'Ta wersja',
+  releaseNotes_empty: 'Nie ma jeszcze informacji o wersji.',
+  releaseNotes_emptyOnlyBeta: 'Nie ma jeszcze wersji stabilnej. Włącz wersje beta, aby zobaczyć, co jest testowane.',
+  releaseNotes_loadFailedTitle: 'Nie udało się wczytać informacji o wersji',
+  releaseNotes_loadFailedBody: 'Sprawdź połączenie i spróbuj ponownie.',
+  releaseNotes_retry: 'Spróbuj ponownie',
 }

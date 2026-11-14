@@ -41,6 +41,7 @@ import { NotificationSettingsDialog } from '@/features/notification-settings/Not
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog'
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
+import { ReleaseNotesScreen } from '@/features/release-notes/ReleaseNotesScreen'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { SharedBillScreen } from '@/features/shared-bill/SharedBillScreen'
 import { ProfileLinkScreen } from '@/features/profile-link/ProfileLinkScreen'
@@ -346,6 +347,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <ProfileScreen />
     case 'category-map':
       return <CategoryMapScreen />
+    // Why: Profile's "Release notes", a page of its own over the profile, as the category map is.
+    case 'release-notes':
+      return <ReleaseNotesScreen />
     // Why: a bill's link (7.3h), a page of its own outside the home's frame.
     case 'shared-bill':
       return route ? <SharedBillScreen key={route.sharedBillCode} route={route} /> : null

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Notes de version</string>
+    <string name="release_notes_show_beta">Afficher les versions bêta</string>
+    <string name="release_notes_beta_badge">Bêta %1$d</string>
+    <string name="release_notes_installed_badge">Cette version</string>
+    <string name="release_notes_empty">Pas encore de notes de version.</string>
+    <string name="release_notes_empty_only_betas">Il n’y a pas encore de version stable. Activez les versions bêta pour voir ce qui est en test.</string>
+    <string name="release_notes_load_failed_title">Impossible de charger les notes de version</string>
+    <string name="release_notes_load_failed_body">Vérifie ta connexion et réessaie.</string>
+    <string name="release_notes_retry">Réessayer</string>
+</resources>

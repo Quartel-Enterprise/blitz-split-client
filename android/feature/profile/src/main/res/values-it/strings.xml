@@ -83,6 +83,7 @@
     <string name="profile_privacy_policy">Informativa sulla privacy</string>
     <string name="profile_terms">Termini di servizio</string>
     <string name="profile_version_footer">Versione %1$s</string>
+    <string name="profile_release_notes">Note di rilascio</string>
     <string name="profile_check_for_updates">Controlla aggiornamenti</string>
     <string name="profile_check_for_updates_version">Versione %1$s</string>
     <string name="profile_check_for_updates_checking">Controllo in corso…</string>

@@ -2302,4 +2302,13 @@ export const pt: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1} desligou Simplificar dívidas. Agora {2} te paga {3}.',
   push_debtsUnsimplifiedFromYou: '{1} desligou Simplificar dívidas. Agora você paga {3} a {2}.',
   push_debtsUnsimplifiedOther: '{1} desligou Simplificar dívidas. Veja como ficou para você.',
+  releaseNotes_title: 'Notas de versão',
+  releaseNotes_showBeta: 'Mostrar versões beta',
+  releaseNotes_beta: 'Beta {number}',
+  releaseNotes_thisVersion: 'Esta versão',
+  releaseNotes_empty: 'Ainda não há notas de versão.',
+  releaseNotes_emptyOnlyBeta: 'Ainda não há uma versão estável. Ative as versões beta para ver o que está em teste.',
+  releaseNotes_loadFailedTitle: 'Não foi possível carregar as notas de versão',
+  releaseNotes_loadFailedBody: 'Confira sua conexão e tente de novo.',
+  releaseNotes_retry: 'Tentar de novo',
 }

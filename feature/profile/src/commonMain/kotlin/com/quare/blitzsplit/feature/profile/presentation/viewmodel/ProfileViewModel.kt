@@ -322,6 +322,8 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE) { emit(ProfileUiAction.OpenUrl(it)) }
 
+            ProfileUiEvent.OnReleaseNotesClicked -> navigator.navigate(Route.ReleaseNotes)
+
             ProfileUiEvent.OnCheckForUpdatesClicked -> checkForUpdates()
 
             ProfileUiEvent.OnSignOutClicked -> dialogs.openSignOut()

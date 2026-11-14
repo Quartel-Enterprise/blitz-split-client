@@ -2303,4 +2303,13 @@ export const tr: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1} “Borçları sadeleştir” ayarını kapattı. Artık {2} sana {3} ödüyor.',
   push_debtsUnsimplifiedFromYou: '{1} “Borçları sadeleştir” ayarını kapattı. Artık {2} kişisine {3} ödüyorsun.',
   push_debtsUnsimplifiedOther: '{1} “Borçları sadeleştir” ayarını kapattı. Senin için durumu gör.',
+  releaseNotes_title: 'Sürüm notları',
+  releaseNotes_showBeta: 'Beta sürümlerini göster',
+  releaseNotes_beta: 'Beta {number}',
+  releaseNotes_thisVersion: 'Bu sürüm',
+  releaseNotes_empty: 'Henüz sürüm notu yok.',
+  releaseNotes_emptyOnlyBeta: 'Henüz kararlı bir sürüm yok. Nelerin test edildiğini görmek için beta sürümlerini aç.',
+  releaseNotes_loadFailedTitle: 'Sürüm notları yüklenemedi',
+  releaseNotes_loadFailedBody: 'Bağlantını kontrol edip tekrar dene.',
+  releaseNotes_retry: 'Tekrar dene',
 }

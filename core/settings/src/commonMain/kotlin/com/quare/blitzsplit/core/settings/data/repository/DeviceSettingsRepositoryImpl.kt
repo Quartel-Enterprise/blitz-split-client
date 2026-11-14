@@ -121,4 +121,13 @@ class DeviceSettingsRepositoryImpl(
     override suspend fun updateUsageDataSharing(isOn: Boolean) {
         local.update { entity -> entity.copy(sharesUsageData = isOn) }
     }
+
+    override fun observeBetaReleaseNotesChoice(): Flow<Boolean?> = local
+        .observe()
+        .map { entity -> entity?.showsBetaReleaseNotes }
+        .distinctUntilChanged()
+
+    override suspend fun updateBetaReleaseNotesChoice(isOn: Boolean) {
+        local.update { entity -> entity.copy(showsBetaReleaseNotes = isOn) }
+    }
 }

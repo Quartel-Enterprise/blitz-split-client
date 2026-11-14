@@ -563,7 +563,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
   )
 }
 
-/** "Privacy and about": the export and who sees the profile; the legal pages and the version are the footer's. */
+/** "Privacy and about": the export, who sees the profile and "Release notes"; the legal pages and the version are the footer's. */
 function AboutCard({ presenter, state, className }: { presenter: ProfilePresenter; state: JsProfileState; className?: string }) {
   return (
     <Card className={className}>
@@ -587,6 +587,14 @@ function AboutCard({ presenter, state, className }: { presenter: ProfilePresente
             <Switch id="share-usage-data" checked={state.sharesUsageData} onCheckedChange={(checked) => presenter.toggleUsageData(checked)} />
           </label>
         )}
+        {/* What each version changed on the web, a page over the profile */}
+        <button
+          onClick={() => presenter.releaseNotes()}
+          className="flex min-h-12 items-center gap-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+        >
+          <span className="min-w-0 flex-1 text-sm font-medium">{t('releaseNotes_title')}</span>
+          <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+        </button>
       </CardContent>
     </Card>
   )
