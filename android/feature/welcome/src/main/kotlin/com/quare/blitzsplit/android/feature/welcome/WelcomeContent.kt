@@ -35,7 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
@@ -57,6 +64,8 @@ import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeUiState
 private val singleColumnMaxWidth = 560.dp
 private val twoColumnsMaxWidth = 1100.dp
 private val tabletActionsMaxWidth = 400.dp
+private const val TERMS_MARKER = '\u0000' // Why: where the notice's sentence puts the Terms link.
+private const val PRIVACY_MARKER = '\u0001' // Why: where it puts the Privacy Policy link.
 
 @Composable
 fun WelcomeContent(
@@ -458,7 +467,48 @@ private fun WelcomeActionsSection(
         ) {
             Text(text = stringResource(R.string.welcome_used_on_another_device))
         }
+        WelcomeLegalText(onEvent = onEvent)
     }
+}
+
+/*
+ * Why: the one line that tells about the Terms and the Privacy Policy before anything is used, with no checkbox nor
+ * extra step: continuing is accepting the Terms, and Analytics rests on legitimate interest (docs/analytics/README.md).
+ */
+@Composable
+private fun WelcomeLegalText(onEvent: (WelcomeUiEvent) -> Unit) {
+    val terms = stringResource(R.string.welcome_legal_terms)
+    val privacy = stringResource(R.string.welcome_legal_privacy)
+    // Why: each language puts the two names where its grammar wants them, so the sentence is cut at their markers.
+    val template = stringResource(R.string.welcome_legal_notice, TERMS_MARKER.toString(), PRIVACY_MARKER.toString())
+    val linkStyles = TextLinkStyles(
+        style = SpanStyle(
+            color = MaterialTheme.colorScheme.primary,
+            textDecoration = TextDecoration.Underline,
+        ),
+    )
+    val text = buildAnnotatedString {
+        template.forEach { char ->
+            when (char) {
+                TERMS_MARKER -> withLink(
+                    LinkAnnotation.Clickable("terms", linkStyles) { onEvent(WelcomeUiEvent.OnTermsClicked) },
+                ) { append(terms) }
+
+                PRIVACY_MARKER -> withLink(
+                    LinkAnnotation.Clickable("privacy", linkStyles) { onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked) },
+                ) { append(privacy) }
+
+                else -> append(char)
+            }
+        }
+    }
+    Text(
+        text = text,
+        modifier = Modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+    )
 }
 
 @Composable

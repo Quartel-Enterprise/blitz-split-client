@@ -980,6 +980,17 @@ private struct AboutSection: View {
     var body: some View {
         Section("Privacy and about") {
             ExportRow(model: model)
+            // Analytics' opt out on this device, on by default under legitimate interest (docs/analytics/README.md)
+            Toggle(
+                isOn: Binding(
+                    get: { model.state.sharesUsageData },
+                    set: { model.send(ProfileUiEventOnUsageDataToggled(isOn: $0)) },
+                ),
+            ) {
+                Text("Share usage data")
+                Text("Screens and taps, to improve the app. Never names or amounts.")
+            }
+            .disabled(!model.state.isLoaded)
             // The version itself sits in the legal footer, at the end of the profile (beta feedback 18)
             if model.state.showsCheckForUpdates {
                 CheckForUpdatesRow(model: model)

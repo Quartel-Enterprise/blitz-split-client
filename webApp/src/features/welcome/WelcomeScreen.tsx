@@ -1,6 +1,6 @@
 import { CloudOff, Link2, ShieldCheck } from 'lucide-react'
 import { WelcomePresenter, type JsWelcomeState } from 'blitzsplit-shared'
-import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, BrandMark, OfflineAlert, OrDivider } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { t } from '@/i18n'
@@ -9,6 +9,7 @@ import { t } from '@/i18n'
 export function WelcomeScreen() {
   const presenter = usePresenter(() => new WelcomePresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsWelcomeState) => void) => p.observeState(onChange))
+  useActions(presenter, (p, onUrl: (url: string) => void) => p.observeOpenUrls(onUrl), (url) => window.open(url, '_blank', 'noopener,noreferrer'))
   if (!presenter || !state) return null
 
   return (
@@ -43,6 +44,7 @@ export function WelcomeScreen() {
               {t('welcome_usedOnAnotherDevice')}
             </Button>
           </div>
+          <LegalNotice presenter={presenter} />
         </section>
       </div>
     </main>
@@ -62,3 +64,30 @@ function Benefit({ icon, title, body }: { icon: React.ReactNode; title: string; 
     </li>
   )
 }
+
+/**
+ * The one line that tells about the Terms and the Privacy Policy before anything is used, with no checkbox nor extra
+ * step: continuing is accepting the Terms, and Analytics rests on legitimate interest (docs/analytics/README.md).
+ */
+function LegalNotice({ presenter }: { presenter: WelcomePresenter }) {
+  const links: Record<string, { label: string; open: () => void }> = {
+    '\u0000': { label: t('welcome_legalTerms'), open: () => presenter.termsOfService() },
+    '\u0001': { label: t('welcome_legalPrivacy'), open: () => presenter.privacyPolicy() },
+  }
+  // Why: each language puts the two names where its grammar wants them, so the sentence is cut at their markers
+  const parts = t('welcome_legalNotice', { terms: '\u0000', privacy: '\u0001' }).split(/(\u0000|\u0001)/)
+  return (
+    <p className="text-center text-xs text-muted-foreground">
+      {parts.map((part, index) => {
+        const link = links[part]
+        if (!link) return part
+        return (
+          <button key={index} type="button" className="cursor-pointer underline underline-offset-2 hover:text-foreground focus-visible:outline-2" onClick={link.open}>
+            {link.label}
+          </button>
+        )
+      })}
+    </p>
+  )
+}
+

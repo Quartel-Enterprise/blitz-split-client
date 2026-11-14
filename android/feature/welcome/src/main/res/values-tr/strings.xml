@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Hesapsız kullan</string>
     <string name="welcome_used_on_another_device">Başka bir cihazda kullandım</string>
     <string name="welcome_sign_in_failed">Şu an giriş yapılamadı. Tekrar dene.</string>
+    <string name="welcome_legal_notice">Devam ederek %1$s kabul etmiş ve %2$s okumuş sayılırsın.</string>
+    <string name="welcome_legal_terms">Hizmet Şartları’nı</string>
+    <string name="welcome_legal_privacy">Gizlilik Politikası’nı</string>
 </resources>

@@ -56,6 +56,9 @@ export const en = {
   welcome_offlineNotice: 'Signing in with an account needs the internet. Use it without an account now and connect later in Profile.',
   welcome_useWithoutAccount: 'Use without an account',
   welcome_usedOnAnotherDevice: "I've used it on another device",
+  welcome_legalNotice: "By continuing, you accept the {terms} and acknowledge the {privacy}.",
+  welcome_legalTerms: "Terms of Service",
+  welcome_legalPrivacy: "Privacy Policy",
 
   profileSetup_title: 'What do your friends call you?',
   profileSetup_subtitle: 'Your groups and anyone with your profile link see your name.',
@@ -821,6 +824,8 @@ export const en = {
   profile_languageIndonesian: 'Indonesian',
   profile_bitcoinInSats: 'Bitcoin in satoshis',
   profile_bitcoinInSatsDetail: 'Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).',
+  profile_shareUsageData: "Share usage data",
+  profile_shareUsageDataDetail: "Screens and taps, to improve the app. Never names or amounts.",
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Cryptocurrencies',

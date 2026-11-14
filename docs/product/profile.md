@@ -122,6 +122,11 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update
     is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks: its
     version is only the footer's.
+  - Profile's "Privacy and about" holds "Share usage data" ("Screens and taps, to improve the app. Never names or
+    amounts."), a switch right under "Export my data" (Pierre's call, #184): on by default, per device like the theme,
+    it turns Firebase Analytics off on this device, the user id included. Nothing asks about it first: Analytics rests
+    on legitimate interest, and Welcome's line tells about the Privacy Policy ([general.md](general.md),
+    [docs/analytics](../analytics/README.md#consent)).
   - Profile › Preferences › "Notifications" ("5 active", the rows whose Push is on; "0 active" while its "Push notifications" switch is off on this device) opens Notifications: a row per
     kind of Activity and the weekly reminder, each with a Push and an In app toggle. Activity's bar opens the same
     screen; see [activity-and-push.md](activity-and-push.md) for the rows, the defaults and how each platform draws

@@ -11,8 +11,11 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBro
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.OpenLegalPageUseCase
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.signin.ProviderSignInImpl
 import com.quare.blitzsplit.feature.welcome.presentation.model.WelcomeError
@@ -524,6 +527,215 @@ class WelcomeViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN Android WHEN clicking the Terms of Service THEN opens the terms in the app`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(clientPlatform = ClientPlatform.ANDROID)
+
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnTermsClicked)
+
+        // Then
+        assertEquals(listOf(Route.Welcome, legalDocument(LegalPage.TERMS_OF_USE)), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Android WHEN clicking the Privacy Policy THEN opens the policy in the app`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(clientPlatform = ClientPlatform.ANDROID)
+
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked)
+
+        // Then
+        assertEquals(listOf(Route.Welcome, legalDocument(LegalPage.PRIVACY_POLICY)), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN iOS WHEN clicking the Terms of Service THEN opens the terms in the app`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(clientPlatform = ClientPlatform.IOS)
+
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnTermsClicked)
+
+        // Then
+        assertEquals(listOf(Route.Welcome, legalDocument(LegalPage.TERMS_OF_USE)), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN macOS WHEN clicking the Privacy Policy THEN opens the policy in the app`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(clientPlatform = ClientPlatform.MACOS)
+
+        // When
+        viewModel.onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked)
+
+        // Then
+        assertEquals(listOf(Route.Welcome, legalDocument(LegalPage.PRIVACY_POLICY)), navigator.backStack.value)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the web WHEN clicking the Terms of Service THEN opens the site terms and stays on the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.WEB)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnTermsClicked)
+
+            // Then
+            assertEquals<List<WelcomeUiAction>>(
+                listOf(WelcomeUiAction.OpenUrl("https://blitzsplit.com/terms")),
+                actions,
+            )
+            assertEquals(listOf(Route.Welcome), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the web WHEN clicking the Privacy Policy THEN opens the site policy and stays on the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.WEB)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked)
+
+            // Then
+            assertEquals<List<WelcomeUiAction>>(
+                listOf(WelcomeUiAction.OpenUrl("https://blitzsplit.com/privacy")),
+                actions,
+            )
+            assertEquals(listOf(Route.Welcome), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN clicking the Terms of Service THEN still opens the terms in the app`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnTermsClicked)
+
+            // Then
+            assertEquals(listOf(Route.Welcome, legalDocument(LegalPage.TERMS_OF_USE)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the web with no internet WHEN clicking the Privacy Policy THEN still opens the site policy`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                online = false,
+                clientPlatform = ClientPlatform.WEB,
+            )
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked)
+
+            // Then
+            assertEquals<List<WelcomeUiAction>>(
+                listOf(WelcomeUiAction.OpenUrl("https://blitzsplit.com/privacy")),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN a Google sign in connecting WHEN clicking the Privacy Policy THEN still opens the policy in the app`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(native = setOf(AccountProvider.GOOGLE))
+            viewModel.onEvent(WelcomeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked)
+
+            // Then
+            assertEquals(listOf(Route.Welcome, legalDocument(LegalPage.PRIVACY_POLICY)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the web with a sign in connecting WHEN clicking the terms THEN still opens the site terms`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                clientPlatform = ClientPlatform.WEB,
+                isProfilePullPending = true,
+            )
+            account.returningBrowserSignIn.value = AccountProvider.APPLE
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnTermsClicked)
+
+            // Then
+            assertEquals<List<WelcomeUiAction>>(
+                listOf(WelcomeUiAction.OpenUrl("https://blitzsplit.com/terms")),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN Android WHEN clicking the Terms of Service THEN tracks the terms click from the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.ANDROID)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnTermsClicked)
+
+            // Then
+            assertEquals(listOf("terms_clicked" to mapOf<String, Any>("source" to "welcome")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN iOS WHEN clicking the Privacy Policy THEN tracks the policy click from the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.IOS)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked)
+
+            // Then
+            assertEquals(listOf("privacy_policy_clicked" to mapOf<String, Any>("source" to "welcome")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the web WHEN clicking the Terms of Service THEN tracks the terms click from the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.WEB)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnTermsClicked)
+
+            // Then
+            assertEquals(listOf("terms_clicked" to mapOf<String, Any>("source" to "welcome")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the web WHEN clicking the Privacy Policy THEN tracks the policy click from the welcome`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(clientPlatform = ClientPlatform.WEB)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnPrivacyPolicyClicked)
+
+            // Then
+            assertEquals(listOf("privacy_policy_clicked" to mapOf<String, Any>("source" to "welcome")), trackedEvents)
+        }
+
+    private fun legalDocument(page: LegalPage): Route = Route.LegalDocument(
+        page = page,
+        anchor = null,
+    )
+
     private fun providerClicked(provider: AccountProvider): Pair<String, Map<String, Any>> =
         "sign_in_provider_clicked" to mapOf("provider" to provider, "source" to "welcome")
 
@@ -534,6 +746,7 @@ class WelcomeViewModelTest {
         profilePullError: Throwable? = null,
         connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED),
         isProfilePullPending: Boolean = false,
+        clientPlatform: ClientPlatform = ClientPlatform.ANDROID,
     ) {
         if (!isProfilePullPending) profilePull.complete(Unit)
         account = FakeAccountRepository().also { it.connectResult = connectResult }
@@ -555,6 +768,7 @@ class WelcomeViewModelTest {
                 observeAbandonedBrowserSignIn = ObserveAbandonedBrowserSignInUseCase(account),
             ),
             navigator = navigator,
+            openLegalPage = OpenLegalPageUseCase(navigator, clientPlatform),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

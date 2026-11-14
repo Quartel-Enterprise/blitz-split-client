@@ -122,4 +122,6 @@
     <string name="profile_share">Compartilhar perfil</string>
     <string name="profile_share_message">Esse é meu perfil no Bora Rachar: %1$s</string>
     <string name="profile_link_copied">Link copiado</string>
+    <string name="profile_share_usage_data">Compartilhar dados de uso</string>
+    <string name="profile_share_usage_data_detail">Telas e toques, para melhorar o app. Nunca nomes ou valores.</string>
 </resources>

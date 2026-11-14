@@ -111,4 +111,14 @@ class DeviceSettingsRepositoryImpl(
     override suspend fun dismissAppBanner() {
         local.update { entity -> entity.copy(isAppBannerDismissed = true) }
     }
+
+    // Why: on for a fresh install, so the default the policy states (legitimate interest) holds before any row exists.
+    override fun observeUsageDataSharing(): Flow<Boolean> = local
+        .observe()
+        .map { entity -> entity?.sharesUsageData ?: true }
+        .distinctUntilChanged()
+
+    override suspend fun updateUsageDataSharing(isOn: Boolean) {
+        local.update { entity -> entity.copy(sharesUsageData = isOn) }
+    }
 }

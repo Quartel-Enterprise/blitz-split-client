@@ -10,6 +10,8 @@ kotlin {
             implementation(projects.core.navigation)
             api(projects.core.account)
             implementation(projects.core.sync)
+            // Why: ClientPlatform, since the web opens the legal texts on the site.
+            implementation(projects.core.profile)
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

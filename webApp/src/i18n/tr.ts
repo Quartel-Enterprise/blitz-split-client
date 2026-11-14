@@ -58,6 +58,9 @@ export const tr: Record<MessageKey, string> = {
   welcome_offlineNotice: 'Hesapla giriş yapmak için internet gerekir. Şimdi hesapsız kullan, sonra Profil bölümünden bağlan.',
   welcome_useWithoutAccount: 'Hesapsız kullan',
   welcome_usedOnAnotherDevice: 'Başka bir cihazda kullandım',
+  welcome_legalNotice: "Devam ederek {terms} kabul etmiş ve {privacy} okumuş sayılırsın.",
+  welcome_legalTerms: "Hizmet Şartları’nı",
+  welcome_legalPrivacy: "Gizlilik Politikası’nı",
 
   profileSetup_title: 'Arkadaşların sana ne diyor?',
   profileSetup_subtitle: 'Grupların ve profil bağlantına sahip olan herkes adını görür.',
@@ -823,6 +826,8 @@ export const tr: Record<MessageKey, string> = {
   profile_languageIndonesian: 'Endonezce',
   profile_bitcoinInSats: 'Satoshi cinsinden bitcoin',
   profile_bitcoinInSatsDetail: 'Bitcoin tutarlarını sats olarak gösterir ve girer (1 ₿ = 100.000.000 sats).',
+  profile_shareUsageData: "Kullanım verilerini paylaş",
+  profile_shareUsageDataDetail: "Uygulamayı geliştirmek için ekranlar ve dokunuşlar. İsim veya tutar asla gönderilmez.",
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Kripto paralar',

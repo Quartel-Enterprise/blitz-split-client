@@ -6,4 +6,9 @@ sealed interface WelcomeUiAction {
     data class LaunchNativeSignIn(
         val provider: AccountProvider,
     ) : WelcomeUiAction
+
+    // Why: the web opens the legal texts on the site, in another tab, as a browser does.
+    data class OpenUrl(
+        val url: String,
+    ) : WelcomeUiAction
 }

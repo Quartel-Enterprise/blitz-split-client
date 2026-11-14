@@ -58,6 +58,9 @@ export const es: Record<MessageKey, string> = {
   welcome_offlineNotice: 'Iniciar sesión con una cuenta necesita internet. Úsalo ahora sin cuenta y conéctate más tarde en Perfil.',
   welcome_useWithoutAccount: 'Usar sin cuenta',
   welcome_usedOnAnotherDevice: 'Ya lo usé en otro dispositivo',
+  welcome_legalNotice: "Al continuar, aceptas los {terms} y declaras conocer la {privacy}.",
+  welcome_legalTerms: "Términos de Servicio",
+  welcome_legalPrivacy: "Política de Privacidad",
 
   profileSetup_title: '¿Cómo te llaman tus amigos?',
   profileSetup_subtitle: 'Tus grupos y quien tenga el enlace de tu perfil ven tu nombre.',
@@ -823,6 +826,8 @@ export const es: Record<MessageKey, string> = {
   profile_languageIndonesian: 'Indonesio',
   profile_bitcoinInSats: 'Bitcoin en satoshis',
   profile_bitcoinInSatsDetail: 'Muestra y escribe los montos de bitcoin en sats (1 ₿ = 100,000,000 sats).',
+  profile_shareUsageData: "Compartir datos de uso",
+  profile_shareUsageDataDetail: "Pantallas y toques, para mejorar la app. Nunca nombres ni montos.",
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Criptomonedas',

@@ -45,6 +45,8 @@ class JsProfileState(
     val theme: String,
     // Why: Preferências' "Bitcoin em satoshis".
     val showsBitcoinInSats: Boolean,
+    // Why: "Share usage data", Analytics' opt out in this browser.
+    val sharesUsageData: Boolean,
     // Why: Preferences' "Language": "system", or the tag of the language picked ("en", "pt-BR").
     val language: String,
     // Why: the codes of the options, in the order every UI lists them.
@@ -127,6 +129,7 @@ class ProfilePresenter {
                 isSignOutScheduled = state.isSignOutScheduled,
                 theme = state.theme.code,
                 showsBitcoinInSats = state.showsBitcoinInSats,
+                sharesUsageData = state.sharesUsageData,
                 language = state.language.code,
                 languageOptions = state.languageOptions.map { it.code }.toTypedArray(),
                 activeNotificationCount = state.activeNotificationCount.valueOrNull(),
@@ -258,6 +261,10 @@ class ProfilePresenter {
 
     fun toggleBitcoinInSats(isOn: Boolean) {
         viewModel.onEvent(ProfileUiEvent.OnBitcoinInSatsToggled(isOn))
+    }
+
+    fun toggleUsageData(isOn: Boolean) {
+        viewModel.onEvent(ProfileUiEvent.OnUsageDataToggled(isOn))
     }
 
     // Why: "App on your phone"'s "See code" and its ✕.

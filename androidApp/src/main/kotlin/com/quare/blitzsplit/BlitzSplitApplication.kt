@@ -26,7 +26,9 @@ class BlitzSplitApplication : Application() {
         super.onCreate()
         if (BuildConfig.HAS_FIREBASE) startCrashReporting(isDebug = BuildConfig.DEBUG)
         startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }
-        if (BuildConfig.HAS_FIREBASE && !BuildConfig.DEBUG) get<AnalyticsHub>().attach(FirebaseAnalyticsService(this))
+        if (BuildConfig.HAS_FIREBASE && BuildConfig.COLLECTS_ANALYTICS && !BuildConfig.DEBUG) {
+            get<AnalyticsHub>().attach(FirebaseAnalyticsService(this))
+        }
         PushSetup.start(this, setPushDevice = get())
         // Why: Google Play's update flow starts from the Activity in front, whichever screen asked for it.
         registerActivityLifecycleCallbacks(get<CurrentActivityProvider>())

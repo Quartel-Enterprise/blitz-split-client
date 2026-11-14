@@ -30,6 +30,7 @@ class DeviceSettingsRepositoryImplTest {
     private lateinit var observedCharts: MutableList<StatsChartPreferences>
     private lateinit var observedDynamicColors: MutableList<Boolean>
     private lateinit var observedBitcoinInSats: MutableList<Boolean>
+    private lateinit var observedUsageDataSharing: MutableList<Boolean>
 
     @Test
     fun `GIVEN a fresh install with no theme stored WHEN observing the theme THEN follows the system`() = runTest {
@@ -677,11 +678,213 @@ class DeviceSettingsRepositoryImplTest {
                     theme = "dark",
                     lastNotificationPromptAt = 1_600_000_000_000L,
                     isAppBannerDismissed = true,
+                    sharesUsageData = true,
                 ),
             ),
             local.rows.values.toList(),
         )
         assertEquals(true, repository.observeAppBannerDismissed().first())
+    }
+
+    @Test
+    fun `GIVEN a fresh install with no row WHEN observing usage data sharing THEN is on`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val sharing = observedUsageDataSharing.toList()
+
+        // Then
+        assertEquals(listOf(true), sharing)
+    }
+
+    @Test
+    fun `GIVEN usage data sharing turned off on this device WHEN observing it THEN is off`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                sharesUsageData = false,
+            ),
+        )
+
+        // When
+        val sharing = observedUsageDataSharing.toList()
+
+        // Then
+        assertEquals(listOf(false), sharing)
+    }
+
+    @Test
+    fun `GIVEN a fresh install WHEN turning usage data sharing off THEN stores off and observers see off`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        repository.updateUsageDataSharing(false)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "system",
+                    sharesUsageData = false,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(true, false), observedUsageDataSharing)
+        assertEquals(listOf(ThemePreference.SYSTEM), observed)
+    }
+
+    @Test
+    fun `GIVEN dark Material You sats and the grid WHEN turning usage data sharing off THEN keeps them all`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "dark",
+                    groupsDisplay = "grid",
+                    groupGridSize = "large",
+                    usesDynamicColors = true,
+                    showsBitcoinInSats = true,
+                    lastNotificationPromptAt = 1_700_000_000_000L,
+                ),
+            )
+
+            // When
+            repository.updateUsageDataSharing(false)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "dark",
+                        groupsDisplay = "grid",
+                        groupGridSize = "large",
+                        usesDynamicColors = true,
+                        showsBitcoinInSats = true,
+                        lastNotificationPromptAt = 1_700_000_000_000L,
+                        sharesUsageData = false,
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(true, false), observedUsageDataSharing)
+            assertEquals(listOf(ThemePreference.DARK), observed)
+            assertEquals(listOf(true), observedDynamicColors)
+            assertEquals(listOf(true), observedBitcoinInSats)
+        }
+
+    @Test
+    fun `GIVEN usage data sharing off with dark and sats WHEN turning it back on THEN stores on keeping the rest`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "dark",
+                    showsBitcoinInSats = true,
+                    sharesUsageData = false,
+                ),
+            )
+
+            // When
+            repository.updateUsageDataSharing(true)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "dark",
+                        showsBitcoinInSats = true,
+                        sharesUsageData = true,
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(false, true), observedUsageDataSharing)
+        }
+
+    @Test
+    fun `GIVEN usage data sharing off WHEN picking dark THEN sharing stays off`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                sharesUsageData = false,
+            ),
+        )
+
+        // When
+        repository.updateTheme(ThemePreference.DARK)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    sharesUsageData = false,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(false), observedUsageDataSharing)
+    }
+
+    @Test
+    fun `GIVEN a fresh install WHEN picking dark THEN usage data sharing stays on`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        repository.updateTheme(ThemePreference.DARK)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    sharesUsageData = true,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(true), observedUsageDataSharing)
+    }
+
+    @Test
+    fun `GIVEN sharing off WHEN the device row is emitted again unchanged THEN observers are not notified again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "dark",
+                    sharesUsageData = false,
+                ),
+            )
+
+            // When
+            local.emitAgain()
+
+            // Then
+            assertEquals(listOf(false), observedUsageDataSharing)
+        }
+
+    @Test
+    fun `GIVEN usage data sharing off WHEN turning it off again THEN observers are not notified again`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                sharesUsageData = false,
+            ),
+        )
+
+        // When
+        repository.updateUsageDataSharing(false)
+
+        // Then
+        assertEquals(listOf(false), observedUsageDataSharing)
     }
 
     private fun settings(
@@ -695,6 +898,7 @@ class DeviceSettingsRepositoryImplTest {
         lastUpdatePromptAt: Long? = null,
         lastNotificationPromptAt: Long? = null,
         isAppBannerDismissed: Boolean = false,
+        sharesUsageData: Boolean = true,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -707,6 +911,7 @@ class DeviceSettingsRepositoryImplTest {
         lastUpdatePromptAt = lastUpdatePromptAt,
         lastNotificationPromptAt = lastNotificationPromptAt,
         isAppBannerDismissed = isAppBannerDismissed,
+        sharesUsageData = sharesUsageData,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -717,6 +922,7 @@ class DeviceSettingsRepositoryImplTest {
         observedCharts = mutableListOf()
         observedDynamicColors = mutableListOf()
         observedBitcoinInSats = mutableListOf()
+        observedUsageDataSharing = mutableListOf()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeTheme().collect(observed::add)
         }
@@ -731,6 +937,9 @@ class DeviceSettingsRepositoryImplTest {
         }
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeBitcoinInSats().collect(observedBitcoinInSats::add)
+        }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeUsageDataSharing().collect(observedUsageDataSharing::add)
         }
     }
 }
@@ -765,6 +974,7 @@ private class FakeDeviceSettingsLocalDataSource(
             lastUpdatePromptAt = null,
             lastNotificationPromptAt = null,
             isAppBannerDismissed = false,
+            sharesUsageData = true,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

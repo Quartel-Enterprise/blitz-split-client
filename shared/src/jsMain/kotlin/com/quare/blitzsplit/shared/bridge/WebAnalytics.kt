@@ -10,12 +10,18 @@ import org.koin.mp.KoinPlatform
  * Why: Firebase Analytics on the web (webApp/src/analytics), attached only by a production build with its Firebase
  * config. Each event's params cross as a plain object of strings and numbers, since a Kotlin Map or Long doesn't.
  */
-fun attachAnalytics(logEvent: (name: String, params: dynamic) -> Unit) {
-    KoinPlatform.getKoin().get<AnalyticsHub>().attach(WebAnalyticsService(logEvent))
+fun attachAnalytics(
+    logEvent: (name: String, params: dynamic) -> Unit,
+    setCollectionEnabled: (isEnabled: Boolean) -> Unit,
+    setUserId: (userId: String?) -> Unit,
+) {
+    KoinPlatform.getKoin().get<AnalyticsHub>().attach(WebAnalyticsService(logEvent, setCollectionEnabled, setUserId))
 }
 
 private class WebAnalyticsService(
     private val logEvent: (name: String, params: dynamic) -> Unit,
+    private val setCollectionEnabled: (isEnabled: Boolean) -> Unit,
+    private val setUserId: (userId: String?) -> Unit,
 ) : AnalyticsService {
     override fun logEvent(
         name: String,
@@ -26,5 +32,13 @@ private class WebAnalyticsService(
             plain[key] = if (value is Long) value.toDouble() else value
         }
         logEvent(name, plain)
+    }
+
+    override fun setCollectionEnabled(isEnabled: Boolean) {
+        setCollectionEnabled.invoke(isEnabled)
+    }
+
+    override fun setUserId(userId: String?) {
+        setUserId.invoke(userId)
     }
 }

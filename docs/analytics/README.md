@@ -10,7 +10,7 @@ every UI.
 | Piece | Where | Does |
 | --- | --- | --- |
 | `TrackEvent` | `:core:provider:analytics`'s `domain/usecase` | How the shared code tracks an event: a name and its params. A Boolean goes as `"true"` or `"false"` (GA4 has no boolean), a whole number as a Long, any other as a Double, an enum as its name in lowercase; any other value is left out, never sent as its text |
-| `AnalyticsHub` | `:core:provider:analytics` | Where the events go, an SDK that throws losing only that event: once an app attaches its platform's `AnalyticsService`. The first 50 before that wait for it, so the opening screen counts on the web too, which attaches only once the page drew; Firebase dates them when they are sent, a moment late, since its SDKs take no timestamp |
+| `AnalyticsHub` | `:core:provider:analytics` | Where the events go, an SDK that throws losing only that event: once an app attaches its platform's `AnalyticsService` and the device's "Share usage data" is read, dropping them all while it is off. It also hands the SDK that choice and the user id ([Consent](#consent)). The first 50 before that wait for it, so the opening screen counts on the web too, which attaches only once the page drew; Firebase dates them when they are sent, a moment late, since its SDKs take no timestamp |
 | `FirebaseAnalyticsService` | `:core:provider:analytics`'s `androidMain` | Android's, attached by `BlitzSplitApplication` |
 | `FirebaseSetup.swift` | `iosApp/Sources/Shared/App` | Apple's, attached through `BlitzSplitApple.attachAnalytics` once the shared code started |
 | `firebaseAnalytics.ts` | `webApp/src/analytics` | The web's, through `firebase/analytics`, attached through the exported `attachAnalytics` |
@@ -44,12 +44,15 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 
 ## What is never sent
 
-- **A name, an amount or an id** (a group's, a bill's, a person's), in an event's params or anywhere else: the event
-  goes to Google. Params say what kind of thing happened (`split_mode`, `source`, `is_new`), never whose or how much.
+- **A name, an amount or an id** (a group's, a bill's, a person's), in an event's params: the event goes to Google.
+  Params say what kind of thing happened (`split_mode`, `source`, `is_new`), never whose or how much. The one id that
+  goes is the account's, as GA4's user id, never as a param ([User id](#user-id)).
+- **An email or a name as the user id**: Google's terms forbid it, so the user id is the account's Supabase UUID.
 - **Anything from a debug build**: Android's manifest turns collection off for the debug build type
-  (`analyticsCollectionEnabled`), Apple's Info.plist turns it off from the first launch on and `FirebaseSetup` turns it
-  on again only for a release build, on every launch, since the setting persists on the device; a debug build never
-  attaches either, and the web only starts in a production build.
+  (`analyticsCollectionEnabled`), Apple's Info.plist turns it off from the first launch on, a release build turning it
+  on only once the shared code read "Share usage data", and `FirebaseSetup` turns it off again on every debug launch,
+  since the setting persists on the device; a debug build never attaches either, and the web only starts in a
+  production build.
 - **The advertising id**: Android removes the `AD_ID` permission and turns its collection off, Apple links
   `FirebaseAnalytics` without `FirebaseAnalyticsIdentitySupport`, and the web turns Google signals off. Ad
   personalization is off on all of them.
@@ -59,12 +62,37 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 
 ## Consent
 
-Release builds collect on every platform, and debug builds never do. Whether the app asks first, or offers an opt-out
-in Profile, is still Pierre's call (#184), and nothing in the build enforces it: settle it, and update the Play Data
-safety form and the App Store privacy labels, before a build reaches testers (TestFlight, Play testing tracks) or the
-stores, and before the web app is served to the public (where it is also an EU cookie-consent question). Setting a
-platform's `collectsAnalytics` to `false` turns its collection off: in `androidApp/build.gradle.kts`, in
-`FirebaseSetup.swift` and in `webApp/src/analytics/firebaseAnalytics.ts`.
+Release builds collect on every platform, under **legitimate interest** (LGPD, art. 7, IX), so nothing asks first and
+nothing waits for a tap (Pierre's call, #184). What that rests on:
+
+- **Transparency.** The Privacy Policy (`blitz-split-site`, `public/legal/privacy.<language>.md`) says what is collected,
+  the user id included, and how to turn it off. Welcome's one line under its buttons, "By continuing, you accept the
+  Terms of Service and acknowledge the Privacy Policy", links both, with no checkbox nor extra step: the Terms are
+  accepted, the policy only acknowledged, since Analytics doesn't rest on consent.
+- **An opt out.** Profile's "Share usage data" ("Privacy and about"; Settings on the Mac), on by default, per device like
+  the theme (`DeviceSettingsEntity.sharesUsageData`). Turning it off stops the events at once
+  (`FollowUsageDataSharing` hands it to `AnalyticsHub`) and turns the SDK's own collection off too (first_open,
+  sessions), which Android and Apple keep on the device from the next launch on; the web starts gtag disabled until the
+  shared code read it. The toggle itself sends no event.
+- **The web in the EU** shows no cookie banner: the ePrivacy directive asks consent before GA's cookies, and leaving it
+  out is a risk Pierre took knowingly.
+
+Until the device's choice is read from Room, `AnalyticsHub` keeps the first events waiting, so a device that turned
+sharing off sends nothing, not even its opening screen. Crashlytics doesn't follow the toggle: crash reports carry no
+usage and are a technical need ([crash-reporting.md](../crash-reporting.md)).
+
+Each platform's `collectsAnalytics` stays as a kill switch: `false` turns its collection off for everyone, in
+`androidApp/build.gradle.kts`, in `FirebaseSetup.swift` and in `webApp/src/analytics/firebaseAnalytics.ts`. The Play
+Data safety form and the App Store privacy labels declare Usage Data › Product Interaction and the user id, linked to
+the person, not used for tracking, collected for Analytics and optional.
+
+## User id
+
+GA4's user id is the account's Supabase id, anonymous, Google or Apple alike (#187), so one person's events join across
+their phone, Mac and web and survive a reinstall. `FollowAnalyticsUserId` (`:core:account`) sets it from the account's
+status and clears it without an account, so a sign out or a deleted account sends no id from then on. A local-only
+install has none and is counted by Firebase's own app instance id. Once the account is deleted, the server no longer
+holds that id, so the events left in GA4 (14 months at most) no longer lead to anyone.
 
 ## What stays off until it is set up
 
@@ -103,7 +131,7 @@ three UIs send the same events. The `add-analytics-event` skill walks through it
 | --- | --- | --- |
 | `EventAnalytics.Automatic(name, params)` | The event and its params are known from the `UiEvent` itself | `TrackedViewModel.onEvent`; the ViewModel never calls `trackEvent` for it. A screen that refuses whole kinds of events for a while (Split a bill reading a receipt) overrides `isAccepted`, and `onEvent` then neither tracks nor handles those events |
 | `EventAnalytics.Manual(name)` | It needs what only handling it tells: the result of a save, the `UiState` (`setOf(…)` for a branch that may send more than one) | A `trackEvent("name", …)` call in the branch, with the same name |
-| `EventAnalytics.NotTracked` | Not a user action at all: a scroll, an animation ending, a frame or a window measured, a value typed letter by letter (what was typed shows in the action that saves it), a result the platform hands back (unless it stands for a tap the ViewModel never sees, as a photo picked does, or ends the funnel a tap began, as the native sign in failing or closed does). A back too, since each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, and a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front: where either went is its screen view | Nothing |
+| `EventAnalytics.NotTracked` | Not a user action at all: a scroll, an animation ending, a frame or a window measured, a value typed letter by letter (what was typed shows in the action that saves it), a result the platform hands back (unless it stands for a tap the ViewModel never sees, as a photo picked does, or ends the funnel a tap began, as the native sign in failing or closed does). A back too, since each platform's own back (a gesture, the NavigationStack, a swipe down) reaches the back stack apart, and a tab of the home's bar, rail or sidebar, which each platform routes through whichever screen is in front: where either went is its screen view. And Profile's "Share usage data" switch, whose off asks for no events, that one included ([Consent](#consent)) | Nothing |
 
 Every tap on a button, a row, a tab, a menu item, a chip or a toggle is a user action and gets its event, even when it
 opens a screen: the tap and the screen it opens are different signals (how many tapped, how many saw). Picking an
@@ -477,8 +505,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_recovery_code_clicked` | none | "Recovery code" | `:feature:profile` |
 | `bitcoin_in_sats_toggled` | `is_on` | "Bitcoin in satoshis" | `:feature:profile` |
 | `profile_notifications_clicked` | none | "Notifications" (Android and iOS) | `:feature:profile` |
-| `privacy_policy_clicked` | none | "Privacy Policy", in Profile's footer | `:feature:profile` |
-| `terms_clicked` | none | "Terms of Service", in Profile's footer | `:feature:profile` |
+| `privacy_policy_clicked` | `source` (`profile`, `welcome`) | "Privacy Policy", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
+| `terms_clicked` | `source` (`profile`, `welcome`) | "Terms of Service", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
 | `legal_document_retry_clicked` | none | "Try again" on a legal text that couldn't be downloaded (Android, iOS, macOS) | `:feature:legal` |
 | `legal_document_link_clicked` | `target` (`external`, `privacy_policy`, `terms_of_use`) | A link inside a legal text: one that leaves the app, or the other text | `:feature:legal` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
