@@ -19,6 +19,16 @@ internal object StoredZip {
     private const val DOS_DATE = 0x0021
     private const val CRC_POLYNOMIAL = 0xEDB88320.toInt()
     private const val BYTE_MASK = 0xFF
+    private const val BYTE_VALUES = 256
+
+    // Why: the CRC of each byte worked out once, so a sheet's bytes take one lookup each rather than eight shifts.
+    private val crcTable = IntArray(BYTE_VALUES) { byte ->
+        var crc = byte
+        repeat(BITS_PER_BYTE) {
+            crc = if (crc and 1 != 0) (crc ushr 1) xor CRC_POLYNOMIAL else crc ushr 1
+        }
+        crc
+    }
 
     fun of(entries: List<Pair<String, ByteArray>>): ByteArray {
         val out = ZipBytes()
@@ -77,10 +87,7 @@ internal object StoredZip {
     fun computeCrc32(data: ByteArray): Int {
         var crc = -1
         data.forEach { byte ->
-            crc = crc xor (byte.toInt() and BYTE_MASK)
-            repeat(BITS_PER_BYTE) {
-                crc = if (crc and 1 != 0) (crc ushr 1) xor CRC_POLYNOMIAL else crc ushr 1
-            }
+            crc = crcTable[(crc xor byte.toInt()) and BYTE_MASK] xor (crc ushr BITS_PER_BYTE)
         }
         return crc.inv()
     }

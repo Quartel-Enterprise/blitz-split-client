@@ -4,7 +4,8 @@ import type { ReactNode } from 'react'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t, type MessageKey } from '@/i18n'
+import { t } from '@/i18n'
+import { appCategoryName } from '@/lib/categories'
 import { downloadBlob } from '@/lib/download'
 
 const FORMATS: { format: string; icon: ReactNode; label: () => string }[] = [
@@ -71,7 +72,7 @@ function exportWordsOf(presenter: GroupDetailPresenter): JsGroupExportWords {
     t('groupExport_member'),
     t('groupExport_balance'),
     t('balance_formerMember'),
-    presenter.exportCategoryKeys.map((key) => t(`category_${key.replace('.', '_')}` as MessageKey)),
+    presenter.exportCategoryKeys.map(appCategoryName),
   )
 }
 

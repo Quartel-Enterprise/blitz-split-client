@@ -89,6 +89,8 @@ class ExportGroupUseCase(
             .trim('.')
             .replace(spaces, "-")
             .take(MAX_NAME_LENGTH)
+            // Why: the cut may fall inside an emoji, whose lone half no file system or encoder keeps.
+            .trimEnd { it.isHighSurrogate() }
             .trimEnd('-')
         return listOf(name, day).filter { it.isNotEmpty() }.joinToString("-") + "." + format.extension
     }

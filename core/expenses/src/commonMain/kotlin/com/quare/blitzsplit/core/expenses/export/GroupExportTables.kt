@@ -55,10 +55,10 @@ internal object GroupExportTables {
         val name = names.getValue(member.id)
         listOf(
             ExportColumn<ExportBill>("${words.paid} · $name") { bill ->
-                bill.findPaidMinor(member.id)?.let { ExportCell.Amount(it, bill.currency) } ?: ExportCell.Empty
+                bill.findPaidMinorOrNull(member.id)?.let { ExportCell.Amount(it, bill.currency) } ?: ExportCell.Empty
             },
             ExportColumn("${words.share} · $name") { bill ->
-                bill.findShareMinor(member.id)?.let { ExportCell.Amount(it, bill.currency) } ?: ExportCell.Empty
+                bill.findShareMinorOrNull(member.id)?.let { ExportCell.Amount(it, bill.currency) } ?: ExportCell.Empty
             },
         )
     }

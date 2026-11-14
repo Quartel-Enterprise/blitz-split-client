@@ -205,15 +205,21 @@ internal class XlsxGroupExport : GroupExportEncoder {
         append("</styleSheet>")
     }
 
-    // Why: XML's five escapes, and no control character, which XML 1.0 refuses even escaped.
+    /*
+     * Why: XML's five escapes, and none of what XML 1.0 refuses even escaped, which would make Excel call the whole
+     * workbook corrupt: a control character, U+FFFE and U+FFFF, half of an emoji whose other half is missing.
+     */
     private fun toEscaped(text: String): String = buildString {
-        text.forEach { char ->
+        text.forEachIndexed { index, char ->
             when {
                 char == '&' -> append("&amp;")
                 char == '<' -> append("&lt;")
                 char == '>' -> append("&gt;")
                 char == '"' -> append("&quot;")
                 char < ' ' && char != '\t' && char != '\n' && char != '\r' -> Unit
+                char == '￾' || char == '￿' -> Unit
+                char.isHighSurrogate() && text.getOrNull(index + 1)?.isLowSurrogate() != true -> Unit
+                char.isLowSurrogate() && text.getOrNull(index - 1)?.isHighSurrogate() != true -> Unit
                 else -> append(char)
             }
         }

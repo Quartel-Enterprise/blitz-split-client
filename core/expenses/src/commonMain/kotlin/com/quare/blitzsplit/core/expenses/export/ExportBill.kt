@@ -18,12 +18,12 @@ data class ExportBill(
     val shares: List<ExportAmount>,
 ) {
     // Why: null when the member paid nothing of it, so the cell stays empty rather than reading 0.
-    fun findPaidMinor(memberId: String): Long? = payers
+    fun findPaidMinorOrNull(memberId: String): Long? = payers
         .filter { it.memberId == memberId }
         .takeIf { it.isNotEmpty() }
         ?.sumOf { it.amountMinor }
 
-    fun findShareMinor(memberId: String): Long? = shares
+    fun findShareMinorOrNull(memberId: String): Long? = shares
         .filter { it.memberId == memberId }
         .takeIf { it.isNotEmpty() }
         ?.sumOf { it.amountMinor }
