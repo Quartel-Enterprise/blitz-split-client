@@ -1,7 +1,7 @@
 ---
 name: whatsapp-feedback
-description: "Read a WhatsApp conversation exported as a .zip, or the folder it unzips to (its chat .txt and the screenshots attached), turn it into a list of Bora Rachar bugs and improvements, split them into independent pieces and do them in parallel sessions, each in its own worktree with its own PR. Asks first which model the sessions run on, and every product question up front, then goes on alone. Use whenever someone points at a WhatsApp export (a .zip or its folder) of bug reports, improvement ideas or feedback (\"lê a conversa do WhatsApp em <arquivo.zip> e resolve os bugs\", \"implementa as melhorias que o pessoal mandou no WhatsApp\")."
-argument-hint: "[path to the exported WhatsApp .zip, or the folder it unzips to]"
+description: "Read a WhatsApp conversation exported as a .zip (a path or a file attached to the message), or the folder it unzips to (its chat .txt and the screenshots attached), turn it into a list of Bora Rachar bugs and improvements, split them into independent pieces and do them in parallel sessions, each in its own worktree with its own PR. Asks first which model the sessions run on, and every product question up front, then goes on alone. Use whenever someone points at or attaches a WhatsApp export (a .zip or its folder) of bug reports, improvement ideas or feedback (\"lê a conversa do WhatsApp em <arquivo.zip> e resolve os bugs\", `/whatsapp-feedback` with the zip attached, \"implementa as melhorias que o pessoal mandou no WhatsApp\")."
+argument-hint: "[the exported WhatsApp .zip (a path or attached), or the folder it unzips to]"
 ---
 
 # WhatsApp feedback
@@ -33,8 +33,17 @@ own model: reading screenshots and splitting the work is where judgment pays.
 ## 2. Read the export
 
 The argument is the `.zip` WhatsApp makes with "Export chat" ("Attach media" on iPhone, "Include
-media" on Android): `WhatsApp Chat - <group>.zip`, `Conversa do WhatsApp com <group>.zip`. If none
-was given, ask for it. If the person points at a folder instead (an export someone already unzipped,
+media" on Android): `WhatsApp Chat - <group>.zip`, `Conversa do WhatsApp com <group>.zip`. It comes in
+one of two ways:
+
+- **A path** typed after the skill, or pasted by dragging the file into the terminal.
+- **A file attached to the message.** The app saves the attachment to disk and names it in the
+  message by its path, often in a temporary folder and sometimes under another name: that path is
+  the zip. Its folder may be cleared once the session ends, which the extraction below already
+  survives by copying everything out. If the attachment shows up only as content, with no path on
+  disk, there is nothing to extract: ask the person for the zip's path.
+
+If neither was given, ask for the path. If the person points at a folder instead (an export someone already unzipped,
 or one shared as loose files), use that folder as the export and skip to listing it below.
 
 A shell variable doesn't survive from one Bash call to the next, so write every path below as a
