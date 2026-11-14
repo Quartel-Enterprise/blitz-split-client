@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillComments
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillPayingMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -104,6 +105,7 @@ class BillDetailViewModel(
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
     observeCategoryTree: ObserveCategoryTree,
+    observeBillPayingMethod: ObserveBillPayingMethod,
     observeBillComments: ObserveBillComments,
     observeBillHistory: ObserveBillHistory,
     observeBillAttachments: ObserveBillAttachments,
@@ -149,6 +151,7 @@ class BillDetailViewModel(
                 attachments = Loadable.Loading,
                 viewedAttachmentId = null,
                 isAddingPhoto = false,
+                paidWith = null,
             ),
         )
 
@@ -220,8 +223,9 @@ class BillDetailViewModel(
 
     // Why: a sync may bring someone else's edit while the bill is open, or delete it, or the whole group.
     init {
-        observeCategoryTree(route.groupId)
-            .onEach { tree -> uiState.update { it.copy(categories = tree) } }
+        // Why: with the categories, this device's user's own "Paid with", which only they see.
+        combine(observeCategoryTree(route.groupId), observeBillPayingMethod(route.expenseId), ::Pair)
+            .onEach { (tree, paidWith) -> uiState.update { it.copy(categories = tree).copy(paidWith = paidWith) } }
             .launchIn(viewModelScope)
         combine(group, observeExpense(route.expenseId), ::Pair)
             .onEach { (group, expense) -> handle(group, expense) }

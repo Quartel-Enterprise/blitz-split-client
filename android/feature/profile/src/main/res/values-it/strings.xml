@@ -130,4 +130,7 @@
     <string name="profile_link_copied">Link copiato</string>
     <string name="profile_share_usage_data">Condividi dati di utilizzo</string>
     <string name="profile_share_usage_data_detail">Schermate e tocchi, per migliorare l’app. Mai nomi o importi.</string>
+    <string name="profile_section_paying_methods">Metodi di pagamento</string>
+    <string name="profile_paying_methods_add">Aggiungi un metodo di pagamento</string>
+    <string name="profile_paying_methods_subtitle">Li vedi solo tu. Segna con quale hai pagato ogni spesa.</string>
 </resources>

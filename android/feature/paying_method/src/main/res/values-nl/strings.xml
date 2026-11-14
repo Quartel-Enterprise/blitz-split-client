@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nieuwe betaalmethode</string>
+    <string name="paying_method_edit_title">Betaalmethode bewerken</string>
+    <string name="paying_method_type">Type</string>
+    <string name="paying_method_name">Naam</string>
+    <string name="paying_method_name_optional">Naam (optioneel)</string>
+    <string name="paying_method_color">Kleur</string>
+    <string name="paying_method_default">Standaardmethode</string>
+    <string name="paying_method_default_hint">Nieuwe uitgaven die jij betaalt beginnen hiermee.</string>
+    <string name="paying_method_delete">Betaalmethode verwijderen</string>
+    <string name="paying_method_delete_title">Deze betaalmethode verwijderen?</string>
+    <string name="paying_method_delete_body">Uitgaven die je ermee hebt gemarkeerd, tonen hem niet meer.</string>
+    <string name="paying_method_delete_confirm">Verwijderen</string>
+    <string name="paying_method_save">Opslaan</string>
+</resources>

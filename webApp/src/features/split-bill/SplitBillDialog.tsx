@@ -40,6 +40,7 @@ import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
 import { categoryHint, categoryPane } from './CategoryPane'
 import { ReceiptInput, type ReceiptPicker, useReceiptPicker } from '@/components/ReceiptSourcePicker'
+import { PaidWithField } from './PaidWithField'
 import { ReceiptFailureAlert, ReceiptField, ReceiptReadChips } from './ReceiptField'
 import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
@@ -383,6 +384,7 @@ function BillForm({
         <div className="flex min-w-0 flex-col gap-4">
           <fieldset disabled={state.isFormLocked} className="flex min-w-0 flex-col gap-4">
             <PayerField presenter={presenter} state={state} money={money} />
+            {state.paidWith && <PaidWithField presenter={presenter} paidWith={state.paidWith} />}
             <BillWhenField
               id={whenId}
               label={t('splitBill_when')}

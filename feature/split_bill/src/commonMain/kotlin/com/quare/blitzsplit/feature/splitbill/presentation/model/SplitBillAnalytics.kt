@@ -63,6 +63,9 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
     // Why: only a pick the sheet takes, never a late tap once it closed.
     is SplitBillUiEvent.OnPayerPicked -> EventAnalytics.Manual("split_bill_payer_picked")
 
+    // Why: only another method than the one picked, while "Paid with" shows.
+    is SplitBillUiEvent.OnPaidWithPicked -> EventAnalytics.Manual("split_bill_paid_with_picked")
+
     // Why: only "Pronto" on a sheet still open.
     SplitBillUiEvent.OnPayerDone -> EventAnalytics.Manual("split_bill_payer_confirmed")
 

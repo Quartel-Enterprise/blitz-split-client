@@ -418,4 +418,9 @@ sealed interface Route {
         val method: PaymentMethod,
         val keyId: String?,
     ) : Route
+
+    // Why: Profile's "Payment methods": a new method when methodId is null, otherwise that method, to edit or delete.
+    data class PayingMethod(
+        val methodId: String?,
+    ) : Route
 }

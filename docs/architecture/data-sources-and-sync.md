@@ -453,6 +453,15 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   the profile (`PersonalCategoryData`, which also clears both on sign out). A deleted color stays as a tombstone
   (`isDeleted`) so its deletion wins over an older add; the download is Last-Write-Wins per color. A group category's
   custom color isn't the palette's: it lives in `group_categories.color` as its hex, with the category.
+- **Payment methods** (`:core:expenses`, private): the person's methods (`paying_method`, `payment_methods` on the
+  server) and their mark per bill (`bill_paying_method`, `bill_payment_methods` keyed by user and bill), owned like
+  the category map (`ownerUserId`, claimed by the first sync, dropped on a switch, cleared on sign out and account
+  deletion). Only their owner reads or writes them on the server. A method deleted is a tombstone, final on both
+  sides; a cleared mark is a null method. `PayingMethodRepository.sync` runs after the bills: the methods down then
+  up, then, only once the bills synced, the marks down (dropping those of bills no longer on the device) and up. A
+  mark goes up only once its bill is on the server (its bill's `pendingSync` is off), which the server's foreign key
+  needs, and the pending flag the sync loops on reads the same rule, so a mark waiting on its bill never keeps a sync
+  looping.
 - **Comments** (`:core:expenses`): a bill's comments (`bill_comment`, `bill_comments` on the server, 7.3) are
   never edited nor deleted, so they have no `updatedAt` and no Last-Write-Wins: a comment written here waits with
   `pendingSync` and goes up once, inserted with `ignoreDuplicates` (an answer lost on the way goes up again as the same

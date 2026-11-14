@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
 import com.quare.blitzsplit.core.provider.room.dao.LegalDocumentDao
 import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
+import com.quare.blitzsplit.core.provider.room.dao.PayingMethodDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.dao.PushSettingsDao
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.core.provider.room.entity.AppInviteEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentLikeEntity
+import com.quare.blitzsplit.core.provider.room.entity.BillPayingMethodEntity
 import com.quare.blitzsplit.core.provider.room.entity.CategoryTermEntity
 import com.quare.blitzsplit.core.provider.room.entity.CustomColorEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
@@ -51,6 +53,7 @@ import com.quare.blitzsplit.core.provider.room.entity.LegalDocumentEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
+import com.quare.blitzsplit.core.provider.room.entity.PayingMethodEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import com.quare.blitzsplit.core.provider.room.entity.PushSettingsEntity
@@ -86,8 +89,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AppCategoryColorEntity::class,
         LegalDocumentEntity::class,
         CustomColorEntity::class,
+        PayingMethodEntity::class,
+        BillPayingMethodEntity::class,
     ],
-    version = 49,
+    version = 50,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -286,6 +291,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 48,
             to = 49,
         ),
+        AutoMigration(
+            from = 49,
+            to = 50,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -335,4 +344,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun legalDocumentDao(): LegalDocumentDao
 
     abstract fun customColorDao(): CustomColorDao
+
+    abstract fun payingMethodDao(): PayingMethodDao
 }

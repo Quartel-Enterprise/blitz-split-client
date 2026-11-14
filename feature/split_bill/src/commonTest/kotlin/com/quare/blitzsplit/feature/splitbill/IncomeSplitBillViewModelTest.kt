@@ -709,6 +709,7 @@ class IncomeSplitBillViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { _, _ -> },
             route = route,
             navigator = navigator,

@@ -1,10 +1,13 @@
 package com.quare.blitzsplit.core.expenses.export
 
+import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -67,6 +70,11 @@ internal fun exportWords(
         "food" to "Food",
         "food.restaurant" to "Restaurant",
         "other" to "Other",
+    ),
+    paymentMethod = "Payment method",
+    payingMethodTypeNames = mapOf(
+        "credit_card" to "Credit card",
+        "cash" to "Cash",
     ),
 )
 
@@ -186,11 +194,26 @@ internal fun groupCategory(
     isPending = false,
 )
 
+internal fun exportPayingMethod(
+    id: String,
+    type: PayingMethodType = PayingMethodType.CREDIT_CARD,
+    name: String = "Nubank",
+    cardColor: CardColor? = CardColor.PURPLE.takeIf { type.isCard },
+): PayingMethod = PayingMethod(
+    id = id,
+    type = type,
+    name = name,
+    cardColor = cardColor,
+    isDefault = false,
+    addedAt = 1L,
+)
+
 internal fun exportOf(
     group: Group = exportGroup(),
     bills: List<Expense> = emptyList(),
     payments: List<Settlement> = emptyList(),
     groupCategories: List<GroupCategory> = emptyList(),
+    payingMethods: Map<String, PayingMethod> = emptyMap(),
     timeZone: TimeZone = TimeZone.UTC,
     nowMillis: Long = NOV_14_AFTERNOON,
 ): GroupExport = GroupExport.of(
@@ -198,6 +221,7 @@ internal fun exportOf(
     expenses = bills,
     settlements = payments,
     categoryTree = CategoryTree.of(groupCategories),
+    payingMethods = payingMethods,
     timeZone = timeZone,
     nowMillis = nowMillis,
 )

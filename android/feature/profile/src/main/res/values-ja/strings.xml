@@ -122,4 +122,7 @@
     <string name="profile_link_copied">リンクをコピーしました</string>
     <string name="profile_share_usage_data">利用データを共有</string>
     <string name="profile_share_usage_data_detail">開いた画面と操作をアプリの改善に使います。名前や金額は送りません。</string>
+    <string name="profile_section_paying_methods">支払い方法</string>
+    <string name="profile_paying_methods_add">支払い方法を追加</string>
+    <string name="profile_paying_methods_subtitle">あなただけに表示されます。どの方法で支払ったかを支出に記録できます。</string>
 </resources>

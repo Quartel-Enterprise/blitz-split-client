@@ -81,6 +81,10 @@ sealed interface ProfileUiEvent : UiEvent {
 
             is OnPaymentKeyClicked -> EventAnalytics.Manual("payment_key_clicked")
 
+            PayingMethods.OnAddClicked -> EventAnalytics.Manual("paying_method_add_clicked")
+
+            is PayingMethods.OnClicked -> EventAnalytics.Manual("paying_method_clicked")
+
             OnDeleteAccountClicked -> EventAnalytics.Manual("profile_delete_account_clicked")
 
             OnRetrySyncClicked -> EventAnalytics.Manual("sync_retry_clicked")
@@ -161,6 +165,15 @@ sealed interface ProfileUiEvent : UiEvent {
     data class OnPaymentKeyClicked(
         val keyId: String,
     ) : ProfileUiEvent
+
+    // Why: "Payment methods", how the person pays, apart from the keys they receive with.
+    sealed interface PayingMethods : ProfileUiEvent {
+        data object OnAddClicked : PayingMethods
+
+        data class OnClicked(
+            val methodId: String,
+        ) : PayingMethods
+    }
 
     data object OnRecoveryCodeClicked : ProfileUiEvent
 

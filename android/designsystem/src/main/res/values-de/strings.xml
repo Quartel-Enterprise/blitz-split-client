@@ -294,4 +294,22 @@
     <string name="designsystem_custom_color_in_use_title">Diese Farbe wird verwendet</string>
     <string name="designsystem_custom_color_in_use_message">%1$s verwendet diese Farbe. Ändere zuerst deren Farbe und lösche diese dann.</string>
     <string name="designsystem_custom_color_ok">OK</string>
+    <string name="designsystem_paying_method_credit_card">Kreditkarte</string>
+    <string name="designsystem_paying_method_debit_card">Debitkarte</string>
+    <string name="designsystem_paying_method_cash">Bargeld</string>
+    <string name="designsystem_paying_method_pix">Pix</string>
+    <string name="designsystem_paying_method_bank_transfer">Banküberweisung</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
+    <string name="designsystem_paying_method_other">Andere</string>
+    <string name="designsystem_card_color_purple">Lila</string>
+    <string name="designsystem_card_color_blue">Blau</string>
+    <string name="designsystem_card_color_green">Grün</string>
+    <string name="designsystem_card_color_orange">Orange</string>
+    <string name="designsystem_card_color_red">Rot</string>
+    <string name="designsystem_card_color_pink">Pink</string>
+    <string name="designsystem_card_color_gold">Gold</string>
+    <string name="designsystem_card_color_graphite">Graphit</string>
+    <string name="designsystem_paid_with">Bezahlt mit</string>
+    <string name="designsystem_paid_with_none">Keine</string>
+    <string name="designsystem_paid_with_private">Nur du siehst das.</string>
 </resources>

@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
@@ -40,6 +41,8 @@ class DeleteAccountUseCaseTest {
     private lateinit var profile: FakeProfileRepository
     private lateinit var useCase: DeleteAccountUseCase
 
+    private val payingMethods = FakePayingMethodRepository()
+
     @Test
     fun `GIVEN a Google account WHEN deleting the account THEN deletes it and goes back to no account`() = runTest {
         // Given
@@ -53,6 +56,18 @@ class DeleteAccountUseCaseTest {
         assertEquals(1, account.deleteAccountCount)
         assertEquals(AccountStatus.LocalOnly, account.status)
         assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN payment methods on the device WHEN deleting the account THEN they are erased`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        useCase()
+
+        // Then
+        assertTrue(payingMethods.isCleared)
     }
 
     @Test
@@ -89,6 +104,7 @@ class DeleteAccountUseCaseTest {
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
                 personalCategoryData = PersonalCategoryData(FakeCategoryTermRepository(), FakeCustomColorRepository()),
+                payingMethodRepository = payingMethods,
                 billCommentRepository = FakeBillCommentRepository(),
                 billAttachmentRepository = FakeBillAttachmentRepository(),
                 activityRepository = FakeActivityRepository(),

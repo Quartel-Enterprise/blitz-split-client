@@ -7,6 +7,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
     case profile
     case iphone
     case keys
+    case payingMethods
     case account
     case appearance
     case notifications
@@ -20,6 +21,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
         case .profile: "Profile"
         case .iphone: "iPhone"
         case .keys: "Keys to receive payments"
+        case .payingMethods: "Payment methods"
         case .account: "Account and sync"
         case .appearance: "Appearance"
         case .notifications: "Notifications"
@@ -33,6 +35,7 @@ enum ProfileSettingsPane: CaseIterable, Hashable, Identifiable {
         case .profile: "person.crop.circle"
         case .iphone: "iphone"
         case .keys: "key"
+        case .payingMethods: "creditcard"
         case .account: "arrow.triangle.2.circlepath"
         case .appearance: "circle.lefthalf.filled"
         case .notifications: "bell"
@@ -103,6 +106,7 @@ struct SettingsView: View {
             NavigationStack {
                 switch route {
                 case let .paymentKey(route): PaymentKeyView(route: route)
+                case let .payingMethod(route): PayingMethodView(route: route)
                 case .profilePhoto: ProfilePhotoView()
                 case .deleteAccount: DeleteAccountView()
                 case let .inAppUpdate(route): InAppUpdateView(route: route)

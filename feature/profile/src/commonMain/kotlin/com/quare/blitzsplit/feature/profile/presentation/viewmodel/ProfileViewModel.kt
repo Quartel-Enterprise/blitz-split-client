@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePayingMethods
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
@@ -110,6 +111,7 @@ class ProfileViewModel(
     observeProfileShareLink: ObserveProfileShareLink,
     observePendingProfileChanges: ObservePendingProfileChanges,
     observePaymentKeys: ObservePaymentKeys,
+    observePayingMethods: ObservePayingMethods,
     observePendingPaymentKeyChanges: ObservePendingPaymentKeyChanges,
     observeSyncState: ObserveSyncState,
     observeThemePreference: ObserveThemePreference,
@@ -137,6 +139,7 @@ class ProfileViewModel(
         )
 
     private val appInviteRow = ProfileAppInviteRow(uiState, navigator, dismissAppInvite, trackEvent, viewModelScope)
+    private val payingMethodRows = ProfilePayingMethodRows(uiState, navigator, trackEvent)
 
     // Why: Profile's dialogs and sheets, which open only while nothing signs out.
     private val dialogs = ProfileDialogs(uiState, trackEvent)
@@ -194,6 +197,7 @@ class ProfileViewModel(
             .launchIn(viewModelScope)
         languagePicker.follow(observeAppLanguage, viewModelScope)
         val firstDownload = observeFirstDownload()
+        payingMethodRows.follow(observePayingMethods(), firstDownload, viewModelScope)
         /*
          * Why: a restored account's keys and notification choices only come with its first full sync. The keys and the
          * Pix rule (docs/product/general.md; without it the Pix keys collapse behind "Add a Pix key") arrive together,
@@ -277,6 +281,8 @@ class ProfileViewModel(
             is ProfileUiEvent.OnAddPaymentKeyClicked -> addPaymentKey(event.method)
 
             is ProfileUiEvent.OnPaymentKeyClicked -> openSavedPaymentKey(event.keyId)
+
+            is ProfileUiEvent.PayingMethods -> payingMethodRows.onEvent(event)
 
             ProfileUiEvent.OnRecoveryCodeClicked -> showRecoveryCode()
 

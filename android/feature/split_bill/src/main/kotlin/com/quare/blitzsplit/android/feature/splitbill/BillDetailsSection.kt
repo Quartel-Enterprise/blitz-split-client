@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
+import com.quare.blitzsplit.android.designsystem.component.PaidWithPickerRow
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
@@ -126,6 +127,14 @@ internal fun BillDetailsSection(
         ) {
             StackedFacesRow(state.split.included)
         }
+    }
+    // Why: the person's own "Paid with", only while they pay the bill; the group never sees it.
+    if (state.showsPaidWith) {
+        PaidWithPickerRow(
+            methods = state.paidWith.methods,
+            picked = state.paidWith.method,
+            onPick = { onEvent(SplitBillUiEvent.OnPaidWithPicked(it)) },
+        )
     }
     if (state.showsOfflineNotice) {
         OfflineNoteRow()

@@ -303,4 +303,22 @@
     <string name="designsystem_custom_color_in_use_title">Cette couleur est utilisée</string>
     <string name="designsystem_custom_color_in_use_message">%1$s utilise cette couleur. Changez d’abord sa couleur, puis supprimez celle-ci.</string>
     <string name="designsystem_custom_color_ok">OK</string>
+    <string name="designsystem_paying_method_credit_card">Carte de crédit</string>
+    <string name="designsystem_paying_method_debit_card">Carte de débit</string>
+    <string name="designsystem_paying_method_cash">Espèces</string>
+    <string name="designsystem_paying_method_pix">Pix</string>
+    <string name="designsystem_paying_method_bank_transfer">Virement bancaire</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
+    <string name="designsystem_paying_method_other">Autre</string>
+    <string name="designsystem_card_color_purple">Violet</string>
+    <string name="designsystem_card_color_blue">Bleu</string>
+    <string name="designsystem_card_color_green">Vert</string>
+    <string name="designsystem_card_color_orange">Orange</string>
+    <string name="designsystem_card_color_red">Rouge</string>
+    <string name="designsystem_card_color_pink">Rose</string>
+    <string name="designsystem_card_color_gold">Or</string>
+    <string name="designsystem_card_color_graphite">Graphite</string>
+    <string name="designsystem_paid_with">Payé avec</string>
+    <string name="designsystem_paid_with_none">Aucun</string>
+    <string name="designsystem_paid_with_private">Vous seul voyez ceci.</string>
 </resources>

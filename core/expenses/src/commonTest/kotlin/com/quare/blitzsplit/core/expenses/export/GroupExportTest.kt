@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class GroupExportTest {
     @Test
@@ -366,5 +367,51 @@ class GroupExportTest {
         assertEquals("Trip to Rio", export.groupName)
         assertEquals(emptyList(), export.bills)
         assertEquals(emptyList(), export.payments)
+    }
+
+    @Test
+    fun `GIVEN one of two bills marked by the exporter WHEN exporting THEN only that bill has its payment method`() {
+        // Given
+        val card = exportPayingMethod(id = "card")
+        val bills = listOf(
+            exportBill(
+                id = "dinner",
+                amountMinor = 100L,
+            ),
+            exportBill(
+                id = "taxi",
+                amountMinor = 100L,
+                spentAt = NOV_11_NOON,
+            ),
+        )
+
+        // When
+        val export = exportOf(
+            bills = bills,
+            payingMethods = mapOf("dinner" to card),
+        )
+
+        // Then
+        assertEquals(listOf(card, null), export.bills.map { it.payingMethod })
+    }
+
+    @Test
+    fun `GIVEN a bill the exporter marked but Ana alone pays since WHEN exporting THEN it has no payment method`() {
+        // Given
+        val card = exportPayingMethod(id = "card")
+        val bill = exportBill(
+            id = "dinner",
+            amountMinor = 100L,
+            payers = mapOf(ANA to 100L),
+        )
+
+        // When
+        val export = exportOf(
+            bills = listOf(bill),
+            payingMethods = mapOf("dinner" to card),
+        )
+
+        // Then
+        assertNull(export.bills.single().payingMethod)
     }
 }

@@ -134,4 +134,7 @@
     <string name="profile_link_copied">Link skopiowany</string>
     <string name="profile_share_usage_data">Udostępniaj dane o użyciu</string>
     <string name="profile_share_usage_data_detail">Ekrany i dotknięcia, by ulepszać aplikację. Nigdy imion ani kwot.</string>
+    <string name="profile_section_paying_methods">Metody płatności</string>
+    <string name="profile_paying_methods_add">Dodaj metodę płatności</string>
+    <string name="profile_paying_methods_subtitle">Widzisz je tylko Ty. Zaznaczaj, czym płacisz za wydatki.</string>
 </resources>

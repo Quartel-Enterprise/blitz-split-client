@@ -141,4 +141,7 @@
     <string name="profile_link_copied">Link copied</string>
     <string name="profile_share_usage_data">Share usage data</string>
     <string name="profile_share_usage_data_detail">Screens and taps, to improve the app. Never names or amounts.</string>
+    <string name="profile_section_paying_methods">Payment methods</string>
+    <string name="profile_paying_methods_add">Add a payment method</string>
+    <string name="profile_paying_methods_subtitle">Only you see these. Mark which one you paid a bill with.</string>
 </resources>

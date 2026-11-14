@@ -92,4 +92,6 @@ internal fun toRouteName(route: Route): String = when (route) {
     is Route.LegalDocument -> "legal-document"
 
     is Route.PaymentKey -> "payment-key"
+
+    is Route.PayingMethod -> "paying-method"
 }

@@ -6,6 +6,7 @@ import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, ProviderLogo, providerLabel, segmentClass } from '@/components/common'
 import { pageContentClass } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
+import { PayingMethodLabel } from '@/components/PayingMethodTile'
 import { PixIcon } from '@/components/PixIcon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -173,6 +174,8 @@ export function ProfileScreen() {
             </div>
             <div className="contents lg:flex lg:flex-col lg:gap-4">
               <PaymentKeysCard presenter={presenter} state={state} className="order-2" />
+              {/* Why: right after the keys, in the one column too (same order, after them in the page). */}
+              <PayingMethodsCard presenter={presenter} state={state} className="order-2" />
               <AppearanceCard presenter={presenter} state={state} className="order-5" />
               <NotificationSettingsCard className="order-6" />
               <Card className="order-6">
@@ -241,7 +244,7 @@ function PaymentKeysCard({ presenter, state, className }: CardProps) {
           <button
             key={key.id}
             onClick={() => presenter.clickPaymentKey(key.id)}
-            className="flex min-h-14 items-center gap-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+            className={itemRowClassName}
           >
             <KeyMethodIcon type={key.type as PaymentKeyType} />
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -318,6 +321,36 @@ function KeyMethodIcon({ type }: { type: PaymentKeyType }) {
     </span>
   )
 }
+
+/**
+ * "Payment methods": the person's own, private ones (default first), each opening its form, and "Add a payment method".
+ */
+function PayingMethodsCard({ presenter, state, className }: CardProps) {
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>{t('payingMethod_sectionTitle')}</CardTitle>
+        <CardDescription>{t('payingMethod_sectionNote')}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col divide-y">
+        {!state.payingMethods && <RowsSkeleton count={2} />}
+        {state.payingMethods?.map((method) => (
+          <button key={method.id} onClick={() => presenter.clickPayingMethod(method.id)} className={itemRowClassName}>
+            <PayingMethodLabel method={method} showsSubtitle className="flex-1" />
+            {method.isDefault && <Badge variant="secondary">{t('payingMethod_defaultBadge')}</Badge>}
+            <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+          </button>
+        ))}
+        <button onClick={() => presenter.addPayingMethod()} className={addKeyClassName}>
+          <Plus className="size-4 shrink-0" />
+          {t('payingMethod_add')}
+        </button>
+      </CardContent>
+    </Card>
+  )
+}
+
+const itemRowClassName = 'flex min-h-14 items-center gap-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring'
 
 const addKeyClassName =
   'flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'

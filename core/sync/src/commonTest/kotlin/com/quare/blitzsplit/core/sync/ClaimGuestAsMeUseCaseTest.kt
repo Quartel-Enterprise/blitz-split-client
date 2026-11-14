@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
@@ -253,6 +254,7 @@ class ClaimGuestAsMeUseCaseTest {
             settlementRepository = FakeSettlementRepository(),
             categoryRepository = FakeCategoryRepository(),
             personalCategoryData = PersonalCategoryData(FakeCategoryTermRepository(), FakeCustomColorRepository()),
+            payingMethodRepository = FakePayingMethodRepository(),
             billCommentRepository = FakeBillCommentRepository(),
             billAttachmentRepository = FakeBillAttachmentRepository(),
             activityRepository = FakeActivityRepository(),

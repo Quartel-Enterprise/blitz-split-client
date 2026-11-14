@@ -122,4 +122,7 @@
     <string name="profile_link_copied">Tautan disalin</string>
     <string name="profile_share_usage_data">Bagikan data penggunaan</string>
     <string name="profile_share_usage_data_detail">Layar dan ketukan, untuk meningkatkan aplikasi. Tidak pernah nama atau jumlah.</string>
+    <string name="profile_section_paying_methods">Metode pembayaran</string>
+    <string name="profile_paying_methods_add">Tambah metode pembayaran</string>
+    <string name="profile_paying_methods_subtitle">Hanya kamu yang melihatnya. Tandai metode yang kamu pakai untuk membayar tagihan.</string>
 </resources>
