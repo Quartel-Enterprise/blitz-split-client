@@ -9,6 +9,23 @@
     <string name="group_detail_edit_group">グループを編集</string>
     <string name="group_detail_leave_group">グループから退出</string>
     <string name="group_detail_delete_group">グループを削除</string>
+    <string name="group_detail_export">グループのデータをエクスポート</string>
+    <string name="group_detail_export_text">テキスト (TXT)</string>
+    <string name="group_detail_export_error">グループのデータをエクスポートできませんでした。もう一度お試しください。</string>
+    <string name="group_detail_export_bills">支出</string>
+    <string name="group_detail_export_payments">支払い</string>
+    <string name="group_detail_export_balances">残高</string>
+    <string name="group_detail_export_date">日付</string>
+    <string name="group_detail_export_description">内容</string>
+    <string name="group_detail_export_category">カテゴリ</string>
+    <string name="group_detail_export_amount">金額</string>
+    <string name="group_detail_export_currency">通貨</string>
+    <string name="group_detail_export_paid">支払額</string>
+    <string name="group_detail_export_share">負担額</string>
+    <string name="group_detail_export_from">支払った人</string>
+    <string name="group_detail_export_to">受け取った人</string>
+    <string name="group_detail_export_member">メンバー</string>
+    <string name="group_detail_export_balance">残高</string>
     <plurals name="group_detail_member_count">
         <item quantity="other">メンバー%d人</item>
     </plurals>

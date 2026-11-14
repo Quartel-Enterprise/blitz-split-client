@@ -10,6 +10,9 @@ final class GroupDetailModel {
     private(set) var billDeletedCount = 0
     private(set) var teachErrorCount = 0
     private(set) var billDeleteErrorCount = 0
+    private(set) var exportErrorCount = 0
+    /// The file "Export group data" made, which the file exporter saves; nil once its sheet closes.
+    var exportFile: GroupExportFile?
 
     @ObservationIgnored private let holder: ViewModelHolder<GroupDetailViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -34,6 +37,8 @@ final class GroupDetailModel {
             case is GroupDetailUiActionShowChangeError: self?.changeErrorCount += 1
             case is GroupDetailUiActionShowTeachError: self?.teachErrorCount += 1
             case is GroupDetailUiActionShowBillDeleteError: self?.billDeleteErrorCount += 1
+            case let export as GroupDetailUiActionSaveExport: self?.exportFile = export.file
+            case is GroupDetailUiActionShowExportError: self?.exportErrorCount += 1
             default: break
             }
         })
@@ -67,6 +72,7 @@ final class GroupDetailModel {
             photo: { [weak self] in self?.send(GroupDetailUiEventOnPhotoClicked.shared) },
             editGroup: { [weak self] in self?.send(GroupDetailUiEventOnEditGroupClicked.shared) },
             togglePin: { [weak self] in self?.send(GroupDetailUiEventOnPinToggled.shared) },
+            export: { [weak self] in self?.send(GroupDetailUiEventOnExportClicked.shared) },
             leaveGroup: { [weak self] in self?.send(GroupDetailUiEventOnLeaveGroupClicked.shared) },
             deleteGroup: { [weak self] in self?.send(GroupDetailUiEventOnDeleteGroupClicked.shared) },
             splitBill: { [weak self] in self?.send(GroupDetailUiEventOnSplitBillClicked.shared) },
@@ -76,6 +82,17 @@ final class GroupDetailModel {
             dismissExit: { [weak self] in self?.send(GroupDetailUiEventOnGroupExitDismissed.shared) },
             backToGroups: { [weak self] in self?.send(GroupDetailUiEventOnBackToGroupsClicked.shared) },
         )
+    }
+
+    /// A format picked on "Export group data", with the file's headers in the app's language.
+    func export(_ format: GroupExportFormat) {
+        send(GroupDetailUiEventOnExportFormatPicked(format: format, words: GroupExportCopy.words))
+    }
+
+    /// "Export group data" closed without a format (Cancel, a tap outside). Apple's dialog also closes itself after a
+    /// format, which the ViewModel no longer counts.
+    func dismissExport() {
+        if current.showsExportFormats { send(GroupDetailUiEventOnExportDismissed.shared) }
     }
 
     /// "Delete this payment?" closed without "Delete" (Cancel, Esc, a tap outside on iPad).
@@ -245,6 +262,7 @@ struct GroupDetailView: View {
             onShown: { model?.send(GroupDetailUiEventOnRecordedPaymentNoticeShown.shared) },
         )
         .glassToast("Couldn't teach the map. Try again.", trigger: model?.teachErrorCount ?? 0)
+        .groupExport(model)
         // "Ana turned it off after you" (13.1e), on whichever of the group's tabs is in front
         .simplifyConflictBanner(
             model?.state.simplifyConflict,

@@ -117,7 +117,9 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     the tablet's dialog (a book's right half) and the iPad's form sheet one column; an Android tabletop full screen
     as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pay Ana · R$ 98"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
-  - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Edit group, Leave group and Delete group. "Edit
+  - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds, in this order, Edit group, Pin to Home and Export group
+    data, which work offline, then a divider, Leave group and Delete group (Pierre's call, beta feedback of 2026-11-14;
+    Pin to Home came first before; see [Home](home-tab.md) and [Export group data](group-and-bills.md)). "Edit
     group" (`Route.EditGroup`) has New group's fields (its name under the "Group name" header alone, the field's own
     label hidden, which the Mac's form drew again on the field's left), the icon being a color or a photo (6.4d): on
     Android and iOS the avatar or its pencil on the corner (the profile photo's, "Change icon or photo" to TalkBack and VoiceOver) opens "Group icon" (Android's bottom sheet: the group's

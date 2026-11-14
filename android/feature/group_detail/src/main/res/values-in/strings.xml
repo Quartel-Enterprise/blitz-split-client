@@ -9,6 +9,23 @@
     <string name="group_detail_edit_group">Edit grup</string>
     <string name="group_detail_leave_group">Keluar dari grup</string>
     <string name="group_detail_delete_group">Hapus grup</string>
+    <string name="group_detail_export">Ekspor data grup</string>
+    <string name="group_detail_export_text">Teks (TXT)</string>
+    <string name="group_detail_export_error">Tidak dapat mengekspor data grup. Coba lagi.</string>
+    <string name="group_detail_export_bills">Pengeluaran</string>
+    <string name="group_detail_export_payments">Pembayaran</string>
+    <string name="group_detail_export_balances">Saldo</string>
+    <string name="group_detail_export_date">Tanggal</string>
+    <string name="group_detail_export_description">Deskripsi</string>
+    <string name="group_detail_export_category">Kategori</string>
+    <string name="group_detail_export_amount">Jumlah</string>
+    <string name="group_detail_export_currency">Mata uang</string>
+    <string name="group_detail_export_paid">Dibayar</string>
+    <string name="group_detail_export_share">Bagian</string>
+    <string name="group_detail_export_from">Dari</string>
+    <string name="group_detail_export_to">Kepada</string>
+    <string name="group_detail_export_member">Anggota</string>
+    <string name="group_detail_export_balance">Saldo</string>
     <plurals name="group_detail_member_count">
         <item quantity="other">%d anggota</item>
     </plurals>

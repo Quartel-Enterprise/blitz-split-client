@@ -9,6 +9,26 @@
     <string name="group_detail_edit_group">Edit group</string>
     <string name="group_detail_leave_group">Leave group</string>
     <string name="group_detail_delete_group">Delete group</string>
+    <string name="group_detail_export">Export group data</string>
+    <string name="group_detail_export_csv" translatable="false">CSV</string>
+    <string name="group_detail_export_xlsx" translatable="false">Excel (XLSX)</string>
+    <string name="group_detail_export_json" translatable="false">JSON</string>
+    <string name="group_detail_export_text">Text (TXT)</string>
+    <string name="group_detail_export_error">Couldn\'t export the group\'s data. Try again.</string>
+    <string name="group_detail_export_bills">Expenses</string>
+    <string name="group_detail_export_payments">Payments</string>
+    <string name="group_detail_export_balances">Balances</string>
+    <string name="group_detail_export_date">Date</string>
+    <string name="group_detail_export_description">Description</string>
+    <string name="group_detail_export_category">Category</string>
+    <string name="group_detail_export_amount">Amount</string>
+    <string name="group_detail_export_currency">Currency</string>
+    <string name="group_detail_export_paid">Paid</string>
+    <string name="group_detail_export_share">Share</string>
+    <string name="group_detail_export_from">From</string>
+    <string name="group_detail_export_to">To</string>
+    <string name="group_detail_export_member">Member</string>
+    <string name="group_detail_export_balance">Balance</string>
     <plurals name="group_detail_member_count">
         <item quantity="one">%d member</item>
         <item quantity="other">%d members</item>

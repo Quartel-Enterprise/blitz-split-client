@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSettlement
+import com.quare.blitzsplit.core.expenses.domain.usecase.ExportGroup
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
@@ -31,4 +32,5 @@ class GroupScreenUseCases(
     internal val deleteGroup: DeleteGroup,
     internal val observePinnedGroupIds: ObservePinnedGroupIds,
     internal val setGroupPinned: SetGroupPinned,
+    internal val exportGroup: ExportGroup,
 )

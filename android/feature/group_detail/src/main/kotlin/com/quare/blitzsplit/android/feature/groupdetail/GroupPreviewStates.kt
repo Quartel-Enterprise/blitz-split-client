@@ -85,6 +85,7 @@ internal fun createPreviewGroupDetailState(days: List<ExpenseDay>): GroupDetailU
     isAccountUnprotected = false,
     simplification = null,
     simplifyConflict = null,
+    showsExportFormats = false,
 )
 
 internal fun createPreviewDays(): List<ExpenseDay> = listOf(

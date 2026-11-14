@@ -462,6 +462,7 @@ class GroupDetailUiStateTest {
         isAccountUnprotected = isAccountUnprotected,
         simplification = null,
         simplifyConflict = null,
+        showsExportFormats = false,
     )
 
     private val day = ExpenseDay(

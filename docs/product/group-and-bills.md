@@ -15,6 +15,29 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     around it (beta bugs of 2026-11-10). On an Android phone upright that bar folds to its one line on a scroll down
     and opens again on a scroll up, from anywhere in the list; wider, it opens only back at the top. On iPhone the
     bars stay put (see [the bars on scroll](home-and-shell.md)).
+  - "Export group data" (the group's ⋮/⋯ menu, after "Pin to Home"; Pierre's call, beta feedback of 2026-11-14) asks
+    for a format, CSV, "Excel (XLSX)", JSON or "Text (TXT)" (Android's dialog, a drawer on a phone's web, Apple's
+    confirmation dialog: an action sheet on iPhone, a dialog on iPad and the Mac, whose item reads "Export group
+    data…"), makes the file from what the device has, offline included, and hands it to the system: Android's save
+    sheet (Storage Access Framework, no storage permission), Apple's file exporter (the save panel on the Mac), the
+    browser's download. A file that couldn't be made says "Couldn't export the group's data. Try again." The shared
+    code builds every format (`ExportGroup`, `:core:expenses`' `export` package, a minimal OOXML writer for Excel, no
+    library); the UIs only hand over their words and save the bytes.
+    - What it holds: Expenses (date, description, category, amount, currency, then "Paid · Ana" and "Share · Ana" for
+      each member, empty when the member neither paid nor is in the split), Payments (date, from, to, amount,
+      currency) and Balances (each member's balance per currency, positive when owed, settled members at 0), bills
+      and payments oldest first. Members who left read "Former member" ("Former member 2" from the second on, by
+      their oldest bill). Headers, section names and category names come in the app's language; JSON keeps English
+      keys, with each member's id, the category's id and the payment's method code.
+    - Formats: dates are ISO (2026-11-14) in CSV, JSON and the text, the device's day; Excel writes real dates (the
+      reader's short date) and numbers, a sheet per section, its header row bold and frozen. Amounts carry every
+      decimal of their currency with a dot and no grouping (120.50, yen 1500), so they read the same in any language;
+      JSON writes them as numbers beside `amountMinor`. CSV is UTF-8 with a BOM (so Excel reads accents), RFC 4180
+      (commas, CRLF), the sections one under the other with a blank line between, and a typed text starting with =,
+      +, - or @ gets a leading apostrophe so no spreadsheet runs it as a formula. The text file is the group's name,
+      the day, then each section in aligned columns.
+    - The file is named after the group and the day, "Trip-to-Rio-2026-11-14.xlsx" (characters a file system refuses
+      dropped, spaces as dashes, at most 60 characters of name).
   - The group's avatar is big in the open header and shrinks into the bar as the list scrolls (beta feedback of
     2026-11-12, Pierre's call), following the scroll, never a timed animation. Android: the open bar (168 dp) draws it
     at 64 dp beside the name, shrinking to 40 dp as the bar folds while the one-line bar's title, 32 dp, fades in over

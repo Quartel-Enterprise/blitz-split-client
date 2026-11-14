@@ -108,7 +108,7 @@ internal fun HomeGroupsSection(
 }
 
 /*
- * Why: a group's card: its shape, the pin "Fixar na Início" left, its name, what Grupos' row says under it (the last
+ * Why: a group's card: its shape, the pin "Fixar no Início" left, its name, what Grupos' row says under it (the last
  * activity, "na fila · Mercado") and the balance with its word.
  */
 @Composable
