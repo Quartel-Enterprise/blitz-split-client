@@ -174,8 +174,9 @@ struct StatsChart: View {
                 AxisMarks(values: labeled) { value in
                     let index = Int(value.as(String.self) ?? "") ?? 0
                     let isLast = !state.hasSparseLabels && index == state.bars.count - 1
-                    // A label that would touch another is left out, the last one kept first, so none ever overlap
-                    AxisValueLabel(collisionResolution: .greedy(priority: isLast ? 1 : 0, minimumSpacing: 6)) {
+                    // A label that would touch another is left out, working back from the last one (sparse or not), as
+                    // Android and the web do, so the last always shows and none ever overlap
+                    AxisValueLabel(collisionResolution: .greedy(priority: Double(index), minimumSpacing: 6)) {
                         Text(verbatim: GroupStatsCopy.barLabel(state.bars[index], grain: state.grain, isSparse: state.hasSparseLabels))
                             .font(.caption)
                             .fontWeight(isLast ? .semibold : .regular)

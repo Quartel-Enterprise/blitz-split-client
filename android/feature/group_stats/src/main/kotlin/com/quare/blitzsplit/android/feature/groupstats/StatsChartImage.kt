@@ -52,6 +52,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.model.StatsChartType
@@ -502,7 +503,7 @@ private fun StatsChartLabelsRow(
             }
         },
     ) { measurables, constraints ->
-        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0)) }
+        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0, minHeight = 0)) }
         val slot = constraints.maxWidth.toFloat() / bars.size.coerceAtLeast(1)
         val xs = placeables.mapIndexed { position, placeable ->
             val center = (labeled[position].index + 0.5f) * slot
@@ -521,7 +522,7 @@ private fun StatsChartLabelsRow(
         // Why: as tall as its tallest label, so a large font never clips them.
         val top = 2.dp.roundToPx()
         val height = (placeables.maxOfOrNull { it.height } ?: 0) + top
-        layout(constraints.maxWidth, height.coerceAtLeast(constraints.minHeight)) {
+        layout(constraints.maxWidth, constraints.constrainHeight(height)) {
             shown.forEach { position -> placeables[position].place(xs[position], top) }
         }
     }
