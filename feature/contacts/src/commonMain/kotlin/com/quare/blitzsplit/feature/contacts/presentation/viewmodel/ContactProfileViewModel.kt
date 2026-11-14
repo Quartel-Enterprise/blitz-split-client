@@ -13,8 +13,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveMemberShareCode
-import com.quare.blitzsplit.core.model.LinkLanguage
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.LinkLanguage
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -508,7 +508,7 @@ class ContactProfileViewModel(
         if (!state.canShareProfile || !isShown()) return
         val link = state.shareLink ?: return
         val name = state.contact?.name ?: return
-        trackEvent("contact_profile_share_clicked", sourceParams)
+        trackEvent("contact_profile_share_clicked", emptyMap())
         viewModelScope.launch {
             val spoken = LinkLanguage.buildLink(link, observeSpokenLanguage().first())
             uiAction.emit(ContactProfileUiAction.ShareProfileLink(spoken, name))
