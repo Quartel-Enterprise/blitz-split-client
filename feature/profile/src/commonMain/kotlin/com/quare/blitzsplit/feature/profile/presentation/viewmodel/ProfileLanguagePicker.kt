@@ -34,9 +34,7 @@ internal class ProfileLanguagePicker(
      * and the platform redraws in it.
      */
     fun select(language: AppLanguage) {
-        if (uiState.value.dialog ==
-            ProfileDialog.LANGUAGE
-        ) {
+        if (uiState.value.dialog == ProfileDialog.LANGUAGE) {
             uiState.update {
                 it.copy(
                     dialog = null,

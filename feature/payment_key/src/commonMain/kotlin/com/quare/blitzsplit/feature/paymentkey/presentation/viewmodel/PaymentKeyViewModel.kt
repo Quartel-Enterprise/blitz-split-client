@@ -141,11 +141,12 @@ class PaymentKeyViewModel(
             return
         }
         /*
-         * Why: a held key shown in its tab and deleted on another device leaves the field, never moving its value onto
-         * the key opened, which would then save it in that key's place.
+         * Why: a held key shown in its tab and deleted (or moved to another type) on another device leaves the field,
+         * never moving its value onto the key opened, which would then save it in that key's place.
          */
         val shown = keyId
-        if (shown != null && shown != route.keyId && keys.none { it.id == shown }) {
+        val shownType = uiState.value.type
+        if (shown != null && shown != route.keyId && keys.none { it.id == shown && it.type == shownType }) {
             drafts.remove(uiState.value.type)
             isErrorRevealed = false
             uiState.update { it.copy(input = "") }
@@ -162,9 +163,16 @@ class PaymentKeyViewModel(
                     input = formatPaymentKey(opened),
                 )
             }
-        } else if (!state.isLoaded && !hasChosenType && state.input.isBlank()) {
-            val free = state.types.firstOrNull { type -> heldKeyOf(type) == null } ?: state.type
-            uiState.update { it.copy(type = free) }
+        } else if (!state.isLoaded && state.input.isBlank()) {
+            val held = heldKeyOf(state.type)
+            if (!hasChosenType) {
+                val free = state.types.firstOrNull { type -> heldKeyOf(type) == null } ?: state.type
+                uiState.update { it.copy(type = free) }
+            } else if (held != null) {
+                // Why: a held type picked before the keys loaded shows its saved key once they do, never a blank edit.
+                isErrorRevealed = true
+                uiState.update { it.copy(input = formatPaymentKey(held)) }
+            }
         }
         retarget()
         validate()
@@ -220,9 +228,12 @@ class PaymentKeyViewModel(
         if (type.method != route.method || type == uiState.value.type) return
         trackEvent("payment_key_type_selected", mapOf("type" to type))
         hasChosenType = true
-        drafts[uiState.value.type] = Draft(uiState.value.input, isErrorRevealed)
-        val draft = drafts[type]
-        val held = heldKeyOf(type)
+        drafts[uiState.value.type] = Draft(uiState.value.input, isErrorRevealed, keyId)
+        val target = keyIdFor(type)
+        // Why: a draft left for another key (a held key deleted or synced in since) never comes back onto this one.
+        val draft = drafts[type]?.takeIf { it.keyId == target }
+        // Why: only when the tab edits the held key; an old duplicate's own tab keeps the key opened.
+        val held = heldKeyOf(type)?.takeIf { it.id == target }
         val input = if (draft == null && held != null) {
             // Why: a type already held shows the key saved in it, ready to edit, instead of a second blank one.
             isErrorRevealed = true
@@ -268,7 +279,7 @@ class PaymentKeyViewModel(
             formatPaymentKeyInput(type, toInputAfterErase(state.input, raw, type, isSwitched = detected != null))
         // Why: what was typed moved to the type detected, while a paste replaced the field, so what it held stays.
         if (detected != null) {
-            if (isPaste) drafts[state.type] = Draft(state.input, isErrorRevealed) else drafts.remove(state.type)
+            if (isPaste) drafts[state.type] = Draft(state.input, isErrorRevealed, keyId) else drafts.remove(state.type)
             isErrorRevealed = false
         }
         if (isPaste || input.isComplete) isErrorRevealed = true
@@ -397,5 +408,7 @@ class PaymentKeyViewModel(
     private data class Draft(
         val input: String,
         val isErrorRevealed: Boolean,
+        // Why: the key the draft was typed for, so it only comes back while its tab still edits that key.
+        val keyId: String?,
     )
 }

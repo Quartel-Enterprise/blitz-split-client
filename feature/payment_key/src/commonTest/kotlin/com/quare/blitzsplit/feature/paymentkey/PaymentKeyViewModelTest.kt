@@ -2644,6 +2644,68 @@ class PaymentKeyViewModelTest {
             assertEquals(listOf(openedCpf), repository.keys.value)
         }
 
+    @Test
+    fun `GIVEN a held phone left and deleted on another device WHEN picking phone again THEN starts blank`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            repository.keys.value = listOf(openedCpf)
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isShowingHeldKey)
+            assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN a saved phone and phone picked before the keys load WHEN they load THEN shows the saved phone`() =
+        runTest(testDispatcher) {
+            // Given
+            val keysGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                storedKeys = listOf(heldPhone),
+                keysGate = keysGate,
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // When
+            keysGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("+55 (11) 91234-5678", state.input)
+            assertTrue(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN two saved phones and an email typed WHEN back on phone THEN never shows the other one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedPhone, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(OTHER_EMAIL))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isShowingHeldKey)
+        }
+
     private val profileStack: List<Route> = listOf(Route.Groups, Route.Profile)
 
     private val phoneDefault = PaymentKey(
