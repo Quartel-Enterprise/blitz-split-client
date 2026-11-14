@@ -84,7 +84,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AppCategoryColorEntity::class,
         LegalDocumentEntity::class,
     ],
-    version = 47,
+    version = 48,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -274,6 +274,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 46,
             to = 47,
+        ),
+        AutoMigration(
+            from = 47,
+            to = 48,
         ),
     ],
 )

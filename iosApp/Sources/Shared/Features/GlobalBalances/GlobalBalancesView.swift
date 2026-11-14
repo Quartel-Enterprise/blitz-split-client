@@ -395,25 +395,38 @@ private struct PersonRowView: View {
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel(Text("\(name) by group"))
             }
-            HStack(spacing: 8) {
-                Button {
-                    model.send(GlobalBalancesUiEventOnPersonExpandToggled(personId: row.id))
-                } label: {
-                    HStack(spacing: 5) {
-                        Text("By group")
-                        Image(systemName: row.isExpanded ? "chevron.up" : "chevron.down")
-                            .font(.caption.weight(.bold))
-                    }
+            // "By group" and the actions on one line while they fit, else the actions on a line of their own at the
+            // end: a narrow column never squeezes a capsule around a label broken letter by letter (beta feedback)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    byGroupButton
+                    Spacer()
+                    PersonActions(model: model, row: row, name: name)
                 }
-                .buttonStyle(.borderless)
-                .accessibilityLabel(row.isExpanded ? Text("Hide \(name) by group") : Text("Show \(name) by group"))
-                Spacer()
-                PersonActions(model: model, row: row, name: name)
+                VStack(alignment: .leading, spacing: 4) {
+                    byGroupButton
+                    TrailingPersonActions(model: model, row: row, name: name)
+                }
             }
             .padding(.leading, 52)
             .font(.subheadline.weight(.semibold))
         }
         .padding(.vertical, 4)
+    }
+
+    private var byGroupButton: some View {
+        Button {
+            model.send(GlobalBalancesUiEventOnPersonExpandToggled(personId: row.id))
+        } label: {
+            HStack(spacing: 5) {
+                Text("By group")
+                    .lineLimit(1)
+                Image(systemName: row.isExpanded ? "chevron.up" : "chevron.down")
+                    .font(.caption.weight(.bold))
+            }
+        }
+        .buttonStyle(.borderless)
+        .accessibilityLabel(row.isExpanded ? Text("Hide \(name) by group") : Text("Show \(name) by group"))
     }
 }
 
@@ -513,6 +526,27 @@ private struct PersonActions: View {
             .prominentLabel()
             .buttonBorderShape(.capsule)
             .accessibilityLabel(Text("Settle up with \(name)"))
+        }
+    }
+}
+
+/// The person's actions at the end of their line, one under the other where both don't fit (beta feedback of
+/// 2026-11-14), never a capsule squeezed around a broken label.
+private struct TrailingPersonActions: View {
+    let model: GlobalBalancesModel
+    let row: PersonRow
+    let name: String
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) {
+                Spacer()
+                PersonActions(model: model, row: row, name: name)
+            }
+            VStack(alignment: .trailing, spacing: 8) {
+                PersonActions(model: model, row: row, name: name)
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 }
@@ -670,11 +704,8 @@ private struct PersonDetail: View {
                     .foregroundStyle(row.owesYou ? Palette.positive : Palette.negative)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                HStack(spacing: 8) {
-                    Spacer()
-                    PersonActions(model: model, row: row, name: name)
-                }
-                .font(.subheadline.weight(.semibold))
+                TrailingPersonActions(model: model, row: row, name: name)
+                    .font(.subheadline.weight(.semibold))
             }
             .padding(16)
             .background(Palette.card, in: .rect(cornerRadius: 16))

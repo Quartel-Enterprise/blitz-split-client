@@ -76,10 +76,10 @@ class SupabaseGroupRemoteDataSource(
         .select { filter { eq("group_id", groupId) } }
         .decodeList<GroupMemberDto>()
 
-    // Why: only the id and the photo, never the rest of someone else's profile.
+    // Why: only the id, the photo and the link's code, never the rest of someone else's profile.
     override suspend fun fetchMemberPhotos(): List<MemberPhotoDto> = fetchAll(
         table = PROFILES,
-        columns = Columns.list("id", "avatar_url"),
+        columns = Columns.list("id", "avatar_url", "share_code"),
     )
 
     override suspend fun fetchInvite(code: String): InviteDto? = postgrest

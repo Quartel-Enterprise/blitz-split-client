@@ -80,7 +80,8 @@ function ProfileOverList({ personKey }: { personKey: string }) {
   const homeTab = profile.state.homeTab as HomeTab
   return (
     <PageShell selected={homeTab} phoneBars="home">
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 sm:px-8 sm:py-7">
+      {/* Why: wide enough on the desktop for the profile's two columns (ContactProfileView, from a 56 rem column). */}
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col p-4 sm:px-8 sm:py-7">
         <h1 className="sr-only">{homeTabLabel(homeTab)}</h1>
         {!profile.state.isLoaded && <ContactProfileSkeleton />}
         {profile.presenter && profile.state.contact && (

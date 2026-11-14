@@ -109,6 +109,11 @@ class FakeGroupRepository(
 
     override fun observeHasGroups(): Flow<Boolean> = observeGroups().map { it.isNotEmpty() }
 
+    // Why: each account's profile link code, as the group downloads would have brought it.
+    val memberShareCodes = MutableStateFlow<Map<String, String>>(emptyMap())
+
+    override fun observeMemberShareCode(userId: String): Flow<String?> = memberShareCodes.map { it[userId] }
+
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 
     override suspend fun createGroup(

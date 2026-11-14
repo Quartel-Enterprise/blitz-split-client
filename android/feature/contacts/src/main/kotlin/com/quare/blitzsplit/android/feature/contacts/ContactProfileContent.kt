@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.contacts
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,72 +8,75 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.Send
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.PersonAdd
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
-import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
-import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
-import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
-import com.quare.blitzsplit.android.designsystem.component.amountColorOf
-import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
-import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
-import com.quare.blitzsplit.feature.contacts.presentation.model.ContactBalanceNote
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiState
 import software.quare.loadable.valueOrNull
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val columnMaxWidth = 640.dp
 private val tabletColumnMaxWidth = 560.dp
+private val phoneLandscapeStartWidth = 330.dp
+private val tabletStartWidth = 380.dp
+private val tabletMaxWidth = 1016.dp
+private val bookGap = 72.dp
+private val barAvatarSize = 32.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,13 +90,50 @@ internal fun ContactProfileContent(
     val contact = state.contact
     val paneTitle = contact?.let { stringResource(R.string.contacts_balance_pane, it.name) }.orEmpty()
     val layout = rememberDeviceLayout()
+    val isBook = rememberFoldLayout().bookSplit != null
+    /*
+     * Why: a window lying down (a phone, a tablet, a book) has little height and room to spare across: who the person
+     * is and the balance on the left, the groups in common and the history on the right, as Profile lies down (beta
+     * feedback of 2026-11-14). Beside Contacts' list the pane keeps one column.
+     */
+    val usesTwoColumns = !isInPane && (isBook || layout.usesTwoColumns)
+    val listState = rememberLazyListState()
+    val startScroll = rememberScrollState()
+    var headerHeight by remember { mutableIntStateOf(0) }
+    /*
+     * Why: how far the header went up under the bar, from 0 (all in sight) to 1 (gone), read where it draws, so the
+     * scroll redraws the face and the bar's title, never the screen.
+     */
+    val headerFold by remember(usesTwoColumns, isInPane) {
+        derivedStateOf {
+            val height = headerHeight.toFloat()
+            when {
+                // Why: beside Contacts' list the header stays as it is, as on iOS; the pane names the person already.
+                isInPane || height <= 0f -> 0f
+
+                usesTwoColumns -> (startScroll.value / height).coerceIn(0f, 1f)
+
+                listState.firstVisibleItemIndex > 0 -> 1f
+
+                else -> (listState.firstVisibleItemScrollOffset / height).coerceIn(0f, 1f)
+            }
+        }
+    }
     Scaffold(
         modifier = modifier
             .fillMaxSize()
             .semantics { this.paneTitle = paneTitle },
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                    if (contact != null) {
+                        BarTitle(
+                            state = state,
+                            contact = contact,
+                            fold = { headerFold },
+                        )
+                    }
+                },
                 navigationIcon = {
                     if (!isInPane) {
                         IconButton(onClick = { onEvent(ContactProfileUiEvent.OnBackClicked) }) {
@@ -104,6 +145,15 @@ internal fun ContactProfileContent(
                     }
                 },
                 actions = {
+                    // Why: the person's profile link, as they would share it themselves; a guest has none.
+                    if (state.canShareProfile) {
+                        IconButton(onClick = { onEvent(ContactProfileUiEvent.OnShareProfileClicked) }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Share,
+                                contentDescription = stringResource(R.string.contacts_profile_share),
+                            )
+                        }
+                    }
                     if (contact != null) {
                         ContactProfileMenu(
                             state = state,
@@ -119,67 +169,214 @@ internal fun ContactProfileContent(
         containerColor = MaterialTheme.colorScheme.surface,
         contentWindowInsets = if (isInPane) WindowInsets(0) else ScaffoldDefaults.contentWindowInsets,
     ) { padding ->
+        val contentModifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .consumeWindowInsets(padding)
         if (contact == null) {
             if (!state.isLoaded) {
                 ContactProfileSkeleton(
-                    modifier = Modifier
-                        .padding(padding)
-                        .consumeWindowInsets(padding),
+                    modifier = contentModifier,
                     maxWidth = if (layout.isTablet || isInPane) tabletColumnMaxWidth else columnMaxWidth,
                 )
             }
             return@Scaffold
         }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .consumeWindowInsets(padding),
-            contentAlignment = Alignment.TopCenter,
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .widthIn(max = if (layout.isTablet || isInPane) tabletColumnMaxWidth else columnMaxWidth)
-                    .fillMaxWidth(),
-                contentPadding = PaddingValues(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 24.dp,
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+        val header: @Composable () -> Unit = {
+            ProfileHeader(
+                state = state,
+                contact = contact,
+                avatarSize = if (isInPane || layout.isLandscape) 72.dp else 88.dp,
+                fold = { headerFold },
+                modifier = Modifier.onSizeChanged { headerHeight = it.height },
+            )
+        }
+        when {
+            !usesTwoColumns -> ProfileSingleColumn(
+                state = state,
+                contact = contact,
+                listState = listState,
+                maxWidth = if (layout.isTablet || isInPane) tabletColumnMaxWidth else columnMaxWidth,
+                header = header,
+                onEvent = onEvent,
+                modifier = contentModifier,
+            )
+
+            isBook -> TwoHalvesLayout(
+                start = {
+                    ProfileStartColumn(
+                        state = state,
+                        contact = contact,
+                        scrollState = startScroll,
+                        header = header,
+                        onEvent = onEvent,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(start = 16.dp),
+                    )
+                },
+                end = {
+                    ProfileEndColumn(
+                        state = state,
+                        contact = contact,
+                        onEvent = onEvent,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(end = 16.dp),
+                    )
+                },
+                modifier = contentModifier,
+                gap = bookGap,
+            )
+
+            else -> Box(
+                modifier = contentModifier,
+                contentAlignment = Alignment.TopCenter,
             ) {
-                profileItems(
-                    state = state,
-                    contact = contact,
-                    avatarSize = if (isInPane || layout.isLandscape) 72.dp else 88.dp,
-                    onEvent = onEvent,
-                )
+                Row(
+                    modifier = Modifier
+                        .widthIn(max = if (layout.isTablet) tabletMaxWidth else Dp.Infinity)
+                        .fillMaxSize()
+                        .padding(horizontal = if (layout.isTablet) 32.dp else 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(if (layout.isTablet) 32.dp else 16.dp),
+                ) {
+                    ProfileStartColumn(
+                        state = state,
+                        contact = contact,
+                        scrollState = startScroll,
+                        header = header,
+                        onEvent = onEvent,
+                        modifier = Modifier
+                            .width(if (layout.isTablet) tabletStartWidth else phoneLandscapeStartWidth)
+                            .fillMaxHeight(),
+                    )
+                    ProfileEndColumn(
+                        state = state,
+                        contact = contact,
+                        onEvent = onEvent,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
+                }
             }
         }
     }
 }
 
-private fun LazyListScope.profileItems(
+// Why: one column, the header scrolling up under the bar, whose face and name take its place.
+@Composable
+private fun ProfileSingleColumn(
     state: ContactProfileUiState,
     contact: Contact,
-    avatarSize: Dp,
+    listState: LazyListState,
+    maxWidth: Dp,
+    header: @Composable () -> Unit,
     onEvent: (ContactProfileUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    item(
-        key = "header",
-        contentType = "header",
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.TopCenter,
     ) {
-        ProfileHeader(
+        LazyColumn(
+            modifier = Modifier
+                .widthIn(max = maxWidth)
+                .fillMaxWidth(),
+            state = listState,
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 24.dp,
+            ),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            item(
+                key = "header",
+                contentType = "header",
+            ) { header() }
+            item(
+                key = "summary",
+                contentType = "summary",
+            ) {
+                ProfileSummarySection(
+                    state = state,
+                    contact = contact,
+                    onEvent = onEvent,
+                )
+            }
+            sharedItems(
+                state = state,
+                contact = contact,
+                onEvent = onEvent,
+            )
+        }
+    }
+}
+
+// Why: lying down, who the person is and the balance, scrolling on its own.
+@Composable
+private fun ProfileStartColumn(
+    state: ContactProfileUiState,
+    contact: Contact,
+    scrollState: ScrollState,
+    header: @Composable () -> Unit,
+    onEvent: (ContactProfileUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(scrollState)
+            .padding(
+                start = 8.dp,
+                end = 8.dp,
+                bottom = 24.dp,
+            ),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        header()
+        ProfileSummarySection(
             state = state,
             contact = contact,
-            avatarSize = avatarSize,
+            onEvent = onEvent,
         )
     }
-    if (state.showsOfflineNotice) {
-        item(
-            key = "offline",
-            contentType = "offline",
-        ) {
+}
+
+// Why: lying down, the groups in common and the history, scrolling on their own.
+@Composable
+private fun ProfileEndColumn(
+    state: ContactProfileUiState,
+    contact: Contact,
+    onEvent: (ContactProfileUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            start = 8.dp,
+            end = 8.dp,
+            bottom = 24.dp,
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        sharedItems(
+            state = state,
+            contact = contact,
+            onEvent = onEvent,
+        )
+    }
+}
+
+// Why: under the header, the offline notice, the guest's or the waiting merge's card, and the balance with its actions.
+@Composable
+private fun ProfileSummarySection(
+    state: ContactProfileUiState,
+    contact: Contact,
+    onEvent: (ContactProfileUiEvent) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (state.showsOfflineNotice) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
@@ -187,25 +384,15 @@ private fun LazyListScope.profileItems(
                 OfflineChip(text = stringResource(R.string.contacts_profile_offline))
             }
         }
-    }
-    if (state.showsGuestCard) {
-        item(
-            key = "guest",
-            contentType = "guest",
-        ) {
+        if (state.showsGuestCard) {
             GuestCard(
                 name = contact.name,
                 state = state,
                 onEvent = onEvent,
             )
         }
-    }
-    val pending = state.pendingMerge.valueOrNull()
-    if (state.showsPendingMerge && pending != null) {
-        item(
-            key = "pending",
-            contentType = "pending",
-        ) {
+        val pending = state.pendingMerge.valueOrNull()
+        if (state.showsPendingMerge && pending != null) {
             PendingMergeCard(
                 name = contact.name,
                 requestedAt = pending.requestedAt,
@@ -213,17 +400,20 @@ private fun LazyListScope.profileItems(
                 onEvent = onEvent,
             )
         }
-    }
-    item(
-        key = "balance",
-        contentType = "balance",
-    ) {
         BalanceCard(
             state = state,
             contact = contact,
             onEvent = onEvent,
         )
     }
+}
+
+// Why: "Grupos em comum" and "Histórico com Carla", under the balance in one column, on the right lying down.
+private fun LazyListScope.sharedItems(
+    state: ContactProfileUiState,
+    contact: Contact,
+    onEvent: (ContactProfileUiEvent) -> Unit,
+) {
     item(
         key = "groups-title",
         contentType = "groups-title",
@@ -274,14 +464,55 @@ private fun LazyListScope.profileItems(
     }
 }
 
+/*
+ * Why: the face and the name in the bar, coming in as the header goes up under it (beta feedback of 2026-11-14), so
+ * whose profile it is stays in sight. TalkBack reads the header's, never both.
+ */
+@Composable
+private fun BarTitle(
+    state: ContactProfileUiState,
+    contact: Contact,
+    fold: () -> Float,
+) {
+    val slide = with(LocalDensity.current) { 8.dp.toPx() }
+    Row(
+        modifier = Modifier
+            .graphicsLayer {
+                val shown = ((fold() - 0.5f) * 2f).coerceIn(0f, 1f)
+                alpha = shown
+                translationY = (1f - shown) * slide
+            }.clearAndSetSemantics {},
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AvatarBadge(
+            initial = state.initials,
+            color = contact.color,
+            photoUrl = contact.photoUrl,
+            size = barAvatarSize,
+        )
+        Text(
+            text = contact.name,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/*
+ * Why: the face shrinks and fades towards the bar as the header goes up, the name and the line under it fading with
+ * it, while the bar's own face and name come in.
+ */
 @Composable
 private fun ProfileHeader(
     state: ContactProfileUiState,
     contact: Contact,
     avatarSize: Dp,
+    fold: () -> Float,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
@@ -290,293 +521,48 @@ private fun ProfileHeader(
             color = contact.color,
             photoUrl = contact.photoUrl,
             size = avatarSize,
-        )
-        Text(
-            text = contact.name,
-            modifier = Modifier.padding(top = 6.dp),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = if (contact.isGuest) {
-                stringResource(R.string.contacts_profile_meta_guest)
-            } else {
-                stringResource(
-                    R.string.contacts_profile_meta_user,
-                    pluralStringResource(R.plurals.contacts_groups_in_common, contact.groups.size, contact.groups.size),
-                )
+            modifier = Modifier.graphicsLayer {
+                val progress = fold()
+                val scale = 1f - progress * 0.5f
+                scaleX = scale
+                scaleY = scale
+                alpha = 1f - progress
+                transformOrigin = TransformOrigin(0.5f, 1f)
             },
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
         )
-    }
-}
-
-/*
- * Why: "Diego ainda não usa o Bora Rachar", with Juntar (online only) and his personal invite. Whether a request
- * already waits is the server's to say: Juntar shimmers until it answered, and offline (or after a failed ask) shows
- * disabled with "Precisa de internet", claiming neither.
- */
-@Composable
-private fun GuestCard(
-    name: String,
-    state: ContactProfileUiState,
-    onEvent: (ContactProfileUiEvent) -> Unit,
-) {
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
         Column(
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 16.dp,
-                bottom = 8.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.graphicsLayer { alpha = (1f - fold() * 1.5f).coerceIn(0f, 1f) },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(
-                text = stringResource(R.string.contacts_guest_title, name),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
+                text = contact.name,
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .semantics { heading() },
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
             )
             Text(
-                text = stringResource(R.string.contacts_guest_body, name),
+                text = if (contact.isGuest) {
+                    stringResource(R.string.contacts_profile_meta_guest)
+                } else {
+                    stringResource(
+                        R.string.contacts_profile_meta_user,
+                        pluralStringResource(
+                            R.plurals.contacts_groups_in_common,
+                            contact.groups.size,
+                            contact.groups.size,
+                        ),
+                    )
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            if (state.isMergeStatusUnavailable) {
-                Text(
-                    text = stringResource(DesignR.string.designsystem_group_exit_needs_internet),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Row(
-                modifier = Modifier.align(Alignment.End),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                when {
-                    state.isMergeStatusLoading -> ShimmerBox {
-                        ShimmerLine(
-                            width = 96.dp,
-                            height = 36.dp,
-                        )
-                    }
-
-                    state.canMerge || state.isMergeStatusUnavailable -> TextButton(
-                        onClick = { onEvent(ContactProfileUiEvent.OnMergeClicked) },
-                        enabled = state.canMerge,
-                    ) {
-                        Text(stringResource(R.string.contacts_guest_merge))
-                    }
-                }
-                FilledTonalButton(onClick = { onEvent(ContactProfileUiEvent.OnInviteGuestClicked) }) {
-                    Text(stringResource(R.string.contacts_invite_person, name))
-                }
-            }
-        }
-    }
-}
-
-// Why: "Aguardando Diego aceitar · Convite pessoal enviado hoje, 14:20", with Cancelar.
-@Composable
-private fun PendingMergeCard(
-    name: String,
-    requestedAt: Long,
-    isCancelling: Boolean,
-    onEvent: (ContactProfileUiEvent) -> Unit,
-) {
-    val dates = rememberDateTimeTextFormatter()
-    val cancel = stringResource(R.string.contacts_pending_cancel_person, name)
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
-        Row(
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 8.dp,
-                top = 12.dp,
-                bottom = 12.dp,
-            ),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PendingIndicator(size = 10.dp)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.contacts_pending_title, name),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = stringResource(
-                        R.string.contacts_pending_sent,
-                        dates.toDateText(requestedAt),
-                        dates.toTimeText(requestedAt),
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            if (isCancelling) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .size(20.dp),
-                    strokeWidth = 2.dp,
-                )
-            } else {
-                TextButton(
-                    onClick = { onEvent(ContactProfileUiEvent.OnCancelMergeClicked) },
-                    modifier = Modifier.semantics { contentDescription = cancel },
-                ) {
-                    Text(stringResource(R.string.contacts_pending_cancel))
-                }
-            }
-        }
-    }
-}
-
-// Why: the net with the person across every group, and what it allows: Cobrar and Recebi, or Acertar; Adicionar always.
-@Composable
-private fun BalanceCard(
-    state: ContactProfileUiState,
-    contact: Contact,
-    onEvent: (ContactProfileUiEvent) -> Unit,
-) {
-    val net = contact.net
-    val money = rememberMoneyFormatter(net.currency)
-    Surface(
-        shape = RoundedCornerShape(28.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-    ) {
-        Column(
-            modifier = Modifier.padding(
-                start = 20.dp,
-                end = 20.dp,
-                top = 18.dp,
-                bottom = 16.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = when {
-                        net.amountMinor > 0 -> stringResource(R.string.contacts_balance_owes_you, contact.name)
-                        net.amountMinor < 0 -> stringResource(R.string.contacts_balance_you_owe, contact.name)
-                        else -> stringResource(R.string.contacts_balance_settled)
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = money.toSignedText(net.amountMinor),
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = amountColorOf(net.amountMinor),
-                )
-                Text(
-                    text = when (state.balanceNote) {
-                        ContactBalanceNote.NOTHING_OPEN -> stringResource(R.string.contacts_balance_nothing)
-
-                        ContactBalanceNote.OFFSET_ACROSS_GROUPS -> pluralStringResource(
-                            R.plurals.contacts_balance_offset,
-                            contact.groups.size,
-                            contact.groups.size,
-                        )
-
-                        ContactBalanceNote.ONE_GROUP ->
-                            contact.groups
-                                .firstOrNull()
-                                ?.groupName
-                                .orEmpty()
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            BalanceActionsSection(
-                state = state,
-                onEvent = onEvent,
+                textAlign = TextAlign.Center,
             )
         }
     }
-}
-
-@Composable
-private fun BalanceActionsSection(
-    state: ContactProfileUiState,
-    onEvent: (ContactProfileUiEvent) -> Unit,
-) {
-    val buttonModifier = Modifier.heightIn(min = 48.dp)
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (state.canCharge || state.canReceive) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (state.canCharge) {
-                    Button(
-                        onClick = { onEvent(ContactProfileUiEvent.OnChargeClicked) },
-                        modifier = buttonModifier.weight(1f),
-                    ) {
-                        ButtonContent(Icons.AutoMirrored.Outlined.Send, stringResource(R.string.contacts_charge))
-                    }
-                }
-                if (state.canReceive) {
-                    FilledTonalButton(
-                        onClick = { onEvent(ContactProfileUiEvent.OnReceivedClicked) },
-                        modifier = buttonModifier.weight(1f),
-                    ) {
-                        ButtonContent(Icons.Outlined.Check, stringResource(R.string.contacts_received))
-                    }
-                }
-            }
-        }
-        if (state.canSettle) {
-            Button(
-                onClick = { onEvent(ContactProfileUiEvent.OnSettleClicked) },
-                modifier = buttonModifier.fillMaxWidth(),
-            ) {
-                ButtonContent(Icons.Outlined.Check, stringResource(R.string.contacts_settle))
-            }
-        }
-        val addLabel = stringResource(R.string.contacts_add_to_group)
-        if (state.contact?.isSettled == true) {
-            FilledTonalButton(
-                onClick = { onEvent(ContactProfileUiEvent.OnAddToGroupClicked) },
-                modifier = buttonModifier.fillMaxWidth(),
-            ) {
-                ButtonContent(Icons.Outlined.PersonAdd, addLabel)
-            }
-        } else {
-            OutlinedButton(
-                onClick = { onEvent(ContactProfileUiEvent.OnAddToGroupClicked) },
-                modifier = buttonModifier.fillMaxWidth(),
-            ) {
-                ButtonContent(Icons.Outlined.PersonAdd, addLabel)
-            }
-        }
-    }
-}
-
-@Composable
-private fun ButtonContent(
-    icon: ImageVector,
-    label: String,
-) {
-    Icon(
-        imageVector = icon,
-        contentDescription = null,
-        modifier = Modifier.size(ButtonDefaults.IconSize),
-    )
-    Text(
-        text = label,
-        modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
-    )
 }
 
 @Composable

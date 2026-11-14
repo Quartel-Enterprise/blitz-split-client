@@ -39,6 +39,7 @@
     <string name="contacts_close">閉じる</string>
 
     <string name="contacts_profile_back">連絡先に戻る</string>
+    <string name="contacts_profile_share">プロフィールを共有</string>
     <string name="contacts_profile_more">その他のオプション</string>
     <string name="contacts_profile_meta_user">Blitz Splitを利用中 · %s</string>
     <string name="contacts_profile_meta_guest">ゲスト · アプリ未使用</string>

@@ -39,6 +39,7 @@
     <string name="contacts_close">Tutup</string>
 
     <string name="contacts_profile_back">Kembali ke Kontak</string>
+    <string name="contacts_profile_share">Bagikan profil</string>
     <string name="contacts_profile_more">Opsi lainnya</string>
     <string name="contacts_profile_meta_user">Pakai Blitz Split · %s</string>
     <string name="contacts_profile_meta_guest">Tamu · belum punya aplikasi</string>

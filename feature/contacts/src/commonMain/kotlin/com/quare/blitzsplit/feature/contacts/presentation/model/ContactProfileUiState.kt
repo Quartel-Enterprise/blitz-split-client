@@ -39,6 +39,11 @@ data class ContactProfileUiState(
     val homeTab: HomeTab,
     // Why: right above that tab, back returns to it and the web's back names it; over a bill or a group it says "Voltar".
     val isOverHomeTab: Boolean,
+    /*
+     * Why: the person's profile link (blitzsplit.com/u/<code>), which "Share profile" shares; null for a guest, who has
+     * no account, and for an account whose code no sync brought yet.
+     */
+    val shareLink: String?,
 ) {
     val initials: String
         get() = contact?.name?.let(Initials::of).orEmpty()
@@ -102,6 +107,10 @@ data class ContactProfileUiState(
             isNetOfSeveralGroups -> ContactBalanceNote.OFFSET_ACROSS_GROUPS
             else -> ContactBalanceNote.ONE_GROUP
         }
+
+    // Why: "Share profile" in the bar, only for someone with an account whose link the device has.
+    val canShareProfile: Boolean
+        get() = shareLink != null && contact?.isGuest == false
 
     // Why: "Offline · o que você fizer entra na fila".
     val showsOfflineNotice: Boolean

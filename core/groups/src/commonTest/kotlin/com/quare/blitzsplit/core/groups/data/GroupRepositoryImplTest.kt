@@ -4572,20 +4572,24 @@ class GroupRepositoryImplTest {
                 MemberPhotoEntity(
                     userId = "user-2",
                     photoUrl = "https://photos/ana-old.jpg",
+                    shareCode = null,
                 ),
                 MemberPhotoEntity(
                     userId = "user-3",
                     photoUrl = "https://photos/bruno.jpg",
+                    shareCode = null,
                 ),
             ),
             remoteMemberPhotos = listOf(
                 MemberPhotoDto(
                     userId = "user-2",
                     photoUrl = "https://photos/ana-new.jpg",
+                    shareCode = null,
                 ),
                 MemberPhotoDto(
                     userId = "user-4",
                     photoUrl = "https://photos/carla.jpg",
+                    shareCode = null,
                 ),
             ),
         )
@@ -4600,10 +4604,12 @@ class GroupRepositoryImplTest {
                 MemberPhotoEntity(
                     userId = "user-2",
                     photoUrl = "https://photos/ana-new.jpg",
+                    shareCode = null,
                 ),
                 MemberPhotoEntity(
                     userId = "user-4",
                     photoUrl = "https://photos/carla.jpg",
+                    shareCode = null,
                 ),
             ),
             local.photos.value,
@@ -4619,12 +4625,14 @@ class GroupRepositoryImplTest {
                 MemberPhotoEntity(
                     userId = "user-2",
                     photoUrl = "https://photos/ana.jpg",
+                    shareCode = null,
                 ),
             ),
             remoteMemberPhotos = listOf(
                 MemberPhotoDto(
                     userId = "user-2",
                     photoUrl = null,
+                    shareCode = null,
                 ),
             ),
         )
@@ -4646,10 +4654,12 @@ class GroupRepositoryImplTest {
                     MemberPhotoDto(
                         userId = "user-2",
                         photoUrl = "https://photos/ana.jpg",
+                        shareCode = null,
                     ),
                     MemberPhotoDto(
                         userId = "user-3",
                         photoUrl = null,
+                        shareCode = null,
                     ),
                 ),
             )
@@ -4663,6 +4673,7 @@ class GroupRepositoryImplTest {
                     MemberPhotoEntity(
                         userId = "user-2",
                         photoUrl = "https://photos/ana.jpg",
+                        shareCode = null,
                     ),
                 ),
                 local.photos.value,
@@ -4692,6 +4703,7 @@ class GroupRepositoryImplTest {
                 MemberPhotoDto(
                     userId = "user-2",
                     photoUrl = "https://photos/ana.jpg",
+                    shareCode = null,
                 ),
             ),
         )
@@ -4716,6 +4728,7 @@ class GroupRepositoryImplTest {
                 MemberPhotoEntity(
                     userId = "user-2",
                     photoUrl = "https://photos/ana.jpg",
+                    shareCode = null,
                 ),
             )
             prepareScenario(
@@ -4747,6 +4760,7 @@ class GroupRepositoryImplTest {
             MemberPhotoEntity(
                 userId = "user-2",
                 photoUrl = "https://photos/ana.jpg",
+                shareCode = null,
             ),
         )
         prepareScenario(
@@ -4772,20 +4786,24 @@ class GroupRepositoryImplTest {
                     MemberPhotoEntity(
                         userId = "user-2",
                         photoUrl = "https://photos/ana-old.jpg",
+                        shareCode = null,
                     ),
                     MemberPhotoEntity(
                         userId = "user-3",
                         photoUrl = "https://photos/bruno.jpg",
+                        shareCode = null,
                     ),
                 ),
                 remoteMemberPhotos = listOf(
                     MemberPhotoDto(
                         userId = "user-2",
                         photoUrl = "https://photos/ana-new.jpg",
+                        shareCode = null,
                     ),
                     MemberPhotoDto(
                         userId = "user-3",
                         photoUrl = null,
+                        shareCode = null,
                     ),
                 ),
             )
@@ -4800,6 +4818,7 @@ class GroupRepositoryImplTest {
                     MemberPhotoEntity(
                         userId = "user-2",
                         photoUrl = "https://photos/ana-new.jpg",
+                        shareCode = null,
                     ),
                 ),
                 local.photos.value,
@@ -4814,6 +4833,7 @@ class GroupRepositoryImplTest {
                 MemberPhotoEntity(
                     userId = "user-2",
                     photoUrl = "https://photos/ana.jpg",
+                    shareCode = null,
                 ),
             )
             prepareScenario(
@@ -4840,6 +4860,7 @@ class GroupRepositoryImplTest {
                     MemberPhotoEntity(
                         userId = "user-2",
                         photoUrl = "https://photos/carla-old.jpg",
+                        shareCode = null,
                     ),
                 ),
             )
@@ -4853,6 +4874,7 @@ class GroupRepositoryImplTest {
                 MemberPhotoEntity(
                     userId = "user-2",
                     photoUrl = "https://photos/carla-new.jpg",
+                    shareCode = null,
                 ),
             )
 
@@ -4880,6 +4902,7 @@ class GroupRepositoryImplTest {
                     MemberPhotoEntity(
                         userId = "user-1",
                         photoUrl = "https://photos/pierre-synced.jpg",
+                        shareCode = null,
                     ),
                 ),
                 myPhotoUrl = null,
@@ -4934,6 +4957,7 @@ class GroupRepositoryImplTest {
                 MemberPhotoEntity(
                     userId = "user-2",
                     photoUrl = "https://photos/carla.jpg",
+                    shareCode = null,
                 ),
             ),
         )
@@ -6822,6 +6846,7 @@ class GroupRepositoryImplTest {
     private val brunoPhoto = MemberPhotoEntity(
         userId = "user-2",
         photoUrl = "https://photos/bruno.jpg",
+        shareCode = null,
     )
 
     private suspend fun editGroup(
@@ -7082,6 +7107,9 @@ private class FakeGroupLocalDataSource(
     override fun observeMembers(): Flow<List<GroupMemberEntity>> = members
 
     override fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>> = photos
+
+    override fun observeMemberShareCode(userId: String): Flow<String?> =
+        photos.map { entities -> entities.firstOrNull { it.userId == userId }?.shareCode }
 
     override suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>) {
         photos.value = entities

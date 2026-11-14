@@ -495,6 +495,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `contact_hide_confirmed` | none | Its question confirmed, while it was open | `:feature:contacts` |
 | `contact_hide_cancelled` | none | Its question closed without confirming, while it was open | `:feature:contacts` |
 | `contact_view_balances_clicked` | none | "See in Balances" | `:feature:contacts` |
+| `contact_profile_share_clicked` | none | The top bar's "Share profile" on someone with an account, while the device has their link (it opens the system share) | `:feature:contacts` |
 | `contact_history_see_all_clicked` | none | "See all" over "History with Carla" | `:feature:contacts` |
 | `contact_invite_guest_clicked` | none | "Invite Diego" on a guest | `:feature:contacts` |
 | `profile_link_invite_clicked` | none | "Invite to a group" on a profile link of someone the person shares no group with, while the device has a profile | `:feature:contacts` |
