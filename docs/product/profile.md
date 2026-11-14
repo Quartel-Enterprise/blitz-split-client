@@ -32,7 +32,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     `https://blitzsplit.com/u/<code>`, with "Here's my profile on Blitz Split: <link>" ("Esse é meu perfil no Bora
     Rachar" in Portuguese). The link shared or copied ends in `?lang=<the app's language>` (`LinkLanguage`): a profile
     has no currency to pick its link's preview language by, so blitzsplit.com writes the preview in that one
-    (Portuguese and Spanish; English for any other), and the site's own pages read the same parameter (the web app,
+    (any of the app's eleven languages), and the site's own pages read the same parameter (the web app,
     once it serves `/u/<code>` itself, doesn't read it yet). The language is the one the app is speaking
     (`ObserveSpokenLanguage`): the pick, or the first of the device's languages the app has, English otherwise. Android and iOS open the system share, whose own Copy covers copying; the Mac's toolbar and
     the web's header (the page's heading from 768 px) open a menu with "Share profile" (the Mac's sharing picker,
