@@ -94,4 +94,5 @@
     <string name="group_detail_simplified_pair">Pasangan baru dari penyederhanaan</string>
     <string name="group_detail_balances_note_simplified">Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah menerima” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
     <string name="group_detail_photo_open">Lihat foto grup</string>
+    <string name="group_export_payment_method">Metode pembayaran</string>
 </resources>

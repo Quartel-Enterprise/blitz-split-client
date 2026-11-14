@@ -14,6 +14,8 @@ internal suspend inline fun <reified T : Any> Postgrest.fetchAllById(
     idOf: (T) -> String,
     // Why: one group's rows, for a first download that brings each group whole; null for every group's.
     groupId: String? = null,
+    // Why: the key the pages follow, "expense_id" for the payment methods' marks.
+    idColumn: String = "id",
     pageSize: Long = 1_000L,
 ): List<T> {
     val rows = mutableListOf<T>()
@@ -23,10 +25,10 @@ internal suspend inline fun <reified T : Any> Postgrest.fetchAllById(
             .select {
                 filter {
                     if (groupId != null) eq("group_id", groupId)
-                    if (lastId != null) gt("id", lastId)
+                    if (lastId != null) gt(idColumn, lastId)
                 }
                 order(
-                    column = "id",
+                    column = idColumn,
                     order = Order.ASCENDING,
                 )
                 limit(pageSize)

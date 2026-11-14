@@ -102,4 +102,5 @@
     <string name="group_detail_simplified_pair">Pareja nueva por la simplificación</string>
     <string name="group_detail_balances_note_simplified">Con las deudas simplificadas, la app sugiere la menor cantidad de pagos. “Me pagaron” y “Ya pagué” registran un pago hecho fuera de la app (Pix, efectivo, una transferencia).</string>
     <string name="group_detail_photo_open">Ver foto del grupo</string>
+    <string name="group_export_payment_method">Método de pago</string>
 </resources>

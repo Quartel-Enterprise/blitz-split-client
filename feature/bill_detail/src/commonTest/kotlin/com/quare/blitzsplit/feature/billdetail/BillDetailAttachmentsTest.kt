@@ -25,6 +25,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillPayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
@@ -35,6 +36,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -81,6 +83,7 @@ import kotlin.time.Instant
 
 // Conta's "Anexos" (7.3g): the tiles, the signed URLs, adding and removing a photo and the viewer.
 class BillDetailAttachmentsTest {
+    private val payingMethods = FakePayingMethodRepository()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
@@ -1812,6 +1815,7 @@ class BillDetailAttachmentsTest {
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = ObserveSettlementsUseCase(FakeSettlementRepository()),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeBillPayingMethod = ObserveBillPayingMethodUseCase(payingMethods),
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             editBillComment = EditBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             deleteBillComment = DeleteBillCommentUseCase(comments),

@@ -51,6 +51,7 @@ import com.quare.blitzsplit.feature.join.presentation.viewmodel.JoinWithLinkView
 import com.quare.blitzsplit.feature.legal.presentation.viewmodel.LegalDocumentViewModel
 import com.quare.blitzsplit.feature.members.presentation.viewmodel.MembersViewModel
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel
+import com.quare.blitzsplit.feature.payingmethod.presentation.viewmodel.PayingMethodViewModel
 import com.quare.blitzsplit.feature.paymentkey.presentation.viewmodel.PaymentKeyViewModel
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
 import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileSetupViewModel
@@ -304,6 +305,9 @@ object BlitzSplitApple : KoinComponent {
     // Why: each key opens its own ViewModel, which reads the method and the key to edit from its route.
     fun createPaymentKeyViewModel(route: Route.PaymentKey): ViewModelHolder<PaymentKeyViewModel> =
         ViewModelHolder(PaymentKeyViewModel::class) { get { parametersOf(route) } }
+
+    fun createPayingMethodViewModel(route: Route.PayingMethod): ViewModelHolder<PayingMethodViewModel> =
+        ViewModelHolder(PayingMethodViewModel::class) { get { parametersOf(route) } }
 
     /*
      * Why: Google signs in through the browser on Apple platforms, and its OAuth callback comes back

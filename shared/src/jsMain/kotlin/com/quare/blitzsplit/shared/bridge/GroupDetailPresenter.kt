@@ -3,6 +3,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.export.GroupExportFormat
 import com.quare.blitzsplit.core.expenses.export.GroupExportWords
@@ -169,6 +170,9 @@ class JsGroupExportWords(
     val balance: String,
     val formerMember: String,
     val appCategoryNames: Array<String>,
+    val paymentMethod: String,
+    // Why: the name of each payment method type, in the order of exportPayingMethodTypes.
+    val payingMethodTypeNames: Array<String>,
 )
 
 // Why: the file "Export group data" made, which the page downloads; bytes is an Int8Array.
@@ -324,6 +328,10 @@ class GroupDetailPresenter(
     val exportCategoryKeys: Array<String>
         get() = AppCategory.entries.map { it.key }.toTypedArray()
 
+    // Why: the payment method types' codes, whose names JsGroupExportWords.payingMethodTypeNames gives in the same order.
+    val exportPayingMethodTypes: Array<String>
+        get() = PayingMethodType.entries.map { it.code }.toTypedArray()
+
     // Why: "csv", "xlsx", "json" or "txt" picked on "Export group data".
     fun exportAs(
         format: String,
@@ -350,6 +358,8 @@ class GroupDetailPresenter(
                     balance = words.balance,
                     formerMember = words.formerMember,
                     appCategoryNames = keys.zip(words.appCategoryNames).toMap(),
+                    paymentMethod = words.paymentMethod,
+                    payingMethodTypeNames = exportPayingMethodTypes.zip(words.payingMethodTypeNames).toMap(),
                 ),
             ),
         )

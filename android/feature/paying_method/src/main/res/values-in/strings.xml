@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Metode pembayaran baru</string>
+    <string name="paying_method_edit_title">Edit metode pembayaran</string>
+    <string name="paying_method_type">Jenis</string>
+    <string name="paying_method_name">Nama</string>
+    <string name="paying_method_name_optional">Nama (opsional)</string>
+    <string name="paying_method_color">Warna</string>
+    <string name="paying_method_default">Metode utama</string>
+    <string name="paying_method_default_hint">Tagihan baru yang kamu bayar langsung memakai metode ini.</string>
+    <string name="paying_method_delete">Hapus metode pembayaran</string>
+    <string name="paying_method_delete_title">Hapus metode pembayaran ini?</string>
+    <string name="paying_method_delete_body">Tagihan yang kamu tandai dengan metode ini tidak akan menampilkannya lagi.</string>
+    <string name="paying_method_delete_confirm">Hapus</string>
+    <string name="paying_method_save">Simpan</string>
+</resources>

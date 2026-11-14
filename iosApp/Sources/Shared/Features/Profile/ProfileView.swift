@@ -209,6 +209,8 @@ struct ProfileView: View {
                 // The Mac's settings list the keys right under the profile, as the canvas draws them
                 PaymentKeysSection(model: model)
                     .id(ProfileSettingsPane.keys)
+                PayingMethodsSection(model: model)
+                    .id(ProfileSettingsPane.payingMethods)
                 AccountSection(model: model)
                     .id(ProfileSettingsPane.account)
                 // Right under the account it leaves, never at the end of the form (beta feedback 16)
@@ -253,6 +255,7 @@ struct ProfileView: View {
                 } second: {
                     Form {
                         PaymentKeysSection(model: model)
+                        PayingMethodsSection(model: model)
                         PreferencesSection(model: model)
                     }
                     .formStyle(.grouped)
@@ -264,6 +267,7 @@ struct ProfileView: View {
                     AccountSection(model: model)
                     SignOutSection(model: model)
                     PaymentKeysSection(model: model)
+                    PayingMethodsSection(model: model)
                     PreferencesSection(model: model)
                     AboutSection(model: model)
                     if model.state.showsDeleteAccount {
@@ -885,6 +889,93 @@ private struct PaymentKeysSection: View {
     }
 }
 
+/// "Payment methods": how the person pays, the default first and marked, each opening its form, then "Add a payment
+/// method". Private: only the person sees them, as the note under them says. The Mac adds one with the + under the
+/// list, as its settings lists do.
+private struct PayingMethodsSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Section {
+            if let methods = model.state.payingMethods.loaded(as: [PayingMethod].self) {
+                ForEach(methods, id: \.id) { method in
+                    Button {
+                        model.send(ProfileUiEventPayingMethodsOnClicked(methodId: method.id))
+                    } label: {
+                        PayingMethodRow(method: method)
+                    }
+                    .buttonStyle(.plain)
+                    #if os(macOS)
+                    // A right-click opens the method as its click does, where its default and Delete live
+                    .contextMenu {
+                        Button("Edit…", systemImage: "pencil") {
+                            model.send(ProfileUiEventPayingMethodsOnClicked(methodId: method.id))
+                        }
+                    }
+                    #endif
+                }
+            } else {
+                // A restored account's methods come with its first full sync: never "none" before them
+                ShimmerList(count: 2, leading: .badge, showsTrailing: false)
+                    .shimmering()
+            }
+            addMethod
+        } header: {
+            Text("Payment methods")
+        } footer: {
+            Text("Only you see these. Mark which one you paid a bill with.")
+        }
+    }
+
+    @ViewBuilder
+    private var addMethod: some View {
+        #if os(macOS)
+        HStack {
+            Button {
+                model.send(ProfileUiEventPayingMethodsOnAddClicked.shared)
+            } label: {
+                Image(systemName: "plus")
+                    .frame(width: 20, height: 20)
+                    .contentShape(.rect)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Add a payment method")
+            Spacer()
+        }
+        #else
+        Button {
+            model.send(ProfileUiEventPayingMethodsOnAddClicked.shared)
+        } label: {
+            Label("Add a payment method", systemImage: "plus.circle.fill")
+        }
+        #endif
+    }
+}
+
+/// A payment method as the profile lists it: its tile, its label over its type when named, "Default".
+private struct PayingMethodRow: View {
+    let method: PayingMethod
+
+    var body: some View {
+        HStack(spacing: 12) {
+            PayingMethodLabel(method: method)
+            Spacer(minLength: 8)
+            if method.isDefault {
+                DefaultBadge(title: Text(LocalizedStringResource(
+                    "Default (a payment method's badge)",
+                    defaultValue: "Default",
+                )))
+            }
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
+        }
+        .contentShape(.rect)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 private struct AddPaymentKeyMenu<MenuLabel: View>: View {
     let model: ProfileModel
     @ViewBuilder let label: MenuLabel
@@ -932,12 +1023,7 @@ private struct PaymentKeyRow: View {
             }
             Spacer(minLength: 8)
             if key.isDefault {
-                Text("Default")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(Palette.accent)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Palette.accent.opacity(0.14), in: .rect(cornerRadius: 8))
+                DefaultBadge(title: Text("Default"))
             }
             Image(systemName: "chevron.right")
                 .font(.footnote.weight(.semibold))
@@ -1214,17 +1300,15 @@ private struct CategoryMapRow: View {
     }
 }
 
-/// Pix's own mark (`PixKey` in the asset catalog, Material's Pix glyph, as Android draws it), the bolt and the link of
-/// the two Bitcoin networks. The mark scales with Dynamic Type as the symbols beside it do.
+/// Pix's own mark, the bolt and the link of the two Bitcoin networks.
 private struct PaymentKeyIcon: View {
     let type: PaymentKeyType
-    @ScaledMetric(relativeTo: .subheadline) private var markSize = 18.0
 
     var body: some View {
         switch type {
         case .lightning: Image(systemName: "bolt.fill")
         case .onchain: Image(systemName: "link")
-        default: Image(decorative: "PixKey").resizable().scaledToFit().frame(width: markSize, height: markSize)
+        default: PixMark()
         }
     }
 }

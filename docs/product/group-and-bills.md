@@ -29,6 +29,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
       and payments oldest first. Members who left read "Former member" ("Former member 2" from the second on, by
       their oldest bill), and a name two members share is numbered the same way ("Ana", "Ana 2"). Headers, section names and category names come in the app's language; JSON keeps English
       keys, with each member's id, the category's id and the payment's method code.
+    - "Payment method": the exporter's own "Paid with" of each bill ("Nubank · Credit card", or the type's name for a
+      method with no name), in every format (a column after Currency, a `paymentMethod` object with `type` and `name`
+      in JSON). Private: only the marks of whoever exports, and only on bills they still pay, so a member's export never
+      carries anyone else's; the
+      column only shows while the exporter marked a bill of the group, so an export without marks keeps its columns.
     - Formats: dates are ISO (2026-11-14) in CSV, JSON and the text, the device's day; Excel writes real dates (the
       reader's short date) and numbers, a sheet per section, its header row bold and frozen. Amounts carry every
       decimal of their currency with a dot and no grouping (120.50, yen 1500), so they read the same in any language;
@@ -98,6 +103,12 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     "All expenses" have the same ⋮, long press and right click, their options opening over Home (Pierre's call, beta
     feedback, [home-tab.md](home-tab.md)); Activity has none: its lines open the bill, whose options are a tap away.
     One controller does it for all three lists (`BillMenuController`, `:core:expenses`).
+  - Bill's "Paid with" (private payment methods, Pierre's call, feedback of November 14, 2026): the method this
+    device's user marked the bill with, with "Only you see this.", under the bill and before "Your share"; nothing
+    for a bill they never marked, nor while they aren't among its payers (someone else's edit may have taken them
+    out; `BillDetailUiState.shownPaidWith`). Marking it on a bill someone else created goes
+    through "Edit bill" (any payer may), whose Save then changes only their mark: the bill isn't saved again, so the
+    group sees no edit of it. Bill has no picker of its own.
   - A bill's line, in every list of bills (Expenses, Home's "Latest expenses", "All expenses", a category's
     expenses), ends in your share as its signed amount alone ("+R$ 6,79", "−R$ 9") in green or orange, never with
     "to get back" or "you owe" after it, as Groups' list draws a group's net (beta feedback); screen readers still hear

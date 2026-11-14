@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.splitbill.di
 
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
+import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillPayingMethodUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
@@ -12,6 +13,7 @@ import org.koin.dsl.module
  */
 val splitBillModule = module {
     factoryOf(::BillCategoryUseCases)
+    factoryOf(::BillPayingMethodUseCases)
     viewModel { parameters ->
         SplitBillViewModel(
             route = parameters.get(),
@@ -35,6 +37,7 @@ val splitBillModule = module {
             observeExpenses = get(),
             observeSettlements = get(),
             categoryUseCases = get(),
+            paidWithUseCases = get(),
             observeBitcoinInSats = get(),
             connectivityObserver = get(),
             trackEvent = get(),

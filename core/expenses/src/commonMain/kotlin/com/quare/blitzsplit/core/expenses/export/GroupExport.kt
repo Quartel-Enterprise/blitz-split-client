@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.export
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -30,6 +31,8 @@ data class GroupExport(
             expenses: List<Expense>,
             settlements: List<Settlement>,
             categoryTree: CategoryTree,
+            // Why: the exporter's own marks by bill id, which nobody else's export carries.
+            payingMethods: Map<String, PayingMethod>,
             timeZone: TimeZone,
             nowMillis: Long,
         ): GroupExport {
@@ -42,6 +45,7 @@ data class GroupExport(
                 )
             }
             val currentIds = current.map { it.id }.toSet()
+            val meId = group.members.firstOrNull { it.isMe }?.id
             val sortedExpenses = expenses.sortedBy { it.spentAt }
             val sortedSettlements = settlements.sortedBy { it.paidAt }
             // Why: numbered in the order they first show up, the oldest bill first, then the payments.
@@ -71,6 +75,8 @@ data class GroupExport(
                     currency = expense.currency,
                     payers = expense.payers.map { ExportAmount(it.memberId, it.amountMinor) },
                     shares = expense.shares.map { ExportAmount(it.memberId, it.amountMinor) },
+                    // Why: a mark of a bill the exporter no longer pays (someone else's edit) no longer says how they paid.
+                    payingMethod = payingMethods[expense.id]?.takeIf { expense.payers.any { it.memberId == meId } },
                 )
             }
             val payments = sortedSettlements.map {

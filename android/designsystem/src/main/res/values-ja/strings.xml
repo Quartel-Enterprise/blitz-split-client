@@ -285,4 +285,22 @@
     <string name="designsystem_custom_color_in_use_title">この色は使用中です</string>
     <string name="designsystem_custom_color_in_use_message">%1$s がこの色を使用しています。先にその色を変更してから削除してください。</string>
     <string name="designsystem_custom_color_ok">OK</string>
+    <string name="designsystem_paying_method_credit_card">クレジットカード</string>
+    <string name="designsystem_paying_method_debit_card">デビットカード</string>
+    <string name="designsystem_paying_method_cash">現金</string>
+    <string name="designsystem_paying_method_pix">Pix</string>
+    <string name="designsystem_paying_method_bank_transfer">銀行振込</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
+    <string name="designsystem_paying_method_other">その他</string>
+    <string name="designsystem_card_color_purple">紫</string>
+    <string name="designsystem_card_color_blue">青</string>
+    <string name="designsystem_card_color_green">緑</string>
+    <string name="designsystem_card_color_orange">オレンジ</string>
+    <string name="designsystem_card_color_red">赤</string>
+    <string name="designsystem_card_color_pink">ピンク</string>
+    <string name="designsystem_card_color_gold">ゴールド</string>
+    <string name="designsystem_card_color_graphite">グラファイト</string>
+    <string name="designsystem_paid_with">支払い方法</string>
+    <string name="designsystem_paid_with_none">なし</string>
+    <string name="designsystem_paid_with_private">あなただけに表示されます。</string>
 </resources>

@@ -80,6 +80,15 @@ internal class JsonGroupExport : GroupExportEncoder {
         put("currency", bill.currency.code)
         put("payers", amountsOf(bill.payers, bill.currency, names, "amount"))
         put("shares", amountsOf(bill.shares, bill.currency, names, "amount"))
+        bill.payingMethod?.let { method ->
+            put(
+                "paymentMethod",
+                buildJsonObject {
+                    put("type", method.type.code)
+                    put("name", GroupExportTables.payingMethodNameOf(bill, words))
+                },
+            )
+        }
     }
 
     private fun paymentOf(

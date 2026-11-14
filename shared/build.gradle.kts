@@ -21,6 +21,7 @@ private val exportedToApple = listOf(
     projects.feature.profile,
     projects.feature.editProfile,
     projects.feature.paymentKey,
+    projects.feature.payingMethod,
     projects.feature.deleteAccount,
     projects.feature.notificationSettings,
     projects.feature.createGroup,

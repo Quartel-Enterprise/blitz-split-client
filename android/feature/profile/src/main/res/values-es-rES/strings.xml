@@ -7,4 +7,6 @@
 
     <string name="profile_email_info_body">Aparece aquí para que sepas con qué cuenta has iniciado sesión. Las personas de tus grupos ven tu nombre y tu foto, nunca tu correo.</string>
     <string name="profile_share_usage_data_detail">Pantallas y toques, para mejorar la app. Nunca nombres ni importes.</string>
+    <string name="profile_paying_methods_add">Añadir método de pago</string>
+    <string name="profile_paying_methods_subtitle">Solo tú los ves. Marca con cuál has pagado cada gasto.</string>
 </resources>

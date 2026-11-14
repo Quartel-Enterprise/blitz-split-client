@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_default_hint">Los nuevos gastos que pagues empiezan con este.</string>
+    <string name="paying_method_delete_body">Los gastos que has marcado con él dejarán de mostrarlo.</string>
+</resources>

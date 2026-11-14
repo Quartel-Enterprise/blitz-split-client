@@ -15,6 +15,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PaidWith
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -192,5 +193,10 @@ private fun SampleTrip.splitBillState(
         isDeleting = false,
         isLoaded = true,
         openedInputs = null,
+        paidWith = PaidWith(
+            methods = emptyList(),
+            methodId = null,
+            openedMethodId = null,
+        ),
     )
 }

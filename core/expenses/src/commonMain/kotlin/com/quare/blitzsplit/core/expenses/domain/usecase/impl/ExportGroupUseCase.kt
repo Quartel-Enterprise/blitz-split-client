@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.ExportGroup
 import com.quare.blitzsplit.core.expenses.export.CsvGroupExport
@@ -30,6 +31,7 @@ class ExportGroupUseCase(
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
+    private val payingMethodRepository: PayingMethodRepository,
     private val currentTimeZone: CurrentTimeZone,
     private val currentTimeMillis: CurrentTimeMillis,
     /*
@@ -58,12 +60,20 @@ class ExportGroupUseCase(
             categoryRepository.observeGroupCategories(groupId).first(),
             categoryRepository.observeAppColors().first(),
         )
+        // Why: this device's user's own marks: "Paid with" is private, so no one else's ever reaches the file.
+        val methods = payingMethodRepository.observeMethods().first().associateBy { it.id }
+        val payingMethods = payingMethodRepository
+            .observeMarks()
+            .first()
+            .mapNotNull { (expenseId, methodId) -> methods[methodId]?.let { expenseId to it } }
+            .toMap()
         withContext(encodeDispatcher) {
             val export = GroupExport.of(
                 group = group,
                 expenses = expenses,
                 settlements = settlements,
                 categoryTree = categoryTree,
+                payingMethods = payingMethods,
                 timeZone = currentTimeZone(),
                 nowMillis = currentTimeMillis(),
             )

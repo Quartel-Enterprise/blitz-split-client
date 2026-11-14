@@ -98,4 +98,5 @@
     <string name="group_detail_simplified_pair">Nieuw tweetal door vereenvoudigen</string>
     <string name="group_detail_balances_note_simplified">Met vereenvoudigde schulden stelt de app de minste betalingen voor. “Betaald gekregen” en “Al betaald” registreren een betaling buiten de app (Pix, contant, een overschrijving).</string>
     <string name="group_detail_photo_open">Groepsfoto bekijken</string>
+    <string name="group_export_payment_method">Betaalmethode</string>
 </resources>

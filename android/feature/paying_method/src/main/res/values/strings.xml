@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">New payment method</string>
+    <string name="paying_method_edit_title">Edit payment method</string>
+    <string name="paying_method_type">Type</string>
+    <string name="paying_method_name">Name</string>
+    <string name="paying_method_name_optional">Name (optional)</string>
+    <string name="paying_method_color">Color</string>
+    <string name="paying_method_default">Default method</string>
+    <string name="paying_method_default_hint">New bills you pay start with it.</string>
+    <string name="paying_method_delete">Delete payment method</string>
+    <string name="paying_method_delete_title">Delete this payment method?</string>
+    <string name="paying_method_delete_body">Bills you marked with it will no longer show it.</string>
+    <string name="paying_method_delete_confirm">Delete</string>
+    <string name="paying_method_save">Save</string>
+</resources>

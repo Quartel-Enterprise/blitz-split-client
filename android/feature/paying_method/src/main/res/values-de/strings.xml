@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Neue Zahlungsmethode</string>
+    <string name="paying_method_edit_title">Zahlungsmethode bearbeiten</string>
+    <string name="paying_method_type">Art</string>
+    <string name="paying_method_name">Name</string>
+    <string name="paying_method_name_optional">Name (optional)</string>
+    <string name="paying_method_color">Farbe</string>
+    <string name="paying_method_default">Standardmethode</string>
+    <string name="paying_method_default_hint">Neue Ausgaben, die du bezahlst, starten damit.</string>
+    <string name="paying_method_delete">Zahlungsmethode löschen</string>
+    <string name="paying_method_delete_title">Diese Zahlungsmethode löschen?</string>
+    <string name="paying_method_delete_body">Ausgaben, die du damit markiert hast, zeigen sie nicht mehr an.</string>
+    <string name="paying_method_delete_confirm">Löschen</string>
+    <string name="paying_method_save">Speichern</string>
+</resources>

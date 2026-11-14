@@ -294,4 +294,22 @@
     <string name="designsystem_custom_color_in_use_title">Deze kleur wordt gebruikt</string>
     <string name="designsystem_custom_color_in_use_message">%1$s gebruikt deze kleur. Wijzig eerst de kleur daarvan en verwijder deze daarna.</string>
     <string name="designsystem_custom_color_ok">OK</string>
+    <string name="designsystem_paying_method_credit_card">Creditcard</string>
+    <string name="designsystem_paying_method_debit_card">Betaalkaart</string>
+    <string name="designsystem_paying_method_cash">Contant</string>
+    <string name="designsystem_paying_method_pix">Pix</string>
+    <string name="designsystem_paying_method_bank_transfer">Bankoverschrijving</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
+    <string name="designsystem_paying_method_other">Anders</string>
+    <string name="designsystem_card_color_purple">Paars</string>
+    <string name="designsystem_card_color_blue">Blauw</string>
+    <string name="designsystem_card_color_green">Groen</string>
+    <string name="designsystem_card_color_orange">Oranje</string>
+    <string name="designsystem_card_color_red">Rood</string>
+    <string name="designsystem_card_color_pink">Roze</string>
+    <string name="designsystem_card_color_gold">Goud</string>
+    <string name="designsystem_card_color_graphite">Grafiet</string>
+    <string name="designsystem_paid_with">Betaald met</string>
+    <string name="designsystem_paid_with_none">Geen</string>
+    <string name="designsystem_paid_with_private">Alleen jij ziet dit.</string>
 </resources>

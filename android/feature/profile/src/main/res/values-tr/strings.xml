@@ -126,4 +126,7 @@
     <string name="profile_link_copied">Bağlantı kopyalandı</string>
     <string name="profile_share_usage_data">Kullanım verilerini paylaş</string>
     <string name="profile_share_usage_data_detail">Uygulamayı geliştirmek için ekranlar ve dokunuşlar. İsim veya tutar asla gönderilmez.</string>
+    <string name="profile_section_paying_methods">Ödeme yöntemleri</string>
+    <string name="profile_paying_methods_add">Ödeme yöntemi ekle</string>
+    <string name="profile_paying_methods_subtitle">Bunları yalnızca sen görürsün. Her harcamayı hangisiyle ödediğini işaretle.</string>
 </resources>

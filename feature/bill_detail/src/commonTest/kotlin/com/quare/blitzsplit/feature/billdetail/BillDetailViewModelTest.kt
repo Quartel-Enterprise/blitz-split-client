@@ -17,9 +17,12 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
+import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -38,6 +41,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillPayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
@@ -48,6 +52,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -102,6 +107,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class BillDetailViewModelTest {
+    private val payingMethods = FakePayingMethodRepository()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
@@ -156,6 +162,64 @@ class BillDetailViewModelTest {
             assertEquals(AppCategory.FOOD_MARKET.key, state.category.id)
             assertEquals(AppCategory.FOOD.key, state.categoryParent?.id)
         }
+
+    @Test
+    fun `GIVEN the bill marked with my card WHEN it opens THEN shows the card as Paid with`() =
+        runTest(testDispatcher) {
+            // Given
+            val card = PayingMethod(
+                id = "card-1",
+                type = PayingMethodType.CREDIT_CARD,
+                name = "Travel card",
+                cardColor = CardColor.BLUE,
+                isDefault = true,
+                addedAt = 1L,
+            )
+            payingMethods.methods.value = listOf(card)
+            payingMethods.marks.value = mapOf(expense().id to card.id)
+            prepareScenario(storedExpense = expense(payerId = PIERRE))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(card, state.shownPaidWith)
+        }
+
+    @Test
+    fun `GIVEN my mark on a bill Ana alone paid since WHEN it opens THEN shows no Paid with`() =
+        runTest(testDispatcher) {
+            // Given
+            val card = PayingMethod(
+                id = "card-1",
+                type = PayingMethodType.CREDIT_CARD,
+                name = "Travel card",
+                cardColor = CardColor.BLUE,
+                isDefault = true,
+                addedAt = 1L,
+            )
+            payingMethods.methods.value = listOf(card)
+            payingMethods.marks.value = mapOf(expense().id to card.id)
+            prepareScenario(storedExpense = expense(payerId = ANA))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.shownPaidWith)
+        }
+
+    @Test
+    fun `GIVEN a bill I never marked WHEN it opens THEN shows no Paid with`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.shownPaidWith)
+    }
 
     @Test
     fun `GIVEN a bill on the device WHEN it opens THEN shows the group and the bill`() = runTest(testDispatcher) {
@@ -5008,6 +5072,7 @@ class BillDetailViewModelTest {
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = ObserveSettlementsUseCase(settlements),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeBillPayingMethod = ObserveBillPayingMethodUseCase(payingMethods),
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             editBillComment = EditBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             deleteBillComment = DeleteBillCommentUseCase(comments),

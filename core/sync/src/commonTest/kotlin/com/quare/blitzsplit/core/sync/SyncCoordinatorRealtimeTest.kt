@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
@@ -793,6 +794,7 @@ class SyncCoordinatorRealtimeTest {
             settlementRepository = settlements,
             categoryRepository = categories,
             personalCategoryData = PersonalCategoryData(FakeCategoryTermRepository(), FakeCustomColorRepository()),
+            payingMethodRepository = FakePayingMethodRepository(),
             billCommentRepository = billComments,
             billAttachmentRepository = billAttachments,
             activityRepository = activity,

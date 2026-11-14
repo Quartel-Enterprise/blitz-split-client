@@ -126,4 +126,7 @@
     <string name="profile_link_copied">Link gekopieerd</string>
     <string name="profile_share_usage_data">Gebruiksgegevens delen</string>
     <string name="profile_share_usage_data_detail">Schermen en tikken, om de app te verbeteren. Nooit namen of bedragen.</string>
+    <string name="profile_section_paying_methods">Betaalmethoden</string>
+    <string name="profile_paying_methods_add">Betaalmethode toevoegen</string>
+    <string name="profile_paying_methods_subtitle">Alleen jij ziet ze. Geef aan waarmee je een uitgave betaalde.</string>
 </resources>

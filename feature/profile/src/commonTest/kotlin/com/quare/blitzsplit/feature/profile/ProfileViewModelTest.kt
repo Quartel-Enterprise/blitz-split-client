@@ -10,6 +10,11 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCa
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
+import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePayingMethodsUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
@@ -108,6 +113,7 @@ class ProfileViewModelTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
+    private val payingMethods = FakePayingMethodRepository()
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
 
     // Why: Notifications' "Push notifications" switch of this device, on unless a test turns it off.
@@ -6845,6 +6851,193 @@ class ProfileViewModelTest {
             assertFalse(viewModel.uiState.value.showsPix)
         }
 
+    @Test
+    fun `GIVEN stored payment methods WHEN the profile opens THEN lists them with the default first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = listOf(nubankCard, cash))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loaded(listOf(nubankCard, cash)), state.payingMethods)
+        }
+
+    @Test
+    fun `GIVEN no payment method WHEN the profile opens THEN shows the empty list`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(methods = emptyList())
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(Loadable.Loaded(emptyList()), state.payingMethods)
+    }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN the profile opens THEN its payment methods load`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                methods = listOf(nubankCard),
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(Loadable.Loading, state.payingMethods)
+        }
+
+    @Test
+    fun `GIVEN a restored account not whole yet WHEN its first full sync ends THEN lists its payment methods`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                methods = listOf(nubankCard, cash),
+                firstDownload = pendingDownload,
+            )
+
+            // When
+            firstDownload.value = null
+
+            // Then
+            assertEquals(Loadable.Loaded(listOf(nubankCard, cash)), viewModel.uiState.value.payingMethods)
+        }
+
+    @Test
+    fun `GIVEN the profile open WHEN a payment method is added THEN lists it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(methods = listOf(nubankCard))
+
+        // When
+        payingMethods.saveMethods(listOf(cash))
+
+        // Then
+        assertEquals(Loadable.Loaded(listOf(nubankCard, cash)), viewModel.uiState.value.payingMethods)
+    }
+
+    @Test
+    fun `GIVEN the profile open WHEN a payment method is deleted THEN stops listing it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(methods = listOf(nubankCard, cash))
+
+        // When
+        payingMethods.deleteMethod(cash.id)
+
+        // Then
+        assertEquals(Loadable.Loaded(listOf(nubankCard)), viewModel.uiState.value.payingMethods)
+    }
+
+    @Test
+    fun `GIVEN the profile open WHEN tapping add payment method THEN opens an empty form and tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnAddClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = null)),
+                navigator.backStack.value,
+            )
+            assertEquals(listOf("paying_method_add_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the add payment method form open WHEN tapping add again THEN does not stack a second form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnAddClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnAddClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = null)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a listed payment method WHEN tapping it THEN opens its form and tracks its type`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = listOf(nubankCard, cash))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnClicked(cash.id))
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = cash.id)),
+                navigator.backStack.value,
+            )
+            assertEquals(listOf("paying_method_clicked" to mapOf<String, Any>("type" to "cash")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a payment method form open WHEN tapping a listed method again THEN does not stack a second form`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = listOf(nubankCard))
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnClicked(nubankCard.id))
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnClicked(nubankCard.id))
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = nubankCard.id)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN an unknown payment method WHEN tapping it THEN stays on the profile without tracking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = listOf(nubankCard))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnClicked("gone"))
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+            assertEquals(emptyList(), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the payment methods still loading WHEN tapping one THEN stays on the profile without tracking`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                methods = listOf(nubankCard),
+                firstDownload = pendingDownload,
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.PayingMethods.OnClicked(nubankCard.id))
+
+            // Then
+            assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+            assertEquals(emptyList(), trackedEvents)
+        }
+
     // Why: the account's profile code as this device made it, and the link "Share profile" hands out.
     private val shareCode = "7Hk2pQ8xZa"
 
@@ -6871,6 +7064,25 @@ class ProfileViewModelTest {
     )
 
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
+
+    // Why: the default comes first, as the repository hands them out.
+    private val nubankCard = PayingMethod(
+        id = "nubank",
+        type = PayingMethodType.CREDIT_CARD,
+        name = "Nubank",
+        cardColor = CardColor.PURPLE,
+        isDefault = true,
+        addedAt = 1L,
+    )
+
+    private val cash = PayingMethod(
+        id = "cash",
+        type = PayingMethodType.CASH,
+        name = "",
+        cardColor = null,
+        isDefault = false,
+        addedAt = 2L,
+    )
 
     private val cpfKey = paymentKey("cpf", PaymentKeyType.CPF, "12345678909", isDefault = true)
 
@@ -6951,6 +7163,7 @@ class ProfileViewModelTest {
         signOutError: Throwable? = null,
         signOutHangs: Boolean = false,
         keys: List<PaymentKey> = emptyList(),
+        methods: List<PayingMethod> = emptyList(),
         hasPendingKeys: Boolean = false,
         preferences: NotificationPreferences = NotificationPreferences.DEFAULT,
         hasPendingPreferences: Boolean = false,
@@ -6993,6 +7206,7 @@ class ProfileViewModelTest {
             it.hasPendingChanges.value = hasPendingProfile
             it.shareCode.value = shareCode
         }
+        payingMethods.methods.value = methods
         paymentKeys = FakePaymentKeyRepository(keys).also { it.hasPendingChanges.value = hasPendingKeys }
         notificationPreferences = FakeNotificationPreferencesRepository(preferences).also {
             it.hasPendingChanges.value = hasPendingPreferences
@@ -7064,6 +7278,7 @@ class ProfileViewModelTest {
             observeProfileShareLink = ObserveProfileShareLinkUseCase(profiles),
             observePendingProfileChanges = ObservePendingProfileChangesUseCase(profiles),
             observePaymentKeys = ObservePaymentKeysUseCase(paymentKeys),
+            observePayingMethods = ObservePayingMethodsUseCase(payingMethods),
             observePendingPaymentKeyChanges = ObservePendingPaymentKeyChangesUseCase(paymentKeys),
             observeSyncState = ObserveSyncState { this@ProfileViewModelTest.syncState },
             observeThemePreference = ObserveThemePreference { storedTheme.filterNotNull() },

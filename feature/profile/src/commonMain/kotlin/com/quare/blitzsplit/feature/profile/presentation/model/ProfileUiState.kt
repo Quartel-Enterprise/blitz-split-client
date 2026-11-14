@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -48,6 +49,11 @@ data class ProfileUiState(
      * "Add a Bitcoin key" and "Add a Pix key", so nobody is locked out; it is never false while a Pix key is saved.
      */
     val showsPix: Boolean,
+    /*
+     * Why: "Payment methods", how the person pays (a card, cash, Pix…), the default first. Private: only they see them.
+     * Loading like the keys, since a restored account's methods only come with its first full sync.
+     */
+    val payingMethods: Loadable<List<PayingMethod>>,
     val isSignOutScheduled: Boolean,
     val theme: ThemePreference,
     // Why: "Cores dinâmicas" only shows where the platform draws the wallpaper's scheme (Android 12 and later).

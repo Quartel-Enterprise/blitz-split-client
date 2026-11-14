@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -231,6 +232,7 @@ class GroupExitUseCaseTest {
             settlementRepository = FakeSettlementRepository(),
             categoryRepository = FakeCategoryRepository(),
             personalCategoryData = PersonalCategoryData(FakeCategoryTermRepository(), FakeCustomColorRepository()),
+            payingMethodRepository = FakePayingMethodRepository(),
             billCommentRepository = FakeBillCommentRepository(),
             billAttachmentRepository = FakeBillAttachmentRepository(),
             activityRepository = FakeActivityRepository(),

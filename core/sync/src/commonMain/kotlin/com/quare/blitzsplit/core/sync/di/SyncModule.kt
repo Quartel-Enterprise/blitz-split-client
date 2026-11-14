@@ -79,6 +79,7 @@ val syncModule = module {
             settlementRepository = get(),
             categoryRepository = get(),
             personalCategoryData = PersonalCategoryData(get(), get()),
+            payingMethodRepository = get(),
             billCommentRepository = get(),
             billAttachmentRepository = get(),
             activityRepository = get(),

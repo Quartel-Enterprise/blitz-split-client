@@ -203,7 +203,7 @@ private fun KeyMethodIcon(
 }
 
 @Composable
-private fun DefaultKeyBadge() {
+internal fun DefaultKeyBadge() {
     Surface(
         shape = MaterialTheme.shapes.extraSmall,
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -269,7 +269,7 @@ private fun AddPaymentKeyRow(
 }
 
 @Composable
-private fun AddKeySurface(
+internal fun AddKeySurface(
     label: String,
     shape: Shape,
     onClick: () -> Unit,
@@ -330,7 +330,7 @@ private fun DashedAddIcon() {
     }
 }
 
-private fun segmentShapeOf(
+internal fun segmentShapeOf(
     index: Int,
     count: Int,
 ): Shape {

@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentReposi
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import com.quare.blitzsplit.core.groups.domain.repository.GroupIncomeRepository
@@ -57,6 +58,7 @@ class SyncCoordinator(
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
     private val personalCategoryData: PersonalCategoryData,
+    private val payingMethodRepository: PayingMethodRepository,
     private val billCommentRepository: BillCommentRepository,
     private val billAttachmentRepository: BillAttachmentRepository,
     private val activityRepository: ActivityRepository,
@@ -290,6 +292,8 @@ class SyncCoordinator(
             activityRepository.uploadPendingActivity(userId).getOrThrow()
             activityRepository.downloadActivity(userId).getOrThrow()
         }
+        // Why: the payment methods are the user's own; their bills' marks need the bills on the server first.
+        val payingMethodsSynced = payingMethodRepository.sync(userId, withMarks = groupsSynced.isSuccess)
         // Why: Contatos' hidden list is the user's own, like the keys, so it syncs apart from the groups.
         val hiddenContactsSynced = suspendRunCatching {
             hiddenContactRepository.download(userId).getOrThrow()
@@ -297,17 +301,9 @@ class SyncCoordinator(
         }
         offerRecoveryCodeIfDue()
         signOutIfScheduledAndSynced()
-        keysSynced.getOrThrow()
-        preferencesSynced.getOrThrow()
-        termsSynced.getOrThrow()
-        groupsSynced.getOrThrow()
-        memberKeysSynced.getOrThrow()
-        pinsSynced.getOrThrow()
-        incomesSynced.getOrThrow()
-        commentsSynced.getOrThrow()
-        attachmentsSynced.getOrThrow()
-        activitySynced.getOrThrow()
-        hiddenContactsSynced.getOrThrow()
+        listOf(keysSynced, preferencesSynced, termsSynced, groupsSynced, memberKeysSynced, pinsSynced, incomesSynced)
+            .plus(listOf(commentsSynced, attachmentsSynced, activitySynced, payingMethodsSynced, hiddenContactsSynced))
+            .forEach { it.getOrThrow() }
         return userId
     }
 
@@ -333,6 +329,7 @@ class SyncCoordinator(
                     suspendRunCatching { notificationPreferencesRepository.clear() }
                     suspendRunCatching { appInviteRepository.clear() }
                     suspendRunCatching { personalCategoryData.clear() }
+                    suspendRunCatching { payingMethodRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
                     suspendRunCatching { activityRepository.clear() }
                     suspendRunCatching { hiddenContactRepository.clear() }
@@ -376,7 +373,7 @@ class SyncCoordinator(
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
      * on the profile, the keys, the preferences, the groups, the pending bills' and payments' versions, the hidden
-     * contacts, the pins, the category map's terms, the comments and the attachments makes each new change count, while one going out triggers
+     * contacts, the pins, the category map's terms, the payment methods and their marks, the comments and the attachments makes each new change count, while one going out triggers
      * nothing.
      */
     private suspend fun syncWhenDue() {
@@ -389,6 +386,7 @@ class SyncCoordinator(
             hiddenContactRepository.observeHidden(),
             groupPinRepository.observePinnedGroupIds(),
             personalCategoryData.observeChanges(),
+            payingMethodRepository.observeChanges(),
             billCommentRepository.observePendingIds(),
             billAttachmentRepository.observePendingVersions(),
         ) { lists -> lists.toList() }
@@ -436,6 +434,7 @@ class SyncCoordinator(
         notificationPreferencesRepository.clear()
         appInviteRepository.clear()
         personalCategoryData.clear()
+        payingMethodRepository.clear()
         groupRepository.clear()
         activityRepository.clear()
         hiddenContactRepository.clear()
@@ -448,6 +447,7 @@ class SyncCoordinator(
         paymentKeyRepository.observeHasPendingChanges(),
         notificationPreferencesRepository.observeHasPendingChanges(),
         personalCategoryData.observeHasPendingChanges(),
+        payingMethodRepository.observeHasPendingChanges(),
         billCommentRepository.observeHasPendingChanges(),
         billAttachmentRepository.observeHasPendingChanges(),
         groupRepository.observeHasPendingChanges(),

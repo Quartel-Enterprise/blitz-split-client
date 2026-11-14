@@ -74,40 +74,23 @@ struct PaymentKeyView: View {
     }
 
     var body: some View {
-        Group {
-            if let model, model.state.isLoaded {
+        SavingFormScreen(
+            title: Text(title),
+            layout: $layout,
+            isSheet: isSheet,
+            canSave: model?.state.canSave == true,
+            isSaving: model?.state.isSaving == true,
+            onCancel: { model?.send(PaymentKeyUiEventOnBackClicked.shared) },
+            onSave: { model?.send(PaymentKeyUiEventOnSaveClicked.shared) },
+            isLoaded: model?.state.isLoaded == true,
+        ) {
+            if let model {
                 PaymentKeyForm(
                     model: model,
                     usesTwoColumns: layout.usesTwoColumns && !isSheet,
                 )
-            } else {
-                // The key not read yet: its fields shimmer in place
-                ShimmerScreen {
-                    ShimmerForm(fieldCount: 3)
-                }
-                .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
-        .measuringScreenLayout($layout)
-        .navigationTitle(title)
-        #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
-        #endif
-        .toolbar {
-            if isSheet {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { model?.send(PaymentKeyUiEventOnBackClicked.shared) }
-                }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") { model?.send(PaymentKeyUiEventOnSaveClicked.shared) }
-                    .disabled(model?.state.canSave != true)
-            }
-        }
-        .interactiveDismissDisabled(model?.state.isSaving == true)
-        #if os(macOS)
-        .frame(minWidth: 460, idealWidth: 500, minHeight: 400, idealHeight: 560)
-        #endif
         .onAppear {
             if model == nil { model = PaymentKeyModel(route: route) }
         }
@@ -522,33 +505,16 @@ private struct DeleteSection: View {
     let model: PaymentKeyModel
 
     var body: some View {
-        Section {
-            Button(role: .destructive) {
-                model.send(PaymentKeyUiEventOnDeleteClicked.shared)
-            } label: {
-                Text("Delete key")
-                    .destructiveRowLabel()
-            }
-            .disabled(model.state.isSaving)
-            // Anchored to the button, so the iPad shows it as a popover over it
-            .confirmationDialog(
-                "Delete this key?",
-                isPresented: Binding(
-                    get: { model.state.isDeleteConfirmationShown },
-                    set: { isPresented in
-                        if !isPresented { model.deleteConfirmationClosed() }
-                    },
-                ),
-                titleVisibility: .visible,
-            ) {
-                Button("Delete", role: .destructive) {
-                    model.send(PaymentKeyUiEventOnDeleteConfirmed.shared)
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("People who owe you won't see it when settling up anymore.")
-            }
-        }
+        ConfirmedDeleteSection(
+            label: Text("Delete key"),
+            question: Text("Delete this key?"),
+            message: Text("People who owe you won't see it when settling up anymore."),
+            isDisabled: model.state.isSaving,
+            isConfirmationShown: model.state.isDeleteConfirmationShown,
+            onDelete: { model.send(PaymentKeyUiEventOnDeleteClicked.shared) },
+            onConfirm: { model.send(PaymentKeyUiEventOnDeleteConfirmed.shared) },
+            onClosed: model.deleteConfirmationClosed,
+        )
     }
 }
 

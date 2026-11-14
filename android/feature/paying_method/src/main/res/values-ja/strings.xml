@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">新しい支払い方法</string>
+    <string name="paying_method_edit_title">支払い方法を編集</string>
+    <string name="paying_method_type">種類</string>
+    <string name="paying_method_name">名前</string>
+    <string name="paying_method_name_optional">名前（任意）</string>
+    <string name="paying_method_color">色</string>
+    <string name="paying_method_default">デフォルトの方法</string>
+    <string name="paying_method_default_hint">あなたが支払う新しい支出は、この方法から始まります。</string>
+    <string name="paying_method_delete">支払い方法を削除</string>
+    <string name="paying_method_delete_title">この支払い方法を削除しますか？</string>
+    <string name="paying_method_delete_body">この方法を記録した支出には表示されなくなります。</string>
+    <string name="paying_method_delete_confirm">削除</string>
+    <string name="paying_method_save">保存</string>
+</resources>

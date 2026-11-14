@@ -29,6 +29,14 @@ enum GroupExportCopy {
             appCategoryNames: Dictionary(
                 uniqueKeysWithValues: AppCategory.entries.map { ($0.key, CategoryCopy.name($0)) },
             ),
+            paymentMethod: String(
+                localized: "Payment method (an export's column)",
+                defaultValue: "Payment method",
+                bundle: .appLanguage,
+            ),
+            payingMethodTypeNames: Dictionary(
+                uniqueKeysWithValues: PayingMethodType.entries.map { ($0.code, $0.label) },
+            ),
         )
     }
 

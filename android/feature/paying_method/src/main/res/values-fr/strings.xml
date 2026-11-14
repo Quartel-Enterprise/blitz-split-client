@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nouveau moyen de paiement</string>
+    <string name="paying_method_edit_title">Modifier le moyen de paiement</string>
+    <string name="paying_method_type">Type</string>
+    <string name="paying_method_name">Nom</string>
+    <string name="paying_method_name_optional">Nom (facultatif)</string>
+    <string name="paying_method_color">Couleur</string>
+    <string name="paying_method_default">Moyen par défaut</string>
+    <string name="paying_method_default_hint">Les nouvelles dépenses que vous payez le reprennent.</string>
+    <string name="paying_method_delete">Supprimer le moyen de paiement</string>
+    <string name="paying_method_delete_title">Supprimer ce moyen de paiement ?</string>
+    <string name="paying_method_delete_body">Les dépenses où vous l\'avez indiqué ne l\'afficheront plus.</string>
+    <string name="paying_method_delete_confirm">Supprimer</string>
+    <string name="paying_method_save">Enregistrer</string>
+</resources>

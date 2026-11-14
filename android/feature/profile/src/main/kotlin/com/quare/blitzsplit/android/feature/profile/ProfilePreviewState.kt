@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.android.feature.profile
 
+import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -62,6 +65,24 @@ internal fun createPreviewProfileState(
         ),
     ).toLoaded(),
     showsPix = true,
+    payingMethods = listOf(
+        PayingMethod(
+            id = "card-travel",
+            type = PayingMethodType.CREDIT_CARD,
+            name = "Travel card",
+            cardColor = CardColor.PURPLE,
+            isDefault = true,
+            addedAt = 0L,
+        ),
+        PayingMethod(
+            id = "cash",
+            type = PayingMethodType.CASH,
+            name = "",
+            cardColor = null,
+            isDefault = false,
+            addedAt = 1L,
+        ),
+    ).toLoaded(),
     isSignOutScheduled = false,
     theme = ThemePreference.SYSTEM,
     showsDynamicColors = true,

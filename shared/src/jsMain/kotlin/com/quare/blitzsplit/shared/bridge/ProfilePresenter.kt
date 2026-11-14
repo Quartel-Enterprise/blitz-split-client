@@ -72,6 +72,8 @@ class JsProfileState(
     val canAddPaymentKey: Boolean,
     // Why: the Pix rule (docs/product/general.md): false collapses the Pix keys behind "Add a Pix key".
     val showsPix: Boolean,
+    // Why: "Payment methods", the default first; null while they load (shimmer).
+    val payingMethods: Array<JsPayingMethod>?,
     /*
      * Why: "App on your phone" (14.4): ProfileAppInviteStatus's name, "ACTIVE", "DISMISSED" or "IN_USE"; null where it
      * never shows.
@@ -161,6 +163,10 @@ class ProfilePresenter {
                     }?.toTypedArray(),
                 canAddPaymentKey = state.canAddPaymentKey,
                 showsPix = state.showsPix,
+                payingMethods = state.payingMethods
+                    .valueOrNull()
+                    ?.map { it.toJsPayingMethod() }
+                    ?.toTypedArray(),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -231,6 +237,14 @@ class ProfilePresenter {
 
     fun clickPaymentKey(keyId: String) {
         viewModel.onEvent(ProfileUiEvent.OnPaymentKeyClicked(keyId))
+    }
+
+    fun addPayingMethod() {
+        viewModel.onEvent(ProfileUiEvent.PayingMethods.OnAddClicked)
+    }
+
+    fun clickPayingMethod(methodId: String) {
+        viewModel.onEvent(ProfileUiEvent.PayingMethods.OnClicked(methodId))
     }
 
     fun recoveryCode() {

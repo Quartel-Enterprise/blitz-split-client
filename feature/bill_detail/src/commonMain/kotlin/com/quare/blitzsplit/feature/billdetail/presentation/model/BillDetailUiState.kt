@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillCommentRules
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -76,6 +77,8 @@ data class BillDetailUiState(
     val viewedAttachmentId: String?,
     // Why: a photo picked and being made ready, which takes a moment on a large one.
     val isAddingPhoto: Boolean,
+    // Why: "Paid with", the method this device's user marked the bill with; only they see it, null for none.
+    val paidWith: PayingMethod?,
 ) {
     // Why: "Ana pagou" opens Ana's profile; several payers each have their row in the split, which opens them instead.
     val lonePayer: BillPayer?
@@ -150,6 +153,10 @@ data class BillDetailUiState(
     // Why: Editar and Apagar do nothing while the bill is being deleted.
     val areActionsEnabled: Boolean
         get() = isLoaded && !isDeleting
+
+    // Why: "Paid with" only while this device's user is among the bill's payers; someone else's edit may have removed them.
+    val shownPaidWith: PayingMethod?
+        get() = paidWith?.takeIf { payers.any { it.isMe } }
 
     // Why: a bill in a currency this version doesn't know is read-only: Editar is off, with the note below.
     val canEdit: Boolean

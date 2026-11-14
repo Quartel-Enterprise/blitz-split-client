@@ -18,6 +18,15 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     satoshis" is on), and a split by Items starts over, since its prices were in the old minor unit. A payment
     recorded for the bill's balance later is in the same currency. A bill in bitcoin or ether offers no "Scan
     receipt". The control is disabled while a receipt is being read or the bill is saving.
+  - "Paid with" (private payment methods, Pierre's call, feedback of November 14, 2026): which of their own
+    [payment methods](profile.md) this device's user paid with, a row under the bill's options (Android, after Who
+    paid, When and Split; Apple and the web right after "Who paid") with "Only you see this.". It only shows while
+    they pay the bill (alone or among several payers) and have a method (`SplitBillUiState.showsPaidWith`); its menu
+    lists None and each method. A new bill opens on their default method, a duplicate on its original's mark, an
+    edited bill on its own mark (`PaidWithPicking`). It is saved for them alone once the bill is (`MarkBillPayingMethod`),
+    never with the bill: the group's other members never see it. A bill whose only change is the mark doesn't save the
+    bill again (`SplitBillUiState.isOnlyPaidWithChanged`), so the group sees no edit; no longer paying a bill clears the
+    mark. A change to it counts as unsaved input ("Discard changes?").
   - "Split a bill" (`Route.SplitBill`): "Who paid" picks one person, who paid the whole bill, or "Several people",
     which opens "Several people paid" in its place: each person's amount, adding up to the total exactly ("R$
     312 of R$ 312. Adds up.", else "R$ X left" / "R$ X over"), and Done waits until it does

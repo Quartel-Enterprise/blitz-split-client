@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillItems
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -26,7 +27,11 @@ internal suspend fun CreateExpense.saveNew(
     spentAt = state.spentAt,
 )
 
-// Why: "Salvar" on "Editar conta": the form as typed, over the bill it was opened for.
+/*
+ * Why: "Salvar" on "Editar conta": the form as typed, over the bill it was opened for. A bill whose only change is the
+ * person's own "Paid with" stays as it was, so the group sees no edit of it. The items are compared with the bill's
+ * own, since SplitBillInputs leaves them out: an item renamed keeps everyone's share, and would otherwise be lost.
+ */
 internal suspend fun UpdateExpense.saveEdit(
     expenseId: String,
     groupId: String,
@@ -34,19 +39,24 @@ internal suspend fun UpdateExpense.saveEdit(
     amountMinor: Long,
     payers: List<ExpensePayer>,
     shares: List<ExpenseShare>,
-): Result<Unit> = invoke(
-    expenseId = expenseId,
-    groupId = groupId,
-    description = state.description,
-    amountMinor = amountMinor,
-    currency = state.currency,
-    payers = payers,
-    splitMode = state.split.mode.savedMode,
-    shares = shares,
-    items = state.split.items,
-    categoryId = state.categoryIdToSave,
-    spentAt = state.spentAt,
-)
+    savedItems: BillItems?,
+): Result<Unit> = if (state.isOnlyPaidWithChanged && state.split.items == savedItems) {
+    Result.success(Unit)
+} else {
+    invoke(
+        expenseId = expenseId,
+        groupId = groupId,
+        description = state.description,
+        amountMinor = amountMinor,
+        currency = state.currency,
+        payers = payers,
+        splitMode = state.split.mode.savedMode,
+        shares = shares,
+        items = state.split.items,
+        categoryId = state.categoryIdToSave,
+        spentAt = state.spentAt,
+    )
+}
 
 // Why: a duplicate that keeps its original's category doesn't ask "Ensinar ao mapa?" again, which the original did.
 internal fun SplitBillUiState.findTeachOfferUnlessKept(
