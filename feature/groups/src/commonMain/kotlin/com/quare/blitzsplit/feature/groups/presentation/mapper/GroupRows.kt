@@ -20,9 +20,11 @@ import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import kotlinx.datetime.daysUntil
 
-// Why: "1 semana" up to "3 semanas", and from the 28th day on, the date; macOS's Membros column names the first three.
+// Why: "1 semana" up to "3 semanas", and from the 28th day on, the date.
 private const val DAYS_IN_WEEK = 7
 private const val MAX_WEEKS = 4
+
+// Why: macOS's Membros column names the first three.
 private const val LISTED_NAMES = 3
 
 // Why: in the order "Rachar em qual grupo?" lists them too, as the design's "Em aberto" and "Quitados" both list them.

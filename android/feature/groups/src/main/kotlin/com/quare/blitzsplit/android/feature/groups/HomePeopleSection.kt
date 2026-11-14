@@ -175,57 +175,60 @@ private fun PersonRowItem(
 ) {
     val money = rememberMoneyFormatter(person.currency)
     val texts = personTextsOf(person)
-    PersonTooltipBox(
-        person = person,
-        name = texts.name,
-    ) {
-        // Why: the Surface clips the ripple to the row's shape; the click sits before the semantics it keeps.
-        Surface(
-            modifier = modifier,
-            shape = shape,
-            color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    // Why: the column's weight goes on this Box, the Row's own child; a guest's TooltipBox would swallow it.
+    Box(modifier = modifier) {
+        PersonTooltipBox(
+            person = person,
+            name = texts.name,
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onClick)
-                    .clearAndSetSemantics {
-                        contentDescription = texts.description
-                        role = Role.Button
-                    }.heightIn(min = 56.dp)
-                    .padding(
-                        horizontal = 12.dp,
-                        vertical = 8.dp,
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            // Why: the Surface clips the ripple to the row's shape; the click sits before the semantics it keeps.
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = shape,
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
             ) {
-                PersonFaceBadge(
-                    person = person,
-                    size = 40.dp,
-                )
-                Text(
-                    text = texts.name,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    AmountText(
-                        text = money.toSignedText(person.netMinor),
-                        modifier = Modifier.alignByBaseline(),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = amountColorOf(person.netMinor),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onClick)
+                        .clearAndSetSemantics {
+                            contentDescription = texts.description
+                            role = Role.Button
+                        }.heightIn(min = 56.dp)
+                        .padding(
+                            horizontal = 12.dp,
+                            vertical = 8.dp,
+                        ),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    PersonFaceBadge(
+                        person = person,
+                        size = 40.dp,
                     )
                     Text(
-                        text = texts.word,
-                        modifier = Modifier.alignByBaseline(),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = texts.name,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleSmall,
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        AmountText(
+                            text = money.toSignedText(person.netMinor),
+                            modifier = Modifier.alignByBaseline(),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = amountColorOf(person.netMinor),
+                        )
+                        Text(
+                            text = texts.word,
+                            modifier = Modifier.alignByBaseline(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
         }

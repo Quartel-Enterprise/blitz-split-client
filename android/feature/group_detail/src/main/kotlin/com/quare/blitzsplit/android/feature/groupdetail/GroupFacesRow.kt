@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
@@ -58,7 +57,6 @@ internal fun GroupFacesRow(
             extraCount = header.extraMemberCount,
             size = faceSize,
             ringColor = MaterialTheme.colorScheme.surface,
-            modifier = Modifier.clearAndSetSemantics {},
         )
         if (header.notJoinedCount > 0) {
             Text(

@@ -25,7 +25,6 @@ import {
 } from './itemsText'
 import { personName, type Money } from './splitText'
 
-
 /**
  * "Itens da conta" (7.5) in Dividir's place: a 920 px dialog with the items on the left and what each one pays on
  * the right, one column on a tablet, a drawer on a phone. "Voltar" goes back to Dividir, which keeps the items typed;

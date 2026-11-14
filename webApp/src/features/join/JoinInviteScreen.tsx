@@ -11,7 +11,6 @@ import { locale, t } from '@/i18n'
 import { GROUP_SHAPE } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
-
 /**
  * "Convite": a group's invite link opened, over the home or the welcome. A member's personal link ("Convite
  * pessoal") joins straight in as that member. Offline it keeps the link and opens the invite by itself once the

@@ -15,13 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.FaceStack
+import com.quare.blitzsplit.core.model.toStackedFaces
 
 private const val OVERLAP_RATIO = 0.3f
 private const val EXTRA_TEXT_RATIO = 0.4f
@@ -46,7 +47,7 @@ fun AvatarStackRow(
     ringWidth: Dp = 2.dp,
 ) {
     AvatarStackRow(
-        faces = people.take(FaceStack.faceCountOf(people.size)),
+        faces = people.toStackedFaces(),
         extraCount = FaceStack.extraCountOf(people.size),
         size = size,
         ringColor = ringColor,
@@ -110,7 +111,8 @@ fun AvatarStackRow(
                         text = "+$extraCount",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold,
-                        fontSize = (size.value * EXTRA_TEXT_RATIO).sp,
+                        // Why: in dp, not scaled sp: the bubble keeps its size, so a large font would cut "+N".
+                        fontSize = with(LocalDensity.current) { (size * EXTRA_TEXT_RATIO).toSp() },
                         maxLines = 1,
                         softWrap = false,
                     )
