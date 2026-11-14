@@ -110,7 +110,7 @@ function FilterBody({ presenter, state, draft, rowClassName }: { presenter: Acti
         {state.groups.map((group) => (
           <label key={group.id} className={row}>
             <RadioGroupItem value={group.id} />
-            <GroupAvatar initials={group.initials} color={group.color} className="size-5 text-[9px]" />
+            <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-6 text-[9px]" />
             <span className="truncate">{group.name}</span>
           </label>
         ))}

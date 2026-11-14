@@ -1233,18 +1233,8 @@ class GroupsViewModelTest {
                         color = AvatarColor.GREEN,
                         photoUrl = null,
                     ),
-                    MemberFace(
-                        initial = "A",
-                        color = AvatarColor.PEACH,
-                        photoUrl = null,
-                    ),
-                    MemberFace(
-                        initial = "B",
-                        color = AvatarColor.SAND,
-                        photoUrl = null,
-                    ),
                 ),
-                extraMemberCount = 0,
+                extraMemberCount = 2,
                 memberCount = 3,
                 memberNames = listOf("Pierre", "Ana", "Bia"),
                 isPending = false,
@@ -1284,7 +1274,7 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group of five members WHEN the groups open THEN shows the first three faces and two more`() =
+    fun `GIVEN a group of five members WHEN the groups open THEN shows the first face and four more`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1328,25 +1318,15 @@ class GroupsViewModelTest {
                         color = AvatarColor.GREEN,
                         photoUrl = null,
                     ),
-                    MemberFace(
-                        initial = "A",
-                        color = AvatarColor.PEACH,
-                        photoUrl = null,
-                    ),
-                    MemberFace(
-                        initial = "B",
-                        color = AvatarColor.SAND,
-                        photoUrl = null,
-                    ),
                 ),
                 row.faces,
             )
-            assertEquals(2, row.extraMemberCount)
+            assertEquals(4, row.extraMemberCount)
             assertEquals(5, row.memberCount)
         }
 
     @Test
-    fun `GIVEN a group of four members WHEN the groups open THEN shows three faces and one more`() =
+    fun `GIVEN a group of four members WHEN the groups open THEN shows the first face and three more`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1360,8 +1340,8 @@ class GroupsViewModelTest {
                 .single()
 
             // Then
-            assertEquals(listOf("P", "A", "B"), row.faces.map(MemberFace::initial))
-            assertEquals(1, row.extraMemberCount)
+            assertEquals(listOf("P"), row.faces.map(MemberFace::initial))
+            assertEquals(3, row.extraMemberCount)
             assertEquals(4, row.memberCount)
         }
 
@@ -1400,6 +1380,61 @@ class GroupsViewModelTest {
             assertEquals(0, row.extraMemberCount)
             assertEquals(1, row.memberCount)
         }
+
+    @Test
+    fun `GIVEN a group of two members WHEN the groups open THEN shows both faces and no more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(members = listOf("Pierre", "Ana").map { member(name = it) }),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(listOf("P", "A"), row.faces.map(MemberFace::initial))
+            assertEquals(0, row.extraMemberCount)
+            assertEquals(2, row.memberCount)
+        }
+
+    @Test
+    fun `GIVEN a group of five members WHEN the groups open THEN lists the first three names`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(members = listOf("Pierre", "Ana", "Bia", "Caio", "Duda").map { member(name = it) }),
+                ),
+            )
+
+            // When
+            val row = viewModel.uiState.value.groups
+                .single()
+
+            // Then
+            assertEquals(listOf("Pierre", "Ana", "Bia"), row.memberNames)
+        }
+
+    @Test
+    fun `GIVEN a group of two members WHEN the groups open THEN lists both names`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(members = listOf("Pierre", "Ana").map { member(name = it) }),
+            ),
+        )
+
+        // When
+        val row = viewModel.uiState.value.groups
+            .single()
+
+        // Then
+        assertEquals(listOf("Pierre", "Ana"), row.memberNames)
+    }
 
     @Test
     fun `GIVEN a group created here and not on the server yet WHEN the groups open THEN marks its row as pending`() =

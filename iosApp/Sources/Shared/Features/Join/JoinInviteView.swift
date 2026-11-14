@@ -342,21 +342,13 @@ private struct JoinInviteContent: View {
         return Text("\(count) · created by \(creatorName)")
     }
 
-    /// The faces of the first three who joined, and how many more there are.
+    /// The faces of who joined as a stack: the first and how many more there are.
     private func faces(_ members: [JoinMember]) -> some View {
-        HStack(spacing: -8) {
-            ForEach(members.prefix(3), id: \.id) { member in
-                AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
-                    .overlay(Circle().stroke(Palette.groupedBackground, lineWidth: 2))
-            }
-            if members.count > 3 {
-                Text(verbatim: "+\(members.count - 3)")
-                    .font(.caption.weight(.semibold))
-                    .frame(width: 32, height: 32)
-                    .background(Palette.card, in: .circle)
-            }
-        }
-        .accessibilityHidden(true)
+        AvatarStack(
+            people: members.map { StackFace(initials: $0.initials, color: $0.avatarColor, photoUrl: $0.photoUrl) },
+            size: 32,
+            ring: Palette.groupedBackground,
+        )
     }
 
     /// "Pierre and Ana are already in the group", the names joined the way the language joins them.

@@ -162,8 +162,9 @@ jobs:
 
           # The pull request's current head is what gets judged, not the commit of the run that
           # started this one: claude-review's run ends on the opening commit after it pushed its fix
-          # commit, and on a pull request whose changes run no check workflow (docs only) nothing
-          # else completes on the fix commit. A draft can't be merged; marking it ready runs its
+          # commit, and on a pull request whose changes run no check workflow (docs only) only
+          # claude-review's own short run of the push completes on the fix commit, possibly before the
+          # review's run ends. A draft can't be merged; marking it ready runs its
           # checks again. Two labeled pull requests can share a branch (one into two bases): one is
           # handled per run, and its merge or label change starts this workflow again for the other.
           match=$(jq -c '[.[] | select((.isCrossRepository | not) and (.isDraft | not)
@@ -256,7 +257,7 @@ jobs:
       # first leaves a comment on the pull request instead of a failed merge nobody looks at.
       - id: threads
         if: steps.green.outputs.pr != ''
-        uses: Quartel-Enterprise/claude-review/threads@1.2.0
+        uses: Quartel-Enterprise/claude-review/threads@1.2.2
         with:
           command: open-threads
           pull-request: ${{ steps.green.outputs.pr }}
@@ -291,7 +292,7 @@ jobs:
       # GITHUB_TOKEN does starts no other workflow, so its re-runs might never start this one.
       - id: rerun
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held != '0'
-        uses: Quartel-Enterprise/claude-review/threads@1.2.0
+        uses: Quartel-Enterprise/claude-review/threads@1.2.2
         with:
           command: rerun-held
           sha: ${{ steps.green.outputs.head }}

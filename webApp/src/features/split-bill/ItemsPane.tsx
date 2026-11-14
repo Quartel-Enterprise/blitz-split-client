@@ -1,6 +1,7 @@
 import { X } from 'lucide-react'
 import type { JsFeeEditor, JsItemEditor, JsItemPersonLine, JsItemsEditor, JsSplitBillState, SplitItemsPresenter } from 'blitzsplit-shared'
 import { Avatar, PendingDot, segmentClass } from '@/components/common'
+import { AvatarStack, stackOf } from '@/components/AvatarStack'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { ResponsiveDialog, type PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
@@ -23,8 +24,6 @@ import {
   itemsStatusTitle,
 } from './itemsText'
 import { personName, type Money } from './splitText'
-
-const faceCount = 3
 
 /**
  * "Itens da conta" (7.5) in Dividir's place: a 920 px dialog with the items on the left and what each one pays on
@@ -98,11 +97,7 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
                   <span className="truncate font-medium">{row.name}</span>
                   <span className={cn('truncate text-xs', row.isLoose ? 'text-destructive' : 'text-muted-foreground')}>{itemRowSubtitle(row, money)}</span>
                 </span>
-                <span aria-hidden className="flex -space-x-2">
-                  {row.consumers.slice(0, faceCount).map((person) => (
-                    <Avatar key={person.id} initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-6 border-2 border-card text-[9px]" />
-                  ))}
-                </span>
+                <AvatarStack {...stackOf(Array.from(row.consumers))} />
                 <span role="cell" className="w-24 shrink-0 text-right font-mono text-[13px] tabular-nums">
                   {money(row.totalMinor)}
                 </span>

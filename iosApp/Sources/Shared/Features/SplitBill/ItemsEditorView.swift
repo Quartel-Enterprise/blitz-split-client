@@ -111,19 +111,13 @@ private struct ItemsOfflineNote: View {
     }
 }
 
-/// The first faces of who consumed an item.
+/// Who consumed an item, as a stack of faces.
 private struct ConsumerFaces: View {
     let people: [BillPerson]
     var size: CGFloat = 24
 
     var body: some View {
-        HStack(spacing: -size / 3) {
-            ForEach(people.prefix(3), id: \.id) { person in
-                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
-                    .overlay(Circle().strokeBorder(Palette.card, lineWidth: 2))
-            }
-        }
-        .accessibilityHidden(true)
+        AvatarStack(people: people.map(StackFace.init), size: size)
     }
 }
 

@@ -8,7 +8,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.hasBills
 import com.quare.blitzsplit.core.expenses.domain.model.isEveryoneSettled
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.model.FaceStack
 import com.quare.blitzsplit.core.model.toImageUrl
+import com.quare.blitzsplit.core.model.toStackedFaces
 import com.quare.blitzsplit.feature.groups.presentation.model.ActivityAge
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
@@ -18,9 +20,10 @@ import com.quare.blitzsplit.feature.groups.presentation.model.LastActivity
 import com.quare.blitzsplit.feature.groups.presentation.model.MemberFace
 import kotlinx.datetime.daysUntil
 
-// Why: "1 semana" up to "3 semanas", and from the 28th day on, the date.
+// Why: "1 semana" up to "3 semanas", and from the 28th day on, the date; macOS's Membros column names the first three.
 private const val DAYS_IN_WEEK = 7
 private const val MAX_WEEKS = 4
+private const val LISTED_NAMES = 3
 
 // Why: in the order "Rachar em qual grupo?" lists them too, as the design's "Em aberto" and "Quitados" both list them.
 internal fun rowsOf(
@@ -54,16 +57,16 @@ internal fun rowOf(
         initials = Initials.of(group.name),
         color = group.color,
         photoUrl = group.photo?.toImageUrl(),
-        faces = group.members.take(MAX_FACES).map {
+        faces = group.members.toStackedFaces().map {
             MemberFace(
                 initial = Initials.firstOf(it.name),
                 color = it.avatarColor,
                 photoUrl = it.photoUrl,
             )
         },
-        extraMemberCount = extraFacesOf(group.members.size),
+        extraMemberCount = FaceStack.extraCountOf(group.members.size),
         memberCount = group.members.size,
-        memberNames = group.members.take(MAX_FACES).map { it.name },
+        memberNames = group.members.take(LISTED_NAMES).map { it.name },
         isPending = group.isPending ||
             pendingBill != null ||
             item.settlements.any { it.isPending } ||

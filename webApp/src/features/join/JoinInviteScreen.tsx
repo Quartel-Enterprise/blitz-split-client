@@ -3,15 +3,13 @@ import { JoinInvitePresenter, type JsJoinInviteState, type JsJoinMember, type Js
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar } from '@/components/common'
+import { AvatarStack, stackOf } from '@/components/AvatarStack'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { locale, t } from '@/i18n'
 import { GROUP_SHAPE } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
-
-const shownFaces = 3
 
 /**
  * "Convite": a group's invite link opened, over the home or the welcome. A member's personal link ("Convite
@@ -129,17 +127,9 @@ function PersonalTitle({ inviter, name }: { inviter: string | null | undefined; 
   return <>{inviter != null ? t('join_personalTitle', { inviter, name }) : t('join_personalTitleNoInviter', { name })}</>
 }
 
-/** The faces of the first who joined, and how many more there are. */
+/** The faces of who joined as the app's stack: the first and how many more there are. */
 function Faces({ members }: { members: JsJoinMember[] }) {
-  const more = members.length - shownFaces
-  return (
-    <div aria-hidden className="flex -space-x-2">
-      {members.slice(0, shownFaces).map((member) => (
-        <Avatar key={member.id} initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-9 text-xs ring-2 ring-background" />
-      ))}
-      {more > 0 && <span className="flex size-9 items-center justify-center rounded-full bg-muted text-xs font-semibold ring-2 ring-background">+{more}</span>}
-    </div>
-  )
+  return <AvatarStack {...stackOf(members)} size="lg" ring="ring-background" />
 }
 
 /** The invite's chip, title, group card and buttons, while the server is asked what the link opens. */

@@ -4,6 +4,7 @@ import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
+import { AvatarStack, stackOf } from '@/components/AvatarStack'
 import { PayingMethodLabel } from '@/components/PayingMethodTile'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -273,7 +274,7 @@ export function BillBody({
   onPerson?: (memberId: string) => void
 }) {
   const paid = paidText(state.payers)
-  const faces = state.payers.filter((payer) => payer.name != null).slice(0, 3)
+  const faces = state.payers.filter((payer) => payer.name != null)
   const lonePayerId = state.lonePayerId
   return (
     <div className="flex flex-col gap-6">
@@ -293,13 +294,7 @@ export function BillBody({
             onOpen={onPerson && lonePayerId ? () => onPerson(lonePayerId) : null}
             className="flex items-center gap-2 self-start text-sm text-muted-foreground"
           >
-            {faces.length > 0 && (
-              <span aria-hidden className="flex shrink-0">
-                {faces.map((payer, index) => (
-                  <Avatar key={index} initial={payer.initials} color={payer.color} photoUrl={payer.photoUrl} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
-                ))}
-              </span>
-            )}
+            {faces.length > 0 && <AvatarStack {...stackOf(Array.from(faces))} size="xs" />}
             {paid}
           </PersonButton>
           {state.paidWith && <PaidWithRow method={state.paidWith} />}

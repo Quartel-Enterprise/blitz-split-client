@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react'
 import type { JsGroupRow, JsMemberFace } from 'blitzsplit-shared'
-import { Avatar, pendingSurfaceClass } from '@/components/common'
+import { pendingSurfaceClass } from '@/components/common'
+import { AvatarStack } from '@/components/AvatarStack'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { t, type MessageKey } from '@/i18n'
 import { formatShortDate } from '@/lib/dates'
@@ -79,31 +80,14 @@ export function QueuedBadge() {
   )
 }
 
-/** Up to three faces and "+N"; screen readers get the member count from the row instead. */
+/** The faces the ViewModel picked and "+N"; screen readers get the member count from the row instead. */
 export function Faces({ group }: { group: JsGroupRow }) {
   return <FaceStack faces={Array.from(group.faces)} extraCount={group.extraMemberCount} />
 }
 
-/** Overlapping faces and "+N" for the rest: a group's members, or who paid a bill on Home (`isSmall`, a line tall). */
+/** A group's members, or who paid a bill on Home (`isSmall`, a line tall), as the app's stack of faces. */
 export function FaceStack({ faces, extraCount, isSmall = false }: { faces: JsMemberFace[]; extraCount: number; isSmall?: boolean }) {
-  const size = isSmall ? 'size-5 text-[9px]' : 'size-6 text-[10px]'
-  return (
-    <span aria-hidden className="flex shrink-0 items-center -space-x-1.5">
-      {faces.map((face, index) => (
-        <Avatar key={index} initial={face.initial} color={face.color} photoUrl={face.photoUrl} className={cn(size, 'ring-2 ring-card')} />
-      ))}
-      {extraCount > 0 && (
-        <span
-          className={cn(
-            'flex items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground ring-2 ring-card',
-            isSmall ? 'h-5 min-w-5 px-1 text-[9px]' : 'h-6 min-w-6 px-1.5 text-[10px]',
-          )}
-        >
-          +{extraCount}
-        </span>
-      )}
-    </span>
-  )
+  return <AvatarStack faces={faces.map((face) => ({ initials: face.initial, color: face.color, photoUrl: face.photoUrl }))} extraCount={extraCount} size={isSmall ? 'xs' : 'sm'} />
 }
 
 /** "6 members" or "Just you". */

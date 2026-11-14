@@ -1,71 +1,42 @@
 package com.quare.blitzsplit.android.feature.groups
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MobileOff
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TooltipAnchorPosition
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.AmountText
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupBalanceKind
-import com.quare.blitzsplit.feature.groups.presentation.model.HomePerson
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import software.quare.loadable.valueOrNull
-import kotlin.math.abs
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton as DesignProfileAvatarButton
 
 // Why: "Saldos com pessoas", "Seus grupos" and "Últimas despesas", each with the link that opens all of it.
@@ -91,167 +62,6 @@ internal fun HomeSectionHeader(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         TextButton(onClick = onAction) { Text(action) }
-    }
-}
-
-/*
- * Why: "Saldos com pessoas", each person once per currency, netted across the groups; the count joins the title once
- * the row scrolls. While it is read, or the first download fills the device, a shimmer holds its place; with everyone
- * settled the row goes, leaving no gap.
- */
-@Composable
-internal fun HomePeopleSection(
-    state: HomeUiState,
-    onEvent: (HomeUiEvent) -> Unit,
-    metrics: HomeMetrics,
-) {
-    if (state.isLoadingPeople) {
-        HomePeopleSkeleton(metrics)
-        return
-    }
-    val people = state.people.valueOrNull().orEmpty()
-    if (people.isEmpty()) return
-    val listState = rememberLazyListState()
-    val scrolls = listState.canScrollForward || listState.canScrollBackward
-    Column {
-        HomeSectionHeader(
-            title = if (scrolls) {
-                stringResource(R.string.groups_home_people_title_count, people.size)
-            } else {
-                stringResource(R.string.groups_home_people_title)
-            },
-            action = stringResource(R.string.groups_home_see_balances),
-            onAction = { onEvent(HomeUiEvent.OnSeeBalancesClicked) },
-            modifier = Modifier.padding(horizontal = metrics.gutter),
-        )
-        LazyRow(
-            state = listState,
-            contentPadding = PaddingValues(horizontal = metrics.gutter),
-            horizontalArrangement = Arrangement.spacedBy(if (metrics.isCompact) 6.dp else 8.dp),
-        ) {
-            items(
-                people,
-                key = { person -> person.key + person.currency.code },
-            ) { person ->
-                PersonFaceItem(
-                    person = person,
-                    size = metrics.faceSize,
-                    onClick = { onEvent(HomeUiEvent.OnPersonClicked(person.key, person.currency)) },
-                )
-            }
-        }
-    }
-}
-
-/*
- * Why: a face, what tapping it settles up (4.5) or records as received (6.5). A guest, a name nobody joined as, wears
- * the crossed-out phone, and a long press says they get no notice.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PersonFaceItem(
-    person: HomePerson,
-    size: Dp,
-    onClick: () -> Unit,
-) {
-    val money = rememberMoneyFormatter(person.currency)
-    val name = person.name ?: stringResource(DesignR.string.designsystem_former_member)
-    val amount = money.toText(abs(person.netMinor))
-    val owesYou = person.netMinor > 0
-    val description = stringResource(
-        when {
-            owesYou && person.isGuest -> R.string.groups_home_guest_owes_you_description
-            owesYou -> R.string.groups_home_person_owes_you_description
-            person.isGuest -> R.string.groups_home_guest_you_owe_description
-            else -> R.string.groups_home_person_you_owe_description
-        },
-        name,
-        amount,
-    )
-    val face: @Composable () -> Unit = {
-        Column(
-            modifier = Modifier
-                .width(size + 20.dp)
-                .clip(MaterialTheme.shapes.medium)
-                .clickable(onClick = onClick)
-                .clearAndSetSemantics {
-                    contentDescription = description
-                    role = Role.Button
-                }.padding(vertical = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box {
-                AvatarBadge(
-                    initial = person.initials,
-                    color = person.color ?: AvatarColor.default,
-                    photoUrl = person.photoUrl,
-                    size = size,
-                )
-                if (person.isGuest) GuestBadge(modifier = Modifier.align(Alignment.BottomEnd))
-            }
-            Text(
-                text = name,
-                modifier = Modifier.padding(top = 2.dp),
-                style = MaterialTheme.typography.labelLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            AmountText(
-                text = money.toSignedText(person.netMinor),
-                modifier = Modifier.padding(top = 4.dp),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = amountColorOf(person.netMinor),
-            )
-            Text(
-                text = stringResource(
-                    if (owesYou) R.string.groups_home_person_owes_you else R.string.groups_home_person_you_owe,
-                ),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-    if (!person.isGuest) {
-        face()
-        return
-    }
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below),
-        tooltip = {
-            PlainTooltip {
-                Text(
-                    stringResource(
-                        if (owesYou) {
-                            R.string.groups_home_guest_owes_you_tip
-                        } else {
-                            R.string.groups_home_guest_you_owe_tip
-                        },
-                        name,
-                    ),
-                )
-            }
-        },
-        state = rememberTooltipState(),
-    ) { face() }
-}
-
-@Composable
-private fun GuestBadge(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(22.dp)
-            .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
-            .padding(2.dp)
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.MobileOff,
-            contentDescription = null,
-            modifier = Modifier.size(12.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 

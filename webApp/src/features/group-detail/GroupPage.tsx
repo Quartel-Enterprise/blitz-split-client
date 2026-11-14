@@ -1,7 +1,8 @@
 import { ArrowLeft, BarChart3, Download, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import { useRef, type ReactNode } from 'react'
-import { Avatar, GroupTabs, SplitBillIcon, type GroupTab } from '@/components/common'
+import { GroupTabs, SplitBillIcon, type GroupTab } from '@/components/common'
+import { AvatarStack } from '@/components/AvatarStack'
 import { CurrencyChips } from '@/components/CurrencyChips'
 import { groupPageContentClass, HomeTabCrumb, type HomeTab } from '@/components/HomeShell'
 import { PageShell, useOpenHomeTab } from '@/components/HomeSidebar'
@@ -159,16 +160,7 @@ export function GroupPage({
             aria-label={[members, notJoined, t('groupDetail_seeMembers')].filter(Boolean).join(' · ')}
             className="-mt-1 flex items-center gap-2 self-start rounded-md text-[13px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
           >
-            <span aria-hidden className="flex">
-              {header.faces.map((face, index) => (
-                <Avatar key={index} initial={face.initials} color={face.color} photoUrl={face.photoUrl} className={cn('size-7 border-2 border-background text-[11px]', index > 0 && '-ml-1.5')} />
-              ))}
-              {header.extraMemberCount > 0 && (
-                <span className="-ml-1.5 flex h-7 min-w-7 items-center justify-center rounded-full border-2 border-background bg-muted px-1.5 text-[11px] font-semibold">
-                  +{header.extraMemberCount}
-                </span>
-              )}
-            </span>
+            <AvatarStack faces={Array.from(header.faces)} extraCount={header.extraMemberCount} size="md" ring="ring-background" />
             {notJoined}
           </button>
 
@@ -277,7 +269,7 @@ function GroupBodySkeleton() {
   return (
     <>
       <span className="-mt-1 flex">
-        {[0, 1, 2].map((index) => (
+        {[0, 1].map((index) => (
           <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
         ))}
       </span>

@@ -275,19 +275,13 @@ private struct SettledPairText: View {
     }
 }
 
-/// Up to four faces of who is in the split.
+/// Who is in the split, as a stack of faces.
 private struct SplitFaces: View {
     let people: [BillPerson]
     var size: CGFloat = 22
 
     var body: some View {
-        HStack(spacing: -size * 0.3) {
-            ForEach(people.prefix(4), id: \.id) { person in
-                AvatarPhoto(initial: person.initials, color: person.avatarColor, photoUrl: person.photoUrl, size: size)
-                    .overlay(Circle().strokeBorder(Palette.card, lineWidth: 1.5))
-            }
-        }
-        .accessibilityHidden(true)
+        AvatarStack(people: people.map(StackFace.init), size: size, ringWidth: 1.5)
     }
 }
 

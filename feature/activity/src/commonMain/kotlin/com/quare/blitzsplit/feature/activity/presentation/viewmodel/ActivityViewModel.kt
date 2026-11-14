@@ -12,9 +12,11 @@ import com.quare.blitzsplit.core.activity.domain.usecase.ObserveActivityFeed
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.SyncState
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -300,7 +302,9 @@ class ActivityViewModel(
                     ActivityGroupOption(
                         id = group.id,
                         name = group.name,
+                        initials = Initials.of(group.name),
                         color = group.color,
+                        photoUrl = group.photo?.toImageUrl(),
                         type = group.type,
                     )
                 },

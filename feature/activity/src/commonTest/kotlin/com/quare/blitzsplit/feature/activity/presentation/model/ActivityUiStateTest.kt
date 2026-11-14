@@ -567,7 +567,7 @@ class ActivityUiStateTest {
         filter = filter,
         filterDraft = filterDraft,
         draftResultCount = 0,
-        groups = listOf(ActivityGroupOption("ape", "Apê 302", AvatarColor.PEACH, GroupType.HOME)),
+        groups = listOf(ActivityGroupOption("ape", "Apê 302", "A3", AvatarColor.PEACH, null, GroupType.HOME)),
         personName = null,
         expandedItemId = null,
         pickedItemId = pickedItemId,

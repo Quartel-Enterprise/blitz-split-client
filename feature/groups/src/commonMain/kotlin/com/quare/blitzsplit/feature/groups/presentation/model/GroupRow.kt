@@ -11,7 +11,7 @@ data class GroupRow(
     val color: AvatarColor,
     // Why: drawn in place of the color and the initials, null for none.
     val photoUrl: String?,
-    // Why: up to three faces; the rest is "+N" (extraMemberCount).
+    // Why: the faces FaceStack shows: both of two, the first of three or more; the rest is "+N" (extraMemberCount).
     val faces: List<MemberFace>,
     val extraMemberCount: Int,
     // Why: "Só você" for one, "N membros" otherwise.

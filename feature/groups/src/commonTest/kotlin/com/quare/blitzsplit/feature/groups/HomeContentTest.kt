@@ -466,7 +466,7 @@ class HomeContentTest {
     }
 
     @Test
-    fun `GIVEN a bill four people paid WHEN listing the latest bills THEN shows three faces and one more`() {
+    fun `GIVEN a bill four people paid WHEN listing the latest bills THEN shows the first face and three more`() {
         // Given
         val group = group(
             id = "trip",
@@ -487,8 +487,34 @@ class HomeContentTest {
             .single()
 
         // Then
-        assertEquals(listOf("P", "A", "B"), bill.payerFaces.map { it.initial })
-        assertEquals(1, bill.extraPayerCount)
+        assertEquals(listOf("P"), bill.payerFaces.map { it.initial })
+        assertEquals(3, bill.extraPayerCount)
+    }
+
+    @Test
+    fun `GIVEN a bill three people paid WHEN listing the latest bills THEN shows the first face and two more`() {
+        // Given
+        val group = group(
+            id = "trip",
+            members = listOf("Pierre", "Ana", "Bruno").map { member(it, isMe = it == "Pierre") },
+        )
+        val paidByAll = bill(
+            "dinner",
+            groupId = "trip",
+            spentAt = hoursAgo(1),
+        ).copy(
+            payers = listOf("Pierre", "Ana", "Bruno").map { ExpensePayer("member-$it", 3000L) },
+        )
+
+        // When
+        val bill = homeBillDaysOf(listOf(withMoney(group, paidByAll)), CategoryTree.appOnly, clock)
+            .single()
+            .bills
+            .single()
+
+        // Then
+        assertEquals(listOf("P"), bill.payerFaces.map { it.initial })
+        assertEquals(2, bill.extraPayerCount)
     }
 
     @Test

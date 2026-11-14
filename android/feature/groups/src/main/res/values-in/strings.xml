@@ -15,7 +15,6 @@
     <string name="groups_change_error">Perubahan tidak bisa disimpan. Coba lagi.</string>
     <string name="groups_new_group">Grup baru</string>
     <string name="groups_only_you">Hanya kamu</string>
-    <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">belum ada pengeluaran</string>
     <plurals name="groups_member_count">
         <item quantity="other">%d anggota</item>
