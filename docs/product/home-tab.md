@@ -2,9 +2,13 @@
 
 The home tab, its shortcuts and pinned groups.
 
-  - "Home" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Balances with people", a row of faces
-    with each person's net across groups as Balances nets it (`PeopleBalances`), whom you owe first, then who owes you,
-    the largest first in each, hidden when nobody owes anybody; a face opens settling up for the net
+  - "Home" (flow 10, `HomeViewModel` in `:feature:groups`), top to bottom: "Balances with people", each person's net
+    across groups as Balances nets it (`PeopleBalances`), whom you owe first, then who owes you, the largest first in
+    each, hidden when nobody owes anybody. It draws rows (the face, the name, the amount and "owes you" or "you owe" on
+    one line) while they take two lines at most, in as many columns as fit, and the scrolling row of faces past that
+    (beta feedback: one person left a phone's width empty): `HomePeopleLayout`, shared by the three UIs, from the
+    section's own width and the count; see [Responsive layouts](../architecture/responsive-layouts.md#homes-balances-with-people)
+    for the numbers. A person opens settling up for the net
     (`Route.SettleUp`, Pierre's call: it stays so after beta feedback 18), whose two faces open the profiles, and a
     guest (a name nobody joined as) gets a badge and, on a long press or hover, "Diego is a guest and doesn't have the app…".
     "Overall balance" as Groups' (both are the global Balances' totals, `PeopleBalances.totals`, so the three never differ: big in the first currency with a net, a line for each other one with a net,
@@ -26,11 +30,14 @@ The home tab, its shortcuts and pinned groups.
     under Overall balance, beside the faces in a wide window). "Your groups": up to three open groups, the pinned
     first, then the latest activity, as Groups draws them; "See all" opens Groups. "Latest expenses": the five latest
     bills you paid or take part in, by day, with your share and its category's badge exactly as the group's Expenses
-    rows draw it (Pierre's call, the category as it reads now, `HomeBill.category`). Under the description, no
+    rows draw it (Pierre's call, the category as it reads now, `HomeBill.category`). The share is its signed amount
+    alone, "+R$ 6,79" or "−R$ 9", in green or orange, with no "to get back" or "you owe" after it, in every list of
+    bills (Home, All expenses, the desktop table's "Your share"), as Groups' list draws a group's net (beta feedback);
+    TalkBack, VoiceOver and the web's screen readers still hear the word, and the Bill keeps it. Under the description, no
     "Floripa trip · You paid" line (beta feedback, it was cut off on a phone): the group's rounded square (its photo,
     or its initials on its color, `HomeBill.groupInitials`, `groupColor`, `groupPhotoUrl`) and then who paid as
-    overlapping faces (their photo, or their initial on their color; someone no longer in the group a blank face), up
-    to three and "+N" (`HomeBill.payerFaces`, `extraPayerCount`), the amber dot and "queued" after them while the bill
+    a stack of faces (their photo, or their initial on their color; someone no longer in the group a blank face), at
+    most two bubbles as every stack ([General rules](general.md)) (`HomeBill.payerFaces`, `extraPayerCount`), the amber dot and "queued" after them while the bill
     waits, as the legacy Bora Rachar drew the payer and the group; TalkBack, VoiceOver and the web's screen readers
     still read "Floripa trip · You paid". The web's list keeps the day after the faces, and its desktop table draws the
     group's square in its Group column and only the faces under the description. Inside the group, Expenses keeps its

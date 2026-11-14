@@ -1,16 +1,13 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
@@ -26,34 +23,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
+import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 
-private const val FACE_COUNT = 3
-
+// Why: who shares an item, as a stack of faces.
 @Composable
 internal fun ConsumerFacesRow(people: List<BillPerson>) {
-    Row(horizontalArrangement = Arrangement.spacedBy((-8).dp)) {
-        people.take(FACE_COUNT).forEach { person ->
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .border(2.dp, MaterialTheme.colorScheme.surfaceContainerLowest, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                AvatarBadge(
-                    initial = person.initials,
-                    color = person.avatarColor,
-                    photoUrl = person.photoUrl,
-                    size = 24.dp,
-                )
-            }
-        }
-    }
+    AvatarStackRow(
+        people = people.map {
+            StackFace(
+                initials = it.initials,
+                color = it.avatarColor,
+                photoUrl = it.photoUrl,
+            )
+        },
+        size = 24.dp,
+        ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+    )
 }
 
 // Why: "Serviço (10%)" and "Couvert", each opening its field, and the difference "Dividir a diferença" shared.

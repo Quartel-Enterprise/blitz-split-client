@@ -143,7 +143,14 @@ internal fun GroupGridCard(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (size != GroupGridSize.COMPACT) MemberFacesRow(group = group)
+                    if (size !=
+                        GroupGridSize.COMPACT
+                    ) {
+                        MemberFacesRow(
+                            group = group,
+                            ringColor = selectableRowColorOf(isSelected),
+                        )
+                    }
                     if (group.isPending) PendingIndicator()
                     val detail = if (size == GroupGridSize.COMPACT) {
                         if (group.isPending) stringResource(R.string.groups_meta_queued) else null

@@ -150,6 +150,7 @@ class JsActivityGroup(
     val name: String,
     val initials: String,
     val color: String,
+    val photoUrl: String?,
     val type: String,
 )
 
@@ -390,8 +391,9 @@ private fun toJsActivityFilter(filter: ActivityFilter): JsActivityFilter = JsAct
 private fun toJsActivityGroup(group: ActivityGroupOption): JsActivityGroup = JsActivityGroup(
     id = group.id,
     name = group.name,
-    initials = Initials.of(group.name),
+    initials = group.initials,
     color = group.color.code,
+    photoUrl = group.photoUrl,
     type = group.type.code,
 )
 

@@ -319,7 +319,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group with four members WHEN the screen opens THEN shows all four faces and no extra count`() =
+    fun `GIVEN a group with four members WHEN the screen opens THEN shows the first face and three more`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -331,17 +331,14 @@ class GroupDetailViewModelTest {
             assertEquals(
                 listOf(
                     GroupFace("A", AvatarColor.PEACH, photoUrl = null),
-                    GroupFace("P", AvatarColor.BLUE, photoUrl = null),
-                    GroupFace("B", AvatarColor.GREEN, photoUrl = null),
-                    GroupFace("C", AvatarColor.LILAC, photoUrl = null),
                 ),
                 state.header.faces,
             )
-            assertEquals(0, state.header.extraMemberCount)
+            assertEquals(3, state.header.extraMemberCount)
         }
 
     @Test
-    fun `GIVEN a group with six members WHEN the screen opens THEN shows the first four faces and two more`() =
+    fun `GIVEN a group with six members WHEN the screen opens THEN shows the first face and five more`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = trip.copy(members = trip.members + diego + elisa))
@@ -350,8 +347,8 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(listOf("A", "P", "B", "C"), state.header.faces.map { it.initials })
-            assertEquals(2, state.header.extraMemberCount)
+            assertEquals(listOf("A"), state.header.faces.map { it.initials })
+            assertEquals(5, state.header.extraMemberCount)
             assertEquals(6, state.header.memberCount)
             assertEquals(4, state.header.notJoinedCount)
         }
@@ -919,7 +916,7 @@ class GroupDetailViewModelTest {
             assertEquals("PR", state.header.groupInitials)
             assertEquals(5, state.header.memberCount)
             assertEquals(3, state.header.notJoinedCount)
-            assertEquals(1, state.header.extraMemberCount)
+            assertEquals(4, state.header.extraMemberCount)
         }
 
     @Test

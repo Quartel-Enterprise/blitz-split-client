@@ -16,7 +16,7 @@ data class GroupHeader(
     val currency: GroupCurrency,
     // Why: the chips, drawn only with more than one: the currencies the group has money in, its default first.
     val currencies: List<GroupCurrency>,
-    // Why: up to four faces; the rest is "+N" (extraMemberCount).
+    // Why: the faces FaceStack shows: both of two, the first of three or more; the rest is "+N" (extraMemberCount).
     val faces: List<GroupFace>,
     // Why: "6 membros".
     val memberCount: Int,

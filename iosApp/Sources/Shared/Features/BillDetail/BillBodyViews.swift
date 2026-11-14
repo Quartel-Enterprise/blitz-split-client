@@ -51,14 +51,12 @@ struct BillPayerLine: View {
     var body: some View {
         HStack(spacing: 8) {
             // Whoever left the group has no face
-            let faces = payers.filter { $0.name != nil }.prefix(3)
+            let faces = payers.filter { $0.name != nil }
             if !faces.isEmpty {
-                HStack(spacing: -size * 0.3) {
-                    ForEach(Array(faces.enumerated()), id: \.offset) { _, payer in
-                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: payer.photoUrl, size: size)
-                    }
-                }
-                .accessibilityHidden(true)
+                AvatarStack(
+                    people: faces.map { StackFace(initials: $0.initials, color: $0.avatarColor, photoUrl: $0.photoUrl) },
+                    size: size,
+                )
             }
             Text(verbatim: BillCopy.paid(payers))
         }

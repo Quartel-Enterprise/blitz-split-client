@@ -22,7 +22,7 @@ data class HomeBill(
     val currency: GroupCurrency,
     // Why: who paid, this device's user first, as Despesas names them.
     val payers: List<SearchBillPayer>,
-    // Why: their faces in that order, up to three; the rest is "+N" (extraPayerCount). Someone gone has no initial.
+    // Why: their faces in that order, as FaceStack shows them; the rest is "+N" (extraPayerCount). Someone gone has no initial.
     val payerFaces: List<MemberFace>,
     val extraPayerCount: Int,
     // Why: what the bill does to this device's user's balance: positive "a receber", negative "você deve".

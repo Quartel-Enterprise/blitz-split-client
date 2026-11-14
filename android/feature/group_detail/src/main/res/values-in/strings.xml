@@ -14,7 +14,6 @@
     </plurals>
     <string name="group_detail_meta_total">%1$s · total %2$s</string>
     <string name="group_detail_meta_empty">%s · belum ada pengeluaran</string>
-    <string name="group_detail_extra_members">+%d</string>
     <plurals name="group_detail_not_joined">
         <item quantity="other">%d belum bergabung</item>
     </plurals>

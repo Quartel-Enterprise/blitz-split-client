@@ -1,5 +1,5 @@
 import { ChevronRight, Pin } from 'lucide-react'
-import type { HomePresenter, JsBillMenu, JsHomeBill, JsHomeGroup, JsHomePerson, JsHomeState, JsHomeTotal } from 'blitzsplit-shared'
+import { getHomePeopleLayout, type HomePresenter, type JsBillMenu, type JsHomeBill, type JsHomeGroup, type JsHomePerson, type JsHomeState, type JsHomeTotal } from 'blitzsplit-shared'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react'
 import { homeBillMenuOptions, RowMenuButton } from '@/components/BillRowMenu'
 import { Avatar, PendingDot } from '@/components/common'
@@ -159,8 +159,10 @@ interface GuestTip {
 }
 
 /**
- * "Saldos com pessoas": a face per person you have an open balance with, whom you owe first, in a row that scrolls
- * sideways; " · 9" once it does. A face opens settling up with them for the net. A guest (a name nobody joined as)
+ * "Saldos com pessoas": each person you have an open balance with, whom you owe first. The shared HomePeopleLayout picks
+ * by the card's width and the count, as Android and Apple do (beta feedback): rows (face, name, amount and "te deve" on
+ * one line) while they take two lines at most, in as many columns as fit; else a face each in a row that scrolls
+ * sideways, " · 9" once it does. A face opens settling up with them for the net. A guest (a name nobody joined as)
  * wears the crossed-out phone, and hovering it, focusing it or a long press shows why they get no notice. Gone,
  * leaving no gap, once everyone is settled; faces of gray while the first download hasn't brought anyone yet.
  */
@@ -170,6 +172,8 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   const tipId = useId()
   const [tip, setTip] = useState<GuestTip | null>(null)
   const isScrolling = useOverflows(rowRef, state.people?.length ?? 0)
+  // Why: the card mounts once there is someone to show, so the width is followed from then.
+  const width = useContentWidth(cardRef, state.showsPeople || state.isLoadingPeople)
   // Why: a long press shows the tip until the next touch anywhere, which a touch screen has instead of hover's end.
   useEffect(() => {
     if (!tip?.isTouch) return
@@ -184,6 +188,8 @@ export function PeopleCard({ presenter, state }: SectionProps) {
   if (!state.showsPeople && !state.isLoadingPeople) return null
 
   const people = Array.from(state.people ?? [])
+  const layout = state.isLoadingPeople || people.length === 0 ? null : getHomePeopleLayout(people.length, width)
+  const showsRows = layout?.showsRows === true
   const showTip = (person: JsHomePerson, face: HTMLElement, isTouch: boolean) => {
     const card = cardRef.current
     if (!card) return
@@ -194,23 +200,29 @@ export function PeopleCard({ presenter, state }: SectionProps) {
     <section ref={cardRef} aria-labelledby="home-people-title" className="relative flex flex-col gap-1.5 rounded-lg border bg-card p-3 md:px-4 md:py-3.5">
       <SectionHeader
         id="home-people-title"
-        title={isScrolling ? t('home_peopleCount', { count: people.length }) : t('home_people')}
+        title={isScrolling && !showsRows ? t('home_peopleCount', { count: people.length }) : t('home_people')}
         action={t('home_seeBalances')}
         onAction={() => presenter.seeBalances()}
       />
-      <div ref={rowRef} className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2" onScroll={() => tip && setTip(null)}>
+      <div
+        ref={rowRef}
+        style={showsRows ? { gridTemplateColumns: `repeat(${layout?.columns ?? 1}, minmax(0, 1fr))` } : undefined}
+        className={showsRows ? '-mx-1 grid gap-1 px-1' : '-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2'}
+        onScroll={() => tip && setTip(null)}
+      >
         {state.isLoadingPeople ? (
           <FacesSkeleton />
         ) : (
           people.map((person) => (
-              <PersonFace
-                key={`${person.key}/${person.currency}`}
-                person={person}
-                tipId={tip?.key === person.key ? tipId : undefined}
-                onOpen={() => presenter.openPerson(person.key, person.currency)}
-                onTip={(face, isTouch) => (face ? showTip(person, face, isTouch) : setTip(null))}
-              />
-            ))
+            <PersonFace
+              key={`${person.key}/${person.currency}`}
+              person={person}
+              isRow={showsRows}
+              tipId={tip?.key === person.key ? tipId : undefined}
+              onOpen={() => presenter.openPerson(person.key, person.currency)}
+              onTip={(face, isTouch) => (face ? showTip(person, face, isTouch) : setTip(null))}
+            />
+          ))
         )}
       </div>
       {tip && (
@@ -259,14 +271,19 @@ function NoAppIcon({ className, strokeWidth = 2 }: { className?: string; strokeW
 
 const longPressMillis = 500
 
-/** One face of the row: avatar (with the guest's badge), name, the net with its sign and its word. */
+/**
+ * One person: avatar (with the guest's badge), name, the net with its sign and its word; stacked as a face of the row,
+ * or on one line as a row (`isRow`).
+ */
 function PersonFace({
   person,
+  isRow,
   tipId,
   onOpen,
   onTip,
 }: {
   person: JsHomePerson
+  isRow: boolean
   tipId: string | undefined
   onOpen: () => void
   onTip: (face: HTMLElement | null, isTouch: boolean) => void
@@ -320,13 +337,16 @@ function PersonFace({
         onOpen()
       }}
       {...guestHandlers}
-      className="flex w-[72px] shrink-0 flex-col items-center gap-0.5 rounded-lg py-1.5 outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring md:w-[88px]"
+      className={cn(
+        'rounded-lg outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
+        isRow ? 'flex min-h-14 min-w-0 items-center gap-3 px-2 py-2 text-left' : 'flex w-[72px] shrink-0 flex-col items-center gap-0.5 py-1.5 md:w-[88px]',
+      )}
     >
-      <span className="relative flex">
+      <span className="relative flex shrink-0">
         {person.color ? (
-          <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-12 text-base md:size-14 md:text-lg" />
+          <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={isRow ? 'size-10 text-sm' : 'size-12 text-base md:size-14 md:text-lg'} />
         ) : (
-          <span aria-hidden className="size-12 rounded-full bg-muted md:size-14" />
+          <span aria-hidden className={cn('rounded-full bg-muted', isRow ? 'size-10' : 'size-12 md:size-14')} />
         )}
         {person.isGuest && (
           <span aria-hidden className="absolute -right-0.5 -bottom-0.5 flex size-5 items-center justify-center rounded-full border-2 border-card bg-muted text-muted-foreground">
@@ -334,13 +354,43 @@ function PersonFace({
           </span>
         )}
       </span>
-      <span className="max-w-full truncate text-[13px] leading-4 font-medium">{name}</span>
-      <span className={cn('mt-1 text-xs leading-4 font-semibold whitespace-nowrap tabular-nums', balanceTone(person.netMinor))}>
-        {formatSignedMoney(person.netMinor, person.currency, person.fractionDigits)}
-      </span>
-      <span className="text-[11px] leading-[14px] text-muted-foreground">{t(youOwe ? 'groups_balanceYouOwe' : 'home_owesYouWord')}</span>
+      {isRow ? (
+        <>
+          <span className="min-w-0 flex-1 truncate text-sm font-medium">{name}</span>
+          <span className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap">
+            <span className={cn('text-sm font-semibold tabular-nums', balanceTone(person.netMinor))}>
+              {formatSignedMoney(person.netMinor, person.currency, person.fractionDigits)}
+            </span>
+            <span className="text-xs text-muted-foreground">{t(youOwe ? 'groups_balanceYouOwe' : 'home_owesYouWord')}</span>
+          </span>
+        </>
+      ) : (
+        <>
+          <span className="max-w-full truncate text-[13px] leading-4 font-medium">{name}</span>
+          <span className={cn('mt-1 text-xs leading-4 font-semibold whitespace-nowrap tabular-nums', balanceTone(person.netMinor))}>
+            {formatSignedMoney(person.netMinor, person.currency, person.fractionDigits)}
+          </span>
+          <span className="text-[11px] leading-[14px] text-muted-foreground">{t(youOwe ? 'groups_balanceYouOwe' : 'home_owesYouWord')}</span>
+        </>
+      )}
     </button>
   )
+}
+
+/** The element's width inside its padding, in CSS px, followed as the window or the layout changes. */
+function useContentWidth(ref: RefObject<HTMLElement | null>, isMounted: boolean): number {
+  const [width, setWidth] = useState(0)
+  useLayoutEffect(() => {
+    const element = ref.current
+    if (!element) return
+    // Why: measured before the first paint too, so a wide card doesn't flash the faces before its rows.
+    const style = getComputedStyle(element)
+    setWidth(element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight))
+    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width))
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [ref, isMounted])
+  return width
 }
 
 /** Whether the row is wider than its box, so it scrolls; checked again as the window or the row changes. */
@@ -366,10 +416,18 @@ function shareParts(bill: JsHomeBill): { amount: string; word?: string } {
   return { amount }
 }
 
-/** "+R$ 249,60 a receber" or "−R$ 29,20 você deve" in one line. */
-function shareText(bill: JsHomeBill): string {
+/**
+ * "+R$ 249,60" or "−R$ 29,20": in a list the sign and the color say it, as Groups' list does (beta feedback); a screen
+ * reader still hears "a receber" or "você deve". The bill itself keeps the word.
+ */
+function ShareAmount({ bill, className }: { bill: JsHomeBill; className?: string }) {
   const { amount, word } = shareParts(bill)
-  return word ? `${amount} ${word}` : amount
+  return (
+    <span className={cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor), className)}>
+      {amount}
+      {word && <span className="sr-only"> {word}</span>}
+    </span>
+  )
 }
 
 /** "Você pagou", "Ana pagou", "Ana e Bruno pagaram" or "3 pessoas pagaram", "na fila · " first while it waits. */
@@ -397,17 +455,6 @@ function BillOrigin({ bill, showsGroup, children }: { bill: JsHomeBill; showsGro
         </span>
       )}
       {children}
-    </span>
-  )
-}
-
-/** The table's "Sua parte" as "Seus grupos" draws a balance beside it: the amount, its word under it. */
-function ShareCell({ bill }: { bill: JsHomeBill }) {
-  const { amount, word } = shareParts(bill)
-  return (
-    <span className="flex flex-col items-end">
-      <span className={cn('font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor))}>{amount}</span>
-      {word && <span className="text-xs whitespace-nowrap text-muted-foreground">{word}</span>}
     </span>
   )
 }
@@ -523,7 +570,7 @@ function HomeBillTableRow({ bill, day, menu, onOpen }: { bill: JsHomeBill; day: 
       <td className="px-3 py-2.5 whitespace-nowrap text-muted-foreground">{day}</td>
       <td className="px-3 py-2.5 text-right whitespace-nowrap tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</td>
       <td className="py-2.5 pl-3 text-right">
-        <ShareCell bill={bill} />
+        <ShareAmount bill={bill} />
       </td>
       <td className="py-1 pr-1" onClick={(event) => event.stopPropagation()}>
         <RowMenuButton title={bill.description} options={homeBillMenuOptions(menu, bill)} open={isMenuOpen} onOpenChange={setMenuOpen} />
@@ -560,7 +607,7 @@ export function HomeBillListRow({ bill, menu, onOpen, children }: { bill: JsHome
         </span>
         <span className="flex shrink-0 flex-col items-end gap-0.5">
           <span className="tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</span>
-          <span className={cn('text-xs font-semibold whitespace-nowrap tabular-nums', balanceTone(bill.myBalanceMinor))}>{shareText(bill)}</span>
+          <ShareAmount bill={bill} className="text-xs" />
         </span>
       </button>
       <span className="shrink-0 pr-1">

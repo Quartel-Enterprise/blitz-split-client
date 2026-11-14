@@ -405,10 +405,10 @@ struct ActivityFilterSheet: View {
                 .padding(.vertical, 8)
             GroupedCard {
                 VStack(spacing: 0) {
-                    groupRow(id: nil, name: String(localized: "All groups", bundle: .appLanguage), color: nil)
+                    groupRow(id: nil, name: String(localized: "All groups", bundle: .appLanguage), group: nil)
                     ForEach(model.state.groups, id: \.id) { group in
-                        Divider().padding(.leading, 48)
-                        groupRow(id: group.id, name: group.name, color: group.color)
+                        Divider().padding(.leading, 16)
+                        groupRow(id: group.id, name: group.name, group: group)
                     }
                 }
             }
@@ -449,15 +449,18 @@ struct ActivityFilterSheet: View {
         .padding(.top, 6)
     }
 
-    private func groupRow(id: String?, name: String, color: AvatarColor?) -> some View {
+    /// "All groups" has no avatar and no empty slot for one (beta feedback); a group shows its photo, else its
+    /// initials on its color.
+    private func groupRow(id: String?, name: String, group: ActivityGroupOption?) -> some View {
         let isOn = draft.groupId == id
         return Button {
             model.send(ActivityUiEventOnDraftGroupPicked(groupId: id))
         } label: {
             pickRow(isOn: isOn) {
-                GroupAvatar.shape(size: 20)
-                    .fill(color?.data ?? .clear)
-                    .frame(width: 20, height: 20)
+                if let group {
+                    GroupAvatar(initials: group.initials, color: group.color, photoUrl: group.photoUrl, size: 24)
+                        .accessibilityHidden(true)
+                }
                 Text(verbatim: name)
             }
         }

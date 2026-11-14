@@ -21,9 +21,11 @@ struct HomeSectionHeader: View {
     }
 }
 
-/// "Balances with people": a row of faces, whom you owe first, then who owes you. A face settles up with them, or
-/// records what they paid you; a guest (no app) wears a crossed-out phone and explains itself on a long press, a hover
-/// on the Mac. Until they are read (nil), and while the first download fills the device, faces shimmer in their place.
+/// "Balances with people", whom you owe first, then who owes you. `HomePeopleLayout` picks by the section's width and
+/// the count, as Android and the web do: rows (face, name, amount and "owes you" on one line) while they take two lines
+/// at most, in as many columns as fit, else a row of faces. A person settles up with them, or records what they paid
+/// you; a guest (no app) wears a crossed-out phone and explains itself on a long press, a hover on the Mac. Until they
+/// are read (nil), and while the first download fills the device, faces shimmer in their place.
 struct HomePeopleSection: View {
     let people: [HomePerson]?
     /// Nobody to show yet: still read, or the first download may bring them.
@@ -33,35 +35,111 @@ struct HomePeopleSection: View {
 
     /// The faces run past the row, so the title counts them.
     @State private var isCounted = false
+    @State private var width: CGFloat = 0
+
+    private var layout: HomePeopleLayout? {
+        guard !isLoading, let people, !people.isEmpty else { return nil }
+        let layout = HomePeopleLayout.companion.of(peopleCount: Int32(people.count), sectionWidth: Float(width))
+        return layout.showsRows ? layout : nil
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HomeSectionHeader(
-                title: HomeCopy.peopleTitle(count: people?.count ?? 0, isCounted: isCounted && people != nil),
+                title: HomeCopy.peopleTitle(count: people?.count ?? 0, isCounted: isCounted && people != nil && layout == nil),
                 action: String(localized: "See balances", bundle: .appLanguage),
             ) {
                 send(HomeUiEventOnSeeBalancesClicked.shared)
             }
-            ScrollView(.horizontal) {
-                HStack(alignment: .top, spacing: 8) {
-                    if isLoading {
-                        HomeFacesPlaceholder(faceSize: faceSize)
-                            .shimmering()
-                    }
-                    ForEach(people ?? [], id: \.stableId) { person in
-                        PersonFace(person: person, size: faceSize) {
-                            send(HomeUiEventOnPersonClicked(key: person.key, currency: person.currency))
+            if let layout, let people {
+                rows(people, columns: Int(layout.columns))
+            } else {
+                faces
+            }
+        }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
+    }
+
+    private var faces: some View {
+        ScrollView(.horizontal) {
+            HStack(alignment: .top, spacing: 8) {
+                if isLoading {
+                    HomeFacesPlaceholder(faceSize: faceSize)
+                        .shimmering()
+                }
+                ForEach(people ?? [], id: \.stableId) { person in
+                    PersonFace(person: person, size: faceSize) { open(person) }
+                }
+            }
+        }
+        .scrollIndicators(.hidden)
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentSize.width > geometry.containerSize.width + 1
+        } action: { _, overflows in
+            isCounted = overflows
+        }
+    }
+
+    /// One column reads as one card, as "Latest expenses" does; several put each person in a card of their own.
+    @ViewBuilder
+    private func rows(_ people: [HomePerson], columns: Int) -> some View {
+        if columns == 1 {
+            GroupedCard {
+                VStack(spacing: 0) {
+                    ForEach(Array(people.enumerated()), id: \.element.stableId) { index, person in
+                        if index > 0 {
+                            Divider().padding(.leading, 68)
                         }
+                        PersonRow(person: person) { open(person) }
                     }
                 }
             }
-            .scrollIndicators(.hidden)
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                geometry.contentSize.width > geometry.containerSize.width + 1
-            } action: { _, overflows in
-                isCounted = overflows
+        } else {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: columns), spacing: 8) {
+                ForEach(people, id: \.stableId) { person in
+                    PersonRow(person: person) { open(person) }
+                        .background(Palette.card, in: .rect(cornerRadius: 20))
+                }
             }
         }
+    }
+
+    private func open(_ person: HomePerson) {
+        send(HomeUiEventOnPersonClicked(key: person.key, currency: person.currency))
+    }
+}
+
+/// A row of "Balances with people": the face, the name, then the amount and "owes you" or "you owe" on one line.
+private struct PersonRow: View {
+    let person: HomePerson
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                PersonAvatar(person: person, size: 40)
+                Text(verbatim: HomeCopy.name(person))
+                    .lineLimit(1)
+                Spacer(minLength: 8)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(verbatim: HomeCopy.amount(person))
+                        .font(.subheadline.weight(.semibold))
+                        .monospacedDigit()
+                        .foregroundStyle(Palette.balance(person.netMinor))
+                    Text(verbatim: HomeCopy.word(person))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .lineLimit(1)
+                .fixedSize()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .personAccessibility(person, action: action)
     }
 }
 
@@ -73,17 +151,7 @@ private struct PersonFace: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 2) {
-                avatar
-                    .overlay(alignment: .bottomTrailing) {
-                        if person.isGuest {
-                            Image(systemName: "iphone.slash")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(.secondary)
-                                .frame(width: 20, height: 20)
-                                .background(Palette.card, in: .circle)
-                                .offset(x: 2, y: 2)
-                        }
-                    }
+                PersonAvatar(person: person, size: size)
                     .padding(.bottom, 2)
                 Text(verbatim: HomeCopy.name(person))
                     .font(.footnote)
@@ -104,20 +172,47 @@ private struct PersonFace: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: HomeCopy.accessibilityLabel(person)))
-        .accessibilityHint(Text(verbatim: HomeCopy.accessibilityHint(person)))
-        .accessibilityAddTraits(.isButton)
+        .personAccessibility(person, action: action)
+    }
+}
+
+private extension View {
+    /// What VoiceOver reads for a person, and a guest's hint on a long press (a hover on the Mac).
+    func personAccessibility(_ person: HomePerson, action: @escaping () -> Void) -> some View {
+        accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(verbatim: HomeCopy.accessibilityLabel(person)))
+            .accessibilityHint(Text(verbatim: HomeCopy.accessibilityHint(person)))
+            .accessibilityAddTraits(.isButton)
         #if os(iOS)
-        .contextMenu {
-            if person.isGuest {
-                Text(verbatim: HomeCopy.guestHint(person))
-                Button(HomeCopy.accessibilityHint(person), systemImage: "banknote", action: action)
+            .contextMenu {
+                if person.isGuest {
+                    Text(verbatim: HomeCopy.guestHint(person))
+                    Button(HomeCopy.accessibilityHint(person), systemImage: "banknote", action: action)
+                }
             }
-        }
         #else
-        .help(person.isGuest ? HomeCopy.guestHint(person) : "")
+            .help(person.isGuest ? HomeCopy.guestHint(person) : "")
         #endif
+    }
+}
+
+/// The face, a guest's wearing the crossed-out phone; someone no longer in the group a blank one.
+private struct PersonAvatar: View {
+    let person: HomePerson
+    let size: CGFloat
+
+    var body: some View {
+        avatar
+            .overlay(alignment: .bottomTrailing) {
+                if person.isGuest {
+                    Image(systemName: "iphone.slash")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 20, height: 20)
+                        .background(Palette.card, in: .circle)
+                        .offset(x: 2, y: 2)
+                }
+            }
     }
 
     @ViewBuilder
@@ -732,10 +827,12 @@ struct HomeBillRow: View {
                         Text(verbatim: bill.currency.format(bill.totalMinor))
                             .font(.subheadline.weight(.semibold))
                             .monospacedDigit()
-                        Text(verbatim: HomeCopy.share(bill))
+                        // The sign and the color say it in a list, as Groups' list does; VoiceOver still reads the word
+                        Text(verbatim: bill.currency.formatSigned(bill.myBalanceMinor))
                             .font(.caption.weight(.medium))
                             .monospacedDigit()
                             .foregroundStyle(Palette.balance(bill.myBalanceMinor))
+                            .accessibilityLabel(Text(verbatim: HomeCopy.share(bill)))
                     }
                     // The amounts stay whole; the description and the meta give way
                     .fixedSize()
@@ -762,13 +859,12 @@ struct HomeBillRow: View {
         )
     }
 
-    /// The group's square, then who paid as overlapping faces and "+N" (beta feedback, as the legacy app drew them:
+    /// The group's square, then who paid as a stack of faces (beta feedback, as the legacy app drew them:
     /// "Floripa trip · You paid" was cut off on an iPhone), "queued" while it waits; VoiceOver still reads the line.
     private var billOrigin: some View {
         HStack(spacing: 6) {
             GroupAvatar(initials: bill.groupInitials, color: bill.groupColor, photoUrl: bill.groupPhotoUrl, size: 20)
-            FaceStack(faces: bill.payerFaces, extraCount: Int(bill.extraPayerCount))
-                .foregroundStyle(.secondary)
+            AvatarStack(faces: bill.payerFaces.map(StackFace.init), extraCount: Int(bill.extraPayerCount), size: 18, ringWidth: 1.5)
             if bill.isPending {
                 PendingDot()
                 Text("queued")

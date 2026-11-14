@@ -15,7 +15,6 @@
     <string name="groups_change_error">Kan de wijziging niet opslaan. Probeer het opnieuw.</string>
     <string name="groups_new_group">Nieuwe groep</string>
     <string name="groups_only_you">Alleen jij</string>
-    <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">geen uitgaven</string>
     <plurals name="groups_member_count">
         <item quantity="one">%d lid</item>

@@ -1,14 +1,10 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,10 +16,10 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
+import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 
@@ -31,9 +27,8 @@ private const val EXPENSES_TAB_INDEX = 0
 private const val BALANCES_TAB_INDEX = 1
 private const val MEMBERS_TAB_INDEX = 2
 private val faceSize = 32.dp
-private val faceOverlap = (-8).dp
 
-// Why: the members' faces under the name, "+2" for the rest, and who hasn't joined; tapping them opens Membros.
+// Why: the members' faces under the name as a stack ("+N" for the rest), and who hasn't joined; tapping them opens Membros.
 @Composable
 internal fun GroupFacesRow(
     header: GroupHeader,
@@ -52,39 +47,19 @@ internal fun GroupFacesRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
+        AvatarStackRow(
+            faces = header.faces.map {
+                StackFace(
+                    initials = it.initials,
+                    color = it.color,
+                    photoUrl = it.photoUrl,
+                )
+            },
+            extraCount = header.extraMemberCount,
+            size = faceSize,
+            ringColor = MaterialTheme.colorScheme.surface,
             modifier = Modifier.clearAndSetSemantics {},
-            horizontalArrangement = Arrangement.spacedBy(faceOverlap),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            header.faces.forEach { face ->
-                RingedBox {
-                    AvatarBadge(
-                        initial = face.initials,
-                        color = face.color,
-                        photoUrl = face.photoUrl,
-                        size = faceSize,
-                    )
-                }
-            }
-            if (header.extraMemberCount > 0) {
-                RingedBox {
-                    Box(
-                        modifier = Modifier
-                            .size(faceSize)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.group_detail_extra_members, header.extraMemberCount),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-        }
+        )
         if (header.notJoinedCount > 0) {
             Text(
                 text = pluralStringResource(
@@ -97,16 +72,6 @@ internal fun GroupFacesRow(
             )
         }
     }
-}
-
-// Why: the faces overlap, each ringed in the background so its neighbor's edge reads.
-@Composable
-private fun RingedBox(content: @Composable () -> Unit) {
-    Box(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface, CircleShape)
-            .padding(2.dp),
-    ) { content() }
 }
 
 @Composable

@@ -311,20 +311,12 @@ struct GroupFaces: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                HStack(spacing: -size * 0.25) {
-                    ForEach(Array(header.faces.enumerated()), id: \.offset) { _, face in
-                        AvatarPhoto(initial: face.initials, color: face.color, photoUrl: face.photoUrl, size: size)
-                            .overlay(Circle().strokeBorder(Palette.groupedBackground, lineWidth: 2))
-                    }
-                    if header.extraMemberCount > 0 {
-                        Text(verbatim: "+\(header.extraMemberCount)")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(minWidth: size, minHeight: size)
-                            .padding(.horizontal, 4)
-                            .background(.fill.tertiary, in: .capsule)
-                    }
-                }
+                AvatarStack(
+                    faces: header.faces.map { StackFace(initials: $0.initials, color: $0.color, photoUrl: $0.photoUrl) },
+                    extraCount: Int(header.extraMemberCount),
+                    size: size,
+                    ring: Palette.groupedBackground,
+                )
                 if header.notJoinedCount > 0 {
                     Text("\(Int(header.notJoinedCount)) hasn't joined yet")
                         .font(.footnote)
