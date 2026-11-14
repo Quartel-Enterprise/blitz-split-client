@@ -16,6 +16,9 @@ interface GroupLocalDataSource {
 
     fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>>
 
+    // Why: the code of the account's profile link, null until a sync brings it.
+    fun observeMemberShareCode(userId: String): Flow<String?>
+
     // Why: the server's photos take the place of every one the device had, so a removed photo leaves too.
     suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>)
 

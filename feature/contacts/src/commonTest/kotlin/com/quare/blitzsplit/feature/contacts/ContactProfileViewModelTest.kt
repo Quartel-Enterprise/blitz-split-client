@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveMemberShareCodeUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -36,6 +37,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -2631,6 +2633,8 @@ class ContactProfileViewModelTest {
                 claimedContacts += contact
                 if (claimAnswered) claimResult else awaitCancellation()
             },
+            observeSpokenLanguage = { flowOf("pt") },
+            observeMemberShareCode = ObserveMemberShareCodeUseCase(groups),
             observeContactBook = observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden),
             observeMapCategories = { categories },
             connectivityObserver = NetworkConnectivityObserver { isOnline },

@@ -12,6 +12,8 @@ import com.quare.blitzsplit.core.contacts.domain.usecase.SetContactHidden
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.ObserveMemberShareCode
+import com.quare.blitzsplit.core.model.LinkLanguage
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -20,7 +22,9 @@ import com.quare.blitzsplit.core.navigation.isRightAboveHomeTab
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.model.ProfileLink
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.sync.domain.usecase.ClaimGuestAsMe
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddGroupOption
 import com.quare.blitzsplit.feature.contacts.presentation.model.AddToGroupDraft
@@ -34,7 +38,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -57,6 +65,8 @@ class ContactProfileViewModel(
     private val findPendingGuestMerge: FindPendingGuestMerge,
     private val cancelGuestMerge: CancelGuestMerge,
     private val claimGuestAsMe: ClaimGuestAsMe,
+    private val observeSpokenLanguage: ObserveSpokenLanguage,
+    observeMemberShareCode: ObserveMemberShareCode,
     observeContactBook: ObserveContactBook,
     observeMapCategories: ObserveMapCategories,
     connectivityObserver: NetworkConnectivityObserver,
@@ -84,6 +94,7 @@ class ContactProfileViewModel(
                 isCancellingMerge = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
                 isOverHomeTab = navigator.backStack.value.isRightAboveHomeTab(route),
+                shareLink = null,
             ),
         )
 
@@ -105,6 +116,13 @@ class ContactProfileViewModel(
             book = snapshot
             show(snapshot, categories)
         }.launchIn(viewModelScope)
+        // Why: the account's link follows whoever the profile shows, which a sync can turn from a guest into an account.
+        uiState
+            .map { it.contact?.userId }
+            .distinctUntilChanged()
+            .flatMapLatest { userId -> userId?.let(observeMemberShareCode::invoke) ?: flowOf(null) }
+            .onEach { code -> uiState.update { it.copy(shareLink = code?.let(ProfileLink::of)) } }
+            .launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .distinctUntilChanged()
@@ -249,6 +267,8 @@ class ContactProfileViewModel(
             ContactProfileUiEvent.OnAskAppUserClicked -> emit(ContactProfileUiAction.ShowComingSoon)
 
             ContactProfileUiEvent.OnCancelMergeClicked -> cancelMerge()
+
+            ContactProfileUiEvent.OnShareProfileClicked -> shareProfile()
         }
     }
 
@@ -476,6 +496,22 @@ class ContactProfileViewModel(
                 )
             }
             result.onFailure { uiAction.emit(ContactProfileUiAction.ShowCancelMergeError) }
+        }
+    }
+
+    /*
+     * Why: the person's profile link, as they would share it from their own Profile; the preview has nothing else to
+     * pick its language by, so the link carries the app's own (LinkLanguage). Only while the profile is shown.
+     */
+    private fun shareProfile() {
+        val state = uiState.value
+        if (!state.canShareProfile || !isShown()) return
+        val link = state.shareLink ?: return
+        val name = state.contact?.name ?: return
+        trackEvent("contact_profile_share_clicked", sourceParams)
+        viewModelScope.launch {
+            val spoken = LinkLanguage.buildLink(link, observeSpokenLanguage().first())
+            uiAction.emit(ContactProfileUiAction.ShareProfileLink(spoken, name))
         }
     }
 

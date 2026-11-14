@@ -79,6 +79,9 @@ class GroupRepositoryImpl(
 
     // Why: the groups' rows are read only while one is hidden, so the last group deleted leaves the home at once.
     @OptIn(ExperimentalCoroutinesApi::class)
+    override fun observeMemberShareCode(userId: String): Flow<String?> =
+        local.observeMemberShareCode(userId).distinctUntilChanged()
+
     override fun observeHasGroups(): Flow<Boolean> = hiddenGroupIds
         .flatMapLatest { hiddenIds ->
             if (hiddenIds.isEmpty()) {

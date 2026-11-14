@@ -246,11 +246,14 @@ class GroupMapperImpl : GroupMapper {
         inviteCode = dto.inviteCode,
     )
 
-    // Why: a profile with no photo is no row, so its face keeps the initials.
-    override fun toEntity(dto: MemberPhotoDto): MemberPhotoEntity? = dto.photoUrl?.let {
+    // Why: a profile with neither a photo nor a link's code is no row, so its face keeps the initials.
+    override fun toEntity(dto: MemberPhotoDto): MemberPhotoEntity? = if (dto.photoUrl == null && dto.shareCode == null) {
+        null
+    } else {
         MemberPhotoEntity(
             userId = dto.userId,
-            photoUrl = it,
+            photoUrl = dto.photoUrl,
+            shareCode = dto.shareCode,
         )
     }
 

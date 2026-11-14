@@ -128,11 +128,14 @@ class JsContactProfileState(
     val homeTab: String,
     // Why: right above that tab back names it; over a bill or a group it says "Voltar".
     val isOverHomeTab: Boolean,
+    // Why: "Share profile" beside ⋯, for someone with an account whose link the device has.
+    val canShareProfile: Boolean,
 )
 
 /*
- * Why: "coming-soon", "copy" and "share" (with the link, and the person's name for the message), "added" (the name
- * and the group's), "change-error", "claim-error" or "cancel-merge-error".
+ * Why: "coming-soon", "copy" and "share" (with the link, and the person's name for the message), "share-profile"
+ * (the person's profile link, and their name), "added" (the name and the group's), "change-error", "claim-error" or
+ * "cancel-merge-error".
  */
 class JsContactProfileAction(
     val type: String,
@@ -168,6 +171,13 @@ class ContactProfilePresenter(
                 is ContactProfileUiAction.CopyLink -> JsContactProfileAction("copy", action.link, null, null)
 
                 is ContactProfileUiAction.ShareLink -> JsContactProfileAction("share", action.link, action.name, null)
+
+                is ContactProfileUiAction.ShareProfileLink -> JsContactProfileAction(
+                    "share-profile",
+                    action.link,
+                    action.name,
+                    null,
+                )
 
                 is ContactProfileUiAction.ShowAddedToGroup -> JsContactProfileAction(
                     "added",
@@ -296,6 +306,10 @@ class ContactProfilePresenter(
         viewModel.onEvent(ContactProfileUiEvent.OnCancelMergeClicked)
     }
 
+    fun shareProfile() {
+        viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+    }
+
     fun dispose() {
         holder.clear()
     }
@@ -332,6 +346,7 @@ private fun toJsContactProfileState(state: ContactProfileUiState): JsContactProf
     merge = state.merge?.let(::toJsGuestMergeSheet),
     homeTab = toJsHomeTab(state.homeTab),
     isOverHomeTab = state.isOverHomeTab,
+    canShareProfile = state.canShareProfile,
 )
 
 private fun toJsContact(

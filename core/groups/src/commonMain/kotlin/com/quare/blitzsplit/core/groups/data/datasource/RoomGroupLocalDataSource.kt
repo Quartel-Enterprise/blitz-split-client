@@ -19,6 +19,8 @@ class RoomGroupLocalDataSource(
 
     override fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>> = dao.observeMemberPhotos()
 
+    override fun observeMemberShareCode(userId: String): Flow<String?> = dao.observeMemberShareCode(userId)
+
     override suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>) {
         dao.replaceMemberPhotos(entities)
     }

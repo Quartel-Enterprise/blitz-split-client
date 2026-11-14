@@ -7083,6 +7083,9 @@ private class FakeGroupLocalDataSource(
 
     override fun observeMemberPhotos(): Flow<List<MemberPhotoEntity>> = photos
 
+    override fun observeMemberShareCode(userId: String): Flow<String?> =
+        photos.map { entities -> entities.firstOrNull { it.userId == userId }?.shareCode }
+
     override suspend fun replaceMemberPhotos(entities: List<MemberPhotoEntity>) {
         photos.value = entities
     }
