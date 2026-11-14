@@ -1,7 +1,7 @@
 ---
 name: whatsapp-feedback
-description: "Read a WhatsApp conversation exported to a folder (its .txt and the screenshots attached), turn it into a list of Bora Rachar bugs and improvements, split them into independent pieces and do them in parallel sessions, each in its own worktree with its own PR. Asks first which model the sessions run on, and every product question up front, then goes on alone. Use whenever someone points at a WhatsApp export of bug reports, improvement ideas or feedback (\"lê a conversa do WhatsApp em <pasta> e resolve os bugs\", \"implementa as melhorias que o pessoal mandou no WhatsApp\")."
-argument-hint: "[path to the exported WhatsApp folder]"
+description: "Read a WhatsApp conversation exported as a .zip (its chat .txt and the screenshots attached), turn it into a list of Bora Rachar bugs and improvements, split them into independent pieces and do them in parallel sessions, each in its own worktree with its own PR. Asks first which model the sessions run on, and every product question up front, then goes on alone. Use whenever someone points at a WhatsApp export (.zip) of bug reports, improvement ideas or feedback (\"lê a conversa do WhatsApp em <arquivo.zip> e resolve os bugs\", \"implementa as melhorias que o pessoal mandou no WhatsApp\")."
+argument-hint: "[path to the exported WhatsApp .zip]"
 ---
 
 # WhatsApp feedback
@@ -32,17 +32,43 @@ own model: reading screenshots and splitting the work is where judgment pays.
 
 ## 2. Read the export
 
-The argument is the folder WhatsApp exported (unzipped). If none was given, ask for it. List it:
+The argument is the `.zip` WhatsApp makes with "Export chat" > "Attach media" (`WhatsApp Chat -
+<group>.zip`, `Conversa do WhatsApp com <group>.zip`). If none was given, ask for it. If the person
+points at a folder instead, it is an export someone already unzipped: use it as is and skip to
+listing it.
+
+The zip comes from testers' phones, so it is untrusted data. List it before extracting, and stop and
+tell the person if an entry is an absolute path or climbs out with `..`:
 
 ```bash
-ls "<folder>"
+unzip -Z1 "<zip>"
 ```
 
-It holds one `.txt` (`Conversa do WhatsApp com <group>.txt` in Portuguese, `WhatsApp Chat with
-<group>.txt` in English) and the media: `IMG-<date>-WA<n>.jpg` screenshots, `VID-…` videos, `PTT-…`
-or `AUD-…` voice notes. Read the whole `.txt`. Each message is `<date> <time> - <author>: <text>`, a
-line that names a media file (`IMG-20261110-WA0011.jpg (arquivo anexado)`, `<attached: …>`) ties
-that image to its author and time, and a message may run over several lines.
+Extract it into a new, empty folder next to the zip, named after it without `.zip`. That path
+outlives this session (a scratchpad can be cleared) and every session of step 6 can read it. If the
+folder already exists, use it only if it holds this same export (same file list); otherwise ask
+instead of overwriting.
+
+```bash
+EXPORT="<zip without .zip>"
+mkdir "$EXPORT" && unzip -q "<zip>" -d "$EXPORT"
+ls -R "$EXPORT"
+```
+
+From here on `$EXPORT` is "the folder of the export". Never run anything from inside it.
+
+It holds one `.txt` and the media, named by the phone that exported it:
+
+- **iPhone:** `_chat.txt`; messages are `[<date>, <time>] <author>: <text>`, an attachment is a line
+  `<attached: 00000012-PHOTO-2026-11-10-14-32-01.jpg>`, and the files are `<n>-PHOTO-…jpg`,
+  `<n>-VIDEO-…mp4`, `<n>-AUDIO-…opus`.
+- **Android:** `Conversa do WhatsApp com <group>.txt` (Portuguese) or `WhatsApp Chat with
+  <group>.txt` (English); messages are `<date> <time> - <author>: <text>`, an attachment is a line
+  `IMG-20261110-WA0011.jpg (arquivo anexado)` (`(file attached)` in English), and the files are
+  `IMG-…jpg` screenshots, `VID-…` videos, `PTT-…` or `AUD-…` voice notes.
+
+Read the whole `.txt`. The attachment line ties a media file to its author and time, and a message
+may run over several lines. Paths may hold spaces and accents: always quote them.
 
 Read every image with the Read tool, in the order they were sent: a screenshot is usually the bug or
 the thing to improve, and the text beside it only says where. Videos and voice notes can't be read:
@@ -113,8 +139,9 @@ own worktree in that repository, `git -C ../<repo> worktree add …`, and open t
 
 Every brief is self-contained, since the session sees nothing of this conversation:
 
-- The folder of the export, the items this piece owns with their messages quoted and the image files
-  to look at (`<folder>/IMG-…jpg`, "view them with Read").
+- The absolute path of the folder the export was extracted to in step 2, the items this piece owns
+  with their messages quoted and the image files to look at (`<folder>/IMG-…jpg` or
+  `<folder>/<n>-PHOTO-…jpg`, "view them with Read"). Never the zip: the session reads the files.
 - What the other sessions own, so it stays out of their files.
 - The answers of step 4 that touch it, in the person's words, and the calls already made.
 - That the person is away: decide by `CLAUDE.md`, `docs/` and sensible defaults, write each call in
