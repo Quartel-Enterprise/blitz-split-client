@@ -44,6 +44,7 @@ import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
@@ -108,6 +109,7 @@ class BillDetailViewModel(
     observeBillAttachments: ObserveBillAttachments,
     connectivityObserver: NetworkConnectivityObserver,
     minuteTicks: MinuteTicks,
+    observeSpokenLanguage: ObserveSpokenLanguage,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<BillDetailUiEvent>(trackEvent) {
     // Why: the source param of Conta's events, apart from the shared page's.
@@ -178,6 +180,7 @@ class BillDetailViewModel(
         editBillComment = editBillComment,
         deleteBillComment = deleteBillComment,
         likeBillComment = likeBillComment,
+        observeSpokenLanguage = observeSpokenLanguage,
         me = { shownGroup?.members?.firstOrNull { it.isMe } },
         emit = uiAction::emit,
         trackEvent = trackEvent,

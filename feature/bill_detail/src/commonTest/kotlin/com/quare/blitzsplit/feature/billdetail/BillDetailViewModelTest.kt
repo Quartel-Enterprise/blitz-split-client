@@ -79,6 +79,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -3437,7 +3438,7 @@ class BillDetailViewModelTest {
                 listOf<BillDetailUiAction>(
                     BillDetailUiAction.ShareComment(
                         BillCommentShare(
-                            link = "https://blitzsplit.com/b/$EXPENSE_ID?comentario=c1",
+                            link = "https://blitzsplit.com/b/$EXPENSE_ID?comentario=c1&lang=pt",
                             authorName = "Bruno",
                             isMe = false,
                             billDescription = "Mercado",
@@ -3461,7 +3462,7 @@ class BillDetailViewModelTest {
         val share = (actions.single() as BillDetailUiAction.ShareComment).share
         assertTrue(share.isMe)
         assertEquals("Paguei o gelo", share.body)
-        assertEquals("https://blitzsplit.com/b/$EXPENSE_ID?comentario=mine", share.link)
+        assertEquals("https://blitzsplit.com/b/$EXPENSE_ID?comentario=mine&lang=pt", share.link)
     }
 
     @Test
@@ -5045,6 +5046,7 @@ class BillDetailViewModelTest {
             observeBillAttachments = ObserveBillAttachmentsUseCase(attachments),
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             minuteTicks = MinuteTicks { minutes },
+            observeSpokenLanguage = { flowOf("pt") },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

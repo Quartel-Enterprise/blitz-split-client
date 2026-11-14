@@ -164,6 +164,8 @@ class JsHomeState(
 // Why: what the card's QR code opens, its modules row by row (qrSize by qrSize), and StoreListing's name.
 class JsAppInvite(
     val link: String,
+    // Why: the link as the card prints it, without its scheme nor the language it carries.
+    val displayLink: String,
     val qrSize: Int,
     val qrModules: Array<Boolean>,
     val stores: String,
@@ -410,6 +412,7 @@ class HomePresenter {
         ?.second
         ?: JsAppInvite(
             link = invite.link,
+            displayLink = invite.displayLink,
             qrSize = invite.qrCode.size,
             qrModules = invite.qrCode.modules.toTypedArray(),
             stores = invite.stores.name,

@@ -82,6 +82,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -6471,7 +6472,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
             assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
@@ -6523,7 +6524,7 @@ class ProfileViewModelTest {
         viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
 
         // Then
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink("$shareLink?lang=pt")), actions)
         assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
     }
 
@@ -6558,7 +6559,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
             assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
@@ -6576,7 +6577,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink("$shareLink?lang=pt")), actions)
             assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
         }
 
@@ -6598,7 +6599,7 @@ class ProfileViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isSigningOut)
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
         assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
@@ -6620,7 +6621,7 @@ class ProfileViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isSigningOut)
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink("$shareLink?lang=pt")), actions)
         assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
     }
 
@@ -6639,7 +6640,7 @@ class ProfileViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isSignOutScheduled)
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
         }
 
     @Test
@@ -6923,6 +6924,7 @@ class ProfileViewModelTest {
             observePushEnabled = { isPushEnabled },
             observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
             observeShowsPix = { showsPix },
+            observeSpokenLanguage = { flowOf("pt") },
             updateBitcoinInSats = { storedBitcoinInSats.value = it },
             observeBitcoinInSats = { storedBitcoinInSats },
             updateAppLanguage = {

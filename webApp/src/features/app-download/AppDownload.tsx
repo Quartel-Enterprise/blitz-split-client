@@ -12,9 +12,6 @@ import { formatShortDate } from '@/lib/dates'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 
-// Why: the link the QR code opens, as it reads, without the scheme.
-const shownLink = (link: string) => link.replace(/^https:\/\//, '')
-
 const perks: { icon: LucideIcon; chip: MessageKey; title: MessageKey; body: MessageKey }[] = [
   { icon: MapPin, chip: 'appInvite_perkNowChip', title: 'appDownload_perkNowTitle', body: 'appDownload_perkNowBody' },
   { icon: Bell, chip: 'appInvite_perkNoticesChip', title: 'appDownload_perkNoticesTitle', body: 'appDownload_perkNoticesBody' },
@@ -48,7 +45,7 @@ export function AppInviteCard({
   accountProvider: string | null | undefined
 }) {
   const provider = needsAccount ? null : (accountProvider as AccountProvider | null)
-  const link = shownLink(invite.link)
+  const link = invite.displayLink
   return (
     <section
       aria-labelledby="home-app-invite-title"
@@ -148,7 +145,7 @@ export function AppDownloadDialog({ route }: { route: JsRoute }) {
               className="font-mono text-xs text-primary underline underline-offset-2"
               onClick={() => presenter.trackLink()}
             >
-              {shownLink(state.link)}
+              {state.displayLink}
             </a>
             <Button variant="ghost" size="icon-sm" aria-label={t('appDownload_copyLink')} title={t('appDownload_copyLink')} onClick={() => presenter.copyLink()}>
               <Copy />

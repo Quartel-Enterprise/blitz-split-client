@@ -6,6 +6,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.core.model)
+            implementation(projects.core.utils)
             implementation(projects.core.provider.room)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

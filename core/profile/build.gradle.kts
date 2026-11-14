@@ -11,6 +11,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.model)
             implementation(projects.core.utils)
+            implementation(projects.core.settings)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.image)

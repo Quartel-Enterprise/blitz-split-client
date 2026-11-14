@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.StoreListing
+import com.quare.blitzsplit.core.profile.domain.model.AppInvite
 
 /*
  * Why: "Take Bora Rachar on your phone" (14.1), the web's and the Mac's card: the QR code of the app's link, which
@@ -13,4 +14,8 @@ data class HomeAppInvite(
     val stores: StoreListing,
     // Why: neither dismissed nor already in use on a phone; only then does the card come.
     val isActive: Boolean,
-)
+) {
+    // Why: the link as the card prints it.
+    val displayLink: String
+        get() = AppInvite.toDisplayLink(link)
+}

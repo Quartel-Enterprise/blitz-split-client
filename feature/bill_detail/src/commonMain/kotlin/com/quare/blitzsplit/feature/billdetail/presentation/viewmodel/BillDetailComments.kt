@@ -7,8 +7,10 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.LikeBillComment
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.model.LinkLanguage
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.replyTargetOf
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BILL_DETAIL_SOURCE
@@ -20,6 +22,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEv
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import software.quare.loadable.valueOrNull
@@ -36,6 +39,7 @@ internal class BillDetailComments(
     private val editBillComment: EditBillComment,
     private val deleteBillComment: DeleteBillComment,
     private val likeBillComment: LikeBillComment,
+    private val observeSpokenLanguage: ObserveSpokenLanguage,
     private val me: () -> GroupMember?,
     private val emit: suspend (BillDetailUiAction) -> Unit,
     private val trackEvent: TrackEvent,
@@ -283,14 +287,21 @@ internal class BillDetailComments(
     // Why: the comment's link, which opens Conta at it for whoever is in the group, offline too.
     private fun share(commentId: String) {
         val comment = findCommentOrNull(commentId)?.takeIf { it.canInteract } ?: return
-        val share = BillCommentShare(
-            link = BillCommentLink.of(route.expenseId, comment.id),
-            authorName = comment.authorName,
-            isMe = comment.isMe,
-            billDescription = uiState.value.description,
-            body = comment.body,
-        )
+        val billDescription = uiState.value.description
         trackEvent("comment_share_clicked", sourceParams)
-        scope.launch { emit(BillDetailUiAction.ShareComment(share)) }
+        scope.launch {
+            val share = BillCommentShare(
+                // Why: the link's preview shows nothing of the bill, so it only has the app's language to speak.
+                link = LinkLanguage.buildLink(
+                    BillCommentLink.of(route.expenseId, comment.id),
+                    observeSpokenLanguage().first(),
+                ),
+                authorName = comment.authorName,
+                isMe = comment.isMe,
+                billDescription = billDescription,
+                body = comment.body,
+            )
+            emit(BillDetailUiAction.ShareComment(share))
+        }
     }
 }
