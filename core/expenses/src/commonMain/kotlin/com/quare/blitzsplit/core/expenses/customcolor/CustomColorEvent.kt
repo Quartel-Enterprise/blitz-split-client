@@ -57,21 +57,4 @@ sealed interface CustomColorEvent {
      * dialog, a popover closed): they go with it, which isn't an action of the person's.
      */
     data object OnPickerClosed : CustomColorEvent
-
-    /*
-     * Why: whether Analytics hears of it: the gradient and the fields as they change aren't actions of their own ("Add"
-     * says what came of them), nor the picker closing on its own (a rotation, a popover).
-     */
-    val isPersonAction: Boolean
-        get() = when (this) {
-            is OnHsvChanged, is OnHexChanged, is OnChannelChanged, OnPickerClosed -> false
-
-            is OnAddClicked,
-            OnSaveClicked,
-            OnDraftDismissed,
-            is OnLongPressed,
-            OnDeleteConfirmed,
-            OnDeletionDismissed,
-            -> true
-        }
 }

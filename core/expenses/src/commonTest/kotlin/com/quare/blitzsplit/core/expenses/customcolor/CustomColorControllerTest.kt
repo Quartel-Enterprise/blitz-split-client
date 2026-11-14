@@ -470,6 +470,29 @@ class CustomColorControllerTest {
         }
 
     @Test
+    fun `GIVEN Add in flight and its picker closed WHEN the save fails THEN New color does not open again`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                saveError = IllegalStateException("disk full"),
+                addGate = gate,
+            )
+            controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.ORANGE.tint, AppCategory.FOOD.key))
+            controller.onEvent(CustomColorEvent.OnHexChanged("#3A7BD5"))
+            controller.onEvent(CustomColorEvent.OnSaveClicked)
+            controller.onEvent(CustomColorEvent.OnPickerClosed)
+
+            // When
+            gate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertNull(controller.state.value.draft)
+            assertTrue(picked.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the palette filled up meanwhile WHEN Add fails as full THEN New color does not open again`() =
         runTest(testDispatcher) {
             // Given

@@ -32,6 +32,9 @@ class CustomColorController(
     // Why: the app category "+" was opened for, whose color "Add" changes; null for the screen's form.
     private var draftCategoryKey: String? = null
 
+    // Why: how often a picker closed, so a save failing after its picker closed never opens "New color" again.
+    private var closedCount = 0
+
     fun observe() {
         useCases
             .observeCustomColors()
@@ -79,6 +82,7 @@ class CustomColorController(
      * on them nor sends a color to the earlier category. A deletion in flight finishes on its own.
      */
     fun close() {
+        closedCount++
         state.update {
             it.copy(
                 draft = null,
@@ -104,13 +108,15 @@ class CustomColorController(
 
     /*
      * Why: the picker closes at once; the palette reads the color back from Room. A failed write opens it again, unless
-     * another "New color" opened meanwhile, or the palette filled up (a sync brought colors), whose note says so.
+     * another "New color" opened meanwhile, its picker closed (a later picker would open on it), or the palette
+     * filled up (a sync brought colors), whose note says so.
      */
     private fun save() {
         val draft = state.value.draft ?: return
         if (!draft.canSave) return
         val color = draft.color
         val categoryKey = draftCategoryKey
+        val closedBefore = closedCount
         state.update { it.copy(draft = null) }
         scope.launch {
             useCases
@@ -119,7 +125,8 @@ class CustomColorController(
                 .onFailure { error ->
                     if (error is CustomPaletteFullException) return@onFailure
                     state.update {
-                        if (it.draft == null && draftCategoryKey == categoryKey) it.copy(draft = draft) else it
+                        val isSamePicker = draftCategoryKey == categoryKey && closedCount == closedBefore
+                        if (it.draft == null && isSamePicker) it.copy(draft = draft) else it
                     }
                 }
         }

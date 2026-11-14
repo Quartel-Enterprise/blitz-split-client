@@ -264,9 +264,7 @@ function SectionCard({
             {isDetail && section.subcategoryCount > 0 && ` · ${t('categoryMap_subcategories', { count: section.subcategoryCount })}`}
           </span>
         </div>
-        {section.category.appKey != null && section.category.parentId == null && !section.category.isOther && (
-          <ChangeColorPopover presenter={presenter} category={section.category} customColors={customColors} />
-        )}
+        <ChangeColorPopover presenter={presenter} category={section.category} customColors={customColors} />
         {canCreateCategory && section.category.isGroupCategory && (
           <Button variant="ghost" size="icon" aria-label={t('splitBill_categoryEdit', { name: categoryName(section.category) })} onClick={() => presenter.editCategory(section.category.id)}>
             <Pencil />
