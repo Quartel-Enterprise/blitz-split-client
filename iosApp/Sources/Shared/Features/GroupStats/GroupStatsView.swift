@@ -613,16 +613,12 @@ private struct StatsOverTimeSection: View {
                 StatsGrainSegments(model: model)
                 StatsChart(state: state)
                 if let peak = state.peak {
-                    HStack(alignment: .lastTextBaseline, spacing: 4) {
-                        Text(verbatim: GroupStatsCopy.peak(peak, grain: state.grain))
-                            .foregroundStyle(.secondary)
-                        // The amount stays whole; the week's range wraps instead
-                        Text(verbatim: state.currency.format(peak.amountMinor))
-                            .fontWeight(.semibold)
-                            .monospacedDigit()
-                            .fixedSize()
-                    }
-                    .font(.footnote)
+                    Text(peakLine(
+                        label: GroupStatsCopy.peak(peak, grain: state.grain),
+                        amount: state.currency.format(peak.amountMinor),
+                    ))
+                        .font(.footnote)
+                        .monospacedDigit()
                 }
                 if let average = state.chartAverageMinor {
                     StatsAverageLegend(
@@ -924,5 +920,17 @@ private struct StatsAverageLegend: View {
             }
         }
         #endif
+    }
+}
+
+private extension StatsOverTimeSection {
+    /// "Most expensive week: Oct 26 – Nov 1, $2,015.58" as one text, so it wraps as a sentence: the amount's spaces
+    /// don't break, so it moves to the next line whole, as on Android and the web.
+    func peakLine(label: String, amount: String) -> AttributedString {
+        var start = AttributedString(label + " ")
+        start.foregroundColor = .secondary
+        var end = AttributedString(amount.replacingOccurrences(of: " ", with: "\u{00A0}"))
+        end.font = .footnote.weight(.semibold)
+        return start + end
     }
 }

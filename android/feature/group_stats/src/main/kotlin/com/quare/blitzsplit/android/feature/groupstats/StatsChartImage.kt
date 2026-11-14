@@ -503,7 +503,14 @@ private fun StatsChartLabelsRow(
             }
         },
     ) { measurables, constraints ->
-        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0, minHeight = 0)) }
+        val placeables = measurables.map {
+            it.measure(
+                constraints.copy(
+                    minWidth = 0,
+                    minHeight = 0,
+                ),
+            )
+        }
         val slot = constraints.maxWidth.toFloat() / bars.size.coerceAtLeast(1)
         val xs = placeables.mapIndexed { position, placeable ->
             val center = (labeled[position].index + 0.5f) * slot
@@ -514,10 +521,12 @@ private fun StatsChartLabelsRow(
         }
         val gap = labelGap.roundToPx()
         var nextStart = Int.MAX_VALUE
-        val shown = placeables.indices.reversed().filter { position ->
-            val fits = xs[position] + placeables[position].width + gap <= nextStart
-            if (fits) nextStart = xs[position]
-            fits
+        val shown = mutableListOf<Int>()
+        for (position in placeables.indices.reversed()) {
+            if (xs[position] + placeables[position].width + gap <= nextStart) {
+                shown += position
+                nextStart = xs[position]
+            }
         }
         // Why: as tall as its tallest label, so a large font never clips them.
         val top = 2.dp.roundToPx()

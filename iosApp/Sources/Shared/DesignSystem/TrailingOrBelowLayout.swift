@@ -11,20 +11,33 @@ struct TrailingOrBelowLayout: Layout {
     var spacing: CGFloat = 12
     var belowSpacing: CGFloat = 4
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    /// The two subviews' ideal sizes, measured once per layout pass rather than on every proposal.
+    struct Cache {
+        var ideals: [CGSize]
+    }
+
+    func makeCache(subviews: Subviews) -> Cache {
+        Cache(ideals: subviews.map { $0.sizeThatFits(.unspecified) })
+    }
+
+    func updateCache(_ cache: inout Cache, subviews: Subviews) {
+        cache = makeCache(subviews: subviews)
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
         guard subviews.count == 2 else {
             return subviews.first?.sizeThatFits(proposal) ?? .zero
         }
-        let arrangement = arrange(width: proposal.width, subviews: subviews)
+        let arrangement = arrange(width: proposal.width, subviews: subviews, ideals: cache.ideals)
         return arrangement.size
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
         guard subviews.count == 2 else {
             subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
             return
         }
-        let arrangement = arrange(width: bounds.width, subviews: subviews)
+        let arrangement = arrange(width: bounds.width, subviews: subviews, ideals: cache.ideals)
         let main = subviews[0]
         let trailing = subviews[1]
         if arrangement.isSideBySide {
@@ -55,11 +68,11 @@ struct TrailingOrBelowLayout: Layout {
         let size: CGSize
     }
 
-    private func arrange(width: CGFloat?, subviews: Subviews) -> Arrangement {
+    private func arrange(width: CGFloat?, subviews: Subviews, ideals: [CGSize]) -> Arrangement {
         let main = subviews[0]
         let trailing = subviews[1]
-        let trailingIdeal = trailing.sizeThatFits(.unspecified)
-        let mainIdeal = main.sizeThatFits(.unspecified)
+        let mainIdeal = ideals[0]
+        let trailingIdeal = ideals[1]
         guard let width, width.isFinite else {
             let height = max(mainIdeal.height, trailingIdeal.height)
             return Arrangement(

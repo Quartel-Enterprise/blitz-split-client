@@ -14,7 +14,8 @@ import androidx.compose.ui.unit.dp
  * trailing part under the text once it doesn't. In a narrow pane (a phone lying down, the group beside the list) the
  * amount and the ⋮ used to squeeze the member's name and "This device" to a letter per line (beta feedback of
  * 2026-11-14). Side by side the text takes all the width the trailing part leaves and the two center on each other;
- * stacked both start at the start edge. The text needs `minMainWidth`, or less when all of it fits in less.
+ * stacked both start at the start edge. The text needs `minMainWidth`, or less when all of it fits in less. Each slot
+ * draws one composable (wrap several in a Column or Row); either may draw none.
  */
 @Composable
 fun TrailingOrBelowLayout(
@@ -31,9 +32,10 @@ fun TrailingOrBelowLayout(
     ) { (mainMeasurables, trailingMeasurables), constraints ->
         val maxWidth = constraints.maxWidth
         val trailingMeasurable = trailingMeasurables.firstOrNull()
-        val mainMeasurable = mainMeasurables.first()
-        if (trailingMeasurable == null) {
-            val placeable = mainMeasurable.measure(constraints.copy(minHeight = 0))
+        val mainMeasurable = mainMeasurables.firstOrNull()
+        if (mainMeasurable == null || trailingMeasurable == null) {
+            val placeable = (mainMeasurable ?: trailingMeasurable)?.measure(constraints.copy(minHeight = 0))
+                ?: return@Layout layout(constraints.minWidth, constraints.minHeight) {}
             return@Layout layout(
                 constraints.constrainWidth(placeable.width),
                 constraints.constrainHeight(placeable.height),

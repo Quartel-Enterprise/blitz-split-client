@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { JsStatsBar } from 'blitzsplit-shared'
 import { cn } from '@/lib/utils'
+import { barCenterPercent } from './statsFormat'
 
 // Why: the least room between two labels under the chart, in pixels.
 const labelGap = 6
@@ -34,7 +35,7 @@ export function StatsChartLabels({
       const width = element.clientWidth
       const xs = labeled.map((label, position) => {
         const labelWidth = spans.current[position]?.offsetWidth ?? 0
-        const center = ((label.index + 0.5) * width) / Math.max(1, bars.length)
+        const center = (barCenterPercent(label.index, bars.length) * width) / 100
         return { x: Math.min(Math.max(0, center - labelWidth / 2), Math.max(0, width - labelWidth)), labelWidth }
       })
       let nextStart = Number.POSITIVE_INFINITY
@@ -48,8 +49,8 @@ export function StatsChartLabels({
       }
       setPlaced(next)
     }
-    place()
-    // Why: the chart's width and each label's own (a web font arriving after the first measure widens them).
+    // Why: the chart's width and each label's own (a web font arriving after the first measure widens them). Its
+    // first callback, before the first paint, places them the first time.
     const observer = new ResizeObserver(place)
     observer.observe(element)
     spans.current.slice(0, labeled.length).forEach((span) => span && observer.observe(span))

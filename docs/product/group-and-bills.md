@@ -34,8 +34,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     gesture, following the finger (beta feedback of 2026-11-12): from Groups' list and grid and Home's group cards.
     Android: Compose's shared elements (`SharedTransitionLayout` around Navigation 3, `rememberGroupSharedModifiers`),
     keyed by the screen the group opens from (`GroupSharedOrigin`), so a tab switch between Home and Groups flies
-    nothing. That screen is read once, as the group opens: back pops the group before its exit runs, so read live it
-    found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14). From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
+    nothing. That screen is kept while the group is on the back stack and read back once it leaves: back pops the group before
+    its exit runs, so read live it found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14). From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
     over the list, while beside it (a tablet lying down, a book) the row stays where it is. So the group opens over
     Groups as over Home, a screen of its own, outside Material's list-detail scene, wherever the two don't show side by
     side. The web: the View Transitions API

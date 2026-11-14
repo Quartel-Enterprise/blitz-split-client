@@ -4,7 +4,7 @@ import { t } from '@/i18n'
 import { formatCompactMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { StatsChartLabels } from './StatsChartLabels'
-import { barLabel, barName, calloutCount, chartAria } from './statsFormat'
+import { barCenterPercent, barLabel, barName, calloutCount, chartAria } from './statsFormat'
 import { useReplay } from './useReplay'
 
 const chartHeight = 128
@@ -27,7 +27,7 @@ export function StatsChart({ state, money }: { state: JsGroupStatsState; money: 
   const ticks = Array.from(state.chartTicksMinor).filter((tick) => tick > 0)
   const tickTexts = ticks.map((tick) => formatCompactMoney(tick, state.currency, state.fractionDigits))
   const widestTick = tickTexts.reduce((widest, text) => (text.length > widest.length ? text : widest), '')
-  const centerOf = (index: number) => ((index + 0.5) * 100) / count
+  const centerOf = (index: number) => barCenterPercent(index, count)
   const heightOf = (amount: number) => (amount * (chartHeight - topInset)) / top
   const yOf = (amount: number) => chartHeight - heightOf(amount)
   const gap = count > 20 ? 'mx-px' : count > 8 ? 'mx-[3px]' : 'mx-[5px]'
