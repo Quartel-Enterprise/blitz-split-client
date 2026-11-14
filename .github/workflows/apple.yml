@@ -89,8 +89,10 @@ jobs:
     # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
     # Xcode 26 only.
     runs-on: xcode-27
-    # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
-    timeout-minutes: 60
+    # A hung simulator or build would otherwise hold one of the few macOS runners for six hours. The
+    # bound that fits each run is on "Run the tests", which knows whether the simulator runs: this
+    # one only stops what hangs around it.
+    timeout-minutes: 90
     steps:
       # Two commits: on a pull request, GitHub's merge of it with main and main itself, its first
       # parent, which "Pick the test targets" compares it with.
@@ -127,7 +129,9 @@ jobs:
       # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
       # compiles the device target, which no other check builds, and compileAppleMainKotlinMetadata the
       # appleMain shared by the Apple targets, which only a macOS host compiles.
+      # Recompiling everything took 22 minutes on macOS alone and up to 48 with the simulator too.
       - name: Run the tests
+        timeout-minutes: ${{ steps.targets.outputs.simulator && 80 || 60 }}
         env:
           SIMULATOR_TESTS: ${{ steps.targets.outputs.simulator }}
         run: >-
