@@ -39,9 +39,19 @@ fun Context.shareText(text: String) {
     startActivity(Intent.createChooser(send, null))
 }
 
-// Why: ACTION_SENDTO with a mailto link only offers email apps; false when the device has none to take it.
-fun Context.openEmail(mailtoLink: String): Boolean = try {
-    startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse(mailtoLink)))
+/*
+ * Why: ACTION_SENDTO with a mailto link only offers email apps; the subject and the body go as extras too, since some
+ * email apps read them only from there and would open an empty draft. False when the device has none to take it.
+ */
+fun Context.openEmail(
+    mailtoLink: String,
+    subject: String,
+    body: String,
+): Boolean = try {
+    val send = Intent(Intent.ACTION_SENDTO, Uri.parse(mailtoLink))
+        .putExtra(Intent.EXTRA_SUBJECT, subject)
+        .putExtra(Intent.EXTRA_TEXT, body)
+    startActivity(send)
     true
 } catch (_: ActivityNotFoundException) {
     false

@@ -64,7 +64,7 @@ class ContactSupportPresenter {
     fun observeActions(onAction: (JsContactSupportAction) -> Unit): JsWatch {
         val actions = viewModel.uiAction.map { action ->
             when (action) {
-                is ContactSupportUiAction.OpenEmail -> JsContactSupportAction("open", action.mailtoLink)
+                is ContactSupportUiAction.OpenEmail -> JsContactSupportAction("open", action.message.mailtoLink)
                 is ContactSupportUiAction.CopyToClipboard -> JsContactSupportAction("copy", action.email)
             }
         }
@@ -82,6 +82,11 @@ class ContactSupportPresenter {
 
     fun copyEmail() {
         viewModel.onEvent(ContactSupportUiEvent.OnCopyEmailClicked)
+    }
+
+    // Why: the browser refused the clipboard.
+    fun copyEmailFailed() {
+        viewModel.onEvent(ContactSupportUiEvent.OnCopyEmailFailed)
     }
 
     fun dispose() {

@@ -237,7 +237,8 @@ enum AppRoute: Hashable, Identifiable {
     }
 
     /// What only the profile opens, which on the Mac lives in Ajustes (⌘,): a key, the photo big, deleting the
-    /// account, the update "Check for updates" found and the legal texts show as sheets on the Settings window there
+    /// account, Contact support, the update "Check for updates" found and the legal texts show as sheets on the
+    /// Settings window there
     /// (`AppModel.settingsSheet`); a legal text a link of the other one opens takes its place, the top entry being
     /// the one shown. Never off the Mac.
     var opensInSettings: Bool {
@@ -260,7 +261,7 @@ enum AppRoute: Hashable, Identifiable {
     var usesFormSheet: Bool {
         switch self {
         case .createGroup, .contactInvite, .shareBill, .editProfile, .editGroup, .registerPayment, .settleUp,
-             .charge, .pickPayment, .inAppUpdate: true
+             .charge, .pickPayment, .inAppUpdate, .contactSupport: true
         default: false
         }
     }

@@ -4,14 +4,14 @@ import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.support.domain.model.SupportAccount
 import com.quare.blitzsplit.core.support.domain.model.SupportDiagnostics
 import com.quare.blitzsplit.core.support.domain.model.SupportPlatform
-import com.quare.blitzsplit.core.support.domain.usecase.impl.BuildSupportEmailLinkUseCase
+import com.quare.blitzsplit.core.support.domain.usecase.impl.BuildSupportEmailUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class BuildSupportEmailLinkUseCaseTest {
-    private val useCase = BuildSupportEmailLinkUseCase()
+class BuildSupportEmailUseCaseTest {
+    private val buildSupportEmail = BuildSupportEmailUseCase()
 
     @Test
     fun `GIVEN any diagnostics WHEN building the link THEN it is a mailto to the support address as it is`() {
@@ -364,6 +364,49 @@ class BuildSupportEmailLinkUseCaseTest {
         // Then
         assertTrue(link.contains("App%20version%3A%201.4.0-%F0%9F%98%80%0D%0A"), link)
     }
+
+    @Test
+    fun `GIVEN any diagnostics WHEN building the email THEN the subject also goes apart as written`() {
+        // Given
+        val diagnostics = diagnostics(
+            appVersion = "2.0.3",
+            platform = SupportPlatform.ANDROID,
+        )
+
+        // When
+        val email = buildSupportEmail(diagnostics)
+
+        // Then
+        assertEquals("Blitz Split support (Android 2.0.3)", email.subject)
+    }
+
+    @Test
+    fun `GIVEN every diagnostic WHEN building the email THEN the body also goes apart as written`() {
+        // Given
+        val diagnostics = diagnostics(
+            appVersion = "1.4.0",
+            platform = SupportPlatform.ANDROID,
+            language = AppLanguage.PORTUGUESE,
+            account = SupportAccount.GOOGLE,
+            profileLink = "https://blitzsplit.com/u/7Hk2pQ8xZa",
+        )
+
+        // When
+        val email = buildSupportEmail(diagnostics)
+
+        // Then
+        assertEquals(
+            "\n\n---\n" +
+                "App version: 1.4.0\n" +
+                "Platform: Android\n" +
+                "Language: pt-BR\n" +
+                "Account: Google\n" +
+                "Profile: https://blitzsplit.com/u/7Hk2pQ8xZa",
+            email.body,
+        )
+    }
+
+    private fun useCase(diagnostics: SupportDiagnostics): String = buildSupportEmail(diagnostics).mailtoLink
 
     private fun subjectOf(link: String): String = link.substringAfter("?subject=").substringBefore("&body=")
 

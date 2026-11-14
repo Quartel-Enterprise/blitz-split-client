@@ -191,6 +191,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `contact_support_open_email_clicked` | none | Contact support's "Open email", once what the email carries was read | `:feature:contact_support` |
 | `contact_support_no_email_app` | none | No app on the device took the email "Open email" asked for, so the address was copied instead (Android and Apple; a browser never says) | `:feature:contact_support` |
 | `contact_support_copy_email_clicked` | none | Contact support's copy button next to the address, or "Copy email address" | `:feature:contact_support` |
+| `contact_support_copy_email_failed` | none | The platform refused the clipboard, so the notice that said the address was copied goes (the web, when the browser denies it) | `:feature:contact_support` |
 | `contact_support_dismissed` | none | Contact support's Close or its back arrow, while it is the screen on top | `:feature:contact_support` |
 | `invite_link_copy_clicked` | `source` (`invite`, `members`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, on Members' "Invite link" card, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Invite's "Share link", "Share with Carla", or the share of "Invite with link or QR" and "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |

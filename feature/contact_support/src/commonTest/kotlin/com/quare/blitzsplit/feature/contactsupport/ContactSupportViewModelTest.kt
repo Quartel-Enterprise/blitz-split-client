@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.support.domain.model.SupportAccount
 import com.quare.blitzsplit.core.support.domain.model.SupportDiagnostics
+import com.quare.blitzsplit.core.support.domain.model.SupportEmail
 import com.quare.blitzsplit.core.support.domain.model.SupportPlatform
 import com.quare.blitzsplit.feature.contactsupport.presentation.model.ContactSupportNotice
 import com.quare.blitzsplit.feature.contactsupport.presentation.model.ContactSupportUiAction
@@ -317,6 +318,34 @@ class ContactSupportViewModelTest {
         }
 
     @Test
+    fun `GIVEN the address was said to be copied WHEN the platform refuses the clipboard THEN the notice goes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(readDiagnostics = androidDiagnostics)
+            viewModel.onEvent(ContactSupportUiEvent.OnCopyEmailClicked)
+
+            // When
+            viewModel.onEvent(ContactSupportUiEvent.OnCopyEmailFailed)
+
+            // Then
+            assertNull(viewModel.uiState.value.notice)
+        }
+
+    @Test
+    fun `GIVEN the address was said to be copied WHEN the platform refuses the clipboard THEN tracks the failure`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(readDiagnostics = androidDiagnostics)
+            viewModel.onEvent(ContactSupportUiEvent.OnCopyEmailClicked)
+
+            // When
+            viewModel.onEvent(ContactSupportUiEvent.OnCopyEmailFailed)
+
+            // Then
+            assertEquals(listOf(emailCopied, "contact_support_copy_email_failed" to emptyMap()), trackedEvents)
+        }
+
+    @Test
     fun `GIVEN Open email was tapped WHEN no app takes the link THEN copies the support address instead`() =
         runTest(testDispatcher) {
             // Given
@@ -546,7 +575,11 @@ class ContactSupportViewModelTest {
     )
 
     // Why: a link that names the diagnostics it was built for, so a case tells which ones the email carries.
-    private fun linkOf(diagnostics: SupportDiagnostics): String = "mailto:link-for-$diagnostics"
+    private fun linkOf(diagnostics: SupportDiagnostics): SupportEmail = SupportEmail(
+        mailtoLink = "mailto:link-for-$diagnostics",
+        subject = "subject-for-$diagnostics",
+        body = "body-for-$diagnostics",
+    )
 
     private suspend fun TestScope.prepareScenario(readDiagnostics: SupportDiagnostics? = androidDiagnostics) {
         diagnostics = MutableSharedFlow()
@@ -556,7 +589,7 @@ class ContactSupportViewModelTest {
         }
         viewModel = ContactSupportViewModel(
             navigator = navigator,
-            buildSupportEmailLink = ::linkOf,
+            buildSupportEmail = ::linkOf,
             observeSupportDiagnostics = { diagnostics },
             trackEvent = { name, params -> trackedEvents += name to params },
         )

@@ -3,19 +3,25 @@ package com.quare.blitzsplit.core.support.domain.usecase.impl
 import com.quare.blitzsplit.core.support.domain.model.SupportAccount
 import com.quare.blitzsplit.core.support.domain.model.SupportContact
 import com.quare.blitzsplit.core.support.domain.model.SupportDiagnostics
+import com.quare.blitzsplit.core.support.domain.model.SupportEmail
 import com.quare.blitzsplit.core.support.domain.model.SupportPlatform
-import com.quare.blitzsplit.core.support.domain.usecase.BuildSupportEmailLink
+import com.quare.blitzsplit.core.support.domain.usecase.BuildSupportEmail
 
 /*
  * Why: the subject and the diagnostics are for whoever answers the email, so they are in English whatever the app's
  * language; the person writes above the rule, in their own.
  */
-class BuildSupportEmailLinkUseCase : BuildSupportEmailLink {
-    override fun invoke(diagnostics: SupportDiagnostics): String {
+class BuildSupportEmailUseCase : BuildSupportEmail {
+    override fun invoke(diagnostics: SupportDiagnostics): SupportEmail {
         val subject = "$SUBJECT (${diagnostics.platform.label} ${diagnostics.appVersion})"
-        return "mailto:${SupportContact.EMAIL}" +
-            "?subject=${subject.encodeForMailto()}" +
-            "&body=${diagnostics.toBody().encodeForMailto()}"
+        val body = diagnostics.toBody()
+        return SupportEmail(
+            mailtoLink = "mailto:${SupportContact.EMAIL}" +
+                "?subject=${subject.encodeForMailto()}" +
+                "&body=${body.encodeForMailto()}",
+            subject = subject,
+            body = body,
+        )
     }
 
     // Why: two empty lines first, where the person writes, then the rule the diagnostics sit under.

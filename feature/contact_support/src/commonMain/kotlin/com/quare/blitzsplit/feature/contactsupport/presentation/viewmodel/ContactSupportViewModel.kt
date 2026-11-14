@@ -7,7 +7,7 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.support.domain.model.SupportContact
-import com.quare.blitzsplit.core.support.domain.usecase.BuildSupportEmailLink
+import com.quare.blitzsplit.core.support.domain.usecase.BuildSupportEmail
 import com.quare.blitzsplit.core.support.domain.usecase.ObserveSupportDiagnostics
 import com.quare.blitzsplit.feature.contactsupport.presentation.model.ContactSupportNotice
 import com.quare.blitzsplit.feature.contactsupport.presentation.model.ContactSupportUiAction
@@ -27,7 +27,7 @@ import software.quare.loadable.valueOrNull
 
 class ContactSupportViewModel(
     private val navigator: Navigator,
-    private val buildSupportEmailLink: BuildSupportEmailLink,
+    private val buildSupportEmail: BuildSupportEmail,
     observeSupportDiagnostics: ObserveSupportDiagnostics,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactSupportUiEvent>(trackEvent) {
@@ -62,6 +62,9 @@ class ContactSupportViewModel(
 
             // Why: without an email app the address is still what the person needs, so it goes to the clipboard.
             ContactSupportUiEvent.OnOpenEmailFailed -> copyEmail(ContactSupportNotice.NO_EMAIL_APP)
+
+            // Why: nothing reached the clipboard, so the notice that said it did goes; the UI says the copy failed.
+            ContactSupportUiEvent.OnCopyEmailFailed -> uiState.update { it.copy(notice = null) }
         }
     }
 
@@ -76,7 +79,7 @@ class ContactSupportViewModel(
         trackEvent("contact_support_open_email_clicked", emptyMap())
         // Why: another try starts clean, so the notice of the last one never outlives an email app that now opens.
         uiState.update { it.copy(notice = null) }
-        viewModelScope.launch { uiAction.emit(ContactSupportUiAction.OpenEmail(buildSupportEmailLink(diagnostics))) }
+        viewModelScope.launch { uiAction.emit(ContactSupportUiAction.OpenEmail(buildSupportEmail(diagnostics))) }
     }
 
     private fun copyEmail(notice: ContactSupportNotice) {

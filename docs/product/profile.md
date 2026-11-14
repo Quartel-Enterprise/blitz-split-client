@@ -144,7 +144,10 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     answers reads them; the person writes above them in their own. Never the account's email nor its id: the
     profile's link is what finds the person. A device with no email app (Android and Apple say so; a browser never
     does) copies the address instead and says "No email app found. The address was copied instead."; a copy says
-    "Email address copied.".
+    "Email address copied.", which VoiceOver hears on every tap. A browser that refuses the clipboard takes that line
+    back and toasts "Couldn't copy. Select it and copy by hand.". On Android the subject and the body also go as the
+    intent's extras, for the email apps that never read them from the link. An iPad shows the sheet at the form's
+    size.
   - Profile's "Privacy and about" holds "Share usage data" ("Screens and taps, to improve the app. Never names or
     amounts."), a switch right under "Export my data" (Pierre's call, #184): on by default, per device like the theme,
     it turns Firebase Analytics off on this device, the user id included. Nothing asks about it first: Analytics rests

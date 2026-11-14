@@ -16,6 +16,8 @@ sealed interface ContactSupportUiEvent : UiEvent {
 
             // Why: the platform's answer, which ends what the tap on "Open email" began.
             OnOpenEmailFailed -> EventAnalytics.Automatic("contact_support_no_email_app")
+
+            OnCopyEmailFailed -> EventAnalytics.Automatic("contact_support_copy_email_failed")
         }
 
     // Why: the back arrow, Close and a native dismiss of the sheet or dialog.
@@ -27,4 +29,7 @@ sealed interface ContactSupportUiEvent : UiEvent {
 
     // Why: no app on the device takes a mailto link (Android and Apple say so; a browser never does).
     data object OnOpenEmailFailed : ContactSupportUiEvent
+
+    // Why: the platform refused the clipboard (a browser without the permission or the focus); the others never do.
+    data object OnCopyEmailFailed : ContactSupportUiEvent
 }

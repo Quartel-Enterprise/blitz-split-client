@@ -29,8 +29,11 @@ fun ContactSupportScreen(
             when (action) {
                 is ContactSupportUiAction.CopyToClipboard -> context.copyText(action.email)
 
-                is ContactSupportUiAction.OpenEmail -> if (!context.openEmail(action.mailtoLink)) {
-                    viewModel.onEvent(ContactSupportUiEvent.OnOpenEmailFailed)
+                is ContactSupportUiAction.OpenEmail -> {
+                    val message = action.message
+                    if (!context.openEmail(message.mailtoLink, message.subject, message.body)) {
+                        viewModel.onEvent(ContactSupportUiEvent.OnOpenEmailFailed)
+                    }
                 }
             }
         }

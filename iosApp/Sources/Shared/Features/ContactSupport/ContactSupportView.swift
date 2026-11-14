@@ -23,8 +23,13 @@ final class ContactSupportModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             if let copy = action as? ContactSupportUiActionCopyToClipboard {
                 Pasteboard.copy(copy.email)
+                // VoiceOver hears what the tap did on every copy, a second one included, which changes no text
+                let state = viewModel.uiState.value as? ContactSupportUiState
+                if let text = ContactSupportCopy.notice(state?.notice) {
+                    AccessibilityNotification.Announcement(text).post()
+                }
             } else if let open = action as? ContactSupportUiActionOpenEmail {
-                self?.openEmail(open.mailtoLink)
+                self?.openEmail(open.message.mailtoLink)
             }
         })
     }
@@ -80,6 +85,8 @@ struct ContactSupportView: View {
                 }
             }
         }
+        // A short form, so an iPad shows it compact as Android's and the web's dialog, never a page of empty room
+        .formSheetSizing()
         #endif
         .onAppear {
             if model == nil { model = ContactSupportModel() }
@@ -98,12 +105,8 @@ private struct ContactSupportContent: View {
         state.diagnostics.loaded(as: SupportDiagnostics.self)
     }
 
-    /// What the last tap did, in the app's language; nil before any.
     private var notice: String? {
-        guard let notice = state.notice else { return nil }
-        return notice == .noEmailApp
-            ? String(localized: "No email app found. The address was copied instead.", bundle: .appLanguage)
-            : String(localized: "Email address copied.", bundle: .appLanguage)
+        ContactSupportCopy.notice(state.notice)
     }
 
     var body: some View {
@@ -267,7 +270,7 @@ private struct ContactSupportContent: View {
                     Text(verbatim: tag)
                 } else {
                     // A pick of System alone would not say which language the app speaks
-                    Text("System") + Text(verbatim: " (\(diagnostics.spokenLanguage))")
+                    Text(verbatim: "\(String(localized: "System", bundle: .appLanguage)) (\(diagnostics.spokenLanguage))")
                 }
             }
             LabeledContent("Account") { accountText(diagnostics.account) }
@@ -304,6 +307,16 @@ private struct ContactSupportContent: View {
         case .google: Text(verbatim: "Google")
         default: Text(verbatim: "Apple")
         }
+    }
+}
+
+private enum ContactSupportCopy {
+    /// What the last tap did, in the app's language; nil before any.
+    static func notice(_ notice: ContactSupportNotice?) -> String? {
+        guard let notice else { return nil }
+        return notice == .noEmailApp
+            ? String(localized: "No email app found. The address was copied instead.", bundle: .appLanguage)
+            : String(localized: "Email address copied.", bundle: .appLanguage)
     }
 }
 

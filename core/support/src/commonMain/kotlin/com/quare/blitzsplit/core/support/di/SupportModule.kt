@@ -1,8 +1,8 @@
 package com.quare.blitzsplit.core.support.di
 
-import com.quare.blitzsplit.core.support.domain.usecase.BuildSupportEmailLink
+import com.quare.blitzsplit.core.support.domain.usecase.BuildSupportEmail
 import com.quare.blitzsplit.core.support.domain.usecase.ObserveSupportDiagnostics
-import com.quare.blitzsplit.core.support.domain.usecase.impl.BuildSupportEmailLinkUseCase
+import com.quare.blitzsplit.core.support.domain.usecase.impl.BuildSupportEmailUseCase
 import com.quare.blitzsplit.core.support.domain.usecase.impl.ObserveSupportDiagnosticsUseCase
 import com.quare.blitzsplit.core.support.generated.SupportConfig
 import org.koin.core.module.dsl.factoryOf
@@ -20,5 +20,5 @@ val supportModule = module {
             observeProfileShareLink = get(),
         )
     }
-    factoryOf(::BuildSupportEmailLinkUseCase).bind<BuildSupportEmailLink>()
+    factoryOf(::BuildSupportEmailUseCase).bind<BuildSupportEmail>()
 }
