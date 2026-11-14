@@ -313,16 +313,22 @@ private struct ContactProfileContent: View {
                     .frame(maxWidth: maxWidth)
                     .frame(maxWidth: .infinity)
                 }
-                .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                    min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd)
-                } action: { _, offset in
-                    headerScroll.offset = offset
-                }
+                .foldingHeader(headerScroll, isOn: true)
             }
         }
         .scrollContentBackground(.hidden)
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
+    }
+
+    /// What the header's face shrinks with: only on iOS pushed, where the bar's title takes its place. The Mac's
+    /// toolbar names the person, and beside the list the header is a row.
+    private var foldingScroll: GroupHeaderScroll? {
+        #if os(iOS)
+        isInPane ? nil : headerScroll
+        #else
+        nil
+        #endif
     }
 
     /// One column of the two lying down, the header folding into the bar with the left one's scroll.
@@ -331,11 +337,7 @@ private struct ContactProfileContent: View {
             VStack(alignment: .leading, spacing: 20) { content() }
                 .padding(.vertical, 20)
         }
-        .onScrollGeometryChange(for: CGFloat.self) { geometry in
-            foldsHeader ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd) : 0
-        } action: { _, offset in
-            if foldsHeader { headerScroll.offset = offset }
-        }
+        .foldingHeader(headerScroll, isOn: foldsHeader)
     }
 
     /// The header, the notices, the guest's or the waiting merge's card and the balance with its actions.
@@ -345,7 +347,7 @@ private struct ContactProfileContent: View {
             state: state,
             contact: contact,
             isRow: isInPane,
-            scroll: isInPane ? nil : headerScroll,
+            scroll: foldingScroll,
         )
         if state.showsOfflineNotice {
             Label("Offline · what you do goes into the queue", systemImage: "wifi.slash")
@@ -373,6 +375,17 @@ private struct ContactProfileContent: View {
         #else
         return nil
         #endif
+    }
+}
+
+private extension View {
+    /// Ties the header's fold to this scroll, frame by frame, held at the fold's end; off, the scroll leaves it be.
+    func foldingHeader(_ scroll: GroupHeaderScroll, isOn: Bool) -> some View {
+        onScrollGeometryChange(for: CGFloat.self) { geometry in
+            isOn ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), scroll.foldEnd) : 0
+        } action: { _, offset in
+            if isOn { scroll.offset = offset }
+        }
     }
 }
 

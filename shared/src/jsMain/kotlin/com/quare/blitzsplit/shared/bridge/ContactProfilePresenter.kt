@@ -134,7 +134,7 @@ class JsContactProfileState(
 
 /*
  * Why: "coming-soon", "copy" and "share" (with the link, and the person's name for the message), "share-profile"
- * (the person's profile link, and their name), "added" (the name and the group's), "change-error", "claim-error" or
+ * (the person's profile link), "added" (the name and the group's), "change-error", "claim-error" or
  * "cancel-merge-error".
  */
 class JsContactProfileAction(
@@ -175,7 +175,7 @@ class ContactProfilePresenter(
                 is ContactProfileUiAction.ShareProfileLink -> JsContactProfileAction(
                     "share-profile",
                     action.link,
-                    action.name,
+                    null,
                     null,
                 )
 

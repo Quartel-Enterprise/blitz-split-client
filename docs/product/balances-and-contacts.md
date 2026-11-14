@@ -81,10 +81,11 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     Request of its own, which stay on the profile. Beside the list a wide window (full screen) keeps the profile at
     640 pt, centred. Pushed in a window lying down (a phone or a tablet lying down, an unfolded book, an iPhone or
     iPad lying down, the web's page from a 56 rem column) the profile takes two columns, who the person is with the
-    guest's card and the net on the left, "Groups in common" and the history on the right, each scrolling on its own;
-    beside Contacts' list it keeps one (beta feedback of 2026-11-14). As the header scrolls up its face shrinks and
+    guest's card and the net on the left, "Groups in common" and the history on the right, each scrolling on its own (the
+    web's page scrolls as one); beside Contacts' list it keeps one (beta feedback of 2026-11-14). As the header scrolls up its face shrinks and
     fades while a small face and the name come into the top bar (Android and iOS, as the group's header does; the
-    web's header sticks and folds into a compact bar; the Mac and the iPad's pane keep their row). "Request" and
+    web's header sticks and folds into a compact bar, under the phone's top bar; the Mac, whose toolbar names the
+    person, and the iPad's pane keep their header as it is). "Request" and
     "Received" sit side by side while both labels fit and stack full width otherwise, as the guest card's "Merge"
     and "Invite". "Share profile" beside ⋯ shares the person's profile link
     (`https://blitzsplit.com/u/<code>?lang=<app language>`, as they would share it from their own Profile, the link

@@ -104,7 +104,8 @@ export function ContactProfileView({
         Why: sticky, folding into a bar with the scroll (beta feedback of 2026-11-14): the face shrinks and the line
         under the name fades, so whose profile it is stays in sight.
       */}
-      <header ref={headerRef} className="contact-header flex items-center gap-3.5 bg-background/95 backdrop-blur">
+      {/* Why: the surface it sits on, the page's or the desktop pane's card, so the folded bar never shows a band. */}
+      <header ref={headerRef} className={cn('contact-header flex items-center gap-3.5 backdrop-blur', onBack ? 'bg-background/95' : 'bg-card/95')}>
         <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="contact-header-photo shrink-0" />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h2 className="contact-header-name truncate font-semibold tracking-tight">{name}</h2>

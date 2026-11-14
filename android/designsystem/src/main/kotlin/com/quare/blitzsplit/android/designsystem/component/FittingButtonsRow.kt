@@ -25,12 +25,9 @@ fun FittingButtonsRow(
         if (measurables.isEmpty()) return@Layout layout(constraints.minWidth, constraints.minHeight) {}
         val gap = spacing.roundToPx()
         val gaps = gap * (measurables.size - 1)
-        val width = if (constraints.hasBoundedWidth) {
-            constraints.maxWidth
-        } else {
-            measurables.sumOf { it.maxIntrinsicWidth(constraints.maxHeight) } + gaps
-        }
         val widest = measurables.maxOf { it.maxIntrinsicWidth(constraints.maxHeight) }
+        // Why: unbounded (a horizontal scroll), the row is as wide as the widest button times their count.
+        val width = if (constraints.hasBoundedWidth) constraints.maxWidth else widest * measurables.size + gaps
         val fitsInRow = widest * measurables.size + gaps <= width
         if (fitsInRow) {
             val itemWidth = (width - gaps) / measurables.size

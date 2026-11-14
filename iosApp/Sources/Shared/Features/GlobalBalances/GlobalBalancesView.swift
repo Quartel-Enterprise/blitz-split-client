@@ -405,16 +405,7 @@ private struct PersonRowView: View {
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     byGroupButton
-                    ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 8) {
-                            Spacer()
-                            PersonActions(model: model, row: row, name: name)
-                        }
-                        VStack(alignment: .trailing, spacing: 8) {
-                            PersonActions(model: model, row: row, name: name)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
+                    TrailingPersonActions(model: model, row: row, name: name)
                 }
             }
             .padding(.leading, 52)
@@ -535,6 +526,27 @@ private struct PersonActions: View {
             .prominentLabel()
             .buttonBorderShape(.capsule)
             .accessibilityLabel(Text("Settle up with \(name)"))
+        }
+    }
+}
+
+/// The person's actions at the end of their line, one under the other where both don't fit (beta feedback of
+/// 2026-11-14), never a capsule squeezed around a broken label.
+private struct TrailingPersonActions: View {
+    let model: GlobalBalancesModel
+    let row: PersonRow
+    let name: String
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) {
+                Spacer()
+                PersonActions(model: model, row: row, name: name)
+            }
+            VStack(alignment: .trailing, spacing: 8) {
+                PersonActions(model: model, row: row, name: name)
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 }
@@ -692,17 +704,8 @@ private struct PersonDetail: View {
                     .foregroundStyle(row.owesYou ? Palette.positive : Palette.negative)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 8) {
-                        Spacer()
-                        PersonActions(model: model, row: row, name: name)
-                    }
-                    VStack(alignment: .trailing, spacing: 8) {
-                        PersonActions(model: model, row: row, name: name)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-                .font(.subheadline.weight(.semibold))
+                TrailingPersonActions(model: model, row: row, name: name)
+                    .font(.subheadline.weight(.semibold))
             }
             .padding(16)
             .background(Palette.card, in: .rect(cornerRadius: 16))

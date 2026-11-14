@@ -359,7 +359,8 @@
   --photo-open: 48px;
   position: sticky;
   top: 0;
-  z-index: 10;
+  /* Under the phone's top bar (z-10), which comes back over it on a scroll up as over the rest of the page. */
+  z-index: 5;
   flex-shrink: 0;
   height: calc(var(--open) - var(--p, 0) * (var(--open) - var(--folded)));
   margin-bottom: calc(var(--p, 0) * (var(--open) - var(--folded)));

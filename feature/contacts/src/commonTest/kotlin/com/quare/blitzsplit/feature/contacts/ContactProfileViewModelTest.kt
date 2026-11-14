@@ -2623,7 +2623,7 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt", "Carla")),
+                listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt")),
                 actions,
             )
             assertEquals(CARLA_LINK, viewModel.uiState.value.shareLink)
@@ -2661,7 +2661,7 @@ class ContactProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt", "Carla")),
+                listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt")),
                 actions,
             )
         }
@@ -2680,7 +2680,7 @@ class ContactProfileViewModelTest {
 
         // Then
         assertEquals(
-            listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt", "Carla")),
+            listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt")),
             actions,
         )
     }

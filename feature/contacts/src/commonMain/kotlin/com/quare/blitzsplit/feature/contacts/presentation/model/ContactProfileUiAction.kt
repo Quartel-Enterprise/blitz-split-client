@@ -15,13 +15,9 @@ sealed interface ContactProfileUiAction {
         val name: String,
     ) : ContactProfileUiAction
 
-    /*
-     * Why: the system share with the person's profile link, in the app's language; the browser copies it when it has
-     * no share. The name only titles the share.
-     */
+    // Why: the system share with the person's profile link, in the app's language; the browser copies it without one.
     data class ShareProfileLink(
         val link: String,
-        val name: String,
     ) : ContactProfileUiAction
 
     // Why: "Carla entrou no Futebol de quinta."

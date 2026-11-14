@@ -507,11 +507,10 @@ class ContactProfileViewModel(
         val state = uiState.value
         if (!state.canShareProfile || !isShown()) return
         val link = state.shareLink ?: return
-        val name = state.contact?.name ?: return
         trackEvent("contact_profile_share_clicked", emptyMap())
         viewModelScope.launch {
             val spoken = LinkLanguage.buildLink(link, observeSpokenLanguage().first())
-            uiAction.emit(ContactProfileUiAction.ShareProfileLink(spoken, name))
+            uiAction.emit(ContactProfileUiAction.ShareProfileLink(spoken))
         }
     }
 
