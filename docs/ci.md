@@ -65,8 +65,10 @@ target apart, so a bump is the change the two targets can take differently.
 
 `apple-tests` bounds its test step rather than the job, since only the step knows which targets run: 60 minutes on
 macOS alone, where recompiling everything took 22, and 80 with the simulator too, where it took up to 48 on `main`.
-The second is less room than the three times the other jobs get, for a run that already takes most of an hour. The
-job's own `timeout-minutes` of 90 only stops what hangs around the tests.
+The run with the simulator is the exception to the three times above: three times 48 would hold a runner for over two
+hours. A run the step's timeout kills saves no Kotlin/Native entry, since it may have left a library half compiled.
+The job's own `timeout-minutes` of 100 only stops what hangs around the tests, with room for the caches restored
+before the longest run and saved after it.
 
 A test that fails on the simulator alone therefore shows up after the merge, as a failed `apple` run on the `main`
 commit. The `report-failure` job then opens the issue "The apple checks failed on main", assigned to whoever merged,
