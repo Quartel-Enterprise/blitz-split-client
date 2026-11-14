@@ -33,6 +33,9 @@ final class ContactProfileModel {
             case let copy as ContactProfileUiActionCopyLink:
                 Pasteboard.copy(copy.link)
                 self?.copiedCount += 1
+            // The person's profile link alone: its preview shows their name and photo
+            case let share as ContactProfileUiActionShareProfileLink:
+                SystemShare.share(share.link)
             case let added as ContactProfileUiActionShowAddedToGroup:
                 self?.addedText = "\(added.name) joined \(added.groupName)."
                 self?.addedCount += 1
@@ -104,11 +107,13 @@ struct ContactProfileView: View {
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: ContactProfileModel?
+    /// How far the header scrolled under the bar, which its face and the bar's title follow.
+    @State private var headerScroll = GroupHeaderScroll()
 
     var body: some View {
         Group {
             if let model, model.state.isLoaded, let contact = model.state.contact {
-                ContactProfileContent(model: model, contact: contact, isInPane: isInPane)
+                ContactProfileContent(model: model, contact: contact, isInPane: isInPane, headerScroll: headerScroll)
             } else {
                 // The person not read yet: their face, the net and the groups shimmer in place
                 ShimmerScreen {
@@ -131,6 +136,22 @@ struct ContactProfileView: View {
         #endif
         .toolbar {
             if let model, let contact = model.state.contact {
+                #if os(iOS)
+                // The header shows the face and the name; the bar only shows them small once it scrolled away
+                if !isInPane {
+                    ToolbarItem(placement: .principal) {
+                        ContactInlineTitle(state: model.state, contact: contact, scroll: headerScroll)
+                    }
+                }
+                #endif
+                // The person's profile link, as they would share it themselves; a guest has none
+                if model.state.canShareProfile {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Share profile", systemImage: "square.and.arrow.up") {
+                            model.send(ContactProfileUiEventOnShareProfileClicked.shared)
+                        }
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     ContactProfileMenu(model: model, contact: contact)
                 }
@@ -250,41 +271,97 @@ private struct ContactProfileContent: View {
     let model: ContactProfileModel
     let contact: Contact
     let isInPane: Bool
+    let headerScroll: GroupHeaderScroll
+
+    @State private var layout = ScreenLayout()
 
     private var state: ContactProfileUiState {
         model.state
     }
 
+    /// Lying down there is little height and room across: who the person is and the balance on the left, the groups
+    /// in common and the history on the right, each scrolling on its own (beta feedback of 2026-11-14). Beside
+    /// Contacts' list the pane keeps one column.
+    private var usesTwoColumns: Bool {
+        layout.usesTwoColumns && !isInPane
+    }
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                ContactProfileHeader(state: state, contact: contact, isRow: isInPane)
-                if state.showsOfflineNotice {
-                    Label("Offline · what you do goes into the queue", systemImage: "wifi.slash")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+        Group {
+            if usesTwoColumns {
+                TwoColumnsLayout(firstWidth: layout.isLarge ? 380 : 320, spacing: 24) {
+                    scrolling(foldsHeader: true) { summary }
+                } second: {
+                    scrolling(foldsHeader: false) {
+                        GroupsInCommon(model: model, contact: contact)
+                        if !state.history.isEmpty {
+                            ContactHistoryList(model: model, contact: contact)
+                        }
+                    }
                 }
-                if state.isMergeStatusLoading {
-                    // Whether a merge waits for them only the server knows: never Merge before it answered
-                    GuestCardPlaceholder()
-                } else if state.showsGuestCard || state.isMergeStatusUnavailable {
-                    GuestCard(model: model, contact: contact)
+                .padding(.horizontal, 20)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        summary
+                        GroupsInCommon(model: model, contact: contact)
+                        if !state.history.isEmpty {
+                            ContactHistoryList(model: model, contact: contact)
+                        }
+                    }
+                    .padding(20)
+                    .frame(maxWidth: maxWidth)
+                    .frame(maxWidth: .infinity)
                 }
-                if let pending = state.pendingMerge.loaded(as: GuestMerge.self), state.showsPendingMerge {
-                    PendingMergeCard(model: model, contact: contact, pending: pending)
-                }
-                NetCard(model: model, contact: contact)
-                GroupsInCommon(model: model, contact: contact)
-                if !state.history.isEmpty {
-                    ContactHistoryList(model: model, contact: contact)
+                .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                    min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd)
+                } action: { _, offset in
+                    headerScroll.offset = offset
                 }
             }
-            .padding(20)
-            .frame(maxWidth: maxWidth)
-            .frame(maxWidth: .infinity)
         }
         .scrollContentBackground(.hidden)
         .background(Palette.groupedBackground)
+        .measuringScreenLayout($layout)
+    }
+
+    /// One column of the two lying down, the header folding into the bar with the left one's scroll.
+    private func scrolling(foldsHeader: Bool, @ViewBuilder _ content: () -> some View) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) { content() }
+                .padding(.vertical, 20)
+        }
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            foldsHeader ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd) : 0
+        } action: { _, offset in
+            if foldsHeader { headerScroll.offset = offset }
+        }
+    }
+
+    /// The header, the notices, the guest's or the waiting merge's card and the balance with its actions.
+    @ViewBuilder
+    private var summary: some View {
+        ContactProfileHeader(
+            state: state,
+            contact: contact,
+            isRow: isInPane,
+            scroll: isInPane ? nil : headerScroll,
+        )
+        if state.showsOfflineNotice {
+            Label("Offline · what you do goes into the queue", systemImage: "wifi.slash")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        if state.isMergeStatusLoading {
+            // Whether a merge waits for them only the server knows: never Merge before it answered
+            GuestCardPlaceholder()
+        } else if state.showsGuestCard || state.isMergeStatusUnavailable {
+            GuestCard(model: model, contact: contact)
+        }
+        if let pending = state.pendingMerge.loaded(as: GuestMerge.self), state.showsPendingMerge {
+            PendingMergeCard(model: model, contact: contact, pending: pending)
+        }
+        NetCard(model: model, contact: contact)
     }
 
     /// Pushed, the canvas' 520 pt column. Beside the list, the pane's whole width, which only a wide Mac window (full
@@ -304,6 +381,10 @@ private struct ContactProfileHeader: View {
     let state: ContactProfileUiState
     let contact: Contact
     let isRow: Bool
+    /// The scroll the face shrinks with as it goes under the bar; nil where it stays (beside the list).
+    let scroll: GroupHeaderScroll?
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         let layout = isRow
@@ -311,12 +392,17 @@ private struct ContactProfileHeader: View {
             : AnyLayout(VStackLayout(spacing: 8))
         layout {
             AvatarPhoto(initial: state.initials, color: contact.color, photoUrl: contact.photoUrl, size: isRow ? 56 : 88)
+                .scaleEffect(reduceMotion ? 1 : scroll?.avatarScale ?? 1, anchor: .bottom)
+                .opacity(Double(scroll?.avatarOpacity ?? 1))
                 .accessibilityHidden(true)
             VStack(alignment: isRow ? .leading : .center, spacing: 4) {
                 Text(verbatim: contact.name)
                     .font(.title2.weight(.bold))
                     .lineLimit(1)
                     .accessibilityAddTraits(.isHeader)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                        scroll?.nameHeight = height
+                    }
                 Text(verbatim: ContactsCopy.profileMeta(contact))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -328,6 +414,38 @@ private struct ContactProfileHeader: View {
         .frame(maxWidth: .infinity, alignment: isRow ? .leading : .center)
     }
 }
+
+#if os(iOS)
+/// The person's face and name in the bar, coming in as the header goes under it (beta feedback of 2026-11-14), as
+/// the group's do.
+private struct ContactInlineTitle: View {
+    let state: ContactProfileUiState
+    let contact: Contact
+    let scroll: GroupHeaderScroll
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        let progress = scroll.titleProgress
+        HStack(spacing: 8) {
+            AvatarPhoto(
+                initial: state.initials,
+                color: contact.color,
+                photoUrl: contact.photoUrl,
+                size: GroupHeaderScroll.inlineAvatarSize,
+            )
+            .accessibilityHidden(true)
+            Text(verbatim: contact.name)
+                .font(.headline)
+                .lineLimit(1)
+        }
+        .opacity(progress)
+        // Rises into place with the scroll, as the inline title does; Reduce Motion only fades it
+        .offset(y: reduceMotion ? 0 : (1 - progress) * 8)
+        .accessibilityHidden(progress < 0.5)
+    }
+}
+#endif
 
 /// "Diego doesn't use Blitz Split yet": a guest is only a name in the groups, so the profile offers to merge them with
 /// their account (online only) or to send them a personal invite.
@@ -468,17 +586,11 @@ private struct NetCard: View {
             }
             .accessibilityElement(children: .combine)
             if state.canCharge || state.canReceive {
-                HStack(spacing: 10) {
-                    if state.canCharge {
-                        action("Request", systemImage: "text.bubble", isProminent: true) {
-                            model.send(ContactProfileUiEventOnChargeClicked.shared)
-                        }
-                    }
-                    if state.canReceive {
-                        action("Got paid", systemImage: "checkmark", isProminent: false) {
-                            model.send(ContactProfileUiEventOnReceivedClicked.shared)
-                        }
-                    }
+                // Side by side while both labels fit on one line, stacked in a narrow column (beta feedback of
+                // 2026-11-14), never a capsule squeezed around a broken label
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) { chargeAndReceive }
+                    VStack(spacing: 10) { chargeAndReceive }
                 }
             }
             if state.canSettle {
@@ -497,6 +609,20 @@ private struct NetCard: View {
     }
 
     @ViewBuilder
+    private var chargeAndReceive: some View {
+        if state.canCharge {
+            action("Request", systemImage: "text.bubble", isProminent: true) {
+                model.send(ContactProfileUiEventOnChargeClicked.shared)
+            }
+        }
+        if state.canReceive {
+            action("Got paid", systemImage: "checkmark", isProminent: false) {
+                model.send(ContactProfileUiEventOnReceivedClicked.shared)
+            }
+        }
+    }
+
+    @ViewBuilder
     private func action(
         _ title: LocalizedStringKey,
         systemImage: String,
@@ -506,6 +632,8 @@ private struct NetCard: View {
         let button = Button(action: perform) {
             Label(title, systemImage: systemImage)
                 .font(.headline)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
                 .frame(maxWidth: .infinity, minHeight: 32)
         }
         .controlSize(.large)

@@ -395,25 +395,47 @@ private struct PersonRowView: View {
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel(Text("\(name) by group"))
             }
-            HStack(spacing: 8) {
-                Button {
-                    model.send(GlobalBalancesUiEventOnPersonExpandToggled(personId: row.id))
-                } label: {
-                    HStack(spacing: 5) {
-                        Text("By group")
-                        Image(systemName: row.isExpanded ? "chevron.up" : "chevron.down")
-                            .font(.caption.weight(.bold))
+            // "By group" and the actions on one line while they fit, else the actions on a line of their own at the
+            // end: a narrow column never squeezes a capsule around a label broken letter by letter (beta feedback)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    byGroupButton
+                    Spacer()
+                    PersonActions(model: model, row: row, name: name)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    byGroupButton
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 8) {
+                            Spacer()
+                            PersonActions(model: model, row: row, name: name)
+                        }
+                        VStack(alignment: .trailing, spacing: 8) {
+                            PersonActions(model: model, row: row, name: name)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
-                .buttonStyle(.borderless)
-                .accessibilityLabel(row.isExpanded ? Text("Hide \(name) by group") : Text("Show \(name) by group"))
-                Spacer()
-                PersonActions(model: model, row: row, name: name)
             }
             .padding(.leading, 52)
             .font(.subheadline.weight(.semibold))
         }
         .padding(.vertical, 4)
+    }
+
+    private var byGroupButton: some View {
+        Button {
+            model.send(GlobalBalancesUiEventOnPersonExpandToggled(personId: row.id))
+        } label: {
+            HStack(spacing: 5) {
+                Text("By group")
+                    .lineLimit(1)
+                Image(systemName: row.isExpanded ? "chevron.up" : "chevron.down")
+                    .font(.caption.weight(.bold))
+            }
+        }
+        .buttonStyle(.borderless)
+        .accessibilityLabel(row.isExpanded ? Text("Hide \(name) by group") : Text("Show \(name) by group"))
     }
 }
 
@@ -670,9 +692,15 @@ private struct PersonDetail: View {
                     .foregroundStyle(row.owesYou ? Palette.positive : Palette.negative)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
-                HStack(spacing: 8) {
-                    Spacer()
-                    PersonActions(model: model, row: row, name: name)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        Spacer()
+                        PersonActions(model: model, row: row, name: name)
+                    }
+                    VStack(alignment: .trailing, spacing: 8) {
+                        PersonActions(model: model, row: row, name: name)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .font(.subheadline.weight(.semibold))
             }
