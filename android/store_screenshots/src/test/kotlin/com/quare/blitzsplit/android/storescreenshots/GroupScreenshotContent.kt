@@ -49,7 +49,10 @@ internal fun SampleTrip.groupHeader(): GroupHeader {
         groupPhotoUrl = null,
         currency = currency,
         currencies = listOf(currency, foreignCurrency),
-        faces = people.indices.toList().toStackedFaces().map { faceOf(it) },
+        faces = people.indices
+            .toList()
+            .toStackedFaces()
+            .map { faceOf(it) },
         memberCount = people.size,
         notJoinedCount = 0,
         totalSpentMinor = totalSpentMinor,
