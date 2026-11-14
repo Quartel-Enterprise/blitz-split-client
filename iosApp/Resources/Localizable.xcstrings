@@ -127753,13 +127753,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo puedes tener una clave Pix de este tipo, así que esta es la que guardaste. Si quieres, cámbiala aquí."
+            "value" : "Solo puedes tener una clave Pix de este tipo, así que esta es la que ya está guardada. Si quieres, cámbiala aquí."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo puedes tener una clave Pix de este tipo, así que esta es la que has guardado. Si quieres, cámbiala aquí."
+            "value" : "Solo puedes tener una clave Pix de este tipo, así que esta es la que ya está guardada. Si quieres, cámbiala aquí."
           }
         },
         "fr" : {

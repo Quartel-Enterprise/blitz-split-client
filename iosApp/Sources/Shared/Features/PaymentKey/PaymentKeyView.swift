@@ -64,7 +64,8 @@ struct PaymentKeyView: View {
     }
 
     private var title: LocalizedStringKey {
-        switch (isPix, route.keyId != nil) {
+        // The tab of a type already held edits that saved key, so the state says whether it edits, not the route
+        switch (isPix, model?.state.isEditing ?? (route.keyId != nil)) {
         case (true, false): "New Pix key"
         case (true, true): "Edit Pix key"
         case (false, false): "New Bitcoin key"

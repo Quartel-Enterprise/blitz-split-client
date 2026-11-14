@@ -140,6 +140,16 @@ class PaymentKeyViewModel(
             leave()
             return
         }
+        /*
+         * Why: a held key shown in its tab and deleted on another device leaves the field, never moving its value onto
+         * the key opened, which would then save it in that key's place.
+         */
+        val shown = keyId
+        if (shown != null && shown != route.keyId && keys.none { it.id == shown }) {
+            drafts.remove(uiState.value.type)
+            isErrorRevealed = false
+            uiState.update { it.copy(input = "") }
+        }
         this.keys = keys
         val state = uiState.value
         if (!state.isLoaded && opened != null) {
@@ -212,7 +222,7 @@ class PaymentKeyViewModel(
         hasChosenType = true
         drafts[uiState.value.type] = Draft(uiState.value.input, isErrorRevealed)
         val draft = drafts[type]
-        val held = heldKeyOf(type)?.takeIf { uiState.value.isLoaded }
+        val held = heldKeyOf(type)
         val input = if (draft == null && held != null) {
             // Why: a type already held shows the key saved in it, ready to edit, instead of a second blank one.
             isErrorRevealed = true
@@ -339,17 +349,18 @@ class PaymentKeyViewModel(
         val state = uiState.value
         val value = validValue
         if (!state.canSave || value == null) return
+        val savedKeyId = keyId
         uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             savePaymentKey(
-                keyId = keyId,
+                keyId = savedKeyId,
                 type = state.type,
                 value = value,
                 isDefault = state.isDefault,
             )
             trackEvent(
                 "payment_key_saved",
-                mapOf("type" to state.type, "is_new" to (keyId == null), "is_default" to state.isDefault),
+                mapOf("type" to state.type, "is_new" to (savedKeyId == null), "is_default" to state.isDefault),
             )
             leave()
         }

@@ -6,8 +6,9 @@ package com.quare.blitzsplit.core.utils
  * one, so a match in the folded text is at the same place in the text shown, which marks it.
  */
 object TextFolding {
-    private const val ACCENTED = "áàâãäåéèêëíìîïóòôõöúùûüçñý"
-    private const val PLAIN = "aaaaaaeeeeiiiiooooouuuucny"
+    // Why: Polish and Turkish letters too ("Włoski", "Hiszpański", "Lehçe"), so their names fold as people type them.
+    private const val ACCENTED = "áàâãäåéèêëíìîïóòôõöúùûüçñýąćęłńśźżşğıőű"
+    private const val PLAIN = "aaaaaaeeeeiiiiooooouuuucnyacelnszzsgiou"
 
     fun toFolded(text: String): String = buildString(text.length) {
         text.forEach { char ->

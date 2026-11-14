@@ -29,7 +29,7 @@ data class PaymentKeyUiState(
     val isDeleteConfirmationShown: Boolean,
     /*
      * Why: the tab of a type the person already holds (CPF/CNPJ, phone, email) edits that saved key instead of
-     * adding a second one, and the UIs say so ("You already have a Pix key of this type…").
+     * adding a second one, and the UIs say so ("You can only have one Pix key of this type…").
      */
     val isShowingHeldKey: Boolean,
 ) {

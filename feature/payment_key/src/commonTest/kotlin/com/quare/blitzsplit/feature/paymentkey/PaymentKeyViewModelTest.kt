@@ -2622,6 +2622,28 @@ class PaymentKeyViewModelTest {
             assertEquals(2, repository.keys.value.size)
         }
 
+    @Test
+    fun `GIVEN a held phone shown WHEN deleted on another device THEN empties the field and keeps the opened key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // When
+            repository.keys.value = listOf(openedCpf)
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isShowingHeldKey)
+            assertFalse(state.canSave)
+            assertEquals(listOf(openedCpf), repository.keys.value)
+        }
+
     private val profileStack: List<Route> = listOf(Route.Groups, Route.Profile)
 
     private val phoneDefault = PaymentKey(
