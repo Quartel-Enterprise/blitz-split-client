@@ -69,9 +69,14 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       # jvmTest runs the commonTest of every module on the jvm target; koverVerifyCi holds the merged
-      # line coverage of core and feature at 80%.
+      # line coverage of core and feature at 80%. compileCommonMainKotlinMetadata compiles each module's
+      # commonMain against what every target shares, which no target's own compile checks (sqlite's
+      # blocking calls compile on each target but not there). The store screenshot generators only run
+      # when asked for, so their sample states are compiled here to catch a UiState field they miss.
       - name: Run unit tests and verify coverage
-        run: ./gradlew jvmTest :koverVerifyCi :koverHtmlReportCi --continue
+        run: >-
+          ./gradlew jvmTest :koverVerifyCi :koverHtmlReportCi compileCommonMainKotlinMetadata
+          :android:store_screenshots:compileDebugUnitTestKotlin --continue
 
       - name: Upload test reports
         if: failure()
