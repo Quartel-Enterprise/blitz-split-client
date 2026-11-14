@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.payingmethod.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodRules
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeletePayingMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePayingMethods
@@ -70,7 +71,10 @@ class PayingMethodViewModel(
 
             is PayingMethodUiEvent.OnTypeSelected -> selectType(event.type)
 
-            is PayingMethodUiEvent.OnNameChanged -> uiState.update { it.copy(name = event.name) }
+            // Why: capped here, so every platform's field stops at the same length.
+            is PayingMethodUiEvent.OnNameChanged -> uiState.update {
+                it.copy(name = event.name.take(PayingMethodRules.MAX_NAME_LENGTH))
+            }
 
             is PayingMethodUiEvent.OnCardColorSelected -> selectColor(event.color)
 

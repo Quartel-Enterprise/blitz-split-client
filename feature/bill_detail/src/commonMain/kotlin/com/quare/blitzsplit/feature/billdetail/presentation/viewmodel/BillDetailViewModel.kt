@@ -225,7 +225,7 @@ class BillDetailViewModel(
     init {
         // Why: with the categories, this device's user's own "Paid with", which only they see.
         combine(observeCategoryTree(route.groupId), observeBillPayingMethod(route.expenseId), ::Pair)
-            .onEach { (tree, paidWith) -> uiState.update { it.copy(categories = tree).copy(paidWith = paidWith) } }
+            .onEach { (tree, paidWith) -> uiState.update { it.copy(categories = tree, paidWith = paidWith) } }
             .launchIn(viewModelScope)
         combine(group, observeExpense(route.expenseId), ::Pair)
             .onEach { (group, expense) -> handle(group, expense) }

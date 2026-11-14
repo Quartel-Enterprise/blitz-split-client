@@ -544,7 +544,7 @@ class SplitBillViewModel(
                 }
             } else {
                 updateExpense
-                    .saveEdit(expenseId, route.groupId, state, amountMinor, payers, shares)
+                    .saveEdit(expenseId, route.groupId, state, amountMinor, payers, shares, editedExpense?.items)
                     .onSuccess { paidWith.saveTo(expenseId, state) }
                     .map { null }
             }

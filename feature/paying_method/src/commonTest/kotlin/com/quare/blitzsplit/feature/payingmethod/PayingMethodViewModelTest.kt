@@ -465,15 +465,16 @@ class PayingMethodViewModelTest {
     }
 
     @Test
-    fun `GIVEN a name of 31 characters WHEN reading the form THEN cannot save`() = runTest(testDispatcher) {
+    fun `GIVEN a name of 31 characters WHEN typed THEN keeps the first 30`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
         // When
-        viewModel.onEvent(PayingMethodUiEvent.OnNameChanged("a".repeat(31)))
+        viewModel.onEvent(PayingMethodUiEvent.OnNameChanged("a".repeat(30) + "b"))
 
         // Then
-        assertFalse(viewModel.uiState.value.canSave)
+        assertEquals("a".repeat(30), viewModel.uiState.value.name)
+        assertTrue(viewModel.uiState.value.canSave)
     }
 
     @Test

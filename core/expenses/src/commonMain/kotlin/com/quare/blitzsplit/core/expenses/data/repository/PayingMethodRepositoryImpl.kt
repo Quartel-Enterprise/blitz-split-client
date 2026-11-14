@@ -91,7 +91,8 @@ class PayingMethodRepositoryImpl(
         methodId: String?,
     ) {
         val stored = local.getMark(expenseId)
-        if (stored?.methodId == methodId || (stored == null && methodId == null)) return
+        // Why: also no mark stored and none asked for (null == null).
+        if (stored?.methodId == methodId) return
         local.upsertMarks(
             listOf(
                 BillPayingMethodEntity(
