@@ -19,7 +19,7 @@ internal class ProfileShareLink(
     private val scope: CoroutineScope,
     private val observeSpokenLanguage: ObserveSpokenLanguage,
     private val trackEvent: TrackEvent,
-    private val emit: (ProfileUiAction) -> Unit,
+    private val emit: suspend (ProfileUiAction) -> Unit,
 ) {
     fun share() {
         val link = uiState.value.shareLink ?: return

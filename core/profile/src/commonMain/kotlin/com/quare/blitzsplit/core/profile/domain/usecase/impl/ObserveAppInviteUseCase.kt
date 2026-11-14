@@ -20,10 +20,11 @@ class ObserveAppInviteUseCase(
 ) : ObserveAppInvite {
     override fun invoke(): Flow<AppInvite?> {
         val (link, listing) = findOffer() ?: return flowOf(null)
-        return combine(repository.observeStatus(), observeSpokenLanguage()) { status, language ->
+        // Why: the site's link says the app's language, for its preview and its page; a store's own doesn't.
+        val language = if (platform == ClientPlatform.WEB) observeSpokenLanguage() else flowOf(null)
+        return combine(repository.observeStatus(), language) { status, spoken ->
             AppInvite(
-                // Why: the site's link says the app's language, for its preview and its page; a store's own doesn't.
-                link = if (platform == ClientPlatform.WEB) LinkLanguage.buildLink(link, language) else link,
+                link = spoken?.let { LinkLanguage.buildLink(link, it) } ?: link,
                 stores = listing,
                 isDismissed = status.isDismissed,
                 phoneUse = status.phoneUse,

@@ -143,7 +143,13 @@ class ProfileViewModel(
 
     private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
 
-    private val shareLink = ProfileShareLink(uiState, viewModelScope, observeSpokenLanguage, trackEvent, ::emit)
+    private val shareLink = ProfileShareLink(
+        uiState = uiState,
+        scope = viewModelScope,
+        observeSpokenLanguage = observeSpokenLanguage,
+        trackEvent = trackEvent,
+        emit = { action -> uiAction.emit(action) },
+    )
 
     // Why: the theme a tap asked for, which the stored theme reaches only once written.
     private var requestedTheme: ThemePreference? = null
