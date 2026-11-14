@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.welcome
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
@@ -15,6 +16,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun WelcomeScreen(viewModel: WelcomeViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
     val launchGoogleSignIn = rememberGoogleSignInLauncher { result ->
         viewModel.onEvent(
             when (result) {
@@ -36,6 +38,9 @@ fun WelcomeScreen(viewModel: WelcomeViewModel = koinViewModel()) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 is WelcomeUiAction.LaunchNativeSignIn -> launchGoogleSignIn()
+
+                // Why: only the web asks for it; Android opens the legal texts as a screen of its own.
+                is WelcomeUiAction.OpenUrl -> uriHandler.openUri(action.url)
             }
         }
     }

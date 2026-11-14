@@ -121,4 +121,6 @@
     <string name="profile_share">Profil teilen</string>
     <string name="profile_share_message">Hier ist mein Profil bei Blitz Split: %1$s</string>
     <string name="profile_link_copied">Link kopiert</string>
+    <string name="profile_share_usage_data">Nutzungsdaten teilen</string>
+    <string name="profile_share_usage_data_detail">Bildschirme und Aktionen, um die App zu verbessern. Nie Namen oder Beträge.</string>
 </resources>

@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Use without an account</string>
     <string name="welcome_used_on_another_device">I\'ve used it on another device</string>
     <string name="welcome_sign_in_failed">Couldn\'t sign in right now. Try again.</string>
+    <string name="welcome_legal_notice">By continuing, you accept the %1$s and acknowledge the %2$s.</string>
+    <string name="welcome_legal_terms">Terms of Service</string>
+    <string name="welcome_legal_privacy">Privacy Policy</string>
 </resources>

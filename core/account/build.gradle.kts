@@ -10,6 +10,8 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
+            // Why: FollowAnalyticsUserId hands the account's id to it.
+            implementation(projects.core.provider.analytics)
             implementation(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

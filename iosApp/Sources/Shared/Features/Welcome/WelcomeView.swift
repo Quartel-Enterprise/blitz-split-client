@@ -197,7 +197,32 @@ private struct WelcomeActions: View {
             }
             .buttonStyle(.borderless)
             .frame(minHeight: 36)
+            WelcomeLegalText(model: model)
         }
         .animation(.default, value: state.showsOfflineNotice)
+    }
+}
+
+/// The one line that tells about the Terms and the Privacy Policy before anything is used, with no checkbox nor extra
+/// step: continuing is accepting the Terms, and Analytics rests on legitimate interest (docs/analytics/README.md). Its
+/// links open the app's own legal screens, through the shared code.
+private struct WelcomeLegalText: View {
+    let model: WelcomeModel
+
+    var body: some View {
+        Text("By continuing, you accept the [Terms of Service](legal:terms) and acknowledge the [Privacy Policy](legal:privacy).")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .tint(Palette.accent)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
+            .environment(\.openURL, OpenURLAction { url in
+                switch url.absoluteString {
+                case "legal:terms": model.send(WelcomeUiEventOnTermsClicked.shared)
+                case "legal:privacy": model.send(WelcomeUiEventOnPrivacyPolicyClicked.shared)
+                default: return .discarded
+                }
+                return .handled
+            })
     }
 }

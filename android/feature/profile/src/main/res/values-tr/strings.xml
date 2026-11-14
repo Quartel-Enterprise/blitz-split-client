@@ -121,4 +121,6 @@
     <string name="profile_share">Profili paylaş</string>
     <string name="profile_share_message">Blitz Split\'teki profilim: %1$s</string>
     <string name="profile_link_copied">Bağlantı kopyalandı</string>
+    <string name="profile_share_usage_data">Kullanım verilerini paylaş</string>
+    <string name="profile_share_usage_data_detail">Uygulamayı geliştirmek için ekranlar ve dokunuşlar. İsim veya tutar asla gönderilmez.</string>
 </resources>

@@ -58,6 +58,9 @@ export const ja: Record<MessageKey, string> = {
   welcome_offlineNotice: 'アカウントでのログインにはインターネットが必要です。今はアカウントなしで使い、あとでプロフィールから接続してください。',
   welcome_useWithoutAccount: 'アカウントなしで使う',
   welcome_usedOnAnotherDevice: '別のデバイスで使っていました',
+  welcome_legalNotice: "続行すると、{terms}に同意し、{privacy}を確認したものとみなされます。",
+  welcome_legalTerms: "利用規約",
+  welcome_legalPrivacy: "プライバシーポリシー",
 
   profileSetup_title: '友だちからは何と呼ばれていますか？',
   profileSetup_subtitle: 'グループのメンバーと、プロフィールのリンクを持っている人には、名前が表示されます。',
@@ -823,6 +826,8 @@ export const ja: Record<MessageKey, string> = {
   profile_languageIndonesian: 'インドネシア語',
   profile_bitcoinInSats: 'ビットコインをサトシで表示',
   profile_bitcoinInSatsDetail: 'ビットコインの金額をsatsで表示・入力します（1 ₿ = 100,000,000 sats）。',
+  profile_shareUsageData: "利用データを共有",
+  profile_shareUsageDataDetail: "開いた画面と操作をアプリの改善に使います。名前や金額は送りません。",
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: '暗号資産',

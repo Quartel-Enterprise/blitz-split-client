@@ -24,7 +24,6 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
 import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
@@ -36,6 +35,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObservePendingProfileCha
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfileShareLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
+import com.quare.blitzsplit.core.profile.domain.usecase.OpenLegalPage
 import com.quare.blitzsplit.core.profile.domain.usecase.ValidatePaymentKey
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
@@ -43,10 +43,12 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateUsageDataSharing
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
@@ -59,7 +61,6 @@ import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toProfileAppInvite
-import com.quare.blitzsplit.feature.profile.presentation.model.LegalLinks
 import com.quare.blitzsplit.feature.profile.presentation.model.PROFILE_SOURCE
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
@@ -90,6 +91,7 @@ class ProfileViewModel(
     private val updateThemePreference: UpdateThemePreference,
     private val updateDynamicColors: UpdateDynamicColors,
     private val updateBitcoinInSats: UpdateBitcoinInSats,
+    private val updateUsageDataSharing: UpdateUsageDataSharing,
     private val retrySync: RetrySync,
     private val signOut: SignOut,
     private val signOutWhenSynced: SignOutWhenSynced,
@@ -98,7 +100,7 @@ class ProfileViewModel(
     private val exportUserData: ExportUserData,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
-    private val clientPlatform: ClientPlatform,
+    private val openLegalPage: OpenLegalPage,
     dismissAppInvite: DismissAppInvite,
     observeAppInvite: ObserveAppInvite,
     updateMechanism: UpdateMechanism,
@@ -112,6 +114,7 @@ class ProfileViewModel(
     observeThemePreference: ObserveThemePreference,
     observeDynamicColors: ObserveDynamicColors,
     observeBitcoinInSats: ObserveBitcoinInSats,
+    observeUsageDataSharing: ObserveUsageDataSharing,
     observeAppLanguage: ObserveAppLanguage,
     updateAppLanguage: UpdateAppLanguage,
     dynamicColorSupport: DynamicColorSupport,
@@ -165,11 +168,16 @@ class ProfileViewModel(
                 isOnline = connectivityObserver.observe(),
                 awaitsFullSync = observeAccount().map { it.awaitsFullSync }.distinctUntilChanged(),
             ),
-            combine(observeDynamicColors(), observeBitcoinInSats()) { isDynamic, showsSats ->
+            combine(
+                observeDynamicColors(),
+                observeBitcoinInSats(),
+                observeUsageDataSharing(),
+            ) { isDynamic, sats, usage ->
                 uiState.update {
                     it.copy(
                         usesDynamicColors = isDynamic,
-                        showsBitcoinInSats = showsSats,
+                        showsBitcoinInSats = sats,
+                        sharesUsageData = usage,
                     )
                 }
             },
@@ -284,15 +292,19 @@ class ProfileViewModel(
 
             is ProfileUiEvent.OnDynamicColorsToggled -> toggleDynamicColors(event.isOn)
 
-            is ProfileUiEvent.OnBitcoinInSatsToggled -> toggleBitcoinInSats(event.isOn)
+            is ProfileUiEvent.OnBitcoinInSatsToggled -> viewModelScope.launch { updateBitcoinInSats(event.isOn) }
+
+            is ProfileUiEvent.OnUsageDataToggled -> viewModelScope.launch { updateUsageDataSharing(event.isOn) }
 
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
 
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
 
-            ProfileUiEvent.OnPrivacyPolicyClicked -> openLegalPage(LegalPage.PRIVACY_POLICY)
+            ProfileUiEvent.OnPrivacyPolicyClicked -> openLegalPage(
+                LegalPage.PRIVACY_POLICY,
+            ) { emit(ProfileUiAction.OpenUrl(it)) }
 
-            ProfileUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE)
+            ProfileUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE) { emit(ProfileUiAction.OpenUrl(it)) }
 
             ProfileUiEvent.OnCheckForUpdatesClicked -> checkForUpdates()
 
@@ -319,23 +331,6 @@ class ProfileViewModel(
             ) {
                 clearSession { trackEvent("profile_erase_confirmed", emptyMap()) }
             }
-        }
-    }
-
-    /*
-     * Why: the app draws the legal texts itself on Android, iOS and the Mac; in a browser the site's own page, in
-     * another tab, already is the platform's way.
-     */
-    private fun openLegalPage(page: LegalPage) {
-        if (clientPlatform == ClientPlatform.WEB) {
-            emit(ProfileUiAction.OpenUrl(LegalLinks.urlOf(page)))
-        } else {
-            navigator.navigate(
-                Route.LegalDocument(
-                    page = page,
-                    anchor = null,
-                ),
-            )
         }
     }
 
@@ -445,10 +440,6 @@ class ProfileViewModel(
         if (theme != (requestedTheme ?: uiState.value.theme)) trackEvent("theme_selected", mapOf("theme" to theme))
         requestedTheme = theme
         viewModelScope.launch { updateThemePreference(theme) }
-    }
-
-    private fun toggleBitcoinInSats(isOn: Boolean) {
-        viewModelScope.launch { updateBitcoinInSats(isOn) }
     }
 
     // Why: a device that can't draw the wallpaper's scheme shows no switch, so it stores no choice either.

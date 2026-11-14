@@ -117,4 +117,6 @@
     <string name="profile_share">Bagikan profil</string>
     <string name="profile_share_message">Ini profilku di Blitz Split: %1$s</string>
     <string name="profile_link_copied">Tautan disalin</string>
+    <string name="profile_share_usage_data">Bagikan data penggunaan</string>
+    <string name="profile_share_usage_data_detail">Layar dan ketukan, untuk meningkatkan aplikasi. Tidak pernah nama atau jumlah.</string>
 </resources>

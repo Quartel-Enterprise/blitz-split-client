@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
@@ -156,6 +157,26 @@ internal fun AboutSection(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
+        HorizontalDivider()
+        // Why: Analytics' opt out on this device, on by default under legitimate interest (docs/analytics/README.md).
+        SectionRow(
+            icon = Icons.Outlined.Insights,
+            headline = stringResource(R.string.profile_share_usage_data),
+            modifier = Modifier.toggleable(
+                value = state.sharesUsageData,
+                enabled = state.isLoaded,
+                role = Role.Switch,
+                onValueChange = { onEvent(ProfileUiEvent.OnUsageDataToggled(it)) },
+            ),
+            supporting = stringResource(R.string.profile_share_usage_data_detail),
+            trailing = {
+                Switch(
+                    checked = state.sharesUsageData,
+                    onCheckedChange = null,
+                    enabled = state.isLoaded,
                 )
             },
         )

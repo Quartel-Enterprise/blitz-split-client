@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Gebruiken zonder account</string>
     <string name="welcome_used_on_another_device">Ik heb het op een ander apparaat gebruikt</string>
     <string name="welcome_sign_in_failed">Kan nu niet inloggen. Probeer het opnieuw.</string>
+    <string name="welcome_legal_notice">Door verder te gaan, accepteer je de %1$s en bevestig je dat je het %2$s kent.</string>
+    <string name="welcome_legal_terms">Servicevoorwaarden</string>
+    <string name="welcome_legal_privacy">Privacybeleid</string>
 </resources>
