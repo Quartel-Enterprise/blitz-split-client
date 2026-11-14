@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.SharedBillLeftForSignIn
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentLiker
@@ -61,6 +62,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 class SharedBillViewModelTest {
@@ -70,6 +72,7 @@ class SharedBillViewModelTest {
     private lateinit var expenses: FakeExpenseRepository
     private lateinit var profiles: FakeProfileRepository
     private lateinit var navigator: BackStackNavigator
+    private val leftForSignIn = SharedBillLeftForSignIn()
     private val isOnline = MutableStateFlow(true)
     private lateinit var viewModel: SharedBillViewModel
     private val actions = mutableListOf<SharedBillUiAction>()
@@ -560,6 +563,34 @@ class SharedBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN the bill open under the page WHEN tapping Abrir no app THEN goes back to it never twice`() =
+        runTest(testDispatcher) {
+            // Given
+            val group = Route.GroupDetail(
+                groupId = GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+                isOverBill = false,
+            )
+            val bill = Route.BillDetail(
+                groupId = GROUP_ID,
+                expenseId = EXPENSE_ID,
+                focusCommentId = null,
+            )
+            prepareScenario(
+                sharedBill = openBill(isMember = true),
+                storedExpense = expense,
+                routesBelow = listOf(group, bill),
+            )
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnOpenInAppClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, group, bill), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a member without the bill on the device WHEN tapping Abrir no app THEN nothing opens`() =
         runTest(testDispatcher) {
             // Given
@@ -588,6 +619,38 @@ class SharedBillViewModelTest {
     }
 
     @Test
+    fun `GIVEN no profile on the device WHEN tapping Entrar THEN says it left the page to sign in`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = AccountStatus.LocalOnly,
+                storedProfile = null,
+            )
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSignInClicked)
+
+            // Then
+            assertEquals(route, leftForSignIn.take(15.minutes))
+        }
+
+    @Test
+    fun `GIVEN no profile on the device WHEN leaving the page THEN keeps no page left to sign in`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                accountStatus = AccountStatus.LocalOnly,
+                storedProfile = null,
+            )
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnCloseClicked)
+
+            // Then
+            assertNull(leftForSignIn.take(15.minutes))
+        }
+
+    @Test
     fun `GIVEN a profile on the device WHEN tapping Entrar THEN opens the profile over the page`() =
         runTest(testDispatcher) {
             // Given
@@ -598,6 +661,7 @@ class SharedBillViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Home, route, Route.Profile), navigator.backStack.value)
+            assertNull(leftForSignIn.take(15.minutes))
         }
 
     @Test
@@ -2759,6 +2823,8 @@ class SharedBillViewModelTest {
         changeError: Throwable? = null,
         changeGate: CompletableDeferred<Unit>? = null,
         focusCommentId: String? = null,
+        // Why: what the link opened over, between the home and the page.
+        routesBelow: List<Route> = emptyList(),
     ) {
         route = route.copy(commentId = focusCommentId)
         isOnline.value = online
@@ -2773,11 +2839,15 @@ class SharedBillViewModelTest {
         }
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense))
         profiles = FakeProfileRepository(initialProfile = storedProfile)
-        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
+        navigator = BackStackNavigator(startRoute = Route.Home).also { stack ->
+            routesBelow.forEach(stack::navigate)
+            stack.navigate(route)
+        }
         viewModel = SharedBillViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,
+            leftForSignIn = leftForSignIn,
             loadSharedBill = LoadSharedBillUseCase(links),
             commentOnSharedBill = CommentOnSharedBillUseCase(links),
             editSharedBillComment = EditSharedBillCommentUseCase(links),

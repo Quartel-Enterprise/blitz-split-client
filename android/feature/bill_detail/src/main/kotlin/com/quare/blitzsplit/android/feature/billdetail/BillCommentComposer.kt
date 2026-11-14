@@ -38,10 +38,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptions
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillReplyTarget
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 
 private const val COMPOSER_MAX_LINES = 5
+
+// Why: what the composer holds and tells its screen, Conta or a bill's link page, each with its own events.
+internal class BillComposer(
+    val draft: String,
+    val replyTarget: BillReplyTarget?,
+    val editingCommentId: String?,
+    val canSend: Boolean,
+    val onDraftChange: (text: String) -> Unit,
+    val onSendClick: () -> Unit,
+    val onReplyCancel: () -> Unit,
+    val onEditCancel: () -> Unit,
+)
 
 /*
  * Why: "Escreva um comentário" and its send button, with "Respondendo a Diego" over them while answering, or
@@ -51,38 +63,40 @@ private const val COMPOSER_MAX_LINES = 5
  */
 @Composable
 internal fun BillCommentComposerBox(
-    state: BillDetailUiState,
-    showsAvatar: Boolean,
+    composer: BillComposer,
+    // Why: this device's user's face beside the field where the composer is pinned at the bottom, null for none.
+    me: BillShareRow?,
     fieldColor: Color,
-    onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
-    val replyTarget = state.replyTarget
-    LaunchedEffect(replyTarget?.commentId, state.editingCommentId) {
-        if (replyTarget != null || state.isEditingComment) focusRequester.requestFocus()
+    val replyTarget = composer.replyTarget
+    val isEditing = composer.editingCommentId != null
+    LaunchedEffect(replyTarget?.commentId, composer.editingCommentId) {
+        if (replyTarget != null || isEditing) focusRequester.requestFocus()
     }
     /*
      * Why: a draft replaced from outside ("Editar" fills it, sending empties it) puts the caret at its end; one that is
      * only catching up with what was typed (the state comes a frame later) leaves the field, its caret included, alone.
      */
-    var field by remember { mutableStateOf(TextFieldValue(state.commentDraft, TextRange(state.commentDraft.length))) }
+    val draft = composer.draft
+    var field by remember { mutableStateOf(TextFieldValue(draft, TextRange(draft.length))) }
     val typed = remember { mutableListOf<String>() }
-    if (state.commentDraft == field.text) {
+    if (draft == field.text) {
         typed.clear()
-    } else if (state.commentDraft !in typed) {
-        field = TextFieldValue(state.commentDraft, TextRange(state.commentDraft.length))
+    } else if (draft !in typed) {
+        field = TextFieldValue(draft, TextRange(draft.length))
         typed.clear()
     }
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        if (state.isEditingComment) {
+        if (isEditing) {
             ComposerContextChip(
                 text = stringResource(R.string.bill_detail_editing_comment),
                 cancelLabel = stringResource(R.string.bill_detail_cancel_edit),
-                onCancel = { onEvent(BillDetailUiEvent.OnCommentEditCancelled) },
+                onCancel = composer.onEditCancel,
             )
         }
         replyTarget?.let { target ->
@@ -96,15 +110,14 @@ internal fun BillCommentComposerBox(
                     )
                 },
                 cancelLabel = stringResource(R.string.bill_detail_cancel_reply),
-                onCancel = { onEvent(BillDetailUiEvent.OnReplyCancelled) },
+                onCancel = composer.onReplyCancel,
             )
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val me = state.people.firstOrNull { it.isMe }
-            if (showsAvatar && me != null) {
+            if (me != null) {
                 AvatarBadge(
                     initial = me.initials,
                     color = me.avatarColor,
@@ -117,7 +130,7 @@ internal fun BillCommentComposerBox(
                 onValueChange = {
                     field = it
                     typed += it.text
-                    onEvent(BillDetailUiEvent.OnCommentChanged(it.text))
+                    composer.onDraftChange(it.text)
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -136,11 +149,11 @@ internal fun BillCommentComposerBox(
                 ),
             )
             FilledIconButton(
-                onClick = { onEvent(BillDetailUiEvent.OnSendCommentClicked) },
-                enabled = state.canSendComment,
+                onClick = composer.onSendClick,
+                enabled = composer.canSend,
             ) {
                 // Why: "Salvar" (✓) while "Editando comentário", "Enviar comentário" otherwise.
-                if (state.isEditingComment) {
+                if (isEditing) {
                     Icon(
                         imageVector = Icons.Outlined.Check,
                         contentDescription = stringResource(R.string.bill_detail_save_comment),

@@ -260,8 +260,8 @@ sealed interface Route {
     ) : Route
 
     /*
-     * Why: a bill's link opened (7.3h), blitzsplit.com/c/<code>, which only the web receives: over the home, or the
-     * welcome without a profile, as an invite.
+     * Why: a bill's link opened (7.3h), blitzsplit.com/c/<code>: over wherever the app is, or the welcome without a
+     * profile, as an invite.
      */
     data class SharedBill(
         val code: String,

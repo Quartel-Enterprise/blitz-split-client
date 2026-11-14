@@ -197,4 +197,21 @@
     <string name="share_bill_message">Uitgave “%1$s” in Blitz Split: %2$s</string>
     <string name="share_bill_update_error">Kan niet wijzigen wie hem kan openen. Probeer het opnieuw.</string>
     <string name="share_bill_disable_error">Kan de link niet uitzetten. Probeer het opnieuw.</string>
+    <string name="shared_bill_sign_in">Inloggen</string>
+    <string name="shared_bill_open_in_app">Openen in de app</string>
+    <string name="shared_bill_group_banner">Deze uitgave is van de groep %1$s. Wie in de groep zit, ziet ook het eigen deel en de geschiedenis.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Wil je reageren? Log in met een account. Je hoeft niet in de groep te zitten.</string>
+    <string name="shared_bill_sign_in_to_comment">Inloggen om te reageren</string>
+    <string name="shared_bill_not_found_title">Deze link opent niet meer</string>
+    <string name="shared_bill_not_found_body">Wie hem deelde, heeft de link misschien uitgezet of de uitgave verwijderd.</string>
+    <string name="shared_bill_members_only_title">Alleen wie in de groep zit, kan deze uitgave openen</string>
+    <string name="shared_bill_members_only_body">Log in met het account dat je in de groep gebruikt.</string>
+    <string name="shared_bill_members_only_outside_body">Je account zit niet in de groep van deze uitgave. Vraag degene die hem deelde om je uit te nodigen.</string>
+    <string name="shared_bill_failed_title">Kon de uitgave niet openen</string>
+    <string name="shared_bill_offline">Geen internet.</string>
+    <string name="shared_bill_retry">Opnieuw proberen</string>
+    <string name="shared_bill_go_to_app">Naar Blitz Split</string>
+    <string name="shared_bill_comment_error">Kon de reactie niet versturen. Probeer het opnieuw.</string>
+    <string name="shared_bill_needs_name">Maak je profiel aan om te reageren.</string>
+    <string name="shared_bill_comment_change_error">Kon de wijziging aan de reactie niet opslaan. Probeer het opnieuw.</string>
 </resources>

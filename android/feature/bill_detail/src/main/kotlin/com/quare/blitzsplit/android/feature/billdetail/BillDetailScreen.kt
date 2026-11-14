@@ -6,13 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
-import com.quare.blitzsplit.android.platform.rememberGalleryPhotoSaver
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.navigation.Route
@@ -22,6 +20,7 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import software.quare.loadable.valueOrNull
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 @Composable
@@ -72,15 +71,7 @@ fun BillDetailScreen(
         onPhotoPicked = { bytes -> viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(bytes)) },
         onPhotoUnreadable = { viewModel.onEvent(BillDetailUiEvent.OnPhotoUnreadable) },
     )
-    val scope = rememberCoroutineScope()
-    val saveToGallery = rememberGalleryPhotoSaver { isSaved ->
-        scope.showReplacingSnackbar(
-            snackbarHostState = snackbarHostState,
-            message = resources.getString(
-                if (isSaved) R.string.bill_detail_photo_saved else R.string.bill_detail_photo_save_error,
-            ),
-        )
-    }
+    val saveToGallery = rememberBillPhotoSaver(snackbarHostState)
     BackHandler { viewModel.onEvent(BillDetailUiEvent.OnBackClicked) }
     BillDetailContent(
         state = state,
@@ -89,14 +80,22 @@ fun BillDetailScreen(
         pickers = pickers,
         onEvent = viewModel::onEvent,
     )
+    val attachments = state.attachments.valueOrNull().orEmpty()
     BillAttachmentViewerDialog(
-        state = state,
+        attachments = attachments,
+        viewedIndex = state.viewedAttachmentIndex,
+        photoCount = state.photoCount ?: attachments.size,
+        isOnline = state.isOnline,
         snackbarHostState = snackbarHostState,
-        onDownloadClick = { source, fileName ->
-            viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
-            saveToGallery(source, fileName)
-        },
-        onEvent = viewModel::onEvent,
+        callbacks = BillViewerCallbacks(
+            onDownloadClick = { source, fileName ->
+                viewModel.onEvent(BillDetailUiEvent.OnDownloadClicked)
+                saveToGallery(source, fileName)
+            },
+            onPageChange = { viewModel.onEvent(BillDetailUiEvent.OnViewerPageChanged(it)) },
+            onRemoveClick = { viewModel.onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(it)) },
+            onDismiss = { viewModel.onEvent(BillDetailUiEvent.OnViewerDismissed) },
+        ),
     )
     state.deletion?.let { deletion ->
         DeleteBillDialog(
@@ -110,12 +109,16 @@ fun BillDetailScreen(
         )
     }
     if (state.commentToDelete != null) {
-        DeleteCommentDialog(onEvent = viewModel::onEvent)
+        DeleteCommentDialog(
+            isBusy = false,
+            onConfirm = { viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteConfirmed) },
+            onDismiss = { viewModel.onEvent(BillDetailUiEvent.OnCommentDeleteDismissed) },
+        )
     }
     state.likesComment?.let { comment ->
         CommentLikesSheet(
             comment = comment,
-            onEvent = viewModel::onEvent,
+            onDismiss = { viewModel.onEvent(BillDetailUiEvent.OnCommentLikesDismissed) },
         )
     }
 }

@@ -67,7 +67,9 @@ Groups, GroupDetail(groupId, joinedAs, EXPENSES)]`, `joinedAs` null when there i
 already open in the stack goes back to that group instead, so the group never stacks over itself. A profile's link
 (`https://blitzsplit.com/u/<code>`, `ProfileLink.codeOf`, App Links on `/u/` too) takes the same path and pushes
 `Route.ProfileLink(code)`, whose ViewModel replaces it (`Navigator.replaceTop`) with `Route.Profile` or the contact's
-`Route.ContactProfile` once it knows whose it is, and only while it is still on top.
+`Route.ContactProfile` once it knows whose it is, and only while it is still on top. A bill's link
+(`https://blitzsplit.com/c/<code>`, `SharedBillLink.codeOf`, App Links on `/c/` too) pushes `Route.SharedBill(code, commentId)`, the
+bill's own page, the same one coming back to the top when its link opens again.
 
 ### Forms with unsaved input
 

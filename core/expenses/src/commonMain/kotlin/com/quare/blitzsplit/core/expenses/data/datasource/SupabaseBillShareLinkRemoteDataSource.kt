@@ -14,10 +14,20 @@ import com.quare.blitzsplit.core.expenses.data.dto.SharedBillStatusDto
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.rpc
+import kotlinx.serialization.json.Json
 
 class SupabaseBillShareLinkRemoteDataSource(
     private val postgrest: Postgrest,
 ) : BillShareLinkRemoteDataSource {
+    /*
+     * Why: a link that doesn't open (turned off, only for the people in the bill) answers its status alone, and the
+     * Supabase client's own reading fails on a key the server leaves out. Here it reads as null.
+     */
+    private val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
+
     override suspend fun fetchLink(expenseId: String): BillShareLinkDto? = postgrest
         .from(BILL_SHARE_LINKS)
         .select(Columns.list("code", "visibility")) {
@@ -31,19 +41,22 @@ class SupabaseBillShareLinkRemoteDataSource(
         .rpc(
             function = SET_BILL_LINK,
             parameters = SetBillLinkParamsDto(expenseId, visibility),
-        ).decodeAs<BillLinkResultDto>()
+        ).data
+        .let { answer -> json.decodeFromString<BillLinkResultDto>(answer) }
 
     override suspend fun disableLink(expenseId: String): BillLinkResultDto = postgrest
         .rpc(
             function = DISABLE_BILL_LINK,
             parameters = ExpenseIdParamsDto(expenseId),
-        ).decodeAs<BillLinkResultDto>()
+        ).data
+        .let { answer -> json.decodeFromString<BillLinkResultDto>(answer) }
 
     override suspend fun fetchSharedBill(code: String): SharedBillDto = postgrest
         .rpc(
             function = GET_SHARED_BILL,
             parameters = SharedBillCodeParamsDto(code),
-        ).decodeAs<SharedBillDto>()
+        ).data
+        .let { answer -> json.decodeFromString<SharedBillDto>(answer) }
 
     override suspend fun createSharedBillComment(params: CommentOnSharedBillParamsDto): SharedBillStatusDto = postgrest
         .rpc(

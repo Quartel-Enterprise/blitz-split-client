@@ -208,4 +208,21 @@
     <string name="share_bill_message">Spesa «%1$s» su Blitz Split: %2$s</string>
     <string name="share_bill_update_error">Impossibile cambiare chi può aprirlo. Riprova.</string>
     <string name="share_bill_disable_error">Impossibile disattivare il link. Riprova.</string>
+    <string name="shared_bill_sign_in">Accedi</string>
+    <string name="shared_bill_open_in_app">Apri nell’app</string>
+    <string name="shared_bill_group_banner">Questa spesa è del gruppo %1$s. Chi è nel gruppo vede anche la propria parte e la cronologia.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Vuoi commentare? Accedi con un account. Non serve essere nel gruppo.</string>
+    <string name="shared_bill_sign_in_to_comment">Accedi per commentare</string>
+    <string name="shared_bill_not_found_title">Questo link non si apre più</string>
+    <string name="shared_bill_not_found_body">Chi l’ha condiviso potrebbe aver disattivato il link o eliminato la spesa.</string>
+    <string name="shared_bill_members_only_title">Solo le persone del gruppo possono aprire questa spesa</string>
+    <string name="shared_bill_members_only_body">Accedi con l’account che usi nel gruppo.</string>
+    <string name="shared_bill_members_only_outside_body">Il tuo account non è nel gruppo di questa spesa. Chiedi a chi l’ha condivisa di invitarti.</string>
+    <string name="shared_bill_failed_title">Impossibile aprire la spesa</string>
+    <string name="shared_bill_offline">Niente internet.</string>
+    <string name="shared_bill_retry">Riprova</string>
+    <string name="shared_bill_go_to_app">Vai a Blitz Split</string>
+    <string name="shared_bill_comment_error">Impossibile inviare il commento. Riprova.</string>
+    <string name="shared_bill_needs_name">Crea il tuo profilo per commentare.</string>
+    <string name="shared_bill_comment_change_error">Impossibile salvare la modifica al commento. Riprova.</string>
 </resources>

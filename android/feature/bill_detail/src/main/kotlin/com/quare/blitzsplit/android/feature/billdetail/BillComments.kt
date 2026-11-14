@@ -57,10 +57,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
-import software.quare.loadable.isLoading
-import software.quare.loadable.valueOrNull
+import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
 
 // Why: a reply sits under its comment's text, past the comment's avatar (16 + 32 + 12).
 private val replyStartPadding = 60.dp
@@ -157,16 +154,22 @@ internal fun PendingLine(
  */
 @Composable
 internal fun BillCommentsSection(
-    state: BillDetailUiState,
+    threads: List<BillCommentThread>,
+    // Why: Conta reads them from Room after the bill; a bill's link page comes with them.
+    isLoading: Boolean,
+    commentCount: Int?,
+    showsNoComments: Boolean,
+    replyTargetId: String?,
+    focusedCommentId: String?,
     dates: DateTimeTextFormatter,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillCommentCallbacks,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         BillSectionTitle(
             text = stringResource(R.string.bill_detail_comments),
-            trailing = state.commentCount?.takeIf { it > 0 }?.toString(),
+            trailing = commentCount?.takeIf { it > 0 }?.toString(),
         )
-        if (state.showsNoComments) {
+        if (showsNoComments) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = groupedRowShapeOf(
@@ -184,7 +187,7 @@ internal fun BillCommentsSection(
             }
         }
         // Why: the comments shimmer while they are read, never "Nenhum comentário ainda" before it is known.
-        if (state.threads.isLoading()) {
+        if (isLoading) {
             ShimmerListSkeleton(
                 count = SKELETON_COMMENTS,
                 leadingSize = 32.dp,
@@ -209,14 +212,14 @@ internal fun BillCommentsSection(
             highlightedId = null
         }
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            state.threads.valueOrNull().orEmpty().forEachIndexed { threadIndex, thread ->
+            threads.forEachIndexed { threadIndex, thread ->
                 val rows = listOf(thread.comment) + thread.replies
                 rows.forEachIndexed { index, row ->
-                    val isFocused = row.id == state.focusedCommentId
+                    val isFocused = row.id == focusedCommentId
                     CommentRow(
                         row = row,
                         isReply = index > 0,
-                        isReplyTarget = row.id == state.replyTarget?.commentId,
+                        isReplyTarget = row.id == replyTargetId,
                         isFocused = isFocused,
                         highlight = when {
                             isFocused -> 1f
@@ -225,10 +228,10 @@ internal fun BillCommentsSection(
                         },
                         shape = groupedRowShapeOf(index, rows.size),
                         dates = dates,
-                        onEvent = onEvent,
+                        callbacks = callbacks,
                         onFocusShown = {
                             highlightedId = row.id
-                            onEvent(BillDetailUiEvent.OnFocusedCommentShown)
+                            callbacks.onFocusedCommentShown()
                         },
                         modifier = if (index == 0 && threadIndex > 0) Modifier.padding(top = 8.dp) else Modifier,
                     )
@@ -249,7 +252,7 @@ private fun CommentRow(
     highlight: Float,
     shape: Shape,
     dates: DateTimeTextFormatter,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillCommentCallbacks,
     onFocusShown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -281,7 +284,7 @@ private fun CommentRow(
                 row = row,
                 isReply = isReply,
                 dates = dates,
-                onEvent = onEvent,
+                callbacks = callbacks,
             )
         }
     }
@@ -310,7 +313,7 @@ private fun CommentContent(
     row: BillCommentRow,
     isReply: Boolean,
     dates: DateTimeTextFormatter,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillCommentCallbacks,
 ) {
     Row(
         modifier = Modifier.padding(
@@ -322,6 +325,7 @@ private fun CommentContent(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         val authorName = personNameOf(row.authorName, row.isMe)
+        val openAuthor = callbacks.onPersonClick?.let { open -> row.authorMemberId?.let { id -> { open(id) } } }
         // Why: the author's face opens their profile while they are in the group, named for TalkBack.
         AvatarBadge(
             initial = row.initials,
@@ -330,8 +334,8 @@ private fun CommentContent(
             size = if (isReply) replyAvatarSize else commentAvatarSize,
             modifier = Modifier
                 .clip(CircleShape)
-                .semantics { if (row.authorMemberId != null) contentDescription = authorName }
-                .opensProfile(row.authorMemberId?.let { id -> { onEvent(BillDetailUiEvent.OnPersonClicked(id)) } }),
+                .semantics { if (openAuthor != null) contentDescription = authorName }
+                .opensProfile(openAuthor),
         )
         Column(
             modifier = Modifier.weight(1f),
@@ -371,22 +375,24 @@ private fun CommentContent(
                 }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(
-                    onClick = { onEvent(BillDetailUiEvent.OnReplyClicked(row.id)) },
-                    modifier = Modifier.offset(x = (-12).dp),
-                ) {
-                    Text(stringResource(R.string.bill_detail_reply))
+                callbacks.onReplyClick?.let { onReplyClick ->
+                    TextButton(
+                        onClick = { onReplyClick(row.id) },
+                        modifier = Modifier.offset(x = (-12).dp),
+                    ) {
+                        Text(stringResource(R.string.bill_detail_reply))
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 CommentLikeButton(
                     row = row,
-                    onEvent = onEvent,
+                    callbacks = callbacks,
                 )
             }
         }
         CommentMenu(
             row = row,
-            onEvent = onEvent,
+            callbacks = callbacks,
         )
     }
 }

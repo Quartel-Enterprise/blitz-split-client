@@ -200,4 +200,21 @@
     <string name="share_bill_message">Conta “%1$s” no Bora Rachar: %2$s</string>
     <string name="share_bill_update_error">Não deu para mudar quem pode abrir. Tente de novo.</string>
     <string name="share_bill_disable_error">Não deu para desativar o link. Tente de novo.</string>
+    <string name="shared_bill_sign_in">Entrar</string>
+    <string name="shared_bill_open_in_app">Abrir no app</string>
+    <string name="shared_bill_group_banner">Esta conta é do grupo %1$s. Quem está no grupo vê também a própria parte e o histórico.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Quer comentar? Entre com uma conta. Não precisa estar no grupo.</string>
+    <string name="shared_bill_sign_in_to_comment">Entrar para comentar</string>
+    <string name="shared_bill_not_found_title">Este link não abre mais</string>
+    <string name="shared_bill_not_found_body">Quem compartilhou pode ter desativado o link ou apagado a conta.</string>
+    <string name="shared_bill_members_only_title">Só quem está no grupo abre esta conta</string>
+    <string name="shared_bill_members_only_body">Entre com a conta que você usa no grupo.</string>
+    <string name="shared_bill_members_only_outside_body">Sua conta não está no grupo desta conta. Peça a quem compartilhou para te chamar.</string>
+    <string name="shared_bill_failed_title">Não deu para abrir a conta</string>
+    <string name="shared_bill_offline">Sem internet.</string>
+    <string name="shared_bill_retry">Tentar de novo</string>
+    <string name="shared_bill_go_to_app">Ir para o Bora Rachar</string>
+    <string name="shared_bill_comment_error">Não deu para enviar o comentário. Tente de novo.</string>
+    <string name="shared_bill_needs_name">Crie seu perfil para comentar.</string>
+    <string name="shared_bill_comment_change_error">Não deu para salvar a mudança no comentário. Tente de novo.</string>
 </resources>

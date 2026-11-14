@@ -39,6 +39,9 @@ enum AppRoute: Hashable, Identifiable {
     case billDetail(RouteBillDetail)
     /// Share bill, over the bill; holds the Kotlin route itself, which its ViewModel reads the group and the bill from.
     case shareBill(RouteShareBill)
+    /// A bill's link opened, blitzsplit.com/c/<code>: the bill's own page over wherever the app is; holds the Kotlin
+    /// route itself, which its ViewModel reads the code and the comment it was shared at from.
+    case sharedBill(RouteSharedBill)
     /// Holds the Kotlin route itself, which its ViewModel reads the group from.
     case editGroup(RouteEditGroup)
     /// The group's photo big, with the shortcuts that change it; holds the Kotlin route itself, which its ViewModel
@@ -111,6 +114,7 @@ enum AppRoute: Hashable, Identifiable {
         case let splitBill as RouteSplitBill: self = .splitBill(splitBill)
         case let billDetail as RouteBillDetail: self = .billDetail(billDetail)
         case let shareBill as RouteShareBill: self = .shareBill(shareBill)
+        case let sharedBill as RouteSharedBill: self = .sharedBill(sharedBill)
         case let editGroup as RouteEditGroup: self = .editGroup(editGroup)
         case let groupPhoto as RouteGroupPhoto: self = .groupPhoto(groupPhoto)
         case let defaultSplit as RouteDefaultSplit: self = .defaultSplit(defaultSplit)

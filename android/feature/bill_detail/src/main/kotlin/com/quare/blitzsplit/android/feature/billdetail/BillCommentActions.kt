@@ -38,7 +38,23 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
+
+/*
+ * Why: what "Comentários" tells its screen, Conta or a bill's link page, each with its own events. `canChange` is off
+ * while the heart, Editar and Apagar can't reach the server (the link's page offline or with a change on its way);
+ * no `onPersonClick` where nobody opens a profile, no `onReplyClick` where there is no composer to answer in.
+ */
+internal class BillCommentCallbacks(
+    val canChange: Boolean,
+    val onPersonClick: ((memberId: String) -> Unit)?,
+    val onReplyClick: ((commentId: String) -> Unit)?,
+    val onLikeClick: (commentId: String) -> Unit,
+    val onLikesClick: (commentId: String) -> Unit,
+    val onShareClick: (commentId: String) -> Unit,
+    val onEditClick: (commentId: String) -> Unit,
+    val onDeleteClick: (commentId: String) -> Unit,
+    val onFocusedCommentShown: () -> Unit,
+)
 
 /*
  * Why: the heart likes the comment or undoes the like, offline too; its count, or a long press on it, lists who liked
@@ -48,11 +64,11 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEv
 @Composable
 internal fun CommentLikeButton(
     row: BillCommentRow,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillCommentCallbacks,
 ) {
     val likeLabel = stringResource(if (row.isLikedByMe) R.string.bill_detail_unlike else R.string.bill_detail_like)
     val countLabel = pluralStringResource(R.plurals.bill_detail_like_count, row.likeCount, row.likeCount)
-    val opensLikes = { onEvent(BillDetailUiEvent.OnCommentLikesClicked(row.id)) }
+    val opensLikes = { callbacks.onLikesClick(row.id) }
     val hasLikes = row.likeCount > 0
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
@@ -61,11 +77,13 @@ internal fun CommentLikeButton(
                 .size(40.dp)
                 .clip(CircleShape)
                 .combinedClickable(
+                    // Why: off, the count beside it still lists who liked.
+                    enabled = callbacks.canChange,
                     onClickLabel = likeLabel,
                     role = Role.Button,
                     onLongClickLabel = countLabel.takeIf { hasLikes },
                     onLongClick = opensLikes.takeIf { hasLikes },
-                    onClick = { onEvent(BillDetailUiEvent.OnCommentLikeClicked(row.id)) },
+                    onClick = { callbacks.onLikeClick(row.id) },
                 ).semantics { contentDescription = likeLabel },
             contentAlignment = Alignment.Center,
         ) {
@@ -105,7 +123,7 @@ internal fun CommentLikeButton(
 @Composable
 internal fun CommentMenu(
     row: BillCommentRow,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillCommentCallbacks,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     Box {
@@ -125,16 +143,16 @@ internal fun CommentMenu(
                 leadingIcon = { Icon(Icons.Outlined.Share, contentDescription = null) },
                 onClick = {
                     isExpanded = false
-                    onEvent(BillDetailUiEvent.OnCommentShareClicked(row.id))
+                    callbacks.onShareClick(row.id)
                 },
             )
-            if (row.canChange) {
+            if (row.canChange && callbacks.canChange) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.bill_detail_comment_edit)) },
                     leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) },
                     onClick = {
                         isExpanded = false
-                        onEvent(BillDetailUiEvent.OnCommentEditClicked(row.id))
+                        callbacks.onEditClick(row.id)
                     },
                 )
                 DropdownMenuItem(
@@ -142,7 +160,7 @@ internal fun CommentMenu(
                     leadingIcon = { Icon(Icons.Outlined.DeleteOutline, contentDescription = null) },
                     onClick = {
                         isExpanded = false
-                        onEvent(BillDetailUiEvent.OnCommentDeleteClicked(row.id))
+                        callbacks.onDeleteClick(row.id)
                     },
                     colors = MenuDefaults.itemColors(
                         textColor = MaterialTheme.colorScheme.error,

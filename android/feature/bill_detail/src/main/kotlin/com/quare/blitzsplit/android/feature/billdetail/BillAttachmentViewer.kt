@@ -71,13 +71,19 @@ import com.quare.blitzsplit.android.designsystem.theme.pendingOnBlackColor
 import com.quare.blitzsplit.android.platform.GalleryPhotoSource
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
-import software.quare.loadable.valueOrNull
 
 private const val SECONDARY_TEXT_ALPHA = 0.72f
 private val viewerBackground = Color.Black
 private val viewerContent = Color.White
+
+// Why: what the viewer tells its screen, Conta or a bill's link page, each with its own events.
+internal class BillViewerCallbacks(
+    val onDownloadClick: (source: GalleryPhotoSource, fileName: String) -> Unit,
+    val onPageChange: (id: String) -> Unit,
+    // Why: null on a bill's link page, where nothing is removed.
+    val onRemoveClick: ((id: String) -> Unit)?,
+    val onDismiss: () -> Unit,
+)
 
 /*
  * Why: the canvas' viewer (7.3): the receipt or a photo on black, full screen on every size but a book, where it takes
@@ -87,15 +93,18 @@ private val viewerContent = Color.White
  */
 @Composable
 internal fun BillAttachmentViewerDialog(
-    state: BillDetailUiState,
+    attachments: List<BillAttachmentTile>,
+    // Why: the page of the attachment shown; closed while null.
+    viewedIndex: Int?,
+    photoCount: Int,
+    isOnline: Boolean,
     snackbarHostState: SnackbarHostState,
-    onDownloadClick: (source: GalleryPhotoSource, fileName: String) -> Unit,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillViewerCallbacks,
 ) {
-    val index = state.viewedAttachmentIndex ?: return
+    val index = viewedIndex ?: return
     val isBook = rememberFoldLayout().formFactor == FormFactor.Book
     FoldDialog(
-        onDismissRequest = { onEvent(BillDetailUiEvent.OnViewerDismissed) },
+        onDismissRequest = callbacks.onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false,
@@ -105,11 +114,12 @@ internal fun BillAttachmentViewerDialog(
         LightSystemBarsEffect()
         CompositionLocalProvider(LocalContentColor provides viewerContent) {
             ViewerContent(
-                state = state,
+                attachments = attachments,
                 index = index,
+                photoCount = photoCount,
+                isOnline = isOnline,
                 snackbarHostState = snackbarHostState,
-                onDownloadClick = onDownloadClick,
-                onEvent = onEvent,
+                callbacks = callbacks,
                 isInHalf = isBook,
             )
         }
@@ -131,24 +141,24 @@ private fun LightSystemBarsEffect() {
 
 @Composable
 private fun ViewerContent(
-    state: BillDetailUiState,
+    attachments: List<BillAttachmentTile>,
     index: Int,
+    photoCount: Int,
+    isOnline: Boolean,
     snackbarHostState: SnackbarHostState,
-    onDownloadClick: (source: GalleryPhotoSource, fileName: String) -> Unit,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillViewerCallbacks,
     // Why: the book's half is a card off the screen's edges; full screen keeps clear of the system bars instead.
     isInHalf: Boolean,
 ) {
     val insets = if (isInHalf) Modifier else Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
-    val attachments = state.attachments.valueOrNull().orEmpty()
     val pagerState = rememberPagerState(initialPage = index) { attachments.size }
     val currentAttachments by rememberUpdatedState(attachments)
-    val currentViewedId by rememberUpdatedState(state.viewedAttachmentId)
-    val currentOnEvent by rememberUpdatedState(onEvent)
+    val currentViewedId by rememberUpdatedState(attachments.getOrNull(index)?.id)
+    val currentOnPageChange by rememberUpdatedState(callbacks.onPageChange)
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.settledPage }.collect { page ->
             val id = currentAttachments.getOrNull(page)?.id
-            if (id != null && id != currentViewedId) currentOnEvent(BillDetailUiEvent.OnViewerPageChanged(id))
+            if (id != null && id != currentViewedId) currentOnPageChange(id)
         }
     }
     // Why: the ViewModel moves the viewer too, to the next one once the one shown is removed.
@@ -167,9 +177,8 @@ private fun ViewerContent(
         Column(modifier = insets.fillMaxSize()) {
             ViewerTopBar(
                 attachment = current,
-                photoCount = state.photoCount ?: attachments.size,
-                onDownloadClick = onDownloadClick,
-                onEvent = onEvent,
+                photoCount = photoCount,
+                callbacks = callbacks,
             )
             HorizontalPager(
                 state = pagerState,
@@ -180,7 +189,7 @@ private fun ViewerContent(
             ) { page ->
                 ViewerPageBox(
                     attachment = attachments[page],
-                    isOnline = state.isOnline,
+                    isOnline = isOnline,
                 )
             }
             ViewerFooter(
@@ -203,8 +212,7 @@ private fun ViewerContent(
 private fun ViewerTopBar(
     attachment: BillAttachmentTile,
     photoCount: Int,
-    onDownloadClick: (source: GalleryPhotoSource, fileName: String) -> Unit,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    callbacks: BillViewerCallbacks,
 ) {
     val number = attachment.photoNumber
     val title = if (attachment.isReceipt || number == null) {
@@ -229,7 +237,7 @@ private fun ViewerTopBar(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = { onEvent(BillDetailUiEvent.OnViewerDismissed) }) {
+        IconButton(onClick = callbacks.onDismiss) {
             Icon(
                 imageVector = Icons.Outlined.Close,
                 contentDescription = stringResource(R.string.bill_detail_viewer_close),
@@ -248,7 +256,7 @@ private fun ViewerTopBar(
         val source = gallerySourceOf(attachment)
         // Why: a photo never loaded on this device (offline) has nothing to keep yet.
         IconButton(
-            onClick = { source?.let { onDownloadClick(it, fileName) } },
+            onClick = { source?.let { callbacks.onDownloadClick(it, fileName) } },
             enabled = source != null,
         ) {
             Icon(
@@ -256,8 +264,8 @@ private fun ViewerTopBar(
                 contentDescription = stringResource(R.string.bill_detail_viewer_download),
             )
         }
-        if (attachment.canRemove) {
-            IconButton(onClick = { onEvent(BillDetailUiEvent.OnRemoveAttachmentClicked(attachment.id)) }) {
+        callbacks.onRemoveClick?.takeIf { attachment.canRemove }?.let { onRemoveClick ->
+            IconButton(onClick = { onRemoveClick(attachment.id) }) {
                 Icon(
                     imageVector = Icons.Outlined.DeleteOutline,
                     contentDescription = stringResource(R.string.bill_detail_viewer_remove),

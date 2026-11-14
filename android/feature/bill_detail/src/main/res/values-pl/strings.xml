@@ -219,4 +219,21 @@
     <string name="share_bill_message">Wydatek „%1$s” w aplikacji Blitz Split: %2$s</string>
     <string name="share_bill_update_error">Nie udało się zmienić, kto może go otworzyć. Spróbuj ponownie.</string>
     <string name="share_bill_disable_error">Nie udało się wyłączyć linku. Spróbuj ponownie.</string>
+    <string name="shared_bill_sign_in">Zaloguj się</string>
+    <string name="shared_bill_open_in_app">Otwórz w aplikacji</string>
+    <string name="shared_bill_group_banner">Ten wydatek pochodzi z grupy %1$s. Osoby z grupy widzą też swój udział i historię.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Chcesz skomentować? Zaloguj się na konto. Nie musisz być w grupie.</string>
+    <string name="shared_bill_sign_in_to_comment">Zaloguj się, aby komentować</string>
+    <string name="shared_bill_not_found_title">Ten link już się nie otwiera</string>
+    <string name="shared_bill_not_found_body">Osoba, która go udostępniła, mogła wyłączyć link lub usunąć wydatek.</string>
+    <string name="shared_bill_members_only_title">Ten wydatek otwierają tylko osoby z grupy</string>
+    <string name="shared_bill_members_only_body">Zaloguj się kontem, którego używasz w grupie.</string>
+    <string name="shared_bill_members_only_outside_body">Twojego konta nie ma w grupie tego wydatku. Poproś osobę, która go udostępniła, o zaproszenie.</string>
+    <string name="shared_bill_failed_title">Nie udało się otworzyć wydatku</string>
+    <string name="shared_bill_offline">Brak internetu.</string>
+    <string name="shared_bill_retry">Spróbuj ponownie</string>
+    <string name="shared_bill_go_to_app">Przejdź do aplikacji Blitz Split</string>
+    <string name="shared_bill_comment_error">Nie udało się wysłać komentarza. Spróbuj ponownie.</string>
+    <string name="shared_bill_needs_name">Utwórz profil, aby komentować.</string>
+    <string name="shared_bill_comment_change_error">Nie udało się zapisać zmiany komentarza. Spróbuj ponownie.</string>
 </resources>
