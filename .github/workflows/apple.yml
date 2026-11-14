@@ -1,9 +1,9 @@
 name: apple
 
 # The Apple side of the app, on a macOS runner (free on a public repository): every module's
-# commonTest on the iOS simulator and macOS targets, and both schemes of the Apple app, which link
-# the Shared framework. create-pr leaves these to CI and builds a scheme locally only when the branch
-# changes the Swift code (see the create-pr skill, step 8).
+# commonTest on the macOS target, and on the iOS simulator too on main, and both schemes of the Apple
+# app, which link the Shared framework. create-pr leaves these to CI and builds a scheme locally only
+# when the branch changes the Swift code (see the create-pr skill, step 8).
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -92,26 +92,46 @@ jobs:
     # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
     timeout-minutes: 60
     steps:
+      # Two commits: on a pull request, GitHub's merge of it with main and main itself, its first
+      # parent, which "Pick the test targets" compares it with.
       - name: Checkout code
         uses: actions/checkout@v7
         with:
-          fetch-depth: 1
+          fetch-depth: 2
 
       - name: Setup Gradle
+        id: gradle
         uses: ./.github/actions/gradle
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           kotlin-native: 'true'
-          # It compiles every Apple target, so its toolchain cache holds all of them.
-          save-kotlin-native: 'true'
+
+      # A pull request runs the suite on macOS only. The iOS simulator runs the same commonTest over
+      # the same appleMain actuals (iosMain and macosMain differ in a couple of one-line files no test
+      # reaches), and each module links one more test binary for it: the links of both targets were
+      # half of this job. The main code is still built for the simulator on every pull request:
+      # apple-app links Shared for it. main runs the simulator's suite too, after the merge, and so
+      # does a pull request that changes the version catalog: a library publishes its code for each
+      # target apart, so a bump is the change the two targets can take differently.
+      - name: Pick the test targets
+        id: targets
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        # A diff that fails (no first parent) counts as a change: the simulator's suite runs.
+        run: |
+          if [ "$EVENT_NAME" != pull_request ] || ! git diff --quiet HEAD^1 HEAD -- gradle/libs.versions.toml; then
+            echo "simulator=iosSimulatorArm64Test" >> "$GITHUB_OUTPUT"
+          fi
 
       # The actuals of appleMain live in a few modules with few tests of their own; the tests that
       # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
       # compiles the device target, which no other check builds, and compileAppleMainKotlinMetadata the
       # appleMain shared by the Apple targets, which only a macOS host compiles.
-      - name: Run the tests on the iOS simulator and macOS
+      - name: Run the tests
+        env:
+          SIMULATOR_TESTS: ${{ steps.targets.outputs.simulator }}
         run: >-
-          ./gradlew iosSimulatorArm64Test macosArm64Test compileKotlinIosArm64
+          ./gradlew ${SIMULATOR_TESTS:+"$SIMULATOR_TESTS"} macosArm64Test compileKotlinIosArm64
           compileAppleMainKotlinMetadata --continue
 
       - name: Upload test reports
@@ -120,6 +140,34 @@ jobs:
         with:
           name: apple-test-reports
           path: '**/build/reports/tests/**'
+
+      # main saves the Kotlin/Native entry the Gradle action restored, and only this job, which
+      # compiles every Apple target. Its key ends with a fingerprint of the libraries compiled to
+      # native code in it (the folders of klib/cache), so it is saved again when a link compiled a
+      # library's new version, and only then: with the Kotlin version alone as the key it was saved
+      # once, and every run compiled the libraries bumped since. A failed test doesn't stop it, since
+      # the libraries were compiled all the same. An entry keeps the versions bumped away until a new
+      # Kotlin version starts an empty one.
+      - name: Fingerprint the Kotlin/Native libraries
+        id: konan
+        if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
+        env:
+          KEY_PREFIX: ${{ steps.gradle.outputs.konan-key }}
+        run: |
+          if [ -n "$KEY_PREFIX" ] && ls -d ~/.konan/kotlin-native-prebuilt-*/klib/cache > /dev/null 2>&1; then
+            libraries=$(find ~/.konan/kotlin-native-prebuilt-*/klib/cache -mindepth 3 -maxdepth 3 -type d |
+              sort | shasum -a 256 | cut -c1-16)
+            echo "key=$KEY_PREFIX$libraries" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save the Kotlin/Native toolchain
+        if: >-
+          ${{ !cancelled() && steps.konan.outputs.key != '' &&
+          steps.konan.outputs.key != steps.gradle.outputs.konan-restored-key }}
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.konan
+          key: ${{ steps.konan.outputs.key }}
 
   apple-app:
     needs: review-gate
@@ -180,3 +228,40 @@ jobs:
           xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS
           -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData
           -clonedSourcePackagesDirPath iosApp/build/SourcePackages CODE_SIGNING_ALLOWED=NO build -quiet
+
+  # main has no pull request to show a failure on, and a test that fails on the iOS simulator alone
+  # first fails there, after the merge, since pull requests run the suite on macOS only. So a job
+  # that failed or timed out on main opens an issue, assigned to whoever merged, or comments on the
+  # one still open. A run someone cancelled reports nothing.
+  report-failure:
+    needs: [apple-tests, apple-app]
+    if: >-
+      ${{ !cancelled() && github.event_name == 'push' &&
+      (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TITLE: The apple checks failed on main
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TESTS: ${{ needs.apple-tests.result }}
+          APP: ${{ needs.apple-app.result }}
+          ACTOR: ${{ github.actor }}
+        # The list, not the search: the search index lags, and two failures in a row would open two.
+        run: |
+          body=$(printf '%s\n\n%s\n' \
+            "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP." \
+            "Pull requests run the Kotlin tests on macOS only, so a test that fails on the iOS simulator alone first fails here, and the pull request that fixes it can't check the fix: run \`./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test\` on the Mac. See \"Speed and timeouts\" in docs/ci.md.")
+          issue=$(gh issue list --state open --limit 200 --json number,title \
+            --jq "map(select(.title == \"$TITLE\"))[0].number // empty")
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body "$body"
+          else
+            gh issue create --title "$TITLE" --body "$body" --assignee "$ACTOR" ||
+              gh issue create --title "$TITLE" --body "$body"
+          fi

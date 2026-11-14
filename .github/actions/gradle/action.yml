@@ -20,12 +20,16 @@ inputs:
       and fits the Gradle and Kotlin daemons to a macOS runner.
     required: false
     default: 'false'
-  save-kotlin-native:
+
+outputs:
+  konan-key:
     description: >-
-      'true' for the one Kotlin/Native job that saves ~/.konan on main: the one that compiles every
-      Apple target, so the entry holds all of them. The others only restore it.
-    required: false
-    default: 'false'
+      With kotlin-native: the prefix of the keys of the Kotlin/Native entry (~/.konan), for the job
+      that saves it to finish with a fingerprint of what the entry holds.
+    value: ${{ steps.kotlin.outputs.konan-key }}
+  konan-restored-key:
+    description: 'With kotlin-native: the key of the entry that was restored, empty when there was none.'
+    value: ${{ steps.konan.outputs.cache-matched-key }}
 
 runs:
   using: "composite"
@@ -77,9 +81,14 @@ runs:
         sudo xcode-select -s "$xcode"
         xcodebuild -version
 
-    # The toolchain only changes with the Kotlin version and the runner, so that is the key. As with
-    # Gradle's cache, only main saves it: an entry a pull request saves is readable by that branch
-    # alone, and a gigabyte each would push main's entries out of the repository's cache.
+    # ~/.konan holds the toolchain, which changes with the Kotlin version and the runner, and the
+    # native code Kotlin/Native compiles each library to on its first link (klib/cache), which changes
+    # with the libraries' versions. So an entry's key ends with a fingerprint of the libraries it
+    # holds, and every job restores the newest one of its Kotlin version, whatever its fingerprint.
+    # Nothing is saved here, since a composite action has no step that runs when the job ends: the
+    # job that compiles every Apple target saves it (apple-tests, on main). As with Gradle's cache, an
+    # entry a pull request saves would be readable by that branch alone, and a gigabyte each would
+    # push main's entries out of the repository's cache.
     - name: Read the Kotlin version
       id: kotlin
       if: inputs.kotlin-native == 'true'
@@ -91,21 +100,19 @@ runs:
           exit 1
         fi
         echo "version=$version" >> "$GITHUB_OUTPUT"
+        # The fixed word after the version keeps 2.5.0 from matching an entry of 2.5.0-RC.
+        echo "konan-key=konan-$RUNNER_OS-$RUNNER_ARCH-$version-libraries-" >> "$GITHUB_OUTPUT"
 
-    - name: Cache the Kotlin/Native toolchain
-      if: >-
-        inputs.kotlin-native == 'true' && inputs.save-kotlin-native == 'true' &&
-        github.ref == 'refs/heads/main'
-      uses: actions/cache@v6
-      with:
-        path: ~/.konan
-        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}
-
+    # No entry has the bare prefix as its key, so it is always a restore key that matches. The second
+    # one is the entry saved before the keys had a fingerprint, so the first runs after that change
+    # don't start from nothing: drop it once Kotlin moves on from 2.4.21.
     - name: Restore the Kotlin/Native toolchain
-      if: >-
-        inputs.kotlin-native == 'true' &&
-        (inputs.save-kotlin-native != 'true' || github.ref != 'refs/heads/main')
+      id: konan
+      if: inputs.kotlin-native == 'true'
       uses: actions/cache/restore@v6
       with:
         path: ~/.konan
-        key: konan-${{ runner.os }}-${{ runner.arch }}-${{ steps.kotlin.outputs.version }}
+        key: ${{ steps.kotlin.outputs.konan-key }}
+        restore-keys: |
+          ${{ steps.kotlin.outputs.konan-key }}
+          konan-macOS-ARM64-2.4.21

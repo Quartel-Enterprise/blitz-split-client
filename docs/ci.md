@@ -6,7 +6,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
-| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `iosSimulatorArm64Test`, `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -19,9 +19,11 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
 coverage, a compile of the shared code for the iOS simulator and JS, the debug APK, and the UI the branch touches (the
-web build, or the Xcode scheme a change to `iosApp` reaches). The tests on the JS, iOS simulator and macOS targets, Android
+web build, or the Xcode scheme a change to `iosApp` reaches). The tests on the JS and macOS targets, Android
 lint, the release APK and the other Apple scheme are left to these workflows, and `merge-when-green` waits for them:
-on one Mac, queued behind the other worktrees' builds, they were what made a branch slow to open.
+on one Mac, queued behind the other worktrees' builds, they were what made a branch slow to open. The tests on the iOS
+simulator run on `main`, after the merge, and on a pull request that changes the version catalog (see
+[Speed and timeouts](#speed-and-timeouts)).
 
 ## Speed and timeouts
 
@@ -51,6 +53,29 @@ The Gradle action fits them to the runner: it selects the image's newest Xcode, 
 runs, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
 `main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the Gradle home, so the two jobs
 don't store the same entries twice.
+
+`apple-tests` is the slowest check of a pull request. Each module with tests links a test binary of its own for each
+target, and a change to a core module links all of them: those links are half of the job. So a pull request runs every
+module's `commonTest` on macOS only, and `main` runs it on the iOS simulator too. The simulator's run repeats the macOS
+one: the suite is the same `commonTest`, the actuals it reaches are `appleMain`'s (only `core/profile` and
+`core/in_app_update` have an `iosMain` and a `macosMain`, one line each that no test reaches), `create-pr` compiles the
+main and the test code for the simulator before the pull request opens, and `apple-app` links `Shared` for it. A pull
+request that changes `gradle/libs.versions.toml` runs the simulator's suite too: a library publishes its code for each
+target apart, so a bump is the change the two targets can take differently.
+
+A test that fails on the simulator alone therefore shows up after the merge, as a failed `apple` run on the `main`
+commit. The `report-failure` job then opens the issue "The apple checks failed on main", assigned to whoever merged,
+or comments on it while it is open; it does the same when `apple-app` fails or a job times out there. Fix it in a pull
+request of its own, checked on the Mac, since that pull request's `apple-tests` runs macOS only:
+`./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test`. Close the issue once `main` is green.
+
+The Kotlin/Native entry (`~/.konan`) holds the toolchain and the native code each library is compiled to on its first
+link. Every Kotlin/Native job restores the newest entry of its Kotlin version, and `apple-tests` saves it on `main`
+when it ends, under a key that ends with a fingerprint of the libraries compiled in it: a link that compiled a
+library's new version changes the fingerprint and saves a new entry, a run that compiled nothing new saves none, and a
+failed test doesn't stop the save. With the Kotlin version alone as the key, the entry was saved once and every run
+compiled the libraries bumped since. An entry keeps the versions bumped away until a new Kotlin version starts an
+empty one.
 
 ## AI review
 

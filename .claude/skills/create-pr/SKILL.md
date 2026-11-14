@@ -199,15 +199,16 @@ stops every daemon of the machine, and the other sessions' builds with them.
 
 Locally, run only what catches a mistake in a few minutes: the JVM tests and coverage, a compile of
 the shared code for each backend, and the UI the branch touches. CI runs the rest on every pull
-request, and `merge-when-green` waits for it: every module's tests on the JS target, the iOS
-simulator and macOS, Android lint, the release APK and both schemes of the Apple app (see
-[docs/ci.md](../../../docs/ci.md)). Don't run those locally to be safe: they are what made a
+request, and `merge-when-green` waits for it: every module's tests on the JS target and macOS,
+Android lint, the release APK and both schemes of the Apple app (see
+[docs/ci.md](../../../docs/ci.md)). The tests on the iOS simulator run on `main`, after the merge, and
+on a pull request that changes the version catalog. Don't run those locally to be safe: they are what made a
 cross-platform branch take 30 to 40 minutes here, and CI runs them anyway. Run one locally only to
 reproduce a CI failure (step 12).
 
 | Area | The branch changes | Local checks | Left to CI |
 |---|---|---|---|
-| Shared Kotlin | `core/`, `feature/`, `shared/`, or the build: `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | Tests and coverage, main and test code compiled for the iOS simulator and JS, the debug APK; the module graph for a build change | The tests on JS, the iOS simulator and macOS; the release APK; both Apple schemes |
+| Shared Kotlin | `core/`, `feature/`, `shared/`, or the build: `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | Tests and coverage, main and test code compiled for the iOS simulator and JS, the debug APK; the module graph for a build change | The tests on JS and macOS (on the iOS simulator, only on `main` and when the version catalog changes); the release APK; both Apple schemes |
 | Android UI | `android/`, `androidApp/` | The debug APK | Android lint, the release APK |
 | Apple UI | `iosApp/` | Regenerate the Xcode project, build the scheme the Swift change reaches | The other scheme |
 | Web UI | `webApp/`, `shared/src/jsMain` | The production build of the web app | |
@@ -240,7 +241,7 @@ catches an `appleMain` or `jsMain` the change broke, and the `compileTestKotlin*
 `commonTest` with the Kotlin/Native and JS backends, which reject some code the JVM accepts (a
 backtick test name with characters they don't allow). macOS compiles the same `appleMain` as the
 simulator and is left out, unless the branch changes a module that has a `macosMain`
-(`core/in_app_update`): its actuals there implement the module's `expect` declarations, which a
+(`core/in_app_update`, `core/profile`): its actuals there implement the module's `expect` declarations, which a
 change elsewhere in the module can break. Then add `:<module>:compileKotlinMacosArm64` for it. `:androidApp:assembleDebug` compiles the Android
 target and the Compose UI that draws the ViewModels. None of them link a test binary or run a
 suite on another platform: `commonTest` already ran on the JVM, and CI runs it on the others.
@@ -252,8 +253,9 @@ for each backend and takes a few minutes; that is the check working, not somethi
 
 A build change (`build-logic/`, `gradle/`, a `*.gradle.kts`, `gradle.properties`,
 `version.properties`) adds `assertModuleGraph`, which checks the module graph rules of the root
-`build.gradle.kts`, to the same call. CI then runs the tests of every target but the iOS device,
-whose main code it only compiles, and builds the Debug Apple apps; the Release frameworks are linked
+`build.gradle.kts`, to the same call. CI then runs the tests on the JVM, JS and macOS (on the
+iOS simulator once it is on `main`, or when the version catalog changed), compiles the main code of the iOS device, and builds the Debug
+Apple apps; the Release frameworks are linked
 only when the app is archived. A version bump runs more, see the `bump-versions` skill.
 
 **Android UI**: `:androidApp:assembleDebug`, in the Shared Kotlin call when that one runs, or on its
@@ -505,7 +507,8 @@ When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
     locally, and fix it as above; the label stays on, so the green checks of the fix commit merge
     the pull request. Reproduce it with that area's step 8 check or, for a check step 8 leaves to
     CI, on the failing module or scheme alone, through `heavy-check.sh`: `:<module>:jsTest` for
-    a `js-tests` shard, `:<module>:iosSimulatorArm64Test` or `:<module>:macosArm64Test` for `apple-tests`,
+    a `js-tests` shard, `:<module>:macosArm64Test` for `apple-tests` (`:<module>:iosSimulatorArm64Test` when the simulator's
+    test failed, on a pull request that changes the version catalog),
     `:android:<module>:lintDebug` for `android-lint`, `:androidApp:assembleRelease` for `android` (the
     release APK, the only build R8 runs on), the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
     runner, the network, a cancelled run), re-run it once (`gh run rerun <run> --failed`) and wait
