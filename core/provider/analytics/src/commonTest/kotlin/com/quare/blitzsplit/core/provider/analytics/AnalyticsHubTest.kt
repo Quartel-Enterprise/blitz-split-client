@@ -329,6 +329,38 @@ class AnalyticsHubTest {
         assertEquals(listOf("bill_saved"), service.events)
     }
 
+    @Test
+    fun `GIVEN sharing on WHEN tracking while a service attaches THEN the SDK gets the choice first`() {
+        // Given
+        prepareScenario()
+        hub.setCollectionEnabled(true)
+        val calls = mutableListOf<String>()
+        val racing = object : AnalyticsService {
+            override fun logEvent(
+                name: String,
+                params: Map<String, Any>,
+            ) {
+                calls += "event $name"
+            }
+
+            override fun setCollectionEnabled(isEnabled: Boolean) {
+                calls += "collection $isEnabled"
+            }
+
+            override fun setUserId(userId: String?) {
+                calls += "user id"
+                // Why: stands for another thread tracking while attach is still configuring the SDK.
+                trackEvent("screen_viewed", emptyMap())
+            }
+        }
+
+        // When
+        hub.attach(racing)
+
+        // Then
+        assertEquals(listOf("user id", "collection true", "event screen_viewed"), calls)
+    }
+
     private fun prepareScenario(
         failingEvents: Set<String> = emptySet(),
         failsOnCollection: Boolean = false,

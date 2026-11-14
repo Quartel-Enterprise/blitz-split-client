@@ -24,10 +24,22 @@ class AnalyticsHub {
     private var userId: String? = null
     private val pending = AtomicReference<List<AnalyticsEvent>>(emptyList())
 
+    // Why: the SDK gets the id and the choice before any thread can send through it, so no event beats them.
     fun attach(service: AnalyticsService) {
+        val configuredId = userId
+        val configuredChoice = isCollectionEnabled
+        service.safely { setUserId(configuredId) }
+        configuredChoice?.let { isEnabled -> service.safely { setCollectionEnabled(isEnabled) } }
         this.service = service
-        service.safely { setUserId(userId) }
-        isCollectionEnabled?.let { isEnabled -> service.safely { setCollectionEnabled(isEnabled) } }
+        // Why: an id or a choice that changed meanwhile found no service yet, so it is handed over now.
+        val latestId = userId
+        if (latestId != configuredId) service.safely { setUserId(latestId) }
+        val latestChoice = isCollectionEnabled
+        if (latestChoice != null &&
+            latestChoice != configuredChoice
+        ) {
+            service.safely { setCollectionEnabled(latestChoice) }
+        }
         flush()
     }
 

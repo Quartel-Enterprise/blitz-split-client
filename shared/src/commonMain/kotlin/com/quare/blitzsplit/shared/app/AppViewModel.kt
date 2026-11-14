@@ -2,7 +2,6 @@ package com.quare.blitzsplit.shared.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.account.domain.usecase.FollowAnalyticsUserId
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveBrowserSignInReturningToProfile
 import com.quare.blitzsplit.core.activity.domain.usecase.FindActivityEvent
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
@@ -29,7 +28,6 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.ProfileLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.StartScreenViews
-import com.quare.blitzsplit.core.settings.domain.usecase.FollowUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
@@ -74,8 +72,6 @@ class AppViewModel(
     private val observeAppForeground: ObserveAppForeground,
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val startScreenViews: StartScreenViews,
-    private val followUsageDataSharing: FollowUsageDataSharing,
-    private val followAnalyticsUserId: FollowAnalyticsUserId,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -126,7 +122,6 @@ class AppViewModel(
 
     init {
         startSync()
-        followAnalyticsChoices()
         followTheme()
         followLanguage()
         resolveStartRoute()
@@ -194,12 +189,6 @@ class AppViewModel(
                 uiState.first { it == AppUiState.READY }
                 if (navigator.backStack.value.lastOrNull() == Route.Home) navigator.navigate(Route.Profile)
             }.launchIn(viewModelScope)
-    }
-
-    // Why: Profile's "Share usage data" and the account's id reach Analytics before the first screen view goes out.
-    private fun followAnalyticsChoices() {
-        viewModelScope.launch { followUsageDataSharing() }
-        viewModelScope.launch { followAnalyticsUserId() }
     }
 
     /*
