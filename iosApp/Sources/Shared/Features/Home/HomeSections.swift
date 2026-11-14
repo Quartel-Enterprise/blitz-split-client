@@ -35,10 +35,11 @@ struct HomePeopleSection: View {
 
     /// The faces run past the row, so the title counts them.
     @State private var isCounted = false
-    @State private var width: CGFloat = 0
+    /// Nil until measured, so the first frame doesn't draw the faces where rows belong.
+    @State private var width: CGFloat?
 
     private var layout: HomePeopleLayout? {
-        guard !isLoading, let people, !people.isEmpty else { return nil }
+        guard !isLoading, let people, !people.isEmpty, let width else { return nil }
         let layout = HomePeopleLayout.companion.of(peopleCount: Int32(people.count), sectionWidth: Float(width))
         return layout.showsRows ? layout : nil
     }
@@ -53,7 +54,7 @@ struct HomePeopleSection: View {
             }
             if let layout, let people {
                 rows(people, columns: Int(layout.columns))
-            } else {
+            } else if width != nil || isLoading {
                 faces
             }
         }
@@ -95,7 +96,10 @@ struct HomePeopleSection: View {
                 }
             }
         } else {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: columns), spacing: 8) {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible(), spacing: CGFloat(HomePeopleLayout.companion.COLUMN_GAP)), count: columns),
+                spacing: 8,
+            ) {
                 ForEach(people, id: \.stableId) { person in
                     PersonRow(person: person) { open(person) }
                         .background(Palette.card, in: .rect(cornerRadius: 20))

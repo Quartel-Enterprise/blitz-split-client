@@ -49,6 +49,7 @@ import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groups.presentation.model.HomePeopleLayout
@@ -139,7 +140,7 @@ private fun PeopleRowsColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         lines.forEachIndexed { lineIndex, line ->
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(HomePeopleLayout.COLUMN_GAP.dp)) {
                 repeat(columns) { column ->
                     val person = line.getOrNull(column)
                     if (person == null) {
@@ -174,7 +175,7 @@ private fun PersonRowItem(
     modifier: Modifier = Modifier,
 ) {
     val money = rememberMoneyFormatter(person.currency)
-    val texts = personTextsOf(person)
+    val texts = personTextsOf(person, money)
     // Why: the column's weight goes on this Box, the Row's own child; a guest's TooltipBox would swallow it.
     Box(modifier = modifier) {
         PersonTooltipBox(
@@ -243,8 +244,10 @@ private class PersonTexts(
 )
 
 @Composable
-private fun personTextsOf(person: HomePerson): PersonTexts {
-    val money = rememberMoneyFormatter(person.currency)
+private fun personTextsOf(
+    person: HomePerson,
+    money: MoneyFormatter,
+): PersonTexts {
     val name = person.name ?: stringResource(DesignR.string.designsystem_former_member)
     val owesYou = person.netMinor > 0
     return PersonTexts(
@@ -326,7 +329,7 @@ private fun PersonFaceItem(
     onClick: () -> Unit,
 ) {
     val money = rememberMoneyFormatter(person.currency)
-    val texts = personTextsOf(person)
+    val texts = personTextsOf(person, money)
     PersonTooltipBox(
         person = person,
         name = texts.name,

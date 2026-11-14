@@ -207,7 +207,7 @@ export function PeopleCard({ presenter, state }: SectionProps) {
       <div
         ref={rowRef}
         style={showsRows ? { gridTemplateColumns: `repeat(${layout?.columns ?? 1}, minmax(0, 1fr))` } : undefined}
-        className={showsRows ? '-mx-1 grid gap-1 px-1' : '-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2'}
+        className={showsRows ? '-mx-1 grid gap-x-2 gap-y-1 px-1' : '-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:gap-2'}
         onScroll={() => tip && setTip(null)}
       >
         {state.isLoadingPeople ? (

@@ -19,11 +19,14 @@ data class HomePeopleLayout(
         const val ROW_MIN_WIDTH = 280f
         const val MAX_ROW_LINES = 2
 
+        // Why: the gap the three UIs leave between two columns, so each column keeps its ROW_MIN_WIDTH.
+        const val COLUMN_GAP = 8f
+
         fun of(
             peopleCount: Int,
             sectionWidth: Float,
         ): HomePeopleLayout {
-            val columns = (sectionWidth / ROW_MIN_WIDTH).toInt().coerceAtLeast(1)
+            val columns = ((sectionWidth + COLUMN_GAP) / (ROW_MIN_WIDTH + COLUMN_GAP)).toInt().coerceAtLeast(1)
             val lines = (peopleCount + columns - 1) / columns
             return HomePeopleLayout(
                 showsRows = peopleCount > 0 && lines <= MAX_ROW_LINES,

@@ -156,7 +156,7 @@ class HomePeopleLayoutTest {
     @Test
     fun `GIVEN a width of exactly two rows WHEN laying out four people THEN shows them as rows in two columns`() {
         // Given
-        val sectionWidth = 2 * HomePeopleLayout.ROW_MIN_WIDTH
+        val sectionWidth = 2 * HomePeopleLayout.ROW_MIN_WIDTH + HomePeopleLayout.COLUMN_GAP
 
         // When
         val layout = HomePeopleLayout.of(4, sectionWidth)

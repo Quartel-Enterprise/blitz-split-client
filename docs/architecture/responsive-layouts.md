@@ -193,8 +193,9 @@ and Apple take the column's width less the gutters, the web the card's content b
 - A list row (face, name, amount and "owes you" on one line) is about 56 tall, under half a face of the scrolling row
   (about 130 with its name, amount and word), so rows free height while they take **two lines at most**
   (`MAX_ROW_LINES`), and use the width a lone face left empty (beta feedback).
-- The rows sit in as many columns as **280** fit (`ROW_MIN_WIDTH`: a face, a name of about ten letters and the
-  amount without cutting either), never more columns than people. The section's width is what counts, not the
+- The rows sit in as many columns as **280** fit with **8** between them (`ROW_MIN_WIDTH`: a face, a name of about ten
+  letters and the amount without cutting either; `COLUMN_GAP`, which the three UIs use), never more columns than
+  people. The section's width is what counts, not the
   window's: where Home is two columns (a phone or a tablet lying down, a book, an iPhone or iPad lying down, the
   Duo open) the section sits in the narrow first one (300–520), so it gets **one** column there, rows for 1 or 2
   people, as on a phone upright. An Android tablet or an iPad upright (about 576–620) gets two (up to 4 people); the

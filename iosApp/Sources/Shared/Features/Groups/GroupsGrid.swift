@@ -144,7 +144,7 @@ private struct GroupGridCard: View {
                 Text(verbatim: GroupsCopy.memberNames(group))
                     .lineLimit(1)
                 #else
-                MemberFaces(group: group)
+                MemberFaces(group: group, isSelected: isSelected)
                 #endif
             }
             if group.isPending {
@@ -188,9 +188,17 @@ private struct GroupGridCard: View {
 /// The faces the ViewModel picked and "+N"; VoiceOver reads the member count instead.
 struct MemberFaces: View {
     let group: GroupRow
+    /// The ring takes the row's background, the selected one's accent tint included, as Android does.
+    var isSelected = false
 
     var body: some View {
-        AvatarStack(faces: group.faces.map(StackFace.init), extraCount: Int(group.extraMemberCount), size: 20, ringWidth: 1.5)
+        AvatarStack(
+            faces: group.faces.map(StackFace.init),
+            extraCount: Int(group.extraMemberCount),
+            size: 20,
+            ring: isSelected ? Palette.accent.opacity(0.16) : Palette.card,
+            ringWidth: 1.5,
+        )
             .accessibilityElement()
             .accessibilityLabel(Text(verbatim: GroupsCopy.members(group.memberCount)))
     }

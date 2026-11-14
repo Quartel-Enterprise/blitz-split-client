@@ -55,6 +55,10 @@ enum Palette {
     // The grouped cards of a Mac window: a quiet fill that reads on both appearances
     static let card = Color(nsColor: .quaternarySystemFill)
     #endif
+
+    /// A selected row or card: the accent's 16% tint over the card, solid, so what rings a face on it (a stack of
+    /// faces) matches the tinted background around it.
+    static let selectedCard = card.mix(with: accent, by: 0.16)
 }
 
 /// The label of a filled (prominent) button in the color that reads on its tint. The system draws it white, which
