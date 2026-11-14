@@ -45,6 +45,9 @@
     <string name="profile_section_preferences">Preferensi</string>
     <string name="profile_appearance">Tampilan</string>
     <string name="profile_language">Bahasa</string>
+    <string name="profile_language_search">Cari bahasa</string>
+    <string name="profile_language_search_clear">Hapus pencarian</string>
+    <string name="profile_language_no_results">Tidak ada bahasa yang cocok dengan “%1$s”</string>
     <string name="profile_language_system">Sistem</string>
     <string name="profile_language_english">Bahasa Inggris</string>
     <string name="profile_language_portuguese">Bahasa Portugis (Brasil)</string>

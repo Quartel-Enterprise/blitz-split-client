@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 48,
-    "identityHash": "eaf3ec09b22f7500380e0ac4308d3b1e",
+    "identityHash": "596af75abb2f0dd1ab365aadb0871658",
     "entities": [
       {
         "tableName": "profile",
@@ -1462,7 +1462,7 @@
       },
       {
         "tableName": "member_photo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `photoUrl` TEXT NOT NULL, PRIMARY KEY(`userId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `photoUrl` TEXT, `shareCode` TEXT, PRIMARY KEY(`userId`))",
         "fields": [
           {
             "fieldPath": "userId",
@@ -1473,8 +1473,12 @@
           {
             "fieldPath": "photoUrl",
             "columnName": "photoUrl",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "shareCode",
+            "columnName": "shareCode",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -1953,58 +1957,11 @@
             "language"
           ]
         }
-      },
-      {
-        "tableName": "custom_color",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`color` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, `ownerUserId` TEXT, PRIMARY KEY(`color`))",
-        "fields": [
-          {
-            "fieldPath": "color",
-            "columnName": "color",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "addedAt",
-            "columnName": "addedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "updatedAt",
-            "columnName": "updatedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pendingSync",
-            "columnName": "pendingSync",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ownerUserId",
-            "columnName": "ownerUserId",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "color"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eaf3ec09b22f7500380e0ac4308d3b1e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '596af75abb2f0dd1ab365aadb0871658')"
     ]
   }
 }

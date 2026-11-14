@@ -288,6 +288,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `balances_currency_clicked` | `source` (`group_detail`, `members`, `group_stats`) | A currency chip, drawn while the group has money in more than one currency | `:feature:group_detail`, `:feature:members`, `:feature:group_stats` |
 | `edit_group_clicked` | none | "Edit group" | `:feature:group_detail` |
 | `group_pin_toggled` | `is_pinned` | "Pin to Home" or "Unpin from Home" | `:feature:group_detail` |
+| `group_export_clicked` | none | "Export group data" in the group's ⋮ menu once the group is read, when the formats open | `:feature:group_detail` |
+| `group_export_format_picked` | `format` (`csv`, `xlsx`, `json`, `txt`) | A format picked on "Export group data" that makes a file (not a second tap while one is being made) | `:feature:group_detail` |
+| `group_export_cancelled` | none | "Cancel" on "Export group data", or the dialog closed some other way, while it shows | `:feature:group_detail` |
 | `group_deleted_back_clicked` | none | "Back to Groups" on "Group deleted", while it shows (Android's back or a tap outside on it too) | `:feature:group_detail` |
 | `settle_clicked` | `source` (`group_detail`, `global_balances`, `contact_profile`) | "Settle up" on "Your balance in this group", on a person of Balances, or on a contact | `:feature:group_detail`, `:feature:global_balances`, `:feature:contacts` |
 | `debt_clicked` | `source` (`group_detail`) | "Settle up", "Got paid" or "Already paid" on a pair of Balances | `:feature:group_detail` |
@@ -498,6 +501,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `contact_hide_confirmed` | none | Its question confirmed, while it was open | `:feature:contacts` |
 | `contact_hide_cancelled` | none | Its question closed without confirming, while it was open | `:feature:contacts` |
 | `contact_view_balances_clicked` | none | "See in Balances" | `:feature:contacts` |
+| `contact_profile_share_clicked` | none | The top bar's "Share profile" on someone with an account, while the device has their link (it opens the system share) | `:feature:contacts` |
 | `contact_history_see_all_clicked` | none | "See all" over "History with Carla" | `:feature:contacts` |
 | `contact_invite_guest_clicked` | none | "Invite Diego" on a guest | `:feature:contacts` |
 | `profile_link_invite_clicked` | none | "Invite to a group" on a profile link of someone the person shares no group with, while the device has a profile | `:feature:contacts` |

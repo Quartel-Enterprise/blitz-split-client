@@ -254,3 +254,4 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     saved or a member's Pix key turns the rule on), and Settle up's "Pix copy and paste" and Charge's "Include my Pix
     key" only exist with a BRL group or a Pix key, which turn it on too. Adding a key or joining a group in reais
     re-evaluates it at once (the device's own language and region are read each time something else changes, not watched). The website and the store screenshots follow their own rule.
+    A person holds one Pix key of each type at most, random keys aside ([profile.md](profile.md)'s keys).

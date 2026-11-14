@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveMemberShareCodeUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -36,6 +37,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -2540,7 +2542,215 @@ class ContactProfileViewModelTest {
             assertTrue(trackedEvents.isEmpty())
         }
 
+    // region Share profile
+
+    @Test
+    fun `GIVEN Carla with an account and her code WHEN her profile opens THEN offers her profile link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                shareCodes = carlaCode,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(CARLA_LINK, state.shareLink)
+            assertTrue(state.canShareProfile)
+        }
+
+    @Test
+    fun `GIVEN Diego a guest WHEN his profile opens THEN offers no profile link`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = DIEGO_KEY,
+            shareCodes = carlaCode + ("diego" to "DIEGO12345"),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.shareLink)
+        assertFalse(state.canShareProfile)
+    }
+
+    @Test
+    fun `GIVEN no sync brought her code yet WHEN her profile opens THEN offers no profile link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                shareCodes = mapOf("bruno" to "BRUNO12345"),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.shareLink)
+            assertFalse(state.canShareProfile)
+        }
+
+    @Test
+    fun `GIVEN her profile open without her code WHEN a sync brings it THEN offers her profile link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            val synced = carlaCode
+
+            // When
+            groups.memberShareCodes.value = synced
+
+            // Then
+            assertEquals(CARLA_LINK, viewModel.uiState.value.shareLink)
+            assertTrue(viewModel.uiState.value.canShareProfile)
+        }
+
+    @Test
+    fun `GIVEN Carla with her code WHEN Share profile is tapped THEN shares her link in the app language`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                shareCodes = carlaCode,
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertEquals(
+                listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt")),
+                actions,
+            )
+            assertEquals(CARLA_LINK, viewModel.uiState.value.shareLink)
+        }
+
+    @Test
+    fun `GIVEN Carla with her code WHEN Share profile is tapped THEN sends the profile share clicked once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                shareCodes = carlaCode,
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertEquals(listOf("contact_profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla in the pane beside Contatos WHEN Share profile is tapped THEN shares her link`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                inPane = true,
+                shareCodes = carlaCode,
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertEquals(
+                listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt")),
+                actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN the device offline WHEN Share profile is tapped THEN still shares her link`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = CARLA_KEY,
+            online = false,
+            shareCodes = carlaCode,
+        )
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+
+        // Then
+        assertEquals(
+            listOf<ContactProfileUiAction>(ContactProfileUiAction.ShareProfileLink("$CARLA_LINK?lang=pt")),
+            actions,
+        )
+    }
+
+    @Test
+    fun `GIVEN Diego a guest WHEN Share profile is tapped THEN shares and sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = DIEGO_KEY,
+            shareCodes = carlaCode,
+        )
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+
+        // Then
+        assertTrue(actions.none { it is ContactProfileUiAction.ShareProfileLink })
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN no sync brought her code yet WHEN Share profile is tapped THEN shares and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertTrue(actions.none { it is ContactProfileUiAction.ShareProfileLink })
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Registrar pagamento over the profile WHEN a late Share profile arrives THEN shares and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                shareCodes = carlaCode,
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnReceivedClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnShareProfileClicked)
+
+            // Then
+            assertTrue(actions.none { it is ContactProfileUiAction.ShareProfileLink })
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Share profile WHEN reading its analytics THEN the ViewModel sends the profile share clicked`() {
+        // Given
+        val event = ContactProfileUiEvent.OnShareProfileClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("contact_profile_share_clicked"), analytics)
+    }
+
     // endregion
+
+    private val carlaCode: Map<String, String> = mapOf("carla" to CARLA_CODE)
 
     private val profileSource: Map<String, Any> = mapOf("source" to "contact_profile")
 
@@ -2589,10 +2799,11 @@ class ContactProfileViewModelTest {
         claimResult: Result<Int> = Result.success(1),
         claimAnswered: Boolean = true,
         storedCategories: CategoryTree = CategoryTree.appOnly,
+        shareCodes: Map<String, String> = emptyMap(),
     ) {
         claimedContacts.clear()
         categories = MutableStateFlow(storedCategories)
-        groups = FakeGroupRepository(initialGroups = storedGroups)
+        groups = FakeGroupRepository(initialGroups = storedGroups).also { it.memberShareCodes.value = shareCodes }
         expenses = FakeExpenseRepository(initialExpenses = bills)
         hidden = FakeHiddenContactRepository(
             now = { 20L },
@@ -2631,6 +2842,8 @@ class ContactProfileViewModelTest {
                 claimedContacts += contact
                 if (claimAnswered) claimResult else awaitCancellation()
             },
+            observeSpokenLanguage = { flowOf("pt") },
+            observeMemberShareCode = ObserveMemberShareCodeUseCase(groups),
             observeContactBook = observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden),
             observeMapCategories = { categories },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
@@ -2641,5 +2854,10 @@ class ContactProfileViewModelTest {
     private companion object {
         // Why: a group's own category, a subcategory of Alimentação.
         const val CHURRASCO = "churrasco"
+
+        const val CARLA_CODE = "CARLA12345"
+
+        // Why: as ProfileLink builds it, without the app's language.
+        const val CARLA_LINK = "https://blitzsplit.com/u/CARLA12345"
     }
 }

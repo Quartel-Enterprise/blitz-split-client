@@ -209,9 +209,11 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
+    // Why: the screen each group opened over, which its exit still needs once back has popped it.
+    val groupRoutesBelow = remember { mutableMapOf<Route.GroupDetail, Route?>() }
     // Why: the screen right under the group is the one its row was tapped on; beside the list nothing flies.
-    val groupSharedOriginOf = { route: Route.GroupDetail ->
-        when (backStack.getOrNull(backStack.lastIndexOf(route) - 1)) {
+    val groupSharedOriginOf = { routeBelow: Route? ->
+        when (routeBelow) {
             Route.Home -> GroupSharedOrigin.HOME
             Route.Groups -> GroupSharedOrigin.GROUPS.takeIf { listDetail == null }
             else -> null
@@ -327,8 +329,19 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Invite> { route -> InviteScreen(route) }
             // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
+                /*
+                 * Why: kept while the group is on the back stack and read back once it leaves it. Back pops the group
+                 * before its exit runs, so read live the origin turned null and the avatar and name stopped flying
+                 * home (beta feedback of 2026-11-14).
+                 */
+                val index = backStack.lastIndexOf(route)
+                val routeBelow = if (index >= 0) {
+                    backStack.getOrNull(index - 1).also { groupRoutesBelow[route] = it }
+                } else {
+                    groupRoutesBelow[route]
+                }
                 InGroupPane {
-                    EntryTransitionLayout(origin = groupSharedOriginOf(route)) {
+                    EntryTransitionLayout(origin = groupSharedOriginOf(routeBelow)) {
                         GroupDetailScreen(
                             route = route,
                             membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },

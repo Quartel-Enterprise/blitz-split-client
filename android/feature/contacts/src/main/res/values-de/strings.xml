@@ -40,6 +40,7 @@
     <string name="contacts_close">Schließen</string>
 
     <string name="contacts_profile_back">Zurück zu Kontakten</string>
+    <string name="contacts_profile_share">Profil teilen</string>
     <string name="contacts_profile_more">Weitere Optionen</string>
     <string name="contacts_profile_meta_user">Nutzt Blitz Split · %s</string>
     <string name="contacts_profile_meta_guest">Gast · noch ohne App</string>

@@ -31,10 +31,11 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     its row and its dialog, are gone): the top bar's share button shares the account's profile link,
     `https://blitzsplit.com/u/<code>`, with "Here's my profile on Blitz Split: <link>" ("Esse é meu perfil no Bora
     Rachar" in Portuguese). The link shared or copied ends in `?lang=<the app's language>` (`LinkLanguage`): a profile
-    has no currency to pick its link's preview language by, so blitzsplit.com writes the preview in that one
-    (Portuguese and Spanish; English for any other), and the site's own pages read the same parameter (the web app,
-    once it serves `/u/<code>` itself, doesn't read it yet). The language is the one the app is speaking
-    (`ObserveSpokenLanguage`): the pick, or the first of the device's languages the app has, English otherwise. Android and iOS open the system share, whose own Copy covers copying; the Mac's toolbar and
+    has no currency to pick its link's preview language by, so blitzsplit.com writes the preview in that one (any of
+    the app's eleven languages), and the site's own pages read the same parameter (the web app, once it serves
+    `/u/<code>` itself, doesn't read it yet). The language is the one the app is speaking (`ObserveSpokenLanguage`):
+    the pick, or the first of the device's languages the app has, English otherwise. Android and iOS open the system
+    share, whose own Copy covers copying; the Mac's toolbar and
     the web's header (the page's heading from 768 px) open a menu with "Share profile" (the Mac's sharing picker,
     the browser's share where there is one, else a copy) and "Copy link" ("Link copied"). The link is made on the
     device the moment the account exists (its first sync, `ProfileUiState.shareLink`), so it is there offline right
@@ -158,9 +159,14 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's
     LocaleManager, which the system's app language settings also change (the languages the build generates its locale config from), the app's
     own copy before 13; the Apple apps' AppleLanguages, which iOS's Settings › Bora Rachar › Language also changes; the
-    browser's storage on the web. Android's row ("System", "Português (Brasil)") opens a sheet as Bible Planner's
+    browser's storage on the web. Android's row ("System", "Português (Brasil)") opens the picker as Bible Planner's
     (`ProfileDialog.LANGUAGE`): a row per option with its chip ("EN", "PT", "ES", a phone for System, "Device language"
-    under it) and a radio, a bottom sheet on a phone, a 560 dp dialog anywhere wider, a book's right half; a pick
+    under it) and a radio. With eleven languages a bottom sheet filled a phone's screen (Pierre's feedback, November
+    2026), so a phone, upright or lying down, opens it as a screen of its own, "Language" in its bar with back, and
+    anywhere wider it stays a 560 dp dialog, a book's right half. Both start with "Search languages", which keeps the
+    rows any of whose names (its own, the app language's, System's "Device language") holds what is typed, or whose
+    chip's code it is, ignoring case and accents ("alemao", "brasil", "pt"; `ProfileUiState.findLanguageOptions`),
+    "No language matches “…”" when none does; each opening starts from the whole list. A pick
     closes it and the app draws again in it (Android 13 and later on their own, the activity opening again before,
     where the notifications and their channels' names follow from the app's next start). The region the app reads
     (the brand badge's currency, a new group's) stays the device's, whatever the language. The Apple apps pick it in
@@ -168,7 +174,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (`AppLocale`, and every `String(localized:)` reading `bundle: .appLanguage`), a window with a sheet open once it
     closes, so a form in it keeps what was typed; what the system formats itself (dates, amounts) follows at the next
     launch. The web picks it in the Appearance card's segments and
-    reloads the page in it, back on the profile.
+    reloads the page in it, back on the profile. Neither has the search: the Apple menu is the system's, scrolling
+    where it doesn't fit, and the web's segments sit in the page, never over it.
   - "Dynamic colors" (Material You) shows in Appearance only where the platform draws a scheme from the wallpaper,
     Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off by default, it swaps the
     brand's Material scheme for the wallpaper's in light and dark alike, while the groups', avatars' and categories'
@@ -197,6 +204,18 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     rows, "Add a Bitcoin key" and "Add a Pix key", in place of the "Add a Pix or Bitcoin key" menu, so nobody is locked
     out of Pix (`ProfileUiState.showsPix`). Each key's row starts with its method's tile on every platform: Pix's own
     mark (Material's Pix glyph) on the blue tile, Lightning's bolt or on-chain's link on Bitcoin's orange one.
+  - One Pix key per type, random keys aside (Pierre's call, feedback of November 14, 2026): a person holds at most one
+    CPF/CNPJ, one phone and one email key (`PaymentKeyType.isOnePerPerson`), while random keys and Bitcoin keys may
+    repeat. In the key form a type's tab that already holds a saved key shows that key, "Edit Pix key" with "Delete
+    key", and "You can only have one Pix key of this type, so this is the one you saved. Change it here if you want."
+    above the field (`PaymentKeyUiState.isShowingHeldKey`), so saving changes it rather than adding a second one;
+    going back to the tab of the key opened (or of no saved key) returns to it. A new key opens on the first type not
+    held yet, and a key typed or pasted of a held type goes to that saved key the same way. The shared
+    `PaymentKeyViewModel` decides it, so the three UIs follow, and `SavePaymentKey` saves a new key of a held type
+    over the held one, whoever calls it. Each key keeps its "Default Pix key" switch as it was left while the tabs
+    move between keys. Duplicates saved before the rule stay as they are: each
+    still opens and saves on its own. The server has no constraint on it (`payment_keys` only checks each value's
+    shape).
   - A key's "Default Pix key" (or "Default Bitcoin key") switch is locked on for the method's default key and for its
     first key, since a default only gives way to another key made default (`PaymentKeyUiState.isDefaultLocked`).
     Locked, it still reads as on: Android keeps the switch's "on" colors, faded, instead of Material's disabled gray

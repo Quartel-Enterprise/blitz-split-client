@@ -57,6 +57,7 @@
     <string name="payment_key_switched_to_onchain">Esta es una dirección on-chain, así que cambiamos a On-chain.</string>
     <string name="payment_key_switched_to_lightning">Esta es una Lightning Address, así que cambiamos a Lightning.</string>
     <string name="payment_key_cpf_notice">Quien te pague verá tu CPF completo. Si prefieres no compartirlo, usa una clave de teléfono, correo o aleatoria.</string>
+    <string name="payment_key_held_notice">Solo puedes tener una clave Pix de este tipo, así que esta es la que ya está guardada. Si quieres, cámbiala aquí.</string>
 
     <string name="payment_key_accepted_title">Aceptamos</string>
     <string name="payment_key_accepted_lightning_address_sample">nombre@billetera.app</string>

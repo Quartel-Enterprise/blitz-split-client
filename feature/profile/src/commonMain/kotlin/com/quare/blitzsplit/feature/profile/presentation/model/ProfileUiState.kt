@@ -59,6 +59,8 @@ data class ProfileUiState(
     val sharesUsageData: Boolean,
     // Why: Preferences' "Language", this device's pick, SYSTEM following the device.
     val language: AppLanguage,
+    // Why: what is typed in Android's "Search languages", empty when the picker opens.
+    val languageQuery: String,
     /*
      * Why: "5 active" under "Notifications", the rows whose push is on; the toggles live on their own screen or section. Loading like
      * the keys, since a restored account's choices only come with its first full sync.
@@ -98,6 +100,17 @@ data class ProfileUiState(
     // Why: "System" first, then each language, which every UI names in the app's current language.
     val languageOptions: List<AppLanguage>
         get() = AppLanguage.entries
+
+    /*
+     * Why: the options "Search languages" leaves, by any of the names the UI shows for each (its own name, the name in
+     * the app's language, System's "Device language") or its chip's code, ignoring case and accents: "portugues",
+     * "brasil", "alemao" and "pt" all find Português (Brasil). The names are each platform's words, so the UI hands them.
+     */
+    fun findLanguageOptions(namesOf: (AppLanguage) -> List<String>): List<AppLanguage> = LanguageSearch.filter(
+        options = languageOptions,
+        query = languageQuery,
+        namesOf = namesOf,
+    )
 
     // Why: only an anonymous user that synced has a code; a local only one has nothing to recover with.
     val showsRecoveryCodeRow: Boolean

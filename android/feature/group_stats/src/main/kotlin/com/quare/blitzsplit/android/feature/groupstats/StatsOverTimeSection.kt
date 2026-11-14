@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -130,7 +131,8 @@ internal fun StatsOverTimeSection(
             )
             val peak = state.peak
             peakLabelOf(state, dates)?.let { label ->
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                // Why: the amount moves to the next line whole when the week's range leaves it no room.
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
                         label,
                         style = MaterialTheme.typography.bodySmall,

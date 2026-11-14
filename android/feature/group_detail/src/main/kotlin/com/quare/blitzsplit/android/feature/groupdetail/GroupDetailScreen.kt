@@ -16,6 +16,7 @@ import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
+import com.quare.blitzsplit.android.platform.rememberFileSaver
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiAction
@@ -48,15 +49,28 @@ fun GroupDetailScreen(
     val billDeleted = stringResource(R.string.group_detail_bill_deleted)
     val teachError = stringResource(R.string.group_detail_teach_error)
     val billDeleteError = stringResource(DesignR.string.designsystem_delete_bill_error)
+    val exportError = stringResource(R.string.group_detail_export_error)
+    val saveFile = rememberFileSaver()
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 GroupDetailUiAction.ShowLeaveError -> showSnackbar(leaveError)
+
                 GroupDetailUiAction.ShowChangeError -> showSnackbar(changeError)
+
                 GroupDetailUiAction.ShowTeachError -> showSnackbar(teachError)
+
                 GroupDetailUiAction.ShowBillDeleteError -> showSnackbar(billDeleteError)
+
+                is GroupDetailUiAction.SaveExport -> saveFile(
+                    action.file.fileName,
+                    action.file.mimeType,
+                    action.file.bytes,
+                )
+
+                GroupDetailUiAction.ShowExportError -> showSnackbar(exportError)
             }
         }
     }
@@ -115,6 +129,9 @@ fun GroupDetailScreen(
             payment = payment,
             onEvent = viewModel::onEvent,
         )
+    }
+    if (state.showsExportFormats) {
+        GroupExportDialog(onEvent = viewModel::onEvent)
     }
     if (state.paymentToDelete != null) {
         DeletePaymentDialog(onEvent = viewModel::onEvent)

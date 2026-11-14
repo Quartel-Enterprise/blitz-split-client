@@ -11,6 +11,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.currencies
 import com.quare.blitzsplit.core.expenses.domain.model.faceOf
 import com.quare.blitzsplit.core.expenses.domain.model.findSelected
 import com.quare.blitzsplit.core.expenses.domain.model.isEveryoneSettled
+import com.quare.blitzsplit.core.expenses.export.GroupExportFile
+import com.quare.blitzsplit.core.expenses.export.GroupExportFormat
+import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -91,7 +94,7 @@ internal class GroupScreen(
     var isGroupGone = false
         private set
 
-    // Why: "Fixar na Início" or "Desafixar da Início", as the header last showed it.
+    // Why: "Pin to Home" or "Unpin from Home", as the header last showed it.
     var isPinned = false
         private set
 
@@ -254,7 +257,7 @@ internal class GroupScreen(
     }
 
     /*
-     * Why: "Fixar na Início" pins the group to the top of Início's "Seus grupos"; the same item unpins it. Returns the
+     * Why: "Pin to Home" pins the group to the top of Home's "Your groups"; the same item unpins it. Returns the
      * pin it asked for, which Analytics counts, or null while no group is read.
      */
     fun togglePin(): Boolean? {
@@ -263,6 +266,12 @@ internal class GroupScreen(
         scope.launch { useCases.setGroupPinned(groupId, pin) }
         return pin
     }
+
+    // Why: "Export group data", from what the device has.
+    suspend fun createExport(
+        format: GroupExportFormat,
+        words: GroupExportWords,
+    ): Result<GroupExportFile> = useCases.exportGroup(groupId, format, words)
 
     // Why: "Voltar para Grupos" on "Grupo apagado".
     fun closeDeletedNotice() {

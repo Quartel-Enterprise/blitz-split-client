@@ -22,23 +22,25 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     group, a removed member) shows the brand's card, the same image blitzsplit.com's home page shows in a preview. A
     messenger keeps a preview it already fetched: changing the link doesn't change the previews already posted.
     A crawler says nothing of who reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora
-    Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, any other English. No currency picks French, since the euro,
-    the Swiss franc and the Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish
-    speakers gets English too: an accepted trade-off.
+    Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish,
+    any other English. No currency picks French, German, Italian or Dutch, since the euro, the Swiss franc and the
+    Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish speakers gets English
+    too: an accepted trade-off.
   - Every other link the apps share has a preview of its own too, from the same Worker and edge function. A bill's
     link (`/c/<code>`, "Share bill") that "Anyone with the link" opens reads "<bill> · <amount>" with who paid, among
     how many it is split and the group, and an image of the category's icon, the bill's name, its amount and "<payer>
     paid · split among <n>" on the group's color, in the language of the bill's currency; one "Only people in the
     bill" open reads "A bill on Blitz Split" over a lock and "Only people in the bill can open it", and shows nothing
     of the bill, as its page shows nothing to whoever isn't signed in. A comment's link (`/b/<bill>?comentario=`)
-    opens only for the people of its group, so its preview is a static "Comment on a bill" card, in English; the
-    shared text already carries who commented, on what and the comment. "Get the app"'s link (`/app-download`, and the
-    site's `/download`) reads "Get Blitz Split", and the legal pages their own title, each with a static card.
+    opens only for the people of its group, so its preview is a static "Comment on a bill" card, in the language its
+    link asks for (`?lang=`); the shared text already carries who commented, on what and the comment. "Get the app"'s
+    link (`/app-download`, and the site's `/download`) reads "Get Blitz Split", in the language its link asks for
+    (`?lang=`), and the legal pages their own title, each with a static card.
   - A profile's link, `https://blitzsplit.com/u/<code>` (Profile's "Share profile"), opens over wherever the app is
     (the welcome without a profile), as an invite does, and the web serves it as its own page; blitzsplit.com answers
     it with the landing whose link preview is the person's name over a card of their photo (their initials on their
-    color without one), their name and "Split bills with <name>", in English since a profile has no currency
-    (`blitz-split-site`). A person signed out, or with a profile kept on the device only, opens it too: the server
+    color without one), their name and "Split bills with <name>", in the language its link asks for (`?lang=`), since a
+    profile has no currency (`blitz-split-site`, see [profile.md](profile.md)). A person signed out, or with a profile kept on the device only, opens it too: the server
     answers `get_profile_by_share_code` to anyone. What it shows is in
     [balances-and-contacts.md](balances-and-contacts.md).
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).

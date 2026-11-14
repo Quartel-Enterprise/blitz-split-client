@@ -19,6 +19,12 @@ interface GroupRepository {
     // Why: whether the device has a group, settled ones included, without reading the groups and their members.
     fun observeHasGroups(): Flow<Boolean>
 
+    /*
+     * Why: the code of the profile link (blitzsplit.com/u/<code>) of an account the user shares a group with, which
+     * the group downloads bring; null until one did, offline included.
+     */
+    fun observeMemberShareCode(userId: String): Flow<String?>
+
     fun observeHasPendingChanges(): Flow<Boolean>
 
     // Why: the group and its members in one write, so nobody sees the group without them.

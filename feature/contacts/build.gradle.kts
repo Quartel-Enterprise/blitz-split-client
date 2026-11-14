@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.activity)
             implementation(projects.core.sync)
+            implementation(projects.core.settings)
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

@@ -99,6 +99,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DisableBillShareLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditSharedBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.ExportGroup
 import com.quare.blitzsplit.core.expenses.domain.usecase.FindCustomColorUser
 import com.quare.blitzsplit.core.expenses.domain.usecase.GetRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.HoldPickedReceipt
@@ -160,6 +161,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSharedBillCo
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DisableBillShareLinkUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditSharedBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ExportGroupUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.FindCustomColorUserUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.GetRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.HoldPickedReceiptUseCase
@@ -204,6 +206,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetSimplifiesDebts
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SettleUpUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.TakePickedReceiptUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -244,6 +247,17 @@ val expenseModule = module {
     singleOf(::InMemoryRecordedPaymentRepository).bind<RecordedPaymentRepository>()
     factoryOf(::ObserveSettlementsUseCase).bind<ObserveSettlements>()
     factoryOf(::ObserveGroupBalancesUseCase).bind<ObserveGroupBalances>()
+    factory<ExportGroup> {
+        ExportGroupUseCase(
+            groupRepository = get(),
+            expenseRepository = get(),
+            settlementRepository = get(),
+            categoryRepository = get(),
+            currentTimeZone = get(),
+            currentTimeMillis = get(),
+            encodeDispatcher = Dispatchers.Default,
+        )
+    }
     factoryOf(::ObserveGroupsMoneyUseCase).bind<ObserveGroupsMoney>()
     factoryOf(::ObserveGroupsByActivityUseCase).bind<ObserveGroupsByActivity>()
     factoryOf(::GetRecentGroupIdUseCase).bind<GetRecentGroupId>()

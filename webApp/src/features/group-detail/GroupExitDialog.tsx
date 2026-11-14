@@ -16,12 +16,13 @@ import { t } from '@/i18n'
 import { formatMoney, formatSignedMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 
-/** The actions Despesas and Saldos toast: leaving that didn't reach the server, a change not saved. */
+/** The actions Despesas and Saldos toast: leaving that didn't reach the server, a change not saved, an export. */
 export function toastGroupAction(action: string) {
   if (action === 'leave-error') toast(t('groupExit_leaveError'))
   if (action === 'change-error') toast(t('groupDetail_changeError'))
   if (action === 'teach-error') toast(t('groupDetail_teachError'))
   if (action === 'bill-delete-error') toast(t('billDetail_deleteError'))
+  if (action === 'export-error') toast(t('groupExport_error'))
 }
 
 /** What the dialogs of "Sair do grupo" and "Apagar grupo" ask of the ViewModel; the home never shows "Grupo apagado". */

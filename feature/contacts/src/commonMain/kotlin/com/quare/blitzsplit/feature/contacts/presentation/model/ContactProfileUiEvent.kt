@@ -62,6 +62,8 @@ sealed interface ContactProfileUiEvent : UiEvent {
             OnMergeShareClicked -> EventAnalytics.Manual("invite_link_share_clicked")
 
             OnCancelMergeClicked -> EventAnalytics.Manual("contact_merge_cancel_clicked")
+
+            OnShareProfileClicked -> EventAnalytics.Manual("contact_profile_share_clicked")
         }
 
     data object OnBackClicked : ContactProfileUiEvent
@@ -132,4 +134,7 @@ sealed interface ContactProfileUiEvent : UiEvent {
 
     // Why: "Cancelar" on "Aguardando Diego aceitar".
     data object OnCancelMergeClicked : ContactProfileUiEvent
+
+    // Why: "Share profile" in the bar, the person's profile link, as they would share it from their own Profile.
+    data object OnShareProfileClicked : ContactProfileUiEvent
 }

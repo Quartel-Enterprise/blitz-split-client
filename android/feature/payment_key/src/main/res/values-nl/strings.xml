@@ -57,6 +57,7 @@
     <string name="payment_key_switched_to_onchain">Dit is een on-chain adres, dus we zijn overgeschakeld naar On-chain.</string>
     <string name="payment_key_switched_to_lightning">Dit is een Lightning Address, dus we zijn overgeschakeld naar Lightning.</string>
     <string name="payment_key_cpf_notice">Wie jou betaalt, ziet je volledige CPF. Wil je die liever niet delen, gebruik dan een telefoon, e-mail of willekeurige sleutel.</string>
+    <string name="payment_key_held_notice">Je kunt maar één Pix-sleutel van dit type hebben, dus dit is degene die je hebt opgeslagen. Wijzig hem hier als je wilt.</string>
 
     <string name="payment_key_accepted_title">We accepteren</string>
     <string name="payment_key_accepted_lightning_address_sample">naam@wallet.app</string>

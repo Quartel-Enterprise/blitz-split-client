@@ -2,7 +2,10 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.export.GroupExportFormat
+import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
@@ -15,7 +18,9 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUi
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.viewmodel.GroupDetailViewModel
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
@@ -139,6 +144,38 @@ class JsGroupDetailState(
     val showsSimplificationCard: Boolean,
     // Why: 13.1e's toast, until dismissed.
     val simplifyConflict: JsSimplifyConflict?,
+    // Why: "Export group data"'s formats, open while true.
+    val showsExportFormats: Boolean,
+)
+
+/*
+ * Why: the words of "Export group data"'s file, in the page's language; appCategoryNames follows
+ * GroupDetailPresenter.exportCategoryKeys, one name per key.
+ */
+class JsGroupExportWords(
+    val bills: String,
+    val payments: String,
+    val balances: String,
+    val date: String,
+    val description: String,
+    val category: String,
+    val amount: String,
+    val currency: String,
+    val paid: String,
+    val share: String,
+    val from: String,
+    val to: String,
+    val member: String,
+    val balance: String,
+    val formerMember: String,
+    val appCategoryNames: Array<String>,
+)
+
+// Why: the file "Export group data" made, which the page downloads; bytes is an Int8Array.
+class JsGroupExportFile(
+    val fileName: String,
+    val mimeType: String,
+    val bytes: ByteArray,
 )
 
 class GroupDetailPresenter(
@@ -196,23 +233,38 @@ class GroupDetailPresenter(
                 simplification = state.simplification?.let(::toJsDebtSimplification),
                 showsSimplificationCard = state.showsSimplificationCard,
                 simplifyConflict = state.simplifyConflict?.let(::toJsSimplifyConflict),
+                showsExportFormats = state.showsExportFormats,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
         return JsWatch(watch::cancel)
     }
 
-    // Why: "leave-error", "change-error", "bill-delete-error" and "teach-error", a toast in the page's words.
+    /*
+     * Why: "leave-error", "change-error", "bill-delete-error", "teach-error" and "export-error", a toast in the page's
+     * words. The file of "Export group data" comes through observeExports.
+     */
     fun observeActions(onAction: (String) -> Unit): JsWatch {
-        val actions = viewModel.uiAction.map { action ->
+        val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 GroupDetailUiAction.ShowLeaveError -> "leave-error"
                 GroupDetailUiAction.ShowChangeError -> "change-error"
                 GroupDetailUiAction.ShowTeachError -> "teach-error"
                 GroupDetailUiAction.ShowBillDeleteError -> "bill-delete-error"
+                GroupDetailUiAction.ShowExportError -> "export-error"
+                is GroupDetailUiAction.SaveExport -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
+        return JsWatch(watch::cancel)
+    }
+
+    // Why: the file "Export group data" made, which the page downloads.
+    fun observeExports(onExport: (JsGroupExportFile) -> Unit): JsWatch {
+        val files = viewModel.uiAction.filterIsInstance<GroupDetailUiAction.SaveExport>().map { action ->
+            JsGroupExportFile(action.file.fileName, action.file.mimeType, action.file.bytes)
+        }
+        val watch = FlowWatcher(files).observe(onExport)
         return JsWatch(watch::cancel)
     }
 
@@ -254,13 +306,58 @@ class GroupDetailPresenter(
         viewModel.onEvent(GroupDetailUiEvent.OnTabRestored(groupTabOf(tab)))
     }
 
-    // Why: "Fixar na Início" or "Desafixar da Início", first in the ⋯ menu.
+    // Why: "Pin to Home" or "Unpin from Home" in the ⋯ menu, after "Edit group".
     fun togglePin() {
         viewModel.onEvent(GroupDetailUiEvent.OnPinToggled)
     }
 
     fun editGroup() {
         viewModel.onEvent(GroupDetailUiEvent.OnEditGroupClicked)
+    }
+
+    // Why: "Export group data" in the ⋯ menu, which asks for the format.
+    fun openExport() {
+        viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+    }
+
+    // Why: the app categories' keys, whose names JsGroupExportWords.appCategoryNames gives in the same order.
+    val exportCategoryKeys: Array<String>
+        get() = AppCategory.entries.map { it.key }.toTypedArray()
+
+    // Why: "csv", "xlsx", "json" or "txt" picked on "Export group data".
+    fun exportAs(
+        format: String,
+        words: JsGroupExportWords,
+    ) {
+        val keys = exportCategoryKeys
+        viewModel.onEvent(
+            GroupDetailUiEvent.OnExportFormatPicked(
+                format = GroupExportFormat.entries.first { it.extension == format },
+                words = GroupExportWords(
+                    bills = words.bills,
+                    payments = words.payments,
+                    balances = words.balances,
+                    date = words.date,
+                    billDescription = words.description,
+                    category = words.category,
+                    amount = words.amount,
+                    currency = words.currency,
+                    paid = words.paid,
+                    share = words.share,
+                    from = words.from,
+                    to = words.to,
+                    member = words.member,
+                    balance = words.balance,
+                    formerMember = words.formerMember,
+                    appCategoryNames = keys.zip(words.appCategoryNames).toMap(),
+                ),
+            ),
+        )
+    }
+
+    // Why: "Cancel" on "Export group data", or the dialog closed.
+    fun dismissExport() {
+        viewModel.onEvent(GroupDetailUiEvent.OnExportDismissed)
     }
 
     fun leaveGroup() {

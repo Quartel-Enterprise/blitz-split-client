@@ -23,12 +23,14 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ExportGroup
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteSettlementUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ExportGroupUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
@@ -40,6 +42,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategori
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveSettlementsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveCategoryTermUseCase
+import com.quare.blitzsplit.core.expenses.export.GroupExportFormat
+import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
@@ -2125,7 +2129,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group not pinned WHEN tapping Fixar na Inicio THEN pins it now and the header shows it`() =
+    fun `GIVEN a group not pinned WHEN tapping Fixar no Inicio THEN pins it now and the header shows it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -2140,7 +2144,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the group pinned WHEN tapping Desafixar da Inicio THEN unpins it now and the header shows it`() =
+    fun `GIVEN the group pinned WHEN tapping Desafixar do Inicio THEN unpins it now and the header shows it`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(pinnedGroupIds = setOf(GROUP_ID, "group-2"))
@@ -2170,7 +2174,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN the screen on top WHEN tapping Fixar na Inicio THEN the back stack stays`() = runTest(testDispatcher) {
+    fun `GIVEN the screen on top WHEN tapping Fixar no Inicio THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         val event = GroupDetailUiEvent.OnPinToggled
@@ -2184,7 +2188,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN Room not read yet WHEN tapping Fixar na Inicio THEN nothing is pinned`() = runTest(testDispatcher) {
+    fun `GIVEN Room not read yet WHEN tapping Fixar no Inicio THEN nothing is pinned`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isRoomRead = false)
         val event = GroupDetailUiEvent.OnPinToggled
@@ -2198,7 +2202,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN the group gone while covered WHEN tapping Fixar na Inicio THEN nothing is pinned`() =
+    fun `GIVEN the group gone while covered WHEN tapping Fixar no Inicio THEN nothing is pinned`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -2214,7 +2218,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the device fails to save the pin WHEN tapping Fixar na Inicio THEN the header stays unpinned`() =
+    fun `GIVEN the device fails to save the pin WHEN tapping Fixar no Inicio THEN the header stays unpinned`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -2765,7 +2769,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN a group not pinned WHEN tapping Fixar na Inicio THEN tracks group_pin_toggled as pinned`() =
+    fun `GIVEN a group not pinned WHEN tapping Fixar no Inicio THEN tracks group_pin_toggled as pinned`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -2778,7 +2782,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN the group pinned WHEN tapping Desafixar da Inicio THEN tracks group_pin_toggled as not pinned`() =
+    fun `GIVEN the group pinned WHEN tapping Desafixar do Inicio THEN tracks group_pin_toggled as not pinned`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(pinnedGroupIds = setOf(GROUP_ID))
@@ -2806,7 +2810,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN Room not read yet WHEN tapping Fixar na Inicio THEN tracks nothing`() = runTest(testDispatcher) {
+    fun `GIVEN Room not read yet WHEN tapping Fixar no Inicio THEN tracks nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(isRoomRead = false)
 
@@ -2818,7 +2822,7 @@ class GroupDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN the group gone while covered WHEN tapping Fixar na Inicio THEN tracks no pin`() =
+    fun `GIVEN the group gone while covered WHEN tapping Fixar no Inicio THEN tracks no pin`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -3422,6 +3426,266 @@ class GroupDetailViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN the group read WHEN tapping Export group data THEN asks for the format`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.showsExportFormats)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Export group data THEN no format is asked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsExportFormats)
+    }
+
+    @Test
+    fun `GIVEN the group read WHEN tapping Export group data THEN tracks group_export_clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+            // Then
+            assertEquals(listOf("group_export_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the formats asked offline WHEN picking CSV THEN saves the group file made from the device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                isOnline = false,
+                storedExpenses = listOf(
+                    expense(
+                        id = "dinner",
+                        spentAt = thisMorning,
+                        description = "Jantar no centro",
+                    ),
+                ),
+            )
+            viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.CSV, exportWords))
+            val action = actions.last()
+
+            // Then
+            val file = assertIs<GroupDetailUiAction.SaveExport>(action).file
+            assertEquals("Viagem-de-Floripa-2026-10-30.csv", file.fileName)
+            assertEquals(GroupExportFormat.CSV, file.format)
+            val text = file.bytes.decodeToString()
+            assertTrue(text.contains("Contas"), text)
+            assertTrue(text.contains("Data,Descrição"), text)
+            assertTrue(text.contains("Jantar no centro"), text)
+        }
+
+    @Test
+    fun `GIVEN the formats asked WHEN picking Excel THEN saves a non empty xlsx file`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.XLSX, exportWords))
+        val action = actions.last()
+
+        // Then
+        val file = assertIs<GroupDetailUiAction.SaveExport>(action).file
+        assertEquals("Viagem-de-Floripa-2026-10-30.xlsx", file.fileName)
+        assertEquals(GroupExportFormat.XLSX, file.format)
+        assertTrue(file.bytes.isNotEmpty())
+    }
+
+    @Test
+    fun `GIVEN the formats asked WHEN picking one THEN the formats close`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.JSON, exportWords))
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsExportFormats)
+    }
+
+    @Test
+    fun `GIVEN a format picked WHEN picking again before the file is made THEN saves it once`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(exportGate = gate)
+            viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.CSV, exportWords))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.CSV, exportWords))
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(1, actions.count { it is GroupDetailUiAction.SaveExport })
+            assertEquals(1, trackedEvents.count { (name, _) -> name == "group_export_format_picked" })
+        }
+
+    @Test
+    fun `GIVEN the formats already closed by Apple WHEN the pick arrives THEN still saves the file`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.TXT, exportWords))
+            val action = actions.last()
+
+            // Then
+            val file = assertIs<GroupDetailUiAction.SaveExport>(action).file
+            assertEquals("Viagem-de-Floripa-2026-10-30.txt", file.fileName)
+            assertFalse(viewModel.uiState.value.showsExportFormats)
+        }
+
+    @Test
+    fun `GIVEN the group gone while covered WHEN picking a format THEN says the export failed and saves nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnInviteClicked)
+            groups.groups.value = emptyList()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.CSV, exportWords))
+
+            // Then
+            assertEquals(listOf<GroupDetailUiAction>(GroupDetailUiAction.ShowExportError), actions)
+        }
+
+    @Test
+    fun `GIVEN the formats asked WHEN picking Excel THEN tracks group_export_format_picked as xlsx`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.XLSX, exportWords))
+
+            // Then
+            assertEquals(
+                listOf("group_export_format_picked" to mapOf<String, Any>("format" to "xlsx")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping Export group data THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents.filter { (name, _) -> name.startsWith("group_export") })
+    }
+
+    @Test
+    fun `GIVEN the formats asked WHEN cancelling THEN the formats close and nothing is saved`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportDismissed)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsExportFormats)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the formats asked WHEN cancelling THEN tracks group_export_cancelled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(GroupDetailUiEvent.OnExportDismissed)
+
+        // Then
+        assertEquals(listOf("group_export_cancelled" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the formats closed after a pick WHEN Apple reports the close THEN tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(GroupDetailUiEvent.OnExportClicked)
+            viewModel.onEvent(GroupDetailUiEvent.OnExportFormatPicked(GroupExportFormat.CSV, exportWords))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportDismissed)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertFalse(viewModel.uiState.value.showsExportFormats)
+        }
+
+    @Test
+    fun `GIVEN the formats never asked WHEN a close arrives THEN nothing changes nor is tracked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnExportDismissed)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertTrue(trackedEvents.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    private val exportWords = GroupExportWords(
+        bills = "Contas",
+        payments = "Pagamentos",
+        balances = "Saldos",
+        date = "Data",
+        billDescription = "Descrição",
+        category = "Categoria",
+        amount = "Valor",
+        currency = "Moeda",
+        paid = "Pagou",
+        share = "Parte",
+        from = "De",
+        to = "Para",
+        member = "Pessoa",
+        balance = "Saldo",
+        formerMember = "Ex-membro",
+        appCategoryNames = emptyMap(),
+    )
+
     private val beachCategory = GroupCategory(
         id = BEACH_CATEGORY_ID,
         groupId = "another-group",
@@ -3469,6 +3733,7 @@ class GroupDetailViewModelTest {
         joinedAs: String? = null,
         accountStatus: AccountStatus = AccountStatus.LocalOnly,
         groupCategories: List<GroupCategory> = emptyList(),
+        exportGate: CompletableDeferred<Unit>? = null,
     ) {
         route = Route.GroupDetail(
             GROUP_ID,
@@ -3538,6 +3803,21 @@ class GroupDetailViewModelTest {
                 },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
+                exportGroup = run {
+                    val export = ExportGroupUseCase(
+                        groupRepository = groups,
+                        expenseRepository = expenses,
+                        settlementRepository = settlements,
+                        categoryRepository = categories,
+                        currentTimeZone = { timeZone },
+                        currentTimeMillis = { nowMillis },
+                        encodeDispatcher = testDispatcher,
+                    )
+                    ExportGroup { groupId, format, words ->
+                        exportGate?.await()
+                        export(groupId, format, words)
+                    }
+                },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

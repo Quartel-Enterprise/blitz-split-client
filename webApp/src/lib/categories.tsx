@@ -59,9 +59,14 @@ export function categoryIconLabel(code: string): string {
 
 const iconKeys: Record<string, true> = Object.fromEntries(Object.keys(icons).map((code) => [`categoryIcon_${code}`, true]))
 
+/** What an app category is called in the page's language, by its key ("food.groceries"). */
+export function appCategoryName(appKey: string): string {
+  return t(`category_${appKey.replace('.', '_')}` as MessageKey)
+}
+
 /** What a category is called: the app's in the page's language, the group's as someone named it. */
 export function categoryName(category: JsCategory): string {
-  if (category.appKey) return t(`category_${category.appKey.replace('.', '_')}` as MessageKey)
+  if (category.appKey) return appCategoryName(category.appKey)
   return category.name ?? ''
 }
 

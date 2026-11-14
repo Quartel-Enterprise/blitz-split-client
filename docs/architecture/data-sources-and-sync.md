@@ -384,7 +384,7 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     One someone else deleted is posted to `GroupDeletionRepository` (in memory) before it leaves Room, so the
     group's screen open on it shows "Grupo apagado" instead of just closing, or the home says so when no group screen
     is on top. A failed read only skips the notices.
-- **Pins** (`:core:groups`): "Fixar na Início" is a row of `group_pin` per group (`GroupPinRepository`), this
+- **Pins** (`:core:groups`): "Fixar no Início" is a row of `group_pin` per group (`GroupPinRepository`), this
   user's own and never another member's, synced to `group_pins` (one row per user and group) by `updatedAt` like the
   keys, the server's `keep_newer_group_pin` trigger keeping the newer one too. Unpinning keeps the row with
   `isPinned` false, so an unpin on one device wins over an older pin of another. A pin is kept apart from the group's

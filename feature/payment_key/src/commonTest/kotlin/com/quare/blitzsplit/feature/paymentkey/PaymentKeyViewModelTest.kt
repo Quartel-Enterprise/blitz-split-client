@@ -824,19 +824,19 @@ class PaymentKeyViewModelTest {
     }
 
     @Test
-    fun `GIVEN a saved email WHEN typing the same email for a new key THEN shows the already saved error right away`() =
+    fun `GIVEN a saved Lightning Address WHEN typing it for a new key THEN shows the already saved error right away`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
+                method = PaymentMethod.BITCOIN,
                 storedKeys = listOf(
                     key(
                         id = "key-2",
-                        type = PaymentKeyType.EMAIL,
+                        type = PaymentKeyType.LIGHTNING,
                         value = EMAIL,
                     ),
                 ),
             )
-            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
 
             // When
             viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("Pierre@Email.com"))
@@ -2061,6 +2061,667 @@ class PaymentKeyViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN a saved CPF being edited and a saved phone WHEN picking phone THEN shows the saved phone to edit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(PaymentKeyType.PHONE, state.type)
+            assertEquals("+55 (11) 91234-5678", state.input)
+            assertTrue(state.isEditing)
+            assertTrue(state.isShowingHeldKey)
+            assertEquals(PaymentKeyFormat.PHONE, state.format)
+            assertNull(state.error)
+        }
+
+    @Test
+    fun `GIVEN a saved phone shown on its tab WHEN saving a new number THEN updates the saved phone and not the CPF`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(OTHER_PHONE))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().single()
+            assertEquals("key-2", saved.id)
+            assertEquals(PaymentKeyType.PHONE, saved.type)
+            assertEquals(OTHER_PHONE, saved.value)
+            assertEquals(openedCpf, repository.keys.value.single { it.id == "key-1" })
+            assertEquals(2, repository.keys.value.size)
+        }
+
+    @Test
+    fun `GIVEN a saved phone shown on its tab WHEN deleting THEN deletes the saved phone`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            keyId = "key-1",
+            storedKeys = listOf(openedCpf, heldPhone),
+        )
+        viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+        viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+
+        // When
+        viewModel.onEvent(PaymentKeyUiEvent.OnDeleteConfirmed)
+
+        // Then
+        assertEquals(listOf("key-2"), repository.deletedIds)
+        assertTrue(repository.keys.value.any { it.id == "key-1" })
+    }
+
+    @Test
+    fun `GIVEN a saved phone shown on its tab WHEN going back to CPF THEN edits the CPF opened again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("123.456.789-09", state.input)
+            assertTrue(state.isEditing)
+            assertFalse(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN a saved phone shown on its tab and back on CPF WHEN saving THEN stores the CPF under its own id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(OTHER_VALID_CPF))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().single()
+            assertEquals("key-1", saved.id)
+            assertEquals(OTHER_VALID_CPF, saved.value)
+        }
+
+    @Test
+    fun `GIVEN a saved CPF being edited WHEN saving an email on its free tab THEN stores it under the CPF id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(EMAIL))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().single()
+            assertEquals("key-1", saved.id)
+            assertEquals(PaymentKeyType.EMAIL, saved.type)
+        }
+
+    @Test
+    fun `GIVEN a saved CPF being edited and a saved random key WHEN picking random THEN starts a blank random key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, savedRandom),
+            )
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.RANDOM))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertTrue(state.isEditing)
+            assertFalse(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN a new Pix key and a saved random key WHEN picking random THEN starts a new random key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(savedRandom))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.RANDOM))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isEditing)
+            assertFalse(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN a new Pix key and a saved random key WHEN saving another random key THEN adds a second one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(savedRandom))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.RANDOM))
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(OTHER_RANDOM_KEY))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().single()
+            assertNotEquals(savedRandom.id, saved.id)
+            assertEquals(2, repository.keys.value.count { it.type == PaymentKeyType.RANDOM })
+        }
+
+    @Test
+    fun `GIVEN the CPF opened is the default WHEN picking the saved phone THEN shows the phone not default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isDefault)
+            assertFalse(state.isDefaultLocked)
+            assertEquals(PaymentKeyType.CPF, state.currentDefaultType)
+        }
+
+    @Test
+    fun `GIVEN the saved phone is the default WHEN picking its tab from the CPF opened THEN locks the default on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf.copy(isDefault = false), phoneDefault),
+            )
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isDefault)
+            assertTrue(state.isDefaultLocked)
+            assertNull(state.currentDefaultType)
+        }
+
+    @Test
+    fun `GIVEN the default phone shown on its tab WHEN going back to the CPF opened THEN shows the CPF not default`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf.copy(isDefault = false), phoneDefault),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.isDefault)
+            assertFalse(state.isDefaultLocked)
+            assertEquals(PaymentKeyType.PHONE, state.currentDefaultType)
+        }
+
+    @Test
+    fun `GIVEN a saved CPF WHEN a new Pix key opens THEN starts on phone as a new key`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedKeys = listOf(openedCpf))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(PaymentKeyType.PHONE, state.type)
+        assertEquals("", state.input)
+        assertFalse(state.isEditing)
+        assertFalse(state.isShowingHeldKey)
+    }
+
+    @Test
+    fun `GIVEN a saved CPF phone and email WHEN a new Pix key opens THEN starts on random`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedKeys = listOf(openedCpf, heldPhone, heldEmail))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(PaymentKeyType.RANDOM, state.type)
+        assertFalse(state.isEditing)
+        assertFalse(state.isShowingHeldKey)
+    }
+
+    @Test
+    fun `GIVEN a saved CPF and random picked before the keys load WHEN they load THEN stays on random`() =
+        runTest(testDispatcher) {
+            // Given
+            val keysGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                storedKeys = listOf(openedCpf),
+                keysGate = keysGate,
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.RANDOM))
+
+            // When
+            keysGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(PaymentKeyType.RANDOM, viewModel.uiState.value.type)
+        }
+
+    @Test
+    fun `GIVEN a saved CPF and a CPF typed before the keys load WHEN they load THEN keeps CPF and what was typed`() =
+        runTest(testDispatcher) {
+            // Given
+            val keysGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                storedKeys = listOf(openedCpf),
+                keysGate = keysGate,
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("529"))
+
+            // When
+            keysGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(PaymentKeyType.CPF, viewModel.uiState.value.type)
+            assertEquals("529", viewModel.uiState.value.input)
+        }
+
+    @Test
+    fun `GIVEN a saved phone and the keys not loaded yet WHEN picking phone THEN starts a blank new phone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedKeys = listOf(heldPhone),
+                keysGate = CompletableDeferred(),
+            )
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isEditing)
+            assertFalse(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN a new Pix key and a saved CPF WHEN picking CPF THEN shows the saved CPF to edit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(openedCpf))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("123.456.789-09", state.input)
+            assertTrue(state.isEditing)
+            assertTrue(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN a new Pix key showing the saved CPF WHEN deleting THEN deletes the saved CPF`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(openedCpf))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteClicked)
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnDeleteConfirmed)
+
+            // Then
+            assertEquals(listOf("key-1"), repository.deletedIds)
+            assertEquals(profileStack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a new Pix key on CPF and a saved email WHEN pasting another email THEN edits the saved email`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(heldEmail))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(OTHER_EMAIL))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(PaymentKeyType.EMAIL, state.type)
+            assertEquals(OTHER_EMAIL, state.input)
+            assertTrue(state.isEditing)
+            assertTrue(state.isShowingHeldKey)
+            assertNull(state.error)
+        }
+
+    @Test
+    fun `GIVEN a new Pix key on CPF and a saved email WHEN typing the saved email THEN edits it with no error`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(heldEmail))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(EMAIL))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(PaymentKeyType.EMAIL, state.type)
+            assertTrue(state.isShowingHeldKey)
+            assertNull(state.error)
+            assertTrue(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN another email pasted over a saved email WHEN saving THEN updates the saved email`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(heldEmail))
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(OTHER_EMAIL))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().single()
+            assertEquals(heldEmail.id, saved.id)
+            assertEquals(OTHER_EMAIL, saved.value)
+            assertEquals(1, repository.keys.value.size)
+        }
+
+    @Test
+    fun `GIVEN another email pasted over a saved email WHEN saving THEN tracks it saved as not new`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(heldEmail))
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(OTHER_EMAIL))
+            trackedEvents.clear()
+            val save = PaymentKeyUiEvent.OnSaveClicked
+
+            // When
+            viewModel.onEvent(save)
+
+            // Then
+            assertEquals(
+                listOf(
+                    tracked("payment_key_save_clicked"),
+                    tracked(
+                        "payment_key_saved",
+                        "type" to PaymentKeyType.EMAIL,
+                        "is_new" to false,
+                        "is_default" to true,
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN two saved phones from before the rule WHEN editing one THEN edits that one`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            keyId = "key-1",
+            storedKeys = listOf(openedPhone, heldPhone),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(PaymentKeyType.PHONE, state.type)
+        assertEquals("+55 (11) 98765-4321", state.input)
+        assertTrue(state.isEditing)
+        assertFalse(state.isShowingHeldKey)
+    }
+
+    @Test
+    fun `GIVEN two saved phones from before the rule WHEN leaving the one opened and back THEN it stays on that one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedPhone, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("+55 (11) 98765-4321", state.input)
+            assertFalse(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN two saved phones from before the rule WHEN saving the one opened THEN stores it under its own id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedPhone, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("+5511955554444"))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().single()
+            assertEquals("key-1", saved.id)
+            assertEquals("+5511955554444", saved.value)
+        }
+
+    @Test
+    fun `GIVEN a new Pix key on email WHEN an email key syncs in from another device THEN edits that email`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+
+            // When
+            repository.keys.value = listOf(heldEmail)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isEditing)
+            assertTrue(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN an email key synced in while on email WHEN saving an email THEN updates the synced email`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(OTHER_EMAIL))
+            repository.keys.value = listOf(heldEmail)
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().single()
+            assertEquals(heldEmail.id, saved.id)
+            assertEquals(OTHER_EMAIL, saved.value)
+        }
+
+    @Test
+    fun `GIVEN a saved Lightning key WHEN a new Bitcoin key opens THEN starts a new Lightning key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                method = PaymentMethod.BITCOIN,
+                storedKeys = listOf(savedLightning),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(PaymentKeyType.LIGHTNING, state.type)
+            assertEquals("", state.input)
+            assertFalse(state.isEditing)
+            assertFalse(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN a saved Lightning key WHEN saving another Lightning Address THEN adds a second one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                method = PaymentMethod.BITCOIN,
+                storedKeys = listOf(savedLightning),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnPasted(OTHER_EMAIL))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val saved = repository.savedKeys.single().first { it.value == OTHER_EMAIL }
+            assertNotEquals(savedLightning.id, saved.id)
+            assertEquals(PaymentKeyType.LIGHTNING, saved.type)
+            assertEquals(2, repository.keys.value.size)
+        }
+
+    @Test
+    fun `GIVEN a held phone shown WHEN deleted on another device THEN empties the field and keeps the opened key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // When
+            repository.keys.value = listOf(openedCpf)
+            viewModel.onEvent(PaymentKeyUiEvent.OnSaveClicked)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isShowingHeldKey)
+            assertFalse(state.canSave)
+            assertEquals(listOf(openedCpf), repository.keys.value)
+        }
+
+    @Test
+    fun `GIVEN a held phone left and deleted on another device WHEN picking phone again THEN starts blank`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedCpf, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            repository.keys.value = listOf(openedCpf)
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isShowingHeldKey)
+            assertFalse(state.canSave)
+        }
+
+    @Test
+    fun `GIVEN a saved phone and phone picked before the keys load WHEN they load THEN shows the saved phone`() =
+        runTest(testDispatcher) {
+            // Given
+            val keysGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                storedKeys = listOf(heldPhone),
+                keysGate = keysGate,
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // When
+            keysGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("+55 (11) 91234-5678", state.input)
+            assertTrue(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN two saved phones and an email typed WHEN back on phone THEN never shows the other one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                keyId = "key-1",
+                storedKeys = listOf(openedPhone, heldPhone),
+            )
+            viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged(OTHER_EMAIL))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("", state.input)
+            assertFalse(state.isShowingHeldKey)
+        }
+
+    @Test
+    fun `GIVEN a new phone turned default WHEN visiting the held CPF tab and back THEN keeps the default on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(openedCpf))
+            viewModel.onEvent(PaymentKeyUiEvent.OnDefaultChanged(true))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            assertEquals(PaymentKeyType.PHONE, viewModel.uiState.value.type)
+            assertTrue(viewModel.uiState.value.isDefault)
+        }
+
     private val profileStack: List<Route> = listOf(Route.Groups, Route.Profile)
 
     private val phoneDefault = PaymentKey(
@@ -2069,6 +2730,42 @@ class PaymentKeyViewModelTest {
         value = "+5511912345678",
         isDefault = true,
         addedAt = 1L,
+    )
+
+    private val openedCpf = key(
+        id = "key-1",
+        value = VALID_CPF,
+    )
+
+    private val heldPhone = key(
+        id = "key-2",
+        type = PaymentKeyType.PHONE,
+        value = "+5511912345678",
+        isDefault = false,
+    )
+
+    private val openedPhone = key(
+        id = "key-1",
+        type = PaymentKeyType.PHONE,
+        value = OTHER_PHONE,
+    )
+
+    private val heldEmail = key(
+        id = "key-3",
+        type = PaymentKeyType.EMAIL,
+        value = EMAIL,
+    )
+
+    private val savedRandom = key(
+        id = "key-4",
+        type = PaymentKeyType.RANDOM,
+        value = RANDOM_KEY,
+    )
+
+    private val savedLightning = key(
+        id = "key-5",
+        type = PaymentKeyType.LIGHTNING,
+        value = EMAIL,
     )
 
     private fun key(
@@ -2152,6 +2849,10 @@ class PaymentKeyViewModelTest {
         // Why: a valid CPF that is also a valid phone (DDD 11, then a 9).
         const val PHONE_AND_CPF = "11912345684"
         const val EMAIL = "pierre@email.com"
+        const val OTHER_EMAIL = "outro@email.com"
+        const val OTHER_PHONE = "+5511987654321"
+        const val RANDOM_KEY = "123e4567-e89b-12d3-a456-426614174000"
+        const val OTHER_RANDOM_KEY = "9f8e7d6c-5b4a-4321-9876-543210fedcba"
         const val SEGWIT = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"
         const val TAPROOT = "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0"
         const val INVOICE = "lnbc2500u1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypq"

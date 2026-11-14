@@ -123,4 +123,5 @@ export const esES: Partial<Record<MessageKey, string>> = {
   customColor_save: 'Añadir',
   customColor_full: 'Tu paleta está llena: mantén pulsado uno de tus colores para eliminarlo.',
   customColor_hint: 'Mantén pulsado uno de tus colores para eliminarlo.',
+  groupExport_amount: 'Importe',
 }

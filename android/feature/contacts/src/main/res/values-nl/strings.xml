@@ -40,6 +40,7 @@
     <string name="contacts_close">Sluiten</string>
 
     <string name="contacts_profile_back">Terug naar Contacten</string>
+    <string name="contacts_profile_share">Profiel delen</string>
     <string name="contacts_profile_more">Meer opties</string>
     <string name="contacts_profile_meta_user">Gebruikt Blitz Split · %s</string>
     <string name="contacts_profile_meta_guest">Gast · nog geen app</string>

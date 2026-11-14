@@ -1,6 +1,16 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.export.GroupExportFile
+
 sealed interface GroupDetailUiAction {
+    // Why: "Export group data" made its file, which the UI hands to the system to save or share.
+    class SaveExport(
+        val file: GroupExportFile,
+    ) : GroupDetailUiAction
+
+    // Why: the group left the device while the file was being made, which is rare enough to just say so.
+    data object ShowExportError : GroupDetailUiAction
+
     // Why: the device couldn't sync or reach the server, so nobody left; trying again may work.
     data object ShowLeaveError : GroupDetailUiAction
 

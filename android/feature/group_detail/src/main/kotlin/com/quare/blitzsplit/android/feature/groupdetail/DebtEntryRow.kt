@@ -30,6 +30,7 @@ import com.quare.blitzsplit.android.designsystem.component.debtColorOf
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.debtAmountTextOf
 import com.quare.blitzsplit.android.designsystem.format.debtSentenceOf
+import com.quare.blitzsplit.android.designsystem.layout.TrailingOrBelowLayout
 import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
@@ -70,44 +71,51 @@ internal fun DebtEntryRow(
                 DebtFaceBadge(debt.fromFace)
                 DebtFaceBadge(debt.toFace)
             }
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = debtSentenceOf(debt),
-                        modifier = Modifier.weight(
-                            weight = 1f,
-                            fill = false,
-                        ),
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    if (debt.isSimplified) {
-                        Icon(
-                            imageVector = simplifyDebtsIcon(),
-                            contentDescription = stringResource(R.string.group_detail_simplified_pair),
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            // Why: in a narrow pane the button goes under the amount, so the sentence keeps its width.
+            TrailingOrBelowLayout(
+                main = {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = debtSentenceOf(debt),
+                                modifier = Modifier.weight(
+                                    weight = 1f,
+                                    fill = false,
+                                ),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            if (debt.isSimplified) {
+                                Icon(
+                                    imageVector = simplifyDebtsIcon(),
+                                    contentDescription = stringResource(R.string.group_detail_simplified_pair),
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                        Text(
+                            text = debtAmountTextOf(debt),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = debtColorOf(debt.kind),
                         )
                     }
-                }
-                Text(
-                    text = debtAmountTextOf(debt),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = debtColorOf(debt.kind),
-                )
-            }
-            DebtButton(
-                kind = debt.kind,
-                onClick = onClick,
+                },
+                trailing = {
+                    DebtButton(
+                        kind = debt.kind,
+                        onClick = onClick,
+                    )
+                },
+                modifier = Modifier.weight(1f),
             )
         }
     }

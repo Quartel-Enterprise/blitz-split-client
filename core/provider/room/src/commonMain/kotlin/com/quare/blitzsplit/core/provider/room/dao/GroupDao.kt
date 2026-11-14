@@ -537,6 +537,9 @@ interface GroupDao {
     @Query("SELECT * FROM member_photo")
     suspend fun getMemberPhotos(): List<MemberPhotoEntity>
 
+    @Query("SELECT shareCode FROM member_photo WHERE userId = :userId")
+    fun observeMemberShareCode(userId: String): Flow<String?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMemberPhotos(entities: List<MemberPhotoEntity>)
 

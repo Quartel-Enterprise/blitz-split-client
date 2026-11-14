@@ -57,6 +57,7 @@
     <string name="payment_key_switched_to_onchain">To adres on-chain, więc przełączyliśmy na On-chain.</string>
     <string name="payment_key_switched_to_lightning">To Lightning Address, więc przełączyliśmy na Lightning.</string>
     <string name="payment_key_cpf_notice">Kto ci płaci, widzi cały twój CPF. Jeśli wolisz go nie udostępniać, użyj klucza z telefonem, e-mailem lub losowego.</string>
+    <string name="payment_key_held_notice">Możesz mieć tylko jeden klucz Pix tego typu, więc widzisz tu ten już zapisany. Jeśli chcesz, zmień go tutaj.</string>
 
     <string name="payment_key_accepted_title">Akceptujemy</string>
     <string name="payment_key_accepted_lightning_address_sample">nazwa@portfel.app</string>

@@ -45,6 +45,7 @@ import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.TrailingOrBelowLayout
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.feature.members.presentation.model.MembersMember
 import com.quare.blitzsplit.feature.members.presentation.model.MembersUiEvent
@@ -82,25 +83,30 @@ internal fun MemberRow(
                 color = member.avatarColor,
                 photoUrl = member.photoUrl,
             )
-            Column(
+            // Why: in a narrow pane the balance goes under the status, so the name and the status keep their width.
+            TrailingOrBelowLayout(
+                main = {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            text = if (member.isMe) stringResource(R.string.members_me, member.name) else member.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        MemberStatusLine(member)
+                    }
+                },
+                trailing = {
+                    member.balance?.let { balance ->
+                        MemberBalanceText(
+                            balance = balance,
+                            money = money,
+                        )
+                    }
+                },
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text(
-                    text = if (member.isMe) stringResource(R.string.members_me, member.name) else member.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                MemberStatusLine(member)
-            }
-            member.balance?.let { balance ->
-                MemberBalanceText(
-                    balance = balance,
-                    money = money,
-                )
-            }
+            )
             MemberMenu(
                 member = member,
                 onEvent = onEvent,
@@ -155,6 +161,8 @@ private fun MemberStatusLine(member: MembersMember) {
             ),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

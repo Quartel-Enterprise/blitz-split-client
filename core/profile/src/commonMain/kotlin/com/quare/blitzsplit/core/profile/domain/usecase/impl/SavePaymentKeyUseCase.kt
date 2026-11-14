@@ -10,7 +10,8 @@ import kotlin.uuid.Uuid
 
 /*
  * Why: each method always has one default. The first key of a method is it, a key made default takes over from
- * the old one, and the default can't be turned off: another key has to take its place.
+ * the old one, and the default can't be turned off: another key has to take its place. One CPF/CNPJ, phone and email
+ * key per person (PaymentKeyType.isOnePerPerson), whatever the caller, so a key of a held type saves over it.
  */
 class SavePaymentKeyUseCase(
     private val repository: PaymentKeyRepository,
@@ -23,7 +24,9 @@ class SavePaymentKeyUseCase(
         isDefault: Boolean,
     ) {
         val keys = repository.observeKeys().first()
+        // Why: a new CPF/CNPJ, phone or email key replaces the one of that type already held, never adding a second.
         val existing = keyId?.let { id -> keys.find { it.id == id } }
+            ?: keys.find { it.type == type && type.isOnePerPerson }.takeIf { keyId == null }
         val others = keys.filter { it.type.method == type.method && it.id != existing?.id }
         val isNewDefault = isDefault || existing?.isDefault == true || others.isEmpty()
         val key = PaymentKey(

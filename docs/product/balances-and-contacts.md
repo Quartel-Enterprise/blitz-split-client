@@ -37,6 +37,9 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     arrow keys move through the people, as through Activity's items (beside the inspector they pick the one it shows;
     a narrow window only marks the row), a double click or Return opens the person's profile, and a right-click offers
     "Got paid" and "Request" for someone who owes you, else "Settle up", then "Open Ana's profile".
+    A person's card keeps "By group" and the actions on one line while they fit, else moves the actions to a line
+    of their own at its end (beta feedback of 2026-11-14: on a phone lying down "Request" broke letter by letter);
+    no button ever wraps its label.
   - A person tapped wherever a bill, a list or the feed shows them opens their profile, as Contacts opens it (Pierre's
     call, beta feedback 18, `Route.ContactProfile` by Balances' person key, `openPersonProfile`): Bill's split rows,
     its lone payer ("Ana paid"; several payers each have their row), a comment's author and a History line's
@@ -76,7 +79,18 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     click does, and a narrow window only marks the row, Return or a double click opening it over the list; a right-click
     offers "Open Ana's profile" (and "Show in Contacts" for someone hidden): Contacts' list has no Settle up or
     Request of its own, which stay on the profile. Beside the list a wide window (full screen) keeps the profile at
-    640 pt, centred. The profile
+    640 pt, centred. Pushed in a window lying down (a phone or a tablet lying down, an unfolded book, an iPhone or
+    iPad lying down, the web's page from a 56 rem column) the profile takes two columns, who the person is with the
+    guest's card and the net on the left, "Groups in common" and the history on the right, each scrolling on its own (the
+    web's page scrolls as one); beside Contacts' list it keeps one (beta feedback of 2026-11-14). As the header scrolls up its face shrinks and
+    fades while a small face and the name come into the top bar (Android and iOS, as the group's header does; the
+    web's header sticks and folds into a compact bar, under the phone's top bar; the Mac, whose toolbar names the
+    person, and the pane beside Contacts' list keep their header as it is). "Request" and
+    "Received" sit side by side while both labels fit and stack full width otherwise, as the guest card's "Merge"
+    and "Invite". "Share profile" beside ⋯ shares the person's profile link
+    (`https://blitzsplit.com/u/<code>?lang=<app language>`, as they would share it from their own Profile, the link
+    alone), only for someone with an account whose code a sync brought (each member reads the others'
+    `profiles.share_code` with their photos, `member_photo`); a guest has no button (Pierre's call). The profile
     (`Route.ContactProfile`) shows the net ("Already offset across 3 groups"), Request (Balances' message, opened over
     the profile), Received or Settle up (Record payment for the net, `Route.SettleUp`), "Add to a group" (an account goes straight in, joined, with no part in the old bills; a guest as a name; either
     keeps their name even when someone in the group has it too, beta feedback 3 item 29; a group they're

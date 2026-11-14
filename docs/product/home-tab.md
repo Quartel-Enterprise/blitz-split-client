@@ -86,7 +86,8 @@ The home tab, its shortcuts and pinned groups.
     allow them ("Know when a bill comes in", or on Apple "Notifications arrive quietly" while it delivers quietly, in
     [activity-and-push.md](activity-and-push.md)); on the web and the Mac, after both, the invite to the phone app
     once a group holds a bill ([get-the-app.md](get-the-app.md)). A Flip's cover screen shows only Overall balance, the latest bill and "Open the phone to see everything".
-  - "Pin to Home" (the group's ⋮/⋯ menu on Expenses and Balances, "Unpin from Home" once pinned) is each
+  - "Pin to Home" (the group's ⋮/⋯ menu on Expenses and Balances, right after "Edit group"; "Unpin from Home" once
+    pinned; "Fixar no Início" and "Desafixar do Início" in Portuguese, since Início is masculine) is each
     user's own, synced with their account and never shown to other members (`group_pins`, `GroupPinRepository`), works
     offline, and only orders Home's "Your groups" (Groups keeps its order). A settled group stays out of Home
     even when pinned.

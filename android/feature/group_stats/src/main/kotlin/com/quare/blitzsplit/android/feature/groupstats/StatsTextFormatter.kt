@@ -60,6 +60,11 @@ internal class StatsTextFormatter(
 
     fun toYearText(millis: Long): String = year.format(zonedOf(millis))
 
+    /*
+     * Why: under the chart a week is its first day ("19 de out."), short enough for several side by side; its whole
+     * range ("19 – 25 de out.") overlapped the next one's (beta feedback of 2026-11-14) and stays in the callout and
+     * the most expensive week's sentence.
+     */
     fun toBarLabel(
         bar: StatsBar,
         grain: StatsGrain,
@@ -67,7 +72,7 @@ internal class StatsTextFormatter(
         today: String,
     ): String = when (grain) {
         StatsGrain.DAY -> if (bar.isToday) today else dayOfMonth.format(zonedOf(bar.startMillis))
-        StatsGrain.WEEK -> if (isSparse) shortMonth.format(zonedOf(bar.startMillis)) else toWeekText(bar)
+        StatsGrain.WEEK -> (if (isSparse) shortMonth else dayMonth).format(zonedOf(bar.startMillis))
         StatsGrain.MONTH -> shortMonth.format(zonedOf(bar.startMillis))
         StatsGrain.YEAR -> year.format(zonedOf(bar.startMillis))
     }

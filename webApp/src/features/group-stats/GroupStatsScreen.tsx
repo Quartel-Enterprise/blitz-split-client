@@ -483,7 +483,7 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
       <div className="flex flex-col gap-1">
         {peak && (
           <span className="text-[13px] text-muted-foreground">
-            {peakLabel(peak, state.grain)} <strong className="font-semibold text-foreground tabular-nums">{money(peak.amountMinor)}</strong>
+            {peakLabel(peak, state.grain)} <strong className="font-semibold whitespace-nowrap text-foreground tabular-nums">{money(peak.amountMinor)}</strong>
           </span>
         )}
         {state.chartAverageMinor != null && (

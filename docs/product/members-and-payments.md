@@ -19,7 +19,9 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     single use personal link with Copy and "Share with Carla", and says what whoever joins through it already
     finds: "and already sees the R$ 300 share in the expense added" ("in the 3 expenses added", their parts summed;
     nothing while no bill gives them a part, `PersonalInvite.billCount`). Each member shows their balance ("+R$
-    223,50 to get back"), and someone with an open balance can't be removed either ("Carla has an open balance",
+    223,50 to get back") beside their name and status, or under the status where the row is too narrow for the name
+    to keep 160 dp, or on the web its whole width (a phone lying down, the group beside the list, a large font), so the name and "This device" never
+    squeeze (beta feedback of 2026-11-14; Balances' pairs move their button under the amount the same way), and someone with an open balance can't be removed either ("Carla has an open balance",
     `MembersMember.hasOpenBalance`). Only the group's creator sees
     "Release name", on someone else who joined (`MembersMember.canBeReleased`), bills and open balances included:
     after "Release Carla's name?" (`MembersUiState.memberToRelease`), online only, whoever joined as Carla leaves
@@ -117,7 +119,9 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     the tablet's dialog (a book's right half) and the iPad's form sheet one column; an Android tabletop full screen
     as the form's, who, how and the default key above the hinge and the rest with the buttons under it; the Mac's a 440 pt sheet "Pay Ana · R$ 98"
     whose keys scroll between the title and the buttons; the web's a 480 px dialog (a drawer on a phone).
-  - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds Edit group, Leave group and Delete group. "Edit
+  - The group's ⋮ menu (⋯ on iOS, macOS and the web) holds, in this order, Edit group, Pin to Home and Export group
+    data, which work offline, then a divider, Leave group and Delete group (Pierre's call, beta feedback of 2026-11-14;
+    Pin to Home came first before; see [Home](home-tab.md) and [Export group data](group-and-bills.md)). "Edit
     group" (`Route.EditGroup`) has New group's fields (its name under the "Group name" header alone, the field's own
     label hidden, which the Mac's form drew again on the field's left), the icon being a color or a photo (6.4d): on
     Android and iOS the avatar or its pencil on the corner (the profile photo's, "Change icon or photo" to TalkBack and VoiceOver) opens "Group icon" (Android's bottom sheet: the group's

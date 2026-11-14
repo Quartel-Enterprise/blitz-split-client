@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.core.model.StatsChartType
@@ -66,6 +68,7 @@ private val gridWidth = 1.dp
 private val averageWidth = 1.5.dp
 private val gutterGap = 8.dp
 private val calloutGap = 6.dp
+private val labelGap = 6.dp // Why: the least room between two labels under the chart.
 private const val AREA_ALPHA = 0.55f
 private const val DIMMED_ALPHA = 0.35f
 private const val GRID_ALPHA = 0.7f
@@ -468,7 +471,11 @@ private fun StatsChartCalloutBubble(
     }
 }
 
-// Why: each label centered under its bar, so a few labels of many bars still line up with them.
+/*
+ * Why: each label centered under its bar, so a few labels of many bars still line up with them. A label that would
+ * touch the one after it is left out, from the end, so the last (the newest, in bold) always shows and no two ever
+ * overlap, whatever the width and the language (beta feedback of 2026-11-14).
+ */
 @Composable
 private fun StatsChartLabelsRow(
     bars: List<StatsBar>,
@@ -481,7 +488,7 @@ private fun StatsChartLabelsRow(
     Layout(
         modifier = modifier
             .fillMaxWidth()
-            .height(20.dp),
+            .heightIn(min = 20.dp),
         content = {
             labeled.forEach { (index, bar) ->
                 val isLast = boldsLast && index == bars.lastIndex
@@ -496,17 +503,36 @@ private fun StatsChartLabelsRow(
             }
         },
     ) { measurables, constraints ->
-        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0)) }
+        val placeables = measurables.map {
+            it.measure(
+                constraints.copy(
+                    minWidth = 0,
+                    minHeight = 0,
+                ),
+            )
+        }
         val slot = constraints.maxWidth.toFloat() / bars.size.coerceAtLeast(1)
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            placeables.forEachIndexed { position, placeable ->
-                val center = (labeled[position].index + 0.5f) * slot
-                val x = (center - placeable.width / 2f).toInt().coerceIn(
-                    0,
-                    (constraints.maxWidth - placeable.width).coerceAtLeast(0),
-                )
-                placeable.place(x, 2.dp.roundToPx())
+        val xs = placeables.mapIndexed { position, placeable ->
+            val center = (labeled[position].index + 0.5f) * slot
+            (center - placeable.width / 2f).toInt().coerceIn(
+                0,
+                (constraints.maxWidth - placeable.width).coerceAtLeast(0),
+            )
+        }
+        val gap = labelGap.roundToPx()
+        var nextStart = Int.MAX_VALUE
+        val shown = mutableListOf<Int>()
+        for (position in placeables.indices.reversed()) {
+            if (xs[position] + placeables[position].width + gap <= nextStart) {
+                shown += position
+                nextStart = xs[position]
             }
+        }
+        // Why: as tall as its tallest label, so a large font never clips them.
+        val top = 2.dp.roundToPx()
+        val height = (placeables.maxOfOrNull { it.height } ?: 0) + top
+        layout(constraints.maxWidth, constraints.constrainHeight(height)) {
+            shown.forEach { position -> placeables[position].place(xs[position], top) }
         }
     }
 }

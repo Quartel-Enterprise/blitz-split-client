@@ -11,6 +11,48 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ProfileUiStateTest {
+    // Why: what an English UI hands for each option: its own name, then its name in English.
+    private val englishNames: (AppLanguage) -> List<String> = { language ->
+        when (language) {
+            AppLanguage.SYSTEM -> listOf("Device language")
+            AppLanguage.ENGLISH -> listOf("English", "English")
+            AppLanguage.PORTUGUESE -> listOf("Português (Brasil)", "Portuguese (Brazil)")
+            AppLanguage.SPANISH -> listOf("Español", "Spanish")
+            AppLanguage.FRENCH -> listOf("Français", "French")
+            AppLanguage.GERMAN -> listOf("Deutsch", "German")
+            AppLanguage.ITALIAN -> listOf("Italiano", "Italian")
+            AppLanguage.POLISH -> listOf("Polski", "Polish")
+            AppLanguage.DUTCH -> listOf("Nederlands", "Dutch")
+            AppLanguage.JAPANESE -> listOf("日本語", "Japanese")
+            AppLanguage.TURKISH -> listOf("Türkçe", "Turkish")
+            AppLanguage.INDONESIAN -> listOf("Bahasa Indonesia", "Indonesian")
+        }
+    }
+
+    // Why: what a Portuguese UI hands: German is "Alemão" there.
+    private val portugueseNames: (AppLanguage) -> List<String> = { language ->
+        when (language) {
+            AppLanguage.SYSTEM -> listOf("Idioma do aparelho")
+            AppLanguage.GERMAN -> listOf("Deutsch", "Alemão")
+            else -> englishNames(language).take(1)
+        }
+    }
+
+    private val allOptions = listOf(
+        AppLanguage.SYSTEM,
+        AppLanguage.ENGLISH,
+        AppLanguage.PORTUGUESE,
+        AppLanguage.SPANISH,
+        AppLanguage.FRENCH,
+        AppLanguage.GERMAN,
+        AppLanguage.ITALIAN,
+        AppLanguage.POLISH,
+        AppLanguage.DUTCH,
+        AppLanguage.JAPANESE,
+        AppLanguage.TURKISH,
+        AppLanguage.INDONESIAN,
+    )
+
     @Test
     fun `GIVEN a name in lower case with spaces around it WHEN drawing the avatar THEN shows its upper case initial`() {
         // Given
@@ -611,6 +653,174 @@ class ProfileUiStateTest {
         )
     }
 
+    @Test
+    fun `GIVEN no search typed WHEN searching the languages THEN offers every option in order`() {
+        // Given
+        val profile = state(languageQuery = "")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(allOptions, options)
+    }
+
+    @Test
+    fun `GIVEN only spaces typed WHEN searching the languages THEN offers every option in order`() {
+        // Given
+        val profile = state(languageQuery = "   ")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(allOptions, options)
+    }
+
+    @Test
+    fun `GIVEN portugues typed without its accent WHEN searching the languages THEN finds Portuguese`() {
+        // Given
+        val profile = state(languageQuery = "portugues")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+    }
+
+    @Test
+    fun `GIVEN BRASIL typed in upper case WHEN searching the languages THEN finds Portuguese`() {
+        // Given
+        val profile = state(languageQuery = "BRASIL")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+    }
+
+    @Test
+    fun `GIVEN the name in the app language typed WHEN searching the languages THEN finds that language`() {
+        // Given
+        val profile = state(languageQuery = "dutch")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.DUTCH), options)
+    }
+
+    @Test
+    fun `GIVEN alemao typed in a Portuguese app WHEN searching the languages THEN finds German`() {
+        // Given
+        val profile = state(languageQuery = "alemao")
+
+        // When
+        val options = profile.findLanguageOptions(portugueseNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.GERMAN), options)
+    }
+
+    @Test
+    fun `GIVEN the code pt typed and no names WHEN searching the languages THEN finds Portuguese by its code`() {
+        // Given
+        val profile = state(languageQuery = "pt")
+
+        // When
+        val options = profile.findLanguageOptions({ emptyList() })
+
+        // Then
+        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+    }
+
+    @Test
+    fun `GIVEN the code NL typed in upper case WHEN searching the languages THEN finds Dutch by its code`() {
+        // Given
+        val profile = state(languageQuery = "NL")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.DUTCH), options)
+    }
+
+    @Test
+    fun `GIVEN en typed WHEN searching the languages THEN finds English by its code and French by its name`() {
+        // Given
+        val profile = state(languageQuery = "en")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.ENGLISH, AppLanguage.FRENCH), options)
+    }
+
+    @Test
+    fun `GIVEN device typed WHEN searching the languages THEN finds the device language option`() {
+        // Given
+        val profile = state(languageQuery = "device")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.SYSTEM), options)
+    }
+
+    @Test
+    fun `GIVEN a name with spaces around it WHEN searching the languages THEN finds that language`() {
+        // Given
+        val profile = state(languageQuery = "  french  ")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.FRENCH), options)
+    }
+
+    @Test
+    fun `GIVEN ish typed WHEN searching the languages THEN finds every match in the list order`() {
+        // Given
+        val profile = state(languageQuery = "ish")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.ENGLISH, AppLanguage.SPANISH, AppLanguage.POLISH, AppLanguage.TURKISH), options)
+    }
+
+    @Test
+    fun `GIVEN a name no language has WHEN searching the languages THEN finds nothing`() {
+        // Given
+        val profile = state(languageQuery = "klingon")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(emptyList<AppLanguage>(), options)
+    }
+
+    @Test
+    fun `GIVEN the region br of pt-BR typed and no names WHEN searching the languages THEN finds nothing by code`() {
+        // Given
+        val profile = state(languageQuery = "br")
+
+        // When
+        val options = profile.findLanguageOptions({ emptyList() })
+
+        // Then
+        assertEquals(emptyList<AppLanguage>(), options)
+    }
+
     private fun state(
         isLoaded: Boolean = true,
         displayName: String = "Pierre",
@@ -626,6 +836,7 @@ class ProfileUiStateTest {
         isConnectExpanded: Boolean = false,
         formattedRecoveryCode: String? = null,
         language: AppLanguage = AppLanguage.SYSTEM,
+        languageQuery: String = "",
     ): ProfileUiState = ProfileUiState(
         isLoaded = isLoaded,
         displayName = displayName,
@@ -649,6 +860,7 @@ class ProfileUiStateTest {
         showsBitcoinInSats = false,
         sharesUsageData = true,
         language = language,
+        languageQuery = languageQuery,
         activeNotificationCount = 3.toLoaded(),
         showsCheckForUpdates = true,
         isCheckingForUpdates = false,
