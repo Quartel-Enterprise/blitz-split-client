@@ -30,6 +30,9 @@ internal fun memberIdOf(person: Int): String = person.toString()
 
 internal fun avatarColorOf(person: Int): AvatarColor = SampleTrips.avatarColorOf(person)
 
+// Why: the trip group's color, the same on every screen that draws its avatar.
+internal val tripColor: AvatarColor = AvatarColor.PEACH
+
 internal fun SampleTrip.faceOf(person: Int): GroupFace = GroupFace(
     initials = previewInitialsOf(people[person]),
     color = avatarColorOf(person),

@@ -107,9 +107,12 @@ jobs:
 
       # The actuals of appleMain live in a few modules with few tests of their own; the tests that
       # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
-      # compiles the device target, which no other check builds.
+      # compiles the device target, which no other check builds, and compileAppleMainKotlinMetadata the
+      # appleMain shared by the Apple targets, which only a macOS host compiles.
       - name: Run the tests on the iOS simulator and macOS
-        run: ./gradlew iosSimulatorArm64Test macosArm64Test compileKotlinIosArm64 --continue
+        run: >-
+          ./gradlew iosSimulatorArm64Test macosArm64Test compileKotlinIosArm64
+          compileAppleMainKotlinMetadata --continue
 
       - name: Upload test reports
         if: failure()

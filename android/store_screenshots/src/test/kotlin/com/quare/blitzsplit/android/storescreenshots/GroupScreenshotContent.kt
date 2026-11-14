@@ -9,9 +9,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
+import com.quare.blitzsplit.core.model.toStackedFaces
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseDay
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
@@ -45,11 +45,14 @@ internal fun SampleTrip.groupHeader(): GroupHeader {
     return GroupHeader(
         groupName = groupName,
         groupInitials = previewInitialsOf(groupName),
-        groupColor = AvatarColor.PEACH,
+        groupColor = tripColor,
         groupPhotoUrl = null,
         currency = currency,
         currencies = listOf(currency, foreignCurrency),
-        faces = people.indices.map { faceOf(it) },
+        faces = people.indices
+            .toList()
+            .toStackedFaces()
+            .map { faceOf(it) },
         memberCount = people.size,
         notJoinedCount = 0,
         totalSpentMinor = totalSpentMinor,

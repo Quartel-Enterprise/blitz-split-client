@@ -22,6 +22,10 @@ in the browser) and exposes each DAO as a singleton. Schemas are exported to `co
 Today the builder also sets `fallbackToDestructiveMigration(true)`: a version bump drops the database, pending
 changes included. Once a schema has shipped, change it with a migration instead.
 
+An `AutoMigrationSpec` in `commonMain` runs its SQL with the suspend `executeSQL`, `prepare` and `step` of
+`androidx.sqlite.async`, never the blocking `execSQL`: with the web target, sqlite publishes the blocking API only
+for the other targets, so the shared metadata (`compileCommonMainKotlinMetadata`) wouldn't compile.
+
 - DAOs expose `Flow<T>` for what the UI observes and `suspend` functions for one-shot reads and writes.
 - The single-row tables (`profile`, `account`) are keyed by `SINGLE_ROW_ID` (`"me"`): the row exists before the
   server knows the user, so it can't be keyed by the user id.

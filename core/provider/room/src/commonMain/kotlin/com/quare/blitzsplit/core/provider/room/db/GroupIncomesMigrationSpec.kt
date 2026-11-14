@@ -2,7 +2,9 @@ package com.quare.blitzsplit.core.provider.room.db
 
 import androidx.room3.migration.AutoMigrationSpec
 import androidx.sqlite.SQLiteConnection
-import androidx.sqlite.execSQL
+import androidx.sqlite.async.executeSQL
+import androidx.sqlite.async.prepare
+import androidx.sqlite.async.step
 
 /*
  * Why: 44 to 45 made the incomes of "By income" synced (group_member_income). Until then they stayed on the device that
@@ -36,6 +38,6 @@ class GroupIncomesMigrationSpec : AutoMigrationSpec {
                 }
             }
         }
-        connection.execSQL("UPDATE split_group SET splitIncomes = NULL")
+        connection.executeSQL("UPDATE split_group SET splitIncomes = NULL")
     }
 }
