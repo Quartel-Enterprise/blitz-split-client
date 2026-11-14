@@ -9,6 +9,10 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.utils)
             api(libs.androidx.room.runtime)
+            // Why: with the web target in commonMain, sqlite's blocking prepare and execSQL are only on the other
+            // targets; the migration specs use sqlite-async's suspend ones, which Room's own dependency doesn't
+            // put on this module's shared metadata compile.
+            implementation(libs.androidx.sqlite.async)
             implementation(libs.kotlinx.coroutines.core)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

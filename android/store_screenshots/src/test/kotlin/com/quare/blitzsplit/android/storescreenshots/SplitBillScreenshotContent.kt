@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
+import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
@@ -167,6 +168,10 @@ private fun SampleTrip.splitBillState(
         defaultSplit = null,
         defaultSplitExceptionId = null,
         splitAsDefault = null,
+        incomes = BillIncomes(
+            byMemberId = emptyMap(),
+            currency = bill.currency,
+        ),
         categories = CategoryTree.appOnly,
         categoryId = bill.categoryKey,
         isCategoryPicked = true,

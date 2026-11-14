@@ -2,7 +2,7 @@ package com.quare.blitzsplit.core.provider.room.db
 
 import androidx.room3.migration.AutoMigrationSpec
 import androidx.sqlite.SQLiteConnection
-import androidx.sqlite.execSQL
+import androidx.sqlite.async.executeSQL
 
 /*
  * Why: 35 to 36 split Comments out of Bills and Payment requests out of the reminder, each with a Push toggle of its
@@ -11,7 +11,7 @@ import androidx.sqlite.execSQL
  */
 class NotificationChannelsMigrationSpec : AutoMigrationSpec {
     override suspend fun onPostMigrate(connection: SQLiteConnection) {
-        connection.execSQL(
+        connection.executeSQL(
             "UPDATE notification_preferences SET comments = newExpense, paymentRequests = settleReminders",
         )
     }
