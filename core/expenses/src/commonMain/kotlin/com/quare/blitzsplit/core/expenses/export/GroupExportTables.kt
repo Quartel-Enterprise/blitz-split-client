@@ -2,7 +2,7 @@ package com.quare.blitzsplit.core.expenses.export
 
 /*
  * Why: the three sections of CSV, Excel and the text, with the UI's words: Bills (date, description, category, amount,
- * currency, then "Paid · Ana" and "Share · Ana" for each member), Payments (date, from, to, amount, currency) and
+ * currency, the exporter's payment method while any bill has one, then "Paid · Ana" and "Share · Ana" for each member), Payments (date, from, to, amount, currency) and
  * Balances (member, currency, balance). A new column is one entry in its list.
  */
 internal object GroupExportTables {
@@ -49,16 +49,30 @@ internal object GroupExportTables {
         ?.let { words.appCategoryNames[it.key] ?: it.key }
         ?: bill.category.name.orEmpty()
 
+    // Why: "Nubank · Credit card", or the type's name alone for a method with no name; empty for an unmarked bill.
+    fun payingMethodNameOf(
+        bill: ExportBill,
+        words: GroupExportWords,
+    ): String {
+        val method = bill.payingMethod ?: return ""
+        val typeName = words.payingMethodTypeNames[method.type.code] ?: method.type.code
+        return if (method.name.isBlank()) typeName else "${method.name} · $typeName"
+    }
+
     private fun buildBillColumns(
         export: GroupExport,
         words: GroupExportWords,
         names: Map<String, String>,
-    ): List<ExportColumn<ExportBill>> = listOf(
+    ): List<ExportColumn<ExportBill>> = listOfNotNull(
         ExportColumn<ExportBill>(words.date) { ExportCell.Day(it.date) },
         ExportColumn(words.billDescription) { ExportCell.Text(it.description) },
         ExportColumn(words.category) { ExportCell.Text(categoryNameOf(it, words)) },
         ExportColumn(words.amount) { ExportCell.Amount(it.amountMinor, it.currency) },
         ExportColumn(words.currency) { ExportCell.Text(it.currency.code) },
+        // Why: only while the exporter marked a bill, so an export without "Paid with" keeps its columns as they were.
+        ExportColumn<ExportBill>(words.paymentMethod) { bill ->
+            payingMethodNameOf(bill, words).takeIf { it.isNotEmpty() }?.let(ExportCell::Text) ?: ExportCell.Empty
+        }.takeIf { export.bills.any { it.payingMethod != null } },
     ) + export.members.flatMap { member ->
         val name = names.getValue(member.id)
         listOf(

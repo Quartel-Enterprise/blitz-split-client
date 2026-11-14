@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.export
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupBalances
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -30,6 +31,8 @@ data class GroupExport(
             expenses: List<Expense>,
             settlements: List<Settlement>,
             categoryTree: CategoryTree,
+            // Why: the exporter's own marks by bill id, which nobody else's export carries.
+            payingMethods: Map<String, PayingMethod>,
             timeZone: TimeZone,
             nowMillis: Long,
         ): GroupExport {
@@ -71,6 +74,7 @@ data class GroupExport(
                     currency = expense.currency,
                     payers = expense.payers.map { ExportAmount(it.memberId, it.amountMinor) },
                     shares = expense.shares.map { ExportAmount(it.memberId, it.amountMinor) },
+                    payingMethod = payingMethods[expense.id],
                 )
             }
             val payments = sortedSettlements.map {

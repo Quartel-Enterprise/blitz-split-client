@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentReposi
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
@@ -58,6 +59,7 @@ class SyncCoordinator(
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
     private val categoryTermRepository: CategoryTermRepository,
+    private val payingMethodRepository: PayingMethodRepository,
     private val billCommentRepository: BillCommentRepository,
     private val billAttachmentRepository: BillAttachmentRepository,
     private val activityRepository: ActivityRepository,
@@ -294,6 +296,8 @@ class SyncCoordinator(
             activityRepository.uploadPendingActivity(userId).getOrThrow()
             activityRepository.downloadActivity(userId).getOrThrow()
         }
+        // Why: the payment methods are the user's own; their bills' marks need the bills on the server first.
+        val payingMethodsSynced = payingMethodRepository.sync(userId, withMarks = groupsSynced.isSuccess)
         // Why: Contatos' hidden list is the user's own, like the keys, so it syncs apart from the groups.
         val hiddenContactsSynced = suspendRunCatching {
             hiddenContactRepository.download(userId).getOrThrow()
@@ -301,17 +305,9 @@ class SyncCoordinator(
         }
         offerRecoveryCodeIfDue()
         signOutIfScheduledAndSynced()
-        keysSynced.getOrThrow()
-        preferencesSynced.getOrThrow()
-        termsSynced.getOrThrow()
-        groupsSynced.getOrThrow()
-        memberKeysSynced.getOrThrow()
-        pinsSynced.getOrThrow()
-        incomesSynced.getOrThrow()
-        commentsSynced.getOrThrow()
-        attachmentsSynced.getOrThrow()
-        activitySynced.getOrThrow()
-        hiddenContactsSynced.getOrThrow()
+        listOf(keysSynced, preferencesSynced, termsSynced, groupsSynced, memberKeysSynced, pinsSynced, incomesSynced)
+            .plus(listOf(commentsSynced, attachmentsSynced, activitySynced, payingMethodsSynced, hiddenContactsSynced))
+            .forEach { it.getOrThrow() }
         return userId
     }
 
@@ -337,6 +333,7 @@ class SyncCoordinator(
                     suspendRunCatching { notificationPreferencesRepository.clear() }
                     suspendRunCatching { appInviteRepository.clear() }
                     suspendRunCatching { categoryTermRepository.clear() }
+                    suspendRunCatching { payingMethodRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
                     suspendRunCatching { activityRepository.clear() }
                     suspendRunCatching { hiddenContactRepository.clear() }
@@ -393,6 +390,7 @@ class SyncCoordinator(
             hiddenContactRepository.observeHidden(),
             groupPinRepository.observePinnedGroupIds(),
             categoryTermRepository.observeChanges(),
+            payingMethodRepository.observeMethods(),
             billCommentRepository.observePendingIds(),
             billAttachmentRepository.observePendingVersions(),
         ) { lists -> lists.toList() }
@@ -440,6 +438,7 @@ class SyncCoordinator(
         notificationPreferencesRepository.clear()
         appInviteRepository.clear()
         categoryTermRepository.clear()
+        payingMethodRepository.clear()
         groupRepository.clear()
         activityRepository.clear()
         hiddenContactRepository.clear()
@@ -452,6 +451,7 @@ class SyncCoordinator(
         paymentKeyRepository.observeHasPendingChanges(),
         notificationPreferencesRepository.observeHasPendingChanges(),
         categoryTermRepository.observeHasPendingChanges(),
+        payingMethodRepository.observeHasPendingChanges(),
         billCommentRepository.observeHasPendingChanges(),
         billAttachmentRepository.observeHasPendingChanges(),
         groupRepository.observeHasPendingChanges(),

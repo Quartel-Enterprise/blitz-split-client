@@ -19,6 +19,9 @@ class JsRoute internal constructor(
     // Why: the key to edit for "payment-key", null for a new key and for every other route.
     val paymentKeyId: String? = (route as? Route.PaymentKey)?.keyId
 
+    // Why: the method to edit for "paying-method", null for a new method and for every other route.
+    val payingMethodId: String? = (route as? Route.PayingMethod)?.methodId
+
     /*
      * Why: the group of "invite", "group-detail", "register-payment", "split-bill",
      * "bill-detail", "share-bill", "edit-group", "default-split", "group-stats" and "category-expenses", null for every

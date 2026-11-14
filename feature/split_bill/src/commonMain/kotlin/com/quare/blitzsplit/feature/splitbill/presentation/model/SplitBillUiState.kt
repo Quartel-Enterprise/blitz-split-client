@@ -125,6 +125,8 @@ data class SplitBillUiState(
     val isLoaded: Boolean,
     // Why: the inputs as the form opened, once it was filled; what unsaved input is compared against.
     val openedInputs: SplitBillInputs?,
+    // Why: "Paid with", this device's user's own method, kept apart from the bill the group sees.
+    val paidWith: PaidWith,
 ) {
     // Why: what the person can change now, compared with openedInputs.
     val inputs: SplitBillInputs
@@ -145,7 +147,22 @@ data class SplitBillUiState(
 
     // Why: closing asks "Discard changes?" only while the form differs from how it opened; saving puts it back.
     val hasUnsavedInput: Boolean
-        get() = isLoaded && openedInputs != null && inputs != openedInputs
+        get() = isLoaded && openedInputs != null && (inputs != openedInputs || showsPaidWith && paidWith.hasChanged)
+
+    val meId: String?
+        get() = people.firstOrNull { it.isMe }?.id
+
+    // Why: "Paid with" only while this device's user pays the bill, alone or with others, and has a method to pick.
+    val showsPaidWith: Boolean
+        get() = paidWith.methods.isNotEmpty() && meId != null && meId in payerIds
+
+    // Why: "Salvar" then saves only the person's own mark, so the group sees no edit of a bill that stayed as it was.
+    val isOnlyPaidWithChanged: Boolean
+        get() = isEditing && inputs == openedInputs && showsPaidWith && paidWith.hasChanged
+
+    // Why: what "Paid with" saves: the method picked while it shows, none once this device's user no longer pays.
+    val paidWithToSave: String?
+        get() = paidWith.method?.id?.takeIf { showsPaidWith }
 
     val amountMinor: Long?
         get() = AmountInput.parse(amountText, currency, showsSats)

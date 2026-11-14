@@ -218,6 +218,8 @@ class JsBillDetailState(
     val showsAddPhoto: Boolean,
     val canAddPhoto: Boolean,
     val isAddingPhoto: Boolean,
+    // Why: "Paid with", this device's user's own mark, which only they see; null for none.
+    val paidWith: JsPayingMethod?,
     // Why: the viewer's page while it is open, else null.
     val viewedAttachmentIndex: Int?,
 )
@@ -288,6 +290,7 @@ class BillDetailPresenter(
                 showsAddPhoto = state.showsAddPhoto,
                 canAddPhoto = state.canAddPhoto,
                 isAddingPhoto = state.isAddingPhoto,
+                paidWith = state.paidWith?.toJsPayingMethod(),
                 viewedAttachmentIndex = state.viewedAttachmentIndex,
             )
         }

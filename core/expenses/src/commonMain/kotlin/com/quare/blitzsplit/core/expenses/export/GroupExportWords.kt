@@ -25,4 +25,8 @@ data class GroupExportWords(
     val formerMember: String,
     // Why: the name of each app category by its key (`AppCategory.key`); a group's own category has its own name.
     val appCategoryNames: Map<String, String>,
+    // Why: the "Payment method" column, the exporter's own "Paid with" of each bill.
+    val paymentMethod: String,
+    // Why: the name of each payment method type by its code (`PayingMethodType.code`), for a method with no name of its own.
+    val payingMethodTypeNames: Map<String, String>,
 )

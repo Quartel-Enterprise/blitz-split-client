@@ -126,6 +126,7 @@ class JsSplitBillState(
     val isAmountValid: Boolean,
     val payer: JsBillPerson?,
     val payerIsMe: Boolean,
+    val paidWith: JsPaidWith?,
     val isPayerFormerMember: Boolean,
     // Why: who paid, whom Dividir marks as keeping the cents.
     val payerIds: Array<String>,
@@ -238,6 +239,7 @@ class SplitBillPresenter(
                 isAmountValid = state.isAmountValid,
                 payer = state.payer?.let(::toJsBillPerson),
                 payerIsMe = state.payerIsMe,
+                paidWith = toJsPaidWithOrNull(state),
                 isPayerFormerMember = state.isPayerFormerMember,
                 payerIds = state.payerIds.toTypedArray(),
                 severalPayers = state.severalPayers?.let(::toJsPayerAmounts),
@@ -425,6 +427,8 @@ class SplitBillPresenter(
     fun pickPayer(memberId: String) {
         viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(memberId))
     }
+
+    fun pickPaidWith(methodId: String?) = viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(methodId))
 
     fun confirmPayer() {
         viewModel.onEvent(SplitBillUiEvent.OnPayerDone)

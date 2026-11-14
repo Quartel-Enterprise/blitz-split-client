@@ -38,6 +38,7 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 | `activity` | `is_person` (one person's history), `is_bills_only` (Activity opened on its bills; nothing opens it so since Home's "See all" opens All expenses) |
 | `join_invite` | `is_personal` (a personal link) |
 | `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
+| `paying_method` | `is_new` |
 | `legal_document` | `page` (`privacy_policy`, `terms_of_use`) |
 | `category_expenses` | `has_period` (the statistics showed a period other than the whole history) |
 | Every other route (`home`, `groups`, `group_detail`, `bill_detail`…) | none |
@@ -355,6 +356,16 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_key_delete_clicked` | none | "Delete key", which asks first, while the key isn't saving | `:feature:payment_key` |
 | `payment_key_delete_confirmed` | none | Its question confirmed, while it was open | `:feature:payment_key` |
 | `payment_key_delete_cancelled` | none | Its question closed without confirming, while it was open | `:feature:payment_key` |
+| `paying_method_add_clicked` | none | Profile's "Add a payment method" | `:feature:profile` |
+| `paying_method_clicked` | `type` | A payment method's row in Profile, which opens it to edit | `:feature:profile` |
+| `paying_method_type_selected` | `type` | Another type for the method (Credit card, Cash, Pix…) | `:feature:paying_method` |
+| `paying_method_card_color_selected` | `color` | Another color for a card | `:feature:paying_method` |
+| `paying_method_default_toggled` | `is_default` | "Default method" | `:feature:paying_method` |
+| `paying_method_save_clicked` | none | The method's Save, also when it can't save yet | `:feature:paying_method` |
+| `paying_method_saved` | `type`, `is_new`, `is_default` | A method saved | `:feature:paying_method` |
+| `paying_method_delete_clicked` | none | "Delete payment method", which asks first, while the method isn't saving | `:feature:paying_method` |
+| `paying_method_delete_confirmed` | none | Its question confirmed, while it was open | `:feature:paying_method` |
+| `paying_method_delete_cancelled` | none | Its question closed without confirming, while it was open | `:feature:paying_method` |
 | `stats_period_selected` | `period` | A period of the menu | `:feature:group_stats` |
 | `stats_pick_dates_clicked` | none | "Pick dates…" of the period menu, which opens the date picker | `:feature:group_stats` |
 | `stats_custom_period_selected` | none | The days picked in "Pick dates…" | `:feature:group_stats` |
@@ -397,6 +408,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_currency_picked` | `currency` (the code) | The bill's currency picked beside the total, another than the one it has, the form not locked or saving | `:feature:split_bill` |
 | `split_bill_payer_clicked` | none | "Who paid" | `:feature:split_bill` |
 | `split_bill_payer_picked` | none | A person picked in "Who paid", while it is open | `:feature:split_bill` |
+| `split_bill_paid_with_picked` | `has_method` | Another method (or None) picked in "Paid with", while it shows | `:feature:split_bill` |
 | `split_bill_payer_confirmed` | none | "Done" on "Who paid", while it is open | `:feature:split_bill` |
 | `split_bill_several_payers_clicked` | none | "Several people" | `:feature:split_bill` |
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Done" on "Several people paid", once the amounts add up | `:feature:split_bill` |

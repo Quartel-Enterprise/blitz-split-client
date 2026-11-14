@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.profile.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -852,6 +853,7 @@ class ProfileUiStateTest {
         syncStatus = syncStatus,
         pendingChanges = pendingChanges,
         paymentKeys = emptyList<PaymentKeyItem>().toLoaded(),
+        payingMethods = emptyList<PayingMethod>().toLoaded(),
         showsPix = true,
         isSignOutScheduled = isSignOutScheduled,
         theme = ThemePreference.SYSTEM,

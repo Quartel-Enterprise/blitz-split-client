@@ -1,5 +1,23 @@
 package com.quare.blitzsplit.core.expenses.di
 
+import com.quare.blitzsplit.core.expenses.data.datasource.PayingMethodLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.PayingMethodRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomPayingMethodLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.SupabasePayingMethodRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.mapper.PayingMethodMapper
+import com.quare.blitzsplit.core.expenses.data.mapper.PayingMethodMapperImpl
+import com.quare.blitzsplit.core.expenses.data.repository.PayingMethodRepositoryImpl
+import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePayingMethods
+import com.quare.blitzsplit.core.expenses.domain.usecase.SavePayingMethod
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeletePayingMethod
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillPayingMethod
+import com.quare.blitzsplit.core.expenses.domain.usecase.MarkBillPayingMethod
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePayingMethodsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SavePayingMethodUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeletePayingMethodUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillPayingMethodUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.MarkBillPayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
 import com.quare.blitzsplit.core.expenses.data.datasource.AppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentLocalDataSource
@@ -235,6 +253,7 @@ val expenseModule = module {
             expenseRepository = get(),
             settlementRepository = get(),
             categoryRepository = get(),
+            payingMethodRepository = get(),
             currentTimeZone = get(),
             currentTimeMillis = get(),
             encodeDispatcher = Dispatchers.Default,
@@ -265,6 +284,15 @@ val expenseModule = module {
     singleOf(::SupabaseCategoryTermRemoteDataSource).bind<CategoryTermRemoteDataSource>()
     singleOf(::CategoryTermMapperImpl).bind<CategoryTermMapper>()
     singleOf(::CategoryTermRepositoryImpl).bind<CategoryTermRepository>()
+    singleOf(::RoomPayingMethodLocalDataSource).bind<PayingMethodLocalDataSource>()
+    singleOf(::SupabasePayingMethodRemoteDataSource).bind<PayingMethodRemoteDataSource>()
+    singleOf(::PayingMethodMapperImpl).bind<PayingMethodMapper>()
+    singleOf(::PayingMethodRepositoryImpl).bind<PayingMethodRepository>()
+    factoryOf(::ObservePayingMethodsUseCase).bind<ObservePayingMethods>()
+    factoryOf(::SavePayingMethodUseCase).bind<SavePayingMethod>()
+    factoryOf(::DeletePayingMethodUseCase).bind<DeletePayingMethod>()
+    factoryOf(::ObserveBillPayingMethodUseCase).bind<ObserveBillPayingMethod>()
+    factoryOf(::MarkBillPayingMethodUseCase).bind<MarkBillPayingMethod>()
     factoryOf(::ObserveCategoryMapUseCase).bind<ObserveCategoryMap>()
     factoryOf(::SaveCategoryTermUseCase).bind<SaveCategoryTerm>()
     factoryOf(::RemoveCategoryTermUseCase).bind<RemoveCategoryTerm>()

@@ -4,6 +4,7 @@ package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
 // Why: person is null for someone who left the group, "Ex-membro".
 class JsPayerAmountRow(
@@ -38,3 +39,18 @@ internal fun toJsPayerAmounts(amounts: PayerAmounts): JsPayerAmounts = JsPayerAm
     showsMismatch = amounts.showsMismatch,
     paying = amounts.paying.map(::toJsPayerAmountRow).toTypedArray(),
 )
+
+// Why: "Paid with" while it shows: this device's user's own methods, the default first, and the one picked (null for none).
+class JsPaidWith(
+    val methods: Array<JsPayingMethod>,
+    val methodId: String?,
+)
+
+internal fun toJsPaidWithOrNull(state: SplitBillUiState): JsPaidWith? = if (state.showsPaidWith) {
+    JsPaidWith(
+        methods = state.paidWith.methods.map { it.toJsPayingMethod() }.toTypedArray(),
+        methodId = state.paidWith.method?.id,
+    )
+} else {
+    null
+}

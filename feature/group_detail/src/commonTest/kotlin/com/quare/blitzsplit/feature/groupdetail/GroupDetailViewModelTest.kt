@@ -47,6 +47,7 @@ import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryGroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -3684,6 +3685,8 @@ class GroupDetailViewModelTest {
         balance = "Saldo",
         formerMember = "Ex-membro",
         appCategoryNames = emptyMap(),
+        paymentMethod = "Payment method",
+        payingMethodTypeNames = emptyMap(),
     )
 
     private val beachCategory = GroupCategory(
@@ -3809,6 +3812,7 @@ class GroupDetailViewModelTest {
                         expenseRepository = expenses,
                         settlementRepository = settlements,
                         categoryRepository = categories,
+                        payingMethodRepository = FakePayingMethodRepository(),
                         currentTimeZone = { timeZone },
                         currentTimeMillis = { nowMillis },
                         encodeDispatcher = testDispatcher,

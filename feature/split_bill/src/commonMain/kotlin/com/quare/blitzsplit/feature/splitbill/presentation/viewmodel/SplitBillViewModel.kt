@@ -80,6 +80,7 @@ class SplitBillViewModel(
     observeExpenses: ObserveExpenses,
     observeSettlements: ObserveSettlements,
     categoryUseCases: BillCategoryUseCases,
+    paidWithUseCases: BillPayingMethodUseCases,
     observeBitcoinInSats: ObserveBitcoinInSats,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
@@ -113,8 +114,10 @@ class SplitBillViewModel(
     private val tracking = SplitFormTracking(uiState, trackEvent)
     private val spentAtPicking = SpentAtPicking(uiState, currentTimeMillis, currentTimeZone)
 
+    private val paidWith = PaidWithPicking(uiState, viewModelScope, route, paidWithUseCases, trackEvent)
+
     // Why: "Quem pagou" and "Várias pessoas pagaram".
-    private val payerPicking = PayerPicking(uiState, { separator }, trackEvent)
+    private val payerPicking = PayerPicking(uiState, { separator }, trackEvent, paidWith::pick)
 
     // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false
@@ -392,10 +395,7 @@ class SplitBillViewModel(
                 val previous = editedExpense
                 val isFirstRead = previous == null
                 if (isFirstRead) {
-                    fill(
-                        group,
-                        expense,
-                    )
+                    fill(group, expense)
                 } else {
                     uiState.update { it.withChangeNoticed(group, previous, expense) }
                 }
@@ -538,12 +538,15 @@ class SplitBillViewModel(
             val expenseId = route.expenseId
             val result = if (expenseId == null) {
                 createExpense.saveNew(state, amountMinor, payers, shares).map { id ->
+                    paidWith.saveTo(id, state)
                     receipt.attachTo(id, state)
                     saveSplitAsDefault.saveOf(state)
                     state.findTeachOfferUnlessKept(id, duplicatedCategoryId)
                 }
             } else {
-                updateExpense.saveEdit(expenseId, route.groupId, state, amountMinor, payers, shares).map { null }
+                updateExpense.saveEdit(expenseId, route.groupId, state, amountMinor, payers, shares)
+                    .onSuccess { paidWith.saveTo(expenseId, state) }
+                    .map { null }
             }
             result
                 .onSuccess { teachOffer ->
@@ -568,10 +571,7 @@ class SplitBillViewModel(
         val expense = editedExpense ?: return
         if (!uiState.value.canDelete) return
         trackEvent("bill_delete_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
-        val meId = uiState.value.people
-            .firstOrNull { it.isMe }
-            ?.id
-        uiState.update { it.copy(deletion = BillDeletion.of(expense, meId, deletionSettledPair)) }
+        uiState.update { it.copy(deletion = BillDeletion.of(expense, it.meId, deletionSettledPair)) }
     }
 
     private fun delete() {

@@ -3398,6 +3398,7 @@ class SplitBillViewModelTest {
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,

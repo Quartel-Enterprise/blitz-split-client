@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillPayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
@@ -47,6 +48,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -102,6 +104,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class BillDetailViewModelTest {
+    private val payingMethods = FakePayingMethodRepository()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
@@ -5008,6 +5011,7 @@ class BillDetailViewModelTest {
             observeExpenses = ObserveExpensesUseCase(expenses),
             observeSettlements = ObserveSettlementsUseCase(settlements),
             observeCategoryTree = ObserveCategoryTreeUseCase(FakeCategoryRepository()),
+            observeBillPayingMethod = ObserveBillPayingMethodUseCase(payingMethods),
             addBillComment = AddBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             editBillComment = EditBillCommentUseCase(comments, currentTimeMillis = { nowMillis }),
             deleteBillComment = DeleteBillCommentUseCase(comments),

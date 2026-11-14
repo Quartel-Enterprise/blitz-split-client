@@ -33,6 +33,7 @@ val profileModule = module {
             observeProfileShareLink = get(),
             observePendingProfileChanges = get(),
             observePaymentKeys = get(),
+            observePayingMethods = get(),
             observePendingPaymentKeyChanges = get(),
             observeSyncState = get(),
             observeThemePreference = get(),

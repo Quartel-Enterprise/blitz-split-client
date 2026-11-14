@@ -15,6 +15,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PaidWith
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
@@ -1075,6 +1076,11 @@ class SplitBillUiStateTest {
         isDeleting = isDeleting,
         isLoaded = isLoaded,
         openedInputs = null,
+        paidWith = PaidWith(
+            methods = emptyList(),
+            methodId = null,
+            openedMethodId = null,
+        ),
     )
 
     private companion object {

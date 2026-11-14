@@ -26,7 +26,10 @@ internal suspend fun CreateExpense.saveNew(
     spentAt = state.spentAt,
 )
 
-// Why: "Salvar" on "Editar conta": the form as typed, over the bill it was opened for.
+/*
+ * Why: "Salvar" on "Editar conta": the form as typed, over the bill it was opened for. A bill whose only change is the
+ * person's own "Paid with" stays as it was, so the group sees no edit of it.
+ */
 internal suspend fun UpdateExpense.saveEdit(
     expenseId: String,
     groupId: String,
@@ -34,7 +37,7 @@ internal suspend fun UpdateExpense.saveEdit(
     amountMinor: Long,
     payers: List<ExpensePayer>,
     shares: List<ExpenseShare>,
-): Result<Unit> = invoke(
+): Result<Unit> = if (state.isOnlyPaidWithChanged) Result.success(Unit) else invoke(
     expenseId = expenseId,
     groupId = groupId,
     description = state.description,

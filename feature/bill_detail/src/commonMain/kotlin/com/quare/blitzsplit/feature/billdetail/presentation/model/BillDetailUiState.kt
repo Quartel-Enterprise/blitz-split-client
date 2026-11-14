@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentRules
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
@@ -76,6 +77,8 @@ data class BillDetailUiState(
     val viewedAttachmentId: String?,
     // Why: a photo picked and being made ready, which takes a moment on a large one.
     val isAddingPhoto: Boolean,
+    // Why: "Paid with", the method this device's user marked the bill with; only they see it, null for none.
+    val paidWith: PayingMethod?,
 ) {
     // Why: "Ana pagou" opens Ana's profile; several payers each have their row in the split, which opens them instead.
     val lonePayer: BillPayer?

@@ -20,6 +20,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PaidWith
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
@@ -96,6 +97,11 @@ internal fun createInitialBillState(
         isDeleting = false,
         isLoaded = false,
         openedInputs = null,
+        paidWith = PaidWith(
+            methods = emptyList(),
+            methodId = null,
+            openedMethodId = null,
+        ),
     )
 }
 

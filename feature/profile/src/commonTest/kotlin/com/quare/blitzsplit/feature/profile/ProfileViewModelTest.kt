@@ -14,6 +14,8 @@ import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePayingMethodsUseCase
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AppDownloadSource
@@ -108,6 +110,7 @@ class ProfileViewModelTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var profiles: FakeProfileRepository
     private lateinit var paymentKeys: FakePaymentKeyRepository
+    private val payingMethods = FakePayingMethodRepository()
     private lateinit var notificationPreferences: FakeNotificationPreferencesRepository
 
     // Why: Notifications' "Push notifications" switch of this device, on unless a test turns it off.
@@ -7064,6 +7067,7 @@ class ProfileViewModelTest {
             observeProfileShareLink = ObserveProfileShareLinkUseCase(profiles),
             observePendingProfileChanges = ObservePendingProfileChangesUseCase(profiles),
             observePaymentKeys = ObservePaymentKeysUseCase(paymentKeys),
+            observePayingMethods = ObservePayingMethodsUseCase(payingMethods),
             observePendingPaymentKeyChanges = ObservePendingPaymentKeyChangesUseCase(paymentKeys),
             observeSyncState = ObserveSyncState { this@ProfileViewModelTest.syncState },
             observeThemePreference = ObserveThemePreference { storedTheme.filterNotNull() },

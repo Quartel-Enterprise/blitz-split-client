@@ -71,6 +71,11 @@ sealed interface SplitBillUiEvent : UiEvent {
     // Why: "Várias pessoas pagaram" closed without "Pronto", which leaves who paid as it was.
     data object OnSeveralPayersDismissed : Payers
 
+    // Why: "Paid with", one of this device's user's own payment methods, or null for none.
+    data class OnPaidWithPicked(
+        val methodId: String?,
+    ) : Payers
+
     // Why: what "Quando" sends, its date and its time, which SpentAtPicking handles.
     sealed interface SpentAt : SplitBillUiEvent
 

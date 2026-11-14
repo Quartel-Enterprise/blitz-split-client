@@ -36,6 +36,7 @@ val billDetailModule = module {
             observeExpenses = get(),
             observeSettlements = get(),
             observeCategoryTree = get(),
+            observeBillPayingMethod = get(),
             observeBillComments = get(),
             observeBillHistory = get(),
             observeBillAttachments = get(),

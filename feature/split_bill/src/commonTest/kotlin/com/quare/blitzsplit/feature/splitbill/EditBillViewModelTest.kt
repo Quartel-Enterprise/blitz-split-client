@@ -1501,6 +1501,7 @@ class EditBillViewModelTest {
             navigator.navigate(screen)
         }
         viewModel = SplitBillViewModel(
+            paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { name, params -> trackedEvents += name to params },
             route = screen,
             navigator = navigator,

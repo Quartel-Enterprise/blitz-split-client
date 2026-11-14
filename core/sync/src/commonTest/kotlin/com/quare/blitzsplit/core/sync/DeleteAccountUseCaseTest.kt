@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
@@ -88,6 +89,7 @@ class DeleteAccountUseCaseTest {
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
                 categoryTermRepository = FakeCategoryTermRepository(),
+                payingMethodRepository = FakePayingMethodRepository(),
                 billCommentRepository = FakeBillCommentRepository(),
                 billAttachmentRepository = FakeBillAttachmentRepository(),
                 activityRepository = FakeActivityRepository(),

@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.expenses.export.groupCategory
 import com.quare.blitzsplit.core.expenses.export.saoPaulo
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -250,6 +251,7 @@ class ExportGroupUseCaseTest {
         expenses: List<Expense> = emptyList(),
         settlements: List<Settlement> = emptyList(),
         categories: List<GroupCategory> = emptyList(),
+        payingMethods: FakePayingMethodRepository = FakePayingMethodRepository(),
         nowMillis: Long = NOV_14_AFTERNOON,
         timeZone: TimeZone = TimeZone.UTC,
     ) {
@@ -258,6 +260,7 @@ class ExportGroupUseCaseTest {
             expenseRepository = FakeExpenseRepository(initialExpenses = expenses),
             settlementRepository = FakeSettlementRepository(initialSettlements = settlements),
             categoryRepository = FakeCategoryRepository(initialGroupCategories = categories),
+            payingMethodRepository = payingMethods,
             currentTimeZone = { timeZone },
             currentTimeMillis = { nowMillis },
             encodeDispatcher = UnconfinedTestDispatcher(),
