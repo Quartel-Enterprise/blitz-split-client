@@ -98,6 +98,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     sits 1.7 from the Dynamic red's, as no red at tone 90 can sit further from it. The avatars share the values of the
     category color of the same hue (Blue, Peach = Orange, Green, Lilac = Purple, Sand = Yellow), and what shows a theme
     color (Activity's badge of a bill on the web) takes the theme's token, never an avatar or category color.
+    The person's own custom colors (see split-bill.md) are the one exception: they pick any hue, a theme-like one
+    included, on purpose. Their tones aren't written per platform but derived from the base in the shared code
+    (`CustomColor.toTones`), each lightness searched for its contrast: the badge's content at 7:1 on it, the data tone
+    at 4.5:1 on a light card and 7:1 on a dark one.
   - Every text reads at 4.5:1 or more on what is behind it, and a dot, an icon or a field's edge that carries meaning
     at 3:1 (WCAG AA), in light and dark. A filled button's label takes the color made for its fill: on the dark accent
     `#95CDF7` it is `#00344E` (the system's white reads at 1.7:1, so every prominent button on Apple sets

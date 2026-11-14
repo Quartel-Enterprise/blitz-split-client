@@ -1,7 +1,8 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -290,7 +291,12 @@ sealed interface SplitBillUiEvent : UiEvent {
     ) : Categories
 
     data class OnCategoryColorPicked(
-        val color: CategoryColor,
+        val color: CategoryTint,
+    ) : Categories
+
+    // Why: the person's own colors in the form's "Color" ("+", "New color", a long press to delete).
+    data class OnCustomColor(
+        val event: CustomColorEvent,
     ) : Categories
 
     data object OnCategoryFormSaveClicked : Categories

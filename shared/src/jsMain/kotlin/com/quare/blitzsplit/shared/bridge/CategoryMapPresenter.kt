@@ -2,8 +2,8 @@
 
 package com.quare.blitzsplit.shared.bridge
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -109,6 +109,8 @@ class JsCategoryMapState(
     val categoryDeletion: JsCategoryDeletion?,
     // Why: every CategoryIcon's code, in the order "Nova categoria" offers them.
     val icons: Array<String>,
+    // Why: the person's own colors in "Change the color of Food" and the form's "Color".
+    val customColors: JsCustomColors,
 )
 
 class JsCategoryMapAction(
@@ -119,6 +121,9 @@ class JsCategoryMapAction(
 class CategoryMapPresenter {
     private val holder = ViewModelHolder(CategoryMapViewModel::class) { KoinPlatform.getKoin().get() }
     private val viewModel get() = holder.viewModel
+
+    val customColors: JsCustomColorActions =
+        JsCustomColorActions { viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(it)) }
 
     fun observeState(onChange: (JsCategoryMapState) -> Unit): JsWatch {
         val watch = FlowWatcher(viewModel.uiState.map(::toJsMapState)).observe(onChange)
@@ -243,7 +248,7 @@ class CategoryMapPresenter {
     }
 
     fun pickColor(code: String) {
-        val color = CategoryColor.fromCodeOrNull(code) ?: return
+        val color = CategoryTint.fromCodeOrNull(code) ?: return
         viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(color))
     }
 
@@ -252,7 +257,7 @@ class CategoryMapPresenter {
         categoryKey: String,
         code: String?,
     ) {
-        viewModel.onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(categoryKey, CategoryColor.fromCodeOrNull(code)))
+        viewModel.onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(categoryKey, CategoryTint.fromCodeOrNull(code)))
     }
 
     fun save() {
@@ -347,6 +352,7 @@ private fun toJsMapState(state: CategoryMapUiState): JsCategoryMapState {
         categoryForm = state.categoryEditor?.let(::toJsCategoryForm),
         categoryDeletion = state.categoryDeletion?.let(::toJsCategoryDeletion),
         icons = CategoryIcon.entries.map { it.code }.toTypedArray(),
+        customColors = toJsCustomColors(state.customColors),
     )
 }
 

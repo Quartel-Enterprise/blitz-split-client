@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Invite
@@ -526,7 +527,7 @@ class JoinGroupUseCaseTest {
                 expenseRepository = FakeExpenseRepository(),
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
-                categoryTermRepository = FakeCategoryTermRepository(),
+                personalCategoryData = PersonalCategoryData(FakeCategoryTermRepository(), FakeCustomColorRepository()),
                 billCommentRepository = FakeBillCommentRepository(),
                 billAttachmentRepository = FakeBillAttachmentRepository(),
                 activityRepository = FakeActivityRepository(),

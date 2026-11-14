@@ -4,7 +4,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.AppCategoryColorLocalD
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapper
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.provider.room.entity.AppCategoryColorEntity
@@ -30,18 +30,18 @@ class CategoryRepositoryImpl(
         .distinctUntilChanged()
 
     // Why: a color this version doesn't know is left out, so the category reads as the app's default.
-    override fun observeAppColors(): Flow<Map<String, CategoryColor>> = appColorLocal
+    override fun observeAppColors(): Flow<Map<String, CategoryTint>> = appColorLocal
         .observeColors()
         .map { entities ->
             entities
                 .mapNotNull { entity ->
-                    CategoryColor.fromCodeOrNull(entity.color)?.let { entity.categoryKey to it }
+                    CategoryTint.fromCodeOrNull(entity.color)?.let { entity.categoryKey to it }
                 }.toMap()
         }.distinctUntilChanged()
 
     override suspend fun saveAppCategoryColor(
         categoryKey: String,
-        color: CategoryColor?,
+        color: CategoryTint?,
     ): Result<Unit> = suspendRunCatching {
         if (color == null) {
             appColorLocal.clearColor(categoryKey)

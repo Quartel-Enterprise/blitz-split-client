@@ -1,11 +1,13 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTermChange
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -13,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
@@ -27,6 +30,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.createFakeCustomColorUseCases
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
@@ -272,6 +276,35 @@ class BillCategoryViewModelTest {
         assertNull(state.categoryPicker)
         assertNull(state.categoryForm)
     }
+
+    @Test
+    fun `GIVEN a new category WHEN adding a color from its form THEN the form holds it and the palette has it`() =
+        runTest {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+            viewModel.onEvent(
+                SplitBillUiEvent.OnNewCategoryClicked(
+                    parentId = null,
+                    name = "Pet",
+                ),
+            )
+            val current = viewModel.uiState.value.categoryForm!!
+                .color
+            viewModel.onEvent(
+                SplitBillUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(current, categoryKey = null)),
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnCustomColor(CustomColorEvent.OnHexChanged("#3A7BD5")))
+            viewModel.onEvent(SplitBillUiEvent.OnCustomColor(CustomColorEvent.OnSaveClicked))
+
+            // Then
+            val custom = CustomColor(0x3A7BD5)
+            val state = viewModel.uiState.value
+            assertEquals(custom.tint, state.categoryForm?.color)
+            assertEquals(listOf(custom), state.customColors.palette)
+        }
 
     @Test
     fun `GIVEN a name already in the same category WHEN typing it THEN Salvar waits elsewhere it does not`() = runTest {
@@ -1129,6 +1162,7 @@ class BillCategoryViewModelTest {
                 observeCategoryMap = ObserveCategoryMapUseCase(terms),
                 saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
                 deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
+                customColors = createFakeCustomColorUseCases(),
             ),
             saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = OfferCategoryTeachUseCase(teach),

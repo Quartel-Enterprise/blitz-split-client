@@ -277,4 +277,21 @@
     <string name="designsystem_bill_menu_share">Teilen</string>
     <string name="designsystem_bill_menu_delete">Löschen</string>
     <string name="designsystem_bill_menu_options">Optionen für %s</string>
+    <string name="designsystem_custom_color_add">Farbe hinzufügen</string>
+    <string name="designsystem_custom_color_title">Neue Farbe</string>
+    <string name="designsystem_custom_color_shade">Sättigung und Helligkeit</string>
+    <string name="designsystem_custom_color_hue">Farbton</string>
+    <string name="designsystem_custom_color_hex">Hex-Code</string>
+    <string name="designsystem_custom_color_hex_error">Gib einen Code wie #3A7BD5 ein</string>
+    <string name="designsystem_custom_color_rgb_error">Jeder Wert liegt zwischen 0 und 255</string>
+    <string name="designsystem_custom_color_save">Hinzufügen</string>
+    <string name="designsystem_custom_color_label">Eigene Farbe %1$s</string>
+    <string name="designsystem_custom_color_full">Deine Palette ist voll: Halte eine deiner Farben gedrückt, um sie zu löschen.</string>
+    <string name="designsystem_custom_color_hint">Halte eine deiner Farben gedrückt, um sie zu löschen.</string>
+    <string name="designsystem_custom_color_delete_title">Diese Farbe löschen?</string>
+    <string name="designsystem_custom_color_delete_message">Sie verschwindet auf all deinen Geräten aus deiner Palette.</string>
+    <string name="designsystem_custom_color_delete">Löschen</string>
+    <string name="designsystem_custom_color_in_use_title">Diese Farbe wird verwendet</string>
+    <string name="designsystem_custom_color_in_use_message">%1$s verwendet diese Farbe. Ändere zuerst deren Farbe und lösche diese dann.</string>
+    <string name="designsystem_custom_color_ok">OK</string>
 </resources>

@@ -11,4 +11,8 @@
     <string name="designsystem_photo_crop_confirm">Hecho</string>
     <string name="designsystem_category_icon">Icono</string>
     <string name="designsystem_category_parent_help_sub">Una subcategoría usa el icono de %s.</string>
+    <string name="designsystem_custom_color_add">Añadir color</string>
+    <string name="designsystem_custom_color_save">Añadir</string>
+    <string name="designsystem_custom_color_full">Tu paleta está llena: mantén pulsado uno de tus colores para eliminarlo.</string>
+    <string name="designsystem_custom_color_hint">Mantén pulsado uno de tus colores para eliminarlo.</string>
 </resources>

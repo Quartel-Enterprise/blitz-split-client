@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
@@ -22,7 +22,7 @@ class SaveGroupCategoryUseCase(
         name: String,
         parentId: String?,
         icon: CategoryIcon,
-        color: CategoryColor,
+        color: CategoryTint,
         createdByMemberId: String?,
     ): Result<String> {
         val trimmed = CategoryRules.toCapped(name.trim()).trimEnd()

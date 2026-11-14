@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, CloudOff, Ellipsis, FolderPlus, Palette, Pencil, Plus, Search, SearchX, Tag } from 'lucide-react'
+import { ArrowLeft, CloudOff, Ellipsis, FolderPlus, Pencil, Plus, Search, SearchX, Tag } from 'lucide-react'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import {
@@ -6,6 +6,7 @@ import {
   type JsCategory,
   type JsCategoryMapAction,
   type JsCategoryMapState,
+  type JsCustomColors,
   type JsMapRow,
   type JsMapSearchResult,
   type JsMapSection,
@@ -16,16 +17,16 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { LoadingRegion, Skeleton, SkeletonCard, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, wordGap } from '@/i18n'
-import { categoryColorCodes, categoryColorLabel, categoryStyle } from '@/lib/avatar'
 import { CategoryBadge, categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { CategoryFormDialog } from './CategoryFormDialog'
+import { ChangeColorPopover } from './ChangeColorPopover'
 import { TermDialog } from './TermDialog'
 import { PendingDot } from '@/components/common'
 
@@ -143,11 +144,11 @@ export function CategoryMapScreen() {
                 </button>
               ))}
             </nav>
-            <SectionCard presenter={presenter} section={selected} canCreateCategory={state.canCreateCategory} isDetail />
+            <SectionCard presenter={presenter} section={selected} canCreateCategory={state.canCreateCategory} customColors={state.customColors} isDetail />
           </div>
         ) : (
           state.sections.map((section) => (
-            <SectionCard key={section.category.id} presenter={presenter} section={section} canCreateCategory={state.canCreateCategory} />
+            <SectionCard key={section.category.id} presenter={presenter} section={section} canCreateCategory={state.canCreateCategory} customColors={state.customColors} />
           ))
         )}
       </main>
@@ -243,11 +244,13 @@ function SectionCard({
   presenter,
   section,
   canCreateCategory,
+  customColors,
   isDetail = false,
 }: {
   presenter: CategoryMapPresenter
   section: JsMapSection
   canCreateCategory: boolean
+  customColors: JsCustomColors
   isDetail?: boolean
 }) {
   return (
@@ -262,24 +265,7 @@ function SectionCard({
           </span>
         </div>
         {section.category.appKey != null && section.category.parentId == null && !section.category.isOther && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={t('categoryMap_changeColor', { name: categoryName(section.category) })}>
-                <Palette />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {categoryColorCodes.map((code) => (
-                <DropdownMenuItem key={code} onSelect={() => presenter.pickAppCategoryColor(section.category.appKey!, code)}>
-                  <span aria-hidden style={categoryStyle(code)} className="avatar size-4 rounded-full" />
-                  {categoryColorLabel(code)}
-                  {code === section.category.color && <Check aria-hidden className="ml-auto size-4" />}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => presenter.pickAppCategoryColor(section.category.appKey!, null)}>{t('categoryMap_restoreColor')}</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ChangeColorPopover presenter={presenter} category={section.category} customColors={customColors} />
         )}
         {canCreateCategory && section.category.isGroupCategory && (
           <Button variant="ghost" size="icon" aria-label={t('splitBill_categoryEdit', { name: categoryName(section.category) })} onClick={() => presenter.editCategory(section.category.id)}>

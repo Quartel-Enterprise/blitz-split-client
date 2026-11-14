@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.feature.splitbill.ItemsEditorContent
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillContent
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -175,6 +176,7 @@ private fun SampleTrip.splitBillState(
         categoryPicker = null,
         categoryForm = null,
         categoryDeletion = null,
+        customColors = CustomColorState.idle,
         receipt = receipt,
         receiptCategoryId = null,
         receiptRequest = null,

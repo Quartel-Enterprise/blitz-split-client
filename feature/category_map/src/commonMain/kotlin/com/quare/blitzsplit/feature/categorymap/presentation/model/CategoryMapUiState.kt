@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.model
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
@@ -39,6 +40,8 @@ data class CategoryMapUiState(
     val isOnline: Boolean,
     // Why: with Google or Apple the map reaches the person's other devices; otherwise it stays on this one (9.1h).
     val isConnected: Boolean,
+    // Why: the person's own colors in "Change the color of Food" and the form's "Color": the palette, "New color" and deleting one.
+    val customColors: CustomColorState,
 ) {
     /*
      * Why: the terms as the map shows them: one whose group category was deleted reads as its parent, or Outros, as
@@ -211,5 +214,26 @@ data class CategoryMapUiState(
         if (key.startsWith(query)) return 0
         val index = key.indexOf(" $query")
         return if (index >= 0) index + 1 else null
+    }
+
+    companion object {
+        // Why: nothing read yet, so the map shimmers until the terms, the categories and the account come.
+        val initial = CategoryMapUiState(
+            isLoaded = false,
+            map = CategoryMap.of(emptyList()),
+            categories = CategoryTree.appOnly,
+            groups = emptyList(),
+            query = "",
+            selectedCategoryId = null,
+            termForm = null,
+            removedTerm = null,
+            isRestoreConfirmOpen = false,
+            categoryForm = null,
+            categoryDeletion = null,
+            categoryBills = null,
+            isOnline = true,
+            isConnected = false,
+            customColors = CustomColorState.idle,
+        )
     }
 }

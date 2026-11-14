@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.contacts.testing.FakeHiddenContactRepository
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
@@ -17,6 +18,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -97,6 +99,7 @@ class SyncCoordinatorTest {
     private lateinit var billAttachments: FakeBillAttachmentRepository
     private lateinit var pushDevices: FakePushDeviceRepository
     private val categoryTerms = FakeCategoryTermRepository()
+    private val customColors = FakeCustomColorRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -196,6 +199,57 @@ class SyncCoordinatorTest {
 
         // Then
         assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `GIVEN only a custom color waiting to go up WHEN observing the sync state THEN it is pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            online = false,
+        )
+        customColors.add(teal, updatedAt = 1L)
+
+        // When
+        val state = coordinator.observeState().first()
+
+        // Then
+        assertEquals(SyncState.PENDING, state)
+    }
+
+    @Test
+    fun `GIVEN an online start already synced WHEN a custom color is added THEN pushes the palette`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        coordinator.start()
+        runCurrent()
+        val uploadsBefore = customColors.uploadedUserIds.size
+
+        // When
+        customColors.add(teal, updatedAt = 1L)
+        runCurrent()
+
+        // Then
+        assertEquals(uploadsBefore + 1, customColors.uploadedUserIds.size)
+        assertEquals(FakeAccountRepository.ANONYMOUS_USER_ID, customColors.uploadedUserIds.last())
+        assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+    }
+
+    @Test
+    fun `GIVEN a Google account with custom colors WHEN signing out THEN erases the palette`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = google,
+        )
+        customColors.add(teal, updatedAt = 1L)
+
+        // When
+        coordinator.signOut()
+
+        // Then
+        assertTrue(customColors.isCleared)
+        assertTrue(customColors.colors.value.isEmpty())
     }
 
     @Test
@@ -7168,6 +7222,7 @@ class SyncCoordinatorTest {
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
     private val google = AccountStatus.Connected(FakeAccountRepository.CONNECTED_USER_ID, AccountProvider.GOOGLE)
     private val noConnection = IllegalStateException("no connection")
+    private val teal = CustomColor(0x1ABC9C)
     private val noAnswer = HttpRequestException(
         message = "timeout",
         request = HttpRequestBuilder().apply { url("https://example.supabase.co/rest/v1/expenses?id=eq.bill-42") },
@@ -7410,7 +7465,7 @@ class SyncCoordinatorTest {
             expenseRepository = RecordingExpenseRepository(expenses, calls),
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             categoryRepository = RecordingCategoryRepository(categories, calls),
-            categoryTermRepository = categoryTerms,
+            personalCategoryData = PersonalCategoryData(categoryTerms, customColors),
             billCommentRepository = RecordingBillCommentRepository(
                 delegate = if (commentQueuedDuringFirstPush) {
                     CommentDuringFirstPushBillCommentRepository(

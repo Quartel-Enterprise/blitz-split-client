@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.core.expenses.testing
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +14,7 @@ class FakeCategoryRepository(
     initialGroupCategories: List<GroupCategory> = emptyList(),
 ) : CategoryRepository {
     val groupCategories = MutableStateFlow(initialGroupCategories)
-    val appColors = MutableStateFlow(emptyMap<String, CategoryColor>())
+    val appColors = MutableStateFlow(emptyMap<String, CategoryTint>())
     val hasPendingChanges = MutableStateFlow(false)
     val pendingVersions = MutableStateFlow(emptyList<Long>())
     val uploadedUserIds = mutableListOf<String>()
@@ -29,11 +29,11 @@ class FakeCategoryRepository(
 
     override fun observeAllGroupCategories(): Flow<List<GroupCategory>> = groupCategories
 
-    override fun observeAppColors(): Flow<Map<String, CategoryColor>> = appColors
+    override fun observeAppColors(): Flow<Map<String, CategoryTint>> = appColors
 
     override suspend fun saveAppCategoryColor(
         categoryKey: String,
-        color: CategoryColor?,
+        color: CategoryTint?,
     ): Result<Unit> {
         saveError?.let { return Result.failure(it) }
         appColors.update { if (color == null) it - categoryKey else it + (categoryKey to color) }
@@ -69,7 +69,7 @@ class FakeCategoryRepository(
                         name = name,
                         parentId = parentId,
                         icon = icon?.let(CategoryIcon::fromCodeOrNull),
-                        color = CategoryColor.fromCodeOrNull(color),
+                        color = CategoryTint.fromCodeOrNull(color),
                         isPending = true,
                     )
                 } else {

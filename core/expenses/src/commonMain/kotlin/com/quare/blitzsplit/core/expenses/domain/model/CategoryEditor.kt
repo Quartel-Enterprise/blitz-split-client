@@ -36,7 +36,7 @@ data class CategoryEditor(
         get() = form.canSaveIn(categories)
 
     // Why: the preview's color: its parent's for a subcategory, the one picked in the form for a main category.
-    val color: CategoryColor
+    val color: CategoryTint
         get() = parent?.color ?: form.color
 
     // Why: "Sem internet: a categoria fica salva no aparelho e sobe ao reconectar." (7.8d).

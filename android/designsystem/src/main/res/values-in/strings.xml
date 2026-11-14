@@ -268,4 +268,21 @@
     <string name="designsystem_bill_menu_share">Bagikan</string>
     <string name="designsystem_bill_menu_delete">Hapus</string>
     <string name="designsystem_bill_menu_options">Opsi untuk %s</string>
+    <string name="designsystem_custom_color_add">Tambah warna</string>
+    <string name="designsystem_custom_color_title">Warna baru</string>
+    <string name="designsystem_custom_color_shade">Saturasi dan kecerahan</string>
+    <string name="designsystem_custom_color_hue">Rona</string>
+    <string name="designsystem_custom_color_hex">Kode hex</string>
+    <string name="designsystem_custom_color_hex_error">Masukkan kode seperti #3A7BD5</string>
+    <string name="designsystem_custom_color_rgb_error">Setiap nilai dari 0 sampai 255</string>
+    <string name="designsystem_custom_color_save">Tambah</string>
+    <string name="designsystem_custom_color_label">Warna kustom %1$s</string>
+    <string name="designsystem_custom_color_full">Palet kamu penuh: tekan lama salah satu warnamu untuk menghapusnya.</string>
+    <string name="designsystem_custom_color_hint">Tekan lama salah satu warnamu untuk menghapusnya.</string>
+    <string name="designsystem_custom_color_delete_title">Hapus warna ini?</string>
+    <string name="designsystem_custom_color_delete_message">Warna ini akan hilang dari paletmu di semua perangkatmu.</string>
+    <string name="designsystem_custom_color_delete">Hapus</string>
+    <string name="designsystem_custom_color_in_use_title">Warna ini sedang dipakai</string>
+    <string name="designsystem_custom_color_in_use_message">%1$s memakai warna ini. Ganti warnanya dulu, lalu hapus warna ini.</string>
+    <string name="designsystem_custom_color_ok">Oke</string>
 </resources>

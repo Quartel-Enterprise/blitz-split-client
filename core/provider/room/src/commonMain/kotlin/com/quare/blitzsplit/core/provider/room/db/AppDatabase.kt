@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentLikeDao
 import com.quare.blitzsplit.core.provider.room.dao.CategoryTermDao
+import com.quare.blitzsplit.core.provider.room.dao.CustomColorDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.core.provider.room.entity.BillAttachmentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentEntity
 import com.quare.blitzsplit.core.provider.room.entity.BillCommentLikeEntity
 import com.quare.blitzsplit.core.provider.room.entity.CategoryTermEntity
+import com.quare.blitzsplit.core.provider.room.entity.CustomColorEntity
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.ExpenseEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupCategoryEntity
@@ -83,8 +85,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         PushSettingsEntity::class,
         AppCategoryColorEntity::class,
         LegalDocumentEntity::class,
+        CustomColorEntity::class,
     ],
-    version = 47,
+    version = 48,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -275,6 +278,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 46,
             to = 47,
         ),
+        AutoMigration(
+            from = 47,
+            to = 48,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -322,4 +329,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun pushSettingsDao(): PushSettingsDao
 
     abstract fun legalDocumentDao(): LegalDocumentDao
+
+    abstract fun customColorDao(): CustomColorDao
 }

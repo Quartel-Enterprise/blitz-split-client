@@ -7,19 +7,21 @@ package com.quare.blitzsplit.core.expenses.domain.model
  */
 enum class CategoryColor(
     val code: String,
+    // Why: where "+"'s picker starts from a category with this color: its light data tone, the hue at full strength.
+    val baseRgb: Int,
 ) {
-    BLUE("blue"),
-    ORANGE("orange"),
-    GREEN("green"),
-    PURPLE("purple"),
-    YELLOW("yellow"),
-    RED("red"),
-    TEAL("teal"),
-    PINK("pink"),
-    INDIGO("indigo"),
-    LIME("lime"),
-    BROWN("brown"),
-    GRAY("gray"),
+    BLUE("blue", 0x2A75DC),
+    ORANGE("orange", 0xAE650C),
+    GREEN("green", 0x418642),
+    PURPLE("purple", 0x8E65B8),
+    YELLOW("yellow", 0x857800),
+    RED("red", 0xCC4A57),
+    TEAL("teal", 0x00867C),
+    PINK("pink", 0xB55882),
+    INDIGO("indigo", 0x6E6EC3),
+    LIME("lime", 0x678020),
+    BROWN("brown", 0x986E53),
+    GRAY("gray", 0x74777C),
     ;
 
     companion object {

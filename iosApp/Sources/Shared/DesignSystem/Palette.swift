@@ -129,6 +129,59 @@ extension AvatarColor {
     }
 }
 
+/// A category's color, named or custom: a named one has its tones below, a custom one derives them in the shared code
+/// (`CustomColor.toTones`), so every platform draws the same tones and its text always reads.
+extension CategoryTint {
+    var container: Color {
+        if let custom = self as? CategoryTintCustom {
+            let tones = custom.color.toTones()
+            return Color(light: UInt32(tones.lightContainer), dark: UInt32(tones.darkContainer))
+        }
+        return named.container
+    }
+
+    var content: Color {
+        if let custom = self as? CategoryTintCustom {
+            let tones = custom.color.toTones()
+            return Color(light: UInt32(tones.lightContent), dark: UInt32(tones.darkContent))
+        }
+        return named.content
+    }
+
+    var data: Color {
+        if let custom = self as? CategoryTintCustom {
+            let tones = custom.color.toTones()
+            return Color(light: UInt32(tones.lightData), dark: UInt32(tones.darkData))
+        }
+        return named.data
+    }
+
+    /// What a screen reader says for the swatch: the named color, or "Custom color #3A7BD5".
+    var label: String {
+        if let custom = self as? CategoryTintCustom {
+            return String(localized: "Custom color \(custom.color.hex)", bundle: .appLanguage)
+        }
+        return named.label
+    }
+
+    private var named: CategoryColor {
+        (self as? CategoryTintNamed)?.color ?? .blue
+    }
+
+    /// Kotlin's equality, which Swift doesn't see through the protocol.
+    func isSame(as other: CategoryTint?) -> Bool {
+        guard let other else { return false }
+        return (self as AnyObject).isEqual(other as AnyObject)
+    }
+}
+
+extension CustomColor {
+    /// The color as typed or picked, drawn as is: the "New color" preview and the gradient's handle.
+    var raw: Color {
+        Color(light: UInt32(rgb), dark: UInt32(rgb))
+    }
+}
+
 /// The twelve category colors, with the same values on every platform (see the canvas rules).
 extension CategoryColor {
     var container: Color {

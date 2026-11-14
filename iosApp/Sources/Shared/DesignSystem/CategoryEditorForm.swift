@@ -81,7 +81,10 @@ struct CategoryEditorActions {
     let name: Binding<String>
     let parent: Binding<String?>
     let pickIcon: (CategoryIcon) -> Void
-    let pickColor: (CategoryColor) -> Void
+    let pickColor: (CategoryTint) -> Void
+    /// The person's own colors after the named ones in "Color".
+    let customColors: CustomColorState
+    let sendCustomColor: (CustomColorEvent) -> Void
     let save: () -> Void
     let dismiss: () -> Void
     let askToDelete: () -> Void
@@ -134,11 +137,12 @@ struct CategoryEditorForm<GroupField: View>: View {
                         .padding(.vertical, 4)
                     }
                     Section("Color") {
-                        LazyVGrid(columns: iconColumns, spacing: 8) {
-                            ForEach(CategoryColor.entries, id: \.self) { color in
-                                colorButton(color, isSelected: color == form.color)
-                            }
-                        }
+                        CategoryColorGrid(
+                            selected: form.color,
+                            customColors: actions.customColors,
+                            pick: actions.pickColor,
+                            send: actions.sendCustomColor,
+                        )
                         .padding(.vertical, 4)
                     }
                 }
@@ -189,7 +193,7 @@ struct CategoryEditorForm<GroupField: View>: View {
 
     /// The picked icon sits on the category's own color, as the preview and the saved badge draw it, so the grid
     /// never shows the accent as if it were the color.
-    private func iconButton(_ icon: CategoryIcon, color: CategoryColor, isSelected: Bool) -> some View {
+    private func iconButton(_ icon: CategoryIcon, color: CategoryTint, isSelected: Bool) -> some View {
         Button {
             actions.pickIcon(icon)
         } label: {
@@ -204,26 +208,6 @@ struct CategoryEditorForm<GroupField: View>: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(CategoryCopy.iconLabel(icon))
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-
-    private func colorButton(_ color: CategoryColor, isSelected: Bool) -> some View {
-        Button {
-            actions.pickColor(color)
-        } label: {
-            Circle()
-                .fill(color.container)
-                .frame(width: 36, height: 36)
-                .overlay {
-                    if isSelected {
-                        Image(systemName: "checkmark").font(.footnote.bold()).foregroundStyle(color.content)
-                    }
-                }
-                .overlay { Circle().strokeBorder(isSelected ? Palette.accent : .clear, lineWidth: 3) }
-                .frame(width: 44, height: 44)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(color.label)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 

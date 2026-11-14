@@ -1,14 +1,11 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorController
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
 import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
-import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
-import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.invoke
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
@@ -33,11 +30,8 @@ import kotlinx.coroutines.launch
 internal class CategoryEditing(
     private val uiState: MutableStateFlow<SplitBillUiState>,
     private val scope: CoroutineScope,
-    private val observeCategoryTree: ObserveCategoryTree,
+    private val useCases: BillCategoryUseCases,
     private val observeExpenses: ObserveExpenses,
-    private val observeCategoryMap: ObserveCategoryMap,
-    private val saveGroupCategory: SaveGroupCategory,
-    private val deleteGroupCategory: DeleteGroupCategory,
     private val emit: suspend (SplitBillUiAction) -> Unit,
     private val onCategoryChanged: () -> Unit,
     private val trackEvent: TrackEvent,
@@ -46,14 +40,26 @@ internal class CategoryEditing(
     var terms: List<CategoryTerm> = DefaultCategoryTerms.terms
         private set
 
+    // Why: "Add" in "New color" gives the color to the form open on screen.
+    private val customColors = CustomColorController(
+        useCases = useCases.customColors,
+        scope = scope,
+        onPicked = { tint, _ -> uiState.update { it.copy(categoryForm = it.categoryForm?.withColor(tint)) } },
+    )
+
     // Why: the group's categories and how its bills use them, as a sync or a change here moves them.
     fun observe(groupId: Flow<String>) {
+        customColors.observe()
+        customColors.state
+            .onEach { colors -> uiState.update { it.copy(customColors = colors) } }
+            .launchIn(scope)
         groupId
-            .flatMapLatest { id -> combine(observeCategoryTree(id), observeExpenses(id), ::Pair) }
+            .flatMapLatest { id -> combine(useCases.observeCategoryTree(id), observeExpenses(id), ::Pair) }
             .onEach { (tree, expenses) -> change { it.withCategories(tree, expenses).withCategoryMatched(terms) } }
             .launchIn(scope)
         // Why: a term changed in the map, on this device or synced, chooses again while the category isn't picked.
-        observeCategoryMap()
+        useCases
+            .observeCategoryMap()
             .onEach { map ->
                 terms = map.terms.map { it.asTerm }
                 change { it.withCategoryMatched(terms) }
@@ -135,6 +141,8 @@ internal class CategoryEditing(
                 state.copy(categoryForm = state.categoryForm?.withColor(event.color))
             }
 
+            is SplitBillUiEvent.OnCustomColor -> customColors.onEvent(event.event)
+
             SplitBillUiEvent.OnCategoryFormSaveClicked -> {
                 trackEvent("category_save_clicked", mapOf("source" to SPLIT_BILL_SOURCE))
                 save()
@@ -190,7 +198,8 @@ internal class CategoryEditing(
         uiState.update { it.copy(categoryForm = form.copy(isSaving = true)) }
         val meId = state.people.firstOrNull { it.isMe }?.id
         scope.launch {
-            saveGroupCategory(form, meId)
+            useCases
+                .saveGroupCategory(form, meId)
                 .onSuccess { id ->
                     trackEvent(
                         "category_saved",
@@ -236,7 +245,8 @@ internal class CategoryEditing(
         val wasBills = before.category.id == deletion.category.id || before.category.parentId == deletion.category.id
         uiState.update { it.copy(categoryDeletion = deletion.copy(isDeleting = true)) }
         scope.launch {
-            deleteGroupCategory(deletion.category.id)
+            useCases
+                .deleteGroupCategory(deletion.category.id)
                 .onSuccess {
                     uiState.update { state ->
                         state.copy(

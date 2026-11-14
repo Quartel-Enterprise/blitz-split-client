@@ -413,6 +413,8 @@ struct CategoryFormView: View {
                 ),
                 pickIcon: { model.send(SplitBillUiEventOnCategoryIconPicked(icon: $0)) },
                 pickColor: { model.send(SplitBillUiEventOnCategoryColorPicked(color: $0)) },
+                customColors: model.state.customColors,
+                sendCustomColor: { model.send(SplitBillUiEventOnCustomColor(event: $0)) },
                 save: { model.send(SplitBillUiEventOnCategoryFormSaveClicked.shared) },
                 dismiss: { model.send(SplitBillUiEventOnCategoryFormDismissed.shared) },
                 askToDelete: { model.send(SplitBillUiEventOnCategoryDeleteClicked.shared) },

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.BillItem
 import com.quare.blitzsplit.core.expenses.domain.model.BillItems
@@ -191,6 +192,7 @@ internal fun createPreviewBillState(
     categoryPicker = null,
     categoryForm = null,
     categoryDeletion = null,
+    customColors = CustomColorState.idle,
     receipt = receipt,
     receiptCategoryId = null,
     receiptRequest = null,

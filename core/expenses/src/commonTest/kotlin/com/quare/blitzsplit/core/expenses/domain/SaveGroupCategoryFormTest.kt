@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.invoke
 import kotlinx.coroutines.test.runTest
@@ -32,7 +33,15 @@ class SaveGroupCategoryFormTest {
         assertEquals("new-id", result.getOrThrow())
         assertEquals(
             listOf<List<Any?>>(
-                listOf(null, "group-2", "Feira", AppCategory.FOOD.key, CategoryIcon.FOOD, CategoryColor.BLUE, "me"),
+                listOf(
+                    null,
+                    "group-2",
+                    "Feira",
+                    AppCategory.FOOD.key,
+                    CategoryIcon.FOOD,
+                    CategoryColor.BLUE.tint,
+                    "me",
+                ),
             ),
             calls,
         )
@@ -52,7 +61,15 @@ class SaveGroupCategoryFormTest {
         // Then
         assertEquals(
             listOf<List<Any?>>(
-                listOf("feira", "group-2", "Feira", AppCategory.FOOD.key, CategoryIcon.FOOD, CategoryColor.BLUE, "ana"),
+                listOf(
+                    "feira",
+                    "group-2",
+                    "Feira",
+                    AppCategory.FOOD.key,
+                    CategoryIcon.FOOD,
+                    CategoryColor.BLUE.tint,
+                    "ana",
+                ),
             ),
             calls,
         )
@@ -82,7 +99,7 @@ class SaveGroupCategoryFormTest {
         name = "Feira",
         parentId = AppCategory.FOOD.key,
         icon = CategoryIcon.FOOD,
-        color = CategoryColor.BLUE,
+        color = CategoryColor.BLUE.tint,
         createdByMemberId = createdByMemberId,
         isSaving = false,
     )

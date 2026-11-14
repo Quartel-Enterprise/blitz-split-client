@@ -119,4 +119,8 @@ export const esES: Partial<Record<MessageKey, string>> = {
   splitBill_scanReceiptHelp: 'Envía la foto del recibo: rellena el importe, la fecha y la descripción.',
   profile_emailInfoBody: 'Aparece aquí para que sepas con qué cuenta has iniciado sesión. Las personas de tus grupos ven tu nombre y tu foto, nunca tu correo.',
   deleteAccount_keptComments: 'Tus comentarios y las fotos que has añadido, con tu nombre',
+  customColor_add: 'Añadir color',
+  customColor_save: 'Añadir',
+  customColor_full: 'Tu paleta está llena: mantén pulsado uno de tus colores para eliminarlo.',
+  customColor_hint: 'Mantén pulsado uno de tus colores para eliminarlo.',
 }

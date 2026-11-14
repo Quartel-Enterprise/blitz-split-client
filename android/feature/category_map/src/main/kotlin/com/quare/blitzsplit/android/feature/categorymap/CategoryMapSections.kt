@@ -50,6 +50,7 @@ import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.MapTerm
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -135,6 +136,7 @@ private fun SectionHeader(
         }
         ChangeColorButton(
             category = section.category,
+            customColors = state.customColors,
             onEvent = onEvent,
         )
         EditCategoryButton(
@@ -149,6 +151,7 @@ private fun SectionHeader(
 @Composable
 private fun ChangeColorButton(
     category: Category,
+    customColors: CustomColorState,
     onEvent: (CategoryMapUiEvent) -> Unit,
 ) {
     val app = category.app
@@ -169,6 +172,9 @@ private fun ChangeColorButton(
                 CategoryColorPicker(
                     selected = category.color,
                     onSelected = { onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(category.id, it)) },
+                    customColors = customColors,
+                    onCustomColor = { onEvent(CategoryMapUiEvent.OnCustomColor(it)) },
+                    categoryKey = category.id,
                 )
             },
             confirmButton = {
