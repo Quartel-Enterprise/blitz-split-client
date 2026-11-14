@@ -92,6 +92,12 @@ private fun Context.runProfileAction(action: ContactProfileUiAction): String? = 
         null
     }
 
+    // Why: the link alone, whose preview shows the person's name and photo.
+    is ContactProfileUiAction.ShareProfileLink -> {
+        shareText(action.link)
+        null
+    }
+
     is ContactProfileUiAction.ShowAddedToGroup -> getString(R.string.contacts_added, action.name, action.groupName)
 
     ContactProfileUiAction.ShowComingSoon -> getString(R.string.contacts_coming_soon)

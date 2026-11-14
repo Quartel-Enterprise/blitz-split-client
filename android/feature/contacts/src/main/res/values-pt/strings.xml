@@ -40,6 +40,7 @@
     <string name="contacts_close">Fechar</string>
 
     <string name="contacts_profile_back">Voltar para Contatos</string>
+    <string name="contacts_profile_share">Compartilhar perfil</string>
     <string name="contacts_profile_more">Mais opções</string>
     <string name="contacts_profile_meta_user">Usa o Bora Rachar · %s</string>
     <string name="contacts_profile_meta_guest">Convidado · ainda sem o app</string>

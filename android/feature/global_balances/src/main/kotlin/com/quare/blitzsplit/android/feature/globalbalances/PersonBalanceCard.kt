@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -246,40 +246,55 @@ private fun ActionsRow(
         if (row.isExpanded) R.string.global_balances_by_group_hide else R.string.global_balances_by_group_show,
         name,
     )
-    Row(
-        modifier = Modifier.padding(start = actionsInset - 12.dp),
+    /*
+     * Why: "Por grupo" first and the actions at the end of the line, and, where the card is too narrow for both (a phone
+     * lying down, a large font), the actions on a line of their own, never a button squeezed into a column with its
+     * label broken letter by letter (beta feedback of 2026-11-14).
+     */
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = actionsInset - 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         TextButton(
             onClick = { onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(row.id)) },
             modifier = Modifier.semantics { contentDescription = toggle },
         ) {
-            Text(stringResource(DesignR.string.designsystem_person_by_group))
+            Text(
+                text = stringResource(DesignR.string.designsystem_person_by_group),
+                maxLines = 1,
+            )
             Icon(
                 imageVector = if (row.isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp),
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
         PersonActionsRow(
             row = row,
             name = name,
             onEvent = onEvent,
+            modifier = Modifier.weight(1f),
         )
     }
 }
 
-// Why: Recebi and Cobrar for someone who owes you, else Acertar, in the row and in the pane beside the list.
+/*
+ * Why: Recebi and Cobrar for someone who owes you, else Acertar, in the row and in the pane beside the list, at the end
+ * of the line. One row, so the card's line moves both under "Por grupo" together where they don't fit beside it.
+ */
 @Composable
 internal fun PersonActionsRow(
     row: PersonRow,
     name: String,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (row.owesYou) {
@@ -288,14 +303,20 @@ internal fun PersonActionsRow(
                 onClick = { onEvent(GlobalBalancesUiEvent.OnReceivedClicked(row.id)) },
                 modifier = Modifier.semantics { contentDescription = received },
             ) {
-                Text(stringResource(R.string.global_balances_received))
+                Text(
+                    text = stringResource(R.string.global_balances_received),
+                    maxLines = 1,
+                )
             }
             val charge = stringResource(R.string.global_balances_charge_person, name)
             FilledTonalButton(
                 onClick = { onEvent(GlobalBalancesUiEvent.OnChargeClicked(row.id)) },
                 modifier = Modifier.semantics { contentDescription = charge },
             ) {
-                Text(stringResource(R.string.global_balances_charge))
+                Text(
+                    text = stringResource(R.string.global_balances_charge),
+                    maxLines = 1,
+                )
             }
         } else {
             val settle = stringResource(R.string.global_balances_settle_with, name)
@@ -303,7 +324,10 @@ internal fun PersonActionsRow(
                 onClick = { onEvent(GlobalBalancesUiEvent.OnSettleClicked(row.id)) },
                 modifier = Modifier.semantics { contentDescription = settle },
             ) {
-                Text(stringResource(R.string.global_balances_settle))
+                Text(
+                    text = stringResource(R.string.global_balances_settle),
+                    maxLines = 1,
+                )
             }
         }
     }
