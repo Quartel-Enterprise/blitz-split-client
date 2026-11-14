@@ -48,7 +48,9 @@ class JsPaidWith(
 
 internal fun toJsPaidWithOrNull(state: SplitBillUiState): JsPaidWith? = if (state.showsPaidWith) {
     JsPaidWith(
-        methods = state.paidWith.methods.map { it.toJsPayingMethod() }.toTypedArray(),
+        methods = state.paidWith.methods
+            .map { it.toJsPayingMethod() }
+            .toTypedArray(),
         methodId = state.paidWith.method?.id,
     )
 } else {

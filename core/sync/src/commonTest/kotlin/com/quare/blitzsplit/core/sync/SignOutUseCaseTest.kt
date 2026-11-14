@@ -7,8 +7,8 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
-import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupIncomeRepository
 import com.quare.blitzsplit.core.groups.testing.FakeGroupPinRepository
@@ -31,6 +31,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SignOutUseCaseTest {
     private val paymentKeys = FakePaymentKeyRepository()
@@ -38,6 +39,8 @@ class SignOutUseCaseTest {
     private lateinit var account: FakeAccountRepository
     private lateinit var profile: FakeProfileRepository
     private lateinit var useCase: SignOutUseCase
+
+    private val payingMethods = FakePayingMethodRepository()
 
     @Test
     fun `GIVEN a Google account WHEN signing out THEN goes back to local only and erases the profile`() = runTest {
@@ -50,6 +53,18 @@ class SignOutUseCaseTest {
         // Then
         assertEquals(AccountStatus.LocalOnly, account.status)
         assertNull(profile.profile.value)
+    }
+
+    @Test
+    fun `GIVEN payment methods on the device WHEN signing out THEN they are erased`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        useCase()
+
+        // Then
+        assertTrue(payingMethods.isCleared)
     }
 
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, photo = null)
@@ -73,7 +88,7 @@ class SignOutUseCaseTest {
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
                 categoryTermRepository = FakeCategoryTermRepository(),
-                payingMethodRepository = FakePayingMethodRepository(),
+                payingMethodRepository = payingMethods,
                 billCommentRepository = FakeBillCommentRepository(),
                 billAttachmentRepository = FakeBillAttachmentRepository(),
                 activityRepository = FakeActivityRepository(),

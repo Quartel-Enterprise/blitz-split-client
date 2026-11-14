@@ -22,6 +22,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemPersonRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PaidWith
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -202,6 +203,11 @@ internal fun createPreviewBillState(
     isDeleting = false,
     isLoaded = true,
     openedInputs = null,
+    paidWith = PaidWith(
+        methods = emptyList(),
+        methodId = null,
+        openedMethodId = null,
+    ),
 )
 
 internal fun createPreviewEqualEditor(

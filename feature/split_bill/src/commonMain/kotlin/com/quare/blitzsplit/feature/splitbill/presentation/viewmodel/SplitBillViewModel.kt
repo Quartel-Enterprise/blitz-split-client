@@ -113,8 +113,7 @@ class SplitBillViewModel(
 
     private val tracking = SplitFormTracking(uiState, trackEvent)
     private val spentAtPicking = SpentAtPicking(uiState, currentTimeMillis, currentTimeZone)
-
-    private val paidWith = PaidWithPicking(uiState, viewModelScope, route, paidWithUseCases, trackEvent)
+    private val paidWith = PaidWithPicking(uiState, route, paidWithUseCases, trackEvent, viewModelScope)
 
     // Why: "Quem pagou" and "Várias pessoas pagaram".
     private val payerPicking = PayerPicking(uiState, { separator }, trackEvent, paidWith::pick)
@@ -544,7 +543,8 @@ class SplitBillViewModel(
                     state.findTeachOfferUnlessKept(id, duplicatedCategoryId)
                 }
             } else {
-                updateExpense.saveEdit(expenseId, route.groupId, state, amountMinor, payers, shares)
+                updateExpense
+                    .saveEdit(expenseId, route.groupId, state, amountMinor, payers, shares)
                     .onSuccess { paidWith.saveTo(expenseId, state) }
                     .map { null }
             }

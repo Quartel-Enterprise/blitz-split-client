@@ -95,4 +95,5 @@
     <string name="group_detail_simplified_pair">シンプル化による新しい組み合わせ</string>
     <string name="group_detail_balances_note_simplified">精算をシンプルにすると、アプリが最小の支払い回数を提案します。「受け取った」と「支払い済み」は、アプリ外での支払い（Pix、現金、振込）を記録します。</string>
     <string name="group_detail_photo_open">グループの写真を表示</string>
+    <string name="group_export_payment_method">支払い方法</string>
 </resources>

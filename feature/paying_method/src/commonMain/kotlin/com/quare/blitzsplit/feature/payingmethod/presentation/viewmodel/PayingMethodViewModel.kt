@@ -11,9 +11,9 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.guardUnsavedInput
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
+import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveShowsPix
 import com.quare.blitzsplit.feature.payingmethod.presentation.model.PayingMethodUiEvent
 import com.quare.blitzsplit.feature.payingmethod.presentation.model.PayingMethodUiState
@@ -107,7 +107,8 @@ class PayingMethodViewModel(
         if (state.isSaving) return
         val opened = route.methodId?.let { id -> methods.find { it.id == id } }
         if (route.methodId != null && opened == null) {
-            if (state.isLoaded) navigator.navigateBackFrom(route)
+            // Why: nothing typed can be saved to a method that is gone, so leaving asks nothing.
+            if (state.isLoaded) leave()
             return
         }
         val types = PayingMethodType.entries.filter { type ->
@@ -174,11 +175,13 @@ class PayingMethodViewModel(
             ).onSuccess {
                 trackEvent(
                     "paying_method_saved",
-                    mapOf("type" to state.type.code, "is_new" to (route.methodId == null), "is_default" to state.isDefault),
+                    mapOf(
+                        "type" to state.type.code,
+                        "is_new" to (route.methodId == null),
+                        "is_default" to state.isDefault,
+                    ),
                 )
-                // Why: what was typed is saved, so leaving asks nothing.
-                navigator.markUnsaved(route, false)
-                navigator.navigateBackFrom(route)
+                leave()
             }.onFailure {
                 uiState.update { it.copy(isSaving = false) }
             }
@@ -197,8 +200,14 @@ class PayingMethodViewModel(
         }
         viewModelScope.launch {
             deletePayingMethod(id)
-            navigator.markUnsaved(route, false)
-            navigator.navigateBackFrom(route)
+                .onSuccess { leave() }
+                .onFailure { uiState.update { it.copy(isSaving = false) } }
         }
+    }
+
+    // Why: once saved or deleted, what was typed is no longer at stake, so leaving asks nothing.
+    private fun leave() {
+        navigator.markUnsaved(route, false)
+        navigator.navigateBackFrom(route)
     }
 }

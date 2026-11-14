@@ -120,4 +120,8 @@ export const esES: Partial<Record<MessageKey, string>> = {
   profile_emailInfoBody: 'Aparece aquí para que sepas con qué cuenta has iniciado sesión. Las personas de tus grupos ven tu nombre y tu foto, nunca tu correo.',
   deleteAccount_keptComments: 'Tus comentarios y las fotos que has añadido, con tu nombre',
   groupExport_amount: 'Importe',
+  payingMethod_sectionNote: 'Solo tú los ves. Marca con cuál has pagado cada gasto.',
+  payingMethod_add: 'Añadir método de pago',
+  payingMethod_defaultHint: 'Los nuevos gastos que pagues empiezan con este.',
+  payingMethod_deleteBody: 'Los gastos que has marcado con él dejarán de mostrarlo.',
 }

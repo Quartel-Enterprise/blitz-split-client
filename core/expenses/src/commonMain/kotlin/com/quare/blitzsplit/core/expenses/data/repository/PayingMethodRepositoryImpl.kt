@@ -30,20 +30,40 @@ class PayingMethodRepositoryImpl(
 
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
-    // Why: stamped past the version each method had, so an edit wins even when this device's clock is behind.
+    /*
+     * Why: stamped past the version each method had, so an edit wins even when this device's clock is behind. A default
+     * saved here also takes the flag off every other method still holding one (two devices may each have set one
+     * offline) and is stamped past all of them, so it wins even over a flag stamped ahead of this clock.
+     */
     override suspend fun saveMethods(methods: List<PayingMethod>) {
-        val stored = local.getAllMethods().associateBy { it.id }
+        val stored = local.getAllMethods()
+        val byId = stored.associateBy { it.id }
         val now = currentTimeMillis()
-        local.upsertMethods(
-            methods.map { method ->
-                val previous = stored[method.id]
-                mapper.toEntity(
-                    method = method,
-                    updatedAt = maxOf(now, (previous?.updatedAt ?: 0L) + 1),
-                    ownerUserId = previous?.ownerUserId,
-                )
-            },
-        )
+        val latest = stored.maxOfOrNull { it.updatedAt } ?: 0L
+        val saved = methods.map { method ->
+            val previous = byId[method.id]
+            val floor = if (method.isDefault) latest else previous?.updatedAt ?: 0L
+            mapper.toEntity(
+                method = method,
+                updatedAt = maxOf(now, floor + 1),
+                ownerUserId = previous?.ownerUserId,
+            )
+        }
+        val savedIds = methods.map { it.id }.toSet()
+        val unflagged = if (methods.none { it.isDefault }) {
+            emptyList()
+        } else {
+            stored
+                .filter { it.isDefault && !it.isDeleted && it.id !in savedIds }
+                .map {
+                    it.copy(
+                        isDefault = false,
+                        updatedAt = maxOf(now, it.updatedAt + 1),
+                        pendingSync = true,
+                    )
+                }
+        }
+        local.upsertMethods(saved + unflagged)
     }
 
     // Why: a tombstone without its name, so the deletion reaches the person's other devices and no name stays behind.
@@ -105,8 +125,8 @@ class PayingMethodRepositoryImpl(
             .fetchMethods(userId)
             .filter { dto ->
                 val mine = stored[dto.id]
-                mine == null && !dto.isDeleted ||
-                    mine != null && !mine.isDeleted && (dto.isDeleted || mine.updatedAt < dto.updatedAt)
+                (mine == null && !dto.isDeleted) ||
+                    (mine != null && !mine.isDeleted && (dto.isDeleted || mine.updatedAt < dto.updatedAt))
             }.map { mapper.toEntity(it, userId) }
         if (newer.isNotEmpty()) local.upsertMethods(newer)
     }

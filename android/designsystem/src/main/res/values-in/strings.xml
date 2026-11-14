@@ -268,4 +268,22 @@
     <string name="designsystem_bill_menu_share">Bagikan</string>
     <string name="designsystem_bill_menu_delete">Hapus</string>
     <string name="designsystem_bill_menu_options">Opsi untuk %s</string>
+    <string name="designsystem_paying_method_credit_card">Kartu kredit</string>
+    <string name="designsystem_paying_method_debit_card">Kartu debit</string>
+    <string name="designsystem_paying_method_cash">Tunai</string>
+    <string name="designsystem_paying_method_pix">Pix</string>
+    <string name="designsystem_paying_method_bank_transfer">Transfer bank</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
+    <string name="designsystem_paying_method_other">Lainnya</string>
+    <string name="designsystem_card_color_purple">Ungu</string>
+    <string name="designsystem_card_color_blue">Biru</string>
+    <string name="designsystem_card_color_green">Hijau</string>
+    <string name="designsystem_card_color_orange">Oranye</string>
+    <string name="designsystem_card_color_red">Merah</string>
+    <string name="designsystem_card_color_pink">Merah muda</string>
+    <string name="designsystem_card_color_gold">Emas</string>
+    <string name="designsystem_card_color_graphite">Grafit</string>
+    <string name="designsystem_paid_with">Dibayar dengan</string>
+    <string name="designsystem_paid_with_none">Tidak ada</string>
+    <string name="designsystem_paid_with_private">Hanya kamu yang melihat ini.</string>
 </resources>

@@ -88,6 +88,8 @@ enum AppRoute: Hashable, Identifiable {
     case legalDocument(RouteLegalDocument)
     /// Holds the Kotlin route itself, which its ViewModel reads the method and the key from.
     case paymentKey(RoutePaymentKey)
+    /// Profile's "Payment methods": holds the Kotlin route itself, which its ViewModel reads the method to edit from.
+    case payingMethod(RoutePayingMethod)
     /// "Update available" over wherever the app is; holds the Kotlin route itself, which its ViewModel reads the
     /// App Store's version and page from.
     case inAppUpdate(RouteInAppUpdate)
@@ -137,6 +139,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteCategoryMap: self = .categoryMap
         case let legalDocument as RouteLegalDocument: self = .legalDocument(legalDocument)
         case let paymentKey as RoutePaymentKey: self = .paymentKey(paymentKey)
+        case let payingMethod as RoutePayingMethod: self = .payingMethod(payingMethod)
         case let inAppUpdate as RouteInAppUpdate: self = .inAppUpdate(inAppUpdate)
         case let appDownload as RouteAppDownload: self = .appDownload(appDownload)
         default: self = .welcome
@@ -173,7 +176,8 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return false
             #endif
-        case .paymentKey:
+        // A payment method opens as a key does
+        case .paymentKey, .payingMethod:
             #if os(macOS)
             return true
             #else
@@ -236,7 +240,7 @@ enum AppRoute: Hashable, Identifiable {
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
-        case .paymentKey, .profilePhoto, .deleteAccount, .legalDocument: true
+        case .paymentKey, .payingMethod, .profilePhoto, .deleteAccount, .legalDocument: true
         // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
         case let .inAppUpdate(route): route.source == .manual
         // Settings' iPhone row opens it there; Home's card over the main window

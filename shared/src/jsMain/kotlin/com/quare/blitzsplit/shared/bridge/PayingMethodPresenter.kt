@@ -118,10 +118,11 @@ class JsPayingMethod(
     val isDefault: Boolean,
 )
 
-internal fun com.quare.blitzsplit.core.expenses.domain.model.PayingMethod.toJsPayingMethod(): JsPayingMethod = JsPayingMethod(
-    id = id,
-    type = type.code,
-    name = name,
-    cardColor = cardColor?.code,
-    isDefault = isDefault,
-)
+internal fun com.quare.blitzsplit.core.expenses.domain.model.PayingMethod.toJsPayingMethod(): JsPayingMethod =
+    JsPayingMethod(
+        id = id,
+        type = type.code,
+        name = name,
+        cardColor = cardColor?.code,
+        isDefault = isDefault,
+    )

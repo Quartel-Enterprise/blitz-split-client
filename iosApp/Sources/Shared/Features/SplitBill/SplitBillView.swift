@@ -570,6 +570,9 @@ private struct PhoneSplitBill: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            if state.showsPaidWith {
+                PaidWithRow(model: model)
+            }
             BillWhenPickerRows(
                 millis: state.spentAt,
                 relativeDay: state.spentDay,
@@ -684,6 +687,25 @@ private struct PhoneSplitBill: View {
                 if model.current.payerAmounts != nil { model.send(SplitBillUiEventOnSeveralPayersDismissed.shared) }
             },
         )
+    }
+}
+
+/// "Paid with", right under "Who paid" while this device's user is among who paid and has a method: the method
+/// picked, or "None", whose menu picks another. Only the person sees it, as the line under it says.
+private struct PaidWithRow: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Paid with")
+                Text("Only you see this.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 8)
+            PaidWithMenu(model: model)
+        }
     }
 }
 
@@ -875,6 +897,23 @@ private struct SeveralPayersSheet: View {
     }
 }
 #endif
+
+/// The menu of "Paid with": "None" then each of the person's methods, its label the one picked.
+private struct PaidWithMenu: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        let paidWith = model.state.paidWith
+        Menu {
+            PaidWithMenuItems(methods: paidWith.methods) { methodId in
+                model.send(SplitBillUiEventOnPaidWithPicked(methodId: methodId))
+            }
+        } label: {
+            PaidWithChoice(method: paidWith.method)
+        }
+        .accessibilityLabel(Text("Paid with"))
+    }
+}
 
 /// Every word of the map the description has, the one that chose marked (7.1l).
 private struct MatchedTerms: View {
@@ -1179,6 +1218,17 @@ private struct MacBillForm: View {
                             }
                         } label: {
                             Text(verbatim: "")
+                        }
+                    }
+                    if state.showsPaidWith {
+                        LabeledContent("Paid with:") {
+                            VStack(alignment: .leading, spacing: 4) {
+                                PaidWithMenu(model: model)
+                                    .fixedSize()
+                                Text("Only you see this.")
+                                    .font(.callout)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                     MacBillWhenField(

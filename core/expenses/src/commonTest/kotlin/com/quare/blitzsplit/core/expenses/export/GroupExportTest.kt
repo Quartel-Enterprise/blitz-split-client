@@ -367,4 +367,30 @@ class GroupExportTest {
         assertEquals(emptyList(), export.bills)
         assertEquals(emptyList(), export.payments)
     }
+
+    @Test
+    fun `GIVEN one of two bills marked by the exporter WHEN exporting THEN only that bill has its payment method`() {
+        // Given
+        val card = exportPayingMethod(id = "card")
+        val bills = listOf(
+            exportBill(
+                id = "dinner",
+                amountMinor = 100L,
+            ),
+            exportBill(
+                id = "taxi",
+                amountMinor = 100L,
+                spentAt = NOV_11_NOON,
+            ),
+        )
+
+        // When
+        val export = exportOf(
+            bills = bills,
+            payingMethods = mapOf("dinner" to card),
+        )
+
+        // Then
+        assertEquals(listOf(card, null), export.bills.map { it.payingMethod })
+    }
 }

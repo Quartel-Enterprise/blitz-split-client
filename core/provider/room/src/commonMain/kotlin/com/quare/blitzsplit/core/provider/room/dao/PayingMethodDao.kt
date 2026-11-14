@@ -48,7 +48,9 @@ interface PayingMethodDao {
     )
     suspend fun getMarksReadyToUpload(): List<BillPayingMethodEntity>
 
-    @Query("UPDATE bill_paying_method SET pendingSync = 0 WHERE expenseId = :expenseId AND updatedAt = :syncedUpdatedAt")
+    @Query(
+        "UPDATE bill_paying_method SET pendingSync = 0 WHERE expenseId = :expenseId AND updatedAt = :syncedUpdatedAt",
+    )
     suspend fun markMarkSynced(
         expenseId: String,
         syncedUpdatedAt: Long,

@@ -71,6 +71,7 @@ import com.quare.blitzsplit.android.feature.join.JoinWithLinkScreen
 import com.quare.blitzsplit.android.feature.legal.LegalDocumentScreen
 import com.quare.blitzsplit.android.feature.members.rememberMembersTab
 import com.quare.blitzsplit.android.feature.notificationsettings.NotificationSettingsScreen
+import com.quare.blitzsplit.android.feature.payingmethod.PayingMethodScreen
 import com.quare.blitzsplit.android.feature.paymentkey.PaymentKeyScreen
 import com.quare.blitzsplit.android.feature.profile.ProfileScreen
 import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
@@ -314,6 +315,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
             entry<Route.PaymentKey>(metadata = formDialogMetadata) { route ->
                 PaymentKeyScreen(
+                    route = route,
+                    isDialog = usesFormDialog,
+                )
+            }
+            // Why: a payment method opens as a key does: a dialog over the profile on a tablet, full screen elsewhere.
+            entry<Route.PayingMethod>(metadata = formDialogMetadata) { route ->
+                PayingMethodScreen(
                     route = route,
                     isDialog = usesFormDialog,
                 )

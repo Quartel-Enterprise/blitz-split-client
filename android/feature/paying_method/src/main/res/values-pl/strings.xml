@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nowa metoda płatności</string>
+    <string name="paying_method_edit_title">Edytuj metodę płatności</string>
+    <string name="paying_method_type">Typ</string>
+    <string name="paying_method_name">Nazwa</string>
+    <string name="paying_method_name_optional">Nazwa (opcjonalnie)</string>
+    <string name="paying_method_color">Kolor</string>
+    <string name="paying_method_default">Domyślna metoda</string>
+    <string name="paying_method_default_hint">Nowe wydatki, za które płacisz, zaczynają od niej.</string>
+    <string name="paying_method_delete">Usuń metodę płatności</string>
+    <string name="paying_method_delete_title">Usunąć tę metodę płatności?</string>
+    <string name="paying_method_delete_body">Wydatki oznaczone tą metodą przestaną ją pokazywać.</string>
+    <string name="paying_method_delete_confirm">Usuń</string>
+    <string name="paying_method_save">Zapisz</string>
+</resources>

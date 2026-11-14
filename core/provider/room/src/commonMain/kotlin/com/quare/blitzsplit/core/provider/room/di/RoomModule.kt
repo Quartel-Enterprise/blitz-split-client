@@ -9,7 +9,6 @@ import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentLikeDao
 import com.quare.blitzsplit.core.provider.room.dao.CategoryTermDao
-import com.quare.blitzsplit.core.provider.room.dao.PayingMethodDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
@@ -20,6 +19,7 @@ import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
 import com.quare.blitzsplit.core.provider.room.dao.LegalDocumentDao
 import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
+import com.quare.blitzsplit.core.provider.room.dao.PayingMethodDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.dao.PushSettingsDao

@@ -24,9 +24,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
+import com.quare.blitzsplit.android.designsystem.component.nameRes
 import com.quare.blitzsplit.android.designsystem.format.appCategoryName
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.export.GroupExportFormat
 import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
@@ -127,4 +129,6 @@ private fun groupExportWords(): GroupExportWords = GroupExportWords(
     balance = stringResource(R.string.group_detail_export_balance),
     formerMember = stringResource(DesignR.string.designsystem_former_member),
     appCategoryNames = AppCategory.entries.associate { it.key to appCategoryName(it) },
+    paymentMethod = stringResource(R.string.group_export_payment_method),
+    payingMethodTypeNames = PayingMethodType.entries.associate { it.code to stringResource(it.nameRes) },
 )

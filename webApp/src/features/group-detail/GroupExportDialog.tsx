@@ -7,6 +7,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { appCategoryName } from '@/lib/categories'
 import { downloadBlob } from '@/lib/download'
+import { payingMethodTypeName } from '@/lib/payingMethod'
 
 const FORMATS: { format: string; icon: ReactNode; label: () => string }[] = [
   { format: 'csv', icon: <Sheet />, label: () => 'CSV' },
@@ -73,6 +74,8 @@ function exportWordsOf(presenter: GroupDetailPresenter): JsGroupExportWords {
     t('groupExport_balance'),
     t('balance_formerMember'),
     presenter.exportCategoryKeys.map(appCategoryName),
+    t('groupExport_paymentMethod'),
+    presenter.exportPayingMethodTypes.map(payingMethodTypeName),
   )
 }
 

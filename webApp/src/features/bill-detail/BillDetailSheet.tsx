@@ -1,9 +1,10 @@
 import { Pencil, Share2, Trash2, X } from 'lucide-react'
-import { BillDetailPresenter, type JsBillDetailAction, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsRoute } from 'blitzsplit-shared'
+import { BillDetailPresenter, type JsBillDetailAction, type JsBillDetailState, type JsBillPayer, type JsBillShareRow, type JsMyPartNote, type JsPayingMethod, type JsRoute } from 'blitzsplit-shared'
 import { useRef, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
+import { PayingMethodLabel } from '@/components/PayingMethodTile'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
@@ -250,7 +251,7 @@ function BillActions({ presenter, state }: { presenter: BillDetailPresenter; sta
 
 /** What the bill's body reads: Conta's state, or a bill's link page's, which has no "Sua parte" nor queue. */
 export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent' | 'totalMinor' | 'payers' | 'splitMode' | 'participantCount' | 'people'> &
-  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId' | 'showsUnknownCurrencyNote'>>
+  Partial<Pick<JsBillDetailState, 'isPending' | 'showsMyPart' | 'myBalanceMinor' | 'myPartNote' | 'lonePayerId' | 'showsUnknownCurrencyNote' | 'paidWith'>>
 
 /**
  * The bill: what, when, how much and who paid, "Sua parte" for someone in it, "Anexos" and each person's part. A
@@ -301,6 +302,7 @@ export function BillBody({
             )}
             {paid}
           </PersonButton>
+          {state.paidWith && <PaidWithRow method={state.paidWith} />}
           {state.showsUnknownCurrencyNote && (
             <p className="text-sm text-muted-foreground">{t('billDetail_unknownCurrency')}</p>
           )}
@@ -329,6 +331,19 @@ export function BillBody({
           ))}
         </ul>
       </section>
+    </div>
+  )
+}
+
+/** "Paid with" and the person's own method they marked, which only they see. */
+function PaidWithRow({ method }: { method: JsPayingMethod }) {
+  return (
+    <div className="flex flex-col gap-0.5 text-sm">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="shrink-0 text-muted-foreground">{t('payingMethod_paidWith')}</span>
+        <PayingMethodLabel method={method} size="sm" />
+      </div>
+      <span className="text-xs text-muted-foreground">{t('payingMethod_paidWithPrivate')}</span>
     </div>
   )
 }

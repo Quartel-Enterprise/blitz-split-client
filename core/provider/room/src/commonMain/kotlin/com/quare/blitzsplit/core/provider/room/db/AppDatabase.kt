@@ -20,9 +20,9 @@ import com.quare.blitzsplit.core.provider.room.dao.GroupMemberIncomeDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupPinDao
 import com.quare.blitzsplit.core.provider.room.dao.HiddenContactDao
 import com.quare.blitzsplit.core.provider.room.dao.LegalDocumentDao
-import com.quare.blitzsplit.core.provider.room.dao.PayingMethodDao
 import com.quare.blitzsplit.core.provider.room.dao.MemberPaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.NotificationPreferencesDao
+import com.quare.blitzsplit.core.provider.room.dao.PayingMethodDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.dao.PushSettingsDao
@@ -48,10 +48,10 @@ import com.quare.blitzsplit.core.provider.room.entity.GroupMemberIncomeEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupPinEntity
 import com.quare.blitzsplit.core.provider.room.entity.HiddenContactEntity
 import com.quare.blitzsplit.core.provider.room.entity.LegalDocumentEntity
-import com.quare.blitzsplit.core.provider.room.entity.PayingMethodEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
 import com.quare.blitzsplit.core.provider.room.entity.NotificationPreferencesEntity
+import com.quare.blitzsplit.core.provider.room.entity.PayingMethodEntity
 import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import com.quare.blitzsplit.core.provider.room.entity.PushSettingsEntity

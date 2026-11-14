@@ -378,6 +378,44 @@ class JsonGroupExportTest {
         assertEquals(0, json.getValue("payments").jsonArray.size)
     }
 
+    @Test
+    fun `GIVEN a marked and an unmarked bill WHEN writing the JSON THEN only the marked bill has its payment method`() {
+        // Given
+        val export = exportOf(
+            bills = listOf(
+                exportBill(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+                exportBill(
+                    id = "taxi",
+                    amountMinor = 100L,
+                    spentAt = NOV_11_NOON,
+                ),
+            ),
+            payingMethods = mapOf(
+                "dinner" to exportPayingMethod(
+                    id = "card",
+                    name = "Nubank",
+                ),
+            ),
+        )
+
+        // When
+        val json = jsonOf(encoder.encode(export, words))
+
+        // Then
+        val bills = json.getValue("bills").jsonArray.map { it.jsonObject }
+        assertEquals(
+            mapOf(
+                "type" to JsonPrimitive("credit_card"),
+                "name" to JsonPrimitive("Nubank · Credit card"),
+            ),
+            bills[0].getValue("paymentMethod").jsonObject.toContentMap(),
+        )
+        assertFalse("paymentMethod" in bills[1])
+    }
+
     private fun jsonOf(bytes: ByteArray): JsonObject = Json.parseToJsonElement(bytes.decodeToString()).jsonObject
 
     // Why: numbers as their text, so an amount's decimals are checked as written; strings stay JSON strings.

@@ -200,6 +200,19 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     is open.
   - Member names have 2 to 40 letters, like a profile's, since joining without a profile makes one from it.
   - Closing Edit profile with unsaved input asks "Discard changes?" first, on every way out ([general.md](general.md)).
+  - "Payment methods" (Pierre's call, feedback of November 14, 2026), right after "Keys to receive payments" and apart
+    from them: the keys are how the person receives, these are how they pay. Private: "Only you see these. Mark which
+    one you paid a bill with." Nobody else ever sees them, not even the people they share a group with; they sync only
+    to the person's own devices (`payment_methods` and `bill_payment_methods`, owner-only RLS). Each row has its tile,
+    its name (or its type's name) with the type under a name, and "Default" on the default one; "Add a payment method"
+    ends the list, and a row or the add opens "New payment method" / "Edit payment method" (`Route.PayingMethod`,
+    presented as a key's form on each platform). Types: Credit card, Debit card, Cash, Pix, Bank transfer, Bitcoin,
+    Other. Pix follows [the Pix rule](general.md) (a Pix method being edited keeps it); Cash is one per person; Other
+    needs a name, the rest take an optional one (up to 30 characters). A card picks one of eight brand-neutral colors
+    (purple, blue, green, orange, red, pink, gold, graphite) that fill its tile with a white card glyph: never a bank's
+    or a card brand's logo. "Default method" is optional (the first method starts on, any can be turned off) and is
+    what a new bill the person pays opens on in [Split a bill](split-bill.md). Deleting asks "Delete this payment
+    method?"; bills marked with it stop showing it.
   - "Keys to receive payments" follows [the Pix rule](general.md): with no Pix signal it shows the Bitcoin keys and two
     rows, "Add a Bitcoin key" and "Add a Pix key", in place of the "Add a Pix or Bitcoin key" menu, so nobody is locked
     out of Pix (`ProfileUiState.showsPix`). Each key's row starts with its method's tile on every platform: Pix's own

@@ -359,6 +359,7 @@ struct MainTabView: View {
         // The profile's "Privacy Policy" and "Terms of Service"; a sheet on the Mac's Ajustes instead
         case let .legalDocument(route): LegalDocumentView(route: route)
         case let .paymentKey(route): PaymentKeyView(route: route)
+        case let .payingMethod(route): PayingMethodView(route: route)
         // A new identity per route: a group swapped in place (the Mac's sidebar) must not keep the model of the last one
         case let .groupDetail(route): GroupDetailView(route: route).id(route)
         case let .billDetail(route): BillDetailView(route: route)

@@ -15,11 +15,3 @@ data class PayingMethodDto(
     @SerialName("added_at") val addedAt: Long,
     @SerialName("updated_at") val updatedAt: Long,
 )
-
-@Serializable
-data class BillPayingMethodDto(
-    @SerialName("user_id") val userId: String,
-    @SerialName("expense_id") val expenseId: String,
-    @SerialName("payment_method_id") val methodId: String?,
-    @SerialName("updated_at") val updatedAt: Long,
-)

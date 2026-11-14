@@ -20,10 +20,10 @@ import kotlinx.coroutines.flow.update
  */
 internal class PaidWithPicking(
     private val uiState: MutableStateFlow<SplitBillUiState>,
-    scope: CoroutineScope,
     private val route: Route.SplitBill,
     private val useCases: BillPayingMethodUseCases,
     private val trackEvent: TrackEvent,
+    scope: CoroutineScope,
 ) {
     private var hasOpened = false
 

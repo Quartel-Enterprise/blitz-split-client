@@ -15,6 +15,9 @@ class FakePayingMethodRepository(
     val marks = MutableStateFlow(initialMarks)
     val hasPendingChanges = MutableStateFlow(false)
     val syncedUserIds = mutableListOf<Pair<String, Boolean>>()
+
+    // Why: each saveMethods call as one write, so a test sees a default handed over in the same write.
+    val savedWrites = mutableListOf<List<PayingMethod>>()
     var isCleared = false
     var saveError: Throwable? = null
     var syncError: Throwable? = null
@@ -27,8 +30,12 @@ class FakePayingMethodRepository(
 
     override suspend fun saveMethods(methods: List<PayingMethod>) {
         saveError?.let { throw it }
+        savedWrites += methods
         val saved = methods.associateBy { it.id }
-        this.methods.update { list -> list.map { saved[it.id] ?: it } + methods.filter { new -> list.none { it.id == new.id } } }
+        this.methods.update { list ->
+            list.map { saved[it.id] ?: it } +
+                methods.filter { new -> list.none { it.id == new.id } }
+        }
     }
 
     override suspend fun deleteMethod(id: String) {

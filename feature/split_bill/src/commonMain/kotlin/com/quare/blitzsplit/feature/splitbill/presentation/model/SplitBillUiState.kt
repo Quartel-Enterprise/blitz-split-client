@@ -147,7 +147,7 @@ data class SplitBillUiState(
 
     // Why: closing asks "Discard changes?" only while the form differs from how it opened; saving puts it back.
     val hasUnsavedInput: Boolean
-        get() = isLoaded && openedInputs != null && (inputs != openedInputs || showsPaidWith && paidWith.hasChanged)
+        get() = isLoaded && openedInputs != null && (inputs != openedInputs || (showsPaidWith && paidWith.hasChanged))
 
     val meId: String?
         get() = people.firstOrNull { it.isMe }?.id

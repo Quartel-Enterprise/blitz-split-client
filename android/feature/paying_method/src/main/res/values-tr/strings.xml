@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Yeni ödeme yöntemi</string>
+    <string name="paying_method_edit_title">Ödeme yöntemini düzenle</string>
+    <string name="paying_method_type">Tür</string>
+    <string name="paying_method_name">Ad</string>
+    <string name="paying_method_name_optional">Ad (isteğe bağlı)</string>
+    <string name="paying_method_color">Renk</string>
+    <string name="paying_method_default">Varsayılan yöntem</string>
+    <string name="paying_method_default_hint">Ödediğin yeni harcamalar bununla başlar.</string>
+    <string name="paying_method_delete">Ödeme yöntemini sil</string>
+    <string name="paying_method_delete_title">Bu ödeme yöntemi silinsin mi?</string>
+    <string name="paying_method_delete_body">Bununla işaretlediğin harcamalar artık onu göstermez.</string>
+    <string name="paying_method_delete_confirm">Sil</string>
+    <string name="paying_method_save">Kaydet</string>
+</resources>

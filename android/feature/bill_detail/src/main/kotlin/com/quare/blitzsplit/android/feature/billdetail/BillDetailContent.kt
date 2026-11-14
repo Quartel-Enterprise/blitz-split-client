@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
+import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -331,6 +332,8 @@ private fun BillDetailBillSection(
             )
         }
     }
+    // Why: the person's own "Paid with", which only they see.
+    state.paidWith?.let { PaidWithCard(method = it) }
     if (state.showsMyPart) {
         MyPartCard(
             state = state,

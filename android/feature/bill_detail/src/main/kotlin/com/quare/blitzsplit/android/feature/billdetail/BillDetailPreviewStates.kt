@@ -122,6 +122,7 @@ internal fun createPreviewBillDetailState(
         attachments = (if (isPending) createPendingPreviewAttachments() else createPreviewAttachments()).toLoaded(),
         viewedAttachmentId = null,
         isAddingPhoto = false,
+        paidWith = null,
     )
 }
 

@@ -52,10 +52,3 @@ data class PayingMethodUiState(
     val canSave: Boolean
         get() = isLoaded && !isSaving && PayingMethodRules.isNameValid(type, name)
 }
-
-data class PayingMethodInput(
-    val type: PayingMethodType,
-    val name: String,
-    val cardColor: CardColor?,
-    val isDefault: Boolean,
-)

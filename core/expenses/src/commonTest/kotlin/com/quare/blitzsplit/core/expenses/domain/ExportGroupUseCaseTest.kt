@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.export.NOV_14_0230_UTC
 import com.quare.blitzsplit.core.expenses.export.NOV_14_AFTERNOON
 import com.quare.blitzsplit.core.expenses.export.exportBill
 import com.quare.blitzsplit.core.expenses.export.exportGroup
+import com.quare.blitzsplit.core.expenses.export.exportPayingMethod
 import com.quare.blitzsplit.core.expenses.export.exportPayment
 import com.quare.blitzsplit.core.expenses.export.exportWords
 import com.quare.blitzsplit.core.expenses.export.groupCategory
@@ -245,6 +246,70 @@ class ExportGroupUseCaseTest {
         assertFalse(text.contains("Bill elsewhere"), text)
         assertFalse(text.contains("9.99"), text)
     }
+
+    @Test
+    fun `GIVEN a bill the exporter marked with a card WHEN exporting as CSV THEN the file names the payment method`() =
+        runTest {
+            // Given
+            prepareScenario(
+                groups = listOf(exportGroup()),
+                expenses = listOf(
+                    exportBill(
+                        id = "dinner",
+                        amountMinor = 100L,
+                    ),
+                ),
+                payingMethods = FakePayingMethodRepository(
+                    initialMethods = listOf(
+                        exportPayingMethod(
+                            id = "card",
+                            name = "Nubank",
+                        ),
+                    ),
+                    initialMarks = mapOf("dinner" to "card"),
+                ),
+            )
+
+            // When
+            val file = useCase(EXPORT_GROUP_ID, GroupExportFormat.CSV, words).getOrThrow()
+
+            // Then
+            val text = file.bytes.decodeToString()
+            assertTrue(text.contains("Payment method"), text)
+            assertTrue(text.contains("Nubank · Credit card"), text)
+        }
+
+    @Test
+    fun `GIVEN a mark pointing at a deleted method WHEN exporting as CSV THEN the file has no payment method`() =
+        runTest {
+            // Given
+            prepareScenario(
+                groups = listOf(exportGroup()),
+                expenses = listOf(
+                    exportBill(
+                        id = "dinner",
+                        amountMinor = 100L,
+                    ),
+                ),
+                payingMethods = FakePayingMethodRepository(
+                    initialMethods = listOf(
+                        exportPayingMethod(
+                            id = "card",
+                            name = "Nubank",
+                        ),
+                    ),
+                    initialMarks = mapOf("dinner" to "deleted-method"),
+                ),
+            )
+
+            // When
+            val file = useCase(EXPORT_GROUP_ID, GroupExportFormat.CSV, words).getOrThrow()
+
+            // Then
+            val text = file.bytes.decodeToString()
+            assertFalse(text.contains("Payment method"), text)
+            assertFalse(text.contains("Nubank"), text)
+        }
 
     private fun prepareScenario(
         groups: List<Group>,

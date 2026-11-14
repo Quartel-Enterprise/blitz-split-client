@@ -17,8 +17,8 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
-import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
@@ -98,6 +98,7 @@ class SyncCoordinatorTest {
     private lateinit var billAttachments: FakeBillAttachmentRepository
     private lateinit var pushDevices: FakePushDeviceRepository
     private val categoryTerms = FakeCategoryTermRepository()
+    private val payingMethods = FakePayingMethodRepository()
     private lateinit var activity: FakeActivityRepository
     private lateinit var paymentVersionsAgain: MutableSharedFlow<List<Long>>
     private lateinit var isOnline: MutableStateFlow<Boolean>
@@ -185,6 +186,46 @@ class SyncCoordinatorTest {
             assertTrue(result.isFailure)
             assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), groups.uploadedUserIds)
         }
+
+    @Test
+    fun `GIVEN the groups synced WHEN syncing THEN the payment methods sync with the marks of their bills`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID to true), payingMethods.syncedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the groups fail to sync WHEN syncing THEN the payment methods sync without the marks`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        groups.pushError = noConnection
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID to false), payingMethods.syncedUserIds)
+    }
+
+    @Test
+    fun `GIVEN the payment methods fail to sync WHEN syncing THEN the sync fails`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        payingMethods.syncError = noConnection
+
+        // When
+        val result = coordinator.syncNow()
+
+        // Then
+        assertTrue(result.isFailure)
+    }
 
     @Test
     fun `GIVEN the map fails to go up WHEN syncing THEN the sync fails`() = runTest {
@@ -7412,7 +7453,7 @@ class SyncCoordinatorTest {
             settlementRepository = RecordingSettlementRepository(settlements, calls, paymentVersionsAgain),
             categoryRepository = RecordingCategoryRepository(categories, calls),
             categoryTermRepository = categoryTerms,
-            payingMethodRepository = FakePayingMethodRepository(),
+            payingMethodRepository = payingMethods,
             billCommentRepository = RecordingBillCommentRepository(
                 delegate = if (commentQueuedDuringFirstPush) {
                     CommentDuringFirstPushBillCommentRepository(

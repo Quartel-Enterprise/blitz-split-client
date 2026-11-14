@@ -339,6 +339,10 @@ private fun ProfileKeysContent(
         state = state,
         onEvent = onEvent,
     )
+    PayingMethodsSection(
+        state = state,
+        onEvent = onEvent,
+    )
     PreferencesSection(
         state = state,
         onEvent = onEvent,

@@ -7,8 +7,8 @@ import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentReposi
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
-import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import com.quare.blitzsplit.core.groups.domain.repository.GroupIncomeRepository

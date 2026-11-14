@@ -30,16 +30,18 @@ internal class ProfilePayingMethodRows(
         firstDownload: Flow<FirstDownloadProgress?>,
         scope: CoroutineScope,
     ) {
-        combine(methods, firstDownload) { list, download -> if (download != null) Loadable.Loading else list.toLoaded() }
+        combine(methods, firstDownload, ::loadableOf)
             .onEach { loadable -> uiState.update { it.copy(payingMethods = loadable) } }
             .launchIn(scope)
     }
 
     fun onEvent(event: ProfileUiEvent.PayingMethods) {
+        // Why: never twice, so a double tap doesn't stack the form over itself, nor count twice.
+        if (navigator.backStack.value.lastOrNull() is Route.PayingMethod) return
         when (event) {
             ProfileUiEvent.PayingMethods.OnAddClicked -> {
                 trackEvent("paying_method_add_clicked", emptyMap())
-                open(methodId = null)
+                navigator.navigate(Route.PayingMethod(methodId = null))
             }
 
             is ProfileUiEvent.PayingMethods.OnClicked -> {
@@ -47,14 +49,13 @@ internal class ProfilePayingMethodRows(
                     .valueOrNull()
                     ?.find { it.id == event.methodId } ?: return
                 trackEvent("paying_method_clicked", mapOf("type" to method.type.code))
-                open(method.id)
+                navigator.navigate(Route.PayingMethod(method.id))
             }
         }
     }
 
-    // Why: never twice, so a double tap doesn't stack the form over itself.
-    private fun open(methodId: String?) {
-        if (navigator.backStack.value.lastOrNull() is Route.PayingMethod) return
-        navigator.navigate(Route.PayingMethod(methodId))
-    }
+    private fun loadableOf(
+        methods: List<PayingMethod>,
+        download: FirstDownloadProgress?,
+    ): Loadable<List<PayingMethod>> = if (download != null) Loadable.Loading else methods.toLoaded()
 }

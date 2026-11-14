@@ -32,6 +32,7 @@ import { JoinInviteScreen } from '@/features/join/JoinInviteScreen'
 import { JoinPickScreen } from '@/features/join/JoinPickScreen'
 import { JoinWithLinkDialog } from '@/features/join/JoinWithLinkDialog'
 import { PaymentKeyDialog } from '@/features/payment-key/PaymentKeyDialog'
+import { PayingMethodDialog } from '@/features/paying-method/PayingMethodDialog'
 import { GroupPhotoDialog } from '@/features/group-detail/GroupPhotoDialog'
 import { ProfilePhotoDialog } from '@/features/profile/ProfilePhotoDialog'
 import { ProfileScreen } from '@/features/profile/ProfileScreen'
@@ -193,6 +194,8 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   // bill and the group's editor open over the group's expenses (a bill from the home over the home) the same way, and a payment over its balances,
   // expenses or members.
   const isPaymentKey = top.name === 'payment-key'
+  // Why: a payment method's form opens over the profile the same way.
+  const isPayingMethod = top.name === 'paying-method'
   const isDeleteAccount = top.name === 'delete-account'
   // Why: the profile's photo big, over the profile, whose avatar opened it.
   const isProfilePhoto = top.name === 'profile-photo'
@@ -228,7 +231,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   const isDialog =
     isNotificationSettings ||
     isAppDownload ||
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isDeleteAccount || isProfilePhoto || isGroupPhoto
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isPayingMethod || isDeleteAccount || isProfilePhoto || isGroupPhoto
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -247,7 +250,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       ? stack[pageIndex - 1]
       : undefined
   const payment = isRegisterPayment ? top : paymentUnderPage
-  const pageName = page?.name ?? (isPaymentKey || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
+  const pageName = page?.name ?? (isPaymentKey || isPayingMethod || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
   // Why: another tab or group in the same place of the stack is a new page, which fades in (HomeShell). The place
   // counts from the whole stack, so a page over the map never shares its key with one under it.
   const pageKey = `${offset + pageIndex}/${pageName}/${page?.groupId ?? ''}/${page?.groupTab ?? ''}`
@@ -268,6 +271,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       )}
       {isShareBill && <ShareBillDialog key={`${top.groupId}/${top.expenseId}`} route={top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
+      {isPayingMethod && <PayingMethodDialog key={top.payingMethodId ?? 'new'} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
       {isNotificationSettings && <NotificationSettingsDialog />}
       {isAppDownload && <AppDownloadDialog route={top} />}

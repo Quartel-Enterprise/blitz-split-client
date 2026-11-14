@@ -126,4 +126,7 @@
     <string name="profile_link_copied">Link kopiert</string>
     <string name="profile_share_usage_data">Nutzungsdaten teilen</string>
     <string name="profile_share_usage_data_detail">Bildschirme und Aktionen, um die App zu verbessern. Nie Namen oder Beträge.</string>
+    <string name="profile_section_paying_methods">Zahlungsmethoden</string>
+    <string name="profile_paying_methods_add">Zahlungsmethode hinzufügen</string>
+    <string name="profile_paying_methods_subtitle">Nur du siehst sie. Markiere, womit du eine Ausgabe bezahlt hast.</string>
 </resources>

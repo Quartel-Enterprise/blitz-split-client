@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePayingMethods
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
@@ -12,7 +13,6 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.LegalPage
-import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePayingMethods
 import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt

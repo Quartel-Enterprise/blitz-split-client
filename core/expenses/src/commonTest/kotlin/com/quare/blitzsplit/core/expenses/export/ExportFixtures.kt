@@ -1,11 +1,13 @@
 package com.quare.blitzsplit.core.expenses.export
 
+import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
-import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
@@ -190,6 +192,20 @@ internal fun groupCategory(
     createdByMemberId = PIERRE,
     isDeleted = isDeleted,
     isPending = false,
+)
+
+internal fun exportPayingMethod(
+    id: String,
+    type: PayingMethodType = PayingMethodType.CREDIT_CARD,
+    name: String = "Nubank",
+    cardColor: CardColor? = CardColor.PURPLE.takeIf { type.isCard },
+): PayingMethod = PayingMethod(
+    id = id,
+    type = type,
+    name = name,
+    cardColor = cardColor,
+    isDefault = false,
+    addedAt = 1L,
 )
 
 internal fun exportOf(

@@ -1,6 +1,9 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
@@ -14,8 +17,8 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillReceipt
 import com.quare.blitzsplit.feature.splitbill.presentation.model.GroupSelection
-import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PaidWith
+import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmountRow
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerAmounts
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptRequest
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptStatus
@@ -943,6 +946,145 @@ class SplitBillUiStateTest {
         assertTrue(canOpen)
     }
 
+    @Test
+    fun `GIVEN nobody on the device in the group WHEN reading Paid with THEN it is hidden`() {
+        // Given
+        val state = state(
+            people = listOf(person(ANA, isMe = false), person(PIERRE, isMe = false)),
+            paidWith = cashPicked,
+        )
+
+        // When
+        val showsPaidWith = state.showsPaidWith
+
+        // Then
+        assertFalse(showsPaidWith)
+    }
+
+    @Test
+    fun `GIVEN this device user among several payers WHEN reading Paid with THEN it shows`() {
+        // Given
+        val state = state(
+            severalPayers = several(ANA to "60,00", PIERRE to "40,00"),
+            paidWith = cashPicked,
+        )
+
+        // When
+        val showsPaidWith = state.showsPaidWith
+
+        // Then
+        assertTrue(showsPaidWith)
+    }
+
+    @Test
+    fun `GIVEN another method picked while someone else pays WHEN reading the unsaved input THEN there is none`() {
+        // Given
+        val state = state(
+            payerId = ANA,
+            paidWith = cashPicked,
+        ).let { it.copy(openedInputs = it.inputs) }
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertFalse(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN another method picked while this device user pays WHEN reading the unsaved input THEN there is some`() {
+        // Given
+        val state = state(paidWith = cashPicked).let { it.copy(openedInputs = it.inputs) }
+
+        // When
+        val hasUnsavedInput = state.hasUnsavedInput
+
+        // Then
+        assertTrue(hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN a method picked while someone else pays WHEN reading what Paid with saves THEN it is none`() {
+        // Given
+        val state = state(
+            payerId = ANA,
+            paidWith = cashPicked,
+        )
+
+        // When
+        val toSave = state.paidWithToSave
+
+        // Then
+        assertNull(toSave)
+    }
+
+    @Test
+    fun `GIVEN the method picked was deleted WHEN reading what Paid with saves THEN it is none`() {
+        // Given
+        val state = state(paidWith = cashPicked.copy(methods = listOf(nubank)))
+
+        // When
+        val toSave = state.paidWithToSave
+
+        // Then
+        assertNull(toSave)
+    }
+
+    @Test
+    fun `GIVEN a method picked while this device user pays WHEN reading what Paid with saves THEN it is that method`() {
+        // Given
+        val state = state(paidWith = cashPicked)
+
+        // When
+        val toSave = state.paidWithToSave
+
+        // Then
+        assertEquals(CASH, toSave)
+    }
+
+    @Test
+    fun `GIVEN only Paid with changed on a saved bill WHEN reading the change THEN only Paid with changed`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            paidWith = cashPicked,
+        ).let { it.copy(openedInputs = it.inputs) }
+
+        // When
+        val isOnlyPaidWithChanged = state.isOnlyPaidWithChanged
+
+        // Then
+        assertTrue(isOnlyPaidWithChanged)
+    }
+
+    @Test
+    fun `GIVEN Paid with and the description changed on a saved bill WHEN reading the change THEN more changed`() {
+        // Given
+        val state = state(
+            isEditing = true,
+            paidWith = cashPicked,
+        ).let { it.copy(openedInputs = it.inputs) }
+            .copy(description = "Feira")
+
+        // When
+        val isOnlyPaidWithChanged = state.isOnlyPaidWithChanged
+
+        // Then
+        assertFalse(isOnlyPaidWithChanged)
+    }
+
+    @Test
+    fun `GIVEN only Paid with changed on a new bill WHEN reading the change THEN it is no edit`() {
+        // Given
+        val state = state(paidWith = cashPicked).let { it.copy(openedInputs = it.inputs) }
+
+        // When
+        val isOnlyPaidWithChanged = state.isOnlyPaidWithChanged
+
+        // Then
+        assertFalse(isOnlyPaidWithChanged)
+    }
+
     private val billGroup = BillGroup(
         id = "group-1",
         name = "Viagem Floripa",
@@ -950,6 +1092,31 @@ class SplitBillUiStateTest {
         color = AvatarColor.GREEN,
         photoUrl = null,
         memberCount = 2,
+    )
+
+    private val nubank = PayingMethod(
+        id = NUBANK,
+        type = PayingMethodType.CREDIT_CARD,
+        name = "Nubank",
+        cardColor = CardColor.PURPLE,
+        isDefault = true,
+        addedAt = 1L,
+    )
+
+    private val cash = PayingMethod(
+        id = CASH,
+        type = PayingMethodType.CASH,
+        name = "",
+        cardColor = null,
+        isDefault = false,
+        addedAt = 2L,
+    )
+
+    // Why: "Paid with" opened on the default Nubank, then cash picked.
+    private val cashPicked = PaidWith(
+        methods = listOf(nubank, cash),
+        methodId = CASH,
+        openedMethodId = NUBANK,
     )
 
     private fun person(
@@ -1004,6 +1171,11 @@ class SplitBillUiStateTest {
         groupSelection: GroupSelection? = null,
         pickedGroupId: String = "group-1",
         receipt: BillReceipt? = null,
+        paidWith: PaidWith = PaidWith(
+            methods = emptyList(),
+            methodId = null,
+            openedMethodId = null,
+        ),
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,
         groupId = "group-1",
@@ -1076,11 +1248,7 @@ class SplitBillUiStateTest {
         isDeleting = isDeleting,
         isLoaded = isLoaded,
         openedInputs = null,
-        paidWith = PaidWith(
-            methods = emptyList(),
-            methodId = null,
-            openedMethodId = null,
-        ),
+        paidWith = paidWith,
     )
 
     private companion object {
@@ -1088,5 +1256,7 @@ class SplitBillUiStateTest {
         const val PIERRE = "member-2"
         const val BRUNO = "member-3"
         const val FORMER = "member-9"
+        const val NUBANK = "method-nubank"
+        const val CASH = "method-cash"
     }
 }

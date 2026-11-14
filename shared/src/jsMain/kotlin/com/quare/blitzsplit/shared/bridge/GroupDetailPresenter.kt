@@ -3,9 +3,9 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.export.GroupExportFormat
-import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab

@@ -37,19 +37,23 @@ internal suspend fun UpdateExpense.saveEdit(
     amountMinor: Long,
     payers: List<ExpensePayer>,
     shares: List<ExpenseShare>,
-): Result<Unit> = if (state.isOnlyPaidWithChanged) Result.success(Unit) else invoke(
-    expenseId = expenseId,
-    groupId = groupId,
-    description = state.description,
-    amountMinor = amountMinor,
-    currency = state.currency,
-    payers = payers,
-    splitMode = state.split.mode.savedMode,
-    shares = shares,
-    items = state.split.items,
-    categoryId = state.categoryIdToSave,
-    spentAt = state.spentAt,
-)
+): Result<Unit> = if (state.isOnlyPaidWithChanged) {
+    Result.success(Unit)
+} else {
+    invoke(
+        expenseId = expenseId,
+        groupId = groupId,
+        description = state.description,
+        amountMinor = amountMinor,
+        currency = state.currency,
+        payers = payers,
+        splitMode = state.split.mode.savedMode,
+        shares = shares,
+        items = state.split.items,
+        categoryId = state.categoryIdToSave,
+        spentAt = state.spentAt,
+    )
+}
 
 // Why: a duplicate that keeps its original's category doesn't ask "Ensinar ao mapa?" again, which the original did.
 internal fun SplitBillUiState.findTeachOfferUnlessKept(

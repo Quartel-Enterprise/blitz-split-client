@@ -1,9 +1,11 @@
 package com.quare.blitzsplit.core.expenses.export
 
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class GroupExportTablesTest {
     private val words = exportWords()
@@ -329,5 +331,144 @@ class GroupExportTablesTest {
         // Then
         assertEquals(listOf(0, 0), tables.take(2).map { it.rows.size })
         assertEquals(listOf("Date", "From", "To", "Amount", "Currency"), tables[1].headers.take(5))
+    }
+
+    @Test
+    fun `GIVEN no bill marked WHEN drawing the bills THEN there is no Payment method column`() {
+        // Given
+        val export = exportOf(
+            bills = listOf(
+                exportBill(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+            ),
+        )
+
+        // When
+        val bills = GroupExportTables.of(export, words)[0]
+
+        // Then
+        assertFalse("Payment method" in bills.headers)
+    }
+
+    @Test
+    fun `GIVEN a bill marked WHEN drawing the bills THEN Payment method comes right after the currency`() {
+        // Given
+        val export = exportOf(
+            bills = listOf(
+                exportBill(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+            ),
+            payingMethods = mapOf("dinner" to exportPayingMethod(id = "card")),
+        )
+
+        // When
+        val bills = GroupExportTables.of(export, words)[0]
+
+        // Then
+        assertEquals(bills.headers.indexOf("Currency") + 1, bills.headers.indexOf("Payment method"))
+    }
+
+    @Test
+    fun `GIVEN a bill marked with a named card WHEN drawing the bills THEN its cell reads the name and the type`() {
+        // Given
+        val export = exportOf(
+            bills = listOf(
+                exportBill(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+            ),
+            payingMethods = mapOf(
+                "dinner" to exportPayingMethod(
+                    id = "card",
+                    name = "Nubank",
+                ),
+            ),
+        )
+
+        // When
+        val bills = GroupExportTables.of(export, words)[0]
+
+        // Then
+        assertEquals(ExportCell.Text("Nubank · Credit card"), bills.cellAt(0, "Payment method"))
+    }
+
+    @Test
+    fun `GIVEN a bill marked with a method with no name WHEN drawing the bills THEN its cell reads the type alone`() {
+        // Given
+        val cash = exportPayingMethod(
+            id = "cash",
+            type = PayingMethodType.CASH,
+            name = "",
+        )
+        val export = exportOf(
+            bills = listOf(
+                exportBill(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+            ),
+            payingMethods = mapOf("dinner" to cash),
+        )
+
+        // When
+        val bills = GroupExportTables.of(export, words)[0]
+
+        // Then
+        assertEquals(ExportCell.Text("Cash"), bills.cellAt(0, "Payment method"))
+    }
+
+    @Test
+    fun `GIVEN a marked and an unmarked bill WHEN drawing the bills THEN the unmarked cell is empty`() {
+        // Given
+        val export = exportOf(
+            bills = listOf(
+                exportBill(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+                exportBill(
+                    id = "taxi",
+                    amountMinor = 100L,
+                    spentAt = NOV_11_NOON,
+                ),
+            ),
+            payingMethods = mapOf("dinner" to exportPayingMethod(id = "card")),
+        )
+
+        // When
+        val bills = GroupExportTables.of(export, words)[0]
+
+        // Then
+        assertEquals(ExportCell.Empty, bills.cellAt(1, "Payment method"))
+    }
+
+    @Test
+    fun `GIVEN a type the UI words leave out WHEN drawing the bills THEN the cell reads its code`() {
+        // Given
+        val pix = exportPayingMethod(
+            id = "pix",
+            type = PayingMethodType.PIX,
+            name = "",
+        )
+        val export = exportOf(
+            bills = listOf(
+                exportBill(
+                    id = "dinner",
+                    amountMinor = 100L,
+                ),
+            ),
+            payingMethods = mapOf("dinner" to pix),
+        )
+
+        // When
+        val bills = GroupExportTables.of(export, words)[0]
+
+        // Then
+        assertEquals(ExportCell.Text("pix"), bills.cellAt(0, "Payment method"))
     }
 }

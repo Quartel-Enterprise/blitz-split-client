@@ -277,4 +277,22 @@
     <string name="designsystem_bill_menu_share">Paylaş</string>
     <string name="designsystem_bill_menu_delete">Sil</string>
     <string name="designsystem_bill_menu_options">Seçenekler: %s</string>
+    <string name="designsystem_paying_method_credit_card">Kredi kartı</string>
+    <string name="designsystem_paying_method_debit_card">Banka kartı</string>
+    <string name="designsystem_paying_method_cash">Nakit</string>
+    <string name="designsystem_paying_method_pix">Pix</string>
+    <string name="designsystem_paying_method_bank_transfer">Banka havalesi</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
+    <string name="designsystem_paying_method_other">Diğer</string>
+    <string name="designsystem_card_color_purple">Mor</string>
+    <string name="designsystem_card_color_blue">Mavi</string>
+    <string name="designsystem_card_color_green">Yeşil</string>
+    <string name="designsystem_card_color_orange">Turuncu</string>
+    <string name="designsystem_card_color_red">Kırmızı</string>
+    <string name="designsystem_card_color_pink">Pembe</string>
+    <string name="designsystem_card_color_gold">Altın</string>
+    <string name="designsystem_card_color_graphite">Grafit</string>
+    <string name="designsystem_paid_with">Ödeme şekli</string>
+    <string name="designsystem_paid_with_none">Yok</string>
+    <string name="designsystem_paid_with_private">Bunu yalnızca sen görürsün.</string>
 </resources>

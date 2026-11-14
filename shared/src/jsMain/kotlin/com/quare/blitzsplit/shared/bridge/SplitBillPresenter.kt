@@ -428,7 +428,9 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnPayerPicked(memberId))
     }
 
-    fun pickPaidWith(methodId: String?) = viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(methodId))
+    fun pickPaidWith(methodId: String?) {
+        viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(methodId))
+    }
 
     fun confirmPayer() {
         viewModel.onEvent(SplitBillUiEvent.OnPayerDone)

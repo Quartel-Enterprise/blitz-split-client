@@ -286,4 +286,22 @@
     <string name="designsystem_bill_menu_share">Compartir</string>
     <string name="designsystem_bill_menu_delete">Eliminar</string>
     <string name="designsystem_bill_menu_options">Opciones de %s</string>
+    <string name="designsystem_paying_method_credit_card">Tarjeta de crédito</string>
+    <string name="designsystem_paying_method_debit_card">Tarjeta de débito</string>
+    <string name="designsystem_paying_method_cash">Efectivo</string>
+    <string name="designsystem_paying_method_pix">Pix</string>
+    <string name="designsystem_paying_method_bank_transfer">Transferencia bancaria</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
+    <string name="designsystem_paying_method_other">Otro</string>
+    <string name="designsystem_card_color_purple">Morado</string>
+    <string name="designsystem_card_color_blue">Azul</string>
+    <string name="designsystem_card_color_green">Verde</string>
+    <string name="designsystem_card_color_orange">Naranja</string>
+    <string name="designsystem_card_color_red">Rojo</string>
+    <string name="designsystem_card_color_pink">Rosa</string>
+    <string name="designsystem_card_color_gold">Dorado</string>
+    <string name="designsystem_card_color_graphite">Grafito</string>
+    <string name="designsystem_paid_with">Pagado con</string>
+    <string name="designsystem_paid_with_none">Ninguno</string>
+    <string name="designsystem_paid_with_private">Solo tú ves esto.</string>
 </resources>

@@ -18,6 +18,7 @@ data class PaidWith(
     val method: PayingMethod?
         get() = methods.firstOrNull { it.id == methodId }
 
+    // Why: the person's own pick; a picked method deleted on another device meanwhile is no change of theirs.
     val hasChanged: Boolean
-        get() = method?.id != openedMethodId
+        get() = methodId != openedMethodId
 }
