@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CustomPaletteFullExceptio
 import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -31,6 +32,9 @@ class CustomColorController(
 
     // Why: the app category "+" was opened for, whose color "Add" changes; null for the screen's form.
     private var draftCategoryKey: String? = null
+
+    // Why: the add in flight, which a second "+" waits for.
+    private var saveJob: Job? = null
 
     // Why: how often a picker closed, so a save failing after its picker closed never opens "New color" again.
     private var closedCount = 0
@@ -97,7 +101,8 @@ class CustomColorController(
         categoryKey: String?,
     ) {
         val now = state.value
-        if (!now.canAdd || now.draft != null) return
+        // Why: one add at a time, so two never both pass the palette's limit before Room shows the first.
+        if (!now.canAdd || now.draft != null || saveJob?.isActive == true) return
         draftCategoryKey = categoryKey
         state.update { it.copy(draft = ColorDraft.createStartingAt(current)) }
     }
@@ -118,11 +123,13 @@ class CustomColorController(
         val categoryKey = draftCategoryKey
         val closedBefore = closedCount
         state.update { it.copy(draft = null) }
-        scope.launch {
+        saveJob = scope.launch {
             useCases
                 .addCustomColor(color)
-                .onSuccess { onPicked(color.tint, categoryKey) }
-                .onFailure { error ->
+                .onSuccess {
+                    // Why: a form that closed meanwhile never asked for it; an app category still gets what was picked.
+                    if (categoryKey != null || closedCount == closedBefore) onPicked(color.tint, categoryKey)
+                }.onFailure { error ->
                     if (error is CustomPaletteFullException) return@onFailure
                     state.update {
                         val isSamePicker = draftCategoryKey == categoryKey && closedCount == closedBefore

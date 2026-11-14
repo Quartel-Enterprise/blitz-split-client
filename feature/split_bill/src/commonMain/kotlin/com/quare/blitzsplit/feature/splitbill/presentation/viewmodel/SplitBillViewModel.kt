@@ -167,6 +167,7 @@ class SplitBillViewModel(
         observeExpenses = observeExpenses,
         emit = { uiAction.emit(it) },
         onCategoryChanged = ::showCategorySplit,
+        pickColor = { onEvent(SplitBillUiEvent.OnCategoryColorPicked(it)) },
         trackEvent = trackEvent,
     )
 

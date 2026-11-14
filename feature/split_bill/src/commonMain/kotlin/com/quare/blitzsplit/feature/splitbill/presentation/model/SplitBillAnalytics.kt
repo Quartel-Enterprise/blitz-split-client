@@ -260,23 +260,18 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
 
 // Why: the person's own colors in the form's "Color", each name written here so the catalog test reads it.
 private fun customColorAnalyticsOf(event: CustomColorEvent): EventAnalytics = when (event) {
-    is CustomColorEvent.OnAddClicked -> EventAnalytics.Automatic(
-        "custom_color_add_clicked",
-        mapOf("source" to SPLIT_BILL_SOURCE),
-    )
+    /*
+     * Why: no action of the person's: the picker closing by itself, or the gradient and fields as they change ("Add"
+     * tells what came of them).
+     */
+    CustomColorEvent.OnPickerClosed,
+    is CustomColorEvent.OnChannelChanged,
+    is CustomColorEvent.OnHexChanged,
+    is CustomColorEvent.OnHsvChanged,
+    -> EventAnalytics.NotTracked
 
-    CustomColorEvent.OnSaveClicked -> EventAnalytics.Automatic(
-        "custom_color_save_clicked",
-        mapOf("source" to SPLIT_BILL_SOURCE),
-    )
-
-    CustomColorEvent.OnDraftDismissed -> EventAnalytics.Automatic(
-        "custom_color_cancelled",
-        mapOf("source" to SPLIT_BILL_SOURCE),
-    )
-
-    is CustomColorEvent.OnLongPressed -> EventAnalytics.Automatic(
-        "custom_color_delete_asked",
+    CustomColorEvent.OnDeletionDismissed -> EventAnalytics.Automatic(
+        "custom_color_delete_cancelled",
         mapOf("source" to SPLIT_BILL_SOURCE),
     )
 
@@ -285,16 +280,23 @@ private fun customColorAnalyticsOf(event: CustomColorEvent): EventAnalytics = wh
         mapOf("source" to SPLIT_BILL_SOURCE),
     )
 
-    CustomColorEvent.OnDeletionDismissed -> EventAnalytics.Automatic(
-        "custom_color_delete_cancelled",
+    is CustomColorEvent.OnLongPressed -> EventAnalytics.Automatic(
+        "custom_color_delete_asked",
         mapOf("source" to SPLIT_BILL_SOURCE),
     )
 
-    // Why: the gradient and the fields as they change aren't actions of their own ("Add" says what came of them), nor
-    // the picker closing on its own (a rotation, a popover).
-    is CustomColorEvent.OnHsvChanged,
-    is CustomColorEvent.OnHexChanged,
-    is CustomColorEvent.OnChannelChanged,
-    CustomColorEvent.OnPickerClosed,
-    -> EventAnalytics.NotTracked
+    CustomColorEvent.OnDraftDismissed -> EventAnalytics.Automatic(
+        "custom_color_cancelled",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
+
+    CustomColorEvent.OnSaveClicked -> EventAnalytics.Automatic(
+        "custom_color_save_clicked",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
+
+    is CustomColorEvent.OnAddClicked -> EventAnalytics.Automatic(
+        "custom_color_add_clicked",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
 }

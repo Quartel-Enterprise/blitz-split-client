@@ -250,8 +250,10 @@ private fun customColorAnalyticsOf(event: CustomColorEvent): EventAnalytics = wh
         mapOf("source" to CATEGORY_MAP_SOURCE),
     )
 
-    // Why: the gradient and the fields as they change aren't actions of their own ("Add" says what came of them), nor
-    // the picker closing on its own (a rotation, a popover).
+    /*
+     * Why: the gradient and the fields as they change aren't actions of their own ("Add" says what came of them), nor
+     * the picker closing on its own (a rotation, a popover).
+     */
     is CustomColorEvent.OnHsvChanged,
     is CustomColorEvent.OnHexChanged,
     is CustomColorEvent.OnChannelChanged,

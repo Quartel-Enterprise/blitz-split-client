@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.viewmodel
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
@@ -119,11 +118,6 @@ internal class MapCategoryEditing(
                 }
             }
         }
-    }
-
-    // Why: a color "New color" just added, as a pick in "Color", which never changes a form while it saves.
-    fun pickColor(tint: CategoryTint) {
-        changeForm { _, form -> form.withColor(tint) }
     }
 
     private fun changeForm(transform: (CategoryMapUiState, CategoryForm) -> CategoryForm) {

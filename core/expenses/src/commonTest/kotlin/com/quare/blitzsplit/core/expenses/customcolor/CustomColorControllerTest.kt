@@ -446,30 +446,6 @@ class CustomColorControllerTest {
         }
 
     @Test
-    fun `GIVEN Add in flight for Food and plus tapped for Home WHEN the save fails THEN Home keeps its own draft`() =
-        runTest(testDispatcher) {
-            // Given
-            val gate = CompletableDeferred<Unit>()
-            prepareScenario(
-                saveError = IllegalStateException("disk full"),
-                addGate = gate,
-            )
-            controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.ORANGE.tint, AppCategory.FOOD.key))
-            controller.onEvent(CustomColorEvent.OnHexChanged("#3A7BD5"))
-            controller.onEvent(CustomColorEvent.OnSaveClicked)
-            controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.PURPLE.tint, AppCategory.HOME.key))
-            val homeDraft = controller.state.value.draft
-
-            // When
-            gate.complete(Unit)
-            runCurrent()
-
-            // Then
-            assertEquals(ColorDraft.createStartingAt(CategoryColor.PURPLE.tint), homeDraft)
-            assertEquals(homeDraft, controller.state.value.draft)
-        }
-
-    @Test
     fun `GIVEN Add in flight and its picker closed WHEN the save fails THEN New color does not open again`() =
         runTest(testDispatcher) {
             // Given
@@ -581,6 +557,42 @@ class CustomColorControllerTest {
         // Then
         assertNull(controller.state.value.deletion)
     }
+
+    @Test
+    fun `GIVEN Add in flight WHEN tapping plus again THEN New color waits for it`() = runTest(testDispatcher) {
+        // Given
+        val gate = CompletableDeferred<Unit>()
+        prepareScenario(addGate = gate)
+        controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.TEAL.tint, AppCategory.FOOD.key))
+        controller.onEvent(CustomColorEvent.OnHexChanged("#3A7BD5"))
+        controller.onEvent(CustomColorEvent.OnSaveClicked)
+
+        // When
+        controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.PURPLE.tint, AppCategory.HOME.key))
+
+        // Then
+        assertNull(controller.state.value.draft)
+    }
+
+    @Test
+    fun `GIVEN Add from a form in flight WHEN the form closes before it lands THEN the color goes to no form`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(addGate = gate)
+            controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.TEAL.tint, null))
+            controller.onEvent(CustomColorEvent.OnHexChanged("#3A7BD5"))
+            controller.onEvent(CustomColorEvent.OnSaveClicked)
+
+            // When
+            controller.close()
+            gate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertTrue(picked.isEmpty())
+            assertEquals(listOf(blue), repository.colors.value)
+        }
 
     private fun TestScope.prepareScenario(
         palette: List<CustomColor> = emptyList(),

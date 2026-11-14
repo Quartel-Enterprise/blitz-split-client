@@ -34,6 +34,7 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.feature.categorymap.presentation.model.CATEGORY_MAP_SOURCE
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
@@ -671,6 +672,11 @@ class CategoryMapCategoriesTest {
                 ?.color,
         )
         assertEquals(emptyMap(), categories.appColors.value)
+        assertTrue(
+            trackedEvents.contains(
+                "category_color_picked" to mapOf("color" to "custom", "source" to CATEGORY_MAP_SOURCE),
+            ),
+        )
     }
 
     @Test

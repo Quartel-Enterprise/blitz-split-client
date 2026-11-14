@@ -111,16 +111,24 @@ extension View {
                 : String(localized: "This color is in use", bundle: .appLanguage),
             isPresented: Binding(
                 get: { deletion != nil },
-                // Why: every button of the alert sends its own event; the binding's close would send a second one.
-                set: { _ in },
+                /*
+                 * Why: Cancel and OK close the alert through here, one dismissal each. A "Delete" closes it too, while
+                 * the question is deleting, which the live state tells apart. If the question stays (a category took
+                 * the color, the device failed to delete it), the state still holds it and the alert shows again.
+                 */
+                set: { shown in
+                    if !shown, current().deletion?.isDeleting == false {
+                        send(CustomColorEventOnDeletionDismissed.shared)
+                    }
+                },
             ),
             presenting: deletion,
         ) { deletion in
             if deletion.usedBy == nil {
                 Button("Delete", role: .destructive) { send(CustomColorEventOnDeleteConfirmed.shared) }
-                Button("Cancel", role: .cancel) { send(CustomColorEventOnDeletionDismissed.shared) }
+                Button("Cancel", role: .cancel) {}
             } else {
-                Button("OK", role: .cancel) { send(CustomColorEventOnDeletionDismissed.shared) }
+                Button("OK", role: .cancel) {}
             }
         } message: { deletion in
             if let usedBy = deletion.usedBy {

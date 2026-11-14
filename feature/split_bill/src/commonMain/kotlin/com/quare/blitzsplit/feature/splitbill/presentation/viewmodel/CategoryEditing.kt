@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 import com.quare.blitzsplit.core.expenses.customcolor.CustomColorController
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryRules
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTerm
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.DefaultCategoryTerms
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseRules
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -35,6 +36,8 @@ internal class CategoryEditing(
     private val emit: suspend (SplitBillUiAction) -> Unit,
     private val onCategoryChanged: () -> Unit,
     private val trackEvent: TrackEvent,
+    // Why: "Add" in "New color" as a pick in "Color", through the ViewModel so category_color_picked counts it.
+    pickColor: (CategoryTint) -> Unit,
 ) {
     // Why: the person's map (flow 9), whose words suggest a bill's category from its description.
     var terms: List<CategoryTerm> = DefaultCategoryTerms.terms
@@ -44,7 +47,7 @@ internal class CategoryEditing(
     private val customColors = CustomColorController(
         useCases = useCases.customColors,
         scope = scope,
-        onPicked = { tint, _ -> uiState.update { it.copy(categoryForm = it.categoryForm?.withColor(tint)) } },
+        onPicked = { tint, _ -> pickColor(tint) },
     )
 
     // Why: the group's categories and how its bills use them, as a sync or a change here moves them.

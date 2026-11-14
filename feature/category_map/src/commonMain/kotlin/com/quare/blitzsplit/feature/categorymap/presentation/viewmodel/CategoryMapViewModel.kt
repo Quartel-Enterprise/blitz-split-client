@@ -90,7 +90,8 @@ class CategoryMapViewModel(
                 // Why: the same pick as a swatch's, so app_category_color_picked counts it too.
                 onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(categoryKey, tint))
             } else {
-                categoryEditing.pickColor(tint)
+                // Why: the same pick as a swatch's in "Color", so category_color_picked counts it too.
+                onEvent(CategoryMapUiEvent.OnCategoryColorPicked(tint))
             }
         },
     )
