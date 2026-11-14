@@ -12,6 +12,7 @@ internal class RoomReleaseNotesLocalDataSource(
 
     override suspend fun getSavedFeed(language: String): SavedReleaseNotesFeed? = dao.find(language)?.let { entity ->
         SavedReleaseNotesFeed(
+            json = entity.json,
             etag = entity.etag,
             checkedAt = entity.checkedAt,
         )

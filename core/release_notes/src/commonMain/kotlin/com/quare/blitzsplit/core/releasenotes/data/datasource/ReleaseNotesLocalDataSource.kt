@@ -6,7 +6,7 @@ interface ReleaseNotesLocalDataSource {
     // Why: the feed's JSON last saved for that language, null while none was.
     fun observeFeed(language: String): Flow<String?>
 
-    // Why: the ETag and check time of the feed saved for that language, null while none was.
+    // Why: the JSON, ETag and check time of the feed saved for that language, null while none was.
     suspend fun getSavedFeed(language: String): SavedReleaseNotesFeed?
 
     suspend fun saveFeed(

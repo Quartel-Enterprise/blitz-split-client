@@ -87,10 +87,9 @@ function ReleaseCard({ release }: { release: JsReleaseNotes }) {
   )
 }
 
-// Why: the notes come from the server, which never answers in a frame, so the shimmer shows at once.
 function ReleasesSkeleton() {
   return (
-    <LoadingRegion isDelayed={false} className="flex flex-col gap-4">
+    <LoadingRegion className="flex flex-col gap-4">
       {[3, 2, 4].map((lines, index) => (
         <SkeletonCard key={index}>
           <SkeletonLine className="h-4 w-1/4" />

@@ -40,7 +40,11 @@ class ReleaseNotesRepositoryImpl(
 
     override suspend fun refreshReleases(language: String): Result<Unit> = refreshMutex.withLock {
         suspendRunCatching {
-            val saved = local.getSavedFeed(language)
+            /*
+             * Why: a saved feed this version of the app can't read counts as none: it is downloaded again now, and
+             * without its ETag, since an "unchanged" answer would leave the screen with nothing to draw.
+             */
+            val saved = local.getSavedFeed(language)?.takeIf { parser.parse(it.json) != null }
             if (saved?.isFresh() != true) {
                 download(
                     language = language,

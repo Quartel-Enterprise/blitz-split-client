@@ -353,5 +353,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun customColorDao(): CustomColorDao
 
     abstract fun payingMethodDao(): PayingMethodDao
+
     abstract fun releaseNotesFeedDao(): ReleaseNotesFeedDao
 }

@@ -113,6 +113,7 @@ class RoomReleaseNotesLocalDataSourceTest {
         // Then
         assertEquals(
             SavedReleaseNotesFeed(
+                json = "{}",
                 etag = "\"abc\"",
                 checkedAt = 1_000L,
             ),
@@ -139,6 +140,7 @@ class RoomReleaseNotesLocalDataSourceTest {
         // Then
         assertEquals(
             SavedReleaseNotesFeed(
+                json = "{}",
                 etag = null,
                 checkedAt = 1_000L,
             ),

@@ -25,7 +25,6 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
@@ -61,10 +60,9 @@ import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
-import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
+import com.quare.blitzsplit.feature.profile.presentation.mapper.toItemOrNull
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toProfileAppInvite
 import com.quare.blitzsplit.feature.profile.presentation.model.PROFILE_SOURCE
-import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
@@ -98,11 +96,11 @@ class ProfileViewModel(
     private val signOut: SignOut,
     private val signOutWhenSynced: SignOutWhenSynced,
     private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
-    private val validatePaymentKey: ValidatePaymentKey,
     private val exportUserData: ExportUserData,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
     private val openLegalPage: OpenLegalPage,
+    validatePaymentKey: ValidatePaymentKey,
     dismissAppInvite: DismissAppInvite,
     observeAppInvite: ObserveAppInvite,
     updateMechanism: UpdateMechanism,
@@ -204,7 +202,13 @@ class ProfileViewModel(
          * so the add rows never draw one way and switch to the other.
          */
         combine(observePaymentKeys(), firstDownload, observeShowsPix()) { keys, download, showsPix ->
-            val items = if (download != null) Loadable.Loading else keys.mapNotNull(::toItem).toLoaded()
+            val items = if (download !=
+                null
+            ) {
+                Loadable.Loading
+            } else {
+                keys.mapNotNull { it.toItemOrNull(validatePaymentKey) }.toLoaded()
+            }
             items to showsPix
         }.onEach { (keys, showsPix) ->
             uiState.update {
@@ -424,19 +428,6 @@ class ProfileViewModel(
                 method = method,
                 keyId = keyId,
             ),
-        )
-    }
-
-    // Why: the rules tell the format the row names ("· Taproot"); a key they reject never reaches here.
-    private fun toItem(key: PaymentKey): PaymentKeyItem? {
-        val validation = validatePaymentKey(key.type, key.value, otherKeys = emptyList())
-        val format = (validation as? PaymentKeyValidation.Valid)?.format ?: return null
-        return PaymentKeyItem(
-            id = key.id,
-            type = key.type,
-            format = format,
-            maskedValue = key.value.toMaskedPaymentKey(format),
-            isDefault = key.isDefault,
         )
     }
 

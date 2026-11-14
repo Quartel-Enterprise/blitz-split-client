@@ -579,6 +579,47 @@ class ReleaseNotesRepositoryImplTest {
         assertEquals(listOf("pt"), remote.requests)
     }
 
+    @Test
+    fun `GIVEN the feed saved today is one the app cannot read WHEN refreshing THEN downloads it again`() = runTest {
+        // Given
+        prepareScenario(
+            saved = mapOf("pt" to savedFeed(json = errorPage)),
+            site = mapOf("pt" to newFeed),
+        )
+
+        // When
+        val result = repository.refreshReleases("pt")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf(published("3.1.0"), published("3.0.0")), repository.observeReleases("pt").first())
+    }
+
+    @Test
+    fun `GIVEN an old saved feed the app cannot read WHEN refreshing THEN asks without its ETag and saves it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = errorPage,
+                        etag = "\"abc\"",
+                        checkedAt = NOW - 2.days.ms,
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                siteEtags = mapOf("pt" to "\"abc\""),
+            )
+
+            // When
+            val result = repository.refreshReleases("pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf<String?>(null), remote.sentEtags)
+            assertEquals(listOf(published("3.1.0"), published("3.0.0")), repository.observeReleases("pt").first())
+        }
+
     private fun savedFeed(
         json: String,
         etag: String? = null,
@@ -628,6 +669,7 @@ private class FakeReleaseNotesLocalDataSource(
 
     override suspend fun getSavedFeed(language: String): SavedReleaseNotesFeed? = rows.value[language]?.let { row ->
         SavedReleaseNotesFeed(
+            json = row.json,
             etag = row.etag,
             checkedAt = row.checkedAt,
         )
