@@ -976,6 +976,7 @@ export const ja: Record<MessageKey, string> = {
   paymentKey_switchedONCHAIN: 'オンチェーンのアドレスなので、オンチェーンに切り替えました。',
   paymentKey_switchedLIGHTNING: 'Lightning Addressなので、Lightningに切り替えました。',
   paymentKey_cpfNotice: 'あなたに支払う人には、CPFがすべて表示されます。共有したくない場合は、電話番号、メール、ランダムキーを使ってください。',
+  paymentKey_heldNotice: 'この種類のPixキーは1つしか登録できないため、保存済みのキーを表示しています。必要ならここで変更してください。',
   paymentKey_accepted: '対応形式',
   paymentKey_acceptedLightningAddressSample: 'name@wallet.app',
   paymentKey_acceptedLightningAddress: 'Lightning Address',

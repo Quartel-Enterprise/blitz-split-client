@@ -294,6 +294,8 @@ class ProfileViewModel(
 
             is ProfileUiEvent.OnLanguageSelected -> languagePicker.select(event.language)
 
+            is ProfileUiEvent.OnLanguageQueryChanged -> languagePicker.search(event.query)
+
             ProfileUiEvent.OnDynamicColorsInfoClicked -> dialogs.openDynamicColorsInfo()
 
             ProfileUiEvent.OnEmailInfoClicked -> dialogs.openEmailInfo()

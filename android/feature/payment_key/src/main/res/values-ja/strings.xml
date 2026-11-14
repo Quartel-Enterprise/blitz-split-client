@@ -57,6 +57,7 @@
     <string name="payment_key_switched_to_onchain">オンチェーンのアドレスのため、オンチェーンに切り替えました。</string>
     <string name="payment_key_switched_to_lightning">Lightning Addressのため、Lightningに切り替えました。</string>
     <string name="payment_key_cpf_notice">あなたに支払う人には、CPFがすべて表示されます。共有したくない場合は、電話番号、メール、ランダムキーを使ってください。</string>
+    <string name="payment_key_held_notice">この種類のPixキーは1つしか登録できないため、保存済みのキーを表示しています。必要ならここで変更してください。</string>
 
     <string name="payment_key_accepted_title">対応形式</string>
     <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>

@@ -21,13 +21,12 @@ object PixBrCode {
     private const val CRC_LENGTH = 4
     private const val HEX_RADIX = 16
 
-    // Why: letters past TextFolding's Portuguese and Spanish ones, which would otherwise be dropped ("Šárka" → "Sarka").
+    // Why: letters past TextFolding's own, which would otherwise be dropped ("Šárka" → "Sarka").
     private val MORE_FOLDS = mapOf(
         'ÿ' to 'y',
         'š' to 's',
         'ž' to 'z',
         'č' to 'c',
-        'ć' to 'c',
         'ř' to 'r',
         'ď' to 'd',
         'ť' to 't',
@@ -35,26 +34,15 @@ object PixBrCode {
         'ľ' to 'l',
         'ĺ' to 'l',
         'ŕ' to 'r',
-        'ś' to 's',
-        'ź' to 'z',
-        'ż' to 'z',
-        'ł' to 'l',
-        'ő' to 'o',
-        'ű' to 'u',
         'ă' to 'a',
         'ș' to 's',
         'ţ' to 't',
         'ț' to 't',
-        'ę' to 'e',
-        'ą' to 'a',
         'ė' to 'e',
         'ī' to 'i',
         'ū' to 'u',
         'ē' to 'e',
         'ā' to 'a',
-        'ğ' to 'g',
-        'ş' to 's',
-        'ı' to 'i',
         'ø' to 'o',
     )
 

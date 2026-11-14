@@ -976,6 +976,7 @@ export const tr: Record<MessageKey, string> = {
   paymentKey_switchedONCHAIN: "Bu bir on-chain adresi, bu yüzden On-chain'e geçtik.",
   paymentKey_switchedLIGHTNING: "Bu bir Lightning Address, bu yüzden Lightning'e geçtik.",
   paymentKey_cpfNotice: 'Sana ödeme yapan kişi CPF numaranın tamamını görür. Paylaşmak istemiyorsan telefon, e-posta veya rastgele anahtar kullan.',
+  paymentKey_heldNotice: 'Bu türde yalnızca bir Pix anahtarın olabilir, bu yüzden kaydettiğin anahtar gösteriliyor. İstersen buradan değiştir.',
   paymentKey_accepted: 'Kabul ettiklerimiz',
   paymentKey_acceptedLightningAddressSample: 'ad@cuzdan.app',
   paymentKey_acceptedLightningAddress: 'Lightning Address',

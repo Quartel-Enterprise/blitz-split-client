@@ -212,6 +212,11 @@ function PaymentKeyForm({ presenter, state }: { presenter: PaymentKeyPresenter; 
           </>
         )}
       </div>
+      {state.isShowingHeldKey && (
+        <Notice icon={<Info className="mt-0.5 size-4 shrink-0" />}>
+          <span>{t('paymentKey_heldNotice')}</span>
+        </Notice>
+      )}
       {state.showsCpfNotice && (
         <Notice icon={<Info className="mt-0.5 size-4 shrink-0" />}>
           <span>{t('paymentKey_cpfNotice')}</span>

@@ -977,6 +977,7 @@ export const de: Record<MessageKey, string> = {
   paymentKey_switchedONCHAIN: 'Das ist eine On-Chain-Adresse, daher haben wir zu On-Chain gewechselt.',
   paymentKey_switchedLIGHTNING: 'Das ist eine Lightning Address, daher haben wir zu Lightning gewechselt.',
   paymentKey_cpfNotice: 'Wer dir zahlt, sieht deine vollständige CPF. Wenn du sie nicht teilen möchtest, nutze einen Telefon-, E-Mail- oder Zufallsschlüssel.',
+  paymentKey_heldNotice: 'Du kannst nur einen Pix-Schlüssel dieses Typs haben, daher siehst du hier deinen gespeicherten. Ändere ihn hier, wenn du willst.',
   paymentKey_accepted: 'Wir akzeptieren',
   paymentKey_acceptedLightningAddressSample: 'name@wallet.app',
   paymentKey_acceptedLightningAddress: 'Lightning Address',

@@ -15,3 +15,7 @@ enum class FormFactor {
     Book,
     Tabletop,
 }
+
+// Why: a phone, upright or lying down, where a sheet opens from the bottom and a tall list fills the screen.
+val FormFactor.isPhone: Boolean
+    get() = this == FormFactor.Phone || this == FormFactor.PhoneLandscape

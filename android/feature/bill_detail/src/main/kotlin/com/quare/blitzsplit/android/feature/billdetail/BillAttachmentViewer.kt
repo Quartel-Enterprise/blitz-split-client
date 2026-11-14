@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -52,10 +50,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
-import androidx.core.view.WindowCompat
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.quare.blitzsplit.android.designsystem.component.DialogSystemBarsEffect
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.shimmer
@@ -111,7 +108,8 @@ internal fun BillAttachmentViewerDialog(
         ),
         placement = if (isBook) DialogPlacement.EndHalf else DialogPlacement.Centered,
     ) {
-        LightSystemBarsEffect()
+        // Why: light icons on the viewer's black, which the dialog's window would otherwise draw dark.
+        DialogSystemBarsEffect(isLight = false)
         CompositionLocalProvider(LocalContentColor provides viewerContent) {
             ViewerContent(
                 attachments = attachments,
@@ -122,19 +120,6 @@ internal fun BillAttachmentViewerDialog(
                 callbacks = callbacks,
                 isInHalf = isBook,
             )
-        }
-    }
-}
-
-// Why: the dialog's window draws behind the system bars, whose icons would otherwise stay dark on the black.
-@Composable
-private fun LightSystemBarsEffect() {
-    val view = LocalView.current
-    SideEffect {
-        val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
-        WindowCompat.getInsetsController(window, view).apply {
-            isAppearanceLightStatusBars = false
-            isAppearanceLightNavigationBars = false
         }
     }
 }
