@@ -36,7 +36,7 @@ export function CategoryFormDialog({ presenter, state, form, isDesktop }: { pres
       onOpenChange={(open) => {
         if (!open) presenter.dismissForm()
       }}
-      pane={categoryFormPane(presenter, form, state.icons, groupField || undefined)}
+      pane={categoryFormPane(presenter, form, state.icons, state.customColors, groupField || undefined)}
     />
   )
 }

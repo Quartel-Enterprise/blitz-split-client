@@ -286,4 +286,21 @@
     <string name="designsystem_bill_menu_share">Partager</string>
     <string name="designsystem_bill_menu_delete">Supprimer</string>
     <string name="designsystem_bill_menu_options">Options pour %s</string>
+    <string name="designsystem_custom_color_add">Ajouter une couleur</string>
+    <string name="designsystem_custom_color_title">Nouvelle couleur</string>
+    <string name="designsystem_custom_color_shade">Saturation et luminosité</string>
+    <string name="designsystem_custom_color_hue">Teinte</string>
+    <string name="designsystem_custom_color_hex">Code hex</string>
+    <string name="designsystem_custom_color_hex_error">Saisissez un code comme #3A7BD5</string>
+    <string name="designsystem_custom_color_rgb_error">Chaque valeur va de 0 à 255</string>
+    <string name="designsystem_custom_color_save">Ajouter</string>
+    <string name="designsystem_custom_color_label">Couleur personnalisée %1$s</string>
+    <string name="designsystem_custom_color_full">Votre palette est pleine : appuyez longuement sur une de vos couleurs pour la supprimer.</string>
+    <string name="designsystem_custom_color_hint">Appuyez longuement sur une de vos couleurs pour la supprimer.</string>
+    <string name="designsystem_custom_color_delete_title">Supprimer cette couleur ?</string>
+    <string name="designsystem_custom_color_delete_message">Elle quitte votre palette sur tous vos appareils.</string>
+    <string name="designsystem_custom_color_delete">Supprimer</string>
+    <string name="designsystem_custom_color_in_use_title">Cette couleur est utilisée</string>
+    <string name="designsystem_custom_color_in_use_message">%1$s utilise cette couleur. Changez d’abord sa couleur, puis supprimez celle-ci.</string>
+    <string name="designsystem_custom_color_ok">OK</string>
 </resources>

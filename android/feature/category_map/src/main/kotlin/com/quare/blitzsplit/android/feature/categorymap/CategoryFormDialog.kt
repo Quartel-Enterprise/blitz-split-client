@@ -41,6 +41,7 @@ internal fun CategoryFormDialog(
             onParentPicked = { onEvent(CategoryMapUiEvent.OnCategoryParentPicked(it)) },
             onIconPicked = { onEvent(CategoryMapUiEvent.OnCategoryIconPicked(it)) },
             onColorPicked = { onEvent(CategoryMapUiEvent.OnCategoryColorPicked(it)) },
+            onCustomColor = { onEvent(CategoryMapUiEvent.OnCustomColor(it)) },
             onSave = { onEvent(CategoryMapUiEvent.OnCategoryFormSaveClicked) },
             onDismiss = { onEvent(CategoryMapUiEvent.OnCategoryFormDismissed) },
             onDelete = { onEvent(CategoryMapUiEvent.OnCategoryDeleteClicked) },
@@ -67,6 +68,7 @@ internal fun CategoryFormDialog(
             snackbarHostState = snackbarHostState,
             actions = actions,
             groupField = groupField,
+            customColors = state.customColors,
         )
     }
     if (isDialog) {

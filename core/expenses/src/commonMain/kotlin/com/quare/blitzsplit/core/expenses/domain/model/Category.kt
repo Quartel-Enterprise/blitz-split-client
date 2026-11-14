@@ -13,7 +13,7 @@ data class Category(
     val name: String?,
     val icon: CategoryIcon,
     // Why: its main category's color, the same in the pie and in its row.
-    val color: CategoryColor,
+    val color: CategoryTint,
     // Why: the main category of a subcategory; null for a main one.
     val parentId: String?,
     // Why: "Criada por Ana · do grupo"; null for the app's.

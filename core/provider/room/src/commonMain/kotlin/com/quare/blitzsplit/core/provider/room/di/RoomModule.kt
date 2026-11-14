@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.provider.room.dao.BillAttachmentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentDao
 import com.quare.blitzsplit.core.provider.room.dao.BillCommentLikeDao
 import com.quare.blitzsplit.core.provider.room.dao.CategoryTermDao
+import com.quare.blitzsplit.core.provider.room.dao.CustomColorDao
 import com.quare.blitzsplit.core.provider.room.dao.DeviceSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ExpenseDao
 import com.quare.blitzsplit.core.provider.room.dao.GroupCategoryDao
@@ -53,6 +54,7 @@ val roomModule: Module = module {
     single<AppCategoryColorDao> { get<AppDatabase>().appCategoryColorDao() }
     single<GroupCategoryDao> { get<AppDatabase>().groupCategoryDao() }
     single<CategoryTermDao> { get<AppDatabase>().categoryTermDao() }
+    single<CustomColorDao> { get<AppDatabase>().customColorDao() }
     single<MemberPaymentKeyDao> { get<AppDatabase>().memberPaymentKeyDao() }
     single<BillCommentDao> { get<AppDatabase>().billCommentDao() }
     single<BillCommentLikeDao> { get<AppDatabase>().billCommentLikeDao() }

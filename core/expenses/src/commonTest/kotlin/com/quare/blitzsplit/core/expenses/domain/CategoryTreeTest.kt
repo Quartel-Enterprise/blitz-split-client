@@ -4,9 +4,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -36,7 +38,7 @@ class CategoryTreeTest {
         // When
         val second = CategoryTree.of(
             groupCategories = listOf(praia, churrasco),
-            appColors = mapOf(AppCategory.FOOD.key to CategoryColor.BLUE),
+            appColors = mapOf(AppCategory.FOOD.key to CategoryColor.BLUE.tint),
         )
 
         // Then
@@ -68,7 +70,7 @@ class CategoryTreeTest {
         assertEquals(listOf("praia", AppCategory.OTHER.key), mains.takeLast(2))
         assertEquals("churrasco", food?.subcategories?.last()?.id)
         assertEquals(CategoryIcon.FOOD, food?.subcategories?.last()?.icon)
-        assertEquals(CategoryColor.ORANGE, food?.subcategories?.last()?.color)
+        assertEquals(CategoryColor.ORANGE.tint, food?.subcategories?.last()?.color)
     }
 
     @Test
@@ -243,7 +245,7 @@ class CategoryTreeTest {
         val color = tree.nextMainColor
 
         // Then
-        assertEquals(CategoryColor.LIME, color)
+        assertEquals(CategoryColor.LIME.tint, color)
     }
 
     @Test
@@ -259,7 +261,7 @@ class CategoryTreeTest {
         val color = tree.nextMainColor
 
         // Then
-        assertEquals(CategoryColor.LIME, color)
+        assertEquals(CategoryColor.LIME.tint, color)
     }
 
     @Test
@@ -269,7 +271,7 @@ class CategoryTreeTest {
             praia.copy(
                 id = "main-$index",
                 name = "Main $index",
-                color = CategoryColor.entries[index],
+                color = CategoryColor.entries[index].tint,
             )
         }
         val tree = CategoryTree.of(mains)
@@ -278,7 +280,31 @@ class CategoryTreeTest {
         val color = tree.nextMainColor
 
         // Then
-        assertEquals(CategoryColor.entries[tree.branches.size % CategoryColor.entries.size], color)
+        assertEquals(CategoryColor.entries[tree.branches.size % CategoryColor.entries.size].tint, color)
+    }
+
+    @Test
+    fun `GIVEN a group main category in a custom color WHEN asking the next main color THEN no named color is taken`() {
+        // Given
+        val tree = CategoryTree.of(listOf(praia.copy(color = CustomColor(0x3A7BD5).tint)))
+
+        // When
+        val color = tree.nextMainColor
+
+        // Then
+        assertEquals(CategoryColor.LIME.tint, color)
+    }
+
+    @Test
+    fun `GIVEN Food in a custom color WHEN asking the next main color THEN its default orange is free again`() {
+        // Given
+        val tree = CategoryTree.of(emptyList(), mapOf(AppCategory.FOOD.key to CustomColor(0x3A7BD5).tint))
+
+        // When
+        val color = tree.nextMainColor
+
+        // Then
+        assertEquals(CategoryColor.ORANGE.tint, color)
     }
 
     @Test

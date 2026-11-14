@@ -278,4 +278,21 @@
     <string name="designsystem_bill_menu_share">Compartilhar</string>
     <string name="designsystem_bill_menu_delete">Apagar</string>
     <string name="designsystem_bill_menu_options">Opções de %s</string>
+    <string name="designsystem_custom_color_add">Adicionar cor</string>
+    <string name="designsystem_custom_color_title">Nova cor</string>
+    <string name="designsystem_custom_color_shade">Saturação e brilho</string>
+    <string name="designsystem_custom_color_hue">Matiz</string>
+    <string name="designsystem_custom_color_hex">Código hex</string>
+    <string name="designsystem_custom_color_hex_error">Digite um código como #3A7BD5</string>
+    <string name="designsystem_custom_color_rgb_error">Cada valor vai de 0 a 255</string>
+    <string name="designsystem_custom_color_save">Adicionar</string>
+    <string name="designsystem_custom_color_label">Cor personalizada %1$s</string>
+    <string name="designsystem_custom_color_full">Sua paleta está cheia: toque e segure uma das suas cores para excluí-la.</string>
+    <string name="designsystem_custom_color_hint">Toque e segure uma das suas cores para excluí-la.</string>
+    <string name="designsystem_custom_color_delete_title">Excluir esta cor?</string>
+    <string name="designsystem_custom_color_delete_message">Ela sai da sua paleta em todos os seus aparelhos.</string>
+    <string name="designsystem_custom_color_delete">Excluir</string>
+    <string name="designsystem_custom_color_in_use_title">Esta cor está em uso</string>
+    <string name="designsystem_custom_color_in_use_message">%1$s usa esta cor. Troque a cor dela primeiro e depois exclua esta.</string>
+    <string name="designsystem_custom_color_ok">OK</string>
 </resources>

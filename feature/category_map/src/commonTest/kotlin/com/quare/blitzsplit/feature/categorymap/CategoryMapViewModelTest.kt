@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryU
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetAppCategoryColorUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.testing.createFakeCustomColorUseCases
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -956,6 +957,7 @@ class CategoryMapViewModelTest {
             restoreCategoryMap = RestoreCategoryMapUseCase(terms) { NOW },
             setAppCategoryColor = SetAppCategoryColorUseCase(categories),
             saveGroupCategory = SaveGroupCategoryUseCase(categories) { NOW },
+            customColorUseCases = createFakeCustomColorUseCases(),
             deleteGroupCategory = DeleteGroupCategoryUseCase(categories) { NOW },
             observeCategoryMap = ObserveCategoryMapUseCase(terms),
             observeMapCategories = {

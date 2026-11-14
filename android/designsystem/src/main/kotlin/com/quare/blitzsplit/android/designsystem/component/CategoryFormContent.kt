@@ -56,11 +56,13 @@ import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.android.designsystem.theme.toDataColor
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryEditor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 
 private val previewActions = CategoryFormActions(
@@ -68,6 +70,7 @@ private val previewActions = CategoryFormActions(
     onParentPicked = {},
     onIconPicked = {},
     onColorPicked = {},
+    onCustomColor = {},
     onSave = {},
     onDismiss = {},
     onDelete = {},
@@ -79,7 +82,8 @@ data class CategoryFormActions(
     val onNameChanged: (String) -> Unit,
     val onParentPicked: (String?) -> Unit,
     val onIconPicked: (CategoryIcon) -> Unit,
-    val onColorPicked: (CategoryColor) -> Unit,
+    val onColorPicked: (CategoryTint) -> Unit,
+    val onCustomColor: (CustomColorEvent) -> Unit,
     val onSave: () -> Unit,
     val onDismiss: () -> Unit,
     val onDelete: () -> Unit,
@@ -97,6 +101,8 @@ fun CategoryFormContent(
     snackbarHostState: SnackbarHostState,
     actions: CategoryFormActions,
     groupField: (@Composable () -> Unit)? = null,
+    // Why: the person's own colors after the named ones in "Color".
+    customColors: CustomColorState = CustomColorState.idle,
 ) {
     val form = editor.form
     val title = stringResource(
@@ -160,6 +166,8 @@ fun CategoryFormContent(
                 CategoryColorPicker(
                     selected = form.color,
                     onSelected = actions.onColorPicked,
+                    customColors = customColors,
+                    onCustomColor = actions.onCustomColor,
                 )
             }
             if (form.isEditing) {
@@ -348,7 +356,7 @@ private fun PreviewRow(editor: CategoryEditor) {
 @Composable
 private fun IconGrid(
     selected: CategoryIcon,
-    color: CategoryColor,
+    color: CategoryTint,
     onIconPicked: (CategoryIcon) -> Unit,
 ) {
     val isDark = LocalIsDarkTheme.current

@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -119,7 +120,7 @@ class CategoryEditorTest {
         val color = editor(form).color
 
         // Then
-        assertEquals(CategoryColor.ORANGE, color)
+        assertEquals(CategoryColor.ORANGE.tint, color)
     }
 
     @Test
@@ -136,7 +137,7 @@ class CategoryEditorTest {
         val color = editor(form, categories = categories).color
 
         // Then
-        assertEquals(CategoryColor.ORANGE, color)
+        assertEquals(CategoryColor.ORANGE.tint, color)
         assertEquals(categories.findOrNull("bar")?.color, color)
     }
 
@@ -173,7 +174,7 @@ class CategoryEditorTest {
 
         // Then
         assertEquals(tree.nextMainColor, color)
-        assertEquals(CategoryColor.LIME, color)
+        assertEquals(CategoryColor.LIME.tint, color)
     }
 
     @Test

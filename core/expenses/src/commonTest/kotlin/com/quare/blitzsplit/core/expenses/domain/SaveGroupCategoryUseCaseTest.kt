@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.domain
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
@@ -23,7 +24,7 @@ class SaveGroupCategoryUseCaseTest {
         val name = "  Pet  "
 
         // When
-        val id = save(null, GROUP_ID, name, null, CategoryIcon.PAW, CategoryColor.TEAL, "me").getOrThrow()
+        val id = save(null, GROUP_ID, name, null, CategoryIcon.PAW, CategoryColor.TEAL.tint, "me").getOrThrow()
 
         // Then
         val stored = repository.groupCategories.value.single()
@@ -37,7 +38,7 @@ class SaveGroupCategoryUseCaseTest {
         val parentId = "food"
 
         // When
-        save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, CategoryColor.TEAL, "me")
+        save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, CategoryColor.TEAL.tint, "me")
 
         // Then
         assertNull(
@@ -53,7 +54,7 @@ class SaveGroupCategoryUseCaseTest {
         val name = "   "
 
         // When
-        val result = save(null, GROUP_ID, name, null, CategoryIcon.PAW, CategoryColor.TEAL, "me")
+        val result = save(null, GROUP_ID, name, null, CategoryIcon.PAW, CategoryColor.TEAL.tint, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -79,7 +80,7 @@ class SaveGroupCategoryUseCaseTest {
             )
 
             // When
-            save("cat-1", GROUP_ID, "Bichos", "home", CategoryIcon.PAW, CategoryColor.TEAL, "me")
+            save("cat-1", GROUP_ID, "Bichos", "home", CategoryIcon.PAW, CategoryColor.TEAL.tint, "me")
             val edited = repository.observeGroupCategories(GROUP_ID).first().single()
             DeleteGroupCategoryUseCase(repository) { 2_000L }("cat-1")
 
@@ -98,7 +99,7 @@ class SaveGroupCategoryUseCaseTest {
         val parentId = "other"
 
         // When
-        val result = save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, CategoryColor.TEAL, "me")
+        val result = save(null, GROUP_ID, "Feira", parentId, CategoryIcon.PAW, CategoryColor.TEAL.tint, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -111,7 +112,7 @@ class SaveGroupCategoryUseCaseTest {
         repository.groupCategories.value = listOf(category("pet", parentId = null), category("vet", parentId = "pet"))
 
         // When
-        val result = save(null, GROUP_ID, "Banho", "vet", CategoryIcon.PAW, CategoryColor.TEAL, "me")
+        val result = save(null, GROUP_ID, "Banho", "vet", CategoryIcon.PAW, CategoryColor.TEAL.tint, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -123,7 +124,7 @@ class SaveGroupCategoryUseCaseTest {
         repository.groupCategories.value = listOf(category("pet", parentId = null))
 
         // When
-        val id = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, CategoryColor.TEAL, "me").getOrThrow()
+        val id = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, CategoryColor.TEAL.tint, "me").getOrThrow()
 
         // Then
         assertEquals(
@@ -146,7 +147,7 @@ class SaveGroupCategoryUseCaseTest {
         )
 
         // When
-        val result = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, CategoryColor.TEAL, "me")
+        val result = save(null, GROUP_ID, "Banho", "pet", CategoryIcon.PAW, CategoryColor.TEAL.tint, "me")
 
         // Then
         assertTrue(result.isFailure)
@@ -160,7 +161,7 @@ class SaveGroupCategoryUseCaseTest {
                 listOf(category("pet", parentId = null), category("vet", parentId = "pet"))
 
             // When
-            val result = save("pet", GROUP_ID, "Pet", "home", CategoryIcon.PAW, CategoryColor.TEAL, "me")
+            val result = save("pet", GROUP_ID, "Pet", "home", CategoryIcon.PAW, CategoryColor.TEAL.tint, "me")
 
             // Then
             assertTrue(result.isFailure)

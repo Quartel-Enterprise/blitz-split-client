@@ -134,8 +134,26 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     shows its main category's. A group's own main category picks its color in its form ("Color", under "Icon";
     a new one starts with the first color no main category uses), stored on the category (`group_categories.color`)
     and synced to the group's members like its icon. The app's own categories are the same for everyone, so their color is changed per person, on this device only (`app_category_color`): Category map's
-    palette button on each main category but Other (a menu on Apple and the web, a dialog on Android) with "Restore
-    color", which brings the app's default back.
+    palette button on each main category but Other (a popover on Apple and the web, a dialog on Android) with
+    "Restore color", which brings the app's default back.
+    Besides the 12, the person may create colors of their own (Pierre's beta feedback of 2026-11-14): every color
+    picker (Category map's "Change color of Food" and the category form's "Color") shows the person's colors after the
+    named ones, then "+", which opens "New color": a gradient (saturation and brightness in a square, the hue in a bar
+    below) and the same color as a "Hex code" and as Red, Green and Blue (0 to 255), each following the others; "Add"
+    waits for whole codes ("Enter a code like #3A7BD5", "Each value goes from 0 to 255"), puts the color in the palette
+    and gives it to the category. The palette is the person's own, offline first and synced with the account like the
+    category map (`custom_color`, the server's `custom_colors`), up to 12 colors ("Your palette is full: long press one
+    of your colors to delete it."); a long press (a right click on the Mac and the web) on one of them asks "Delete
+    this color?" ("It leaves your palette on all your devices."), unless a category the person can see uses it (one
+    of the app's on this device, or one of any group's on the device), which says "Food uses this color. Change its
+    color first, then delete it." and deletes nothing. A custom color goes anywhere a named one does: an app category
+    keeps it per device (`app_category_color` holds its hex), a group's own category stores it as `#RRGGBB` in
+    `group_categories.color` and syncs it to the members, who see it picked in the form even though it isn't in their
+    palette (and can't delete it). A version older than custom colors reads a hex as none picked and draws the
+    category in its default color. A custom color is only a base, never drawn as is: the badge, its icon and the
+    chart's marks are tones derived from its hue in the shared code (`CustomColor.toTones`), a light tint with dark
+    content in light, a deep shade under light content in dark, each lightness searched for its contrast (content
+    7:1 on its badge, the data tone 4.5:1 on a light card and 7:1 on a dark one), so any color picked stays readable.
   - "New category" (7.8, `GroupCategory`, the group's `group_categories`): anyone in the group may create, rename,
     move and delete the group's own categories, offline too (the change waits in the queue, Last-Write-Wins per
     row). A name has 1 to 30 letters and can't repeat inside the same main category, the app's names included; a

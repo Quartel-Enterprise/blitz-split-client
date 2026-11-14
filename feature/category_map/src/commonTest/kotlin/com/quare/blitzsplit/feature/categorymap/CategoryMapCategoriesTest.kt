@@ -1,12 +1,15 @@
 package com.quare.blitzsplit.feature.categorymap
 
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.SaveGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
@@ -18,6 +21,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryU
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetAppCategoryColorUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.testing.createFakeCustomColorUseCases
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AccountStatus
@@ -30,6 +34,7 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.feature.categorymap.presentation.model.CATEGORY_MAP_SOURCE
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiAction
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
@@ -613,14 +618,81 @@ class CategoryMapCategoriesTest {
         viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
 
         // When
-        viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(CategoryColor.BROWN))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(CategoryColor.BROWN.tint))
 
         // Then
         assertEquals(
-            CategoryColor.BROWN,
+            CategoryColor.BROWN.tint,
             viewModel.uiState.value.categoryForm
                 ?.color,
         )
+    }
+
+    @Test
+    fun `GIVEN New color opened for Food WHEN adding a hex THEN Food wears it and the palette has it`() = runTest {
+        // Given
+        prepareScenario()
+        val food = AppCategory.FOOD
+        val current = viewModel.uiState.value.categories
+            .findOrNull(food.key)!!
+            .color
+        viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(current, food.key)))
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnHexChanged("#3A7BD5")))
+        viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnSaveClicked))
+
+        // Then
+        val custom = CustomColor(0x3A7BD5)
+        val state = viewModel.uiState.value
+        assertEquals(custom.tint, state.categories.findOrNull(food.key)?.color)
+        assertEquals(listOf(custom), state.customColors.palette)
+        assertNull(state.customColors.draft)
+    }
+
+    @Test
+    fun `GIVEN a new main category WHEN adding a color from its form THEN only the form holds it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        val current = viewModel.uiState.value.categoryForm!!
+            .color
+        viewModel.onEvent(
+            CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(current, categoryKey = null)),
+        )
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnHexChanged("3a7bd5")))
+        viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnSaveClicked))
+
+        // Then
+        assertEquals(
+            CustomColor(0x3A7BD5).tint,
+            viewModel.uiState.value.categoryForm
+                ?.color,
+        )
+        assertEquals(emptyMap(), categories.appColors.value)
+        assertTrue(
+            trackedEvents.contains(
+                "category_color_picked" to mapOf("color" to "custom", "source" to CATEGORY_MAP_SOURCE),
+            ),
+        )
+    }
+
+    @Test
+    fun `GIVEN New color open from the form WHEN closing the form THEN New color closes with it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        val current = viewModel.uiState.value.categoryForm!!
+            .color
+        viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(current, categoryKey = null)))
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.customColors.draft)
     }
 
     @Test
@@ -630,11 +702,11 @@ class CategoryMapCategoriesTest {
         viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = AppCategory.TRANSPORT.key))
 
         // When
-        viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(CategoryColor.BROWN))
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryColorPicked(CategoryColor.BROWN.tint))
 
         // Then
         assertEquals(
-            AppCategory.TRANSPORT.defaultColor,
+            AppCategory.TRANSPORT.defaultColor.tint,
             viewModel.uiState.value.categoryForm
                 ?.color,
         )
@@ -647,7 +719,7 @@ class CategoryMapCategoriesTest {
         val food = AppCategory.FOOD
 
         // When
-        viewModel.onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(food.key, CategoryColor.RED))
+        viewModel.onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(food.key, CategoryColor.RED.tint))
         val picked = viewModel.uiState.value.categories
             .findOrNull(food.key)
             ?.color
@@ -657,8 +729,8 @@ class CategoryMapCategoriesTest {
             ?.color
 
         // Then
-        assertEquals(CategoryColor.RED, picked)
-        assertEquals(food.defaultColor, restored)
+        assertEquals(CategoryColor.RED.tint, picked)
+        assertEquals(food.defaultColor.tint, restored)
     }
 
     @Test
@@ -1699,6 +1771,7 @@ class CategoryMapCategoriesTest {
                 if (holdsWrites) writeGate.await()
                 saveGroupCategory(categoryId, groupId, name, parentId, icon, color, createdByMemberId)
             },
+            customColorUseCases = createFakeCustomColorUseCases(),
             deleteGroupCategory = { categoryId ->
                 if (holdsWrites) writeGate.await()
                 deleteGroupCategory(categoryId)

@@ -310,11 +310,13 @@ private fun BillCategoryFormContent(
                 onParentPicked = { onEvent(SplitBillUiEvent.OnCategoryParentPicked(it)) },
                 onIconPicked = { onEvent(SplitBillUiEvent.OnCategoryIconPicked(it)) },
                 onColorPicked = { onEvent(SplitBillUiEvent.OnCategoryColorPicked(it)) },
+                onCustomColor = { onEvent(SplitBillUiEvent.OnCustomColor(it)) },
                 onSave = { onEvent(SplitBillUiEvent.OnCategoryFormSaveClicked) },
                 onDismiss = { onEvent(SplitBillUiEvent.OnCategoryFormDismissed) },
                 onDelete = { onEvent(SplitBillUiEvent.OnCategoryDeleteClicked) },
             )
         },
+        customColors = state.customColors,
     )
 }
 

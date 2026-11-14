@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
@@ -1063,6 +1064,7 @@ class SplitBillUiStateTest {
         categoryPicker = null,
         categoryForm = null,
         categoryDeletion = null,
+        customColors = CustomColorState.idle,
         receipt = receipt,
         receiptCategoryId = null,
         receiptRequest = receiptSource?.let(ReceiptRequest::Open)

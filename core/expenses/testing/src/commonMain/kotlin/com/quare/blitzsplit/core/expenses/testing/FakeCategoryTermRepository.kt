@@ -19,6 +19,7 @@ class FakeCategoryTermRepository(
     var saveError: Throwable? = null
     var pushError: Throwable? = null
     var pullError: Throwable? = null
+    var clearError: Throwable? = null
 
     override fun observeChanges(): Flow<List<CategoryTermChange>> = changes
 
@@ -76,6 +77,7 @@ class FakeCategoryTermRepository(
     }
 
     override suspend fun clear() {
+        clearError?.let { throw it }
         isCleared = true
         changes.value = emptyList()
     }

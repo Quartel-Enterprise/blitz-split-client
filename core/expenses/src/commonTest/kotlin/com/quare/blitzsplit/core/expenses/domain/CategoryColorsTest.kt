@@ -4,8 +4,11 @@ import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SaveGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SetAppCategoryColorUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
@@ -24,7 +27,7 @@ class CategoryColorsTest {
         val mains = AppCategory.mains
 
         // When
-        val colors = mains.map { it.defaultColor }
+        val colors = mains.map { it.defaultColor.tint }
 
         // Then
         assertEquals(mains.size, colors.toSet().size)
@@ -37,10 +40,10 @@ class CategoryColorsTest {
         val leisure = AppCategory.LEISURE
 
         // When
-        val colors = food.defaultColor to leisure.defaultColor
+        val colors = food.defaultColor.tint to leisure.defaultColor.tint
 
         // Then
-        assertEquals(CategoryColor.ORANGE to CategoryColor.BLUE, colors)
+        assertEquals(CategoryColor.ORANGE.tint to CategoryColor.BLUE.tint, colors)
     }
 
     @Test
@@ -52,21 +55,21 @@ class CategoryColorsTest {
         val color = tree.findOrNull(AppCategory.FOOD_MARKET.key)?.color
 
         // Then
-        assertEquals(AppCategory.FOOD.defaultColor, color)
+        assertEquals(AppCategory.FOOD.defaultColor.tint, color)
     }
 
     @Test
     fun `GIVEN a color the person gave Food WHEN building the tree THEN Food and its subcategories wear it`() {
         // Given
-        val appColors = mapOf(AppCategory.FOOD.key to CategoryColor.RED)
+        val appColors = mapOf(AppCategory.FOOD.key to CategoryColor.RED.tint)
 
         // When
         val tree = CategoryTree.of(emptyList(), appColors)
 
         // Then
-        assertEquals(CategoryColor.RED, tree.findOrNull(AppCategory.FOOD.key)?.color)
-        assertEquals(CategoryColor.RED, tree.findOrNull(AppCategory.FOOD_BAR.key)?.color)
-        assertEquals(AppCategory.HOME.defaultColor, tree.findOrNull(AppCategory.HOME.key)?.color)
+        assertEquals(CategoryColor.RED.tint, tree.findOrNull(AppCategory.FOOD.key)?.color)
+        assertEquals(CategoryColor.RED.tint, tree.findOrNull(AppCategory.FOOD_BAR.key)?.color)
+        assertEquals(AppCategory.HOME.defaultColor.tint, tree.findOrNull(AppCategory.HOME.key)?.color)
     }
 
     @Test
@@ -75,7 +78,7 @@ class CategoryColorsTest {
         val pet = groupCategory(
             id = "pet",
             parentId = null,
-            color = CategoryColor.PINK,
+            color = CategoryColor.PINK.tint,
         )
         val food = groupCategory(
             id = "bone",
@@ -87,8 +90,8 @@ class CategoryColorsTest {
         val tree = CategoryTree.of(listOf(pet, food))
 
         // Then
-        assertEquals(CategoryColor.PINK, tree.findOrNull("pet")?.color)
-        assertEquals(CategoryColor.PINK, tree.findOrNull("bone")?.color)
+        assertEquals(CategoryColor.PINK.tint, tree.findOrNull("pet")?.color)
+        assertEquals(CategoryColor.PINK.tint, tree.findOrNull("bone")?.color)
     }
 
     @Test
@@ -110,10 +113,10 @@ class CategoryColorsTest {
         val form = CategoryForm.create(tree, "group-1", AppCategory.FOOD.key, "Feira")
 
         // When
-        val picked = form.withColor(CategoryColor.RED)
+        val picked = form.withColor(CategoryColor.RED.tint)
 
         // Then
-        assertEquals(AppCategory.FOOD.defaultColor, picked.color)
+        assertEquals(AppCategory.FOOD.defaultColor.tint, picked.color)
     }
 
     @Test
@@ -122,10 +125,10 @@ class CategoryColorsTest {
         val form = CategoryForm.create(CategoryTree.appOnly, "group-1", null, "Pet")
 
         // When
-        val picked = form.withColor(CategoryColor.BROWN)
+        val picked = form.withColor(CategoryColor.BROWN.tint)
 
         // Then
-        assertEquals(CategoryColor.BROWN, picked.color)
+        assertEquals(CategoryColor.BROWN.tint, picked.color)
     }
 
     @Test
@@ -134,11 +137,11 @@ class CategoryColorsTest {
         val save = SaveGroupCategoryUseCase(repository) { 1_000L }
 
         // When
-        save(null, "group-1", "Pet", null, CategoryIcon.PAW, CategoryColor.BROWN, "me")
+        save(null, "group-1", "Pet", null, CategoryIcon.PAW, CategoryColor.BROWN.tint, "me")
 
         // Then
         assertEquals(
-            CategoryColor.BROWN,
+            CategoryColor.BROWN.tint,
             repository.groupCategories.value
                 .single()
                 .color,
@@ -151,7 +154,7 @@ class CategoryColorsTest {
         val save = SaveGroupCategoryUseCase(repository) { 1_000L }
 
         // When
-        save(null, "group-1", "Feira", AppCategory.FOOD.key, CategoryIcon.PAW, CategoryColor.BROWN, "me")
+        save(null, "group-1", "Feira", AppCategory.FOOD.key, CategoryIcon.PAW, CategoryColor.BROWN.tint, "me")
 
         // Then
         assertNull(
@@ -167,21 +170,49 @@ class CategoryColorsTest {
         val setColor = SetAppCategoryColorUseCase(repository)
 
         // When
-        val result = setColor(AppCategory.FOOD.key, CategoryColor.RED)
+        val result = setColor(AppCategory.FOOD.key, CategoryColor.RED.tint)
 
         // Then
         assertTrue(result.isSuccess)
-        assertEquals(mapOf(AppCategory.FOOD.key to CategoryColor.RED), repository.appColors.value)
+        assertEquals(mapOf(AppCategory.FOOD.key to CategoryColor.RED.tint), repository.appColors.value)
+    }
+
+    @Test
+    fun `GIVEN an app main category WHEN setting a custom color THEN it is kept for the person`() = runTest {
+        // Given
+        val setColor = SetAppCategoryColorUseCase(repository)
+        val custom = CustomColor(0x3A7BD5).tint
+
+        // When
+        val result = setColor(AppCategory.FOOD.key, custom)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(mapOf(AppCategory.FOOD.key to custom), repository.appColors.value)
+    }
+
+    @Test
+    fun `GIVEN a custom color the person gave Food WHEN building the tree THEN Food and its subcategories wear it`() {
+        // Given
+        val custom = CustomColor(0x3A7BD5).tint
+        val appColors = mapOf(AppCategory.FOOD.key to custom)
+
+        // When
+        val tree = CategoryTree.of(emptyList(), appColors)
+
+        // Then
+        assertEquals(custom, tree.findOrNull(AppCategory.FOOD.key)?.color)
+        assertEquals(custom, tree.findOrNull(AppCategory.FOOD_BAR.key)?.color)
     }
 
     @Test
     fun `GIVEN a changed color WHEN setting the app default back THEN nothing is kept`() = runTest {
         // Given
         val setColor = SetAppCategoryColorUseCase(repository)
-        setColor(AppCategory.FOOD.key, CategoryColor.RED)
+        setColor(AppCategory.FOOD.key, CategoryColor.RED.tint)
 
         // When
-        setColor(AppCategory.FOOD.key, AppCategory.FOOD.defaultColor)
+        setColor(AppCategory.FOOD.key, AppCategory.FOOD.defaultColor.tint)
 
         // Then
         assertTrue(repository.appColors.value.isEmpty())
@@ -191,7 +222,7 @@ class CategoryColorsTest {
     fun `GIVEN a changed color WHEN restoring it THEN nothing is kept`() = runTest {
         // Given
         val setColor = SetAppCategoryColorUseCase(repository)
-        setColor(AppCategory.HOME.key, CategoryColor.LIME)
+        setColor(AppCategory.HOME.key, CategoryColor.LIME.tint)
 
         // When
         setColor(AppCategory.HOME.key, null)
@@ -206,8 +237,8 @@ class CategoryColorsTest {
         val setColor = SetAppCategoryColorUseCase(repository)
 
         // When
-        val sub = setColor(AppCategory.FOOD_BAR.key, CategoryColor.RED)
-        val unknown = setColor("pet", CategoryColor.RED)
+        val sub = setColor(AppCategory.FOOD_BAR.key, CategoryColor.RED.tint)
+        val unknown = setColor("pet", CategoryColor.RED.tint)
 
         // Then
         assertTrue(sub.isFailure)
@@ -233,8 +264,8 @@ class CategoryColorsTest {
         val tree = CategoryTree.of(listOf(first, second))
 
         // Then
-        assertEquals(CategoryColor.BLUE, tree.findOrNull("first")?.color)
-        assertEquals(CategoryColor.ORANGE, tree.findOrNull("second")?.color)
+        assertEquals(CategoryColor.BLUE.tint, tree.findOrNull("first")?.color)
+        assertEquals(CategoryColor.ORANGE.tint, tree.findOrNull("second")?.color)
     }
 
     @Test
@@ -243,22 +274,22 @@ class CategoryColorsTest {
         val pet = groupCategory(
             id = "pet",
             parentId = null,
-            color = CategoryColor.PINK,
+            color = CategoryColor.PINK.tint,
         )
         val tree = CategoryTree.of(listOf(pet))
-        val form = CategoryForm.editingOrNull(tree, "group-1", "pet")!!.withColor(CategoryColor.RED)
+        val form = CategoryForm.editingOrNull(tree, "group-1", "pet")!!.withColor(CategoryColor.RED.tint)
 
         // When
         val again = form.withParent(tree, null)
 
         // Then
-        assertEquals(CategoryColor.RED, again.color)
+        assertEquals(CategoryColor.RED.tint, again.color)
     }
 
     private fun groupCategory(
         id: String,
         parentId: String?,
-        color: CategoryColor?,
+        color: CategoryTint?,
     ): GroupCategory = GroupCategory(
         id = id,
         groupId = "group-1",

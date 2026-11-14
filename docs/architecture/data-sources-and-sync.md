@@ -116,7 +116,7 @@ suspend fun syncNow(): Result<Unit> {
                     paymentKeyRepository.uploadPendingKeys(userId).getOrThrow()
                 }
                 val preferencesSynced = suspendRunCatching { /* download, then upload */ }
-                val termsSynced = suspendRunCatching { /* the category map: download, then upload */ }
+                val termsSynced = personalCategoryData.sync(userId) // the category map, then the custom colors
                 var areGroupsSynced = false
                 val groupsSynced = suspendRunCatching {
                     groupRepository.downloadGroups(userId).getOrThrow()
@@ -448,6 +448,11 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
   (`ownerUserId`, claimed by the first sync, dropped on a switch, cleared on sign out). A null category is a term
   removed and `isDeleted` a change "Restaurar padrão" undid, which stays so its version still wins; the download is
   Last-Write-Wins per word, a newer server row winning even over a change not pushed yet.
+- **Custom colors** (`:core:expenses`): each person's palette (`custom_color`, one row per `#RRGGBB`,
+  `custom_colors` keyed by user and color on the server), owned like the category map and synced with it right after
+  the profile (`PersonalCategoryData`, which also clears both on sign out). A deleted color stays as a tombstone
+  (`isDeleted`) so its deletion wins over an older add; the download is Last-Write-Wins per color. A group category's
+  custom color isn't the palette's: it lives in `group_categories.color` as its hex, with the category.
 - **Comments** (`:core:expenses`): a bill's comments (`bill_comment`, `bill_comments` on the server, 7.3) are
   never edited nor deleted, so they have no `updatedAt` and no Last-Write-Wins: a comment written here waits with
   `pendingSync` and goes up once, inserted with `ignoreDuplicates` (an answer lost on the way goes up again as the same

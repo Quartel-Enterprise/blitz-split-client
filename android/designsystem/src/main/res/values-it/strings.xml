@@ -286,4 +286,21 @@
     <string name="designsystem_bill_menu_share">Condividi</string>
     <string name="designsystem_bill_menu_delete">Elimina</string>
     <string name="designsystem_bill_menu_options">Opzioni per %s</string>
+    <string name="designsystem_custom_color_add">Aggiungi colore</string>
+    <string name="designsystem_custom_color_title">Nuovo colore</string>
+    <string name="designsystem_custom_color_shade">Saturazione e luminosità</string>
+    <string name="designsystem_custom_color_hue">Tonalità</string>
+    <string name="designsystem_custom_color_hex">Codice hex</string>
+    <string name="designsystem_custom_color_hex_error">Inserisci un codice come #3A7BD5</string>
+    <string name="designsystem_custom_color_rgb_error">Ogni valore va da 0 a 255</string>
+    <string name="designsystem_custom_color_save">Aggiungi</string>
+    <string name="designsystem_custom_color_label">Colore personalizzato %1$s</string>
+    <string name="designsystem_custom_color_full">La tua tavolozza è piena: tieni premuto uno dei tuoi colori per eliminarlo.</string>
+    <string name="designsystem_custom_color_hint">Tieni premuto uno dei tuoi colori per eliminarlo.</string>
+    <string name="designsystem_custom_color_delete_title">Eliminare questo colore?</string>
+    <string name="designsystem_custom_color_delete_message">Lascia la tua tavolozza su tutti i tuoi dispositivi.</string>
+    <string name="designsystem_custom_color_delete">Elimina</string>
+    <string name="designsystem_custom_color_in_use_title">Questo colore è in uso</string>
+    <string name="designsystem_custom_color_in_use_message">%1$s usa questo colore. Prima cambiane il colore, poi eliminalo.</string>
+    <string name="designsystem_custom_color_ok">OK</string>
 </resources>
