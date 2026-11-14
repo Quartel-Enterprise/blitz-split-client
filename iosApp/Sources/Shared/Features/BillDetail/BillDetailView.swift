@@ -434,7 +434,7 @@ private struct PhoneBillDetail: View {
     @ViewBuilder
     private var billSections: some View {
         BillHeadSection(bill: state, lonePayer: state.lonePayer, onPerson: model.openPerson) {
-            if let paidWith = state.paidWith {
+            if let paidWith = state.shownPaidWith {
                 PaidWithLine(method: paidWith)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -678,7 +678,7 @@ private struct MacBillDetail: View {
     private var billContent: some View {
         VStack(alignment: .leading, spacing: 20) {
             MacBillTotal(bill: state, lonePayer: state.lonePayer, isNarrow: isNarrow, onPerson: model.openPerson) {
-                if let paidWith = state.paidWith {
+                if let paidWith = state.shownPaidWith {
                     PaidWithLine(method: paidWith, tileSize: 18)
                         .foregroundStyle(.secondary)
                 }

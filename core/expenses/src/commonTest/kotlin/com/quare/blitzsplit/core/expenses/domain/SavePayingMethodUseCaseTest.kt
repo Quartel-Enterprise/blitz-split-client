@@ -412,13 +412,13 @@ class SavePayingMethodUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a method deleted on another device meanwhile WHEN saving its edit THEN saves it as a new method`() =
+    fun `GIVEN a method deleted on another device meanwhile WHEN saving its edit THEN fails and saves nothing`() =
         runTest {
             // Given
             prepareScenario()
 
             // When
-            useCase(
+            val result = useCase(
                 methodId = "deleted-meanwhile",
                 type = PayingMethodType.PIX,
                 name = "Edited",
@@ -427,9 +427,8 @@ class SavePayingMethodUseCaseTest {
             )
 
             // Then
-            val saved = repository.methods.value.single()
-            assertNotEquals("deleted-meanwhile", saved.id)
-            assertEquals(NOW, saved.addedAt)
+            assertTrue(result.isFailure)
+            assertTrue(repository.methods.value.isEmpty())
         }
 
     private val nubank = PayingMethod(

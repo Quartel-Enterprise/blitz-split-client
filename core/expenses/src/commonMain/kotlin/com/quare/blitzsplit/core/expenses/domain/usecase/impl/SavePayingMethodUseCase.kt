@@ -25,6 +25,8 @@ class SavePayingMethodUseCase(
         require(PayingMethodRules.isNameValid(type, name)) { "The name doesn't fit the type" }
         val methods = repository.observeMethods().first()
         val existing = methodId?.let { id -> methods.find { it.id == id } }
+        // Why: a method deleted meanwhile (on another device) is gone, never saved again under a new id.
+        require(methodId == null || existing != null) { "The method was deleted" }
         val others = methods.filterNot { it.id == existing?.id }
         require(!type.isOnePerPerson || others.none { it.type == type }) { "Only one method of this type" }
         val method = PayingMethod(

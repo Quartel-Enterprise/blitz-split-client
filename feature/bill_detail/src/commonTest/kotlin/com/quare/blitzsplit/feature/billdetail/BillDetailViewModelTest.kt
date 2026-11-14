@@ -177,13 +177,36 @@ class BillDetailViewModelTest {
             )
             payingMethods.methods.value = listOf(card)
             payingMethods.marks.value = mapOf(expense().id to card.id)
-            prepareScenario()
+            prepareScenario(storedExpense = expense(payerId = PIERRE))
 
             // When
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(card, state.paidWith)
+            assertEquals(card, state.shownPaidWith)
+        }
+
+    @Test
+    fun `GIVEN my mark on a bill Ana alone paid since WHEN it opens THEN shows no Paid with`() =
+        runTest(testDispatcher) {
+            // Given
+            val card = PayingMethod(
+                id = "card-1",
+                type = PayingMethodType.CREDIT_CARD,
+                name = "Travel card",
+                cardColor = CardColor.BLUE,
+                isDefault = true,
+                addedAt = 1L,
+            )
+            payingMethods.methods.value = listOf(card)
+            payingMethods.marks.value = mapOf(expense().id to card.id)
+            prepareScenario(storedExpense = expense(payerId = ANA))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertNull(state.shownPaidWith)
         }
 
     @Test
@@ -195,7 +218,7 @@ class BillDetailViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertNull(state.paidWith)
+        assertNull(state.shownPaidWith)
     }
 
     @Test

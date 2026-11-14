@@ -45,6 +45,7 @@ data class GroupExport(
                 )
             }
             val currentIds = current.map { it.id }.toSet()
+            val meId = group.members.firstOrNull { it.isMe }?.id
             val sortedExpenses = expenses.sortedBy { it.spentAt }
             val sortedSettlements = settlements.sortedBy { it.paidAt }
             // Why: numbered in the order they first show up, the oldest bill first, then the payments.
@@ -74,7 +75,8 @@ data class GroupExport(
                     currency = expense.currency,
                     payers = expense.payers.map { ExportAmount(it.memberId, it.amountMinor) },
                     shares = expense.shares.map { ExportAmount(it.memberId, it.amountMinor) },
-                    payingMethod = payingMethods[expense.id],
+                    // Why: a mark of a bill the exporter no longer pays (someone else's edit) no longer says how they paid.
+                    payingMethod = payingMethods[expense.id]?.takeIf { expense.payers.any { it.memberId == meId } },
                 )
             }
             val payments = sortedSettlements.map {

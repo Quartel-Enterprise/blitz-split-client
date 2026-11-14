@@ -133,9 +133,11 @@ class PayingMethodViewModel(
                 // Why: the person's first method is their default unless they say otherwise.
                 current.copy(isDefault = methods.isEmpty())
             }
+            // Why: once filled, a sync never changes the type the person is on; saving a second Cash then fails instead.
+            val kept = filled.type.takeIf { current.isLoaded }
             val withTypes = filled.copy(
-                types = types,
-                type = filled.type.takeIf { it in types } ?: types.first(),
+                types = PayingMethodType.entries.filter { it in types || it == kept },
+                type = kept ?: filled.type.takeIf { it in types } ?: types.first(),
                 isLoaded = true,
             )
             withTypes.copy(openedInput = current.openedInput ?: withTypes.input)

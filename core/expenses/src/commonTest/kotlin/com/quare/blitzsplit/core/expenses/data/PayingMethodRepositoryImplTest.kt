@@ -1074,6 +1074,11 @@ private class FakePayingMethodLocalDataSource(
 
     override suspend fun getAllMarks(): List<BillPayingMethodEntity> = marks.value
 
+    override suspend fun getMark(expenseId: String): BillPayingMethodEntity? = marks.value.find {
+        it.expenseId ==
+            expenseId
+    }
+
     override suspend fun getMarksReadyToUpload(): List<BillPayingMethodEntity> = marks.value.filter {
         it.pendingSync && it.expenseId in syncedBills
     }

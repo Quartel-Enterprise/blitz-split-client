@@ -35,6 +35,9 @@ interface PayingMethodDao {
     @Query("SELECT * FROM bill_paying_method")
     suspend fun getAllMarks(): List<BillPayingMethodEntity>
 
+    @Query("SELECT * FROM bill_paying_method WHERE expenseId = :expenseId")
+    suspend fun getMark(expenseId: String): BillPayingMethodEntity?
+
     @Upsert
     suspend fun upsertMarks(entities: List<BillPayingMethodEntity>)
 

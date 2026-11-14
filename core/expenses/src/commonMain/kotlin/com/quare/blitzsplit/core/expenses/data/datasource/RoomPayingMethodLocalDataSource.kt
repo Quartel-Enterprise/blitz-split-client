@@ -18,6 +18,8 @@ class RoomPayingMethodLocalDataSource(
 
     override suspend fun getAllMarks(): List<BillPayingMethodEntity> = dao.getAllMarks()
 
+    override suspend fun getMark(expenseId: String): BillPayingMethodEntity? = dao.getMark(expenseId)
+
     override suspend fun getMarksReadyToUpload(): List<BillPayingMethodEntity> = dao.getMarksReadyToUpload()
 
     override suspend fun upsertMethods(entities: List<PayingMethodEntity>) {

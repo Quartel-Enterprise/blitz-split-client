@@ -154,6 +154,10 @@ data class BillDetailUiState(
     val areActionsEnabled: Boolean
         get() = isLoaded && !isDeleting
 
+    // Why: "Paid with" only while this device's user is among the bill's payers; someone else's edit may have removed them.
+    val shownPaidWith: PayingMethod?
+        get() = paidWith?.takeIf { payers.any { it.isMe } }
+
     // Why: a bill in a currency this version doesn't know is read-only: Editar is off, with the note below.
     val canEdit: Boolean
         get() = areActionsEnabled && currency.isKnown

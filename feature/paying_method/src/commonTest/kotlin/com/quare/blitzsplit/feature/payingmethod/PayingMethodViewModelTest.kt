@@ -275,24 +275,22 @@ class PayingMethodViewModelTest {
     }
 
     @Test
-    fun `GIVEN Cash picked on a new method WHEN a sync brings Cash THEN falls back to the first type`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
-            viewModel.onEvent(PayingMethodUiEvent.OnTypeSelected(PayingMethodType.CASH))
+    fun `GIVEN Cash picked on a new method WHEN a sync brings Cash THEN keeps Cash picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(PayingMethodUiEvent.OnTypeSelected(PayingMethodType.CASH))
 
-            // When
-            repository.methods.value = listOf(cash)
+        // When
+        repository.methods.value = listOf(cash)
 
-            // Then
-            val state = viewModel.uiState.value
-            assertFalse(PayingMethodType.CASH in state.types)
-            assertEquals(state.types.first(), state.type)
-            assertEquals(PayingMethodType.CREDIT_CARD, state.type)
-        }
+        // Then
+        val state = viewModel.uiState.value
+        assertTrue(PayingMethodType.CASH in state.types)
+        assertEquals(PayingMethodType.CASH, state.type)
+    }
 
     @Test
-    fun `GIVEN Pix picked on a new method WHEN the Pix rule turns off THEN falls back to the first type offered`() =
+    fun `GIVEN Pix picked on a new method WHEN the Pix rule turns off THEN keeps Pix picked`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(showsPix = true)
@@ -303,8 +301,8 @@ class PayingMethodViewModelTest {
 
             // Then
             val state = viewModel.uiState.value
-            assertFalse(PayingMethodType.PIX in state.types)
-            assertEquals(PayingMethodType.CREDIT_CARD, state.type)
+            assertTrue(PayingMethodType.PIX in state.types)
+            assertEquals(PayingMethodType.PIX, state.type)
         }
 
     // Picking a type, a color and the default

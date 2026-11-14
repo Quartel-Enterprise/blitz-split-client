@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 
 // In-memory PayingMethodRepository: the methods and marks are public so a test can set and read them, and the failure knobs are public vars.
@@ -25,6 +26,8 @@ class FakePayingMethodRepository(
     override fun observeMethods(): Flow<List<PayingMethod>> = methods
 
     override fun observeMarks(): Flow<Map<String, String>> = marks
+
+    override fun observeChanges(): Flow<Any> = combine(methods, marks, ::Pair)
 
     override fun observeHasPendingChanges(): Flow<Boolean> = hasPendingChanges
 

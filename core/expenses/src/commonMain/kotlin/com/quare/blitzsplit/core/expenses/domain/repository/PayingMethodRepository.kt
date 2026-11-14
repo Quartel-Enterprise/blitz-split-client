@@ -11,6 +11,9 @@ interface PayingMethodRepository {
     // Why: each marked bill's method id, by the bill's id.
     fun observeMarks(): Flow<Map<String, String>>
 
+    // Why: anything the person changed, methods or marks, which a sync waiting on the network counts as new.
+    fun observeChanges(): Flow<Any>
+
     fun observeHasPendingChanges(): Flow<Boolean>
 
     // Why: one write for a method and the default it takes over from, so no one sees two defaults.

@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.provider.room.entity.BillPayingMethodEntity
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -27,6 +28,8 @@ class PayingMethodRepositoryImpl(
         .observeMarks()
         .map { marks -> marks.mapNotNull { mark -> mark.methodId?.let { mark.expenseId to it } }.toMap() }
         .distinctUntilChanged()
+
+    override fun observeChanges(): Flow<Any> = combine(observeMethods(), observeMarks(), ::Pair)
 
     override fun observeHasPendingChanges(): Flow<Boolean> = local.observeHasPending().distinctUntilChanged()
 
@@ -87,7 +90,7 @@ class PayingMethodRepositoryImpl(
         expenseId: String,
         methodId: String?,
     ) {
-        val stored = local.getAllMarks().firstOrNull { it.expenseId == expenseId }
+        val stored = local.getMark(expenseId)
         if (stored?.methodId == methodId || (stored == null && methodId == null)) return
         local.upsertMarks(
             listOf(

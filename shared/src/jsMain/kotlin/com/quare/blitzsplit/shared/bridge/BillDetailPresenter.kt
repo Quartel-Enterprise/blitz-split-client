@@ -290,7 +290,7 @@ class BillDetailPresenter(
                 showsAddPhoto = state.showsAddPhoto,
                 canAddPhoto = state.canAddPhoto,
                 isAddingPhoto = state.isAddingPhoto,
-                paidWith = state.paidWith?.toJsPayingMethod(),
+                paidWith = state.shownPaidWith?.toJsPayingMethod(),
                 viewedAttachmentIndex = state.viewedAttachmentIndex,
             )
         }

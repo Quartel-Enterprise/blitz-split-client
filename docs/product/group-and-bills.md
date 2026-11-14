@@ -31,7 +31,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
       keys, with each member's id, the category's id and the payment's method code.
     - "Payment method": the exporter's own "Paid with" of each bill ("Nubank · Credit card", or the type's name for a
       method with no name), in every format (a column after Currency, a `paymentMethod` object with `type` and `name`
-      in JSON). Private: only the marks of whoever exports, so a member's export never carries anyone else's; the
+      in JSON). Private: only the marks of whoever exports, and only on bills they still pay, so a member's export never
+      carries anyone else's; the
       column only shows while the exporter marked a bill of the group, so an export without marks keeps its columns.
     - Formats: dates are ISO (2026-11-14) in CSV, JSON and the text, the device's day; Excel writes real dates (the
       reader's short date) and numbers, a sheet per section, its header row bold and frozen. Amounts carry every
@@ -104,7 +105,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     One controller does it for all three lists (`BillMenuController`, `:core:expenses`).
   - Bill's "Paid with" (private payment methods, Pierre's call, feedback of November 14, 2026): the method this
     device's user marked the bill with, with "Only you see this.", under the bill and before "Your share"; nothing
-    for a bill they never marked (`BillDetailUiState.paidWith`). Marking it on a bill someone else created goes
+    for a bill they never marked, nor while they aren't among its payers (someone else's edit may have taken them
+    out; `BillDetailUiState.shownPaidWith`). Marking it on a bill someone else created goes
     through "Edit bill" (any payer may), whose Save then changes only their mark: the bill isn't saved again, so the
     group sees no edit of it. Bill has no picker of its own.
   - A bill tapped there opens "Bill" (`Route.BillDetail`): the bill, "Your share" and the split over every member,

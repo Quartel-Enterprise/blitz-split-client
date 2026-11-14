@@ -333,7 +333,7 @@ private fun BillDetailBillSection(
         }
     }
     // Why: the person's own "Paid with", which only they see.
-    state.paidWith?.let { PaidWithCard(method = it) }
+    state.shownPaidWith?.let { PaidWithCard(method = it) }
     if (state.showsMyPart) {
         MyPartCard(
             state = state,

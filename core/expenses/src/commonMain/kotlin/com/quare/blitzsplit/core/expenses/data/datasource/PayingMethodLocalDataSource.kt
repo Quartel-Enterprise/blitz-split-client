@@ -15,6 +15,8 @@ interface PayingMethodLocalDataSource {
 
     suspend fun getAllMarks(): List<BillPayingMethodEntity>
 
+    suspend fun getMark(expenseId: String): BillPayingMethodEntity?
+
     suspend fun getMarksReadyToUpload(): List<BillPayingMethodEntity>
 
     suspend fun upsertMethods(entities: List<PayingMethodEntity>)

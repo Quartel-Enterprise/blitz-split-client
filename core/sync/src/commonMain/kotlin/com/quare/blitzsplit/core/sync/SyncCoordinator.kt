@@ -377,7 +377,7 @@ class SyncCoordinator(
      * Why: a sync is due when the device can sync again (back online, or the first profile saved)
      * and whenever a change is queued while it already can, also after a push that failed. Keying
      * on the profile, the keys, the preferences, the groups, the pending bills' and payments' versions, the hidden
-     * contacts, the pins, the category map's terms, the comments and the attachments makes each new change count, while one going out triggers
+     * contacts, the pins, the category map's terms, the payment methods and their marks, the comments and the attachments makes each new change count, while one going out triggers
      * nothing.
      */
     private suspend fun syncWhenDue() {
@@ -390,7 +390,7 @@ class SyncCoordinator(
             hiddenContactRepository.observeHidden(),
             groupPinRepository.observePinnedGroupIds(),
             categoryTermRepository.observeChanges(),
-            payingMethodRepository.observeMethods(),
+            payingMethodRepository.observeChanges(),
             billCommentRepository.observePendingIds(),
             billAttachmentRepository.observePendingVersions(),
         ) { lists -> lists.toList() }
