@@ -23,6 +23,7 @@ import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.BillLinkNotice
 import com.quare.blitzsplit.shared.app.LinkInbox
+import com.quare.blitzsplit.shared.app.sharedBillSignInWindow
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
@@ -38,14 +39,12 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import org.w3c.dom.Worker
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.minutes
 
 /*
- * Why: a bill's link kept through the browser's sign in. Google's and Apple's pages take a minute or two, so a stash
- * older than the window was a sign in given up on.
+ * Why: a bill's link kept through the browser's sign in. A stash older than the window (sharedBillSignInWindow, the
+ * apps' own too) was a sign in given up on.
  */
 private const val SHARED_BILL_LEFT_TO_SIGN_IN = "blitzsplit.sharedBillLeftToSignIn"
-private val sharedBillSignInWindow = 15.minutes
 private const val PROFILE_LEFT_FOR_LANGUAGE = "blitzsplit.profileLeftForLanguage"
 
 /*

@@ -560,6 +560,34 @@ class SharedBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN the bill open under the page WHEN tapping Abrir no app THEN goes back to it never twice`() =
+        runTest(testDispatcher) {
+            // Given
+            val group = Route.GroupDetail(
+                groupId = GROUP_ID,
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+                isOverBill = false,
+            )
+            val bill = Route.BillDetail(
+                groupId = GROUP_ID,
+                expenseId = EXPENSE_ID,
+                focusCommentId = null,
+            )
+            prepareScenario(
+                sharedBill = openBill(isMember = true),
+                storedExpense = expense,
+                routesBelow = listOf(group, bill),
+            )
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnOpenInAppClicked)
+
+            // Then
+            assertEquals(listOf(Route.Home, group, bill), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN a member without the bill on the device WHEN tapping Abrir no app THEN nothing opens`() =
         runTest(testDispatcher) {
             // Given
@@ -2759,6 +2787,8 @@ class SharedBillViewModelTest {
         changeError: Throwable? = null,
         changeGate: CompletableDeferred<Unit>? = null,
         focusCommentId: String? = null,
+        // Why: what the link opened over, between the home and the page.
+        routesBelow: List<Route> = emptyList(),
     ) {
         route = route.copy(commentId = focusCommentId)
         isOnline.value = online
@@ -2773,7 +2803,10 @@ class SharedBillViewModelTest {
         }
         expenses = FakeExpenseRepository(initialExpenses = listOfNotNull(storedExpense))
         profiles = FakeProfileRepository(initialProfile = storedProfile)
-        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(route) }
+        navigator = BackStackNavigator(startRoute = Route.Home).also { stack ->
+            routesBelow.forEach(stack::navigate)
+            stack.navigate(route)
+        }
         viewModel = SharedBillViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,

@@ -55,6 +55,12 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
+/*
+ * Why: how long a bill's link page left to sign in opens again once the sign in ends, the welcome's here and the
+ * browser's on the web (BlitzSplitWeb). Google's and Apple's pages take a minute or two.
+ */
+internal val sharedBillSignInWindow = 15.minutes
+
 class AppViewModel(
     private val observeProfile: ObserveProfile,
     val navigator: Navigator,
@@ -117,9 +123,6 @@ class AppViewModel(
         field = MutableStateFlow(BillLinkNoticeState(null))
 
     val billLinkNoticeWatcher: FlowWatcher<BillLinkNoticeState> = FlowWatcher(billLinkNotice)
-
-    // Why: as long as the web keeps a bill's link it left to sign in (BlitzSplitWeb).
-    private val signInWindow = 15.minutes
 
     // Why: the Mac's mouse back and forward buttons, and Go › Back and Forward.
     private val forwardHistory = ForwardHistory(navigator, viewModelScope)
@@ -262,7 +265,7 @@ class AppViewModel(
                     kept != null && stack.firstOrNull() == Route.Home -> {
                         left = null
                         val (page, since) = kept
-                        if (since.elapsedNow() <= signInWindow) openSharedBill(page.code, page.commentId)
+                        if (since.elapsedNow() <= sharedBillSignInWindow) openSharedBill(page.code, page.commentId)
                     }
                 }
             }.launchIn(viewModelScope)

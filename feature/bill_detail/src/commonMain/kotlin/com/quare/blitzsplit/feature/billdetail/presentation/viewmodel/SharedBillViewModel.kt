@@ -353,17 +353,22 @@ class SharedBillViewModel(
         val bill = shown ?: return
         if (!uiState.value.canOpenInApp || !isOnTop()) return
         trackEvent("shared_bill_open_in_app_clicked", emptyMap())
+        val group = Route.GroupDetail.expensesOf(bill.groupId)
+        val billDetail = Route.BillDetail(
+            groupId = bill.groupId,
+            expenseId = bill.expenseId,
+            focusCommentId = null,
+        )
+        val below = navigator.backStack.value.dropLast(1)
+        /*
+         * Why: the group or the bill already open under the page (the link opened over its own Conta) comes back
+         * instead of being pushed twice, which Navigation 3 can't hold since it keys each entry by its route.
+         */
+        val openIndex = below.indexOfFirst { it == group || it == billDetail }
         // Why: in one step, so the web never draws Despesas without its Conta in between.
         navigator.replaceAbove(
-            size = navigator.backStack.value.size - 1,
-            routes = listOf(
-                Route.GroupDetail.expensesOf(bill.groupId),
-                Route.BillDetail(
-                    groupId = bill.groupId,
-                    expenseId = bill.expenseId,
-                    focusCommentId = null,
-                ),
-            ),
+            size = if (openIndex < 0) below.size else openIndex,
+            routes = listOf(group, billDetail),
         )
     }
 
