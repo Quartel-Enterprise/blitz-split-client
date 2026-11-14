@@ -67,6 +67,7 @@ internal fun createPreviewProfileState(
     showsDynamicColors = true,
     usesDynamicColors = false,
     showsBitcoinInSats = false,
+    sharesUsageData = true,
     language = AppLanguage.SYSTEM,
     activeNotificationCount = 3.toLoaded(),
     showsCheckForUpdates = true,

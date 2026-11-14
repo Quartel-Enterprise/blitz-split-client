@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Pakai tanpa akun</string>
     <string name="welcome_used_on_another_device">Saya pernah memakainya di perangkat lain</string>
     <string name="welcome_sign_in_failed">Tidak dapat masuk sekarang. Coba lagi.</string>
+    <string name="welcome_legal_notice">Dengan melanjutkan, kamu menerima %1$s dan menyatakan telah membaca %2$s.</string>
+    <string name="welcome_legal_terms">Ketentuan Layanan</string>
+    <string name="welcome_legal_privacy">Kebijakan Privasi</string>
 </resources>

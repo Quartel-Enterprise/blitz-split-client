@@ -125,7 +125,7 @@ targetTemplates:
         CFBundleURLTypes:
           - CFBundleURLName: com.quare.blitzsplit.auth
             CFBundleURLSchemes: [borarachar]
-        # Nothing is collected from the first launch on; FirebaseSetup turns it on, on every launch of a release build
+        # Nothing is collected until the shared code read Profile's "Share usage data" and a release build turned it on
         # (docs/analytics/README.md#consent)
         FIREBASE_ANALYTICS_COLLECTION_ENABLED: false
         # Each screen is tracked by the shared code from the back stack, never by UIKit's or AppKit's view controllers

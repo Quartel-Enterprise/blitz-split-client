@@ -37,4 +37,8 @@ interface DeviceSettingsRepository {
     fun observeAppBannerDismissed(): Flow<Boolean>
 
     suspend fun dismissAppBanner()
+
+    fun observeUsageDataSharing(): Flow<Boolean>
+
+    suspend fun updateUsageDataSharing(isOn: Boolean)
 }

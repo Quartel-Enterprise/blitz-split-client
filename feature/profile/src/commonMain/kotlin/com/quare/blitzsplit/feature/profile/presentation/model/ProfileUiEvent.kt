@@ -37,6 +37,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
             is OnBitcoinInSatsToggled -> EventAnalytics.Automatic("bitcoin_in_sats_toggled", mapOf("is_on" to isOn))
 
+            // Why: whoever turns sharing off asked for no events, that one included; turning it on sends nothing either.
+            is OnUsageDataToggled -> EventAnalytics.NotTracked
+
             OnNotificationsClicked -> EventAnalytics.Automatic("profile_notifications_clicked")
 
             OnAppInviteClicked -> EventAnalytics.Automatic("app_invite_code_clicked", mapOf("source" to PROFILE_SOURCE))
@@ -48,9 +51,12 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnCategoryMapClicked -> EventAnalytics.Automatic("category_map_clicked", mapOf("source" to PROFILE_SOURCE))
 
-            OnPrivacyPolicyClicked -> EventAnalytics.Automatic("privacy_policy_clicked")
+            OnPrivacyPolicyClicked -> EventAnalytics.Automatic(
+                "privacy_policy_clicked",
+                mapOf("source" to PROFILE_SOURCE),
+            )
 
-            OnTermsClicked -> EventAnalytics.Automatic("terms_clicked")
+            OnTermsClicked -> EventAnalytics.Automatic("terms_clicked", mapOf("source" to PROFILE_SOURCE))
 
             OnCancelScheduledSignOutClicked -> EventAnalytics.Automatic("sign_out_scheduled_cancel_clicked")
 
@@ -185,6 +191,11 @@ sealed interface ProfileUiEvent : UiEvent {
     ) : ProfileUiEvent
 
     data class OnBitcoinInSatsToggled(
+        val isOn: Boolean,
+    ) : ProfileUiEvent
+
+    // Why: "Privacy and about"'s "Share usage data", Analytics' opt out on this device.
+    data class OnUsageDataToggled(
         val isOn: Boolean,
     ) : ProfileUiEvent
 

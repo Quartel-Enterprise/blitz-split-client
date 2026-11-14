@@ -28,8 +28,9 @@ if (hasFirebaseConfig) {
 }
 
 /*
- * Firebase Analytics collects in release builds, so the consent decision (#184) has to be settled before any build
- * reaches testers or the stores (docs/analytics/README.md#consent).
+ * Firebase Analytics collects in release builds, on by default under legitimate interest, until Profile's "Share usage
+ * data" turns it off on the device, which the SDK then keeps over the manifest (docs/analytics/README.md#consent).
+ * false turns it off for everyone.
  */
 val collectsAnalytics = true
 
@@ -50,6 +51,8 @@ android {
         versionCode = project.property("versionCode").toString().toInt()
         versionName = project.property("versionName").toString()
         buildConfigField("boolean", "HAS_FIREBASE", "$hasFirebaseConfig")
+        // Why: checked before attaching Analytics, whose runtime setting would override the manifest's.
+        buildConfigField("boolean", "COLLECTS_ANALYTICS", "$collectsAnalytics")
     }
     buildFeatures {
         buildConfig = true

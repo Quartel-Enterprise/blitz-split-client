@@ -11,8 +11,8 @@ enum FirebaseSetup {
     private static let isDebug = false
     #endif
 
-    /// Firebase Analytics collects in release builds, so the consent decision (#184) has to be settled before any
-    /// build reaches testers or the stores (docs/analytics/README.md#consent).
+    /// Firebase Analytics collects in release builds, on by default under legitimate interest, until Profile's "Share
+    /// usage data" turns it off on the device (docs/analytics/README.md#consent). false turns it off for everyone.
     private static let collectsAnalytics = true
 
     private static var isConfigured: Bool {
@@ -23,8 +23,9 @@ enum FirebaseSetup {
     static func start() {
         guard isConfigured else { return }
         FirebaseApp.configure()
-        // Analytics keeps the setting on the device, so every launch sets it again
-        Analytics.setAnalyticsCollectionEnabled(collectsAnalytics && !isDebug)
+        // Info.plist keeps it off until the shared code reads "Share usage data", which Analytics then keeps on the
+        // device: a debug build turns it off again on every launch, in case a release build ran there before
+        if isDebug || !collectsAnalytics { Analytics.setAnalyticsCollectionEnabled(false) }
         BlitzSplitApple.shared.startCrashReporting(isDebug: isDebug)
     }
 
@@ -39,5 +40,13 @@ enum FirebaseSetup {
 nonisolated private final class FirebaseAnalyticsService: AnalyticsService {
     func logEvent(name: String, params: [String: Any]) {
         Analytics.logEvent(name, parameters: params)
+    }
+
+    func setCollectionEnabled(isEnabled: Bool) {
+        Analytics.setAnalyticsCollectionEnabled(isEnabled)
+    }
+
+    func setUserId(userId: String?) {
+        Analytics.setUserID(userId)
     }
 }

@@ -57,6 +57,9 @@ export const id: Record<MessageKey, string> = {
   welcome_offlineNotice: 'Masuk dengan akun butuh internet. Pakai tanpa akun sekarang dan hubungkan nanti di Profil.',
   welcome_useWithoutAccount: 'Pakai tanpa akun',
   welcome_usedOnAnotherDevice: 'Saya sudah pernah pakai di perangkat lain',
+  welcome_legalNotice: "Dengan melanjutkan, kamu menerima {terms} dan menyatakan telah membaca {privacy}.",
+  welcome_legalTerms: "Ketentuan Layanan",
+  welcome_legalPrivacy: "Kebijakan Privasi",
 
   profileSetup_title: 'Teman-temanmu memanggilmu apa?',
   profileSetup_subtitle: 'Grupmu dan siapa pun yang punya tautan profilmu melihat namamu.',
@@ -822,6 +825,8 @@ export const id: Record<MessageKey, string> = {
   profile_languageIndonesian: 'Bahasa Indonesia',
   profile_bitcoinInSats: 'Bitcoin dalam satoshi',
   profile_bitcoinInSatsDetail: 'Menampilkan dan mengetik nominal bitcoin dalam sats (1 ₿ = 100.000.000 sats).',
+  profile_shareUsageData: "Bagikan data penggunaan",
+  profile_shareUsageDataDetail: "Layar dan ketukan, untuk meningkatkan aplikasi. Tidak pernah nama atau jumlah.",
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Mata uang kripto',

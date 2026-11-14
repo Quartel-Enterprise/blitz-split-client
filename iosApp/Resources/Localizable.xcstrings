@@ -126694,6 +126694,207 @@
           }
         }
       }
+    },
+    "Share usage data" : {
+      "comment" : "Profile: Analytics opt out on this device",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzungsdaten teilen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir datos de uso"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager les données d’utilisation"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bagikan data penggunaan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condividi dati di utilizzo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用データを共有"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruiksgegevens delen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udostępniaj dane o użyciu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartilhar dados de uso"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanım verilerini paylaş"
+          }
+        }
+      }
+    },
+    "Screens and taps, to improve the app. Never names or amounts." : {
+      "comment" : "Profile: what Share usage data sends",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bildschirme und Aktionen, um die App zu verbessern. Nie Namen oder Beträge."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantallas y toques, para mejorar la app. Nunca nombres ni montos."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantallas y toques, para mejorar la app. Nunca nombres ni importes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Écrans et appuis, pour améliorer l’app. Jamais de noms ni de montants."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layar dan ketukan, untuk meningkatkan aplikasi. Tidak pernah nama atau jumlah."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schermate e tocchi, per migliorare l’app. Mai nomi o importi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開いた画面と操作をアプリの改善に使います。名前や金額は送りません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schermen en tikken, om de app te verbeteren. Nooit namen of bedragen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ekrany i dotknięcia, by ulepszać aplikację. Nigdy imion ani kwot."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Telas e toques, para melhorar o app. Nunca nomes ou valores."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uygulamayı geliştirmek için ekranlar ve dokunuşlar. İsim veya tutar asla gönderilmez."
+          }
+        }
+      }
+    },
+    "By continuing, you accept the [Terms of Service](legal:terms) and acknowledge the [Privacy Policy](legal:privacy)." : {
+      "comment" : "Welcome: the legal notice under the buttons; keep both links with their legal: addresses",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn du fortfährst, akzeptierst du die [Nutzungsbedingungen](legal:terms) und bestätigst, die [Datenschutzerklärung](legal:privacy) gelesen zu haben."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al continuar, aceptas los [Términos de Servicio](legal:terms) y declaras conocer la [Política de Privacidad](legal:privacy)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En continuant, tu acceptes les [Conditions d’utilisation](legal:terms) et reconnais avoir pris connaissance de la [Politique de confidentialité](legal:privacy)."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dengan melanjutkan, kamu menerima [Ketentuan Layanan](legal:terms) dan menyatakan telah membaca [Kebijakan Privasi](legal:privacy)."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuando, accetti i [Termini di servizio](legal:terms) e dichiari di aver letto l’[Informativa sulla privacy](legal:privacy)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "続行すると、[利用規約](legal:terms)に同意し、[プライバシーポリシー](legal:privacy)を確認したものとみなされます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Door verder te gaan, accepteer je de [Servicevoorwaarden](legal:terms) en bevestig je dat je het [Privacybeleid](legal:privacy) kent."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontynuując, akceptujesz [Warunki korzystania](legal:terms) i potwierdzasz, że znasz [Politykę prywatności](legal:privacy)."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao continuar, você aceita os [Termos de Serviço](legal:terms) e declara estar ciente da [Política de Privacidade](legal:privacy)."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devam ederek [Hizmet Şartları’nı](legal:terms) kabul etmiş ve [Gizlilik Politikası’nı](legal:privacy) okumuş sayılırsın."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

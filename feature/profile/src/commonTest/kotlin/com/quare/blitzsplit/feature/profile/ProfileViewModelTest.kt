@@ -48,6 +48,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingPayme
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileShareLinkUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.OpenLegalPageUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
@@ -118,6 +119,7 @@ class ProfileViewModelTest {
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
     private val storedBitcoinInSats = MutableStateFlow(false)
+    private val storedUsageDataSharing = MutableStateFlow(true)
     private lateinit var storedLanguage: MutableStateFlow<AppLanguage>
     private val languageWrites = mutableListOf<AppLanguage>()
     private var supportsDynamicColors = true
@@ -960,6 +962,23 @@ class ProfileViewModelTest {
             // Then
             assertTrue(storedBitcoinInSats.value)
             assertTrue(viewModel.uiState.value.showsBitcoinInSats)
+        }
+
+    @Test
+    fun `GIVEN usage data shared WHEN turning sharing off THEN stores and shows it off without tracking it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+            assertTrue(viewModel.uiState.value.sharesUsageData)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUsageDataToggled(isOn = false))
+
+            // Then
+            assertEquals(false, storedUsageDataSharing.value)
+            assertEquals(false, viewModel.uiState.value.sharesUsageData)
+            assertEquals(emptyList(), trackedEvents)
         }
 
     @Test
@@ -4641,7 +4660,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
 
             // Then
-            assertEquals(listOf("privacy_policy_clicked" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(listOf("privacy_policy_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
         }
 
     @Test
@@ -4653,7 +4672,7 @@ class ProfileViewModelTest {
         viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
 
         // Then
-        assertEquals(listOf("terms_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(listOf("terms_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
     }
 
     @Test
@@ -6906,7 +6925,7 @@ class ProfileViewModelTest {
                 shownUpdatePrompts += availability to source
             },
             updateMechanism = updateMechanism,
-            clientPlatform = clientPlatform,
+            openLegalPage = OpenLegalPageUseCase(navigator, clientPlatform),
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),
             observeProfileShareLink = ObserveProfileShareLinkUseCase(profiles),
@@ -6927,6 +6946,8 @@ class ProfileViewModelTest {
             observeSpokenLanguage = { flowOf("pt") },
             updateBitcoinInSats = { storedBitcoinInSats.value = it },
             observeBitcoinInSats = { storedBitcoinInSats },
+            updateUsageDataSharing = { storedUsageDataSharing.value = it },
+            observeUsageDataSharing = { storedUsageDataSharing },
             updateAppLanguage = {
                 languageWrites += it
                 storedLanguage.value = it

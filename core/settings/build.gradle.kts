@@ -8,6 +8,8 @@ kotlin {
             api(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.provider.room)
+            // Why: FollowUsageDataSharing hands the device's choice to it.
+            implementation(projects.core.provider.analytics)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }

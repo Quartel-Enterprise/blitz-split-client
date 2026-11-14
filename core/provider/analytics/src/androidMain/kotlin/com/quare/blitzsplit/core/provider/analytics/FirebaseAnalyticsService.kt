@@ -17,6 +17,14 @@ class FirebaseAnalyticsService(
         analytics.logEvent(name, params.toBundle())
     }
 
+    override fun setCollectionEnabled(isEnabled: Boolean) {
+        analytics.setAnalyticsCollectionEnabled(isEnabled)
+    }
+
+    override fun setUserId(userId: String?) {
+        analytics.setUserId(userId)
+    }
+
     private fun Map<String, Any>.toBundle(): Bundle = Bundle().also { bundle ->
         forEach { (key, value) ->
             when (value) {
