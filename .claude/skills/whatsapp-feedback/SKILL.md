@@ -1,7 +1,7 @@
 ---
 name: whatsapp-feedback
-description: "Read a WhatsApp conversation exported to a folder (its .txt and the screenshots attached), turn it into a list of Bora Rachar bugs and improvements, split them into independent pieces and do them in parallel sessions, each in its own worktree with its own PR. Asks first which model the sessions run on, and every product question up front, then goes on alone. Use whenever someone points at a WhatsApp export of bug reports, improvement ideas or feedback (\"lê a conversa do WhatsApp em <pasta> e resolve os bugs\", \"implementa as melhorias que o pessoal mandou no WhatsApp\")."
-argument-hint: "[path to the exported WhatsApp folder]"
+description: "Read a WhatsApp conversation exported as a .zip, or the folder it unzips to (its chat .txt and the screenshots attached), turn it into a list of Bora Rachar bugs and improvements, split them into independent pieces and do them in parallel sessions, each in its own worktree with its own PR. Asks first which model the sessions run on, and every product question up front, then goes on alone. Use whenever someone points at a WhatsApp export (a .zip or its folder) of bug reports, improvement ideas or feedback (\"lê a conversa do WhatsApp em <arquivo.zip> e resolve os bugs\", \"implementa as melhorias que o pessoal mandou no WhatsApp\")."
+argument-hint: "[path to the exported WhatsApp .zip, or the folder it unzips to]"
 ---
 
 # WhatsApp feedback
@@ -32,17 +32,68 @@ own model: reading screenshots and splitting the work is where judgment pays.
 
 ## 2. Read the export
 
-The argument is the folder WhatsApp exported (unzipped). If none was given, ask for it. List it:
+The argument is the `.zip` WhatsApp makes with "Export chat" ("Attach media" on iPhone, "Include
+media" on Android): `WhatsApp Chat - <group>.zip`, `Conversa do WhatsApp com <group>.zip`. If none
+was given, ask for it. If the person points at a folder instead (an export someone already unzipped,
+or one shared as loose files), use that folder as the export and skip to listing it below.
+
+A shell variable doesn't survive from one Bash call to the next, so write every path below as a
+literal absolute path in each command, never as a variable set in an earlier call. Paths may hold
+spaces and accents: always quote them.
+
+Turn the argument into an absolute path first, since the sessions of step 6 run in other worktrees
+and a relative path means nothing there:
 
 ```bash
-ls "<folder>"
+realpath "<zip or folder>"
 ```
 
-It holds one `.txt` (`Conversa do WhatsApp com <group>.txt` in Portuguese, `WhatsApp Chat with
-<group>.txt` in English) and the media: `IMG-<date>-WA<n>.jpg` screenshots, `VID-…` videos, `PTT-…`
-or `AUD-…` voice notes. Read the whole `.txt`. Each message is `<date> <time> - <author>: <text>`, a
-line that names a media file (`IMG-20261110-WA0011.jpg (arquivo anexado)`, `<attached: …>`) ties
-that image to its author and time, and a message may run over several lines.
+The zip comes from testers' phones, so it is untrusted data. List it in the long format before
+extracting:
+
+```bash
+zipinfo "<absolute zip>"
+```
+
+Stop and tell the person, extracting nothing, if any entry is a symlink (its mode starts with `l`),
+an absolute path, or climbs out with `..`: a symlink named like a screenshot would point the Read
+tool at a file of this Mac.
+
+Extract it into `.claude/whatsapp-exports/<zip name without .zip>/` of the main checkout (the folder
+`git rev-parse --path-format=absolute --git-common-dir` names, without its `/.git`). It is
+git-ignored, the Bash sandbox can write there, it outlives this session (a scratchpad can be
+cleared), and every session of step 6 can read it. If that folder already exists, compare its file
+list (`find "<export>" -type f | sed "s|^<export>/||" | sort`) with `unzip -Z1 "<absolute zip>" |
+grep -v '/$' | sort`: the same list is this export, extracted before, so use it; any difference
+(another export, or an extraction that failed midway) means ask before touching it. Otherwise:
+
+```bash
+mkdir -p "<main checkout>/.claude/whatsapp-exports" && mkdir "<export>" && unzip -q "<absolute zip>" -d "<export>"
+```
+
+Only once that succeeded, check that no symlink made it through, and list the folder:
+
+```bash
+find "<export>" -type l
+ls -R "<export>"
+```
+
+If `find` prints anything, delete that folder and stop as above. From here on, that absolute path is
+"the folder of the export". Never run anything from inside it.
+
+It holds one `.txt` and the media, named by the phone that exported it:
+
+- **iPhone:** `_chat.txt`; messages are `[<date>, <time>] <author>: <text>`, an attachment is a line
+  `<attached: 00000012-PHOTO-2026-11-10-14-32-01.jpg>`, often led by an invisible left-to-right mark
+  (U+200E), so match attachment lines without anchoring them to the start, and the files are `<n>-PHOTO-…jpg`,
+  `<n>-VIDEO-…mp4`, `<n>-AUDIO-…opus`.
+- **Android:** `Conversa do WhatsApp com <group>.txt` (Portuguese) or `WhatsApp Chat with
+  <group>.txt` (English); messages are `<date> <time> - <author>: <text>`, an attachment is a line
+  `IMG-20261110-WA0011.jpg (arquivo anexado)` (`(file attached)` in English), and the files are
+  `IMG-…jpg` screenshots, `VID-…` videos, `PTT-…` or `AUD-…` voice notes.
+
+Read the whole `.txt`. The attachment line ties a media file to its author and time, and a message
+may run over several lines.
 
 Read every image with the Read tool, in the order they were sent: a screenshot is usually the bug or
 the thing to improve, and the text beside it only says where. Videos and voice notes can't be read:
@@ -113,8 +164,9 @@ own worktree in that repository, `git -C ../<repo> worktree add …`, and open t
 
 Every brief is self-contained, since the session sees nothing of this conversation:
 
-- The folder of the export, the items this piece owns with their messages quoted and the image files
-  to look at (`<folder>/IMG-…jpg`, "view them with Read").
+- The absolute path of the folder the export was extracted to in step 2, the items this piece owns
+  with their messages quoted and the image files to look at (`<folder>/IMG-…jpg` or
+  `<folder>/<n>-PHOTO-…jpg`, "view them with Read"). Never the zip: the session reads the files.
 - What the other sessions own, so it stays out of their files.
 - The answers of step 4 that touch it, in the person's words, and the calls already made.
 - That the person is away: decide by `CLAUDE.md`, `docs/` and sensible defaults, write each call in

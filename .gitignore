@@ -35,6 +35,7 @@ node_modules/
 # Claude Code: skills and launch.json are versioned, the rest is local
 .claude/worktrees/
 .claude/memory/
+.claude/whatsapp-exports/
 .claude/settings.json
 .claude/settings.local.json
 
