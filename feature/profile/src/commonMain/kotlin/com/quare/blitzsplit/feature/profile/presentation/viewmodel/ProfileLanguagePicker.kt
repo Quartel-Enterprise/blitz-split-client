@@ -34,14 +34,8 @@ internal class ProfileLanguagePicker(
      * and the platform redraws in it.
      */
     fun select(language: AppLanguage) {
-        if (uiState.value.dialog == ProfileDialog.LANGUAGE) {
-            uiState.update {
-                it.copy(
-                    dialog = null,
-                    languageQuery = "",
-                )
-            }
-        }
+        // Why: the query stays until the next opening, which starts from the whole list (ProfileDialogs.openLanguage).
+        if (uiState.value.dialog == ProfileDialog.LANGUAGE) uiState.update { it.copy(dialog = null) }
         if (language == uiState.value.language) return
         trackEvent("language_selected", mapOf("language" to language))
         updateAppLanguage(language)

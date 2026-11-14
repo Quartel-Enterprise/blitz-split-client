@@ -12,6 +12,7 @@ dependencies {
     api(libs.compose.materialIconsExtended)
     // Why: the fold the device reports (androidx.window's FoldingFeature, through Material's adaptive reader).
     implementation(libs.compose.material3.adaptive)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 }

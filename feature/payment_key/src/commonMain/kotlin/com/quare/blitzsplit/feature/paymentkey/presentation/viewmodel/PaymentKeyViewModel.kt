@@ -73,6 +73,9 @@ class PaymentKeyViewModel(
     // Why: the user's other keys, so the same key can't be saved twice, and whose default this one would replace.
     private var otherKeys: List<PaymentKey> = emptyList()
 
+    // Why: the default switch as the person left it for each key the tabs point at (null for a new key).
+    private val defaultChoices = mutableMapOf<String?, Boolean>()
+
     // Why: a new key opens on a type the person doesn't hold yet, until they pick or type something themselves.
     private var hasChosenType = false
     private var validValue: String? = null
@@ -192,12 +195,13 @@ class PaymentKeyViewModel(
 
     /*
      * Why: points the form at the key its type's tab edits, and works out the default switch against the others.
-     * Moving to another saved key shows that key's own default; staying keeps the person's choice once they could
-     * make it.
+     * Each key keeps the switch as the person left it, so a visit to a held key's tab and back never undoes it;
+     * a key not touched yet shows its own saved default.
      */
     private fun retarget() {
         val state = uiState.value
         val previous = keyId
+        if (state.isLoaded && !state.isDefaultLocked) defaultChoices[previous] = state.isDefault
         keyId = keyIdFor(state.type)
         val target = keyId?.let { id -> keys.find { it.id == id } }
         otherKeys = keys.filter { it.id != keyId }
@@ -205,7 +209,7 @@ class PaymentKeyViewModel(
         val isLocked = ofMethod.isEmpty() || target?.isDefault == true
         val isDefault = when {
             isLocked -> true
-            state.isLoaded && !state.isDefaultLocked && previous == keyId -> state.isDefault
+            keyId in defaultChoices -> defaultChoices.getValue(keyId)
             else -> target?.isDefault == true
         }
         uiState.update {

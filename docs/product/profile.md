@@ -206,7 +206,9 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     above the field (`PaymentKeyUiState.isShowingHeldKey`), so saving changes it rather than adding a second one;
     going back to the tab of the key opened (or of no saved key) returns to it. A new key opens on the first type not
     held yet, and a key typed or pasted of a held type goes to that saved key the same way. The shared
-    `PaymentKeyViewModel` decides it, so the three UIs follow. Duplicates saved before the rule stay as they are: each
+    `PaymentKeyViewModel` decides it, so the three UIs follow, and `SavePaymentKey` saves a new key of a held type
+    over the held one, whoever calls it. Each key keeps its "Default Pix key" switch as it was left while the tabs
+    move between keys. Duplicates saved before the rule stay as they are: each
     still opens and saves on its own. The server has no constraint on it (`payment_keys` only checks each value's
     shape).
   - A key's "Default Pix key" (or "Default Bitcoin key") switch is locked on for the method's default key and for its

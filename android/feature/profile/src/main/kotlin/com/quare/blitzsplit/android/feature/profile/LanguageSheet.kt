@@ -33,13 +33,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -54,18 +52,15 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
-import androidx.core.view.WindowCompat
+import com.quare.blitzsplit.android.designsystem.component.DialogSystemBarsEffect
 import com.quare.blitzsplit.android.designsystem.component.SearchBarField
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
-import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.isPhone
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 import com.quare.blitzsplit.android.designsystem.R as DesignR
-
-private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape)
 
 /*
  * Why: "Language" as Bible Planner's language sheet: a row per option with its chip and a radio, the pick closing it.
@@ -81,7 +76,7 @@ internal fun LanguageSheet(
     val names = languageSearchNames()
     val options = state.findLanguageOptions { names.getValue(it) }
     val onDismiss = { onEvent(ProfileUiEvent.OnDialogDismissed) }
-    if (rememberFoldLayout().formFactor in phoneFormFactors) {
+    if (rememberFoldLayout().formFactor.isPhone) {
         LanguageScreen(
             state = state,
             options = options,
@@ -134,7 +129,7 @@ private fun LanguageScreen(
             decorFitsSystemWindows = false,
         ),
     ) {
-        ScreenSystemBarsEffect()
+        DialogSystemBarsEffect(isLight = MaterialTheme.colorScheme.surface.luminance() > 0.5f)
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -171,20 +166,6 @@ private fun LanguageScreen(
                     onEvent = onEvent,
                 )
             }
-        }
-    }
-}
-
-// Why: the dialog's own window draws the bars light by default, white icons the light theme couldn't show.
-@Composable
-private fun ScreenSystemBarsEffect() {
-    val view = LocalView.current
-    val isLight = MaterialTheme.colorScheme.surface.luminance() > 0.5f
-    SideEffect {
-        val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
-        WindowCompat.getInsetsController(window, view).apply {
-            isAppearanceLightStatusBars = isLight
-            isAppearanceLightNavigationBars = isLight
         }
     }
 }

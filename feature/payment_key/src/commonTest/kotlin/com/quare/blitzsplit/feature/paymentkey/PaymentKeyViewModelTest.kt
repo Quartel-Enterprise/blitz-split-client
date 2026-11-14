@@ -2706,6 +2706,22 @@ class PaymentKeyViewModelTest {
             assertFalse(state.isShowingHeldKey)
         }
 
+    @Test
+    fun `GIVEN a new phone turned default WHEN visiting the held CPF tab and back THEN keeps the default on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedKeys = listOf(openedCpf))
+            viewModel.onEvent(PaymentKeyUiEvent.OnDefaultChanged(true))
+
+            // When
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.CPF))
+            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.PHONE))
+
+            // Then
+            assertEquals(PaymentKeyType.PHONE, viewModel.uiState.value.type)
+            assertTrue(viewModel.uiState.value.isDefault)
+        }
+
     private val profileStack: List<Route> = listOf(Route.Groups, Route.Profile)
 
     private val phoneDefault = PaymentKey(

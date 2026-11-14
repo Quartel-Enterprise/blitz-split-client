@@ -1629,7 +1629,7 @@ class ProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN a language search typed WHEN picking Portuguese THEN closes the sheet and clears the search`() =
+    fun `GIVEN a language search typed WHEN picking Portuguese THEN closes the sheet and stores Portuguese`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(language = AppLanguage.SYSTEM)
@@ -1641,23 +1641,22 @@ class ProfileViewModelTest {
 
             // Then
             assertNull(viewModel.uiState.value.dialog)
-            assertEquals("", viewModel.uiState.value.languageQuery)
             assertEquals(listOf(AppLanguage.PORTUGUESE), languageWrites)
         }
 
     @Test
-    fun `GIVEN a language search typed on Portuguese WHEN picking Portuguese again THEN clears the search`() =
+    fun `GIVEN Portuguese picked again from a search WHEN opening Language again THEN starts from an empty search`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(language = AppLanguage.PORTUGUESE)
             viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
             viewModel.onEvent(ProfileUiEvent.OnLanguageQueryChanged("portu"))
-
-            // When
             viewModel.onEvent(ProfileUiEvent.OnLanguageSelected(AppLanguage.PORTUGUESE))
 
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
             // Then
-            assertNull(viewModel.uiState.value.dialog)
             assertEquals("", viewModel.uiState.value.languageQuery)
             assertTrue(languageWrites.isEmpty())
         }
