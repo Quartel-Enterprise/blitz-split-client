@@ -104,13 +104,17 @@ internal fun ContactProfileContent(
      * Why: how far the header went up under the bar, from 0 (all in sight) to 1 (gone), read where it draws, so the
      * scroll redraws the face and the bar's title, never the screen.
      */
-    val headerFold by remember(usesTwoColumns) {
+    val headerFold by remember(usesTwoColumns, isInPane) {
         derivedStateOf {
             val height = headerHeight.toFloat()
             when {
-                height <= 0f -> 0f
+                // Why: beside Contacts' list the header stays as it is, as on iOS; the pane names the person already.
+                isInPane || height <= 0f -> 0f
+
                 usesTwoColumns -> (startScroll.value / height).coerceIn(0f, 1f)
+
                 listState.firstVisibleItemIndex > 0 -> 1f
+
                 else -> (listState.firstVisibleItemScrollOffset / height).coerceIn(0f, 1f)
             }
         }

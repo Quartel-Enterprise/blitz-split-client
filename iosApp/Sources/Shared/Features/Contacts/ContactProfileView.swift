@@ -283,7 +283,12 @@ private struct ContactProfileContent: View {
     /// in common and the history on the right, each scrolling on its own (beta feedback of 2026-11-14). Beside
     /// Contacts' list the pane keeps one column.
     private var usesTwoColumns: Bool {
+        #if os(iOS)
         layout.usesTwoColumns && !isInPane
+        #else
+        // The Mac's window keeps one column, its profile mostly in the inspector beside the list
+        false
+        #endif
     }
 
     var body: some View {
@@ -319,6 +324,8 @@ private struct ContactProfileContent: View {
         .scrollContentBackground(.hidden)
         .background(Palette.groupedBackground)
         .measuringScreenLayout($layout)
+        // The other layout's scroll starts at the top: a fold left from the one before would keep the face hidden
+        .onChange(of: usesTwoColumns) { headerScroll.offset = 0 }
     }
 
     /// What the header's face shrinks with: only on iOS pushed, where the bar's title takes its place. The Mac's
@@ -380,9 +387,11 @@ private struct ContactProfileContent: View {
 
 private extension View {
     /// Ties the header's fold to this scroll, frame by frame, held at the fold's end; off, the scroll leaves it be.
+    /// The contact's face sits 16 pt lower than the group's (the 20 pt padding), so its fold starts that much later
+    /// and the bar's name never shows while the header's is still in sight.
     func foldingHeader(_ scroll: GroupHeaderScroll, isOn: Bool) -> some View {
         onScrollGeometryChange(for: CGFloat.self) { geometry in
-            isOn ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), scroll.foldEnd) : 0
+            isOn ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top - 16), scroll.foldEnd) : 0
         } action: { _, offset in
             if isOn { scroll.offset = offset }
         }
@@ -601,10 +610,7 @@ private struct NetCard: View {
             if state.canCharge || state.canReceive {
                 // Side by side while both labels fit on one line, stacked in a narrow column (beta feedback of
                 // 2026-11-14), never a capsule squeezed around a broken label
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 10) { chargeAndReceive }
-                    VStack(spacing: 10) { chargeAndReceive }
-                }
+                FittingButtonsLayout(spacing: 10) { chargeAndReceive }
             }
             if state.canSettle {
                 action("Settle up", systemImage: "checkmark", isProminent: true) {

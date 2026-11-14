@@ -85,7 +85,7 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     web's page scrolls as one); beside Contacts' list it keeps one (beta feedback of 2026-11-14). As the header scrolls up its face shrinks and
     fades while a small face and the name come into the top bar (Android and iOS, as the group's header does; the
     web's header sticks and folds into a compact bar, under the phone's top bar; the Mac, whose toolbar names the
-    person, and the iPad's pane keep their header as it is). "Request" and
+    person, and the pane beside Contacts' list keep their header as it is). "Request" and
     "Received" sit side by side while both labels fit and stack full width otherwise, as the guest card's "Merge"
     and "Invite". "Share profile" beside ⋯ shares the person's profile link
     (`https://blitzsplit.com/u/<code>?lang=<app language>`, as they would share it from their own Profile, the link

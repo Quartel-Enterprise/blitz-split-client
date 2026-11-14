@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.LeadingTrailingRow
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.clickableWhen
@@ -251,34 +251,34 @@ private fun ActionsRow(
      * lying down, a large font), the actions on a line of their own, never a button squeezed into a column with its
      * label broken letter by letter (beta feedback of 2026-11-14).
      */
-    FlowRow(
+    LeadingTrailingRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = actionsInset - 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        itemVerticalAlignment = Alignment.CenterVertically,
-    ) {
-        TextButton(
-            onClick = { onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(row.id)) },
-            modifier = Modifier.semantics { contentDescription = toggle },
-        ) {
-            Text(
-                text = stringResource(DesignR.string.designsystem_person_by_group),
-                maxLines = 1,
+        leading = {
+            TextButton(
+                onClick = { onEvent(GlobalBalancesUiEvent.OnPersonExpandToggled(row.id)) },
+                modifier = Modifier.semantics { contentDescription = toggle },
+            ) {
+                Text(
+                    text = stringResource(DesignR.string.designsystem_person_by_group),
+                    maxLines = 1,
+                )
+                Icon(
+                    imageVector = if (row.isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        },
+        trailing = {
+            PersonActionsRow(
+                row = row,
+                name = name,
+                onEvent = onEvent,
             )
-            Icon(
-                imageVector = if (row.isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-        }
-        PersonActionsRow(
-            row = row,
-            name = name,
-            onEvent = onEvent,
-            modifier = Modifier.weight(1f),
-        )
-    }
+        },
+    )
 }
 
 /*
