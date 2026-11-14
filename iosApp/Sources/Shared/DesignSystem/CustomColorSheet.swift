@@ -6,6 +6,8 @@ import SwiftUI
 /// fields and the gradient never disagree; "Add" waits for whole codes.
 struct CustomColorSheet: View {
     let draft: ColorDraft
+    /// The draft as the model holds it right now, which the fields read so fast typing never sees a stale value.
+    let current: () -> ColorDraft?
     let send: (CustomColorEvent) -> Void
 
     var body: some View {
@@ -23,7 +25,7 @@ struct CustomColorSheet: View {
                             .overlay { Circle().strokeBorder(.separator) }
                             .accessibilityHidden(true)
                         TextField("Hex code", text: Binding(
-                            get: { draft.hexText },
+                            get: { current()?.hexText ?? draft.hexText },
                             set: { send(CustomColorEventOnHexChanged(text: $0)) },
                         ))
                         .autocorrectionDisabled()
@@ -32,9 +34,9 @@ struct CustomColorSheet: View {
                         #endif
                     }
                     HStack {
-                        channelField("Red", text: draft.redText, channel: .red)
-                        channelField("Green", text: draft.greenText, channel: .green)
-                        channelField("Blue", text: draft.blueText, channel: .blue)
+                        channelField("Red", channel: .red) { $0.redText }
+                        channelField("Green", channel: .green) { $0.greenText }
+                        channelField("Blue", channel: .blue) { $0.blueText }
                     }
                 } footer: {
                     if draft.isHexInvalid {
@@ -134,9 +136,13 @@ struct CustomColorSheet: View {
         }
     }
 
-    private func channelField(_ title: LocalizedStringKey, text: String, channel: ColorDraft.ColorChannel) -> some View {
+    private func channelField(
+        _ title: LocalizedStringKey,
+        channel: ColorDraft.ColorChannel,
+        text: @escaping (ColorDraft) -> String,
+    ) -> some View {
         TextField(title, text: Binding(
-            get: { text },
+            get: { text(current() ?? draft) },
             set: { send(CustomColorEventOnChannelChanged(channel: channel, text: $0)) },
         ))
         #if os(iOS)

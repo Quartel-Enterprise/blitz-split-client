@@ -307,6 +307,28 @@ class BillCategoryViewModelTest {
         }
 
     @Test
+    fun `GIVEN New color open from the form WHEN closing Category THEN New color closes with it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryClicked)
+        viewModel.onEvent(
+            SplitBillUiEvent.OnNewCategoryClicked(
+                parentId = null,
+                name = "Pet",
+            ),
+        )
+        val current = viewModel.uiState.value.categoryForm!!
+            .color
+        viewModel.onEvent(SplitBillUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(current, categoryKey = null)))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnCategoryDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.customColors.draft)
+    }
+
+    @Test
     fun `GIVEN a name already in the same category WHEN typing it THEN Salvar waits elsewhere it does not`() = runTest {
         // Given
         prepareScenario(groupCategories = listOf(churrasco))

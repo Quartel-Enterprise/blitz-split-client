@@ -18,7 +18,14 @@ export function ChangeColorPopover({ presenter, category, customColors }: { pres
   const title = t('categoryMap_changeColor', { name: categoryName(category) })
   const titleId = `change-color-${appKey}`
   return (
-    <Popover open={isOpen} onOpenChange={setOpen}>
+    <Popover
+      open={isOpen}
+      onOpenChange={(open) => {
+        setOpen(open)
+        // Why: "New color" and the questions go with the popover, so the next picker never opens on them.
+        if (!open) presenter.customColors.closePicker()
+      }}
+    >
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" aria-label={title}>
           <Palette />
@@ -47,7 +54,14 @@ export function ChangeColorPopover({ presenter, category, customColors }: { pres
           <Button variant="ghost" onClick={() => presenter.pickAppCategoryColor(appKey, null)}>
             {t('categoryMap_restoreColor')}
           </Button>
-          <Button onClick={() => setOpen(false)}>{t('splitBill_done')}</Button>
+          <Button
+            onClick={() => {
+              setOpen(false)
+              presenter.customColors.closePicker()
+            }}
+          >
+            {t('splitBill_done')}
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

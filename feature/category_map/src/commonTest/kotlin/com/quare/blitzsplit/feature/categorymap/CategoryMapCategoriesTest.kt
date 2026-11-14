@@ -674,6 +674,22 @@ class CategoryMapCategoriesTest {
     }
 
     @Test
+    fun `GIVEN New color open from the form WHEN closing the form THEN New color closes with it`() = runTest {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryMapUiEvent.OnNewCategoryClicked(parentId = null))
+        val current = viewModel.uiState.value.categoryForm!!
+            .color
+        viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(current, categoryKey = null)))
+
+        // When
+        viewModel.onEvent(CategoryMapUiEvent.OnCategoryFormDismissed)
+
+        // Then
+        assertNull(viewModel.uiState.value.customColors.draft)
+    }
+
+    @Test
     fun `GIVEN a new subcategory WHEN picking a color THEN it keeps its parent color`() = runTest {
         // Given
         prepareScenario()

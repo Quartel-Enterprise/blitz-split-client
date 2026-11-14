@@ -112,7 +112,8 @@ data class CustomColor(
         }
 
         private fun channelOf(fraction: Double): Int = (fraction * CHANNEL_MAX_D).roundToInt().coerceIn(0, CHANNEL_MAX)
-
-        private fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
     }
 }
+
+// Why: what a hex code is made of, the one rule CustomColor and the picker's field both read.
+internal fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'

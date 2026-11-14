@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useDraft } from '@/hooks/useDraft'
 import { t } from '@/i18n'
 import { categoryColorCodes, categoryColorLabel, categoryStyle } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
@@ -161,6 +162,11 @@ function CustomColorDialogs({ customColors, actions }: { customColors: JsCustomC
 /** "New color": saturation and brightness in the square, the hue below, and the same color as hex and RGB. */
 function NewColorDialog({ draft, actions }: { draft: JsColorDraft; actions: JsCustomColorActions }) {
   const hueColor = `hsl(${draft.hue} 100% 50%)`
+  // Why: the field keeps what was typed, so the caret stays put while the ViewModel answers.
+  const [hex, setHex] = useDraft(draft.hexText, (text) => {
+    actions.changeHex(text)
+    return actions.getHexText()
+  })
   const fromSquare = (event: PointerEvent<HTMLDivElement>) => {
     const box = event.currentTarget.getBoundingClientRect()
     const saturation = Math.min(Math.max((event.clientX - box.left) / box.width, 0), 1)
@@ -241,35 +247,19 @@ function NewColorDialog({ draft, actions }: { draft: JsColorDraft; actions: JsCu
               <Label htmlFor="custom-color-hex">{t('customColor_hex')}</Label>
               <Input
                 id="custom-color-hex"
-                value={draft.hexText}
+                value={hex}
                 autoComplete="off"
                 spellCheck={false}
                 aria-invalid={draft.isHexInvalid}
                 aria-describedby={draft.isHexInvalid ? 'custom-color-error' : undefined}
-                onChange={(event) => actions.changeHex(event.target.value)}
+                onChange={(event) => setHex(event.target.value)}
               />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            {(
-              [
-                ['red', 'categoryColor_red', draft.redText],
-                ['green', 'categoryColor_green', draft.greenText],
-                ['blue', 'categoryColor_blue', draft.blueText],
-              ] as const
-            ).map(([channel, label, text]) => (
-              <div key={channel} className="flex flex-col gap-1.5">
-                <Label htmlFor={`custom-color-${channel}`}>{t(label)}</Label>
-                <Input
-                  id={`custom-color-${channel}`}
-                  value={text}
-                  inputMode="numeric"
-                  aria-invalid={draft.isRgbInvalid}
-                  aria-describedby={draft.isRgbInvalid ? 'custom-color-error' : undefined}
-                  onChange={(event) => actions.changeChannel(channel, event.target.value)}
-                />
-              </div>
-            ))}
+            <ChannelField channel="red" label="categoryColor_red" value={draft.redText} isInvalid={draft.isRgbInvalid} actions={actions} />
+            <ChannelField channel="green" label="categoryColor_green" value={draft.greenText} isInvalid={draft.isRgbInvalid} actions={actions} />
+            <ChannelField channel="blue" label="categoryColor_blue" value={draft.blueText} isInvalid={draft.isRgbInvalid} actions={actions} />
           </div>
           {(draft.isHexInvalid || draft.isRgbInvalid) && (
             <p id="custom-color-error" className="text-sm text-destructive">
@@ -287,5 +277,38 @@ function NewColorDialog({ draft, actions }: { draft: JsColorDraft; actions: JsCu
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function ChannelField({
+  channel,
+  label,
+  value,
+  isInvalid,
+  actions,
+}: {
+  channel: 'red' | 'green' | 'blue'
+  label: 'categoryColor_red' | 'categoryColor_green' | 'categoryColor_blue'
+  value: string
+  isInvalid: boolean
+  actions: JsCustomColorActions
+}) {
+  // Why: the field keeps what was typed, digits only as the ViewModel keeps them, so the caret stays put.
+  const [text, setText] = useDraft(value, (next) => {
+    actions.changeChannel(channel, next)
+    return actions.getChannelText(channel)
+  })
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={`custom-color-${channel}`}>{t(label)}</Label>
+      <Input
+        id={`custom-color-${channel}`}
+        value={text}
+        inputMode="numeric"
+        aria-invalid={isInvalid}
+        aria-describedby={isInvalid ? 'custom-color-error' : undefined}
+        onChange={(event) => setText(event.target.value)}
+      />
+    </div>
   )
 }

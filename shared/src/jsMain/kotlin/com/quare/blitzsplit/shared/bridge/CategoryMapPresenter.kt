@@ -122,8 +122,10 @@ class CategoryMapPresenter {
     private val holder = ViewModelHolder(CategoryMapViewModel::class) { KoinPlatform.getKoin().get() }
     private val viewModel get() = holder.viewModel
 
-    val customColors: JsCustomColorActions =
-        JsCustomColorActions { viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(it)) }
+    val customColors: JsCustomColorActions = JsCustomColorActions(
+        send = { viewModel.onEvent(CategoryMapUiEvent.OnCustomColor(it)) },
+        current = { viewModel.uiState.value.customColors },
+    )
 
     fun observeState(onChange: (JsCategoryMapState) -> Unit): JsWatch {
         val watch = FlowWatcher(viewModel.uiState.map(::toJsMapState)).observe(onChange)

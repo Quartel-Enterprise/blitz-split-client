@@ -57,9 +57,8 @@ fun CategoryColorPicker(
      * takes the draft along, so a later picker never opens on it nor sends its color to the earlier category.
      */
     val latestOnCustomColor by rememberUpdatedState(onCustomColor)
-    val hasDraft by rememberUpdatedState(customColors.draft != null)
     DisposableEffect(Unit) {
-        onDispose { if (hasDraft) latestOnCustomColor(CustomColorEvent.OnDraftDismissed) }
+        onDispose { latestOnCustomColor(CustomColorEvent.OnPickerClosed) }
     }
     Column(
         modifier = modifier,

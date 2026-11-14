@@ -102,11 +102,14 @@ internal class CategoryEditing(
                 if (uiState.value != before) trackEvent("bill_category_picked", emptyMap())
             }
 
-            SplitBillUiEvent.OnCategoryDismissed -> uiState.update {
-                it.copy(
-                    categoryPicker = null,
-                    categoryForm = null,
-                )
+            SplitBillUiEvent.OnCategoryDismissed -> {
+                customColors.close()
+                uiState.update {
+                    it.copy(
+                        categoryPicker = null,
+                        categoryForm = null,
+                    )
+                }
             }
 
             is SplitBillUiEvent.OnNewCategoryClicked -> uiState.update {
@@ -148,8 +151,11 @@ internal class CategoryEditing(
                 save()
             }
 
-            SplitBillUiEvent.OnCategoryFormDismissed -> uiState.update {
-                if (it.categoryForm?.isSaving == true) it else it.copy(categoryForm = null)
+            SplitBillUiEvent.OnCategoryFormDismissed -> {
+                customColors.close()
+                uiState.update {
+                    if (it.categoryForm?.isSaving == true) it else it.copy(categoryForm = null)
+                }
             }
 
             SplitBillUiEvent.OnCategoryDeleteClicked -> askToDelete()

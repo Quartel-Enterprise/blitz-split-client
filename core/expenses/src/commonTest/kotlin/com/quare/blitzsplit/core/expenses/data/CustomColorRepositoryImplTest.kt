@@ -460,6 +460,41 @@ class CustomColorRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN odd colors from the server WHEN downloading THEN keys hex uppercase and drops the rest`() = runTest {
+        // Given
+        prepareScenario(
+            serverRows = listOf(
+                CustomColorDto(
+                    USER_ID,
+                    "#3a7bd5",
+                    isDeleted = false,
+                    addedAt = 1L,
+                    updatedAt = 10L,
+                ),
+                CustomColorDto(
+                    USER_ID,
+                    "#12",
+                    isDeleted = false,
+                    addedAt = 1L,
+                    updatedAt = 10L,
+                ),
+            ),
+        )
+
+        // When
+        repository.download(USER_ID)
+        repository.delete(CustomColor(0x3A7BD5), updatedAt = 20L)
+
+        // Then
+        assertEquals(listOf("#3A7BD5"), local.rows.value.map { it.color })
+        assertTrue(
+            local.rows.value
+                .single()
+                .isDeleted,
+        )
+    }
+
+    @Test
     fun `GIVEN a color only on the server WHEN downloading THEN stores it synced as this user`() = runTest {
         // Given
         prepareScenario(

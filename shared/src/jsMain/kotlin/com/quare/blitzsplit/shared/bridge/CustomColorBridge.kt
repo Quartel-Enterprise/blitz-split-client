@@ -75,7 +75,26 @@ class JsCustomColors internal constructor(
 // Why: what the page sends about the person's own colors, on the screen's own ViewModel.
 class JsCustomColorActions internal constructor(
     private val send: (CustomColorEvent) -> Unit,
+    private val current: () -> CustomColorState,
 ) {
+    // Why: what the hex field shows right after a keystroke, before the next state arrives.
+    fun getHexText(): String = current().draft?.hexText.orEmpty()
+
+    // Why: a channel as the ViewModel kept it (digits only, three at most), right after a keystroke.
+    fun getChannelText(channel: String): String {
+        val draft = current().draft ?: return ""
+        return when (channel.lowercase()) {
+            "red" -> draft.redText
+            "green" -> draft.greenText
+            else -> draft.blueText
+        }
+    }
+
+    // Why: "Change color of Food" closed without the person closing "New color" or the question first.
+    fun closePicker() {
+        send(CustomColorEvent.OnPickerClosed)
+    }
+
     // Why: "+"; categoryKey is the app category "Change the color of" is open for, null for the form.
     fun add(
         currentCode: String,

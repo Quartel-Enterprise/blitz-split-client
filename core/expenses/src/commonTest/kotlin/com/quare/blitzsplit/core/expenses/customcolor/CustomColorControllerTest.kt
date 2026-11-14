@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.ColorDraft
 import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.CustomPalette
+import com.quare.blitzsplit.core.expenses.domain.model.CustomPaletteFullException
 import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.createFakeCustomColorUseCases
@@ -444,22 +445,144 @@ class CustomColorControllerTest {
             assertNull(controller.state.value.deletion)
         }
 
+    @Test
+    fun `GIVEN Add in flight for Food and plus tapped for Home WHEN the save fails THEN Home keeps its own draft`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(
+                saveError = IllegalStateException("disk full"),
+                addGate = gate,
+            )
+            controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.ORANGE.tint, AppCategory.FOOD.key))
+            controller.onEvent(CustomColorEvent.OnHexChanged("#3A7BD5"))
+            controller.onEvent(CustomColorEvent.OnSaveClicked)
+            controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.PURPLE.tint, AppCategory.HOME.key))
+            val homeDraft = controller.state.value.draft
+
+            // When
+            gate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(ColorDraft.createStartingAt(CategoryColor.PURPLE.tint), homeDraft)
+            assertEquals(homeDraft, controller.state.value.draft)
+        }
+
+    @Test
+    fun `GIVEN the palette filled up meanwhile WHEN Add fails as full THEN New color does not open again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(saveError = CustomPaletteFullException())
+            controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.TEAL.tint, null))
+            controller.onEvent(CustomColorEvent.OnHexChanged("#3A7BD5"))
+
+            // When
+            controller.onEvent(CustomColorEvent.OnSaveClicked)
+            runCurrent()
+
+            // Then
+            assertNull(controller.state.value.draft)
+            assertTrue(picked.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Delete this color asked WHEN the device fails to delete THEN the question stays for another try`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                palette = listOf(blue),
+                saveError = IllegalStateException("disk full"),
+            )
+            controller.observe()
+            controller.onEvent(CustomColorEvent.OnLongPressed(blue))
+            runCurrent()
+
+            // When
+            controller.onEvent(CustomColorEvent.OnDeleteConfirmed)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                CustomColorDeletion(
+                    color = blue,
+                    usedBy = null,
+                    isDeleting = false,
+                ),
+                controller.state.value.deletion,
+            )
+            assertEquals(listOf(blue), controller.state.value.palette)
+        }
+
+    @Test
+    fun `GIVEN the categories fail to read WHEN long pressing a color THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            palette = listOf(blue),
+            findError = IllegalStateException("db closed"),
+        )
+        controller.observe()
+
+        // When
+        controller.onEvent(CustomColorEvent.OnLongPressed(blue))
+        runCurrent()
+
+        // Then
+        assertNull(controller.state.value.deletion)
+    }
+
+    @Test
+    fun `GIVEN New color open WHEN its picker closes THEN the draft goes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        controller.onEvent(CustomColorEvent.OnAddClicked(CategoryColor.TEAL.tint, AppCategory.FOOD.key))
+
+        // When
+        controller.onEvent(CustomColorEvent.OnPickerClosed)
+
+        // Then
+        assertNull(controller.state.value.draft)
+    }
+
+    @Test
+    fun `GIVEN Delete this color asked WHEN its picker closes THEN the question goes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(palette = listOf(blue))
+        controller.observe()
+        controller.onEvent(CustomColorEvent.OnLongPressed(blue))
+        runCurrent()
+
+        // When
+        controller.close()
+
+        // Then
+        assertNull(controller.state.value.deletion)
+    }
+
     private fun TestScope.prepareScenario(
         palette: List<CustomColor> = emptyList(),
         saveError: Throwable? = null,
         deleteGate: CompletableDeferred<Unit>? = null,
+        addGate: CompletableDeferred<Unit>? = null,
+        findError: Throwable? = null,
     ) {
         repository = FakeCustomColorRepository(initialColors = palette).also { it.saveError = saveError }
         val fake = createFakeCustomColorUseCases(repository, usedBy = { usedBy[it] })
         controller = CustomColorController(
             useCases = CustomColorUseCases(
                 observeCustomColors = fake.observeCustomColors,
-                addCustomColor = fake.addCustomColor,
+                addCustomColor = { color ->
+                    addGate?.await()
+                    fake.addCustomColor(color)
+                },
                 deleteCustomColor = { color ->
                     deleteGate?.await()
                     fake.deleteCustomColor(color)
                 },
-                findCustomColorUser = fake.findCustomColorUser,
+                findCustomColorUser = { color ->
+                    findError?.let { throw it }
+                    fake.findCustomColorUser(color)
+                },
             ),
             scope = backgroundScope,
             onPicked = { tint, categoryKey -> picked += tint to categoryKey },

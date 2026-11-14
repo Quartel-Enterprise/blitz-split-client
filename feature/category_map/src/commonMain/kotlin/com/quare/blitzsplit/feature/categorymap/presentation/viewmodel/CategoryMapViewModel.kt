@@ -87,7 +87,8 @@ class CategoryMapViewModel(
         scope = viewModelScope,
         onPicked = { tint, categoryKey ->
             if (categoryKey != null) {
-                viewModelScope.launch { setAppCategoryColor(categoryKey, tint) }
+                // Why: the same pick as a swatch's, so app_category_color_picked counts it too.
+                onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(categoryKey, tint))
             } else {
                 categoryEditing.pickColor(tint)
             }
@@ -235,7 +236,10 @@ class CategoryMapViewModel(
 
             is CategoryMapUiEvent.OnCustomColor -> customColors.onEvent(event.event)
 
-            is CategoryMapUiEvent.Categories -> categoryEditing.onEvent(event)
+            is CategoryMapUiEvent.Categories -> {
+                if (event == CategoryMapUiEvent.OnCategoryFormDismissed) customColors.close()
+                categoryEditing.onEvent(event)
+            }
         }
     }
 

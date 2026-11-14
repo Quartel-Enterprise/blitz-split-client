@@ -84,6 +84,7 @@ struct CategoryEditorActions {
     let pickColor: (CategoryTint) -> Void
     /// The person's own colors after the named ones in "Color".
     let customColors: CustomColorState
+    let currentCustomColors: () -> CustomColorState
     let sendCustomColor: (CustomColorEvent) -> Void
     let save: () -> Void
     let dismiss: () -> Void
@@ -140,6 +141,7 @@ struct CategoryEditorForm<GroupField: View>: View {
                         CategoryColorGrid(
                             selected: form.color,
                             customColors: actions.customColors,
+                            currentCustomColors: actions.currentCustomColors,
                             pick: actions.pickColor,
                             send: actions.sendCustomColor,
                         )

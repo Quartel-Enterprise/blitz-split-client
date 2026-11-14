@@ -115,7 +115,10 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
 class SplitCategoriesPresenter internal constructor(
     private val viewModel: () -> SplitBillViewModel,
 ) {
-    val customColors: JsCustomColorActions = JsCustomColorActions { send(SplitBillUiEvent.OnCustomColor(it)) }
+    val customColors: JsCustomColorActions = JsCustomColorActions(
+        send = { send(SplitBillUiEvent.OnCustomColor(it)) },
+        current = { viewModel().uiState.value.customColors },
+    )
 
     fun open() {
         send(SplitBillUiEvent.OnCategoryClicked)

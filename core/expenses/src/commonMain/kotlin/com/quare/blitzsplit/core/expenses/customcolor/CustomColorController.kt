@@ -3,7 +3,9 @@ package com.quare.blitzsplit.core.expenses.customcolor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.ColorDraft
 import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
+import com.quare.blitzsplit.core.expenses.domain.model.CustomPaletteFullException
 import com.quare.blitzsplit.core.expenses.domain.model.tint
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -66,6 +68,22 @@ class CustomColorController(
             CustomColorEvent.OnDeletionDismissed -> state.update {
                 if (it.deletion?.isDeleting == true) it else it.copy(deletion = null)
             }
+
+            CustomColorEvent.OnPickerClosed -> close()
+        }
+    }
+
+    /*
+     * Why: "New color" and the questions belong to the picker that opened them: once it closes (its form, the bill's
+     * Category, "Change color of Food", or a rotation that took its dialog), they go too, so the next picker never opens
+     * on them nor sends a color to the earlier category. A deletion in flight finishes on its own.
+     */
+    fun close() {
+        state.update {
+            it.copy(
+                draft = null,
+                deletion = it.deletion?.takeIf { deletion -> deletion.isDeleting },
+            )
         }
     }
 
@@ -84,7 +102,10 @@ class CustomColorController(
         state.update { current -> current.copy(draft = current.draft?.let(transform)) }
     }
 
-    // Why: the picker closes at once; the palette reads the color back from Room. A failed write keeps the picker open.
+    /*
+     * Why: the picker closes at once; the palette reads the color back from Room. A failed write opens it again, unless
+     * another "New color" opened meanwhile, or the palette filled up (a sync brought colors), whose note says so.
+     */
     private fun save() {
         val draft = state.value.draft ?: return
         if (!draft.canSave) return
@@ -95,14 +116,20 @@ class CustomColorController(
             useCases
                 .addCustomColor(color)
                 .onSuccess { onPicked(color.tint, categoryKey) }
-                .onFailure { state.update { it.copy(draft = draft) } }
+                .onFailure { error ->
+                    if (error is CustomPaletteFullException) return@onFailure
+                    state.update {
+                        if (it.draft == null && draftCategoryKey == categoryKey) it.copy(draft = draft) else it
+                    }
+                }
         }
     }
 
     private fun askToDelete(color: CustomColor) {
         if (!state.value.isDeletable(color) || state.value.deletion != null) return
         scope.launch {
-            val usedBy = useCases.findCustomColorUser(color)
+            // Why: a read that fails asks nothing, as if the long press hadn't landed.
+            val usedBy = suspendRunCatching { useCases.findCustomColorUser(color) }.getOrElse { return@launch }
             state.update { current ->
                 if (current.deletion != null || color !in current.palette) {
                     current
@@ -125,13 +152,19 @@ class CustomColorController(
         if (deletion.isBlocked || deletion.isDeleting) return
         state.update { it.copy(deletion = deletion.copy(isDeleting = true)) }
         scope.launch {
-            val usedBy = useCases.findCustomColorUser(deletion.color)
+            // Why: a check that fails deletes nothing; the question stays for another try or "Cancel".
+            val usedBy = suspendRunCatching { useCases.findCustomColorUser(deletion.color) }.getOrElse {
+                state.update { it.copy(deletion = deletion) }
+                return@launch
+            }
             if (usedBy != null) {
                 state.update { it.copy(deletion = deletion.copy(usedBy = usedBy)) }
                 return@launch
             }
-            useCases.deleteCustomColor(deletion.color)
-            state.update { it.copy(deletion = null) }
+            useCases
+                .deleteCustomColor(deletion.color)
+                .onSuccess { state.update { it.copy(deletion = null) } }
+                .onFailure { state.update { it.copy(deletion = deletion) } }
         }
     }
 }

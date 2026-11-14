@@ -8,6 +8,8 @@ import SwiftUI
 struct CategoryColorGrid: View {
     let selected: CategoryTint
     let customColors: CustomColorState
+    /// The model's state right now, which "New color"'s fields read.
+    let currentCustomColors: () -> CustomColorState
     let pick: (CategoryTint) -> Void
     let send: (CustomColorEvent) -> Void
     var categoryKey: String?
@@ -51,7 +53,7 @@ struct CategoryColorGrid: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .customColorDialogs(customColors, send: send)
+        .customColorDialogs(customColors, current: currentCustomColors, send: send)
     }
 
     /// How to delete one of the person's colors, said where the hand is: a long press, a right click on the Mac.
@@ -90,14 +92,18 @@ struct CategoryColorGrid: View {
 
 extension View {
     /// "New color", then "Delete this color?" or "This color is in use", over the grid that opened them.
-    func customColorDialogs(_ state: CustomColorState, send: @escaping (CustomColorEvent) -> Void) -> some View {
+    func customColorDialogs(
+        _ state: CustomColorState,
+        current: @escaping () -> CustomColorState,
+        send: @escaping (CustomColorEvent) -> Void,
+    ) -> some View {
         let deletion = state.deletion
         return sheet(isPresented: Binding(
             get: { state.draft != nil },
             set: { shown in if !shown { send(CustomColorEventOnDraftDismissed.shared) } },
         )) {
             if let draft = state.draft {
-                CustomColorSheet(draft: draft, send: send)
+                CustomColorSheet(draft: draft, current: { current().draft }, send: send)
             }
         }
         .alert(

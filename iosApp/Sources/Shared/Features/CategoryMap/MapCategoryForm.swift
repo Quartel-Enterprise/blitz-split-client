@@ -21,6 +21,7 @@ struct MapCategoryFormView: View {
                 pickIcon: { model.send(CategoryMapUiEventOnCategoryIconPicked(icon: $0)) },
                 pickColor: { model.send(CategoryMapUiEventOnCategoryColorPicked(color: $0)) },
                 customColors: model.state.customColors,
+                currentCustomColors: { model.current.customColors },
                 sendCustomColor: { model.send(CategoryMapUiEventOnCustomColor(event: $0)) },
                 save: { model.send(CategoryMapUiEventOnCategoryFormSaveClicked.shared) },
                 dismiss: { model.send(CategoryMapUiEventOnCategoryFormDismissed.shared) },
@@ -139,6 +140,7 @@ struct ChangeCategoryColorMenu: View {
                         CategoryColorGrid(
                             selected: category.color,
                             customColors: model.state.customColors,
+                            currentCustomColors: { model.current.customColors },
                             pick: { model.send(CategoryMapUiEventOnAppCategoryColorPicked(categoryKey: category.id, color: $0)) },
                             send: { model.send(CategoryMapUiEventOnCustomColor(event: $0)) },
                             categoryKey: category.id,
@@ -154,6 +156,8 @@ struct ChangeCategoryColorMenu: View {
                     }
                     .padding(20)
                     .frame(minWidth: 300, idealWidth: 340)
+                    // Why: "New color" and the questions go with the popover, so the next picker never opens on them.
+                    .onDisappear { model.send(CategoryMapUiEventOnCustomColor(event: CustomColorEventOnPickerClosed.shared)) }
                     .presentationCompactAdaptation(.sheet)
                     .presentationDetents([.medium, .large])
                 }

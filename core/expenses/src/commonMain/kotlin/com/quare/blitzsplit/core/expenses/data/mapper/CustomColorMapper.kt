@@ -8,10 +8,11 @@ interface CustomColorMapper {
     // Why: null for a row this version can't read, which the palette leaves out.
     fun toDomainOrNull(entity: CustomColorEntity): CustomColor?
 
-    fun toEntity(
+    // Why: null for a row whose color isn't a hex; any other is keyed by its uppercase #RRGGBB, as every lookup is.
+    fun toEntityOrNull(
         dto: CustomColorDto,
         ownerUserId: String,
-    ): CustomColorEntity
+    ): CustomColorEntity?
 
     fun toDto(
         entity: CustomColorEntity,

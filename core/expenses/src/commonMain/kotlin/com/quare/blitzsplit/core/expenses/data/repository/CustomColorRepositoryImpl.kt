@@ -91,8 +91,8 @@ class CustomColorRepositoryImpl(
         local.deleteOtherUsersColors(userId)
         val stored = local.getAll().associateBy(CustomColorEntity::color)
         val newer = rows
-            .filter { dto -> stored[dto.color].let { it == null || it.updatedAt < dto.updatedAt } }
-            .map { mapper.toEntity(it, userId) }
+            .mapNotNull { mapper.toEntityOrNull(it, userId) }
+            .filter { row -> stored[row.color].let { it == null || it.updatedAt < row.updatedAt } }
         if (newer.isNotEmpty()) local.upsert(newer)
     }
 

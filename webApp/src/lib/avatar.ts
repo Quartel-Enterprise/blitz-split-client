@@ -77,10 +77,18 @@ export function categoryStyle(code: string): React.CSSProperties {
   return colorStyle(categoryColors[code] ?? customTones(code) ?? categoryColors.blue)
 }
 
+/** A custom color's tones, worked out once per code: every badge, row and slice asks on each render. */
+const customToneCache = new Map<string, ColorTones | undefined>()
+
 function customTones(code: string): ColorTones | undefined {
-  const tones = code.startsWith('#') ? getCustomColorTones(code) : null
-  if (!tones) return undefined
-  return { light: [tones.lightBg, tones.lightFg], dark: [tones.darkBg, tones.darkFg], data: [tones.lightData, tones.darkData] }
+  if (!code.startsWith('#')) return undefined
+  if (customToneCache.has(code)) return customToneCache.get(code)
+  const tones = getCustomColorTones(code)
+  const result: ColorTones | undefined = tones
+    ? { light: [tones.lightBg, tones.lightFg], dark: [tones.darkBg, tones.darkFg], data: [tones.lightData, tones.darkData] }
+    : undefined
+  customToneCache.set(code, result)
+  return result
 }
 
 /**
