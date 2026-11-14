@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,10 +33,10 @@ import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
-import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryPath
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
+import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
@@ -45,15 +46,20 @@ private val payerAvatarSize = 32.dp
 private val rowAvatarSize = 40.dp
 
 /*
- * Why: what the bill was, when, how much and who paid it, with the pending line while it waits for the server. A lone
- * payer opens their profile from here; several each have their row in the split, which opens them.
+ * Why: what the bill was, when, how much and who paid it, for Conta and for a bill's link page alike; Conta's own
+ * lines (the pending one while it waits for the server) come under them as `notes`. A lone payer opens their profile
+ * from here where the screen opens profiles; several each have their row in the split, which opens them.
  */
 @Composable
 internal fun BillSummaryColumn(
-    state: BillDetailUiState,
-    money: MoneyFormatter,
-    dates: DateTimeTextFormatter,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    category: Category,
+    categoryParent: Category?,
+    description: String,
+    spentAtText: String,
+    totalText: String,
+    payers: List<BillPayer>,
+    onLonePayerClick: (() -> Unit)?,
+    notes: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // Why: the bill's category over its title, "Alimentação › Mercado" (7.3).
@@ -62,59 +68,46 @@ internal fun BillSummaryColumn(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CategoryBadge(
-                category = state.category,
+                category = category,
                 size = 28.dp,
             )
             Text(
-                text = categoryPath(state.category, state.categoryParent),
+                text = categoryPath(category, categoryParent),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Text(
-            text = state.description,
+            text = description,
             modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
         )
         Text(
-            text = spentAtTextOf(
-                spentAt = state.spentAt,
-                spentDay = state.spentDay,
-                dates = dates,
-            ),
+            text = spentAtText,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = money.toText(state.totalMinor),
+            text = totalText,
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
         )
         Row(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.small)
-                .opensProfile(
-                    state.lonePayer?.let { payer -> { onEvent(BillDetailUiEvent.OnPersonClicked(payer.memberId)) } },
-                ),
+                .opensProfile(onLonePayerClick),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PayerFacesRow(state.payers)
+            PayerFacesRow(payers)
             Text(
-                text = payerTextOf(state.payers),
+                text = payerTextOf(payers),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
             )
         }
-        if (state.isPending) PendingLine(stringResource(R.string.bill_detail_pending))
-        if (state.showsUnknownCurrencyNote) {
-            Text(
-                text = stringResource(R.string.bill_detail_unknown_currency),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        notes()
     }
 }
 
@@ -176,18 +169,23 @@ internal fun MyPartCard(
     }
 }
 
-// Why: "Igual entre 5" over everyone in the group, each with their part or "—" when out of the split.
+/*
+ * Why: "Igual entre 5" over everyone in the group, each with their part or "—" when out of the split. A row opens its
+ * person's profile only where the screen opens profiles (never a bill's link page, which passes none).
+ */
 @Composable
 internal fun BillSplitSection(
-    state: BillDetailUiState,
+    splitMode: SplitMode,
+    participantCount: Int,
+    people: List<BillShareRow>,
     money: MoneyFormatter,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    onPersonClick: ((memberId: String) -> Unit)?,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
             text = splitTitleOf(
-                mode = state.splitMode,
-                count = state.participantCount,
+                mode = splitMode,
+                count = participantCount,
             ),
             modifier = Modifier
                 .padding(
@@ -197,15 +195,15 @@ internal fun BillSplitSection(
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        state.people.forEachIndexed { index, row ->
+        people.forEachIndexed { index, row ->
             ShareRow(
                 row = row,
                 shape = groupedRowShapeOf(
                     index = index,
-                    count = state.people.size,
+                    count = people.size,
                 ),
                 money = money,
-                onClick = { onEvent(BillDetailUiEvent.OnPersonClicked(row.memberId)) },
+                onClick = onPersonClick?.let { open -> { open(row.memberId) } },
             )
         }
     }
@@ -217,7 +215,7 @@ private fun ShareRow(
     row: BillShareRow,
     shape: Shape,
     money: MoneyFormatter,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -227,7 +225,7 @@ private fun ShareRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .opensProfile(onClick.takeIf { row.opensProfile })
+                .opensProfile(onClick?.takeIf { row.opensProfile })
                 .padding(
                     horizontal = 16.dp,
                     vertical = 12.dp,

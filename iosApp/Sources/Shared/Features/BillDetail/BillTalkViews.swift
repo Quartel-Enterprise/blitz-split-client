@@ -15,14 +15,18 @@ struct BillTalkMetrics {
     #endif
 }
 
-/// "Offline. Comments and photos wait in the queue and go up once you're back online.", at the top of Bill.
-struct BillOfflineBanner: View {
+/// A line the page says about the bill as a whole, on a card over it: Bill's offline notice, and the group a bill's
+/// link page belongs to.
+struct BillNotice: View {
+    let text: Text
+    let systemImage: String
+
     var body: some View {
         Label {
-            Text("Offline. Comments and photos wait in the queue and go up once you're back online.")
+            text
                 .fixedSize(horizontal: false, vertical: true)
         } icon: {
-            Image(systemName: "icloud.slash")
+            Image(systemName: systemImage)
         }
         .font(.footnote)
         .foregroundStyle(.secondary)
@@ -32,6 +36,58 @@ struct BillOfflineBanner: View {
         .background(Palette.card, in: .rect(cornerRadius: 16))
         .accessibilityElement(children: .combine)
     }
+}
+
+/// "Offline. Comments and photos wait in the queue and go up once you're back online.", at the top of Bill.
+struct BillOfflineBanner: View {
+    var body: some View {
+        BillNotice(
+            text: Text("Offline. Comments and photos wait in the queue and go up once you're back online."),
+            systemImage: "icloud.slash",
+        )
+    }
+}
+
+/// What a comment's buttons do, on Bill and on a bill's link page.
+struct BillCommentActions {
+    /// The author's face and name; nil on a bill's link page, which opens nobody's profile.
+    var onPerson: ((String) -> Void)?
+    /// "Reply"; nil where there is no composer to answer in, so it doesn't show.
+    var onReply: ((String) -> Void)?
+    /// The heart, Edit and Delete wait while false: a bill's link page sends each straight to the server.
+    var canChange = true
+    let onLike: (String) -> Void
+    let onLikes: (String) -> Void
+    let onLikesDismissed: () -> Void
+    let onShare: (String) -> Void
+    let onEdit: (String) -> Void
+    let onDelete: (String) -> Void
+}
+
+/// A bill's comments as its page draws them, on Bill and on a bill's link page.
+struct BillCommentsValues {
+    /// "Comments · 3"
+    let header: String
+    let showsNoComments: Bool
+    let isLoading: Bool
+    let threads: [BillCommentThread]
+    /// The comment being answered or edited, tinted while "Replying to" or "Editing comment" shows.
+    let targetIds: [String?]
+    /// The comment whose "Likes" is open, which the Mac shows as a popover on its heart.
+    let likesCommentId: String?
+    let actions: BillCommentActions
+}
+
+/// What the composer holds and does, on Bill and on a bill's link page.
+struct BillComposerValues {
+    /// "Write a comment", read back from the ViewModel at once so a keystroke never shows the text before it.
+    let draft: Binding<String>
+    let isEditing: Bool
+    let replyTarget: BillReplyTarget?
+    let canSend: Bool
+    let onSend: () -> Void
+    let onEditCancelled: () -> Void
+    let onReplyCancelled: () -> Void
 }
 
 /// The amber dot of what is still queued, beside its words. The attachment viewer, black in both appearances, passes
@@ -61,12 +117,13 @@ struct BillCommentView: View {
     let metrics: BillTalkMetrics
     /// Whether "Likes" is open on this comment: the Mac shows it as a popover on the heart.
     let showsLikes: Bool
-    let send: (any BillDetailUiEvent) -> Void
+    let actions: BillCommentActions
     /// "Reply" and "Edit" put the cursor in the composer.
     let focusComposer: () -> Void
 
     private var openAuthor: (() -> Void)? {
-        comment.authorMemberId.map { id in { send(BillDetailUiEventOnPersonClicked(memberId: id)) } }
+        guard let id = comment.authorMemberId, let onPerson = actions.onPerson else { return nil }
+        return { onPerson(id) }
     }
 
     var body: some View {
@@ -80,7 +137,7 @@ struct BillCommentView: View {
         } else {
             content
                 .contextMenu {
-                    actions
+                    menuActions
                     if comment.likeCount > 0 {
                         Button("Likes", systemImage: "heart", action: openLikes)
                     }
@@ -141,15 +198,17 @@ struct BillCommentView: View {
     /// "Reply", the heart and its count, and ⋯ at the end; each a button of its own, never the whole row.
     private var footer: some View {
         HStack(spacing: 14) {
-            Button("Reply") {
-                send(BillDetailUiEventOnReplyClicked(commentId: comment.id))
-                focusComposer()
+            if let onReply = actions.onReply {
+                Button("Reply") {
+                    onReply(comment.id)
+                    focusComposer()
+                }
+                .font(.footnote.weight(.semibold))
             }
-            .font(.footnote.weight(.semibold))
             likes
             Spacer(minLength: 0)
             Menu {
-                actions
+                menuActions
             } label: {
                 Label("More options", systemImage: "ellipsis")
                     .labelStyle(.iconOnly)
@@ -173,7 +232,7 @@ struct BillCommentView: View {
     private var likes: some View {
         HStack(spacing: 4) {
             Button {
-                send(BillDetailUiEventOnCommentLikeClicked(commentId: comment.id))
+                actions.onLike(comment.id)
             } label: {
                 Image(systemName: comment.isLikedByMe ? "heart.fill" : "heart")
                     .font(.footnote.weight(.semibold))
@@ -181,6 +240,7 @@ struct BillCommentView: View {
                     .contentTransition(.symbolEffect(.replace))
                     .fingerTarget()
             }
+            .disabled(!actions.canChange)
             .accessibilityLabel(comment.isLikedByMe ? Text("Unlike") : Text("Like"))
             .help(comment.isLikedByMe ? Text("Unlike") : Text("Like"))
             if comment.likeCount > 0 {
@@ -210,7 +270,7 @@ struct BillCommentView: View {
         Binding(
             get: { showsLikes },
             set: { isShown in
-                if !isShown, showsLikes { send(BillDetailUiEventOnCommentLikesDismissed.shared) }
+                if !isShown, showsLikes { actions.onLikesDismissed() }
             },
         )
     }
@@ -218,17 +278,17 @@ struct BillCommentView: View {
 
     /// Share, then Edit and Delete on the user's own comment.
     @ViewBuilder
-    private var actions: some View {
+    private var menuActions: some View {
         Button("Share", systemImage: "square.and.arrow.up") {
-            send(BillDetailUiEventOnCommentShareClicked(commentId: comment.id))
+            actions.onShare(comment.id)
         }
-        if comment.canChange {
+        if comment.canChange, actions.canChange {
             Button("Edit", systemImage: "pencil") {
-                send(BillDetailUiEventOnCommentEditClicked(commentId: comment.id))
+                actions.onEdit(comment.id)
                 focusComposer()
             }
             Button(role: .destructive) {
-                send(BillDetailUiEventOnCommentDeleteClicked(commentId: comment.id))
+                actions.onDelete(comment.id)
             } label: {
                 Label {
                     Text(BillCopy.delete)
@@ -240,7 +300,7 @@ struct BillCommentView: View {
     }
 
     private func openLikes() {
-        send(BillDetailUiEventOnCommentLikesClicked(commentId: comment.id))
+        actions.onLikes(comment.id)
     }
 }
 
@@ -501,38 +561,40 @@ private struct ChipBackground: ViewModifier {
 /// capsule floating over the bottom of an iPhone's page (`isFloating`), a plain one under the comments in two columns
 /// and in the Mac's sheet.
 struct BillCommentComposer: View {
-    let model: BillDetailModel
+    let composer: BillComposerValues
     let isFloating: Bool
     let focus: FocusState<Bool>.Binding
-
-    private var state: BillDetailUiState {
-        model.state
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // The ViewModel never keeps both: editing drops the reply, and replying drops the edit
-            if state.isEditingComment {
-                BillComposerChip(text: BillCopy.editing, cancelLabel: "Cancel editing", isFloating: isFloating) {
-                    model.send(BillDetailUiEventOnCommentEditCancelled.shared)
-                }
-            } else if let target = state.replyTarget {
-                BillComposerChip(text: BillCopy.replying(target), cancelLabel: "Cancel reply", isFloating: isFloating) {
-                    model.send(BillDetailUiEventOnReplyCancelled.shared)
-                }
+            if composer.isEditing {
+                BillComposerChip(
+                    text: BillCopy.editing,
+                    cancelLabel: "Cancel editing",
+                    isFloating: isFloating,
+                    onCancel: composer.onEditCancelled,
+                )
+            } else if let target = composer.replyTarget {
+                BillComposerChip(
+                    text: BillCopy.replying(target),
+                    cancelLabel: "Cancel reply",
+                    isFloating: isFloating,
+                    onCancel: composer.onReplyCancelled,
+                )
             }
             #if os(macOS)
             HStack(alignment: .bottom, spacing: 8) {
                 field
                     .textFieldStyle(.roundedBorder)
-                Button(action: send) {
-                    state.isEditingComment ? Text("Save") : Text("Send")
+                Button(action: composer.onSend) {
+                    composer.isEditing ? Text("Save") : Text("Send")
                 }
                 .buttonStyle(.borderedProminent)
                 .prominentLabel()
                 .keyboardShortcut(.return, modifiers: .command)
-                .disabled(!state.canSendComment)
-                .help(state.isEditingComment ? Text("Save") : Text("Send comment"))
+                .disabled(!composer.canSend)
+                .help(composer.isEditing ? Text("Save") : Text("Send comment"))
             }
             #else
             HStack(alignment: .bottom, spacing: 8) {
@@ -550,7 +612,7 @@ struct BillCommentComposer: View {
 
     private var field: some View {
         TextField(
-            text: model.commentDraft.firstLetterCapitalized,
+            text: composer.draft.firstLetterCapitalized,
             prompt: Text("Write a comment"),
             axis: .vertical,
         ) {
@@ -563,24 +625,19 @@ struct BillCommentComposer: View {
 
     #if os(iOS)
     private var sendButton: some View {
-        Button(action: send) {
+        Button(action: composer.onSend) {
             // Saving an edit is a check, sending a new comment an arrow
-            Image(systemName: state.isEditingComment ? "checkmark" : "arrow.up")
+            Image(systemName: composer.isEditing ? "checkmark" : "arrow.up")
                 .font(.body.weight(.semibold))
                 .frame(width: 36, height: 36)
-                .foregroundStyle(state.canSendComment ? Palette.onAccent : .secondary)
-                .background(state.canSendComment ? Palette.accent : Color(uiColor: .tertiarySystemFill), in: .circle)
+                .foregroundStyle(composer.canSend ? Palette.onAccent : .secondary)
+                .background(composer.canSend ? Palette.accent : Color(uiColor: .tertiarySystemFill), in: .circle)
         }
         .buttonStyle(.plain)
-        .disabled(!state.canSendComment)
-        .accessibilityLabel(state.isEditingComment ? Text("Save") : Text("Send comment"))
+        .disabled(!composer.canSend)
+        .accessibilityLabel(composer.isEditing ? Text("Save") : Text("Send comment"))
     }
     #endif
-
-    private func send() {
-        guard model.current.canSendComment else { return }
-        model.send(BillDetailUiEventOnSendCommentClicked.shared)
-    }
 }
 
 #if os(iOS)
@@ -602,14 +659,16 @@ private struct ComposerCapsule: ViewModifier {
 /// (`highlighted`, fading out over about two seconds), then the ViewModel is told, once. Only on the scroll view that
 /// holds the comments (`isEnabled`): the Mac's narrow inspector shows History in another.
 struct BillCommentFocus: ViewModifier {
-    let model: BillDetailModel
+    let focusedCommentId: String?
     let proxy: ScrollViewProxy
     @Binding var highlighted: String?
     var isEnabled = true
+    /// Tells the ViewModel the comment was shown, which clears it.
+    let onShown: () -> Void
 
     func body(content: Content) -> some View {
-        content.task(id: model.state.focusedCommentId) {
-            guard isEnabled, let id = model.state.focusedCommentId else { return }
+        content.task(id: focusedCommentId) {
+            guard isEnabled, let id = focusedCommentId else { return }
             // Why: the rows lay out first, the comments' tab included, or there is nothing to scroll to yet
             try? await Task.sleep(for: .milliseconds(350))
             guard !Task.isCancelled else { return }
@@ -622,7 +681,144 @@ struct BillCommentFocus: ViewModifier {
                     if highlighted == id { highlighted = nil }
                 }
             }
-            model.send(BillDetailUiEventOnFocusedCommentShown.shared)
+            onShown()
         }
     }
 }
+
+/// What went wrong with a comment, said in the glass toast of Bill and of a bill's link page.
+enum BillCommentToasts {
+    static func messages(goneCount: Int, sendErrorCount: Int, changeErrorCount: Int) -> [GlassToastMessage] {
+        [
+            GlassToastMessage(text: "That comment was deleted.", trigger: goneCount),
+            GlassToastMessage(text: "Couldn't send the comment. Try again.", trigger: sendErrorCount),
+            GlassToastMessage(text: "Couldn't save the change to the comment.", trigger: changeErrorCount),
+        ]
+    }
+}
+
+extension View {
+    /// "Delete comment?", open while the ViewModel has a comment to delete.
+    func billCommentDeletionAlert(
+        isPresented: Binding<Bool>,
+        onConfirm: @escaping () -> Void,
+        onDismiss: @escaping () -> Void,
+    ) -> some View {
+        alert("Delete comment?", isPresented: isPresented) {
+            Button(role: .destructive, action: onConfirm) {
+                Text(BillCopy.delete)
+            }
+            Button("Cancel", role: .cancel, action: onDismiss)
+        } message: {
+            Text("It leaves the bill for everyone. Its replies stay.")
+        }
+    }
+}
+
+#if os(iOS)
+/// Comments in a bill's list, each with its replies under it: a thread reads as one block, with no line between a
+/// comment and its replies.
+struct BillCommentsSection: View {
+    let comments: BillCommentsValues
+    /// The comment a link opened the page at, tinted for a moment.
+    let highlightedId: String?
+    let focusComposer: () -> Void
+
+    var body: some View {
+        Section {
+            if comments.showsNoComments {
+                BillNoComments()
+                    .padding(.vertical, 4)
+            }
+            if comments.isLoading {
+                BillTalkPlaceholder()
+            }
+            ForEach(comments.threads, id: \.comment.id) { thread in
+                // The section's last row draws no line under the card
+                let isLastThread = thread.comment.id == comments.threads.last?.comment.id
+                row(thread.comment, isReply: false, endsThread: thread.replies.isEmpty && !isLastThread)
+                ForEach(Array(thread.replies.enumerated()), id: \.element.id) { index, reply in
+                    row(reply, isReply: true, endsThread: index == thread.replies.count - 1 && !isLastThread)
+                }
+            }
+        } header: {
+            Text(verbatim: comments.header)
+        }
+    }
+
+    private func row(_ comment: BillCommentRow, isReply: Bool, endsThread: Bool) -> some View {
+        BillCommentView(
+            comment: comment,
+            isReply: isReply,
+            metrics: .standard,
+            showsLikes: false,
+            actions: comments.actions,
+            focusComposer: focusComposer,
+        )
+        .padding(.vertical, 2)
+        .id(comment.id)
+        .listRowSeparator(endsThread ? .visible : .hidden, edges: .bottom)
+        .listRowBackground(ZStack {
+            Palette.card
+            if comments.targetIds.contains(comment.id) { Palette.accent.opacity(0.12) }
+            // The comment a link opened at, fading out
+            Palette.accent.opacity(highlightedId == comment.id ? 0.22 : 0)
+        })
+    }
+}
+#endif
+
+#if os(macOS)
+/// Comments on the Mac, each with its replies under it; `showsTitle` is false where a segment already says
+/// "Comments".
+struct MacBillComments: View {
+    let comments: BillCommentsValues
+    let showsTitle: Bool
+    /// The comment a link opened the page at, tinted for a moment.
+    let highlightedId: String?
+    let focusComposer: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if showsTitle {
+                Text(verbatim: comments.header)
+                    .font(.headline)
+            }
+            if comments.showsNoComments {
+                BillNoComments()
+            }
+            if comments.isLoading {
+                BillTalkPlaceholder()
+            }
+            ForEach(comments.threads, id: \.comment.id) { thread in
+                VStack(alignment: .leading, spacing: 2) {
+                    row(thread.comment, isReply: false)
+                    ForEach(thread.replies, id: \.id) { reply in
+                        row(reply, isReply: true)
+                    }
+                }
+                .padding(.top, 4)
+            }
+        }
+    }
+
+    private func row(_ comment: BillCommentRow, isReply: Bool) -> some View {
+        let isTarget = comments.targetIds.contains(comment.id)
+        let isHighlighted = highlightedId == comment.id
+        return BillCommentView(
+            comment: comment,
+            isReply: isReply,
+            metrics: .standard,
+            showsLikes: comments.likesCommentId == comment.id,
+            actions: comments.actions,
+            focusComposer: focusComposer,
+        )
+        .padding(6)
+        .background(
+            Palette.accent.opacity(isHighlighted ? 0.24 : isTarget ? 0.14 : 0),
+            in: .rect(cornerRadius: 8),
+        )
+        .id(comment.id)
+    }
+}
+#endif

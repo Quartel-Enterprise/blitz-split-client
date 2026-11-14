@@ -94,7 +94,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     and only its author may do either (the server's RLS). A deleted comment with replies stays as "Comment deleted"
     over them; one without replies, and a deleted reply, go. Edits, deletions and likes record no Activity event and
     push nothing: Comments' row shows the text as edited, and "Ana deleted a comment on Dinner" once deleted. A
-    comment's link, `https://blitzsplit.com/b/<bill>?comentario=<comment>` (`BillCommentLink`), which the apps claim
+    comment's link, `https://blitzsplit.com/b/<bill>?comentario=<comment>` (`BillCommentLink`, shared with
+    `&lang=<the app's language>` so its preview, which shows nothing of the bill, speaks it), which the apps claim
     (App Links, Universal Links) and the web opens, opens the bill's Bill screen over its group's Expenses, over Groups,
     scrolled to the comment and highlighted, after a sync of a few seconds, since the comment may be newer than the device's copy
     (`Route.BillDetail.focusCommentId`); a deleted comment opens Bill with "That comment was deleted.", a deleted
@@ -131,15 +132,23 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     "Turn off link" turns it off with no question and closes. Online only: offline it says "Sharing needs the internet." while Copy and "Send link" (the system share) still work once the link is known; a bill not up yet
     fails with "Try again". Laid out as Contacts' "Invite with link or QR": a bottom sheet on an Android phone,
     a 560 dp dialog on its tablets (a book's right half), a sheet on iOS (a 540 pt form sheet with an iPad's room) and
-    the Mac, a 480 px dialog on the web (a drawer on a phone). The link opens only on the web (`Route.SharedBill`,
-    page 7.3h), since the apps claim only `/g/`, `/b/` and `/u/` links: the bill, who paid, each one's part, the attachments and the
-    comments, never the balances nor the group's other bills, under "This bill belongs to the group X" (the server doesn't
+    the Mac, a 480 px dialog on the web (a drawer on a phone). The link opens the bill's own page (`Route.SharedBill`,
+    page 7.3h) in the apps, which claim `/c/` links as they do `/g/`, `/b/` and `/u/`, and on the web, over wherever the
+    app is (the welcome without a profile), as an invite does. Every platform draws it with Bill's own pieces, read-only
+    (no Edit, Delete, History, nor adding or removing photos): a full screen on Android (one centered column upright
+    with the composer pinned at the bottom; two columns lying down and on a book, one on each side of its hinge, with
+    the composer under the second), a pushed page on iOS and iPadOS (Bill's
+    columns, a centered column on the iPad), a centered column of the main window on the Mac and of the page on the
+    web. It shows the bill, who paid, each one's part, the attachments and the
+    comments, never the balances nor the group's other bills, under "This bill is from the group X" (the server doesn't
     say who shared it, and a group's own category shows as Other). "Only people in the bill" opens it to the group's
     members signed in; "Anyone" to anyone, and any device with an account (an anonymous one too) comments
     there, in the group or not, online only, and likes, shares (the page's link at the comment, `/c/<code>?comentario=`,
     which scrolls to it) and edits and deletes their own comments there, online only. "Sign in" goes through the app's own sign in (Welcome without a
     profile, else Profile) and the link opens again when the browser's Google or Apple sign in comes back within 15
-    minutes, or once Welcome makes the profile on the page ("Use without an account"). A link only the group opens
+    minutes, or once Welcome puts Home in place ("Use without an account", or a Google or Apple sign in there), on
+    every platform (the page tells `SharedBillLeftForSignIn` it left to sign in, so one left by going back never opens again;
+    the web also keeps it across the page load of a browser sign in). A link only the group opens
     offers "Sign in" until the device has a Google or Apple account; a member with the bill on the device gets "Open in the app".
   - Currencies (Pierre's call: the currency belongs to each bill and payment, see [General rules](general.md)): while the
     group has money in more than one currency, a chip row with each currency's code sits in the header and over

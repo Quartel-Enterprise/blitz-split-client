@@ -186,7 +186,7 @@ export function ProfileScreen() {
                   </Button>
                 </CardContent>
               </Card>
-              <AboutCard presenter={presenter} className="order-7" />
+              <AboutCard presenter={presenter} state={state} className="order-7" />
               {state.showsDeleteAccount && <DeleteAccountCard presenter={presenter} className="order-8" />}
             </div>
           </div>
@@ -531,7 +531,7 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
 }
 
 /** "Privacy and about": the export and who sees the profile; the legal pages and the version are the footer's. */
-function AboutCard({ presenter, className }: { presenter: ProfilePresenter; className?: string }) {
+function AboutCard({ presenter, state, className }: { presenter: ProfilePresenter; state: JsProfileState; className?: string }) {
   return (
     <Card className={className}>
       <CardHeader>
@@ -544,6 +544,16 @@ function AboutCard({ presenter, className }: { presenter: ProfilePresenter; clas
             <Download /> {t('profile_exportButton')}
           </Button>
         </Row>
+        {/* Analytics' opt out in this browser, on by default under legitimate interest (docs/analytics/README.md) */}
+        {state.isLoaded && (
+          <label htmlFor="share-usage-data" className="flex min-h-12 items-center gap-3 py-2">
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="text-sm font-medium">{t('profile_shareUsageData')}</span>
+              <span className="text-xs text-muted-foreground">{t('profile_shareUsageDataDetail')}</span>
+            </span>
+            <Switch id="share-usage-data" checked={state.sharesUsageData} onCheckedChange={(checked) => presenter.toggleUsageData(checked)} />
+          </label>
+        )}
       </CardContent>
     </Card>
   )

@@ -208,4 +208,21 @@
     <string name="share_bill_message">Gasto “%1$s” en Blitz Split: %2$s</string>
     <string name="share_bill_update_error">No se pudo cambiar quién puede abrirlo. Inténtalo de nuevo.</string>
     <string name="share_bill_disable_error">No se pudo desactivar el enlace. Inténtalo de nuevo.</string>
+    <string name="shared_bill_sign_in">Iniciar sesión</string>
+    <string name="shared_bill_open_in_app">Abrir en la app</string>
+    <string name="shared_bill_group_banner">Este gasto es del grupo %1$s. Quien esté en el grupo también ve su propia parte y el historial.</string>
+    <string name="shared_bill_sign_in_to_comment_body">¿Quieres comentar? Inicia sesión con una cuenta. No necesitas estar en el grupo.</string>
+    <string name="shared_bill_sign_in_to_comment">Inicia sesión para comentar</string>
+    <string name="shared_bill_not_found_title">Este enlace ya no abre</string>
+    <string name="shared_bill_not_found_body">Quien lo compartió pudo haber desactivado el enlace o eliminado el gasto.</string>
+    <string name="shared_bill_members_only_title">Solo las personas del grupo abren este gasto</string>
+    <string name="shared_bill_members_only_body">Inicia sesión con la cuenta que usas en el grupo.</string>
+    <string name="shared_bill_members_only_outside_body">Tu cuenta no está en el grupo de este gasto. Pídele a quien lo compartió que te invite.</string>
+    <string name="shared_bill_failed_title">No se pudo abrir el gasto</string>
+    <string name="shared_bill_offline">Sin internet.</string>
+    <string name="shared_bill_retry">Intentar de nuevo</string>
+    <string name="shared_bill_go_to_app">Ir a Blitz Split</string>
+    <string name="shared_bill_comment_error">No se pudo enviar el comentario. Inténtalo de nuevo.</string>
+    <string name="shared_bill_needs_name">Crea tu perfil para comentar.</string>
+    <string name="shared_bill_comment_change_error">No se pudo guardar el cambio del comentario. Inténtalo de nuevo.</string>
 </resources>

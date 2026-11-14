@@ -6,6 +6,7 @@ import type { MessageKey } from './en'
  * missing here simply keeps the neutral wording.
  */
 export const esES: Partial<Record<MessageKey, string>> = {
+  profile_shareUsageDataDetail: 'Pantallas y toques, para mejorar la app. Nunca nombres ni importes.',
   camera_title: 'Hacer foto',
   camera_shutter: 'Hacer foto',
   profileSetup_addPhoto: 'Añadir foto',

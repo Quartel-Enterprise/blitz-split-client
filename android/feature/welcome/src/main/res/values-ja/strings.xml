@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">アカウントなしで使う</string>
     <string name="welcome_used_on_another_device">別のデバイスで使ったことがある</string>
     <string name="welcome_sign_in_failed">今はログインできませんでした。もう一度お試しください。</string>
+    <string name="welcome_legal_notice">続行すると、%1$sに同意し、%2$sを確認したものとみなされます。</string>
+    <string name="welcome_legal_terms">利用規約</string>
+    <string name="welcome_legal_privacy">プライバシーポリシー</string>
 </resources>

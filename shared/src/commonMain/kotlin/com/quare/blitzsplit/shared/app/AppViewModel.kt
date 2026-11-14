@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.navigation.ForwardHistory
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.SharedBillLeftForSignIn
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -51,7 +52,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+
+/*
+ * Why: how long a bill's link page left to sign in opens again once the sign in ends, the welcome's here and the
+ * browser's on the web (BlitzSplitWeb). Google's and Apple's pages take a minute or two.
+ */
+internal val sharedBillSignInWindow = 15.minutes
 
 class AppViewModel(
     private val observeProfile: ObserveProfile,
@@ -63,6 +71,7 @@ class AppViewModel(
     private val observeAppLanguage: ObserveAppLanguage,
     private val refreshAppLanguage: RefreshAppLanguage,
     private val linkInbox: LinkInbox,
+    private val sharedBillLeftForSignIn: SharedBillLeftForSignIn,
     private val markActivityRead: MarkActivityRead,
     private val findActivityEvent: FindActivityEvent,
     private val observeGroup: ObserveGroup,
@@ -130,6 +139,7 @@ class AppViewModel(
         returnToProfileOnBrowserSignIn()
         returnToWelcomeOnceErased()
         openInviteLinks()
+        reopenSharedBillLeftForWelcome()
         offerUpdatesInFront()
         prefetchLegalTexts()
     }
@@ -248,6 +258,23 @@ class AppViewModel(
                     it is Route.JoinInvite && it.code == invite.code && it.memberCode == invite.memberCode
                 }
                 if (openIndex < 0) navigator.navigate(invite) else navigator.popTo(openIndex + 1)
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: "Entrar" on a bill's link page without a profile leaves it for the welcome, which takes the whole stack. Once
+     * the welcome puts the home in place, the page it said it left opens again over it, on every platform; one left by
+     * going back never does.
+     */
+    private fun reopenSharedBillLeftForWelcome() {
+        navigator.backStack
+            .map { stack -> stack.firstOrNull() == Route.Home }
+            .distinctUntilChanged()
+            .filter { isHome -> isHome }
+            .onEach {
+                sharedBillLeftForSignIn.take(sharedBillSignInWindow)?.let { page ->
+                    openSharedBill(page.code, page.commentId)
+                }
             }.launchIn(viewModelScope)
     }
 

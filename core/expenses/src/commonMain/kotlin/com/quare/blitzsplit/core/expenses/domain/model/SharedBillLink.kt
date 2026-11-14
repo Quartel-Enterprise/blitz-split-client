@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.model
 
-// Why: a bill's link, blitzsplit.com/c/<code>, which the web opens as the bill (7.3h); the apps leave it to the browser.
+// Why: a bill's link, blitzsplit.com/c/<code>, which the apps and the web open as the bill's own page (7.3h).
 object SharedBillLink {
     private const val BASE_URL = "https://blitzsplit.com/c/"
 

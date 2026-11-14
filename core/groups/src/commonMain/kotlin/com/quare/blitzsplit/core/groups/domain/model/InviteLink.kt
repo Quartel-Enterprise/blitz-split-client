@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain.model
 
+import com.quare.blitzsplit.core.model.DisplayLink
+
 /*
  * Why: the group's link, whoever opens it picks who they are in the group (flow 3), and a member's personal link,
  * blitzsplit.com/g/<group code>/<member code>, which joins straight in as that member. A personal link ends in
@@ -32,7 +34,7 @@ object InviteLink {
     ): String = BASE_URL + inviteCode + "/" + memberCode + inviterCode?.let { "?$FROM=$it" }.orEmpty()
 
     // Why: "blitzsplit.com/g/7Hk2pQ8x/c3Rt9z", a link as the screens show it, without whoever shares it.
-    fun displayOf(link: String): String = link.substringAfter("://").substringBefore("?")
+    fun displayOf(link: String): String = DisplayLink.of(link)
 
     // Why: what a link opens, null for any other URL, like the browser sign in's callback.
     fun targetOf(url: String): InviteTarget? {

@@ -9,7 +9,8 @@ The web and the Mac app invite people to the phone app (canvas page 14, "Baixe o
     names only the stores that have it ("For now the app is only on Google Play, for Android."); with none, nothing
     shows. The Mac comes from the Mac App Store, so it only ever names the iPhone and the App Store (guideline 2.3.10):
     its QR code opens the App Store's listing straight, and without an App Store id the Mac shows nothing.
-  - The web's QR code and link are `blitzsplit.com/app-download`, which the site sends to Google Play on Android, to the
+  - The web's QR code and link are `blitzsplit.com/app-download?lang=<the app's language>` (the link's preview and
+    the page it opens speak it), which the site sends to Google Play on Android, to the
     App Store on an iPhone or iPad and, on anything else, to a page with the stores that list the app
     (`blitz-split-site`). The QR codes are encoded in Kotlin (`EncodeQrCode`), so they show offline too.
   - Home's card, "Take Blitz Split on your phone" (14.1, `HomeUiState.showsAppInviteCard`): after the first bill (some

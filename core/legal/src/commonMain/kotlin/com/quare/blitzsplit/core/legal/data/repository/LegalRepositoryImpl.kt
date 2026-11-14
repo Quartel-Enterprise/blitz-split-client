@@ -147,7 +147,7 @@ class LegalRepositoryImpl(
     }
 
     private companion object {
-        // Why: French, German, Italian and Polish read the legal texts in English, as on the site.
+        // Why: a language the site doesn't write the legal texts in reads them in English, as on the site.
         const val FALLBACK_LANGUAGE = "en"
     }
 }

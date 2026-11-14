@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.model.DisplayLink
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.StoreListing
 
@@ -13,4 +14,8 @@ data class HomeAppInvite(
     val stores: StoreListing,
     // Why: neither dismissed nor already in use on a phone; only then does the card come.
     val isActive: Boolean,
-)
+) {
+    // Why: the link as the card prints it.
+    val displayLink: String
+        get() = DisplayLink.of(link)
+}

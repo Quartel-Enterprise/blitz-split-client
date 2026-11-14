@@ -129,6 +129,83 @@ final class BillDetailModel {
     }
 }
 
+/// The values and closures Bill hands the pieces it shares with a bill's link page.
+extension BillDetailModel {
+    /// A person's face, name or row: their profile, or Profile for this device's user.
+    func openPerson(_ memberId: String) {
+        send(BillDetailUiEventOnPersonClicked(memberId: memberId))
+    }
+
+    /// The comment a link or Activity opened Bill at was scrolled to.
+    func focusedCommentShown() {
+        send(BillDetailUiEventOnFocusedCommentShown.shared)
+    }
+
+    var comments: BillCommentsValues {
+        let send = self.send
+        return BillCommentsValues(
+            header: BillCopy.commentsHeader(state.commentCount),
+            showsNoComments: state.showsNoComments,
+            isLoading: state.threads.isLoading,
+            threads: state.loadedThreads ?? [],
+            targetIds: [state.replyTarget?.commentId, state.editingCommentId],
+            likesCommentId: state.likesComment?.id,
+            actions: BillCommentActions(
+                onPerson: openPerson,
+                onReply: { send(BillDetailUiEventOnReplyClicked(commentId: $0)) },
+                onLike: { send(BillDetailUiEventOnCommentLikeClicked(commentId: $0)) },
+                onLikes: { send(BillDetailUiEventOnCommentLikesClicked(commentId: $0)) },
+                onLikesDismissed: { send(BillDetailUiEventOnCommentLikesDismissed.shared) },
+                onShare: { send(BillDetailUiEventOnCommentShareClicked(commentId: $0)) },
+                onEdit: { send(BillDetailUiEventOnCommentEditClicked(commentId: $0)) },
+                onDelete: { send(BillDetailUiEventOnCommentDeleteClicked(commentId: $0)) },
+            ),
+        )
+    }
+
+    var composer: BillComposerValues {
+        let send = self.send
+        return BillComposerValues(
+            draft: commentDraft,
+            isEditing: state.isEditingComment,
+            replyTarget: state.replyTarget,
+            canSend: state.canSendComment,
+            onSend: { [self] in
+                guard current.canSendComment else { return }
+                send(BillDetailUiEventOnSendCommentClicked.shared)
+            },
+            onEditCancelled: { send(BillDetailUiEventOnCommentEditCancelled.shared) },
+            onReplyCancelled: { send(BillDetailUiEventOnReplyCancelled.shared) },
+        )
+    }
+
+    var attachments: BillAttachmentsValues {
+        let send = self.send
+        return BillAttachmentsValues(
+            isLoading: state.attachments.isLoading,
+            tiles: state.loadedAttachments ?? [],
+            photoCount: BillCopy.photoCount(state),
+            onOpen: { send(BillDetailUiEventOnAttachmentClicked(id: $0)) },
+        )
+    }
+
+    var viewer: BillViewerValues {
+        let send = self.send
+        return BillViewerValues(
+            tiles: state.loadedAttachments ?? [],
+            viewed: state.viewedAttachment,
+            viewedIndex: state.viewedAttachmentIndex?.intValue,
+            photoCount: state.photoCount?.int32Value ?? 0,
+            isOnline: state.isOnline,
+            page: viewedAttachmentId,
+            removeErrorCount: removePhotoErrorCount,
+            onClose: { send(BillDetailUiEventOnViewerDismissed.shared) },
+            onDownload: { send(BillDetailUiEventOnDownloadClicked.shared) },
+            onRemove: { send(BillDetailUiEventOnRemoveAttachmentClicked(id: $0)) },
+        )
+    }
+}
+
 /// "Bill": one bill of the group, what it was, who paid, its Attachments and how it splits, then its Comments and
 /// History (7.3). Pushed
 /// over the group on iPhone, a sheet on iPad (820×640 lying down, 620×860 upright) and the window's inspector on the
@@ -155,19 +232,7 @@ struct BillDetailView: View {
                 PhoneBillDetail(model: model)
                 #endif
             } else {
-                // The bill not read yet: its title, amount and split shimmer in place
-                ShimmerScreen {
-                    HStack(spacing: 12) {
-                        ShimmerBlock(width: 40, height: 40, cornerRadius: 12)
-                        VStack(alignment: .leading, spacing: 8) {
-                            ShimmerLine(width: 120, height: 10)
-                            ShimmerLine(width: 200, height: 20)
-                        }
-                    }
-                    ShimmerLine(width: 140, height: 28)
-                    ShimmerList(count: 4)
-                }
-                .background(Palette.groupedBackground.ignoresSafeArea())
+                BillLoadingShimmer()
             }
         }
         #if os(iOS)
@@ -193,25 +258,16 @@ struct BillDetailView: View {
             onConfirm: { model?.send(BillDetailUiEventOnDeleteConfirmed.shared) },
             onDismiss: { model?.dismissDeletion() },
         )
-        .alert("Delete comment?", isPresented: model?.isCommentDeletionOpen ?? .constant(false)) {
-            Button(role: .destructive) {
-                model?.send(BillDetailUiEventOnCommentDeleteConfirmed.shared)
-            } label: {
-                Text(BillCopy.delete)
-            }
-            Button("Cancel", role: .cancel) {
-                model?.send(BillDetailUiEventOnCommentDeleteDismissed.shared)
-            }
-        } message: {
-            Text("It leaves the bill for everyone. Its replies stay.")
-        }
-        .glassToast([
-            GlassToastMessage(text: "That comment was deleted.", trigger: model?.commentGoneCount ?? 0),
-            GlassToastMessage(text: "Couldn't send the comment. Try again.", trigger: model?.commentErrorCount ?? 0),
-            GlassToastMessage(
-                text: "Couldn't save the change to the comment.",
-                trigger: model?.commentChangeErrorCount ?? 0,
-            ),
+        .billCommentDeletionAlert(
+            isPresented: model?.isCommentDeletionOpen ?? .constant(false),
+            onConfirm: { model?.send(BillDetailUiEventOnCommentDeleteConfirmed.shared) },
+            onDismiss: { model?.send(BillDetailUiEventOnCommentDeleteDismissed.shared) },
+        )
+        .glassToast(BillCommentToasts.messages(
+            goneCount: model?.commentGoneCount ?? 0,
+            sendErrorCount: model?.commentErrorCount ?? 0,
+            changeErrorCount: model?.commentChangeErrorCount ?? 0,
+        ) + [
             GlassToastMessage(text: "Couldn't undo. Try again.", trigger: model?.undoErrorCount ?? 0),
             GlassToastMessage(text: "Couldn't delete the bill. Try again.", trigger: model?.deleteErrorCount ?? 0),
         ] + BillAttachmentToasts.messages(model))
@@ -257,32 +313,6 @@ struct BillDetailView: View {
         }
     }
     #endif
-}
-
-/// "Bruno paid" next to Bruno's face, or "A former member paid". A lone payer opens their profile from here; several
-/// each have their row in the split, which opens them.
-private struct PayerLine: View {
-    let payers: [BillPayer]
-    let lonePayer: BillPayer?
-    let size: CGFloat
-    let onPerson: (String) -> Void
-
-    var body: some View {
-        HStack(spacing: 8) {
-            // Whoever left the group has no face
-            let faces = payers.filter { $0.name != nil }.prefix(3)
-            if !faces.isEmpty {
-                HStack(spacing: -size * 0.3) {
-                    ForEach(Array(faces.enumerated()), id: \.offset) { _, payer in
-                        AvatarPhoto(initial: payer.initials, color: payer.avatarColor, photoUrl: payer.photoUrl, size: size)
-                    }
-                }
-                .accessibilityHidden(true)
-            }
-            Text(verbatim: BillCopy.paid(payers))
-        }
-        .opensProfile(lonePayer.map { payer in { onPerson(payer.memberId) } })
-    }
 }
 
 /// "Queued · syncs when you're back online", with the amber dot of what is still queued.
@@ -333,62 +363,11 @@ private struct MyPartContent: View {
     }
 }
 
-/// One person of the split: their face, "Paid R$ 642,00" or "Hasn't joined yet", and their part. The row opens their
-/// profile, which someone no longer in the group doesn't have.
-private struct ShareRow: View {
-    let row: BillShareRow
-    let currency: GroupCurrency
-    let avatarSize: CGFloat
-    let onPerson: (String) -> Void
-
-    var body: some View {
-        HStack(spacing: 12) {
-            ShareAvatar(row: row, size: avatarSize)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: BillCopy.name(row))
-                    .lineLimit(1)
-                if let subtitle = BillCopy.subtitle(row, currency: currency) {
-                    Text(verbatim: subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            Spacer(minLength: 8)
-            Text(verbatim: BillCopy.share(row, currency: currency))
-                .monospacedDigit()
-                .foregroundStyle(row.shareMinor == nil ? .secondary : .primary)
-        }
-        .accessibilityElement(children: .combine)
-        .opensProfile(row.opensProfile ? { onPerson(row.memberId) } : nil)
-    }
-}
-
-/// Someone who left the group has no name nor color left: a plain person.
-private struct ShareAvatar: View {
-    let row: BillShareRow
-    let size: CGFloat
-
-    var body: some View {
-        Group {
-            if row.name == nil, !row.isMe {
-                Image(systemName: "person.fill")
-                    .font(.system(size: size * 0.45))
-                    .foregroundStyle(.secondary)
-                    .frame(width: size, height: size)
-                    .background(.fill.tertiary, in: .circle)
-            } else {
-                AvatarPhoto(initial: row.initials, color: row.avatarColor, photoUrl: row.photoUrl, size: size)
-            }
-        }
-        .accessibilityHidden(true)
-    }
-}
-
 #if os(iOS)
 /// Upright and on a narrow iPad sheet: one column, the bill, its Attachments, its split, Comments and History, with the
 /// composer floating in glass at the bottom, above the keyboard. Lying down and on a wide iPad sheet: the bill and its
-/// Attachments on the left; how it splits, Comments and History on the right with the composer under them. A photo
-/// opens full screen over it.
+/// Attachments on the left; how it splits, Comments and History on the right with the composer under them
+/// (`BillPhoneColumns`). A photo opens full screen over it.
 private struct PhoneBillDetail: View {
     let model: BillDetailModel
 
@@ -396,22 +375,20 @@ private struct PhoneBillDetail: View {
     /// The comment a link opened Bill at, tinted for a moment.
     @State private var highlightedCommentId: String?
     @FocusState private var isComposing: Bool
-    /// The total's 40 pt, growing with the text size.
-    @ScaledMetric(relativeTo: .largeTitle) private var totalSize: CGFloat = 40
 
     private var state: BillDetailUiState {
         model.state
     }
 
-    /// A person's face, name or row: their profile, or Profile for this device's user.
-    private func openPerson(_ memberId: String) {
-        model.send(BillDetailUiEventOnPersonClicked(memberId: memberId))
-    }
-
     var body: some View {
         ScrollViewReader { proxy in
             columns
-                .modifier(BillCommentFocus(model: model, proxy: proxy, highlighted: $highlightedCommentId))
+                .modifier(BillCommentFocus(
+                    focusedCommentId: state.focusedCommentId,
+                    proxy: proxy,
+                    highlighted: $highlightedCommentId,
+                    onShown: model.focusedCommentShown,
+                ))
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             if !state.isOnline {
@@ -425,7 +402,7 @@ private struct PhoneBillDetail: View {
         .measuringScreenLayout($layout)
         .background(Palette.groupedBackground)
         .fullScreenCover(isPresented: model.isViewerOpen) {
-            BillAttachmentViewer(model: model)
+            BillAttachmentViewer(viewer: model.viewer)
         }
         .sheet(isPresented: model.isLikesOpen) {
             BillLikesSheet(likers: state.likesComment?.likers ?? []) {
@@ -434,101 +411,38 @@ private struct PhoneBillDetail: View {
         }
     }
 
-    @ViewBuilder
     private var columns: some View {
-        Group {
-            if layout.usesTwoColumns {
-                TwoColumnsLayout(spacing: 0) {
-                    list {
-                        billSections
-                        attachmentsSection(wraps: true)
-                    }
-                } second: {
-                    VStack(spacing: 0) {
-                        list {
-                            splitSection
-                            talkSections
-                        }
-                        BillCommentComposer(model: model, isFloating: false, focus: $isComposing)
-                            .padding(.horizontal, 20)
-                            .padding(.top, 8)
-                            .padding(.bottom, 12)
-                    }
-                }
-            } else {
-                list {
-                    billSections
-                    attachmentsSection(wraps: false)
-                    splitSection
-                    talkSections
-                }
-                .frame(maxWidth: 640)
-                .frame(maxWidth: .infinity)
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    BillCommentComposer(model: model, isFloating: true, focus: $isComposing)
-                        .frame(maxWidth: 640)
-                        .padding(.horizontal, 16)
-                        .padding(.top, 8)
-                        .padding(.bottom, 8)
+        BillPhoneColumns(usesTwoColumns: layout.usesTwoColumns) { wrapsAttachments in
+            billSections
+            // Attachments under Your share, as the canvas draws them
+            BillAttachmentsSection(attachments: model.attachments, wraps: wrapsAttachments) {
+                if state.showsAddPhoto {
+                    BillAddPhotoTile(model: model, metrics: .standard)
                 }
             }
+        } second: {
+            BillSplitSection(bill: state, onPerson: model.openPerson)
+            BillCommentsSection(comments: model.comments, highlightedId: highlightedCommentId) {
+                isComposing = true
+            }
+            historySections
+        } composer: { isFloating in
+            BillCommentComposer(composer: model.composer, isFloating: isFloating, focus: $isComposing)
         }
-    }
-
-    private func list<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        List(content: content)
-            .listStyle(.insetGrouped)
-            .listSectionSpacing(.compact)
-            .scrollContentBackground(.hidden)
-            // Scrolling back up to the bill puts the keyboard away
-            .scrollDismissesKeyboard(.interactively)
     }
 
     @ViewBuilder
     private var billSections: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 18) {
-                HStack(spacing: 12) {
-                    CategoryBadge(category: state.category, size: 52)
-                    VStack(alignment: .leading, spacing: 2) {
-                        // The bill's category over its title, "Food › Groceries" (7.3)
-                        Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text(verbatim: state.description_)
-                            .font(.title.bold())
-                            .lineLimit(3)
-                            .accessibilityAddTraits(.isHeader)
-                        Text(verbatim: ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(verbatim: state.currency.format(state.totalMinor))
-                        .font(.system(size: totalSize, weight: .bold))
-                        .monospacedDigit()
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.5)
-                    PayerLine(payers: state.payers, lonePayer: state.lonePayer, size: 24, onPerson: openPerson)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    if state.isPending {
-                        PendingLine()
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    if state.showsUnknownCurrencyNote {
-                        UnknownCurrencyNote()
-                    }
-                }
-                // The row clips to its rounded corner, which would cut the payer's face at its edge
-                .padding(.horizontal, 4)
+        BillHeadSection(bill: state, lonePayer: state.lonePayer, onPerson: model.openPerson) {
+            if state.isPending {
+                PendingLine()
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            if state.showsUnknownCurrencyNote {
+                UnknownCurrencyNote()
+            }
         }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 4, trailing: 0))
         if state.showsMyPart {
             Section {
                 MyPartContent(state: state)
@@ -539,50 +453,9 @@ private struct PhoneBillDetail: View {
         }
     }
 
-    /// Attachments under Your share, as the canvas draws them: a strip in one column, wrapping in the bill's own one.
-    private func attachmentsSection(wraps: Bool) -> some View {
-        Section {
-            BillAttachmentStrip(model: model, wraps: wraps, metrics: .standard)
-                .padding(.vertical, 4)
-        } header: {
-            BillAttachmentsHeader(state: state)
-        }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: wraps ? 4 : 0))
-    }
-
-    private var splitSection: some View {
-        Section {
-            ForEach(state.people, id: \.memberId) { row in
-                ShareRow(row: row, currency: state.currency, avatarSize: 32, onPerson: openPerson)
-            }
-        } header: {
-            Text(verbatim: BillCopy.splitHeader(state.splitMode, count: state.participantCount))
-        }
-    }
-
-    /// Comments, each with its replies under it, then History by day (hidden while there is none).
+    /// History by day, under the comments (hidden while there is none).
     @ViewBuilder
-    private var talkSections: some View {
-        Section {
-            if state.showsNoComments {
-                BillNoComments()
-                    .padding(.vertical, 4)
-            }
-            if state.threads.isLoading {
-                BillTalkPlaceholder()
-            }
-            ForEach(state.loadedThreads ?? [], id: \.comment.id) { thread in
-                // The section's last row draws no line under the card
-                let isLastThread = thread.comment.id == state.loadedThreads?.last?.comment.id
-                commentRow(thread.comment, isReply: false, endsThread: thread.replies.isEmpty && !isLastThread)
-                ForEach(Array(thread.replies.enumerated()), id: \.element.id) { index, reply in
-                    commentRow(reply, isReply: true, endsThread: index == thread.replies.count - 1 && !isLastThread)
-                }
-            }
-        } header: {
-            Text(verbatim: BillCopy.commentsHeader(state.commentCount))
-        }
+    private var historySections: some View {
         if state.history.isLoading {
             Section {
                 BillTalkPlaceholder()
@@ -607,7 +480,7 @@ private struct PhoneBillDetail: View {
                                 categories: state.categories,
                                 isUndoing: state.isUndoing,
                                 metrics: .standard,
-                                onPerson: openPerson,
+                                onPerson: model.openPerson,
                             ) {
                                 model.send(BillDetailUiEventOnUndoClicked.shared)
                             }
@@ -619,30 +492,6 @@ private struct PhoneBillDetail: View {
                 Text("History", comment: "The bill's history section")
             }
         }
-    }
-
-    /// A thread reads as one block: no line between a comment and its replies.
-    private func commentRow(_ comment: BillCommentRow, isReply: Bool, endsThread: Bool) -> some View {
-        // The comment being answered or edited, tinted while "Replying to" or "Editing comment" shows
-        let isTarget = state.replyTarget?.commentId == comment.id || state.editingCommentId == comment.id
-        return BillCommentView(
-            comment: comment,
-            isReply: isReply,
-            metrics: .standard,
-            showsLikes: false,
-            send: model.send,
-        ) {
-            isComposing = true
-        }
-        .padding(.vertical, 2)
-        .id(comment.id)
-        .listRowSeparator(endsThread ? .visible : .hidden, edges: .bottom)
-        .listRowBackground(ZStack {
-            Palette.card
-            if isTarget { Palette.accent.opacity(0.12) }
-            // The comment a link opened at, fading out
-            Palette.accent.opacity(highlightedCommentId == comment.id ? 0.22 : 0)
-        })
     }
 }
 #endif
@@ -669,11 +518,6 @@ private struct MacBillDetail: View {
 
     private var state: BillDetailUiState {
         model.state
-    }
-
-    /// A person's face, name or row: their profile, or Profile for this device's user.
-    private func openPerson(_ memberId: String) {
-        model.send(BillDetailUiEventOnPersonClicked(memberId: memberId))
     }
 
     /// The inspector itself, not the window: two columns from 600 pt, as the 720 pt inspector draws them.
@@ -725,7 +569,7 @@ private struct MacBillDetail: View {
         .measuringScreenLayout($layout)
         .background(Palette.groupedBackground)
         .sheet(isPresented: model.isViewerOpen) {
-            BillAttachmentViewer(model: model)
+            BillAttachmentViewer(viewer: model.viewer)
         }
         // Esc closes it while the focus is in it, which it takes as it opens, so a field elsewhere keeps its own Esc
         .focusable()
@@ -782,19 +626,7 @@ private struct MacBillDetail: View {
     }
 
     private var headerTitles: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(verbatim: CategoryCopy.path(state.category, parent: state.categoryParent))
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-            Text(verbatim: state.description_)
-                .font(isNarrow ? .title3.bold() : .title2.bold())
-                .lineLimit(2)
-                .accessibilityAddTraits(.isHeader)
-            Text(verbatim: "\(state.groupName) · \(ExpenseFormat.dayTime(state.spentAt, relativeDay: state.spentDay))")
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-        }
+        MacBillTitles(bill: state, groupName: state.groupName, isNarrow: isNarrow)
     }
 
     /// Share, Edit…, Delete and Close.
@@ -840,14 +672,7 @@ private struct MacBillDetail: View {
 
     private var billContent: some View {
         VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(verbatim: state.currency.format(state.totalMinor))
-                    .font(.system(size: isNarrow ? 28 : 34, weight: .bold))
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-                PayerLine(payers: state.payers, lonePayer: state.lonePayer, size: 20, onPerson: openPerson)
-                    .foregroundStyle(.secondary)
+            MacBillTotal(bill: state, lonePayer: state.lonePayer, isNarrow: isNarrow, onPerson: model.openPerson) {
                 if state.isPending {
                     PendingLine()
                         .foregroundStyle(.secondary)
@@ -866,23 +691,19 @@ private struct MacBillDetail: View {
                 }
             }
             VStack(alignment: .leading, spacing: 6) {
-                BillAttachmentsHeader(state: state)
+                BillAttachmentsHeader(attachments: model.attachments)
                     .font(.headline)
-                BillAttachmentStrip(model: model, wraps: true, metrics: isNarrow ? .narrow : .standard)
-            }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(verbatim: BillCopy.splitHeader(state.splitMode, count: state.participantCount))
-                    .font(.headline)
-                VStack(spacing: 0) {
-                    ForEach(Array(state.people.enumerated()), id: \.element.memberId) { index, row in
-                        if index > 0 { Divider() }
-                        ShareRow(row: row, currency: state.currency, avatarSize: 24, onPerson: openPerson)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
+                BillAttachmentStrip(
+                    attachments: model.attachments,
+                    wraps: true,
+                    metrics: isNarrow ? .narrow : .standard,
+                ) {
+                    if state.showsAddPhoto {
+                        BillAddPhotoTile(model: model, metrics: isNarrow ? .narrow : .standard)
                     }
                 }
-                .background(Palette.card, in: .rect(cornerRadius: 10))
             }
+            MacBillSplit(bill: state, onPerson: model.openPerson)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -900,65 +721,26 @@ private struct MacBillDetail: View {
                     .padding(isNarrow ? 16 : 20)
                 }
                 .modifier(BillCommentFocus(
-                    model: model,
+                    focusedCommentId: state.focusedCommentId,
                     proxy: proxy,
                     highlighted: $highlightedCommentId,
                     isEnabled: showsComments,
+                    onShown: model.focusedCommentShown,
                 ))
             }
             if showsComments {
                 Divider()
-                BillCommentComposer(model: model, isFloating: false, focus: $isComposing)
+                BillCommentComposer(composer: model.composer, isFloating: false, focus: $isComposing)
                     .padding(isNarrow ? 12 : 16)
             }
         }
     }
 
+    /// The narrow sheet's segment already says "Comments".
     private var comments: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // The narrow sheet's segment already says it
-            if !isNarrow {
-                Text(verbatim: BillCopy.commentsHeader(state.commentCount))
-                    .font(.headline)
-            }
-            if state.showsNoComments {
-                BillNoComments()
-            }
-            if state.threads.isLoading {
-                BillTalkPlaceholder()
-            }
-            ForEach(state.loadedThreads ?? [], id: \.comment.id) { thread in
-                VStack(alignment: .leading, spacing: 2) {
-                    commentRow(thread.comment, isReply: false)
-                    ForEach(thread.replies, id: \.id) { reply in
-                        commentRow(reply, isReply: true)
-                    }
-                }
-                .padding(.top, 4)
-            }
-        }
-    }
-
-    private func commentRow(_ comment: BillCommentRow, isReply: Bool) -> some View {
-        // The comment being answered or edited, tinted while "Replying to" or "Editing comment" shows; the one a link
-        // opened at, fading out
-        let isTarget = state.replyTarget?.commentId == comment.id || state.editingCommentId == comment.id
-        let isHighlighted = highlightedCommentId == comment.id
-        return BillCommentView(
-            comment: comment,
-            isReply: isReply,
-            metrics: .standard,
-            showsLikes: state.likesComment?.id == comment.id,
-            send: model.send,
-        ) {
+        MacBillComments(comments: model.comments, showsTitle: !isNarrow, highlightedId: highlightedCommentId) {
             isComposing = true
         }
-        .padding(6)
-        .background(
-            Palette.accent.opacity(isHighlighted ? 0.24 : isTarget ? 0.14 : 0),
-            in: .rect(cornerRadius: 8),
-        )
-        .id(comment.id)
     }
 
     @ViewBuilder
@@ -984,7 +766,7 @@ private struct MacBillDetail: View {
                             categories: state.categories,
                             isUndoing: state.isUndoing,
                             metrics: .standard,
-                            onPerson: openPerson,
+                            onPerson: model.openPerson,
                         ) {
                             model.send(BillDetailUiEventOnUndoClicked.shared)
                         }

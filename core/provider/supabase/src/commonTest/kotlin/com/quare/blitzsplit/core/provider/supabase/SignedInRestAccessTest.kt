@@ -93,6 +93,18 @@ class SignedInRestAccessTest {
     }
 
     @Test
+    fun `GIVEN no user token WHEN resolving a profile link THEN reaches the server`() = runTest {
+        // Given
+        val url = "$URL/rest/v1/rpc/get_profile_by_share_code"
+
+        // When
+        client.post(url)
+
+        // Then
+        assertEquals(listOf("/rest/v1/rpc/get_profile_by_share_code"), requestedPaths)
+    }
+
+    @Test
     fun `GIVEN no user token WHEN calling a function that needs a user THEN fails before reaching the server`() =
         runTest {
             // Given

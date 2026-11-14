@@ -11,6 +11,10 @@ enum class LegalPage(
     TERMS_OF_USE("terms"),
     ;
 
+    // Why: the site's page, which the web opens in the browser; the other platforms draw the same text themselves.
+    val siteUrl: String
+        get() = "https://blitzsplit.com/$slug"
+
     companion object {
         fun fromSlug(slug: String): LegalPage? = entries.firstOrNull { it.slug == slug }
     }

@@ -197,4 +197,21 @@
     <string name="share_bill_message">Bill “%1$s” on Blitz Split: %2$s</string>
     <string name="share_bill_update_error">Couldn\'t change who can open it. Try again.</string>
     <string name="share_bill_disable_error">Couldn\'t turn off the link. Try again.</string>
+    <string name="shared_bill_sign_in">Sign in</string>
+    <string name="shared_bill_open_in_app">Open in the app</string>
+    <string name="shared_bill_group_banner">This bill is from the group %1$s. Whoever is in the group also sees their own part and the history.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Want to comment? Sign in with an account. You don\'t need to be in the group.</string>
+    <string name="shared_bill_sign_in_to_comment">Sign in to comment</string>
+    <string name="shared_bill_not_found_title">This link doesn\'t open anymore</string>
+    <string name="shared_bill_not_found_body">Whoever shared it may have turned the link off or deleted the bill.</string>
+    <string name="shared_bill_members_only_title">Only people in the group open this bill</string>
+    <string name="shared_bill_members_only_body">Sign in with the account you use in the group.</string>
+    <string name="shared_bill_members_only_outside_body">Your account isn\'t in this bill\'s group. Ask whoever shared it to invite you.</string>
+    <string name="shared_bill_failed_title">Couldn\'t open the bill</string>
+    <string name="shared_bill_offline">No internet.</string>
+    <string name="shared_bill_retry">Try again</string>
+    <string name="shared_bill_go_to_app">Go to Blitz Split</string>
+    <string name="shared_bill_comment_error">Couldn\'t send the comment. Try again.</string>
+    <string name="shared_bill_needs_name">Create your profile to comment.</string>
+    <string name="shared_bill_comment_change_error">Couldn\'t save the change to the comment. Try again.</string>
 </resources>

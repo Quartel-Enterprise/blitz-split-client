@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.SharedBillLeftForSignIn
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -54,13 +55,14 @@ import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.uuid.Uuid
 
 /*
- * Why: a bill's link opened on the web (7.3h). The server answers what it shows, so it is read once online, and again
+ * Why: a bill's link opened (7.3h). The server answers what it shows, so it is read once online, and again
  * after a comment goes up. Signing in is the app's own (the welcome, or the profile's Google or Apple), and whoever is
  * in the group with the bill on this device may open it in the app instead.
  */
 class SharedBillViewModel(
     private val route: Route.SharedBill,
     private val navigator: Navigator,
+    private val leftForSignIn: SharedBillLeftForSignIn,
     private val loadSharedBill: LoadSharedBill,
     private val commentOnSharedBill: CommentOnSharedBill,
     private val editSharedBillComment: EditSharedBillComment,
@@ -341,11 +343,8 @@ class SharedBillViewModel(
         if (!isOnTop()) return
         trackEvent("shared_bill_sign_in_clicked", emptyMap())
         viewModelScope.launch {
-            if (observeProfile().first() == null) {
-                navigator.replaceAll(Route.Welcome)
-            } else {
-                navigator.navigate(Route.Profile)
-            }
+            val hasProfile = observeProfile().first() != null
+            if (hasProfile) navigator.navigate(Route.Profile) else leftForSignIn.leaveForWelcome(route, navigator)
         }
     }
 
@@ -353,17 +352,22 @@ class SharedBillViewModel(
         val bill = shown ?: return
         if (!uiState.value.canOpenInApp || !isOnTop()) return
         trackEvent("shared_bill_open_in_app_clicked", emptyMap())
+        val group = Route.GroupDetail.expensesOf(bill.groupId)
+        val billDetail = Route.BillDetail(
+            groupId = bill.groupId,
+            expenseId = bill.expenseId,
+            focusCommentId = null,
+        )
+        val below = navigator.backStack.value.dropLast(1)
+        /*
+         * Why: the group or the bill already open under the page (the link opened over its own Conta) comes back
+         * instead of being pushed twice, which Navigation 3 can't hold since it keys each entry by its route.
+         */
+        val openIndex = below.indexOfFirst { it == group || it == billDetail }
         // Why: in one step, so the web never draws Despesas without its Conta in between.
         navigator.replaceAbove(
-            size = navigator.backStack.value.size - 1,
-            routes = listOf(
-                Route.GroupDetail.expensesOf(bill.groupId),
-                Route.BillDetail(
-                    groupId = bill.groupId,
-                    expenseId = bill.expenseId,
-                    focusCommentId = null,
-                ),
-            ),
+            size = if (openIndex < 0) below.size else openIndex,
+            routes = listOf(group, billDetail),
         )
     }
 

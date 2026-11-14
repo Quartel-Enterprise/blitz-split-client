@@ -31,6 +31,7 @@ internal fun createInitialProfileUiState(
     showsDynamicColors = showsDynamicColors,
     usesDynamicColors = false,
     showsBitcoinInSats = false,
+    sharesUsageData = true,
     language = AppLanguage.SYSTEM,
     activeNotificationCount = Loadable.Loading,
     showsCheckForUpdates = showsCheckForUpdates,

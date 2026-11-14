@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 
 class TrackEventUseCaseTest {
     private val logged = mutableListOf<Pair<String, Map<String, Any>>>()
-    private val hub = AnalyticsHub()
+    private val hub = AnalyticsHub().apply { setCollectionEnabled(true) }
     private val trackEvent = TrackEventUseCase(hub)
 
     @Test
@@ -88,6 +88,14 @@ class TrackEventUseCaseTest {
             params: Map<String, Any>,
         ) {
             logged += name to params
+        }
+
+        override fun setCollectionEnabled(isEnabled: Boolean) {
+            // Why: these tests only look at the events.
+        }
+
+        override fun setUserId(userId: String?) {
+            // Why: these tests only look at the events.
         }
     }
 }

@@ -48,6 +48,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingPayme
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePendingProfileChangesUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileShareLinkUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.OpenLegalPageUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ValidatePaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeNotificationPreferencesRepository
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
@@ -82,6 +83,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -117,6 +119,7 @@ class ProfileViewModelTest {
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
     private val storedBitcoinInSats = MutableStateFlow(false)
+    private val storedUsageDataSharing = MutableStateFlow(true)
     private lateinit var storedLanguage: MutableStateFlow<AppLanguage>
     private val languageWrites = mutableListOf<AppLanguage>()
     private var supportsDynamicColors = true
@@ -959,6 +962,23 @@ class ProfileViewModelTest {
             // Then
             assertTrue(storedBitcoinInSats.value)
             assertTrue(viewModel.uiState.value.showsBitcoinInSats)
+        }
+
+    @Test
+    fun `GIVEN usage data shared WHEN turning sharing off THEN stores and shows it off without tracking it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+            assertTrue(viewModel.uiState.value.sharesUsageData)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnUsageDataToggled(isOn = false))
+
+            // Then
+            assertEquals(false, storedUsageDataSharing.value)
+            assertEquals(false, viewModel.uiState.value.sharesUsageData)
+            assertEquals(emptyList(), trackedEvents)
         }
 
     @Test
@@ -4640,7 +4660,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnPrivacyPolicyClicked)
 
             // Then
-            assertEquals(listOf("privacy_policy_clicked" to emptyMap<String, Any>()), trackedEvents)
+            assertEquals(listOf("privacy_policy_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
         }
 
     @Test
@@ -4652,7 +4672,7 @@ class ProfileViewModelTest {
         viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
 
         // Then
-        assertEquals(listOf("terms_clicked" to emptyMap<String, Any>()), trackedEvents)
+        assertEquals(listOf("terms_clicked" to mapOf<String, Any>("source" to "profile")), trackedEvents)
     }
 
     @Test
@@ -6471,7 +6491,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
             assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
@@ -6523,7 +6543,7 @@ class ProfileViewModelTest {
         viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
 
         // Then
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink("$shareLink?lang=pt")), actions)
         assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
     }
 
@@ -6558,7 +6578,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnShareProfileClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
             assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
@@ -6576,7 +6596,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink("$shareLink?lang=pt")), actions)
             assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
         }
 
@@ -6598,7 +6618,7 @@ class ProfileViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isSigningOut)
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
         assertEquals(listOf("profile_share_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
@@ -6620,7 +6640,7 @@ class ProfileViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isSigningOut)
-        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink(shareLink)), actions)
+        assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyProfileLink("$shareLink?lang=pt")), actions)
         assertEquals(listOf("profile_link_copied" to emptyMap<String, Any>()), trackedEvents)
     }
 
@@ -6639,7 +6659,7 @@ class ProfileViewModelTest {
 
             // Then
             assertTrue(viewModel.uiState.value.isSignOutScheduled)
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink(shareLink)), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.ShareProfileLink("$shareLink?lang=pt")), actions)
         }
 
     @Test
@@ -6905,7 +6925,7 @@ class ProfileViewModelTest {
                 shownUpdatePrompts += availability to source
             },
             updateMechanism = updateMechanism,
-            clientPlatform = clientPlatform,
+            openLegalPage = OpenLegalPageUseCase(navigator, clientPlatform),
             observeAccount = ObserveAccountUseCase(account),
             observeProfile = ObserveProfileUseCase(profiles),
             observeProfileShareLink = ObserveProfileShareLinkUseCase(profiles),
@@ -6923,8 +6943,11 @@ class ProfileViewModelTest {
             observePushEnabled = { isPushEnabled },
             observeFirstDownload = ObserveFirstDownload { this@ProfileViewModelTest.firstDownload },
             observeShowsPix = { showsPix },
+            observeSpokenLanguage = { flowOf("pt") },
             updateBitcoinInSats = { storedBitcoinInSats.value = it },
             observeBitcoinInSats = { storedBitcoinInSats },
+            updateUsageDataSharing = { storedUsageDataSharing.value = it },
+            observeUsageDataSharing = { storedUsageDataSharing },
             updateAppLanguage = {
                 languageWrites += it
                 storedLanguage.value = it

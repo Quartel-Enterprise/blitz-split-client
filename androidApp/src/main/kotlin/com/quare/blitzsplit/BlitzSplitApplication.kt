@@ -26,7 +26,15 @@ class BlitzSplitApplication : Application() {
         super.onCreate()
         if (BuildConfig.HAS_FIREBASE) startCrashReporting(isDebug = BuildConfig.DEBUG)
         startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }
-        if (BuildConfig.HAS_FIREBASE && !BuildConfig.DEBUG) get<AnalyticsHub>().attach(FirebaseAnalyticsService(this))
+        if (BuildConfig.HAS_FIREBASE && BuildConfig.COLLECTS_ANALYTICS && !BuildConfig.DEBUG) {
+            get<AnalyticsHub>().attach(FirebaseAnalyticsService(this))
+        } else if (BuildConfig.HAS_FIREBASE) {
+            /*
+             * Why: the SDK keeps the runtime setting over the manifest's, so a release build that turned it on before
+             * (a debug build installed over it, or the kill switch shipped in an update) would keep collecting.
+             */
+            FirebaseAnalyticsService(this).setCollectionEnabled(false)
+        }
         PushSetup.start(this, setPushDevice = get())
         // Why: Google Play's update flow starts from the Activity in front, whichever screen asked for it.
         registerActivityLifecycleCallbacks(get<CurrentActivityProvider>())

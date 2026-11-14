@@ -125,7 +125,7 @@ targetTemplates:
         CFBundleURLTypes:
           - CFBundleURLName: com.quare.blitzsplit.auth
             CFBundleURLSchemes: [borarachar]
-        # Nothing is collected from the first launch on; FirebaseSetup turns it on, on every launch of a release build
+        # Nothing is collected until the shared code read Profile's "Share usage data" and a release build turned it on
         # (docs/analytics/README.md#consent)
         FIREBASE_ANALYTICS_COLLECTION_ENABLED: false
         # Each screen is tracked by the shared code from the back stack, never by UIKit's or AppKit's view controllers
@@ -162,7 +162,8 @@ targets:
       properties:
         com.apple.developer.applesignin: [Default]
         # webcredentials lets the recovery code be saved to the Passwords app; applinks opens a
-        # group's invite link, blitzsplit.com/g/<code>, and a profile's, blitzsplit.com/u/<code>, in the app. Both need their entry in
+        # group's invite link, blitzsplit.com/g/<code>, a comment's, blitzsplit.com/b/<bill>, a profile's,
+        # blitzsplit.com/u/<code>, and a bill's, blitzsplit.com/c/<code>, in the app. Each needs its entry in
         # https://blitzsplit.com/.well-known/apple-app-site-association, served by blitz-split-site
         # (webApp/public/.well-known keeps the same copy: change both)
         com.apple.developer.associated-domains: [webcredentials:blitzsplit.com, applinks:blitzsplit.com]

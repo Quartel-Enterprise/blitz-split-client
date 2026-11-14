@@ -30,7 +30,11 @@ The profile, its photo, appearance, in-app update and Adjust photo.
   - "Share profile" (Pierre's call, beta feedback: it took the place of the top bar's "i", and "Who sees your profile",
     its row and its dialog, are gone): the top bar's share button shares the account's profile link,
     `https://blitzsplit.com/u/<code>`, with "Here's my profile on Blitz Split: <link>" ("Esse é meu perfil no Bora
-    Rachar" in Portuguese). Android and iOS open the system share, whose own Copy covers copying; the Mac's toolbar and
+    Rachar" in Portuguese). The link shared or copied ends in `?lang=<the app's language>` (`LinkLanguage`): a profile
+    has no currency to pick its link's preview language by, so blitzsplit.com writes the preview in that one
+    (Portuguese and Spanish; English for any other), and the site's own pages read the same parameter (the web app,
+    once it serves `/u/<code>` itself, doesn't read it yet). The language is the one the app is speaking
+    (`ObserveSpokenLanguage`): the pick, or the first of the device's languages the app has, English otherwise. Android and iOS open the system share, whose own Copy covers copying; the Mac's toolbar and
     the web's header (the page's heading from 768 px) open a menu with "Share profile" (the Mac's sharing picker,
     the browser's share where there is one, else a copy) and "Copy link" ("Link copied"). The link is made on the
     device the moment the account exists (its first sync, `ProfileUiState.shareLink`), so it is there offline right
@@ -79,8 +83,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (`https://blitzsplit.com/legal/…`). The web keeps opening https://blitzsplit.com/privacy and
     https://blitzsplit.com/terms in another tab (`LegalLinks`), a browser's own way (Pierre's call).
     - The language is Profile › Language's, or the device's own while it follows the system, so a device in Turkish
-      reads them in Turkish though the app is in English; a language the site doesn't write them in (French, German,
-      Italian, Polish) reads the English text.
+      reads them in Turkish though the app is in English; the site writes them in all eleven of the app's languages
+      (blitz-split-site#29), and a language it doesn't write them in reads the English text.
     - The device keeps the last text it downloaded (`legal_document`, per page and language) and shows it at once,
       offline too, while a newer one downloads and takes its place. A device that never downloaded it draws the
       shimmer, then "Couldn't load this page" with "Try again" when the download fails (Pierre's call: no copy ships
@@ -126,6 +130,11 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update
     is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks: its
     version is only the footer's.
+  - Profile's "Privacy and about" holds "Share usage data" ("Screens and taps, to improve the app. Never names or
+    amounts."), a switch right under "Export my data" (Pierre's call, #184): on by default, per device like the theme,
+    it turns Firebase Analytics off on this device, the user id included. Nothing asks about it first: Analytics rests
+    on legitimate interest, and Welcome's line tells about the Privacy Policy ([general.md](general.md),
+    [docs/analytics](../analytics/README.md#consent)).
   - Profile › Preferences › "Notifications" ("5 active", the rows whose Push is on; "0 active" while its "Push notifications" switch is off on this device) opens Notifications: a row per
     kind of Activity and the weekly reminder, each with a Push and an In app toggle. Activity's bar opens the same
     screen; see [activity-and-push.md](activity-and-push.md) for the rows, the defaults and how each platform draws

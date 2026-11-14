@@ -197,4 +197,21 @@
     <string name="share_bill_message">Blitz Split\'te “%1$s” harcaması: %2$s</string>
     <string name="share_bill_update_error">Kimlerin açabileceği değiştirilemedi. Tekrar dene.</string>
     <string name="share_bill_disable_error">Bağlantı kapatılamadı. Tekrar dene.</string>
+    <string name="shared_bill_sign_in">Giriş yap</string>
+    <string name="shared_bill_open_in_app">Uygulamada aç</string>
+    <string name="shared_bill_group_banner">Bu harcama %1$s grubuna ait. Gruptaki herkes kendi payını ve geçmişi de görür.</string>
+    <string name="shared_bill_sign_in_to_comment_body">Yorum yapmak mı istiyorsun? Bir hesapla giriş yap. Grupta olman gerekmez.</string>
+    <string name="shared_bill_sign_in_to_comment">Yorum için giriş yap</string>
+    <string name="shared_bill_not_found_title">Bu bağlantı artık açılmıyor</string>
+    <string name="shared_bill_not_found_body">Paylaşan kişi bağlantıyı kapatmış ya da harcamayı silmiş olabilir.</string>
+    <string name="shared_bill_members_only_title">Bu harcamayı yalnızca gruptakiler açabilir</string>
+    <string name="shared_bill_members_only_body">Grupta kullandığın hesapla giriş yap.</string>
+    <string name="shared_bill_members_only_outside_body">Hesabın bu harcamanın grubunda değil. Paylaşan kişiden seni davet etmesini iste.</string>
+    <string name="shared_bill_failed_title">Harcama açılamadı</string>
+    <string name="shared_bill_offline">İnternet yok.</string>
+    <string name="shared_bill_retry">Tekrar dene</string>
+    <string name="shared_bill_go_to_app">Blitz Split\'e git</string>
+    <string name="shared_bill_comment_error">Yorum gönderilemedi. Tekrar dene.</string>
+    <string name="shared_bill_needs_name">Yorum yapmak için profilini oluştur.</string>
+    <string name="shared_bill_comment_change_error">Yorumdaki değişiklik kaydedilemedi. Tekrar dene.</string>
 </resources>

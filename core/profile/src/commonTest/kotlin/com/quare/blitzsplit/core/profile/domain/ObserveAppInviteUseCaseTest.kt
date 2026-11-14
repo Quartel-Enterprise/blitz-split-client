@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PhoneUse
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveAppInviteUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeAppInviteRepository
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -62,7 +63,7 @@ class ObserveAppInviteUseCaseTest {
         val invite = useCase().first()
 
         // Then
-        assertEquals("https://blitzsplit.com/app-download", invite?.link)
+        assertEquals("https://blitzsplit.com/app-download?lang=pt", invite?.link)
         assertEquals(StoreListing.BOTH, invite?.stores)
     }
 
@@ -81,7 +82,7 @@ class ObserveAppInviteUseCaseTest {
         val invite = useCase().first()
 
         // Then
-        assertEquals("https://blitzsplit.com/app-download", invite?.link)
+        assertEquals("https://blitzsplit.com/app-download?lang=pt", invite?.link)
         assertEquals(StoreListing.GOOGLE_PLAY, invite?.stores)
     }
 
@@ -100,7 +101,7 @@ class ObserveAppInviteUseCaseTest {
         val invite = useCase().first()
 
         // Then
-        assertEquals("https://blitzsplit.com/app-download", invite?.link)
+        assertEquals("https://blitzsplit.com/app-download?lang=pt", invite?.link)
         assertEquals(StoreListing.APP_STORE, invite?.stores)
     }
 
@@ -184,7 +185,7 @@ class ObserveAppInviteUseCaseTest {
         // Then
         assertEquals(
             AppInvite(
-                link = "https://blitzsplit.com/app-download",
+                link = "https://blitzsplit.com/app-download?lang=pt",
                 stores = StoreListing.BOTH,
                 isDismissed = false,
                 phoneUse = null,
@@ -282,6 +283,7 @@ class ObserveAppInviteUseCaseTest {
             repository = repository,
             platform = platform,
             stores = stores,
+            observeSpokenLanguage = { flowOf("pt") },
         )
     }
 

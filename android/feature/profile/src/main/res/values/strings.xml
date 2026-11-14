@@ -136,4 +136,6 @@
     <string name="profile_share">Share profile</string>
     <string name="profile_share_message">Here\'s my profile on Blitz Split: %1$s</string>
     <string name="profile_link_copied">Link copied</string>
+    <string name="profile_share_usage_data">Share usage data</string>
+    <string name="profile_share_usage_data_detail">Screens and taps, to improve the app. Never names or amounts.</string>
 </resources>

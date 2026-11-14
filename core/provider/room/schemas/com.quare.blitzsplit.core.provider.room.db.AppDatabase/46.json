@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 46,
-    "identityHash": "d8d9ecb8458769b6efdeb99f75c5dba0",
+    "identityHash": "9749dd97ffec05eb9c894b8355ca8b3a",
     "entities": [
       {
         "tableName": "profile",
@@ -147,7 +147,7 @@
       },
       {
         "tableName": "device_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `theme` TEXT NOT NULL, `groupsDisplay` TEXT DEFAULT NULL, `groupGridSize` TEXT DEFAULT NULL, `statsChartType` TEXT DEFAULT NULL, `statsGrain` TEXT DEFAULT NULL, `usesDynamicColors` INTEGER NOT NULL DEFAULT 0, `showsBitcoinInSats` INTEGER NOT NULL DEFAULT 0, `lastUpdatePromptAt` INTEGER DEFAULT NULL, `lastNotificationPromptAt` INTEGER DEFAULT NULL, `isAppBannerDismissed` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `theme` TEXT NOT NULL, `groupsDisplay` TEXT DEFAULT NULL, `groupGridSize` TEXT DEFAULT NULL, `statsChartType` TEXT DEFAULT NULL, `statsGrain` TEXT DEFAULT NULL, `usesDynamicColors` INTEGER NOT NULL DEFAULT 0, `showsBitcoinInSats` INTEGER NOT NULL DEFAULT 0, `lastUpdatePromptAt` INTEGER DEFAULT NULL, `lastNotificationPromptAt` INTEGER DEFAULT NULL, `isAppBannerDismissed` INTEGER NOT NULL DEFAULT 0, `sharesUsageData` INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -217,6 +217,13 @@
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
+          },
+          {
+            "fieldPath": "sharesUsageData",
+            "columnName": "sharesUsageData",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
           }
         ],
         "primaryKey": {
@@ -1906,7 +1913,7 @@
       },
       {
         "tableName": "legal_document",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`page` TEXT NOT NULL, `language` TEXT NOT NULL, `markdown` TEXT NOT NULL, `etag` TEXT DEFAULT NULL, `checkedAt` INTEGER DEFAULT NULL, PRIMARY KEY(`page`, `language`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`page` TEXT NOT NULL, `language` TEXT NOT NULL, `markdown` TEXT NOT NULL, PRIMARY KEY(`page`, `language`))",
         "fields": [
           {
             "fieldPath": "page",
@@ -1925,18 +1932,6 @@
             "columnName": "markdown",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "etag",
-            "columnName": "etag",
-            "affinity": "TEXT",
-            "defaultValue": "NULL"
-          },
-          {
-            "fieldPath": "checkedAt",
-            "columnName": "checkedAt",
-            "affinity": "INTEGER",
-            "defaultValue": "NULL"
           }
         ],
         "primaryKey": {
@@ -1950,7 +1945,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd8d9ecb8458769b6efdeb99f75c5dba0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9749dd97ffec05eb9c894b8355ca8b3a')"
     ]
   }
 }

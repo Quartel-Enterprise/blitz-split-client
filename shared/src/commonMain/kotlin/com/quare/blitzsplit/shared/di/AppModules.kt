@@ -48,8 +48,12 @@ import com.quare.blitzsplit.feature.registerpayment.di.registerPaymentModule
 import com.quare.blitzsplit.feature.restore.di.restoreModule
 import com.quare.blitzsplit.feature.splitbill.di.splitBillModule
 import com.quare.blitzsplit.feature.welcome.di.welcomeModule
+import com.quare.blitzsplit.shared.app.AnalyticsChoices
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -64,6 +68,14 @@ private val appModule = module {
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
     viewModelOf(::AppViewModel)
+    // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
+    single {
+        AnalyticsChoices(
+            followUsageDataSharing = get(),
+            followAnalyticsUserId = get(),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+        )
+    }
 }
 
 val sharedModules: List<Module> = listOf(
@@ -122,4 +134,4 @@ fun startBlitzSplitKoin(
 ): KoinApplication = startKoin {
     configure()
     modules(sharedModules + extraModules)
-}
+}.also { app -> app.koin.get<AnalyticsChoices>().start() }

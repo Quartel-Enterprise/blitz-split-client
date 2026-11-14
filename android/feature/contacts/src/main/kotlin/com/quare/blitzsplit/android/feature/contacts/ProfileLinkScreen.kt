@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -42,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.LinkProblemMessage
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.contacts.presentation.model.ProfileLinkStage
 import com.quare.blitzsplit.feature.contacts.presentation.model.ProfileLinkUiEvent
@@ -125,17 +125,18 @@ internal fun ProfileLinkContent(
                         onEvent = onEvent,
                     )
 
-                    ProfileLinkStage.UNREACHABLE -> LinkMessage(
-                        icon = Icons.Outlined.CloudOff,
-                        title = stringResource(R.string.profile_link_unreachable_title),
-                        body = stringResource(R.string.profile_link_unreachable_body),
-                    ) {
+                    ProfileLinkStage.UNREACHABLE -> {
+                        LinkProblemMessage(
+                            icon = Icons.Outlined.CloudOff,
+                            title = stringResource(R.string.profile_link_unreachable_title),
+                            body = stringResource(R.string.profile_link_unreachable_body),
+                        )
                         Button(onClick = { onEvent(ProfileLinkUiEvent.OnRetryClicked) }) {
                             Text(stringResource(R.string.profile_link_retry))
                         }
                     }
 
-                    ProfileLinkStage.NOT_FOUND -> LinkMessage(
+                    ProfileLinkStage.NOT_FOUND -> LinkProblemMessage(
                         icon = Icons.Outlined.LinkOff,
                         title = stringResource(R.string.profile_link_not_found_title),
                         body = stringResource(R.string.profile_link_not_found_body),
@@ -190,32 +191,4 @@ private fun StrangerProfileContent(
             )
         }
     }
-}
-
-@Composable
-private fun LinkMessage(
-    icon: ImageVector,
-    title: String,
-    body: String,
-    action: @Composable () -> Unit = {},
-) {
-    Icon(
-        imageVector = icon,
-        contentDescription = null,
-        modifier = Modifier.size(48.dp),
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-        text = title,
-        modifier = Modifier.semantics { heading() },
-        style = MaterialTheme.typography.titleLarge,
-        textAlign = TextAlign.Center,
-    )
-    Text(
-        text = body,
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        textAlign = TextAlign.Center,
-    )
-    action()
 }

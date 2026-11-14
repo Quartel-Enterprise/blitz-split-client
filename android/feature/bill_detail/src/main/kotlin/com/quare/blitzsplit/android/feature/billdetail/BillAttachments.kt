@@ -45,7 +45,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
@@ -68,9 +67,6 @@ import com.quare.blitzsplit.android.designsystem.theme.pendingOnInverseSurfaceCo
 import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillAttachmentTile
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiEvent
-import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
-import software.quare.loadable.valueOrNull
 
 // Why: the canvas' tiles, 104×80 and 92×70 on a phone lying down, where the screen is short.
 private val regularTile = TileSize(104.dp, 80.dp)
@@ -88,21 +84,31 @@ private class TileSize(
     val thumbHeight: Dp,
 )
 
+// Why: Conta's "Adicionar foto" tile, which a bill's link page never has.
+internal class BillAddPhoto(
+    val isEnabled: Boolean,
+    val isAdding: Boolean,
+    val pickers: PhotoPickers,
+)
+
 /*
  * Why: "Anexos" (7.3): the receipt that filled the bill first, then up to 5 photos, then "Adicionar foto" while there
- * is room; one row scrolling sideways in one column, wrapping in two columns, as the canvas draws them.
+ * is room; one row scrolling sideways in one column, wrapping in two columns, as the canvas draws them. Conta and a
+ * bill's link page both draw it, the page with no count nor "Adicionar foto".
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun BillAttachmentsSection(
-    state: BillDetailUiState,
+    // Why: null while Conta reads them.
+    attachments: List<BillAttachmentTile>?,
+    // Why: "2 de 5 fotos", null while they are read and where no photo is added.
+    countText: String?,
     wraps: Boolean,
     dates: DateTimeTextFormatter,
-    pickers: PhotoPickers,
-    onEvent: (BillDetailUiEvent) -> Unit,
+    addPhoto: BillAddPhoto?,
+    onAttachmentClick: (id: String) -> Unit,
 ) {
     val size = if (rememberFoldLayout().formFactor == FormFactor.PhoneLandscape) shortTile else regularTile
-    val attachments = state.attachments.valueOrNull()
     val tiles: @Composable () -> Unit = {
         if (attachments == null) AttachmentTilesSkeleton(size)
         attachments?.forEach { attachment ->
@@ -110,30 +116,22 @@ internal fun BillAttachmentsSection(
                 attachment = attachment,
                 size = size,
                 dates = dates,
-                onClick = { onEvent(BillDetailUiEvent.OnAttachmentClicked(attachment.id)) },
+                onClick = { onAttachmentClick(attachment.id) },
             )
         }
-        if (state.showsAddPhoto) {
+        addPhoto?.let {
             AddPhotoTile(
-                isEnabled = state.canAddPhoto,
-                isAdding = state.isAddingPhoto,
+                isEnabled = it.isEnabled,
+                isAdding = it.isAdding,
                 size = size,
-                pickers = pickers,
+                pickers = it.pickers,
             )
         }
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         BillSectionTitle(
             text = stringResource(R.string.bill_detail_attachments),
-            // Why: "2 de 5 fotos", whose noun follows the limit.
-            trailing = state.photoCount?.let { count ->
-                pluralStringResource(
-                    R.plurals.bill_detail_attachments_count,
-                    state.photoLimit,
-                    count,
-                    state.photoLimit,
-                )
-            },
+            trailing = countText,
         )
         if (wraps) {
             FlowRow(

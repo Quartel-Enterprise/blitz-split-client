@@ -156,6 +156,7 @@ struct RootView: View {
         case let .splitBill(route): SplitBillView(route: route)
         case let .billDetail(route): BillDetailView(route: route)
         case let .shareBill(route): ShareBillView(route: route)
+        case let .sharedBill(route): SharedBillView(route: route).id(route)
         case let .editGroup(route): EditGroupView(route: route)
         case let .defaultSplit(route): DefaultSplitView(route: route)
         case let .simplifyDebtsInfo(route): SimplifyDebtsInfoView(route: route)

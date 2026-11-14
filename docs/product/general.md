@@ -6,6 +6,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (`RecoveryCodeUiState.isConnectExpanded`).
   - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
     iPad); Google comes first on Android and in any other browser.
+  - Welcome ends in one small centered line under its buttons, "By continuing, you accept the Terms of Service and
+    acknowledge the Privacy Policy.", both names links to the legal texts (the app's own screens; the site's page in
+    another tab on the web), with no checkbox nor step of its own (Pierre's call, #184): Analytics rests on legitimate
+    interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
+    [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish and Indonesian: the device's language, English
     for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Spanish variants, a neutral
     Latin-American one for every `es` tag, and Spain's `es-ES` overriding only the words Spain says differently, the

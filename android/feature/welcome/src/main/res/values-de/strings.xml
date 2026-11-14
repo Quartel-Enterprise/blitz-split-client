@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Ohne Konto nutzen</string>
     <string name="welcome_used_on_another_device">Ich habe die App schon auf einem anderen Gerät genutzt</string>
     <string name="welcome_sign_in_failed">Anmeldung gerade nicht möglich. Versuch es noch einmal.</string>
+    <string name="welcome_legal_notice">Wenn du fortfährst, akzeptierst du die %1$s und bestätigst, die %2$s gelesen zu haben.</string>
+    <string name="welcome_legal_terms">Nutzungsbedingungen</string>
+    <string name="welcome_legal_privacy">Datenschutzerklärung</string>
 </resources>

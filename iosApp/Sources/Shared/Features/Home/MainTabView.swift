@@ -362,6 +362,8 @@ struct MainTabView: View {
         // A new identity per route: a group swapped in place (the Mac's sidebar) must not keep the model of the last one
         case let .groupDetail(route): GroupDetailView(route: route).id(route)
         case let .billDetail(route): BillDetailView(route: route)
+        // A bill's link opened over a tab; the same link shared at a comment opens again as a page of its own
+        case let .sharedBill(route): SharedBillView(route: route).id(route)
         case let .groupStats(route): GroupStatsView(route: route)
         case let .categoryExpenses(route): CategoryExpensesView(route: route)
         // "How it works" of Simplify debts, from the group's Balances; the Mac opens it as a sheet

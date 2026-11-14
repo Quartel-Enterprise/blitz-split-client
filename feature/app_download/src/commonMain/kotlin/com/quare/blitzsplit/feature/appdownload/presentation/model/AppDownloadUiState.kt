@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.appdownload.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.DisplayLink
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.StoreListing
 
@@ -20,6 +21,10 @@ data class AppDownloadUiState(
     val accountProvider: AccountProvider?,
     val isDismissed: Boolean,
 ) {
+    // Why: the link as the code prints it under itself.
+    val displayLink: String
+        get() = DisplayLink.of(link)
+
     val usesPhone: Boolean
         get() = phoneUseSinceMillis != null
 

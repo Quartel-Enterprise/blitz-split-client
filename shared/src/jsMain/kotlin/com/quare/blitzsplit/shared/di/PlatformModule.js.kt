@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSource
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
 import com.quare.blitzsplit.core.utils.DeviceLanguage
+import com.quare.blitzsplit.core.utils.DeviceLanguages
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.shared.settings.WebAppLanguageLocalDataSource
 import org.koin.core.module.Module
@@ -13,6 +14,8 @@ internal actual val platformModule: Module = module {
     single { NativeSignIn(providers = emptySet()) }
     single { DeviceRegion(::getBrowserRegion) }
     single { DeviceLanguage { js("navigator.language") as? String } }
+    // Why: the web says the language its pages are in itself (BlitzSplitWeb), so this only stands in for it.
+    single { DeviceLanguages { listOfNotNull(js("navigator.language") as? String) } }
     single<AppLanguageLocalDataSource> { WebAppLanguageLocalDataSource() }
     single { DynamicColorSupport { false } }
 }

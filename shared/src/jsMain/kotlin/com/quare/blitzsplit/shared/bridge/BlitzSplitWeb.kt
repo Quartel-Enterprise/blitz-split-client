@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
@@ -17,12 +18,14 @@ import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.shared.app.AppUiState
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.BillLinkNotice
 import com.quare.blitzsplit.shared.app.LinkInbox
+import com.quare.blitzsplit.shared.app.sharedBillSignInWindow
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.browser.window
 import kotlinx.coroutines.MainScope
@@ -30,6 +33,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -38,14 +42,12 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import org.w3c.dom.Worker
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.minutes
 
 /*
- * Why: a bill's link kept through the browser's sign in. Google's and Apple's pages take a minute or two, so a stash
- * older than the window was a sign in given up on.
+ * Why: a bill's link kept through the browser's sign in. A stash older than the window (sharedBillSignInWindow, the
+ * apps' own too) was a sign in given up on.
  */
 private const val SHARED_BILL_LEFT_TO_SIGN_IN = "blitzsplit.sharedBillLeftToSignIn"
-private val sharedBillSignInWindow = 15.minutes
 private const val PROFILE_LEFT_FOR_LANGUAGE = "blitzsplit.profileLeftForLanguage"
 
 /*
@@ -60,18 +62,24 @@ fun startBlitzSplit(
     val launchUrl = window.location.href
     // Why: the UI's language is picked once at startup, so its separator is read once too.
     val decimalSeparator = decimalSeparatorOf(languageTag)
+    /*
+     * Why: the language the pages speak, which src/i18n picks from the pick or the first of the browser's languages
+     * the app has, not navigator.language alone; a pick reloads the page, so it never changes while it runs.
+     */
+    val spokenLanguage = AppLanguage.languageOf(languageTag) ?: "en"
     startBlitzSplitKoin(
         extraModules = listOf(
             module {
                 single<Worker> { sqliteWorker }
                 single { DeviceDecimalSeparator { decimalSeparator } }
+                single { ObserveSpokenLanguage { flowOf(spokenLanguage) } }
             },
         ),
     )
     val handleBrowserCallback = KoinPlatform.getKoin().get<HandleBrowserCallback>()
     MainScope().launch { handleBrowserCallback(launchUrl) }
     openInviteLink(launchUrl)
-    openSharedBillOnceProfileMade()
+    forgetSharedBillOnceProfileMade()
     reopenProfileAfterLanguage()
 }
 
@@ -141,16 +149,18 @@ fun openNotificationLink(url: String) {
     if (PushLink.of(url) != null) KoinPlatform.getKoin().get<LinkInbox>().receive(url)
 }
 
-// Why: Boas-vindas without the browser ("Usar sem conta") makes the profile on this page, which goes back to the bill.
-private fun openSharedBillOnceProfileMade() {
-    val inbox = KoinPlatform.getKoin().get<LinkInbox>()
+/*
+ * Why: Boas-vindas without the browser ("Usar sem conta") makes the profile on this page, and the app itself goes back
+ * to the bill (AppViewModel). The link kept for a browser's sign in is dropped then, so a later load never opens it.
+ */
+private fun forgetSharedBillOnceProfileMade() {
     val observeProfile = KoinPlatform.getKoin().get<ObserveProfile>()
     observeProfile()
         .map { profile -> profile != null }
         .distinctUntilChanged()
         .dropWhile { hasProfile -> hasProfile }
         .filter { hasProfile -> hasProfile }
-        .onEach { takeSharedBillLeftToSignIn()?.let(inbox::receive) }
+        .onEach { takeSharedBillLeftToSignIn() }
         .launchIn(MainScope())
 }
 
