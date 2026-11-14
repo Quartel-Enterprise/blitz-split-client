@@ -9,7 +9,6 @@ import com.quare.blitzsplit.android.feature.splitbill.SplitBillContent
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillGroup
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillIncomes
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
@@ -121,14 +120,14 @@ private fun SampleTrip.splitBillState(
         pickedGroupId = GROUP_ID,
         groupName = groupName,
         groupInitials = previewInitialsOf(groupName),
-        groupColor = AvatarColor.PEACH,
+        groupColor = tripColor,
         groupPhotoUrl = null,
         groups = listOf(
             BillGroup(
                 id = GROUP_ID,
                 name = groupName,
                 initials = previewInitialsOf(groupName),
-                color = AvatarColor.PEACH,
+                color = tripColor,
                 photoUrl = null,
                 memberCount = people.size,
             ),
@@ -170,7 +169,7 @@ private fun SampleTrip.splitBillState(
         splitAsDefault = null,
         incomes = BillIncomes(
             byMemberId = emptyMap(),
-            currency = bill.currency,
+            currency = currency,
         ),
         categories = CategoryTree.appOnly,
         categoryId = bill.categoryKey,

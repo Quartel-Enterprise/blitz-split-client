@@ -5,6 +5,7 @@ import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.feature.groups.HomeContent
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.FaceStack
 import com.quare.blitzsplit.core.model.toStackedFaces
@@ -30,7 +31,6 @@ private const val UNREAD_ACTIVITY = 3
 private const val MINUTES_PER_DAY = 1_440
 private const val MINUTES_NOW = 13 * 60
 private const val MINUTES_SINCE_PAYMENT = 3 * 60
-private val tripColor = AvatarColor.PEACH
 
 /** Início with the trip and the two other groups pinned, the people who owe or are owed, and yesterday's bills. */
 @Composable
@@ -66,6 +66,11 @@ private fun SampleTrip.homeState(): HomeUiState {
         )
     }
     val yesterday = bills.filter { it.daysAgo == 1 }.sortedByDescending { it.minuteOfDay }
+    // Why: whoever paid, in the app's order: me first, then the group's order.
+    val payerOrder = PayerOrder(
+        meId = memberIdOf(me),
+        memberIds = people.indices.map(::memberIdOf),
+    )
     return HomeUiState(
         displayName = people[me],
         avatarInitial = initialsOf(me),
@@ -116,7 +121,7 @@ private fun SampleTrip.homeState(): HomeUiState {
                 dayStartMillis = startOfDayOf(1),
                 relativeDay = relativeDayOf(1),
                 bills = yesterday.mapIndexed { index, bill ->
-                    val payers = bill.payers.map { it.person }.sortedByDescending { it == me }
+                    val payers = payerOrder.sort(bill.payers.map { memberIdOf(it.person) }).map(String::toInt)
                     HomeBill(
                         id = "home-bill-$index",
                         groupId = "trip",
