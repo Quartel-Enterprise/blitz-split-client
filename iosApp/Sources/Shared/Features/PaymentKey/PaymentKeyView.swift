@@ -266,6 +266,18 @@ private struct KeySections: View {
         .onChange(of: isFocused) { wasFocused, isFocused in
             if wasFocused, !isFocused { model.send(PaymentKeyUiEventOnInputFocusLost.shared) }
         }
+        if state.isShowingHeldKey {
+            Section {
+                Label {
+                    Text("You can only have one Pix key of this type, so this is the one you saved. Change it here if you want.")
+                } icon: {
+                    Image(systemName: "info.circle")
+                }
+                .font(.subheadline)
+                .foregroundStyle(Palette.onInfoContainer)
+                .listRowBackground(Palette.infoContainer)
+            }
+        }
         if state.showsCpfNotice {
             Section {
                 Label {

@@ -57,6 +57,7 @@
     <string name="payment_key_switched_to_onchain">Bu bir on-chain adres, bu yüzden On-chain\'e geçtik.</string>
     <string name="payment_key_switched_to_lightning">Bu bir Lightning Address, bu yüzden Lightning\'e geçtik.</string>
     <string name="payment_key_cpf_notice">Sana ödeme yapan kişi CPF\'nin tamamını görür. Paylaşmak istemezsen telefon, e-posta ya da rastgele anahtar kullan.</string>
+    <string name="payment_key_held_notice">Bu türde yalnızca bir Pix anahtarın olabilir, bu yüzden kaydettiğin anahtar gösteriliyor. İstersen buradan değiştir.</string>
 
     <string name="payment_key_accepted_title">Kabul ettiklerimiz</string>
     <string name="payment_key_accepted_lightning_address_sample">ad@cuzdan.app</string>

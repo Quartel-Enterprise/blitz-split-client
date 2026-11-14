@@ -824,19 +824,19 @@ class PaymentKeyViewModelTest {
     }
 
     @Test
-    fun `GIVEN a saved email WHEN typing the same email for a new key THEN shows the already saved error right away`() =
+    fun `GIVEN a saved Lightning Address WHEN typing it for a new key THEN shows the already saved error right away`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
+                method = PaymentMethod.BITCOIN,
                 storedKeys = listOf(
                     key(
                         id = "key-2",
-                        type = PaymentKeyType.EMAIL,
+                        type = PaymentKeyType.LIGHTNING,
                         value = EMAIL,
                     ),
                 ),
             )
-            viewModel.onEvent(PaymentKeyUiEvent.OnTypeSelected(PaymentKeyType.EMAIL))
 
             // When
             viewModel.onEvent(PaymentKeyUiEvent.OnInputChanged("Pierre@Email.com"))

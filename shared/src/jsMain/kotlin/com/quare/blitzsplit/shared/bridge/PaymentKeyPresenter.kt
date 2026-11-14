@@ -34,6 +34,7 @@ class JsPaymentKeyState(
     val isDeleteConfirmationShown: Boolean,
     val canSave: Boolean,
     val showsCpfNotice: Boolean,
+    val isShowingHeldKey: Boolean,
 )
 
 class PaymentKeyPresenter(
@@ -64,6 +65,7 @@ class PaymentKeyPresenter(
                 isDeleteConfirmationShown = state.isDeleteConfirmationShown,
                 canSave = state.canSave,
                 showsCpfNotice = state.showsCpfNotice,
+                isShowingHeldKey = state.isShowingHeldKey,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

@@ -7,7 +7,7 @@ import com.quare.blitzsplit.core.model.PaymentMethod
 
 data class PaymentKeyUiState(
     val method: PaymentMethod,
-    // Why: "Editar chave" with "Excluir chave" for a saved key, "Nova chave" otherwise.
+    // Why: "Editar chave" with "Excluir chave" for a saved key (opened, or shown by its type's tab), "Nova chave" otherwise.
     val isEditing: Boolean,
     // Why: a saved key fills the form once read, so the form doesn't flash empty first.
     val isLoaded: Boolean,
@@ -27,6 +27,11 @@ data class PaymentKeyUiState(
     val isDefaultLocked: Boolean,
     val isSaving: Boolean,
     val isDeleteConfirmationShown: Boolean,
+    /*
+     * Why: the tab of a type the person already holds (CPF/CNPJ, phone, email) edits that saved key instead of
+     * adding a second one, and the UIs say so ("You already have a Pix key of this type…").
+     */
+    val isShowingHeldKey: Boolean,
 ) {
     val types: List<PaymentKeyType>
         get() = PaymentKeyType.of(method)

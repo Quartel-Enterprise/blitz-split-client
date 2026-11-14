@@ -255,7 +255,10 @@ internal fun AcceptedFormatsCard(
 }
 
 @Composable
-internal fun CpfNoticeCard(modifier: Modifier = Modifier) {
+internal fun PaymentKeyNoticeCard(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -274,7 +277,7 @@ internal fun CpfNoticeCard(modifier: Modifier = Modifier) {
                 modifier = Modifier.size(20.dp),
             )
             Text(
-                text = stringResource(R.string.payment_key_cpf_notice),
+                text = text,
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

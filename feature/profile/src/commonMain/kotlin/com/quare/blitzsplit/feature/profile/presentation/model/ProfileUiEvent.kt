@@ -93,6 +93,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             is OnLanguageSelected -> EventAnalytics.Manual("language_selected")
 
+            is OnLanguageQueryChanged -> EventAnalytics.NotTracked
+
             OnDynamicColorsInfoClicked -> EventAnalytics.Manual("profile_dynamic_colors_info_clicked")
 
             OnEmailInfoClicked -> EventAnalytics.Manual("profile_email_info_clicked")
@@ -179,6 +181,11 @@ sealed interface ProfileUiEvent : UiEvent {
 
     data class OnLanguageSelected(
         val language: AppLanguage,
+    ) : ProfileUiEvent
+
+    // Why: Android's "Search languages" field, over the Language sheet or screen.
+    data class OnLanguageQueryChanged(
+        val query: String,
     ) : ProfileUiEvent
 
     data object OnDynamicColorsInfoClicked : ProfileUiEvent

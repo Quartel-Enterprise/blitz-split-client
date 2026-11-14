@@ -649,6 +649,7 @@ class ProfileUiStateTest {
         showsBitcoinInSats = false,
         sharesUsageData = true,
         language = language,
+        languageQuery = "",
         activeNotificationCount = 3.toLoaded(),
         showsCheckForUpdates = true,
         isCheckingForUpdates = false,

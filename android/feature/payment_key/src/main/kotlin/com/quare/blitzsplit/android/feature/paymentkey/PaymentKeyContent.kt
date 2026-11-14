@@ -276,7 +276,7 @@ private fun ColumnScope.PaymentKeyFormColumn(body: PaymentKeyBody) {
             top = 12.dp,
         ),
     )
-    if (state.showsCpfNotice) CpfNoticeCard()
+    PaymentKeyNoticesSection(state = state)
     if (!isPix) AcceptedFormatsCard(type = state.type)
     DefaultKeySwitchRow(
         state = state,
@@ -416,7 +416,7 @@ private fun PaymentKeyFieldColumn(
             onEvent = body.onEvent,
             modifier = Modifier.padding(top = 8.dp),
         )
-        if (state.showsCpfNotice) CpfNoticeCard()
+        PaymentKeyNoticesSection(state = state)
         DefaultKeySwitchRow(
             state = state,
             onEvent = body.onEvent,
@@ -450,6 +450,7 @@ private fun createPreviewState(
     isDefaultLocked = false,
     isSaving = false,
     isDeleteConfirmationShown = false,
+    isShowingHeldKey = false,
 )
 
 @Composable
@@ -550,4 +551,10 @@ private fun PaymentKeyTabletopPreview() {
             )
         }
     }
+}
+
+@Composable
+private fun PaymentKeyNoticesSection(state: PaymentKeyUiState) {
+    if (state.isShowingHeldKey) PaymentKeyNoticeCard(text = stringResource(R.string.payment_key_held_notice))
+    if (state.showsCpfNotice) PaymentKeyNoticeCard(text = stringResource(R.string.payment_key_cpf_notice))
 }

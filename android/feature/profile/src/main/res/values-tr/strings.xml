@@ -46,6 +46,9 @@
     <string name="profile_section_preferences">Tercihler</string>
     <string name="profile_appearance">Görünüm</string>
     <string name="profile_language">Dil</string>
+    <string name="profile_language_search">Dil ara</string>
+    <string name="profile_language_search_clear">Aramayı temizle</string>
+    <string name="profile_language_no_results">“%1$s” ile eşleşen dil yok</string>
     <string name="profile_language_system">Sistem</string>
     <string name="profile_language_english">İngilizce</string>
     <string name="profile_language_portuguese">Portekizce (Brezilya)</string>

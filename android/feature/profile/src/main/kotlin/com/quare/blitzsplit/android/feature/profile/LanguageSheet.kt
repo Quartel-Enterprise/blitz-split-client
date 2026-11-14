@@ -5,6 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -14,23 +18,33 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Smartphone
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,46 +52,184 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
+import com.quare.blitzsplit.android.designsystem.component.SearchBarField
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
+import com.quare.blitzsplit.android.designsystem.layout.FormFactor
+import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
+import com.quare.blitzsplit.android.designsystem.R as DesignR
+
+private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape)
 
 /*
- * Why: "Language" as Bible Planner's language sheet: a row per option with its chip and a radio, the pick closing it,
- * in the app's short sheet, as the profile's other dialogs keep off the hinge.
+ * Why: "Language" as Bible Planner's language sheet: a row per option with its chip and a radio, the pick closing it.
+ * With eleven languages the sheet filled a phone's screen (Pierre's feedback, November 2026), so a phone, upright or
+ * lying down, opens it as a screen of its own; wider windows keep the dialog, off the hinge as the profile's other
+ * dialogs. Both search the languages by any name the row shows.
  */
 @Composable
 internal fun LanguageSheet(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    AdaptiveSheet(
-        title = stringResource(R.string.profile_language),
-        onDismissRequest = { onEvent(ProfileUiEvent.OnDialogDismissed) },
-    ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    bottom = 24.dp,
-                ),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+    val names = languageSearchNames()
+    val options = state.findLanguageOptions { names.getValue(it) }
+    val onDismiss = { onEvent(ProfileUiEvent.OnDialogDismissed) }
+    if (rememberFoldLayout().formFactor in phoneFormFactors) {
+        LanguageScreen(
+            state = state,
+            options = options,
+            onDismiss = onDismiss,
+            onEvent = onEvent,
+        )
+    } else {
+        AdaptiveSheet(
+            title = stringResource(R.string.profile_language),
+            onDismissRequest = onDismiss,
         ) {
-            Text(
-                text = stringResource(R.string.profile_language),
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.semantics { heading() },
-            )
-            LanguageList(
-                selected = state.language,
-                options = state.languageOptions,
-                onSelect = { onEvent(ProfileUiEvent.OnLanguageSelected(it)) },
-            )
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 24.dp,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.profile_language),
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.semantics { heading() },
+                )
+                LanguageSearchContent(
+                    state = state,
+                    options = options,
+                    onEvent = onEvent,
+                )
+            }
         }
     }
+}
+
+// Why: a screen over the profile, its bar's back closing it as the system's back does, the list scrolling under it.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LanguageScreen(
+    state: ProfileUiState,
+    options: List<AppLanguage>,
+    onDismiss: () -> Unit,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false,
+        ),
+    ) {
+        ScreenSystemBarsEffect()
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.profile_language)) },
+                    navigationIcon = {
+                        IconButton(onClick = onDismiss) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = stringResource(DesignR.string.designsystem_back),
+                            )
+                        }
+                    },
+                )
+            },
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .imePadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                        bottom = 24.dp,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                LanguageSearchContent(
+                    state = state,
+                    options = options,
+                    onEvent = onEvent,
+                )
+            }
+        }
+    }
+}
+
+// Why: the dialog's own window draws the bars light by default, white icons the light theme couldn't show.
+@Composable
+private fun ScreenSystemBarsEffect() {
+    val view = LocalView.current
+    val isLight = MaterialTheme.colorScheme.surface.luminance() > 0.5f
+    SideEffect {
+        val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
+        WindowCompat.getInsetsController(window, view).apply {
+            isAppearanceLightStatusBars = isLight
+            isAppearanceLightNavigationBars = isLight
+        }
+    }
+}
+
+// Why: "Search languages" over the rows it leaves, or a line saying none matched.
+@Composable
+private fun LanguageSearchContent(
+    state: ProfileUiState,
+    options: List<AppLanguage>,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
+    SearchBarField(
+        query = state.languageQuery,
+        placeholder = stringResource(R.string.profile_language_search),
+        clearLabel = stringResource(R.string.profile_language_search_clear),
+        onQueryChange = { onEvent(ProfileUiEvent.OnLanguageQueryChanged(it)) },
+        modifier = Modifier.fillMaxWidth(),
+    )
+    if (options.isEmpty()) {
+        Text(
+            text = stringResource(R.string.profile_language_no_results, state.languageQuery.trim()),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp)
+                .semantics { liveRegion = LiveRegionMode.Polite },
+        )
+    } else {
+        LanguageList(
+            selected = state.language,
+            options = options,
+            onSelect = { onEvent(ProfileUiEvent.OnLanguageSelected(it)) },
+        )
+    }
+}
+
+// Why: every name a row shows, which the search looks in: its own, the app language's, System's "Device language".
+@Composable
+private fun languageSearchNames(): Map<AppLanguage, List<String>> = AppLanguage.entries.associateWith { language ->
+    listOfNotNull(
+        languageName(language),
+        translatedLanguageName(language),
+        if (language == AppLanguage.SYSTEM) stringResource(R.string.profile_language_system_detail) else null,
+    )
 }
 
 @Composable

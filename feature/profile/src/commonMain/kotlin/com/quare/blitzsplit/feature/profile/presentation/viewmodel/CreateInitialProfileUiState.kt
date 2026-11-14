@@ -33,6 +33,7 @@ internal fun createInitialProfileUiState(
     showsBitcoinInSats = false,
     sharesUsageData = true,
     language = AppLanguage.SYSTEM,
+    languageQuery = "",
     activeNotificationCount = Loadable.Loading,
     showsCheckForUpdates = showsCheckForUpdates,
     isCheckingForUpdates = false,

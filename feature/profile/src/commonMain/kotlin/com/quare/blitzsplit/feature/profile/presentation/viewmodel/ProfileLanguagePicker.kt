@@ -34,10 +34,25 @@ internal class ProfileLanguagePicker(
      * and the platform redraws in it.
      */
     fun select(language: AppLanguage) {
-        if (uiState.value.dialog == ProfileDialog.LANGUAGE) uiState.update { it.copy(dialog = null) }
+        if (uiState.value.dialog ==
+            ProfileDialog.LANGUAGE
+        ) {
+            uiState.update {
+                it.copy(
+                    dialog = null,
+                    languageQuery = "",
+                )
+            }
+        }
         if (language == uiState.value.language) return
         trackEvent("language_selected", mapOf("language" to language))
         updateAppLanguage(language)
         emit(ProfileUiAction.ApplyLanguage)
+    }
+
+    // Why: the search only exists while the picker is open, so a query typed after it closed is dropped.
+    fun search(query: String) {
+        if (uiState.value.dialog != ProfileDialog.LANGUAGE) return
+        uiState.update { it.copy(languageQuery = query) }
     }
 }

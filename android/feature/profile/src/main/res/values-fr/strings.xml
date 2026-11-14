@@ -47,6 +47,9 @@
     <string name="profile_section_preferences">Préférences</string>
     <string name="profile_appearance">Apparence</string>
     <string name="profile_language">Langue</string>
+    <string name="profile_language_search">Rechercher une langue</string>
+    <string name="profile_language_search_clear">Effacer la recherche</string>
+    <string name="profile_language_no_results">Aucune langue ne correspond à « %1$s »</string>
     <string name="profile_language_system">Système</string>
     <string name="profile_language_english">Anglais</string>
     <string name="profile_language_portuguese">Portugais (Brésil)</string>

@@ -977,6 +977,7 @@ export const nl: Record<MessageKey, string> = {
   paymentKey_switchedONCHAIN: 'Dit is een on-chain-adres, dus we zijn overgeschakeld naar On-chain.',
   paymentKey_switchedLIGHTNING: 'Dit is een Lightning Address, dus we zijn overgeschakeld naar Lightning.',
   paymentKey_cpfNotice: 'Wie jou betaalt, ziet je volledige CPF. Wil je dat liever niet delen, gebruik dan een telefoonnummer, e-mail of willekeurige sleutel.',
+  paymentKey_heldNotice: 'Je kunt maar één Pix-sleutel van dit type hebben, dus dit is degene die je hebt opgeslagen. Wijzig hem hier als je wilt.',
   paymentKey_accepted: 'We accepteren',
   paymentKey_acceptedLightningAddressSample: 'naam@wallet.app',
   paymentKey_acceptedLightningAddress: 'Lightning Address',
