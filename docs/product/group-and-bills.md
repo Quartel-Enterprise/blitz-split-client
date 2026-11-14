@@ -146,8 +146,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     which scrolls to it) and edits and deletes their own comments there, online only. "Sign in" goes through the app's own sign in (Welcome without a
     profile, else Profile) and the link opens again when the browser's Google or Apple sign in comes back within 15
     minutes, or once Welcome puts Home in place ("Use without an account", or a Google or Apple sign in there), on
-    every platform (`AppViewModel` keeps the page it left for Welcome; the web also keeps it across the page load of a
-    browser sign in). A link only the group opens
+    every platform (the page tells `SharedBillLeftForSignIn` it left to sign in, so one left by going back never opens again;
+    the web also keeps it across the page load of a browser sign in). A link only the group opens
     offers "Sign in" until the device has a Google or Apple account; a member with the bill on the device gets "Open in the app".
   - Currencies (Pierre's call: the currency belongs to each bill and payment, see [General rules](general.md)): while the
     group has money in more than one currency, a chip row with each currency's code sits in the header and over

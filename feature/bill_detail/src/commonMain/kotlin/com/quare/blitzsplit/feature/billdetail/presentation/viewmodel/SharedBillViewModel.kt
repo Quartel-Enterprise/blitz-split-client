@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.SharedBillLeftForSignIn
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
@@ -61,6 +62,7 @@ import kotlin.uuid.Uuid
 class SharedBillViewModel(
     private val route: Route.SharedBill,
     private val navigator: Navigator,
+    private val leftForSignIn: SharedBillLeftForSignIn,
     private val loadSharedBill: LoadSharedBill,
     private val commentOnSharedBill: CommentOnSharedBill,
     private val editSharedBillComment: EditSharedBillComment,
@@ -341,11 +343,8 @@ class SharedBillViewModel(
         if (!isOnTop()) return
         trackEvent("shared_bill_sign_in_clicked", emptyMap())
         viewModelScope.launch {
-            if (observeProfile().first() == null) {
-                navigator.replaceAll(Route.Welcome)
-            } else {
-                navigator.navigate(Route.Profile)
-            }
+            val hasProfile = observeProfile().first() != null
+            if (hasProfile) navigator.navigate(Route.Profile) else leftForSignIn.leaveForWelcome(route, navigator)
         }
     }
 

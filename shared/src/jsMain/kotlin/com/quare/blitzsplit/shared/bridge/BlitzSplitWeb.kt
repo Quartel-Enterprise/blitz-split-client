@@ -70,7 +70,7 @@ fun startBlitzSplit(
     val handleBrowserCallback = KoinPlatform.getKoin().get<HandleBrowserCallback>()
     MainScope().launch { handleBrowserCallback(launchUrl) }
     openInviteLink(launchUrl)
-    openSharedBillOnceProfileMade()
+    forgetSharedBillOnceProfileMade()
     reopenProfileAfterLanguage()
 }
 
@@ -140,16 +140,18 @@ fun openNotificationLink(url: String) {
     if (PushLink.of(url) != null) KoinPlatform.getKoin().get<LinkInbox>().receive(url)
 }
 
-// Why: Boas-vindas without the browser ("Usar sem conta") makes the profile on this page, which goes back to the bill.
-private fun openSharedBillOnceProfileMade() {
-    val inbox = KoinPlatform.getKoin().get<LinkInbox>()
+/*
+ * Why: Boas-vindas without the browser ("Usar sem conta") makes the profile on this page, and the app itself goes back
+ * to the bill (AppViewModel). The link kept for a browser's sign in is dropped then, so a later load never opens it.
+ */
+private fun forgetSharedBillOnceProfileMade() {
     val observeProfile = KoinPlatform.getKoin().get<ObserveProfile>()
     observeProfile()
         .map { profile -> profile != null }
         .distinctUntilChanged()
         .dropWhile { hasProfile -> hasProfile }
         .filter { hasProfile -> hasProfile }
-        .onEach { takeSharedBillLeftToSignIn()?.let(inbox::receive) }
+        .onEach { takeSharedBillLeftToSignIn() }
         .launchIn(MainScope())
 }
 

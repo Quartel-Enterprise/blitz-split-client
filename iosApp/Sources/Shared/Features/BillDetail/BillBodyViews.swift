@@ -45,7 +45,8 @@ struct BillPayerLine: View {
     let payers: [BillPayer]
     let lonePayer: BillPayer?
     let size: CGFloat
-    let onPerson: (String) -> Void
+    /// Nil where nobody opens a profile (a bill's link page).
+    let onPerson: ((String) -> Void)?
 
     var body: some View {
         HStack(spacing: 8) {
@@ -61,7 +62,7 @@ struct BillPayerLine: View {
             }
             Text(verbatim: BillCopy.paid(payers))
         }
-        .opensProfile(lonePayer.map { payer in { onPerson(payer.memberId) } })
+        .opensProfile(onPerson.flatMap { open in lonePayer.map { payer in { open(payer.memberId) } } })
     }
 }
 
@@ -71,7 +72,8 @@ struct BillShareRowView: View {
     let row: BillShareRow
     let currency: GroupCurrency
     let avatarSize: CGFloat
-    let onPerson: (String) -> Void
+    /// Nil where nobody opens a profile (a bill's link page).
+    let onPerson: ((String) -> Void)?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -91,7 +93,7 @@ struct BillShareRowView: View {
                 .foregroundStyle(row.shareMinor == nil ? .secondary : .primary)
         }
         .accessibilityElement(children: .combine)
-        .opensProfile(row.opensProfile ? { onPerson(row.memberId) } : nil)
+        .opensProfile(row.opensProfile ? onPerson.map { open in { open(row.memberId) } } : nil)
     }
 }
 
@@ -191,7 +193,8 @@ struct BillPhoneColumns<First: View, Second: View, Composer: View>: View {
 struct BillHeadSection<Notes: View>: View {
     let bill: any BillFacts
     let lonePayer: BillPayer?
-    let onPerson: (String) -> Void
+    /// Nil where nobody opens a profile (a bill's link page).
+    let onPerson: ((String) -> Void)?
     @ViewBuilder let notes: Notes
 
     /// The total's 40 pt, growing with the text size.
@@ -239,7 +242,8 @@ struct BillHeadSection<Notes: View>: View {
 /// "Equally among 5": everyone of the split, each with their part.
 struct BillSplitSection: View {
     let bill: any BillFacts
-    let onPerson: (String) -> Void
+    /// Nil where nobody opens a profile (a bill's link page).
+    let onPerson: ((String) -> Void)?
 
     var body: some View {
         Section {
@@ -283,7 +287,8 @@ struct MacBillTotal<Notes: View>: View {
     let bill: any BillFacts
     let lonePayer: BillPayer?
     let isNarrow: Bool
-    let onPerson: (String) -> Void
+    /// Nil where nobody opens a profile (a bill's link page).
+    let onPerson: ((String) -> Void)?
     @ViewBuilder let notes: Notes
 
     var body: some View {
@@ -303,7 +308,8 @@ struct MacBillTotal<Notes: View>: View {
 /// "Equally among 5" over a card with everyone of the split, each with their part.
 struct MacBillSplit: View {
     let bill: any BillFacts
-    let onPerson: (String) -> Void
+    /// Nil where nobody opens a profile (a bill's link page).
+    let onPerson: ((String) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {

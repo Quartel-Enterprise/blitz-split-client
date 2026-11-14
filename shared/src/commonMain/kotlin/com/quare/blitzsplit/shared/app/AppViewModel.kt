@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.navigation.ForwardHistory
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.SharedBillLeftForSignIn
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -52,8 +53,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.TimeMark
-import kotlin.time.TimeSource
 
 /*
  * Why: how long a bill's link page left to sign in opens again once the sign in ends, the welcome's here and the
@@ -71,6 +70,7 @@ class AppViewModel(
     private val observeAppLanguage: ObserveAppLanguage,
     private val refreshAppLanguage: RefreshAppLanguage,
     private val linkInbox: LinkInbox,
+    private val sharedBillLeftForSignIn: SharedBillLeftForSignIn,
     private val markActivityRead: MarkActivityRead,
     private val findActivityEvent: FindActivityEvent,
     private val observeGroup: ObserveGroup,
@@ -247,26 +247,17 @@ class AppViewModel(
 
     /*
      * Why: "Entrar" on a bill's link page without a profile leaves it for the welcome, which takes the whole stack. Once
-     * the welcome puts the home in place, within the 15 minutes the web gives its own sign in, the page opens again
-     * over it, on every platform.
+     * the welcome puts the home in place, the page it said it left opens again over it, on every platform; one left by
+     * going back never does.
      */
     private fun reopenSharedBillLeftForWelcome() {
-        var previous = navigator.backStack.value
-        var left: Pair<Route.SharedBill, TimeMark>? = null
         navigator.backStack
-            .onEach { stack ->
-                val leftPage = previous.lastOrNull() as? Route.SharedBill
-                previous = stack
-                val kept = left
-                when {
-                    leftPage != null && stack == listOf(Route.Welcome) ->
-                        left = leftPage to TimeSource.Monotonic.markNow()
-
-                    kept != null && stack.firstOrNull() == Route.Home -> {
-                        left = null
-                        val (page, since) = kept
-                        if (since.elapsedNow() <= sharedBillSignInWindow) openSharedBill(page.code, page.commentId)
-                    }
+            .map { stack -> stack.firstOrNull() == Route.Home }
+            .distinctUntilChanged()
+            .filter { isHome -> isHome }
+            .onEach {
+                sharedBillLeftForSignIn.take(sharedBillSignInWindow)?.let { page ->
+                    openSharedBill(page.code, page.commentId)
                 }
             }.launchIn(viewModelScope)
     }

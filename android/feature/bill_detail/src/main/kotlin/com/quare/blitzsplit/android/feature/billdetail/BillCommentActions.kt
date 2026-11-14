@@ -77,13 +77,13 @@ internal fun CommentLikeButton(
                 .size(40.dp)
                 .clip(CircleShape)
                 .combinedClickable(
-                    // Why: off, the heart still lists who liked on a long press, which changes nothing.
-                    enabled = callbacks.canChange || hasLikes,
-                    onClickLabel = likeLabel.takeIf { callbacks.canChange },
+                    // Why: off, the count beside it still lists who liked.
+                    enabled = callbacks.canChange,
+                    onClickLabel = likeLabel,
                     role = Role.Button,
                     onLongClickLabel = countLabel.takeIf { hasLikes },
                     onLongClick = opensLikes.takeIf { hasLikes },
-                    onClick = { if (callbacks.canChange) callbacks.onLikeClick(row.id) },
+                    onClick = { callbacks.onLikeClick(row.id) },
                 ).semantics { contentDescription = likeLabel },
             contentAlignment = Alignment.Center,
         ) {

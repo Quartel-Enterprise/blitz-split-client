@@ -345,12 +345,12 @@ private struct PhoneSharedBill: View {
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
                 // Nobody opens a profile from a bill's link page, which is outside the app's groups
-                BillHeadSection(bill: state, lonePayer: nil, onPerson: { _ in }) {}
+                BillHeadSection(bill: state, lonePayer: nil, onPerson: nil) {}
                 if !state.attachments.isEmpty {
                     BillAttachmentsSection(attachments: model.attachments, wraps: wraps) {}
                 }
             } second: {
-                BillSplitSection(bill: state, onPerson: { _ in })
+                BillSplitSection(bill: state, onPerson: nil)
                 BillCommentsSection(comments: model.comments, highlightedId: highlightedCommentId) {
                     isComposing = true
                 }
@@ -438,7 +438,7 @@ private struct MacSharedBill: View {
                 MacBillTitles(bill: state, groupName: nil, isNarrow: false)
             }
             // Nobody opens a profile from a bill's link page, which is outside the app's groups
-            MacBillTotal(bill: state, lonePayer: nil, isNarrow: false, onPerson: { _ in }) {}
+            MacBillTotal(bill: state, lonePayer: nil, isNarrow: false, onPerson: nil) {}
             if !state.attachments.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     BillAttachmentsHeader(attachments: model.attachments)
@@ -446,7 +446,7 @@ private struct MacSharedBill: View {
                     BillAttachmentStrip(attachments: model.attachments, wraps: true, metrics: .standard) {}
                 }
             }
-            MacBillSplit(bill: state, onPerson: { _ in })
+            MacBillSplit(bill: state, onPerson: nil)
             MacBillComments(comments: model.comments, showsTitle: true, highlightedId: highlightedCommentId) {
                 isComposing = true
             }

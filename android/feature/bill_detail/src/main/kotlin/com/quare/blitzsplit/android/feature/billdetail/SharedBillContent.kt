@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,13 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.InfoNoteBanner
+import com.quare.blitzsplit.android.designsystem.component.LinkProblemMessage
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -357,7 +353,7 @@ private fun SharedBillProblemBox(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when (state.status) {
-                SharedBillStatus.NOT_FOUND -> ProblemMessage(
+                SharedBillStatus.NOT_FOUND -> LinkProblemMessage(
                     icon = Icons.Outlined.LinkOff,
                     title = stringResource(R.string.shared_bill_not_found_title),
                     body = stringResource(R.string.shared_bill_not_found_body),
@@ -365,7 +361,7 @@ private fun SharedBillProblemBox(
 
                 // Why: signing in helps until the device has a Google or Apple account; after that, only an invite.
                 SharedBillStatus.MEMBERS_ONLY -> {
-                    ProblemMessage(
+                    LinkProblemMessage(
                         icon = Icons.Outlined.Lock,
                         title = stringResource(R.string.shared_bill_members_only_title),
                         body = stringResource(
@@ -384,7 +380,7 @@ private fun SharedBillProblemBox(
                 }
 
                 SharedBillStatus.FAILED -> {
-                    ProblemMessage(
+                    LinkProblemMessage(
                         icon = Icons.Outlined.CloudOff,
                         title = stringResource(R.string.shared_bill_failed_title),
                         body = if (state.isOnline) null else stringResource(R.string.shared_bill_offline),
@@ -402,34 +398,5 @@ private fun SharedBillProblemBox(
                 Text(stringResource(R.string.shared_bill_go_to_app))
             }
         }
-    }
-}
-
-@Composable
-private fun ProblemMessage(
-    icon: ImageVector,
-    title: String,
-    // Why: null where the title says it all (the server didn't answer, online).
-    body: String?,
-) {
-    Icon(
-        imageVector = icon,
-        contentDescription = null,
-        modifier = Modifier.size(48.dp),
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-        text = title,
-        modifier = Modifier.semantics { heading() },
-        style = MaterialTheme.typography.titleLarge,
-        textAlign = TextAlign.Center,
-    )
-    body?.let {
-        Text(
-            text = it,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
     }
 }
