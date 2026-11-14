@@ -4,18 +4,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,18 +32,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
 
 private val singleColumnMaxWidth = 592.dp
 private val columnSpacing = 20.dp
 private val tabletopHalvesGap = 48.dp
+private val dialogPadding = 24.dp
+private val columnsGap = 32.dp
+private val floatingActionClearance = 88.dp // Why: the extended FAB's 56 dp, its 16 dp margin and a gap.
 
 // Why: what the top bar (or the dialog's header and actions) of Rachar conta, Dividir and Divisão padrão hold.
 class FormChrome(
@@ -64,13 +77,23 @@ class FormIconAction(
 )
 
 /*
+ * Why: Rachar conta's "Ler cupom fiscal" as an extended FAB at the bottom, under the thumb (beta feedback), on a full
+ * screen form; null for none.
+ */
+class FormFloatingAction(
+    val icon: ImageVector,
+    val label: String,
+    val onClick: () -> Unit,
+)
+
+/*
  * Why: the canvas opens Rachar conta and Dividir full screen on a phone and lying down, and Divisão padrão on a phone
  * and a foldable upright, in two columns when lying down; as a dialog (where the caller says so) they sit over the
  * group, two columns wide on a tablet lying down and one column anywhere else, a book's half included. On a tabletop a
  * form with a board of its own (`tabletop`) reads in the top half (`first`) and is filled in the bottom one
  * (`second`); any other stays as lying down.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ColumnsFormLayout(
     chrome: FormChrome,
@@ -80,6 +103,8 @@ fun ColumnsFormLayout(
     second: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
     tabletop: TabletopForm? = null,
+    // Why: drawn only full screen and off a tabletop, as a dialog and a tabletop's board keep their own actions.
+    floatingAction: FormFloatingAction? = null,
 ) {
     val usesTwoColumns = rememberUsesFormColumns(isDialog)
     val tabletopForm = tabletop?.takeIf { rememberUsesTabletopHalves(isDialog) }
@@ -92,15 +117,25 @@ fun ColumnsFormLayout(
             cardModifier = Modifier.imePadding(),
         ) {
             DialogHeader(chrome)
+            /*
+             * Why: the columns reach the card's sides, its padding inside their scroll, and share the gap between
+             * them, so a row that scrolls sideways runs to the card's edge or the gap's middle.
+             */
+            val bleed = FormBleed(dialogPadding, dialogPadding)
             FormColumnsLayout(
                 usesTwoColumns = usesTwoColumns,
-                contentPadding = PaddingValues(0.dp),
+                contentPadding = PaddingValues(
+                    start = bleed.start,
+                    end = bleed.end,
+                ),
+                isGapInPadding = true,
                 first = first,
                 second = second,
-                modifier = Modifier.weight(
-                    weight = 1f,
-                    fill = false,
-                ),
+                modifier = Modifier
+                    .weight(
+                        weight = 1f,
+                        fill = false,
+                    ).horizontalBleed(bleed),
             )
             DialogActionsRow(chrome)
         }
@@ -131,6 +166,21 @@ fun ColumnsFormLayout(
                 )
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
+            floatingActionButton = {
+                // Why: the keyboard's own keys sit where it is; it comes back once the keyboard goes down.
+                if (floatingAction != null && tabletopForm == null && !WindowInsets.isImeVisible) {
+                    ExtendedFloatingActionButton(
+                        onClick = floatingAction.onClick,
+                        icon = {
+                            Icon(
+                                imageVector = floatingAction.icon,
+                                contentDescription = null,
+                            )
+                        },
+                        text = { Text(floatingAction.label) },
+                    )
+                }
+            },
         ) { padding ->
             if (tabletopForm != null) {
                 TabletopHalvesLayout(
@@ -162,14 +212,14 @@ fun ColumnsFormLayout(
                                 start = 56.dp,
                                 end = 24.dp,
                                 top = 4.dp,
-                                bottom = 16.dp,
+                                bottom = if (floatingAction != null) floatingActionClearance else 16.dp,
                             )
                         } else {
                             PaddingValues(
                                 start = 16.dp,
                                 end = 16.dp,
                                 top = 8.dp,
-                                bottom = 24.dp,
+                                bottom = if (floatingAction != null) floatingActionClearance else 24.dp,
                             )
                         },
                         first = first,
@@ -226,8 +276,10 @@ private fun TabletopHalvesLayout(
                             vertical = 12.dp,
                         ),
                     verticalArrangement = Arrangement.spacedBy(columnSpacing),
-                    content = first,
-                )
+                ) {
+                    val column = this
+                    CompositionLocalProvider(LocalFormBleed provides FormBleed(24.dp, 24.dp)) { column.first() }
+                }
             }
         },
         bottom = {
@@ -250,7 +302,8 @@ private fun TabletopHalvesLayout(
                         ),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    second()
+                    val column = this
+                    CompositionLocalProvider(LocalFormBleed provides FormBleed(24.dp, 24.dp)) { column.second() }
                     if (tabletop == TabletopForm.ConfirmAtBottom) {
                         Button(
                             onClick = chrome.onConfirm,
@@ -273,28 +326,44 @@ private fun FormColumnsLayout(
     first: @Composable ColumnScope.() -> Unit,
     second: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
+    // Why: the gap between two columns as their facing padding (a dialog's), so each one's sideways row reaches its half.
+    isGapInPadding: Boolean = false,
 ) {
+    val layoutDirection = LocalLayoutDirection.current
+    // Why: the column's side margins, which a row that scrolls sideways runs into (`horizontalBleed`).
+    val bleed = FormBleed.of(contentPadding, layoutDirection)
     if (usesTwoColumns) {
+        val halfGap = columnsGap / 2
+        val firstPadding = if (isGapInPadding) contentPadding.withEnd(halfGap, layoutDirection) else contentPadding
+        val secondPadding = if (isGapInPadding) contentPadding.withStart(halfGap, layoutDirection) else contentPadding
         Row(
             modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(32.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (isGapInPadding) 0.dp else columnsGap),
         ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(contentPadding),
+                    .padding(firstPadding),
                 verticalArrangement = Arrangement.spacedBy(columnSpacing),
-                content = first,
-            )
+            ) {
+                val column = this
+                CompositionLocalProvider(LocalFormBleed provides FormBleed.of(firstPadding, layoutDirection)) {
+                    column.first()
+                }
+            }
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
-                    .padding(contentPadding),
+                    .padding(secondPadding),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                content = second,
-            )
+            ) {
+                val column = this
+                CompositionLocalProvider(LocalFormBleed provides FormBleed.of(secondPadding, layoutDirection)) {
+                    column.second()
+                }
+            }
         }
     } else {
         Column(
@@ -304,8 +373,10 @@ private fun FormColumnsLayout(
                 .padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(columnSpacing),
         ) {
-            first()
-            second()
+            CompositionLocalProvider(LocalFormBleed provides bleed) {
+                first()
+                second()
+            }
         }
     }
 }
@@ -388,3 +459,23 @@ private fun FormSubtitleText(text: String) {
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
+
+private fun PaddingValues.withStart(
+    start: Dp,
+    layoutDirection: LayoutDirection,
+): PaddingValues = PaddingValues(
+    start = start,
+    top = calculateTopPadding(),
+    end = calculateEndPadding(layoutDirection),
+    bottom = calculateBottomPadding(),
+)
+
+private fun PaddingValues.withEnd(
+    end: Dp,
+    layoutDirection: LayoutDirection,
+): PaddingValues = PaddingValues(
+    start = calculateStartPadding(layoutDirection),
+    top = calculateTopPadding(),
+    end = end,
+    bottom = calculateBottomPadding(),
+)

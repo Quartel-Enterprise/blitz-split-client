@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.designsystem.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -18,7 +20,8 @@ import androidx.compose.ui.unit.dp
 
 /*
  * Why: the large amount of Rachar conta and Registrar pagamento, the currency's symbol before it, the number
- * keyboard, and what it means under it, read out as it changes.
+ * keyboard, and what it means under it, read out as it changes. With `onSymbolClick`, tapping the symbol opens what
+ * changes the currency (Rachar conta's menu beside the total, beta feedback), labeled `symbolClickLabel`.
  */
 @Composable
 fun AmountTextField(
@@ -31,6 +34,8 @@ fun AmountTextField(
     modifier: Modifier = Modifier,
     imeAction: ImeAction = ImeAction.Next,
     enabled: Boolean = true,
+    onSymbolClick: (() -> Unit)? = null,
+    symbolClickLabel: String? = null,
 ) {
     val amountField = rememberNumberField(value, onValueChange)
     OutlinedTextField(
@@ -43,7 +48,18 @@ fun AmountTextField(
         prefix = {
             Text(
                 text = symbol,
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier
+                    .then(
+                        if (onSymbolClick != null && enabled) {
+                            Modifier.clickable(
+                                onClickLabel = symbolClickLabel,
+                                role = Role.Button,
+                                onClick = onSymbolClick,
+                            )
+                        } else {
+                            Modifier
+                        },
+                    ).padding(end = 8.dp),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

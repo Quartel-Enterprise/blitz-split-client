@@ -6,7 +6,9 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     currency control beside the total, the code ("BRL") with a menu that is New group's "Currency" list, the
     cryptocurrencies under their own header (`SplitBillUiEvent.OnCurrencyPicked`; Android a menu on a chip, SwiftUI a
     menu "Currency" row under the total, the web a menu button, labeled "Currency: BRL. Change it" for a screen
-    reader). A new bill opens in the group's currency (`Group.currency`, only the default), a bill being edited, and
+    reader). Tapping the currency's symbol inside the amount field ("R$") opens the same menu (Pierre's call, beta
+    feedback: Android's symbol opens the chip's menu, SwiftUI's symbol is a menu of the same list, the web's opens the
+    button's menu), disabled when the control is. A new bill opens in the group's currency (`Group.currency`, only the default), a bill being edited, and
     a duplicate of a bill (bill's "Duplicate", `Route.SplitBill.duplicatesExpenseId`: a new bill filled in once with
     the original's description, amount, category, payers and split, spent now), in its own (`Expense.currency`); the
     state's `currency` is the one source, so saving an edit never moves the bill to the group's. Nothing remembers the last pick: the next bill opens in the group's again, and a bill moved to
@@ -43,6 +45,10 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     modes are a row of capsules that scrolls sideways (Pierre's call, beta feedback: six no longer fit side by side),
     the picked one filled and scrolled into sight, each a radio button to a screen reader (Android's `ChoiceChipRow`,
     SwiftUI's capsules in a horizontal `ScrollView`, the Mac's too, the web's pills in an `overflow-x-auto` radiogroup).
+    The row scrolls edge to edge, with no cut on either side (Pierre's call, beta feedback): at rest the first capsule
+    lines up with the form, but scrolling carries the capsules out to the screen's (or the dialog's) edge rather than
+    stopping at the form's side margins (Android's `LocalFormBleed`, SwiftUI's `scrollClipDisabled`, the web's
+    `--pane-gutter`).
     "By income" (`SplitMode.INCOME`, Pierre's call: the incomes are synced) has each one's income field, prefilled with
     the group's incomes (`group_member_income`, the same ones Default split's By income keeps, in the group's currency,
     moved to the bill's as a total is), blank for whoever has none, and under each name their share and the
@@ -187,10 +193,15 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     in the map; where a word goes now is the whole map's, every group's categories as Category map reads them,
     so a word of another group's category says "Leaves Beach" and teaching moves it (one category per term). The
     bills already saved don't change.
-  - "Scan receipt" (7.1e to 7.1g, `ReadReceipt`, the server's `read-receipt`): a new bill's form offers it under
-    "Split" (never on "Edit bill", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
-    leave it out there; Home's shortcut still opens it), online only ("Needs internet. Fill it in by hand or scan
-    the receipt once you're back online."). It asks first where the photo comes from (Pierre's call, beta feedback
+  - "Scan receipt" (7.1e to 7.1g, `ReadReceipt`, the server's `read-receipt`): a new bill's form offers it at the
+    bottom, under the thumb, while Save stays at the top (Pierre's call, beta feedback): Android an extended FAB
+    (hidden while the keyboard is up; the form keeps room under its last row for it), iOS and iPadOS a prominent
+    glass button in the bottom toolbar, the web the footer's first button (its top on a phone, its start on a
+    dialog). A dialog on an Android tablet and the Mac's form keep it in the form, under "Split", with its hint
+    ("Fills in the amount, date and description from the photo."); elsewhere the button's label says enough and the
+    hint went. Never on "Edit bill", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
+    leave it out there; Home's shortcut still opens it. Online only: offline the button gives way to "Needs
+    internet. Fill it in by hand or scan the receipt once you're back online." under "Split". It asks first where the photo comes from (Pierre's call, beta feedback
     part 2, item 7, `SplitBillUiState.showsReceiptSourceChoice`, `OnReceiptSourcePicked`, `OnReceiptChoiceSkipped` where there is no camera), as Home's shortcut and
     "Take another photo" do too: Android a bottom sheet "Scan receipt" with "Take photo", "Choose from gallery"
     (the system Photo Picker, no storage permission) and "Choose file" (the documents picker, an image saved as a

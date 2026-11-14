@@ -1,11 +1,14 @@
-import { ChevronRight, CircleAlert, Loader2, ScanText, X } from 'lucide-react'
+import { ChevronRight, CircleAlert, Loader2, X } from 'lucide-react'
 import type { JsBillReceipt, JsSplitBillState, SplitBillPresenter } from 'blitzsplit-shared'
 import type { ReceiptPicker } from '@/components/ReceiptSourcePicker'
 import { Button } from '@/components/ui/button'
 import { t, type MessageKey } from '@/i18n'
 
-/** Under "Divisão": "Ler cupom fiscal" until a receipt is picked, then "Foto do cupom", attached once saved, with ×. */
-export function ReceiptField({ presenter, state, picker }: { presenter: SplitBillPresenter; state: JsSplitBillState; picker: ReceiptPicker }) {
+/**
+ * Under "Divisão": "Foto do cupom" once a receipt is picked, attached once saved, with ×. "Ler cupom fiscal" itself is the
+ * footer's (beta feedback); offline, only why it isn't there stays here.
+ */
+export function ReceiptField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
   const receipt = state.receipt
   if (receipt?.hasPhoto) {
     const isReading = receipt.status === 'reading'
@@ -23,16 +26,8 @@ export function ReceiptField({ presenter, state, picker }: { presenter: SplitBil
       </div>
     )
   }
-  if (!state.showsScanReceipt) return null
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Button type="button" variant="outline" className="self-start" disabled={!state.canScanReceipt} onClick={picker.pick}>
-        <ScanText aria-hidden />
-        {t('splitBill_scanReceipt')}
-      </Button>
-      <span className="text-[13px] text-muted-foreground">{state.isOnline ? t('splitBill_scanReceiptHelp') : t('splitBill_scanReceiptOffline')}</span>
-    </div>
-  )
+  if (!state.showsScanReceipt || state.isOnline) return null
+  return <span className="text-[13px] text-muted-foreground">{t('splitBill_scanReceiptOffline')}</span>
 }
 
 /** "Lido do cupom" and "14 itens" under the description once a receipt was read; the items open Dividir on "Itens". */

@@ -199,14 +199,22 @@ private fun ReceiptError.toMessageRes(): Int = when (this) {
     ReceiptError.OFFLINE -> R.string.split_bill_receipt_offline
 }
 
+// Why: where "Ler cupom fiscal" sits: a FAB full screen, in the form in a dialog, nowhere on a tabletop's board.
+internal enum class ScanReceiptPlacement {
+    FLOATING,
+    INLINE,
+    NONE,
+}
+
 /*
- * Why: under "Divisão": "Ler cupom fiscal" until a receipt is picked (hidden on a tabletop, as the board draws it),
- * then "Foto do cupom", which the bill attaches once saved, with × to take it off.
+ * Why: under "Divisão": "Ler cupom fiscal" until a receipt is picked (in a dialog; full screen it is the FAB, and
+ * offline only "Precisa de internet" stays here), then "Foto do cupom", which the bill attaches once saved, with × to
+ * take it off.
  */
 @Composable
 internal fun ReceiptSection(
     state: SplitBillUiState,
-    showsScanButton: Boolean,
+    scanPlacement: ScanReceiptPlacement,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
     val receipt = state.receipt
@@ -216,7 +224,11 @@ internal fun ReceiptSection(
             onRemove = { onEvent(SplitBillUiEvent.OnReceiptRemoved) },
         )
 
-        state.showsScanReceipt && showsScanButton -> ScanReceiptButton(state, onEvent)
+        !state.showsScanReceipt -> Unit
+
+        scanPlacement == ScanReceiptPlacement.INLINE -> ScanReceiptButton(state, onEvent)
+
+        scanPlacement == ScanReceiptPlacement.FLOATING && !state.isOnline -> ScanReceiptHelpText(state)
     }
 }
 
@@ -240,15 +252,26 @@ private fun ScanReceiptButton(
                 modifier = Modifier.padding(start = 8.dp),
             )
         }
-        Text(
-            text = stringResource(
-                if (state.isOnline) R.string.split_bill_scan_receipt_help else R.string.split_bill_scan_receipt_offline,
-            ),
+        ScanReceiptHelpText(
+            state = state,
             modifier = Modifier.padding(horizontal = 12.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+@Composable
+private fun ScanReceiptHelpText(
+    state: SplitBillUiState,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = stringResource(
+            if (state.isOnline) R.string.split_bill_scan_receipt_help else R.string.split_bill_scan_receipt_offline,
+        ),
+        modifier = modifier,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable

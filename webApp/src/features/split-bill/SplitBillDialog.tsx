@@ -1,4 +1,4 @@
-import { Banknote, ChevronDown, ChevronRight, ChevronsUpDown, Info, Loader2, Plus } from 'lucide-react'
+import { Banknote, ChevronDown, ChevronRight, ChevronsUpDown, Info, Loader2, Plus, ScanText } from 'lucide-react'
 import {
   SplitBillPresenter,
   type JsBillConflict,
@@ -38,7 +38,7 @@ import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 import { feePane, ItemDeleteDialog, itemPane, ItemsOverlayDialogs, itemsPane } from './ItemsPane'
 import { categoryHint, categoryPane } from './CategoryPane'
-import { ReceiptInput, useReceiptPicker } from '@/components/ReceiptSourcePicker'
+import { ReceiptInput, type ReceiptPicker, useReceiptPicker } from '@/components/ReceiptSourcePicker'
 import { ReceiptFailureAlert, ReceiptField, ReceiptReadChips } from './ReceiptField'
 import { splitLead, splitPane } from './SplitPane'
 import { personName, splitSummary, type Money } from './splitText'
@@ -83,6 +83,8 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
     else if (action === 'category-save-error') toast(t('splitBill_categorySaveError'))
     else if (action === 'category-delete-error') toast(t('splitBill_categoryDeleteError'))
   })
+  // Why: "Ler cupom fiscal" sits in the footer, under the thumb on a phone (beta feedback), and the form holds its inputs.
+  const receiptPicker = useReceiptPicker(presenter, state)
   if (!presenter || !state) return null
   if (!state.isLoaded) {
     if (isCovered) return null
@@ -131,7 +133,7 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
   else if (isGroupOpen && !isDesktop) pane = groupPane(presenter, state)
   else if (isPayerOpen && !isDesktop) pane = payerPane(presenter, state, money)
   else if (payerAmounts && !isDesktop) pane = severalPayersPane(presenter, state, payerAmounts, money)
-  else pane = billPane(presenter, state, money)
+  else pane = billPane(presenter, state, money, receiptPicker)
   const deletion = state.deletion && (
     <BillDeleteDialog
       deletion={state.deletion}
@@ -162,10 +164,10 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
   )
 }
 
-function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money: Money): PaneParts {
+function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money: Money, receiptPicker: ReceiptPicker): PaneParts {
   return {
     title: t(state.isEditing ? 'splitBill_editTitle' : 'splitBill_title'),
-    body: <BillForm presenter={presenter} state={state} money={money} />,
+    body: <BillForm presenter={presenter} state={state} money={money} receiptPicker={receiptPicker} />,
     // Why: keys of their own, so React never turns another pane's button into this submit button mid-click.
     footer: (
       <>
@@ -178,6 +180,20 @@ function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money:
             className="text-destructive hover:text-destructive sm:mr-auto"
           >
             {t('splitBill_delete')}
+          </Button>
+        )}
+        {/* Why: a new bill's, online (offline the form says why it isn't there); the footer's start on a dialog, its top on a phone. */}
+        {state.showsScanReceipt && state.isOnline && (
+          <Button
+            key="bill-scan"
+            type="button"
+            variant="outline"
+            disabled={!state.canScanReceipt}
+            onClick={receiptPicker.pick}
+            className="order-last md:order-first md:mr-auto"
+          >
+            <ScanText aria-hidden />
+            {t('splitBill_scanReceipt')}
           </Button>
         )}
         <Button key="bill-cancel" variant="outline" onClick={() => presenter.close()}>
@@ -193,9 +209,19 @@ function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money:
 }
 
 /** The bill's currency beside its total, the group's until another is picked; the list is Novo grupo's "Moeda". */
-function CurrencyField({ presenter, state }: { presenter: SplitBillPresenter; state: JsSplitBillState }) {
+function CurrencyField({
+  presenter,
+  state,
+  open,
+  onOpenChange,
+}: {
+  presenter: SplitBillPresenter
+  state: JsSplitBillState
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
@@ -220,7 +246,21 @@ function CurrencyField({ presenter, state }: { presenter: SplitBillPresenter; st
   )
 }
 
-function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; money: Money }) {
+function BillForm({
+  presenter,
+  state,
+  money,
+  receiptPicker,
+}: {
+  presenter: SplitBillPresenter
+  state: JsSplitBillState
+  money: Money
+  receiptPicker: ReceiptPicker
+}) {
+  // Why: the symbol before the total opens the same menu as the currency button beside it (beta feedback).
+  const [isCurrencyOpen, setCurrencyOpen] = useState(false)
+  // Why: a menu the form locked closes for good, rather than opening again by itself once the lock lifts.
+  if (isCurrencyOpen && !state.canChangeCurrency) setCurrencyOpen(false)
   // Why: the ViewModel filters what is typed, so each field reads its text back in the same keystroke.
   const [amount, setAmount] = useDraft(state.amountText, (value) => {
     presenter.changeAmount(value)
@@ -240,7 +280,6 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
   // Why: editing a by-amount split, a new total changes everyone's value, not only the total.
   const showsEditAmountHelp = state.showsProportionalAmountHint
   const amountDescribedBy = [amountHelp && amountHelpId, showsEditAmountHelp && amountEditHelpId].filter(Boolean).join(' ') || undefined
-  const receiptPicker = useReceiptPicker(presenter, state)
 
   return (
     <form
@@ -318,9 +357,14 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
                   onChange={setAmount}
                   isInvalid={state.showsAmountError}
                   describedBy={amountDescribedBy}
+                  symbolAction={{
+                    label: t('splitBill_currencyChange', { code: state.currency }),
+                    disabled: !state.canChangeCurrency,
+                    onClick: () => setCurrencyOpen(true),
+                  }}
                 />
               </div>
-              <CurrencyField presenter={presenter} state={state} />
+              <CurrencyField presenter={presenter} state={state} open={isCurrencyOpen} onOpenChange={setCurrencyOpen} />
             </div>
             {amountHelp && (
               <p id={amountHelpId} className={cn('text-[13px]', state.showsAmountError ? 'text-destructive' : 'text-muted-foreground')}>
@@ -363,7 +407,7 @@ function BillForm({ presenter, state, money }: { presenter: SplitBillPresenter; 
               />
             </div>
           </fieldset>
-          <ReceiptField presenter={presenter} state={state} picker={receiptPicker} />
+          <ReceiptField presenter={presenter} state={state} />
         </div>
       </div>
 

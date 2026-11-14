@@ -19,6 +19,8 @@ private struct SplitModePicker: View {
                 }
                 .padding(.vertical, 2)
             }
+            // Why: the capsules scroll on to the screen's edge rather than being cut at the row's (beta feedback).
+            .scrollClipDisabled()
             .onAppear { proxy.scrollTo(mode) }
             .onChange(of: mode) { _, picked in
                 withAnimation { proxy.scrollTo(picked) }
@@ -38,7 +40,8 @@ private struct SplitModePicker: View {
                 .lineLimit(1)
                 .padding(.horizontal, 14)
                 .frame(minHeight: 34)
-                .foregroundStyle(isSelected ? AnyShapeStyle(Palette.onAccent) : AnyShapeStyle(.primary))
+                // Why: `Color.primary`, since a section's header (Split's place for the row) dims the hierarchical `.primary`.
+                .foregroundStyle(isSelected ? AnyShapeStyle(Palette.onAccent) : AnyShapeStyle(Color.primary))
                 .background(
                     Capsule().fill(isSelected ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.fill.tertiary)),
                 )
@@ -440,11 +443,14 @@ struct PhoneSplitEditor: View {
                     )
             }
         }
-        Section {
+        // Why: a section's header, which the list never clips as it does a row, so the capsules scroll on to the screen's
+        // edge (beta feedback); it lines up with the cards' edge at rest.
+        Section {} header: {
             SplitModePicker(mode: editor.mode) { model.send($0) }
+                .textCase(nil)
+                .padding(.horizontal, -20)
+                .accessibilityRemoveTraits(.isHeader)
         }
-        .listRowBackground(Color.clear)
-        .listRowInsets(EdgeInsets())
         let status = SplitBillCopy.status(editor)
         Section {
             SplitStatusView(status: status)

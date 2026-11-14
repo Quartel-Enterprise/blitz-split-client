@@ -26,6 +26,7 @@ export function AmountInput({
   isInvalid,
   describedBy,
   autoFocus = false,
+  symbolAction,
 }: {
   id: string
   currency: string
@@ -35,17 +36,31 @@ export function AmountInput({
   isInvalid: boolean
   describedBy?: string
   autoFocus?: boolean
+  // Why: Rachar conta's symbol opens the currency menu beside the field (beta feedback); without it, plain text.
+  symbolAction?: { label: string; disabled: boolean; onClick: () => void }
 }) {
   return (
     <div
       className={cn(
-        'flex h-14 items-center gap-2 rounded-md border border-field-border bg-card px-3 focus-within:ring-[3px] has-[:disabled]:opacity-50 dark:bg-input/30',
+        'flex h-14 items-center gap-2 rounded-md border border-field-border bg-card px-3 focus-within:ring-[3px] has-[input:disabled]:opacity-50 dark:bg-input/30',
         isInvalid ? 'border-destructive focus-within:ring-destructive/20' : 'focus-within:border-ring focus-within:ring-ring',
       )}
     >
-      <span aria-hidden className="text-xl font-medium text-muted-foreground">
-        {currencySymbol(currency)}
-      </span>
+      {symbolAction ? (
+        <button
+          type="button"
+          aria-label={symbolAction.label}
+          disabled={symbolAction.disabled}
+          onClick={symbolAction.onClick}
+          className="-mx-1 rounded-sm px-1 text-xl font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none"
+        >
+          {currencySymbol(currency)}
+        </button>
+      ) : (
+        <span aria-hidden className="text-xl font-medium text-muted-foreground">
+          {currencySymbol(currency)}
+        </span>
+      )}
       <input
         id={id}
         inputMode="numeric"
