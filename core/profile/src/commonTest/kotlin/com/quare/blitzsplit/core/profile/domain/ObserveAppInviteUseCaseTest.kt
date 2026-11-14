@@ -270,18 +270,6 @@ class ObserveAppInviteUseCaseTest {
         sinceMillis = 1_700_000_000_000L,
     )
 
-    @Test
-    fun `GIVEN the web link with its language WHEN printing it THEN shows it without scheme nor language`() {
-        // Given
-        val link = "https://blitzsplit.com/app-download?lang=pt"
-
-        // When
-        val display = AppInvite.toDisplayLink(link)
-
-        // Then
-        assertEquals("blitzsplit.com/app-download", display)
-    }
-
     private fun prepareScenario(
         platform: ClientPlatform = ClientPlatform.WEB,
         stores: AppStores = bothStores,

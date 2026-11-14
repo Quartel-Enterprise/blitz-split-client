@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSo
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.core.utils.DeviceLanguage
+import com.quare.blitzsplit.core.utils.DeviceLanguages
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.shared.settings.InMemoryAppLanguageLocalDataSource
 import org.koin.core.module.Module
@@ -16,6 +17,7 @@ internal actual val platformModule: Module = module {
     single { NativeSignIn(providers = emptySet()) }
     single { DeviceRegion { Locale.getDefault().country.ifEmpty { null } } }
     single { DeviceLanguage { Locale.getDefault().toLanguageTag() } }
+    single { DeviceLanguages { listOf(Locale.getDefault().toLanguageTag()) } }
     single { DeviceDecimalSeparator { DecimalFormatSymbols.getInstance().decimalSeparator } }
     single<AppLanguageLocalDataSource> { InMemoryAppLanguageLocalDataSource() }
     single { DynamicColorSupport { false } }

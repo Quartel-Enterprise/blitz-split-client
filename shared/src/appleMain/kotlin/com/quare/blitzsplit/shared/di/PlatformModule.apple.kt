@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSo
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.core.utils.DeviceLanguage
+import com.quare.blitzsplit.core.utils.DeviceLanguages
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.shared.settings.AppleAppLanguageLocalDataSource
 import org.koin.core.module.Module
@@ -20,6 +21,7 @@ internal actual val platformModule: Module = module {
     single { NativeSignIn(providers = setOf(AccountProvider.APPLE)) }
     single { DeviceRegion { NSLocale.currentLocale.countryCode } }
     single { DeviceLanguage { NSLocale.preferredLanguages.firstOrNull() as? String } }
+    single { DeviceLanguages { NSLocale.preferredLanguages.filterIsInstance<String>() } }
     single { DeviceDecimalSeparator { NSLocale.currentLocale.decimalSeparator.firstOrNull() ?: '.' } }
     single<AppLanguageLocalDataSource> { AppleAppLanguageLocalDataSource() }
     single { DynamicColorSupport { false } }

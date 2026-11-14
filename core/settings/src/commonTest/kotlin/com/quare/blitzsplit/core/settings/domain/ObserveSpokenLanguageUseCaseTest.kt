@@ -19,6 +19,9 @@ class ObserveSpokenLanguageUseCaseTest {
     // Why: what the device reports; a test of several devices sets it between two readings.
     private var deviceLanguage: String? = null
 
+    // Why: the device's whole list, for the tests about its order; otherwise its one language above.
+    private var deviceLanguages: List<String>? = null
+
     @Test
     fun `GIVEN Portuguese picked in Profile on a Japanese device WHEN observing the spoken language THEN it is pt`() =
         runTest {
@@ -367,6 +370,33 @@ class ObserveSpokenLanguageUseCaseTest {
         return observeSpokenLanguage().first()
     }
 
+    @Test
+    fun `GIVEN System on a device whose first language the app lacks WHEN observing THEN it is the next one it has`() =
+        runTest {
+            // Given
+            prepareScenario()
+            deviceLanguages = listOf("ca-ES", "es-ES", "pt-BR")
+
+            // When
+            val language = observeSpokenLanguage().first()
+
+            // Then
+            assertEquals("es", language)
+        }
+
+    @Test
+    fun `GIVEN System on a device with no language the app has WHEN observing THEN it is en`() = runTest {
+        // Given
+        prepareScenario()
+        deviceLanguages = listOf("ca-ES", "zh-Hans-CN")
+
+        // When
+        val language = observeSpokenLanguage().first()
+
+        // Then
+        assertEquals("en", language)
+    }
+
     private fun prepareScenario(
         picked: AppLanguage = AppLanguage.SYSTEM,
         device: String? = "en-US",
@@ -376,7 +406,7 @@ class ObserveSpokenLanguageUseCaseTest {
         updateAppLanguage = UpdateAppLanguageUseCase(repository)
         observeSpokenLanguage = ObserveSpokenLanguageUseCase(
             observeAppLanguage = ObserveAppLanguageUseCase(repository),
-            deviceLanguage = { deviceLanguage },
+            deviceLanguages = { deviceLanguages ?: listOfNotNull(deviceLanguage) },
         )
     }
 }

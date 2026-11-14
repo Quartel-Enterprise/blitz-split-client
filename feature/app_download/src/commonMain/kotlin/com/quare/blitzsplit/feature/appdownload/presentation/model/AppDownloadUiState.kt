@@ -1,9 +1,9 @@
 package com.quare.blitzsplit.feature.appdownload.presentation.model
 
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.DisplayLink
 import com.quare.blitzsplit.core.model.QrCode
 import com.quare.blitzsplit.core.model.StoreListing
-import com.quare.blitzsplit.core.profile.domain.model.AppInvite
 
 /*
  * Why: "Bora Rachar on your phone" (14.2): the QR code of the app's link, the stores it names, and, once the account
@@ -23,7 +23,7 @@ data class AppDownloadUiState(
 ) {
     // Why: the link as the code prints it under itself.
     val displayLink: String
-        get() = AppInvite.toDisplayLink(link)
+        get() = DisplayLink.of(link)
 
     val usesPhone: Boolean
         get() = phoneUseSinceMillis != null

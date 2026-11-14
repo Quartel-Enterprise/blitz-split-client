@@ -21,8 +21,5 @@ data class AppInvite(
     companion object {
         // Why: sends Android to Google Play, the iPhone to the App Store and anything else to a page with both.
         const val WEB_LINK: String = "https://blitzsplit.com/app-download"
-
-        // Why: "blitzsplit.com/app-download", the link as the screens print it, without the language it carries.
-        fun toDisplayLink(link: String): String = link.substringAfter("://").substringBefore("?")
     }
 }
