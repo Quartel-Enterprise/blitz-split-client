@@ -338,28 +338,35 @@ private struct MemberRow: View {
     private var content: some View {
         HStack(spacing: 12) {
             AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
-            VStack(alignment: .leading, spacing: 2) {
-                if member.isMe {
-                    Text("\(member.name) (you)")
-                } else {
-                    Text(verbatim: member.name)
-                }
-                Group {
-                    if member.isMe {
-                        Text("This \(DeviceName.current)")
-                    } else if member.hasJoined {
-                        Text("Joined")
-                    } else {
-                        Text("Hasn't joined yet")
+            // In a narrow column the balance goes under the status, so the name and the status keep their width
+            TrailingOrBelowLayout {
+                VStack(alignment: .leading, spacing: 2) {
+                    Group {
+                        if member.isMe {
+                            Text("\(member.name) (you)")
+                        } else {
+                            Text(verbatim: member.name)
+                        }
                     }
+                    .lineLimit(1)
+                    Group {
+                        if member.isMe {
+                            Text("This \(DeviceName.current)")
+                        } else if member.hasJoined {
+                            Text("Joined")
+                        } else {
+                            Text("Hasn't joined yet")
+                        }
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
                 }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-            }
-            Spacer()
-            if let balance = member.balance {
-                MemberBalanceText(balance: balance, currency: currency)
-                    .font(.footnote.weight(.semibold))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                if let balance = member.balance {
+                    MemberBalanceText(balance: balance, currency: currency)
+                        .font(.footnote.weight(.semibold))
+                }
             }
             if isReleasing {
                 ProgressView()

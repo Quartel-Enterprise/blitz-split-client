@@ -143,17 +143,22 @@ function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; 
     <li className="flex items-center gap-1 py-1 pr-2 pl-2">
       <PersonButton onOpen={() => presenter.openMember(member.id)} className="flex min-w-0 flex-1 items-center gap-3 px-2 py-1.5">
       <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-medium">
-          {member.name}
-          {member.isMe && <span className="text-muted-foreground"> · {t('members_me')}</span>}
+      {/* Why: the balance wraps under the status once it and the whole name don't fit side by side, so the name and the status keep their width. */}
+      <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+        <span className="min-w-0 flex-auto">
+          <span className="block truncate font-medium">
+            {member.name}
+            {member.isMe && <span className="text-muted-foreground"> · {t('members_me')}</span>}
+          </span>
+          <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+            <span aria-hidden className={cn('size-2 shrink-0 rounded-full', member.hasJoined ? 'bg-primary' : 'border-[1.5px] border-muted-foreground')} />
+            <span className="truncate">
+              {member.isMe ? t('members_statusThisBrowser') : member.hasJoined ? t('members_statusJoined') : t('members_statusNotJoined')}
+            </span>
+          </span>
         </span>
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span aria-hidden className={cn('size-2 rounded-full', member.hasJoined ? 'bg-primary' : 'border-[1.5px] border-muted-foreground')} />
-          {member.isMe ? t('members_statusThisBrowser') : member.hasJoined ? t('members_statusJoined') : t('members_statusNotJoined')}
-        </span>
+        {member.balance && <MemberBalanceText balance={member.balance} money={money} />}
       </span>
-      {member.balance && <MemberBalanceText balance={member.balance} money={money} />}
       {member.hasJoined && <Check aria-hidden className="size-4 text-primary" />}
       </PersonButton>
       <DropdownMenu>

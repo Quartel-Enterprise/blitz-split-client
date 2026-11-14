@@ -167,24 +167,27 @@ function DebtRowItem({ debt, presenter }: { debt: JsDebtRow; presenter: GroupDet
         <ArrowRight className="size-3.5 text-muted-foreground" />
         <Face face={debt.toFace} />
       </span>
-      <span className="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center sm:gap-3">
-        <span className="flex min-w-0 items-center gap-1.5 sm:flex-1">
-          <span className="truncate font-medium">{sentence}</span>
-          {debt.isSimplified && <SimplifyIcon label={t('simplify_pairIcon')} className="size-3.5 text-muted-foreground" />}
+      {/* Why: the button wraps under the amount once it and the whole sentence don't fit side by side. */}
+      <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1.5">
+        <span className="flex min-w-0 flex-auto flex-col sm:flex-row sm:items-center sm:gap-3">
+          <span className="flex min-w-0 items-center gap-1.5 sm:flex-1">
+            <span className="truncate font-medium">{sentence}</span>
+            {debt.isSimplified && <SimplifyIcon label={t('simplify_pairIcon')} className="size-3.5 text-muted-foreground" />}
+          </span>
+          <span className={cn('text-sm font-semibold whitespace-nowrap tabular-nums sm:text-base', amount.tone)}>{amount.text}</span>
         </span>
-        <span className={cn('text-sm font-semibold whitespace-nowrap tabular-nums sm:text-base', amount.tone)}>{amount.text}</span>
+        <Button
+          size="sm"
+          variant={debt.kind === 'you-owe' ? 'default' : 'outline'}
+          aria-label={`${label}: ${sentence}, ${amount.text}`}
+          onClick={(event) => {
+            event.stopPropagation()
+            open()
+          }}
+        >
+          {label}
+        </Button>
       </span>
-      <Button
-        size="sm"
-        variant={debt.kind === 'you-owe' ? 'default' : 'outline'}
-        aria-label={`${label}: ${sentence}, ${amount.text}`}
-        onClick={(event) => {
-          event.stopPropagation()
-          open()
-        }}
-      >
-        {label}
-      </Button>
     </li>
   )
 }

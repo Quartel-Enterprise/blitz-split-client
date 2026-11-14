@@ -54,10 +54,18 @@ export function periodHint(option: JsStatsPeriodOption): string {
   })
 }
 
-/** The label of a bar under the chart: the day ("hoje" for today), the week, the month or the year. */
+/** Where the bar at `index` of `count` is centered, in percent of the chart's width. */
+export function barCenterPercent(index: number, count: number): number {
+  return ((index + 0.5) * 100) / Math.max(1, count)
+}
+
+/**
+ * The label of a bar under the chart: the day ("hoje" for today), the week's first day ("19 de out."), the month or the
+ * year. A week's whole range overlapped the next one's under a phone's chart, so it stays in the callout and the sentence.
+ */
 export function barLabel(bar: JsStatsBar, grain: string, isSparse: boolean): string {
   if (grain === 'day') return bar.isToday ? t('stats_today') : String(new Date(bar.startMillis).getDate())
-  if (grain === 'week') return isSparse ? shortMonth.format(bar.startMillis) : dayMonth.formatRange(bar.startMillis, bar.endMillis)
+  if (grain === 'week') return (isSparse ? shortMonth : dayMonth).format(bar.startMillis)
   if (grain === 'month') return shortMonth.format(bar.startMillis)
   return String(new Date(bar.startMillis).getFullYear())
 }
