@@ -10,7 +10,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
-| `claude-review` | A pull request opened, or a draft marked ready | Reviews it, fixes what it found, posts the rest |
+| `claude-review` | A pull request opened, or a draft marked ready; or the push that solves the conflict it opened with | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
 | `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
@@ -120,6 +120,13 @@ commit, again on the fix commit):
   author's push, a reopened pull request, `main`) skips the gate, and the checks run right away. A draft, a fork, a
   failed or cancelled review, one still running after 40 minutes or GitHub's API failing three times in a row let
   the checks run.
+- GitHub starts no pull request workflow while the pull request conflicts with its base, so one opened (or marked
+  ready) with a conflict gets neither the review nor the checks on that event. `claude-review` also runs on pushes
+  for that case: on a push, the shared `review` action looks for a `claude-review` run between the pull request's
+  opening (or a draft's last marking as ready) and this one, and with none (GitHub started none while it conflicted)
+  the push that solved the conflict is reviewed. The gate
+  doesn't wait for that review, since the push is an author's: the checks run on it right away, and again on the
+  review's fix commit, if any. Every other push ends the run in seconds without reviewing.
 - Once the review ended, the gate counts its unresolved threads. With one open, the checks are skipped and the gate
   fails in its `Hold for the open threads` step, so the pull request shows why nothing ran. The author's next push
   runs them. Resolving the threads without a push (a finding answered instead of fixed) starts no workflow: add the
@@ -155,8 +162,9 @@ the label added again, as below. A push to the pull request moves its head commi
 to pass again. A failed check leaves the pull request open with the label on; re-running the check and getting it
 green merges it. The pull request's current head is the one judged, whichever commit's run started the workflow, so
 a pull request whose changes run no check workflow (docs only, `iosApp` only) merges once the review ends, even after
-the review pushed its fix commit. No pull request workflow runs on every push here, so a label added, or a sweep run, right after a
-push waits 30 seconds first, for the push's workflows to register their runs. Drafts wait until they are marked
+the review pushed its fix commit. Every push runs `claude-review`, which ends in seconds without reviewing (see the
+review gate below) and starts `merge-when-green` when it completes. A label added, or a sweep run, right after a push
+still waits 30 seconds first, for the push's workflows to register their runs. Drafts wait until they are marked
 ready, and pull requests from forks are never merged: their author could push after a maintainer added the label.
 
 A job waiting on another has no check until it starts, so while `review-gate` waits for the review, or right after it
