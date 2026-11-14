@@ -126,7 +126,7 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
   }
 
   let pane: PaneParts
-  if (categoryForm) pane = categoryFormPane(presenter.categories, categoryForm, state.categories.icons)
+  if (categoryForm) pane = categoryFormPane(presenter.categories, categoryForm, state.categories.icons, state.categories.customColors)
   else if (isCategoryOpen) pane = categoryPane(presenter.categories, state, isWide)
   else if (items && state.itemEditor && !isDesktop) pane = itemPane(presenter.items, state, state.itemEditor, money)
   else if (items && state.feeEditor && !isDesktop) pane = feePane(presenter.items, state, state.feeEditor)

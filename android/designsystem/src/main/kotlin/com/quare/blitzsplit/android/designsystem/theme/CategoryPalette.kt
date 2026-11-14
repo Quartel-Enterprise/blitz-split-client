@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 
 /*
  * Why: the twelve category colors, the same on every platform (see the canvas rules), each with the content color that
@@ -17,6 +18,28 @@ fun CategoryColor.toContentColor(isDark: Boolean): Color = if (isDark) darkConte
  * 3:1 for a meaningful mark), and it never equals one of the theme's own container roles.
  */
 fun CategoryColor.toDataColor(isDark: Boolean): Color = if (isDark) darkData else lightData
+
+/*
+ * Why: a category's color, named or custom: a named one has its tones written here, a custom one derives them in the
+ * shared code (CustomColor.toTones), so every platform draws the same tones and its text always reads.
+ */
+fun CategoryTint.toContainerColor(isDark: Boolean): Color = when (this) {
+    is CategoryTint.Named -> color.toContainerColor(isDark)
+    is CategoryTint.Custom -> color.toTones().let { rgbOf(if (isDark) it.darkContainer else it.lightContainer) }
+}
+
+fun CategoryTint.toContentColor(isDark: Boolean): Color = when (this) {
+    is CategoryTint.Named -> color.toContentColor(isDark)
+    is CategoryTint.Custom -> color.toTones().let { rgbOf(if (isDark) it.darkContent else it.lightContent) }
+}
+
+fun CategoryTint.toDataColor(isDark: Boolean): Color = when (this) {
+    is CategoryTint.Named -> color.toDataColor(isDark)
+    is CategoryTint.Custom -> color.toTones().let { rgbOf(if (isDark) it.darkData else it.lightData) }
+}
+
+// Why: a 0xRRGGBB from the shared code, opaque.
+fun rgbOf(rgb: Int): Color = Color(0xFF000000.toInt() or rgb)
 
 private val CategoryColor.lightContainer: Color
     get() = when (this) {

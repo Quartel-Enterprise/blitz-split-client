@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
 // Why: the screen Rachar conta's events come from, as their source param says, for its UiEvent and its ViewModel alike.
@@ -200,8 +201,10 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
 
     is SplitBillUiEvent.OnCategoryColorPicked -> EventAnalytics.Automatic(
         "category_color_picked",
-        mapOf("color" to event.color.code, "source" to SPLIT_BILL_SOURCE),
+        mapOf("color" to event.color.analyticsCode, "source" to SPLIT_BILL_SOURCE),
     )
+
+    is SplitBillUiEvent.OnCustomColor -> customColorAnalyticsOf(event.event)
 
     // Why: the tap, then the category once it is saved.
     SplitBillUiEvent.OnCategoryFormSaveClicked -> EventAnalytics.Manual(
@@ -256,4 +259,47 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
     SplitBillUiEvent.OnDeleteConfirmed -> EventAnalytics.Manual("bill_delete_confirmed")
 
     SplitBillUiEvent.OnDeleteDismissed -> EventAnalytics.Manual("bill_delete_cancelled")
+}
+
+// Why: the person's own colors in the form's "Color", each name written here so the catalog test reads it.
+private fun customColorAnalyticsOf(event: CustomColorEvent): EventAnalytics = when (event) {
+    /*
+     * Why: no action of the person's: the picker closing by itself, or the gradient and fields as they change ("Add"
+     * tells what came of them).
+     */
+    CustomColorEvent.OnPickerClosed,
+    is CustomColorEvent.OnChannelChanged,
+    is CustomColorEvent.OnHexChanged,
+    is CustomColorEvent.OnHsvChanged,
+    -> EventAnalytics.NotTracked
+
+    CustomColorEvent.OnDeletionDismissed -> EventAnalytics.Automatic(
+        "custom_color_delete_cancelled",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
+
+    CustomColorEvent.OnDeleteConfirmed -> EventAnalytics.Automatic(
+        "custom_color_delete_confirmed",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
+
+    is CustomColorEvent.OnLongPressed -> EventAnalytics.Automatic(
+        "custom_color_delete_asked",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
+
+    CustomColorEvent.OnDraftDismissed -> EventAnalytics.Automatic(
+        "custom_color_cancelled",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
+
+    CustomColorEvent.OnSaveClicked -> EventAnalytics.Automatic(
+        "custom_color_save_clicked",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
+
+    is CustomColorEvent.OnAddClicked -> EventAnalytics.Automatic(
+        "custom_color_add_clicked",
+        mapOf("source" to SPLIT_BILL_SOURCE),
+    )
 }

@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.UpdateExpenseUseCa
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.createFakeCustomColorUseCases
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
@@ -1123,6 +1124,7 @@ class DiscardChangesViewModelTest {
                 observeCategoryMap = ObserveCategoryMapUseCase(FakeCategoryTermRepository()),
                 saveGroupCategory = { _, _, _, _, _, _, _ -> Result.success("") },
                 deleteGroupCategory = { Result.success(Unit) },
+                customColors = createFakeCustomColorUseCases(),
             ),
             saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},

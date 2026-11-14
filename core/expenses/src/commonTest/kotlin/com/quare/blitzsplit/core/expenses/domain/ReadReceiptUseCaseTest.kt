@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReaderException
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptScan
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ReadReceiptUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeReceiptRepository
 import com.quare.blitzsplit.core.expenses.testing.noReceiptCategoryHints
@@ -172,7 +173,7 @@ class ReadReceiptUseCaseTest {
         app = null,
         name = "Pet",
         icon = CategoryIcon.DOTS,
-        color = CategoryColor.PURPLE,
+        color = CategoryColor.PURPLE.tint,
         parentId = null,
         createdByMemberId = "ana",
         isPending = false,

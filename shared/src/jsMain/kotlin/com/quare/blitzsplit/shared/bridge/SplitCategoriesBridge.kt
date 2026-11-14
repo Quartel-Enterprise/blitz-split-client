@@ -2,8 +2,8 @@
 
 package com.quare.blitzsplit.shared.bridge
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.CategoryHint
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -54,6 +54,8 @@ class JsBillCategories(
     val splitEditorDefaultException: JsCategory?,
     // Why: every CategoryIcon's code, in the order "Nova categoria" offers them.
     val icons: Array<String>,
+    // Why: the person's own colors in the form's "Color".
+    val customColors: JsCustomColors,
 )
 
 internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
@@ -105,6 +107,7 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
         splitAsDefaultException = state.splitAsDefaultException?.let(::toJsCategory),
         splitEditorDefaultException = state.splitEditorDefaultException?.let(::toJsCategory),
         icons = CategoryIcon.entries.map { it.code }.toTypedArray(),
+        customColors = toJsCustomColors(state.customColors),
     )
 }
 
@@ -112,6 +115,11 @@ internal fun toJsBillCategories(state: SplitBillUiState): JsBillCategories {
 class SplitCategoriesPresenter internal constructor(
     private val viewModel: () -> SplitBillViewModel,
 ) {
+    val customColors: JsCustomColorActions = JsCustomColorActions(
+        send = { send(SplitBillUiEvent.OnCustomColor(it)) },
+        current = { viewModel().uiState.value.customColors },
+    )
+
     fun open() {
         send(SplitBillUiEvent.OnCategoryClicked)
     }
@@ -173,7 +181,7 @@ class SplitCategoriesPresenter internal constructor(
     }
 
     fun pickColor(code: String) {
-        val color = CategoryColor.fromCodeOrNull(code) ?: return
+        val color = CategoryTint.fromCodeOrNull(code) ?: return
         send(SplitBillUiEvent.OnCategoryColorPicked(color))
     }
 

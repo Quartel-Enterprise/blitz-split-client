@@ -6,7 +6,6 @@ import com.quare.blitzsplit.core.contacts.domain.repository.HiddenContactReposit
 import com.quare.blitzsplit.core.expenses.domain.repository.BillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.BillCommentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
-import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
@@ -58,7 +57,7 @@ class SyncCoordinator(
     private val expenseRepository: ExpenseRepository,
     private val settlementRepository: SettlementRepository,
     private val categoryRepository: CategoryRepository,
-    private val categoryTermRepository: CategoryTermRepository,
+    private val personalCategoryData: PersonalCategoryData,
     private val payingMethodRepository: PayingMethodRepository,
     private val billCommentRepository: BillCommentRepository,
     private val billAttachmentRepository: BillAttachmentRepository,
@@ -224,11 +223,8 @@ class SyncCoordinator(
          * the next one tries again.
          */
         appInviteRepository.sync(userId)
-        // Why: the person's category map (flow 9), theirs alone like the keys.
-        val termsSynced = suspendRunCatching {
-            categoryTermRepository.download(userId).getOrThrow()
-            categoryTermRepository.uploadPending(userId).getOrThrow()
-        }
+        // Why: the person's category map (flow 9) and custom colors, theirs alone like the keys.
+        val termsSynced = personalCategoryData.sync(userId)
         /*
          * Why: the bills and the payments after their groups, which they need on the device to come
          * down and on the server to go up, and after the group's categories, so a bill never reaches
@@ -332,7 +328,7 @@ class SyncCoordinator(
                     suspendRunCatching { paymentKeyRepository.clear() }
                     suspendRunCatching { notificationPreferencesRepository.clear() }
                     suspendRunCatching { appInviteRepository.clear() }
-                    suspendRunCatching { categoryTermRepository.clear() }
+                    suspendRunCatching { personalCategoryData.clear() }
                     suspendRunCatching { payingMethodRepository.clear() }
                     suspendRunCatching { groupRepository.clear() }
                     suspendRunCatching { activityRepository.clear() }
@@ -389,7 +385,7 @@ class SyncCoordinator(
             observePendingMoneyVersions(),
             hiddenContactRepository.observeHidden(),
             groupPinRepository.observePinnedGroupIds(),
-            categoryTermRepository.observeChanges(),
+            personalCategoryData.observeChanges(),
             payingMethodRepository.observeChanges(),
             billCommentRepository.observePendingIds(),
             billAttachmentRepository.observePendingVersions(),
@@ -437,7 +433,7 @@ class SyncCoordinator(
         paymentKeyRepository.clear()
         notificationPreferencesRepository.clear()
         appInviteRepository.clear()
-        categoryTermRepository.clear()
+        personalCategoryData.clear()
         payingMethodRepository.clear()
         groupRepository.clear()
         activityRepository.clear()
@@ -450,7 +446,7 @@ class SyncCoordinator(
         profileRepository.observeHasPendingChanges(),
         paymentKeyRepository.observeHasPendingChanges(),
         notificationPreferencesRepository.observeHasPendingChanges(),
-        categoryTermRepository.observeHasPendingChanges(),
+        personalCategoryData.observeHasPendingChanges(),
         payingMethodRepository.observeHasPendingChanges(),
         billCommentRepository.observeHasPendingChanges(),
         billAttachmentRepository.observeHasPendingChanges(),

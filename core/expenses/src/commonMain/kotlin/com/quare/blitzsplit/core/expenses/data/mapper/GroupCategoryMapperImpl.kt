@@ -1,8 +1,8 @@
 package com.quare.blitzsplit.core.expenses.data.mapper
 
 import com.quare.blitzsplit.core.expenses.data.dto.GroupCategoryDto
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.provider.room.entity.GroupCategoryEntity
 
@@ -15,7 +15,7 @@ class GroupCategoryMapperImpl : GroupCategoryMapper {
         name = entity.name,
         icon = entity.icon?.let { CategoryIcon.fromCodeOrNull(it) ?: CategoryIcon.DOTS },
         // Why: a color this version doesn't know reads as none picked, the place's default.
-        color = CategoryColor.fromCodeOrNull(entity.color),
+        color = CategoryTint.fromCodeOrNull(entity.color),
         createdByMemberId = entity.createdByMemberId,
         isDeleted = entity.isDeleted,
         isPending = entity.pendingSync,

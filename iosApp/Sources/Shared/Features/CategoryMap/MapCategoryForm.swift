@@ -20,6 +20,9 @@ struct MapCategoryFormView: View {
                 ),
                 pickIcon: { model.send(CategoryMapUiEventOnCategoryIconPicked(icon: $0)) },
                 pickColor: { model.send(CategoryMapUiEventOnCategoryColorPicked(color: $0)) },
+                customColors: model.state.customColors,
+                currentCustomColors: { model.current.customColors },
+                sendCustomColor: { model.send(CategoryMapUiEventOnCustomColor(event: $0)) },
                 save: { model.send(CategoryMapUiEventOnCategoryFormSaveClicked.shared) },
                 dismiss: { model.send(CategoryMapUiEventOnCategoryFormDismissed.shared) },
                 askToDelete: { model.send(CategoryMapUiEventOnCategoryDeleteClicked.shared) },
@@ -120,34 +123,44 @@ struct EditCategoryButton: View {
     }
 }
 
-/// "Change color of Food" (7.7): the color of one of the app's main categories, on this device only. A group's own
-/// category changes its color in its form instead.
+/// "Change color of Food" (7.7): the color of one of the app's main categories, on this device only, in a popover
+/// with the person's own colors and "+" after the named ones. A group's own category changes its color in its form.
 struct ChangeCategoryColorMenu: View {
     let category: Shared.Category
     let model: CategoryMapModel
+    @State private var isOpen = false
 
     var body: some View {
         if let app = category.app, app.isMain, !category.isOther {
-            Menu(String(
-                localized: "Change color of \(CategoryCopy.name(category))",
-                bundle: .appLanguage,
-            ), systemImage: "paintpalette") {
-                ForEach(CategoryColor.entries, id: \.self) { color in
-                    Button {
-                        model.send(CategoryMapUiEventOnAppCategoryColorPicked(categoryKey: category.id, color: color))
-                    } label: {
-                        if color == category.color {
-                            Label(color.label, systemImage: "checkmark")
-                        } else {
-                            Text(verbatim: color.label)
+            let title = String(localized: "Change color of \(CategoryCopy.name(category))", bundle: .appLanguage)
+            Button(title, systemImage: "paintpalette") { isOpen = true }
+                .popover(isPresented: $isOpen) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(verbatim: title).font(.headline)
+                        CategoryColorGrid(
+                            selected: category.color,
+                            customColors: model.state.customColors,
+                            currentCustomColors: { model.current.customColors },
+                            pick: { model.send(CategoryMapUiEventOnAppCategoryColorPicked(categoryKey: category.id, color: $0)) },
+                            send: { model.send(CategoryMapUiEventOnCustomColor(event: $0)) },
+                            categoryKey: category.id,
+                        )
+                        HStack {
+                            Button("Restore color") {
+                                model.send(CategoryMapUiEventOnAppCategoryColorPicked(categoryKey: category.id, color: nil))
+                            }
+                            Spacer()
+                            Button("Done") { isOpen = false }
+                                .bold()
                         }
                     }
+                    .padding(20)
+                    .frame(minWidth: 300, idealWidth: 340)
+                    // Why: "New color" and the questions go with the popover, so the next picker never opens on them.
+                    .onDisappear { model.send(CategoryMapUiEventOnCustomColor(event: CustomColorEventOnPickerClosed.shared)) }
+                    .presentationCompactAdaptation(.sheet)
+                    .presentationDetents([.medium, .large])
                 }
-                Divider()
-                Button("Restore color") {
-                    model.send(CategoryMapUiEventOnAppCategoryColorPicked(categoryKey: category.id, color: nil))
-                }
-            }
         }
     }
 }

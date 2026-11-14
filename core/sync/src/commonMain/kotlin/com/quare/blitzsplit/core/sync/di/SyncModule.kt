@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.sync.di
 
 import com.quare.blitzsplit.core.sync.AppForeground
 import com.quare.blitzsplit.core.sync.FirstDownload
+import com.quare.blitzsplit.core.sync.PersonalCategoryData
 import com.quare.blitzsplit.core.sync.SyncCoordinator
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
@@ -77,7 +78,7 @@ val syncModule = module {
             expenseRepository = get(),
             settlementRepository = get(),
             categoryRepository = get(),
-            categoryTermRepository = get(),
+            personalCategoryData = PersonalCategoryData(get(), get()),
             payingMethodRepository = get(),
             billCommentRepository = get(),
             billAttachmentRepository = get(),

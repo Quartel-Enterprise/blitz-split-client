@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 49,
-    "identityHash": "8d292432578e448dd5c2d62bd6a4353a",
+    "identityHash": "fe24e92c1fa02f97980ce1a46bdb1433",
     "entities": [
       {
         "tableName": "profile",
@@ -1959,37 +1959,13 @@
         }
       },
       {
-        "tableName": "paying_method",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `name` TEXT NOT NULL, `icon` TEXT NOT NULL, `isDefault` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, `ownerUserId` TEXT, PRIMARY KEY(`id`))",
+        "tableName": "custom_color",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`color` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, `ownerUserId` TEXT, PRIMARY KEY(`color`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "color",
+            "columnName": "color",
             "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "icon",
-            "columnName": "icon",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isDefault",
-            "columnName": "isDefault",
-            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -2025,54 +2001,14 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
-        "tableName": "bill_paying_method",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expenseId` TEXT NOT NULL, `methodId` TEXT, `updatedAt` INTEGER NOT NULL, `pendingSync` INTEGER NOT NULL, `ownerUserId` TEXT, PRIMARY KEY(`expenseId`))",
-        "fields": [
-          {
-            "fieldPath": "expenseId",
-            "columnName": "expenseId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "methodId",
-            "columnName": "methodId",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "updatedAt",
-            "columnName": "updatedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "pendingSync",
-            "columnName": "pendingSync",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ownerUserId",
-            "columnName": "ownerUserId",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "expenseId"
+            "color"
           ]
         }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8d292432578e448dd5c2d62bd6a4353a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fe24e92c1fa02f97980ce1a46bdb1433')"
     ]
   }
 }

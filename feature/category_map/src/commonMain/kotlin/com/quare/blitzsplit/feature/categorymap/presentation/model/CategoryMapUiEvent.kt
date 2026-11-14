@@ -1,7 +1,8 @@
 package com.quare.blitzsplit.feature.categorymap.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
@@ -74,13 +75,15 @@ sealed interface CategoryMapUiEvent : UiEvent {
 
             is OnCategoryColorPicked -> EventAnalytics.Automatic(
                 "category_color_picked",
-                mapOf("color" to color.code, "source" to CATEGORY_MAP_SOURCE),
+                mapOf("color" to color.analyticsCode, "source" to CATEGORY_MAP_SOURCE),
             )
+
+            is OnCustomColor -> customColorAnalyticsOf(event)
 
             // Why: the color of one of the app's own categories, changed from its card (7.7); null is "Restore color".
             is OnAppCategoryColorPicked -> EventAnalytics.Automatic(
                 "app_category_color_picked",
-                mapOf("category" to categoryKey, "color" to (color?.code ?: "default")),
+                mapOf("category" to categoryKey, "color" to (color?.analyticsCode ?: "default")),
             )
 
             // Why: the tap, then the category once it is saved.
@@ -154,7 +157,12 @@ sealed interface CategoryMapUiEvent : UiEvent {
 
     data class OnAppCategoryColorPicked(
         val categoryKey: String,
-        val color: CategoryColor?,
+        val color: CategoryTint?,
+    ) : CategoryMapUiEvent
+
+    // Why: the person's own colors in a color picker ("+", "New color", a long press to delete), which CustomColorController handles.
+    data class OnCustomColor(
+        val event: CustomColorEvent,
     ) : CategoryMapUiEvent
 
     data object OnRestoreClicked : CategoryMapUiEvent
@@ -196,7 +204,7 @@ sealed interface CategoryMapUiEvent : UiEvent {
     ) : Categories
 
     data class OnCategoryColorPicked(
-        val color: CategoryColor,
+        val color: CategoryTint,
     ) : Categories
 
     data object OnCategoryFormSaveClicked : Categories
@@ -208,4 +216,47 @@ sealed interface CategoryMapUiEvent : UiEvent {
     data object OnCategoryDeleteConfirmed : Categories
 
     data object OnCategoryDeleteDismissed : Categories
+}
+
+// Why: the person's own colors in a picker, each name written here so the catalog test reads it.
+private fun customColorAnalyticsOf(event: CustomColorEvent): EventAnalytics = when (event) {
+    is CustomColorEvent.OnAddClicked -> EventAnalytics.Automatic(
+        "custom_color_add_clicked",
+        mapOf("source" to CATEGORY_MAP_SOURCE),
+    )
+
+    CustomColorEvent.OnSaveClicked -> EventAnalytics.Automatic(
+        "custom_color_save_clicked",
+        mapOf("source" to CATEGORY_MAP_SOURCE),
+    )
+
+    CustomColorEvent.OnDraftDismissed -> EventAnalytics.Automatic(
+        "custom_color_cancelled",
+        mapOf("source" to CATEGORY_MAP_SOURCE),
+    )
+
+    is CustomColorEvent.OnLongPressed -> EventAnalytics.Automatic(
+        "custom_color_delete_asked",
+        mapOf("source" to CATEGORY_MAP_SOURCE),
+    )
+
+    CustomColorEvent.OnDeleteConfirmed -> EventAnalytics.Automatic(
+        "custom_color_delete_confirmed",
+        mapOf("source" to CATEGORY_MAP_SOURCE),
+    )
+
+    CustomColorEvent.OnDeletionDismissed -> EventAnalytics.Automatic(
+        "custom_color_delete_cancelled",
+        mapOf("source" to CATEGORY_MAP_SOURCE),
+    )
+
+    /*
+     * Why: the gradient and the fields as they change aren't actions of their own ("Add" says what came of them), nor
+     * the picker closing on its own (a rotation, a popover).
+     */
+    is CustomColorEvent.OnHsvChanged,
+    is CustomColorEvent.OnHexChanged,
+    is CustomColorEvent.OnChannelChanged,
+    CustomColorEvent.OnPickerClosed,
+    -> EventAnalytics.NotTracked
 }

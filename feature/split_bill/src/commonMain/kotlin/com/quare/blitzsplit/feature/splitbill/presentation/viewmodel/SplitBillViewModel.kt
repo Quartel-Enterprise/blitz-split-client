@@ -165,13 +165,11 @@ class SplitBillViewModel(
     private val categoryEditing = CategoryEditing(
         uiState = uiState,
         scope = viewModelScope,
-        observeCategoryTree = categoryUseCases.observeCategoryTree,
+        useCases = categoryUseCases,
         observeExpenses = observeExpenses,
-        observeCategoryMap = categoryUseCases.observeCategoryMap,
-        saveGroupCategory = categoryUseCases.saveGroupCategory,
-        deleteGroupCategory = categoryUseCases.deleteGroupCategory,
         emit = { uiAction.emit(it) },
         onCategoryChanged = ::showCategorySplit,
+        pickColor = { onEvent(SplitBillUiEvent.OnCategoryColorPicked(it)) },
         trackEvent = trackEvent,
     )
 

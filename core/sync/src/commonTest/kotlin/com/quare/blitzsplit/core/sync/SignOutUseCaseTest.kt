@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeBillCommentRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryTermRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
@@ -87,7 +88,7 @@ class SignOutUseCaseTest {
                 expenseRepository = FakeExpenseRepository(),
                 settlementRepository = FakeSettlementRepository(),
                 categoryRepository = FakeCategoryRepository(),
-                categoryTermRepository = FakeCategoryTermRepository(),
+                personalCategoryData = PersonalCategoryData(FakeCategoryTermRepository(), FakeCustomColorRepository()),
                 payingMethodRepository = payingMethods,
                 billCommentRepository = FakeBillCommentRepository(),
                 billAttachmentRepository = FakeBillAttachmentRepository(),

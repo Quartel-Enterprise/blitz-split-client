@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUseCases
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
@@ -11,4 +12,6 @@ data class BillCategoryUseCases(
     val observeCategoryMap: ObserveCategoryMap,
     val saveGroupCategory: SaveGroupCategory,
     val deleteGroupCategory: DeleteGroupCategory,
+    // Why: the person's own colors in the form's "Color".
+    val customColors: CustomColorUseCases,
 )

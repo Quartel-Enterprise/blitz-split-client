@@ -1,8 +1,8 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryForm
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 
 fun interface SaveGroupCategory {
     /*
@@ -15,7 +15,7 @@ fun interface SaveGroupCategory {
         name: String,
         parentId: String?,
         icon: CategoryIcon,
-        color: CategoryColor,
+        color: CategoryTint,
         createdByMemberId: String?,
     ): Result<String>
 }

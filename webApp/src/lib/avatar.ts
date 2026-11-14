@@ -1,3 +1,4 @@
+import { getCustomColorTones } from 'blitzsplit-shared'
 import { t, type MessageKey } from '@/i18n'
 
 /** A color's [background, text] pair per theme, and its `data` tone [light, dark]. */
@@ -62,14 +63,32 @@ export const avatarColors: Record<string, ColorTones & { label: MessageKey }> = 
 /** The category colors' codes, in the order the picker lists them. */
 export const categoryColorCodes = Object.keys(categoryColors)
 
-/** The color's name for screen readers, or its code when the app doesn't know it. */
+/** The color's name for screen readers: a named color's, "Custom color #3A7BD5", or its code when the app doesn't know it. */
 export function categoryColorLabel(code: string): string {
-  return categoryColors[code] ? t(`categoryColor_${code}` as MessageKey) : code
+  if (categoryColors[code]) return t(`categoryColor_${code}` as MessageKey)
+  return code.startsWith('#') ? t('customColor_label', { hex: code }) : code
 }
 
-/** CSS variables for a category color, the same ones an avatar takes so the `avatar` class paints it. */
+/**
+ * CSS variables for a category color, the same ones an avatar takes so the `avatar` class paints it. A custom color
+ * (a hex code) takes the tones the shared code derives from it, as the Android and Apple apps draw it.
+ */
 export function categoryStyle(code: string): React.CSSProperties {
-  return colorStyle(categoryColors[code] ?? categoryColors.blue)
+  return colorStyle(categoryColors[code] ?? customTones(code) ?? categoryColors.blue)
+}
+
+/** A custom color's tones, worked out once per code: every badge, row and slice asks on each render. */
+const customToneCache = new Map<string, ColorTones | undefined>()
+
+function customTones(code: string): ColorTones | undefined {
+  if (!code.startsWith('#')) return undefined
+  if (customToneCache.has(code)) return customToneCache.get(code)
+  const tones = getCustomColorTones(code)
+  const result: ColorTones | undefined = tones
+    ? { light: [tones.lightBg, tones.lightFg], dark: [tones.darkBg, tones.darkFg], data: [tones.lightData, tones.darkData] }
+    : undefined
+  customToneCache.set(code, result)
+  return result
 }
 
 /**

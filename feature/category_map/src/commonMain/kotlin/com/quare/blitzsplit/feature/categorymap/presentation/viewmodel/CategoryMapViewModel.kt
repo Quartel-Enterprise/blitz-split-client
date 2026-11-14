@@ -2,9 +2,10 @@ package com.quare.blitzsplit.feature.categorymap.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorController
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUseCases
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryMap
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -48,6 +49,7 @@ class CategoryMapViewModel(
     private val restoreCategoryMap: RestoreCategoryMap,
     private val setAppCategoryColor: SetAppCategoryColor,
     saveGroupCategory: SaveGroupCategory,
+    customColorUseCases: CustomColorUseCases,
     deleteGroupCategory: DeleteGroupCategory,
     observeCategoryMap: ObserveCategoryMap,
     observeMapCategories: ObserveMapCategories,
@@ -59,24 +61,7 @@ class CategoryMapViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<CategoryMapUiEvent>(trackEvent) {
     val uiState: StateFlow<CategoryMapUiState>
-        field = MutableStateFlow(
-            CategoryMapUiState(
-                isLoaded = false,
-                map = CategoryMap.of(emptyList()),
-                categories = CategoryTree.appOnly,
-                groups = emptyList(),
-                query = "",
-                selectedCategoryId = null,
-                termForm = null,
-                removedTerm = null,
-                isRestoreConfirmOpen = false,
-                categoryForm = null,
-                categoryDeletion = null,
-                categoryBills = null,
-                isOnline = true,
-                isConnected = false,
-            ),
-        )
+        field = MutableStateFlow(CategoryMapUiState.initial)
 
     val uiAction: SharedFlow<CategoryMapUiAction>
         field = MutableSharedFlow<CategoryMapUiAction>()
@@ -93,7 +78,29 @@ class CategoryMapViewModel(
         trackEvent = trackEvent,
     )
 
+    /*
+     * Why: "Add" in "New color" gives the color to what "+" was opened for: the app category of "Change the color of
+     * Food" (on this device, as any color of it), or the form open on screen.
+     */
+    private val customColors = CustomColorController(
+        useCases = customColorUseCases,
+        scope = viewModelScope,
+        onPicked = { tint, categoryKey ->
+            if (categoryKey != null) {
+                // Why: the same pick as a swatch's, so app_category_color_picked counts it too.
+                onEvent(CategoryMapUiEvent.OnAppCategoryColorPicked(categoryKey, tint))
+            } else {
+                // Why: the same pick as a swatch's in "Color", so category_color_picked counts it too.
+                onEvent(CategoryMapUiEvent.OnCategoryColorPicked(tint))
+            }
+        },
+    )
+
     init {
+        customColors.observe()
+        customColors.state
+            .onEach { colors -> uiState.update { it.copy(customColors = colors) } }
+            .launchIn(viewModelScope)
         // Why: one read, so the terms never show against the app's categories alone, nor without the account.
         combine(
             observeCategoryMap(),
@@ -228,7 +235,12 @@ class CategoryMapViewModel(
                 setAppCategoryColor(event.categoryKey, event.color)
             }
 
-            is CategoryMapUiEvent.Categories -> categoryEditing.onEvent(event)
+            is CategoryMapUiEvent.OnCustomColor -> customColors.onEvent(event.event)
+
+            is CategoryMapUiEvent.Categories -> {
+                if (event == CategoryMapUiEvent.OnCategoryFormDismissed) customColors.close()
+                categoryEditing.onEvent(event)
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase
 
-import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 
 fun interface SetAppCategoryColor {
     /*
@@ -9,6 +9,6 @@ fun interface SetAppCategoryColor {
      */
     suspend operator fun invoke(
         categoryKey: String,
-        color: CategoryColor?,
+        color: CategoryTint?,
     ): Result<Unit>
 }

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.ItemSplitMode
@@ -82,6 +83,7 @@ internal fun createInitialBillState(
         categoryPicker = null,
         categoryForm = null,
         categoryDeletion = null,
+        customColors = CustomColorState.idle,
         receipt = null,
         receiptCategoryId = null,
         /*

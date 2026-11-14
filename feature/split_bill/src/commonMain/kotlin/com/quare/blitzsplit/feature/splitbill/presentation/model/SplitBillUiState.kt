@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.splitbill.presentation.model
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
@@ -91,6 +92,8 @@ data class SplitBillUiState(
     val categoryForm: CategoryForm?,
     // Why: "Apagar “Churrasco”?" (7.8f), open while not null.
     val categoryDeletion: CategoryDeletion?,
+    // Why: the person's own colors in the form's "Color": the palette, "New color" and deleting one.
+    val customColors: CustomColorState,
     // Why: "Dividir", open while not null; it changes the bill's split only on "Pronto".
     val splitEditor: SplitEditor?,
     // Why: Dividir's "Usar como padrão do grupo", which the bill takes on "Pronto" while it shows.

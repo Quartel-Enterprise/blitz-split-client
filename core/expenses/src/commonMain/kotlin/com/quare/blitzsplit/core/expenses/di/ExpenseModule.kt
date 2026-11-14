@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.di
 
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUseCases
 import com.quare.blitzsplit.core.expenses.data.datasource.AppCategoryColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.BillAttachmentRemoteDataSource
@@ -9,6 +10,8 @@ import com.quare.blitzsplit.core.expenses.data.datasource.BillCommentRemoteDataS
 import com.quare.blitzsplit.core.expenses.data.datasource.BillShareLinkRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.CategoryTermLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.CategoryTermRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.CustomColorLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.CustomColorRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.ExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.GroupCategoryLocalDataSource
@@ -20,6 +23,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.RoomAppCategoryColorLo
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillAttachmentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomBillCommentLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomCategoryTermLocalDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.RoomCustomColorLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomExpenseLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomGroupCategoryLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.RoomPayingMethodLocalDataSource
@@ -30,6 +34,7 @@ import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseBillAttachment
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseBillCommentRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseBillShareLinkRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseCategoryTermRemoteDataSource
+import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseCustomColorRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseExpenseRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabaseGroupCategoryRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.SupabasePayingMethodRemoteDataSource
@@ -41,6 +46,8 @@ import com.quare.blitzsplit.core.expenses.data.mapper.BillCommentMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.BillCommentMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.CategoryTermMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.CategoryTermMapperImpl
+import com.quare.blitzsplit.core.expenses.data.mapper.CustomColorMapper
+import com.quare.blitzsplit.core.expenses.data.mapper.CustomColorMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapper
 import com.quare.blitzsplit.core.expenses.data.mapper.ExpenseMapperImpl
 import com.quare.blitzsplit.core.expenses.data.mapper.GroupCategoryMapper
@@ -58,6 +65,7 @@ import com.quare.blitzsplit.core.expenses.data.repository.BillCommentRepositoryI
 import com.quare.blitzsplit.core.expenses.data.repository.BillShareLinkRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.CategoryRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.CategoryTermRepositoryImpl
+import com.quare.blitzsplit.core.expenses.data.repository.CustomColorRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.ExpenseRepositoryImpl
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryCategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
@@ -73,6 +81,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.BillShareLinkReposit
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTeachRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.CategoryTermRepository
+import com.quare.blitzsplit.core.expenses.domain.repository.CustomColorRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.DeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.ExpenseRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
@@ -82,6 +91,7 @@ import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepos
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AddCustomColor
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.CommentOnSharedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeCategoryTeachOffer
@@ -89,6 +99,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeDeletedBillNotic
 import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteCustomColor
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteGroupCategory
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeletePayingMethod
@@ -98,6 +109,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.DisableBillShareLink
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditSharedBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ExportGroup
+import com.quare.blitzsplit.core.expenses.domain.usecase.FindCustomColorUser
 import com.quare.blitzsplit.core.expenses.domain.usecase.GetRecentGroupId
 import com.quare.blitzsplit.core.expenses.domain.usecase.HoldPickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.LikeBillComment
@@ -116,6 +128,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillPayingMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryMap
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTeachOffer
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCustomColors
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
@@ -146,12 +159,14 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddCustomColorUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CommentOnSharedBillUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CreateExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteCustomColorUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteGroupCategoryUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeletePayingMethodUseCase
@@ -161,6 +176,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DisableBillShareLi
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditSharedBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ExportGroupUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.FindCustomColorUserUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.GetRecentGroupIdUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.HoldPickedReceiptUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LikeBillCommentUseCase
@@ -179,6 +195,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillPayingM
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryMapUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCustomColorsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
@@ -226,6 +243,7 @@ val expenseModule = module {
     factoryOf(::ObserveMyExpensesUseCase).bind<ObserveMyExpenses>()
     factoryOf(::ObserveBillDeletionUseCase).bind<ObserveBillDeletion>()
     factoryOf(::BillMenuUseCases)
+    factoryOf(::CustomColorUseCases)
     factoryOf(::CreateExpenseUseCase).bind<CreateExpense>()
     factoryOf(::ObserveExpenseUseCase).bind<ObserveExpense>()
     factoryOf(::UpdateExpenseUseCase).bind<UpdateExpense>()
@@ -284,6 +302,14 @@ val expenseModule = module {
     singleOf(::SupabaseCategoryTermRemoteDataSource).bind<CategoryTermRemoteDataSource>()
     singleOf(::CategoryTermMapperImpl).bind<CategoryTermMapper>()
     singleOf(::CategoryTermRepositoryImpl).bind<CategoryTermRepository>()
+    singleOf(::RoomCustomColorLocalDataSource).bind<CustomColorLocalDataSource>()
+    singleOf(::SupabaseCustomColorRemoteDataSource).bind<CustomColorRemoteDataSource>()
+    singleOf(::CustomColorMapperImpl).bind<CustomColorMapper>()
+    singleOf(::CustomColorRepositoryImpl).bind<CustomColorRepository>()
+    factoryOf(::ObserveCustomColorsUseCase).bind<ObserveCustomColors>()
+    factoryOf(::AddCustomColorUseCase).bind<AddCustomColor>()
+    factoryOf(::DeleteCustomColorUseCase).bind<DeleteCustomColor>()
+    factoryOf(::FindCustomColorUserUseCase).bind<FindCustomColorUser>()
     singleOf(::RoomPayingMethodLocalDataSource).bind<PayingMethodLocalDataSource>()
     singleOf(::SupabasePayingMethodRemoteDataSource).bind<PayingMethodRemoteDataSource>()
     singleOf(::PayingMethodMapperImpl).bind<PayingMethodMapper>()

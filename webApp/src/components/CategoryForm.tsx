@@ -1,6 +1,7 @@
-import { Check, CloudOff } from 'lucide-react'
-import type { JsCategoryDeletion, JsCategoryForm } from 'blitzsplit-shared'
+import { CloudOff } from 'lucide-react'
+import type { JsCategoryDeletion, JsCategoryForm, JsCustomColorActions, JsCustomColors } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
+import { CategoryColorPicker } from '@/components/CategoryColorPicker'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import type { PaneParts } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDraft } from '@/hooks/useDraft'
 import { t } from '@/i18n'
-import { categoryColorCodes, categoryColorLabel, categoryStyle } from '@/lib/avatar'
+import { categoryStyle } from '@/lib/avatar'
 import { categoryIconLabel, categoryIconOf, categoryName } from '@/lib/categories'
 import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
@@ -31,17 +32,19 @@ export interface CategoryFormActions {
   askToDelete(): void
   confirmDelete(): void
   dismissDelete(): void
+  /** The person's own colors in "Color". */
+  readonly customColors: JsCustomColorActions
 }
 
 /**
  * "Nova categoria", "Nova subcategoria" or "Editar categoria" (7.8), in a bill's picker or over the map (9.4).
  * groupField is the map's "Grupo", above the name.
  */
-export function categoryFormPane(actions: CategoryFormActions, form: JsCategoryForm, icons: string[], groupField?: ReactNode): PaneParts {
+export function categoryFormPane(actions: CategoryFormActions, form: JsCategoryForm, icons: string[], customColors: JsCustomColors, groupField?: ReactNode): PaneParts {
   const title = form.isEditing ? 'splitBill_categoryFormEdit' : form.isSubcategory ? 'splitBill_categoryFormSub' : 'splitBill_categoryFormNew'
   return {
     title: t(title),
-    body: <CategoryFormBody actions={actions} form={form} icons={icons} groupField={groupField} />,
+    body: <CategoryFormBody actions={actions} form={form} icons={icons} customColors={customColors} groupField={groupField} />,
     footer: (
       <>
         {form.isEditing && (
@@ -60,7 +63,19 @@ export function categoryFormPane(actions: CategoryFormActions, form: JsCategoryF
   }
 }
 
-function CategoryFormBody({ actions, form, icons, groupField }: { actions: CategoryFormActions; form: JsCategoryForm; icons: string[]; groupField?: ReactNode }) {
+function CategoryFormBody({
+  actions,
+  form,
+  icons,
+  customColors,
+  groupField,
+}: {
+  actions: CategoryFormActions
+  form: JsCategoryForm
+  icons: string[]
+  customColors: JsCustomColors
+  groupField?: ReactNode
+}) {
   const [name, setName] = useDraft(form.name, (text) => {
     actions.changeName(text)
     return actions.getName()
@@ -178,28 +193,13 @@ function CategoryFormBody({ actions, form, icons, groupField }: { actions: Categ
           <span id="category-color-label" className="mt-3 text-sm font-semibold text-muted-foreground">
             {t('splitBill_categoryColor')}
           </span>
-          <div role="radiogroup" aria-labelledby="category-color-label" className="flex flex-wrap gap-3">
-            {categoryColorCodes.map((code) => {
-              const isSelected = code === form.color
-              return (
-                <button
-                  key={code}
-                  type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  aria-label={categoryColorLabel(code)}
-                  onClick={() => actions.pickColor(code)}
-                  style={categoryStyle(code)}
-                  className={cn(
-                    'avatar flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                    isSelected && 'ring-[3px] ring-primary',
-                  )}
-                >
-                  {isSelected && <Check aria-hidden className="size-5" />}
-                </button>
-              )
-            })}
-          </div>
+          <CategoryColorPicker
+            selected={form.color}
+            onPick={(code) => actions.pickColor(code)}
+            customColors={customColors}
+            actions={actions.customColors}
+            labelledBy="category-color-label"
+          />
         </div>
       )}
     </div>

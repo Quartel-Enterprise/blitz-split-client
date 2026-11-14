@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptCategoryHints
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptItem
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReading
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.testing.noReceiptCategoryHints
 import com.quare.blitzsplit.core.model.GroupCurrency
 import kotlinx.coroutines.CancellationException
@@ -381,7 +382,7 @@ class ReceiptRepositoryImplTest {
         app = null,
         name = "Pet",
         icon = CategoryIcon.DOTS,
-        color = CategoryColor.PURPLE,
+        color = CategoryColor.PURPLE.tint,
         parentId = null,
         createdByMemberId = "ana",
         isPending = false,
