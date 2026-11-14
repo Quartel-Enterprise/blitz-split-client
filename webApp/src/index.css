@@ -349,6 +349,62 @@
 }
 
 /*
+ * A contact's profile header (ContactProfile): the face, the name and "Uses the app · 1 group in common" at the top,
+ * and, as the page or the pane scrolls, a compact sticky bar, the face shrinking to 32 px and the line under the name
+ * fading. `--p` goes from 0 (open) to 1 (folded) with the scroll itself (useCollapsingHeader), as the group's header.
+ */
+.contact-header {
+  --open: 72px;
+  --folded: 52px;
+  --photo-open: 48px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+  height: calc(var(--open) - var(--p, 0) * (var(--open) - var(--folded)));
+  margin-bottom: calc(var(--p, 0) * (var(--open) - var(--folded)));
+}
+
+.contact-header::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--border);
+  opacity: var(--p, 0);
+}
+
+.contact-header-photo {
+  --size: calc(var(--photo-open) - var(--p, 0) * (var(--photo-open) - 32px));
+  width: var(--size);
+  height: var(--size);
+  font-size: calc(var(--size) * 0.36);
+}
+
+.contact-header-name {
+  font-size: calc(20px - var(--p, 0) * 4px);
+  line-height: 1.25;
+}
+
+.contact-header-meta {
+  max-height: calc((1 - var(--p, 0)) * 28px);
+  opacity: max(0, 1 - var(--p, 0) * 2);
+  overflow: hidden;
+}
+
+@container (width >= 28rem) {
+  .contact-header {
+    --open: 80px;
+    --photo-open: 56px;
+  }
+
+  .contact-header-name {
+    font-size: calc(24px - var(--p, 0) * 8px);
+  }
+}
+
+/*
  * A group opened from its row, and back (lib/groupTransition): the photo and the name morph between the row and the
  * header while the page crossfades under them. Reduced motion never starts one; this covers a preference that
  * changes during one.

@@ -1,4 +1,5 @@
-import { ArrowRight, Check, ChevronLeft, CircleDollarSign, Ellipsis, EyeOff, Eye, Info, Merge, UserPlus, Wallet, WifiOff } from 'lucide-react'
+import { useRef } from 'react'
+import { ArrowRight, Check, ChevronLeft, CircleDollarSign, Ellipsis, EyeOff, Eye, Info, Merge, Share2, UserPlus, Wallet, WifiOff } from 'lucide-react'
 import {
   ContactProfilePresenter,
   type JsContact,
@@ -18,6 +19,7 @@ import { balanceTone, paymentMethodLabel } from '@/features/balances/BalanceCard
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { t } from '@/i18n'
 import { CategoryBadge } from '@/lib/categories'
+import { useCollapsingHeader } from '@/hooks/useCollapsingHeader'
 import { formatDayTime, formatShortDate } from '@/lib/dates'
 import { formatMoney, formatNames, formatSignedMoney } from '@/lib/money'
 import { copyLink, shareOrCopy } from '@/lib/share'
@@ -43,6 +45,10 @@ function onProfileAction(action: JsContactProfileAction) {
       break
     case 'share':
       if (action.link) shareOrCopy(t('contactProfile_mergeShareMessage', { name: action.name ?? '', link: action.link }), action.link)
+      break
+    // Why: the link alone, whose preview shows the person's name and photo.
+    case 'share-profile':
+      if (action.link) shareOrCopy(action.link, action.link)
       break
     case 'added':
       toast(t('contactProfile_added', { name: action.name ?? '', group: action.groupName ?? '' }))
@@ -81,6 +87,9 @@ export function ContactProfileView({
 }) {
   const name = contact.name
   const groupsMeta = contact.groups.length === 1 ? t('contactProfile_groupsOne') : t('contacts_groupsInCommon', { count: contact.groups.length })
+  const headerPlace = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+  useCollapsingHeader(headerPlace, headerRef)
   return (
     <section aria-label={t('contactProfile_pane', { name })} className="@container flex min-w-0 flex-col gap-5">
       {onBack && (
@@ -89,17 +98,32 @@ export function ContactProfileView({
           {backLabel ?? t('contacts_title')}
         </Button>
       )}
-      <header className="flex items-center gap-3.5">
-        <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="size-12 text-lg @md:size-14" />
+      {/* Why: where the header sits in the page, which its fold counts from; it takes no room (the gap after it is undone). */}
+      <div ref={headerPlace} aria-hidden className="-mb-5" />
+      {/*
+        Why: sticky, folding into a bar with the scroll (beta feedback of 2026-11-14): the face shrinks and the line
+        under the name fades, so whose profile it is stays in sight.
+      */}
+      <header ref={headerRef} className="contact-header flex items-center gap-3.5 bg-background/95 backdrop-blur">
+        <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="contact-header-photo shrink-0" />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h2 className="truncate text-xl font-semibold tracking-tight @md:text-2xl">{name}</h2>
-          <div className="flex flex-wrap items-center gap-2">
+          <h2 className="contact-header-name truncate font-semibold tracking-tight">{name}</h2>
+          <div className="contact-header-meta flex flex-wrap items-center gap-2">
             <Badge variant={contact.isGuest ? 'outline' : 'secondary'}>{t(contact.isGuest ? 'contactProfile_guest' : 'contactProfile_usesApp')}</Badge>
             <span className="text-[13px] text-muted-foreground">{groupsMeta}</span>
           </div>
         </div>
+        {/* Why: the person's profile link, as they would share it themselves; a guest has none. */}
+        {state.canShareProfile && (
+          <Button variant="outline" size="icon" aria-label={t('profile_share')} title={t('profile_share')} onClick={() => presenter.shareProfile()}>
+            <Share2 />
+          </Button>
+        )}
         <ProfileMenu presenter={presenter} state={state} contact={contact} />
       </header>
+      {/* Why: from a wide container, who the person is with the balance on the left, the groups and the history on the right. */}
+      <div className="flex flex-col gap-5 @4xl:grid @4xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] @4xl:items-start @4xl:gap-8">
+      <div className="flex min-w-0 flex-col gap-5">
       {state.showsOfflineNotice && (
         <span className="inline-flex items-center gap-1.5 self-start rounded-md border px-2 py-1 text-xs text-muted-foreground">
           <WifiOff aria-hidden className="size-3.5" />
@@ -157,6 +181,8 @@ export function ContactProfileView({
         </div>
       )}
       <BalanceSection presenter={presenter} state={state} contact={contact} />
+      </div>
+      <div className="flex min-w-0 flex-col gap-5">
       <GroupsInCommon presenter={presenter} contact={contact} isNetOfSeveralGroups={state.isNetOfSeveralGroups} />
       {state.history.length > 0 && (
         <section aria-label={t('contactProfile_history', { name })} className="flex flex-col gap-2.5">
@@ -175,6 +201,8 @@ export function ContactProfileView({
           </ul>
         </section>
       )}
+      </div>
+      </div>
       {state.isHideConfirmOpen && (
         <ConfirmDialog
           title={t('contactProfile_hideTitle', { name })}
