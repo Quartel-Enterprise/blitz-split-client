@@ -268,17 +268,19 @@ class PaidWithViewModelTest {
         }
 
     @Test
-    fun `GIVEN cash picked WHEN cash is deleted meanwhile THEN Paid with reads as none`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(CASH))
+    fun `GIVEN cash picked WHEN cash is deleted meanwhile THEN Paid with goes back to how it opened`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(CASH))
 
-        // When
-        paying.methods.value = listOf(nubank)
+            // When
+            paying.methods.value = listOf(nubank)
 
-        // Then
-        assertNull(viewModel.uiState.value.paidWith.method)
-    }
+            // Then
+            assertEquals(nubank, viewModel.uiState.value.paidWith.method)
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
 
     @Test
     fun `GIVEN the default picked WHEN picking cash THEN cash is picked and the pick is tracked`() =

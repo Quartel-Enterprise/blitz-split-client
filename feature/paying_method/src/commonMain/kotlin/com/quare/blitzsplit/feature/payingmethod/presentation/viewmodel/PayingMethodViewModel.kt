@@ -58,10 +58,15 @@ class PayingMethodViewModel(
 
     val stateWatcher: FlowWatcher<PayingMethodUiState> = FlowWatcher(uiState)
 
+    // Why: what a sync brought while saving, which update() skipped then and applies if the save fails.
+    private var latest: Pair<List<PayingMethod>, Boolean>? = null
+
     init {
         combine(observePayingMethods(), observeShowsPix(), ::Pair)
-            .onEach { (methods, showsPix) -> update(methods, showsPix) }
-            .launchIn(viewModelScope)
+            .onEach { (methods, showsPix) ->
+                latest = methods to showsPix
+                update(methods, showsPix)
+            }.launchIn(viewModelScope)
         navigator.guardUnsavedInput(viewModelScope, route, uiState.map { it.hasUnsavedInput })
     }
 
@@ -190,6 +195,7 @@ class PayingMethodViewModel(
                 leave()
             }.onFailure {
                 uiState.update { it.copy(isSaving = false) }
+                latest?.let { (methods, showsPix) -> update(methods, showsPix) }
             }
         }
     }
@@ -207,7 +213,10 @@ class PayingMethodViewModel(
         viewModelScope.launch {
             deletePayingMethod(id)
                 .onSuccess { leave() }
-                .onFailure { uiState.update { it.copy(isSaving = false) } }
+                .onFailure {
+                    uiState.update { it.copy(isSaving = false) }
+                    latest?.let { (methods, showsPix) -> update(methods, showsPix) }
+                }
         }
     }
 

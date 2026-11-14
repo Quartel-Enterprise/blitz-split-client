@@ -55,7 +55,11 @@ internal class PaidWithPicking(
         useCases.markBillPayingMethod(expenseId, state.paidWithToSave)
     }
 
-    // Why: what the form opens on is set once; later the list only follows the methods added or deleted meanwhile.
+    /*
+     * Why: what the form opens on is set once, from the first list that has methods (a restored account's come a moment
+     * later); later the list only follows the methods added or deleted, and a picked method deleted meanwhile goes back
+     * to the bill's own mark.
+     */
     private fun show(
         methods: List<PayingMethod>,
         mark: PayingMethod?,
@@ -64,16 +68,20 @@ internal class PaidWithPicking(
         val openedId = mark?.id ?: default
         uiState.update { state ->
             val withMethods = state.paidWith.copy(methods = methods)
-            val paidWith = if (hasOpened) {
-                withMethods
-            } else {
-                withMethods.copy(
+            val paidWith = when {
+                !hasOpened -> withMethods.copy(
                     methodId = openedId,
                     openedMethodId = openedId,
                 )
+
+                methods.none { it.id == withMethods.methodId } -> withMethods.copy(
+                    methodId = withMethods.openedMethodId,
+                )
+
+                else -> withMethods
             }
             state.copy(paidWith = paidWith)
         }
-        hasOpened = true
+        if (methods.isNotEmpty()) hasOpened = true
     }
 }
