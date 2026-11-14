@@ -11,7 +11,10 @@ interface LegalRepository {
         language: String,
     ): Flow<LegalDocument?>
 
-    // Why: downloads the page's current text for that language, English's when the site has none in it.
+    /*
+     * Why: makes sure the saved text for that language is the page's current one (English's when the site has none in
+     * it), asking the site at most once a day and downloading the text only when it changed.
+     */
     suspend fun refreshDocument(
         page: LegalPage,
         language: String,

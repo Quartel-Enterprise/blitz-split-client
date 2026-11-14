@@ -145,7 +145,12 @@ function SplitModeChips({ presenter, selected }: { presenter: SplitBillPresenter
     selectedRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }, [selected])
   return (
-    <div role="radiogroup" aria-label={t('split_modes')} className="flex w-full min-w-0 gap-2 overflow-x-auto py-0.5 [scrollbar-width:none]">
+    // Why: it reaches into the pane's side padding (--pane-gutter), so the pills scroll to its edge, never cut short (beta feedback).
+    <div
+      role="radiogroup"
+      aria-label={t('split_modes')}
+      className="-mx-(--pane-gutter) flex min-w-0 scroll-px-(--pane-gutter) gap-2 overflow-x-auto px-(--pane-gutter) py-0.5 [scrollbar-width:none]"
+    >
       {modes.map(({ mode, label }) => {
         const isSelected = selected === mode
         return (

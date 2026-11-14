@@ -57,6 +57,7 @@
     <string name="payment_key_switched_to_onchain">Ini adalah alamat on-chain, jadi kami beralih ke On-chain.</string>
     <string name="payment_key_switched_to_lightning">Ini adalah Lightning Address, jadi kami beralih ke Lightning.</string>
     <string name="payment_key_cpf_notice">Siapa pun yang membayarmu melihat CPF lengkapmu. Jika tidak ingin membagikannya, gunakan kunci telepon, email, atau acak.</string>
+    <string name="payment_key_held_notice">Kamu hanya bisa punya satu kunci Pix jenis ini, jadi ini kunci yang sudah kamu simpan. Ubah di sini jika mau.</string>
 
     <string name="payment_key_accepted_title">Kami menerima</string>
     <string name="payment_key_accepted_lightning_address_sample">nama@wallet.app</string>

@@ -69,6 +69,7 @@ internal fun createPreviewProfileState(
     showsBitcoinInSats = false,
     sharesUsageData = true,
     language = AppLanguage.SYSTEM,
+    languageQuery = "",
     activeNotificationCount = 3.toLoaded(),
     showsCheckForUpdates = true,
     isCheckingForUpdates = false,

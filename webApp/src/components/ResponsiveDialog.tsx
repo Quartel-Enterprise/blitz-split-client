@@ -45,7 +45,7 @@ export function ResponsiveDialog({
 }) {
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
-      <DialogContent className={cn('max-h-[calc(100dvh-2rem)] overflow-y-auto', className)} onOpenAutoFocus={focusPastLeading}>
+      <DialogContent className={cn('max-h-[calc(100dvh-2rem)] overflow-y-auto [--pane-gutter:--spacing(6)]', className)} onOpenAutoFocus={focusPastLeading}>
         <DialogHeader className="pr-8">
           <div data-dialog-leading className="contents">
             {pane.leading}
@@ -67,7 +67,7 @@ export function ResponsiveDialog({
           <DrawerTitle>{pane.title}</DrawerTitle>
           <DrawerDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DrawerDescription>
         </DrawerHeader>
-        <div className="overflow-y-auto px-4">{pane.body}</div>
+        <div className="overflow-y-auto px-4 [--pane-gutter:--spacing(4)]">{pane.body}</div>
         <DrawerFooter className="flex-col-reverse">{pane.footer}</DrawerFooter>
       </DrawerContent>
     </Drawer>

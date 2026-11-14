@@ -22,7 +22,6 @@ import androidx.compose.ui.window.DialogProperties
 
 private val landscapeSheetMaxWidth = 640.dp
 private val alertDialogMaxWidth = 560.dp
-private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape)
 
 /*
  * Why: a short sheet over the app: a bottom sheet on a phone (centered at up to 640dp lying down), a 560dp dialog on a
@@ -39,7 +38,7 @@ private val phoneFormFactors = setOf(FormFactor.Phone, FormFactor.PhoneLandscape
 fun AdaptiveSheet(
     title: String?,
     onDismissRequest: () -> Unit,
-    usesDialog: Boolean = rememberFoldLayout().formFactor !in phoneFormFactors,
+    usesDialog: Boolean = !rememberFoldLayout().formFactor.isPhone,
     skipPartiallyExpanded: Boolean = true,
     sheetMaxWidth: Dp = landscapeSheetMaxWidth,
     dialogMaxWidth: Dp = alertDialogMaxWidth,

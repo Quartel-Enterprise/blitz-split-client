@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.splitbill
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.FormFloatingAction
 import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -47,6 +49,16 @@ fun SplitBillContent(
      * photo comes from.
      */
     val usesTabletopHalves = rememberUsesTabletopHalves(isDialog)
+    /*
+     * Why: full screen, "Ler cupom fiscal" is an extended FAB at the bottom, under the thumb, while "Salvar" stays at the
+     * top (beta feedback); a dialog keeps it in the form, beside its own actions.
+     */
+    val scanPlacement = when {
+        usesTabletopHalves -> ScanReceiptPlacement.NONE
+        isDialog -> ScanReceiptPlacement.INLINE
+        else -> ScanReceiptPlacement.FLOATING
+    }
+    val scanLabel = stringResource(R.string.split_bill_scan_receipt)
     ColumnsFormLayout(
         chrome = FormChrome(
             title = stringResource(if (state.isEditing) R.string.split_bill_edit_title else R.string.split_bill_title),
@@ -88,7 +100,7 @@ fun SplitBillContent(
                 )
                 ReceiptSection(
                     state = state,
-                    showsScanButton = !usesTabletopHalves,
+                    scanPlacement = scanPlacement,
                     onEvent = onEvent,
                 )
                 if (state.isEditing) {
@@ -103,6 +115,14 @@ fun SplitBillContent(
         },
         modifier = modifier,
         tabletop = TabletopForm.ConfirmAtBottom,
+        floatingAction = FormFloatingAction(
+            icon = Icons.Outlined.DocumentScanner,
+            label = scanLabel,
+            onClick = { onEvent(SplitBillUiEvent.OnScanReceiptClicked) },
+        ).takeIf {
+            // Why: a FAB has no disabled look, so it leaves while scanning can't start (saving, a group loading).
+            scanPlacement == ScanReceiptPlacement.FLOATING && state.showsScanReceipt && state.canScanReceipt
+        },
     )
 }
 

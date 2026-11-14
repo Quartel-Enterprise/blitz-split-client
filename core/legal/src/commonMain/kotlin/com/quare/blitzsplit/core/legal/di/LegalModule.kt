@@ -10,9 +10,11 @@ import com.quare.blitzsplit.core.legal.data.repository.LegalRepositoryImpl
 import com.quare.blitzsplit.core.legal.domain.repository.LegalRepository
 import com.quare.blitzsplit.core.legal.domain.usecase.GetLegalLanguage
 import com.quare.blitzsplit.core.legal.domain.usecase.ObserveLegalDocument
+import com.quare.blitzsplit.core.legal.domain.usecase.PrefetchLegalDocuments
 import com.quare.blitzsplit.core.legal.domain.usecase.RefreshLegalDocument
 import com.quare.blitzsplit.core.legal.domain.usecase.impl.GetLegalLanguageUseCase
 import com.quare.blitzsplit.core.legal.domain.usecase.impl.ObserveLegalDocumentUseCase
+import com.quare.blitzsplit.core.legal.domain.usecase.impl.PrefetchLegalDocumentsUseCase
 import com.quare.blitzsplit.core.legal.domain.usecase.impl.RefreshLegalDocumentUseCase
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
@@ -40,4 +42,11 @@ val legalModule = module {
     factoryOf(::GetLegalLanguageUseCase).bind<GetLegalLanguage>()
     factoryOf(::ObserveLegalDocumentUseCase).bind<ObserveLegalDocument>()
     factoryOf(::RefreshLegalDocumentUseCase).bind<RefreshLegalDocument>()
+    factory<PrefetchLegalDocuments> {
+        PrefetchLegalDocumentsUseCase(
+            drawsTextsInApp = drawsLegalTextsInApp,
+            getLegalLanguage = get(),
+            repository = get(),
+        )
+    }
 }

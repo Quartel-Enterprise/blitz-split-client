@@ -56,6 +56,48 @@ class SavePaymentKeyUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a CPF key held WHEN adding another CPF THEN saves it over the held one`() = runTest {
+        // Given
+        prepareScenario(keys = listOf(pixDefault))
+
+        // When
+        useCase(
+            keyId = null,
+            type = PaymentKeyType.CPF,
+            value = "52998224725",
+            isDefault = false,
+        )
+
+        // Then
+        val saved = repository.keys.value.single()
+        assertEquals(pixDefault.id, saved.id)
+        assertEquals("52998224725", saved.value)
+        assertEquals(pixDefault.addedAt, saved.addedAt)
+    }
+
+    @Test
+    fun `GIVEN a random key held WHEN adding another random key THEN adds a second one`() = runTest {
+        // Given
+        val random = pixDefault.copy(
+            id = "pix-r",
+            type = PaymentKeyType.RANDOM,
+            value = "123e4567-e89b-12d3-a456-426614174000",
+        )
+        prepareScenario(keys = listOf(random))
+
+        // When
+        useCase(
+            keyId = null,
+            type = PaymentKeyType.RANDOM,
+            value = "9f8e7d6c-5b4a-4321-9876-543210fedcba",
+            isDefault = false,
+        )
+
+        // Then
+        assertEquals(2, repository.keys.value.size)
+    }
+
+    @Test
     fun `GIVEN no Pix key WHEN adding one not as default THEN it is the Pix default anyway`() = runTest {
         // Given
         prepareScenario(keys = listOf(bitcoinDefault))

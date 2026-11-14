@@ -31,6 +31,8 @@ internal class ProfileDialogs(
 
     fun openLanguage() {
         if (uiState.value.isLoaded && show(ProfileDialog.LANGUAGE)) {
+            // Why: each opening starts from the whole list, never from the last search.
+            uiState.update { it.copy(languageQuery = "") }
             trackEvent("profile_language_clicked", emptyMap())
         }
     }

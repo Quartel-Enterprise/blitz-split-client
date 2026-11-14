@@ -127741,6 +127741,77 @@
         }
       }
     },
+    "You can only have one Pix key of this type, so this is the one you saved. Change it here if you want." : {
+      "comment" : "Pix key form: the tab of a type the person already holds shows that saved key",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst nur einen Pix-Schlüssel dieses Typs haben, daher siehst du hier deinen gespeicherten. Ändere ihn hier, wenn du willst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo puedes tener una clave Pix de este tipo, así que esta es la que ya está guardada. Si quieres, cámbiala aquí."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo puedes tener una clave Pix de este tipo, así que esta es la que ya está guardada. Si quieres, cámbiala aquí."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu ne peux avoir qu’une clé Pix de ce type, voici donc celle que tu as enregistrée. Modifie-la ici si tu veux."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamu hanya bisa punya satu kunci Pix jenis ini, jadi ini kunci yang sudah kamu simpan. Ubah di sini jika mau."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puoi avere una sola chiave Pix di questo tipo, quindi questa è quella che hai salvato. Se vuoi, cambiala qui."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この種類のPixキーは1つしか登録できないため、保存済みのキーを表示しています。必要ならここで変更してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je kunt maar één Pix-sleutel van dit type hebben, dus dit is degene die je hebt opgeslagen. Wijzig hem hier als je wilt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Możesz mieć tylko jeden klucz Pix tego typu, więc widzisz tu ten już zapisany. Jeśli chcesz, zmień go tutaj."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você só pode ter uma chave Pix desse tipo, então esta é a que você salvou. Se quiser, troque por aqui."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu türde yalnızca bir Pix anahtarın olabilir, bu yüzden kaydettiğin anahtar gösteriliyor. İstersen buradan değiştir."
+          }
+        }
+      }
+    },
     "Export group data" : {
       "comment" : "The group's ⋯ menu and the title of its format picker: saves the group's bills, payments and balances to a file",
       "localizations" : {

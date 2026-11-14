@@ -2,6 +2,8 @@ package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -24,12 +27,15 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.layout.FormBleed
+import com.quare.blitzsplit.android.designsystem.layout.horizontalBleed
 import kotlinx.coroutines.flow.first
 
 /*
  * Why: a single choice among more options than fit side by side (Dividir's six modes, beta feedback): a row of pill
  * chips that scrolls sideways, the picked one filled and always scrolled into sight. Each chip is a radio button to a
- * screen reader, the row their group.
+ * screen reader, the row their group. With `bleed`, it reaches into the form's side margins (`LocalFormBleed`), so the chips scroll
+ * to the column's edge rather than being cut short of it (beta feedback), the first one still lined up with the form.
  */
 @Composable
 fun ChoiceChipRow(
@@ -40,7 +46,10 @@ fun ChoiceChipRow(
     modifier: Modifier = Modifier,
     height: Dp = 40.dp,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    // Why: opt in with `LocalFormBleed.current` where the row sits right in a form's column, never inside a card.
+    bleed: FormBleed = FormBleed.None,
 ) {
+    val layoutDirection = LocalLayoutDirection.current
     val listState = rememberLazyListState()
     LaunchedEffect(selectedIndex) {
         if (selectedIndex < 0) return@LaunchedEffect
@@ -53,10 +62,16 @@ fun ChoiceChipRow(
     LazyRow(
         state = listState,
         modifier = modifier
+            .horizontalBleed(bleed)
             .fillMaxWidth()
             .selectableGroup()
             .semantics { contentDescription = groupLabel },
-        contentPadding = contentPadding,
+        contentPadding = PaddingValues(
+            start = contentPadding.calculateStartPadding(layoutDirection) + bleed.start,
+            top = contentPadding.calculateTopPadding(),
+            end = contentPadding.calculateEndPadding(layoutDirection) + bleed.end,
+            bottom = contentPadding.calculateBottomPadding(),
+        ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         itemsIndexed(labels) { index, label ->

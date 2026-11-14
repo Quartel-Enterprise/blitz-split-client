@@ -57,6 +57,7 @@
     <string name="payment_key_switched_to_onchain">Questo è un indirizzo on-chain, quindi siamo passati a On-chain.</string>
     <string name="payment_key_switched_to_lightning">Questo è un Lightning Address, quindi siamo passati a Lightning.</string>
     <string name="payment_key_cpf_notice">Chi ti paga vede il tuo CPF completo. Se preferisci non condividerlo, usa una chiave telefono, email o casuale.</string>
+    <string name="payment_key_held_notice">Puoi avere una sola chiave Pix di questo tipo, quindi questa è quella che hai salvato. Se vuoi, cambiala qui.</string>
 
     <string name="payment_key_accepted_title">Accettiamo</string>
     <string name="payment_key_accepted_lightning_address_sample">nome@wallet.app</string>

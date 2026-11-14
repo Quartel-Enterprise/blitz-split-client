@@ -974,6 +974,7 @@ export const en = {
   paymentKey_switchedONCHAIN: 'This is an on-chain address, so we switched to On-chain.',
   paymentKey_switchedLIGHTNING: 'This is a Lightning Address, so we switched to Lightning.',
   paymentKey_cpfNotice: "Whoever pays you sees your full CPF. If you'd rather not share it, use a phone, email or random key.",
+  paymentKey_heldNotice: 'You can only have one Pix key of this type, so this is the one you saved. Change it here if you want.',
   paymentKey_accepted: 'We accept',
   paymentKey_acceptedLightningAddressSample: 'name@wallet.app',
   paymentKey_acceptedLightningAddress: 'Lightning Address',
