@@ -33,6 +33,7 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
@@ -97,6 +98,7 @@ internal fun SplitEditorContent(
                 selectedIndex = SplitMode.entries.indexOf(editor.mode),
                 groupLabel = stringResource(R.string.split_bill_modes),
                 onClick = { index -> onEvent(SplitBillUiEvent.OnSplitModeClicked(SplitMode.entries[index])) },
+                bleed = LocalFormBleed.current,
             )
             SplitStatusCard(
                 editor = editor,

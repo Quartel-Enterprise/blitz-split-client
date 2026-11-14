@@ -79,6 +79,11 @@ final class SplitBillModel {
         )
     }
 
+    /// What the symbol before the total offers: the same list as the "Currency" control (beta feedback).
+    var currencyChoice: CurrencyChoice {
+        CurrencyChoice(selection: currency, currencies: state.currencies, isEnabled: state.canChangeCurrency)
+    }
+
     var billDescription: Binding<String> {
         Binding(
             get: { self.current.description_ },
@@ -312,6 +317,23 @@ private struct PhoneSplitBill: View {
         model.state
     }
 
+    /// "Scan receipt" in the bottom toolbar: a new bill, disabled offline (the form says why) rather than gone, so its
+    /// open source dialog survives the connection dropping. Only the layouts that offer it declare it, so an iPhone
+    /// Duo's halves (the board leaves it out) never do, whatever the fold.
+    private var showsScanButton: Bool {
+        state.isLoaded && state.showsScanReceipt
+    }
+
+    @ToolbarContentBuilder
+    private var scanToolbar: some ToolbarContent {
+        if showsScanButton {
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            ToolbarItem(placement: .bottomBar) {
+                ScanReceiptToolbarButton(model: model, isSettled: isSettled, isShown: $isScanButtonShown)
+            }
+        }
+    }
+
     var body: some View {
         Group {
             // Lying down and on iPad: what to read on the left, the details on the right
@@ -320,11 +342,12 @@ private struct PhoneSplitBill: View {
                     Form { whatSections }
                     Form {
                         detailsSection
-                        ReceiptSection(model: model, isSettled: isSettled, isScanButtonShown: $isScanButtonShown)
+                        ReceiptSection(model: model)
                         settledPairSection
                         deleteSection
                     }
                 }
+                .toolbar { scanToolbar }
             } else {
                 // An iPhone Duo open upright: the same halves above and below the fold (7.1)
                 FoldHalves(scrollsHalves: false) {
@@ -333,12 +356,7 @@ private struct PhoneSplitBill: View {
                     Form {
                         detailsSection
                         // The board leaves "Ler cupom fiscal" out here; Início's shortcut still asks where the photo comes from
-                        ReceiptSection(
-                            model: model,
-                            isSettled: isSettled,
-                            isScanButtonShown: $isScanButtonShown,
-                            showsScanButton: false,
-                        )
+                        ReceiptSection(model: model, showsScanNotice: false)
                         settledPairSection
                         deleteSection
                     }
@@ -346,10 +364,11 @@ private struct PhoneSplitBill: View {
                     Form {
                         whatSections
                         detailsSection
-                        ReceiptSection(model: model, isSettled: isSettled, isScanButtonShown: $isScanButtonShown)
+                        ReceiptSection(model: model)
                         settledPairSection
                         deleteSection
                     }
+                    .toolbar { scanToolbar }
                 }
             }
         }
@@ -460,8 +479,13 @@ private struct PhoneSplitBill: View {
         }
         .disabled(state.isFormLocked)
         Section {
-            AmountField(currency: state.currency, text: model.amount, label: "Amount")
-                .focused($focusedField, equals: .amount)
+            AmountField(
+                currency: state.currency,
+                text: model.amount,
+                label: "Amount",
+                currencyChoice: model.currencyChoice,
+            )
+            .focused($focusedField, equals: .amount)
             Picker("Currency", selection: model.currency) {
                 CurrencyOptions(currencies: state.currencies)
             }
@@ -1114,7 +1138,12 @@ private struct MacBillForm: View {
                     }
                     LabeledContent("Amount:") {
                         VStack(alignment: .leading, spacing: 4) {
-                            AmountField(currency: state.currency, text: model.amount, label: "Amount")
+                            AmountField(
+                                currency: state.currency,
+                                text: model.amount,
+                                label: "Amount",
+                                currencyChoice: model.currencyChoice,
+                            )
                             AmountHelp(state: state)
                                 .font(.callout)
                                 .foregroundStyle(.secondary)

@@ -162,13 +162,13 @@ struct ReceiptThumbnail: View {
 }
 
 #if os(iOS)
-/// Under "Detalhes": "Ler cupom fiscal" until a receipt is picked (where the board offers it), then "Foto do cupom",
-/// which the bill attaches once saved, with × to take it off.
+/// Under "Detalhes": "Foto do cupom" once a receipt is picked, which the bill attaches once saved, with × to take it
+/// off. "Ler cupom fiscal" itself is the bottom toolbar's (`ScanReceiptToolbarButton`), under the thumb (beta
+/// feedback); offline, only why it isn't there stays here.
 struct ReceiptSection: View {
     let model: SplitBillModel
-    let isSettled: Bool
-    @Binding var isScanButtonShown: Bool
-    var showsScanButton = true
+    /// Where the board offers "Scan receipt" (not an iPhone Duo open upright), so its offline notice too.
+    var showsScanNotice = true
 
     private var state: SplitBillUiState {
         model.state
@@ -208,31 +208,45 @@ struct ReceiptSection: View {
                     .accessibilityLabel(Text("Remove the receipt photo"))
                 }
             }
-        } else if state.showsScanReceipt, showsScanButton {
-            Section {
-                Button {
-                    model.send(SplitBillUiEventOnScanReceiptClicked.shared)
-                } label: {
-                    Label("Scan receipt", systemImage: "doc.viewfinder")
-                }
-                .disabled(!state.canScanReceipt)
-                // Why: the choice points at the button while it is on screen, and only one of the two dialogs binds to it.
-                .receiptSourceDialog(
-                    isPresented: model.receiptSourceRequest.choiceShown(
-                        isActive: isSettled && ReceiptSource.hasChoice && isScanButtonShown,
-                    ),
-                    pick: model.receiptSourceRequest.pick,
-                )
-                .onAppear { isScanButtonShown = true }
-                .onDisappear { isScanButtonShown = false }
-            } footer: {
-                if state.isOnline {
-                    Text("Fills in the amount, date and description from the photo.")
-                } else {
-                    Text("Needs internet. Fill it in by hand or scan the receipt once you reconnect.")
-                }
+        } else if state.showsScanReceipt, showsScanNotice, !state.isOnline {
+            Section {} footer: {
+                Text("Needs internet. Fill it in by hand or scan the receipt once you reconnect.")
             }
         }
+    }
+}
+
+/// "Ler cupom fiscal" in the bottom toolbar, prominent glass under the thumb while "Salvar" stays at the top (beta
+/// feedback). Its label says what it does, so the form's hint went with it; offline it gives way to the notice.
+struct ScanReceiptToolbarButton: View {
+    let model: SplitBillModel
+    let isSettled: Bool
+    @Binding var isShown: Bool
+
+    var body: some View {
+        Button {
+            model.send(SplitBillUiEventOnScanReceiptClicked.shared)
+        } label: {
+            // Why: icon and words side by side, as a toolbar draws a `Label` as its icon alone.
+            HStack(spacing: 6) {
+                Image(systemName: "doc.viewfinder")
+                    .accessibilityHidden(true)
+                Text("Scan receipt")
+            }
+            .padding(.horizontal, 6)
+        }
+        .buttonStyle(.glassProminent)
+        .prominentLabel()
+        .disabled(!model.state.canScanReceipt)
+        // Why: the choice points at the button while it is on screen, and only one of the two dialogs binds to it.
+        .receiptSourceDialog(
+            isPresented: model.receiptSourceRequest.choiceShown(
+                isActive: isSettled && ReceiptSource.hasChoice && isShown,
+            ),
+            pick: model.receiptSourceRequest.pick,
+        )
+        .onAppear { isShown = true }
+        .onDisappear { isShown = false }
     }
 }
 #endif

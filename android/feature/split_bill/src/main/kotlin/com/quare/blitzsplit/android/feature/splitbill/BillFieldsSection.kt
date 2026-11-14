@@ -77,6 +77,12 @@ internal fun BillFieldsSection(
         state = state,
         onEvent = onEvent,
     )
+    // Why: the symbol before the total opens the same menu as the chip beside it (beta feedback).
+    var isCurrencyMenuOpen by rememberSaveable { mutableStateOf(false) }
+    // Why: a menu the form locked closes for good, rather than opening again by itself once the lock lifts.
+    LaunchedEffect(state.canChangeCurrency) {
+        if (!state.canChangeCurrency) isCurrencyMenuOpen = false
+    }
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,
@@ -84,11 +90,14 @@ internal fun BillFieldsSection(
         AmountField(
             state = state,
             money = money,
+            onSymbolClick = { isCurrencyMenuOpen = true },
             onEvent = onEvent,
             modifier = Modifier.weight(1f),
         )
         CurrencyChip(
             state = state,
+            isMenuOpen = isCurrencyMenuOpen,
+            onMenuOpenChange = { isCurrencyMenuOpen = it },
             onEvent = onEvent,
         )
     }
@@ -98,13 +107,14 @@ internal fun BillFieldsSection(
 @Composable
 private fun CurrencyChip(
     state: SplitBillUiState,
+    isMenuOpen: Boolean,
+    onMenuOpenChange: (Boolean) -> Unit,
     onEvent: (SplitBillUiEvent) -> Unit,
 ) {
-    var isMenuOpen by rememberSaveable { mutableStateOf(false) }
     val label = stringResource(R.string.split_bill_currency_change, state.currency.code)
     Box(modifier = Modifier.padding(top = 8.dp)) {
         Surface(
-            onClick = { isMenuOpen = true },
+            onClick = { onMenuOpenChange(true) },
             modifier = Modifier
                 .height(68.dp)
                 .semantics { contentDescription = label },
@@ -132,13 +142,13 @@ private fun CurrencyChip(
         }
         DropdownMenu(
             expanded = isMenuOpen && state.canChangeCurrency,
-            onDismissRequest = { isMenuOpen = false },
+            onDismissRequest = { onMenuOpenChange(false) },
         ) {
             CurrencyMenuContent(
                 currencies = state.currencies,
                 selected = state.currency,
                 onSelected = { currency ->
-                    isMenuOpen = false
+                    onMenuOpenChange(false)
                     onEvent(SplitBillUiEvent.OnCurrencyPicked(currency))
                 },
             )
@@ -314,6 +324,7 @@ private fun GroupChipContent(state: SplitBillUiState) {
 private fun AmountField(
     state: SplitBillUiState,
     money: MoneyFormatter,
+    onSymbolClick: () -> Unit,
     onEvent: (SplitBillUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -335,6 +346,8 @@ private fun AmountField(
         imeAction = ImeAction.Done,
         enabled = !state.isFormLocked,
         modifier = modifier,
+        onSymbolClick = onSymbolClick.takeIf { state.canChangeCurrency },
+        symbolClickLabel = stringResource(R.string.split_bill_currency_change, state.currency.code),
     )
 }
 
