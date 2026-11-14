@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Event
@@ -34,7 +33,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
+import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -44,9 +45,8 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
-private const val SPLIT_FACE_COUNT = 3
 private const val OPTION_ROW_COUNT = 3
-private val splitFaceSize = 26.dp
+private val splitFaceSize = 22.dp
 private const val DISABLED_ALPHA = 0.38f
 
 // Why: the controls: who paid, when, how it splits, and the offline note under them.
@@ -132,27 +132,29 @@ internal fun BillDetailsSection(
     }
 }
 
-// Why: the first faces of whoever paid several parts, or of who is in the split.
+/*
+ * Why: whoever paid several parts, or who is in the split, as a stack of faces in the 40dp a single face takes, so the
+ * labels of the three rows line up; a stack a hair wider spills evenly into the gap rather than squeezing a face.
+ */
 @Composable
 private fun StackedFacesRow(people: List<BillPerson>) {
-    Row(
+    Box(
         modifier = Modifier.width(40.dp),
-        horizontalArrangement = Arrangement.spacedBy((-14).dp),
+        contentAlignment = Alignment.Center,
     ) {
-        people.take(SPLIT_FACE_COUNT).forEach { person ->
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceContainerLowest, CircleShape)
-                    .padding(2.dp),
-            ) {
-                AvatarBadge(
-                    initial = person.initials,
-                    color = person.avatarColor,
-                    photoUrl = person.photoUrl,
-                    size = splitFaceSize,
+        AvatarStackRow(
+            people = people.map {
+                StackFace(
+                    initials = it.initials,
+                    color = it.avatarColor,
+                    photoUrl = it.photoUrl,
                 )
-            }
-        }
+            },
+            size = splitFaceSize,
+            ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            modifier = Modifier.wrapContentWidth(unbounded = true),
+            ringWidth = 1.5.dp,
+        )
     }
 }
 

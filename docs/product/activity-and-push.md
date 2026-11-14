@@ -23,7 +23,9 @@ The feed, unread state, real time and push notifications.
     (`MarkActivityTypeRead`), so the bell doesn't light up with everything that came meanwhile. Your own events are born read, opening Activity marks nothing, tapping an item marks only it. A tap opens what it is about
     (the bill's screen (Bill) over its Expenses, the group, its Members, its Balances for a payment request); a deleted bill or group
     keeps its row with the trash and says who deleted it and when instead. A bill's edit shows its first change,
-    "and 2 more changes" and "See changes". "Filter activity": one group or all, and the types (Bills, Payments and
+    "and 2 more changes" and "See changes". "Filter activity": one group or all ("All groups" first, with no avatar
+    nor an empty slot for one, beta feedback; each group with its avatar as Groups draws it: its photo, else its
+    initials on its color, `ActivityGroupOption.initials`, `photoUrl`), and the types (Bills, Payments and
     settle-ups, Comments, People and groups, Payment requests), as removable chips with "Clear"; a contact's history opens it
     on that person over the profile (`Route.Activity.personKey`), a chip too. Offline it shows the device's last 90 days, the changes
     not up yet on top of Today as "Waiting to send", and says older ones load when the internet is back; a device that

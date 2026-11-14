@@ -15,7 +15,6 @@
     <string name="groups_change_error">Nie udało się zapisać zmiany. Spróbuj ponownie.</string>
     <string name="groups_new_group">Nowa grupa</string>
     <string name="groups_only_you">Tylko ty</string>
-    <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">brak wydatków</string>
     <plurals name="groups_member_count">
         <item quantity="one">%d członek</item>

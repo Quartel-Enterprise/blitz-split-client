@@ -15,6 +15,7 @@ import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { CategoryDeleteDialog, categoryFormPane } from '@/components/CategoryForm'
 import { Avatar, PendingDot } from '@/components/common'
+import { AvatarStack, stackOf } from '@/components/AvatarStack'
 import { CurrencyMenuItems } from '@/components/CurrencyMenuItems'
 import { AmountInput, BillWhenField, controlClass } from '@/components/fields'
 import { LoadingDialog } from '@/components/LoadingDialog'
@@ -502,7 +503,7 @@ function GroupList({ presenter, state }: { presenter: SplitBillPresenter; state:
 /** "Quem pagou": whoever paid, or several people with what is missing while their amounts don't add up. */
 function PayerField({ presenter, state, money }: { presenter: SplitBillPresenter; state: JsSplitBillState; money: Money }) {
   const several = state.severalPayers
-  const faces = several ? several.paying.flatMap((row) => (row.person ? [row.person] : [])).slice(0, 3) : state.payer ? [state.payer] : []
+  const faces = several ? several.paying.flatMap((row) => (row.person ? [row.person] : [])) : state.payer ? [state.payer] : []
   // Why: an edited bill keeps whoever paid it after they left the group.
   const name = several
     ? payerNamesText(several.paying.map(payerRowName))
@@ -526,13 +527,7 @@ function PayerField({ presenter, state, money }: { presenter: SplitBillPresenter
         onClick={() => presenter.openPayer()}
         className={cn(controlClass, mismatch && 'border-destructive')}
       >
-        {faces.length > 0 && (
-          <span aria-hidden className="flex shrink-0">
-            {faces.map((person, index) => (
-              <Avatar key={person.id} initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={cn('size-5 border-2 border-card text-[10px]', index > 0 && '-ml-1.5')} />
-            ))}
-          </span>
-        )}
+        {faces.length > 0 && <AvatarStack {...stackOf(faces)} size="xs" />}
         <span className="flex-1 truncate">{name}</span>
         <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
       </button>
@@ -639,22 +634,13 @@ function SplitSummary({
 }) {
   const title = t(splitTitles[split.mode] ?? 'splitBill_splitEqual', { count: split.includedCount })
   const details = splitSummary(summary, money, exceptionName, newExceptionName)
-  const faces = split.included.slice(0, 3)
-  const extra = split.included.length - faces.length
   return (
     <button
       type="button"
       onClick={() => presenter.openSplit()}
       className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
     >
-      <span aria-hidden className="flex shrink-0">
-        {faces.map((person, index) => (
-          <Avatar key={person.id} initial={person.initials} color={person.color} photoUrl={person.photoUrl} className={cn('size-6 border-2 border-card text-[10px]', index > 0 && '-ml-2')} />
-        ))}
-        {extra > 0 && (
-          <span className="-ml-2 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-card bg-muted px-1 text-[10px] font-semibold">+{extra}</span>
-        )}
-      </span>
+      <AvatarStack {...stackOf(Array.from(split.included))} />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate font-medium">{title}</span>
         {details && <span className="truncate text-[13px] text-muted-foreground">{details}</span>}

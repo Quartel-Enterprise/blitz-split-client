@@ -15,7 +15,6 @@
     <string name="groups_change_error">変更を保存できませんでした。もう一度お試しください。</string>
     <string name="groups_new_group">新しいグループ</string>
     <string name="groups_only_you">あなただけ</string>
-    <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">支出なし</string>
     <plurals name="groups_member_count">
         <item quantity="other">メンバー%d人</item>

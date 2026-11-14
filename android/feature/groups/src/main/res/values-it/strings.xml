@@ -15,7 +15,6 @@
     <string name="groups_change_error">Impossibile salvare la modifica. Riprova.</string>
     <string name="groups_new_group">Nuovo gruppo</string>
     <string name="groups_only_you">Solo tu</string>
-    <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">nessuna spesa</string>
     <plurals name="groups_member_count">
         <item quantity="one">%d membro</item>

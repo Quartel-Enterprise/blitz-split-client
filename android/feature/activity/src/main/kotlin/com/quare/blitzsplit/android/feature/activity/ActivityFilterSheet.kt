@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.android.feature.activity
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +28,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesGroupDialog
 import com.quare.blitzsplit.core.activity.domain.model.ActivityType
@@ -172,13 +172,14 @@ private fun GroupOption(
             selected = isSelected,
             onClick = null,
         )
+        // Why: "Todos os grupos" has no avatar and no empty slot for one (beta feedback); a group shows its photo.
         if (group != null) {
-            GroupDotIcon(
+            GroupBadge(
+                initials = group.initials,
                 color = group.color,
-                modifier = Modifier.size(20.dp),
+                size = 24.dp,
+                photoUrl = group.photoUrl,
             )
-        } else {
-            Box(modifier = Modifier.size(20.dp))
         }
         Text(
             text = label,

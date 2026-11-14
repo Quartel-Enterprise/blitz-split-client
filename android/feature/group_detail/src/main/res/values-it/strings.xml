@@ -33,7 +33,6 @@
     </plurals>
     <string name="group_detail_meta_total">%1$s · %2$s in totale</string>
     <string name="group_detail_meta_empty">%s · ancora nessuna spesa</string>
-    <string name="group_detail_extra_members">+%d</string>
     <plurals name="group_detail_not_joined">
         <item quantity="one">%d deve ancora entrare</item>
         <item quantity="many">%d devono ancora entrare</item>

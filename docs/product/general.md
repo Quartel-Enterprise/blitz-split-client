@@ -111,6 +111,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     captions over a white page: 80% on the web, 75% black on Apple. A selected chip's label takes the color made
     for the accent (`Palette.onAccent` on Apple), and on the Mac a money color in a selected row gives way to the
     row's own label color.
+  - Every stack of faces (a group's members on its row and under its name, who paid a bill in a list and on the Bill,
+    who is in a split and who shares an item in Split a bill, who already joined on the invite) shows at most two
+    bubbles, the same on every platform (Pierre's call, beta feedback): one or two people show their faces; three or
+    more show the first face and a second bubble "+N" for the rest (three people: a face and "+2"). The rule is
+    `FaceStack` in `:core:model`, which the ViewModels cut their faces by and each UI's one stack component uses
+    (Android's `AvatarStackRow`, Apple's `AvatarStack`, the web's `AvatarStack` through `getStackedFaceCount`). Each
+    bubble is a true circle ringed in the surface behind it and keeps its size whatever room the row leaves it (a
+    squeezed one read flattened); screen readers skip the stack, the row around it says who.
   - A money amount is never broken in two lines nor cut to its sign (the same sweep): it stays on one line and
     shrinks to fit its card (Android's auto size, Apple's `minimumScaleFactor`, the web's `truncate`), and the words
     beside it ("to get back") drop under it when the row is too narrow.

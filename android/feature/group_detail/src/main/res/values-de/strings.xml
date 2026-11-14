@@ -32,7 +32,6 @@
     </plurals>
     <string name="group_detail_meta_total">%1$s · %2$s insgesamt</string>
     <string name="group_detail_meta_empty">%s · noch keine Ausgaben</string>
-    <string name="group_detail_extra_members">+%d</string>
     <plurals name="group_detail_not_joined">
         <item quantity="one">%d ist noch nicht beigetreten</item>
         <item quantity="other">%d sind noch nicht beigetreten</item>

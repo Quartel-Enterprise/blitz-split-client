@@ -144,7 +144,7 @@ private struct GroupGridCard: View {
                 Text(verbatim: GroupsCopy.memberNames(group))
                     .lineLimit(1)
                 #else
-                MemberFaces(group: group)
+                MemberFaces(group: group, isSelected: isSelected)
                 #endif
             }
             if group.isPending {
@@ -185,33 +185,22 @@ private struct GroupGridCard: View {
     }
 }
 
-/// Up to three faces and "+N"; VoiceOver reads the member count instead.
+/// The faces the ViewModel picked and "+N"; VoiceOver reads the member count instead.
 struct MemberFaces: View {
     let group: GroupRow
+    /// The ring takes the row's background, the selected one's accent tint included, as Android does.
+    var isSelected = false
 
     var body: some View {
-        FaceStack(faces: group.faces, extraCount: Int(group.extraMemberCount))
+        AvatarStack(
+            faces: group.faces.map(StackFace.init),
+            extraCount: Int(group.extraMemberCount),
+            size: 20,
+            ring: isSelected ? Palette.accent.opacity(0.16) : Palette.card,
+            ringWidth: 1.5,
+        )
             .accessibilityElement()
             .accessibilityLabel(Text(verbatim: GroupsCopy.members(group.memberCount)))
-    }
-}
-
-/// Overlapping faces and "+N" for the rest: a group's members, or who paid a bill on Home.
-struct FaceStack: View {
-    let faces: [MemberFace]
-    let extraCount: Int
-
-    var body: some View {
-        HStack(spacing: -6) {
-            ForEach(Array(faces.enumerated()), id: \.offset) { _, face in
-                AvatarPhoto(initial: face.initial, color: face.color, photoUrl: face.photoUrl, size: 20)
-            }
-            if extraCount > 0 {
-                Text(verbatim: "+\(extraCount)")
-                    .font(.caption2.weight(.semibold))
-                    .padding(.leading, 10)
-            }
-        }
     }
 }
 

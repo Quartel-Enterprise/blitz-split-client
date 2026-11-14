@@ -15,7 +15,6 @@
     <string name="groups_change_error">Couldn\'t save the change. Try again.</string>
     <string name="groups_new_group">New group</string>
     <string name="groups_only_you">Just you</string>
-    <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">no expenses</string>
     <plurals name="groups_member_count">
         <item quantity="one">%d member</item>

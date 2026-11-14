@@ -98,6 +98,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     "All expenses" have the same ⋮, long press and right click, their options opening over Home (Pierre's call, beta
     feedback, [home-tab.md](home-tab.md)); Activity has none: its lines open the bill, whose options are a tap away.
     One controller does it for all three lists (`BillMenuController`, `:core:expenses`).
+  - A bill's line, in every list of bills (Expenses, Home's "Latest expenses", "All expenses", a category's
+    expenses), ends in your share as its signed amount alone ("+R$ 6,79", "−R$ 9") in green or orange, never with
+    "to get back" or "you owe" after it, as Groups' list draws a group's net (beta feedback); screen readers still hear
+    the word. Bill keeps it under "Your share". Who paid shows as the app's stack of faces, at most two bubbles
+    ([General rules](general.md)), as do the members' faces under the group's name.
   - A bill tapped there opens "Bill" (`Route.BillDetail`): the bill, "Your share" and the split over every member,
     with its category over the title and Share, Edit and Delete in the top bar. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the

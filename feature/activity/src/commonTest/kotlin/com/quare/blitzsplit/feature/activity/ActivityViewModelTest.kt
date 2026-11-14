@@ -35,6 +35,7 @@ import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.HomeTab
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -1507,6 +1508,25 @@ class ActivityViewModelTest {
             assertEquals(ActivityFilter.none, viewModel.uiState.value.filterDraft)
             assertTrue(viewModel.uiState.value.isFilterOpen)
             assertEquals(5, viewModel.uiState.value.draftResultCount)
+        }
+
+    @Test
+    fun `GIVEN a group with a photo WHEN Filtrar lists the groups THEN each shows its initials and its photo`() =
+        runTest(testDispatcher) {
+            // Given
+            val withPhoto = defaultGroups.map {
+                if (it.id == APE) it.copy(photo = ProfilePhoto.Remote("https://photos/ape.jpg")) else it
+            }
+            prepareScenario(storedGroups = withPhoto)
+
+            // When
+            val groups = viewModel.uiState.value.groups
+
+            // Then
+            assertEquals(
+                listOf("A3" to "https://photos/ape.jpg", "VF" to null),
+                groups.map { it.initials to it.photoUrl },
+            )
         }
 
     @Test

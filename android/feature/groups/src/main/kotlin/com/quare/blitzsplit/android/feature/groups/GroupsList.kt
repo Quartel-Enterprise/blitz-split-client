@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -42,9 +43,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
+import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
@@ -338,6 +340,7 @@ private fun GroupListRow(
                         amountText = money::toAmountText,
                         dates = dates,
                     ),
+                    ringColor = selectableRowColorOf(isSelected),
                 )
             }
             if (group.isSettled) {
@@ -391,12 +394,16 @@ internal fun SettledLabel() {
 private fun GroupMetaRow(
     group: GroupRow,
     detail: String,
+    ringColor: Color,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        MemberFacesRow(group = group)
+        MemberFacesRow(
+            group = group,
+            ringColor = ringColor,
+        )
         if (group.isPending) PendingIndicator()
         Text(
             text = detail,
@@ -410,49 +417,43 @@ private fun GroupMetaRow(
 
 // Why: the faces only show who is in it; TalkBack reads the member count instead.
 @Composable
-internal fun MemberFacesRow(group: GroupRow) {
+internal fun MemberFacesRow(
+    group: GroupRow,
+    ringColor: Color,
+) {
     val members = membersTextOf(group.memberCount)
     FacesRow(
         faces = group.faces,
         extraCount = group.extraMemberCount,
         size = 22.dp,
+        ringColor = ringColor,
         modifier = Modifier.clearAndSetSemantics { contentDescription = members },
     )
 }
 
-// Why: overlapping faces and "+N" for the rest: a group's members, or who paid a bill on Início.
+// Why: the faces the ViewModel picked and "+N" for the rest: a group's members, or who paid a bill on Início.
 @Composable
 internal fun FacesRow(
     faces: List<MemberFace>,
     extraCount: Int,
     size: Dp,
+    ringColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    AvatarStackRow(
+        faces = faces.map {
+            StackFace(
+                initials = it.initial,
+                color = it.color,
+                photoUrl = it.photoUrl,
+            )
+        },
+        extraCount = extraCount,
+        size = size,
+        ringColor = ringColor,
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy((-6).dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        faces.forEach { face ->
-            AvatarBadge(
-                initial = face.initial,
-                color = face.color,
-                photoUrl = face.photoUrl,
-                size = size,
-            )
-        }
-        if (extraCount > 0) {
-            Text(
-                text = stringResource(R.string.groups_extra_members, extraCount),
-                modifier = Modifier.padding(start = 10.dp),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                // Why: in a narrow pane "+1" broke into "+" over "1".
-                softWrap = false,
-                maxLines = 1,
-            )
-        }
-    }
+        ringWidth = 1.5.dp,
+    )
 }
 
 @Composable

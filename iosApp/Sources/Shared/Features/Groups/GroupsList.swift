@@ -164,7 +164,7 @@ struct GroupsList: View {
                 zoomScope?.zoom.arm(group.id)
                 model.send(GroupsUiEventOnGroupClicked(groupId: group.id))
             } label: {
-                GroupListRow(group: group)
+                GroupListRow(group: group, isSelected: group.id == selectedGroupId)
                     .groupZoomSource(groupId: group.id)
             }
             .buttonStyle(.plain)
@@ -256,6 +256,7 @@ private struct GroupsSummaryCard: View {
 
 private struct GroupListRow: View {
     let group: GroupRow
+    let isSelected: Bool
 
     var body: some View {
         HStack(spacing: 14) {
@@ -265,7 +266,7 @@ private struct GroupListRow: View {
                     .font(.body.weight(.semibold))
                     .lineLimit(group.usesTwoNameLines ? 2 : 1)
                 HStack(spacing: 6) {
-                    MemberFaces(group: group)
+                    MemberFaces(group: group, isSelected: isSelected)
                     if group.isPending {
                         PendingDot()
                     }

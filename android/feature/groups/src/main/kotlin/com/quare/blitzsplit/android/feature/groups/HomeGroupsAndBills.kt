@@ -369,18 +369,22 @@ internal fun HomeBillRow(
                     overflow = TextOverflow.Ellipsis,
                 )
                 if (bill.myBalanceMinor != 0L) {
-                    Text(
-                        text = stringResource(
-                            R.string.groups_home_amount_with_word,
-                            money.toSignedText(bill.myBalanceMinor),
-                            stringResource(
-                                if (bill.myBalanceMinor > 0) {
-                                    R.string.groups_balance_to_receive
-                                } else {
-                                    R.string.groups_balance_you_owe
-                                },
-                            ),
+                    // Why: the sign and the color say it in a list, as Grupos' list does; TalkBack still reads the word.
+                    val share = money.toSignedText(bill.myBalanceMinor)
+                    val shareLabel = stringResource(
+                        R.string.groups_home_amount_with_word,
+                        share,
+                        stringResource(
+                            if (bill.myBalanceMinor > 0) {
+                                R.string.groups_balance_to_receive
+                            } else {
+                                R.string.groups_balance_you_owe
+                            },
                         ),
+                    )
+                    Text(
+                        text = share,
+                        modifier = Modifier.semantics { contentDescription = shareLabel },
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = amountColorOf(bill.myBalanceMinor),
@@ -445,7 +449,7 @@ private fun Modifier.cappedAtHalfWidth(): Modifier = layout { measurable, constr
     layout(placeable.width, placeable.height) { placeable.place(0, 0) }
 }
 
-// Why: the group's square, then who paid as overlapping faces and "+N"; nothing here to cut off on a narrow phone.
+// Why: the group's square, then who paid as a stack of faces; nothing here to cut off on a narrow phone.
 @Composable
 private fun BillOriginRow(
     bill: HomeBill,
@@ -466,6 +470,7 @@ private fun BillOriginRow(
             faces = bill.payerFaces,
             extraCount = bill.extraPayerCount,
             size = billOriginSize,
+            ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         )
         if (bill.isPending) {
             PendingIndicator()

@@ -15,7 +15,6 @@
     <string name="groups_change_error">Impossible d’enregistrer la modification. Réessaie.</string>
     <string name="groups_new_group">Nouveau groupe</string>
     <string name="groups_only_you">Juste toi</string>
-    <string name="groups_extra_members">+%d</string>
     <string name="groups_no_expenses">aucune dépense</string>
     <plurals name="groups_member_count">
         <item quantity="one">%d membre</item>

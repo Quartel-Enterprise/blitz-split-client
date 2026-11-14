@@ -29,7 +29,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
@@ -41,7 +43,6 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiSt
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
 
-private const val PAYER_FACE_COUNT = 3
 private val payerAvatarSize = 32.dp
 private val rowAvatarSize = 40.dp
 
@@ -279,30 +280,25 @@ private fun ShareRow(
     }
 }
 
-// Why: the faces of whoever paid, overlapping when several did, as iOS and the web draw them: only members' faces.
+// Why: the faces of whoever paid as a stack, as iOS and the web draw them: only members' faces.
 @Composable
 private fun PayerFacesRow(payers: List<BillPayer>) {
-    val faces = payers.filter { it.name != null }.take(PAYER_FACE_COUNT)
+    val faces = payers.filter { it.name != null }
     if (faces.isEmpty()) {
         FormerMemberBadge(payerAvatarSize)
         return
     }
-    Row(horizontalArrangement = Arrangement.spacedBy((-10).dp)) {
-        faces.forEach { payer ->
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surface, CircleShape)
-                    .padding(2.dp),
-            ) {
-                AvatarBadge(
-                    initial = payer.initials,
-                    color = payer.avatarColor,
-                    photoUrl = payer.photoUrl,
-                    size = payerAvatarSize,
-                )
-            }
-        }
-    }
+    AvatarStackRow(
+        people = faces.map {
+            StackFace(
+                initials = it.initials,
+                color = it.avatarColor,
+                photoUrl = it.photoUrl,
+            )
+        },
+        size = payerAvatarSize,
+        ringColor = MaterialTheme.colorScheme.surface,
+    )
 }
 
 // Why: someone who left the group keeps no name nor color, so a plain person icon stands for them.

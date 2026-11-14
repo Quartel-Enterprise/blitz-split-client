@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -45,8 +44,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
+import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.LocalFoldLayout
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
@@ -59,7 +59,6 @@ import com.quare.blitzsplit.feature.join.presentation.model.JoinInviteUiState
 import com.quare.blitzsplit.feature.join.presentation.model.JoinMember
 
 private val maxContentWidth = 560.dp
-private const val SHOWN_FACES = 3
 
 /*
  * Why: one centered column on a phone and upright on a tablet or a foldable; two columns lying down (the title on the
@@ -396,34 +395,17 @@ private fun AlreadyInText(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row {
-            members.take(SHOWN_FACES).forEachIndexed { index, member ->
-                AvatarBadge(
-                    initial = member.initials,
-                    color = member.avatarColor,
-                    size = 36.dp,
-                    photoUrl = member.photoUrl,
-                    modifier = Modifier.offset(x = (-8 * index).dp),
+        AvatarStackRow(
+            people = members.map {
+                StackFace(
+                    initials = it.initials,
+                    color = it.avatarColor,
+                    photoUrl = it.photoUrl,
                 )
-            }
-            val more = members.size - SHOWN_FACES
-            if (more > 0) {
-                Surface(
-                    modifier = Modifier
-                        .offset(x = (-8 * SHOWN_FACES).dp)
-                        .size(36.dp),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = "+$more",
-                            style = MaterialTheme.typography.labelMedium,
-                        )
-                    }
-                }
-            }
-        }
+            },
+            size = 36.dp,
+            ringColor = MaterialTheme.colorScheme.surface,
+        )
         Text(
             text = pluralStringResource(R.plurals.join_already_in, joinedNames.size, namesOf(joinedNames)),
             style = MaterialTheme.typography.bodyMedium,

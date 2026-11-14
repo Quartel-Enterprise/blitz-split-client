@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.toImageUrl
+import com.quare.blitzsplit.core.model.toStackedFaces
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openFromGroupScreen
@@ -37,9 +38,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-
-// Why: the faces under the group's name; the rest is "+N".
-private const val MAX_FACES = 4
 
 // Why: what the header holds until Room is read; nothing is drawn meanwhile.
 internal val emptyGroupHeader = GroupHeader(
@@ -338,7 +336,7 @@ internal fun groupHeaderOf(
         groupPhotoUrl = group.photo?.toImageUrl(),
         currency = currency,
         currencies = balances.currencies,
-        faces = group.members.take(MAX_FACES).map(::faceOf),
+        faces = group.members.toStackedFaces().map(::faceOf),
         memberCount = group.members.size,
         notJoinedCount = group.members.count { !it.hasJoined },
         totalSpentMinor = expenses.filter { it.currency == currency }.sumOf { it.amountMinor },
