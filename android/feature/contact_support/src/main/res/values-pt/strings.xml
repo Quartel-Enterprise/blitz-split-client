@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contatar suporte</string>
+    <string name="contact_support_description">Vamos abrir seu app de e-mail com uma mensagem pronta. Descreva o que aconteceu e envie: cada mensagem é lida por pessoas de verdade.</string>
+    <string name="contact_support_to">Para</string>
+    <string name="contact_support_diagnostics">Será incluído no e-mail</string>
+    <string name="contact_support_app_version">Versão do app</string>
+    <string name="contact_support_platform">Plataforma</string>
+    <string name="contact_support_language">Idioma</string>
+    <string name="contact_support_account">Conta</string>
+    <string name="contact_support_profile">Perfil</string>
+    <string name="contact_support_language_system">Sistema</string>
+    <string name="contact_support_account_local">Só neste aparelho</string>
+    <string name="contact_support_account_anonymous">Não conectada</string>
+    <string name="contact_support_open_email">Abrir e-mail</string>
+    <string name="contact_support_copy_email">Copiar endereço de e-mail</string>
+    <string name="contact_support_notice_copied">Endereço de e-mail copiado.</string>
+    <string name="contact_support_notice_no_app">Nenhum app de e-mail encontrado. O endereço foi copiado.</string>
+    <string name="contact_support_close">Fechar</string>
+</resources>

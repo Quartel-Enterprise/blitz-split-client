@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Destekle iletişime geç</string>
+    <string name="contact_support_description">E-posta uygulamanı hazır bir mesajla açacağız. Ne olduğunu anlat ve gönder: her mesajı gerçek insanlar okur.</string>
+    <string name="contact_support_to">Kime</string>
+    <string name="contact_support_diagnostics">E-postaya eklenecek</string>
+    <string name="contact_support_app_version">Uygulama sürümü</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Dil</string>
+    <string name="contact_support_account">Hesap</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Sistem</string>
+    <string name="contact_support_account_local">Yalnızca bu cihazda</string>
+    <string name="contact_support_account_anonymous">Bağlı değil</string>
+    <string name="contact_support_open_email">E-postayı aç</string>
+    <string name="contact_support_copy_email">E-posta adresini kopyala</string>
+    <string name="contact_support_notice_copied">E-posta adresi kopyalandı.</string>
+    <string name="contact_support_notice_no_app">E-posta uygulaması bulunamadı. Adres kopyalandı.</string>
+    <string name="contact_support_close">Kapat</string>
+</resources>

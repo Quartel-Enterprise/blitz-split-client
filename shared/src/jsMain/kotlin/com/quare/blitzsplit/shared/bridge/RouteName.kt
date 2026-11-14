@@ -84,6 +84,8 @@ internal fun toRouteName(route: Route): String = when (route) {
 
     Route.DeleteAccount -> "delete-account"
 
+    Route.ContactSupport -> "contact-support"
+
     Route.NotificationSettings -> "notification-settings"
 
     Route.CategoryMap -> "category-map"

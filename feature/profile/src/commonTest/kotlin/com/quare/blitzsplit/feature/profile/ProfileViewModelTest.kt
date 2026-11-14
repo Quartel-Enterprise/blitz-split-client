@@ -4450,6 +4450,18 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN the profile WHEN tapping Contact support THEN opens it over the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnContactSupportClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.ContactSupport), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN the profile WHEN tapping the category map THEN opens it over the profile`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -4775,6 +4787,18 @@ class ProfileViewModelTest {
             // Then
             assertEquals(listOf("profile_notifications_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping Contact support THEN sends it clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnContactSupportClicked)
+
+        // Then
+        assertEquals(listOf("profile_contact_support_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
 
     @Test
     fun `GIVEN the profile WHEN tapping the category map THEN sends it clicked from the profile`() =

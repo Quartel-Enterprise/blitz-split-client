@@ -81,6 +81,8 @@ enum AppRoute: Hashable, Identifiable {
     /// The profile's photo big, with the shortcuts that change it (Bible Planner's viewer).
     case profilePhoto
     case deleteAccount
+    /// "Contact support", a sheet over the profile (Settings on the Mac).
+    case contactSupport
     case notificationSettings
     case categoryMap
     /// "Privacy Policy" or "Terms of Service", from the profile's footer or a link of the other text; holds the Kotlin
@@ -135,6 +137,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteEditProfile: self = .editProfile
         case is RouteProfilePhoto: self = .profilePhoto
         case is RouteDeleteAccount: self = .deleteAccount
+        case is RouteContactSupport: self = .contactSupport
         case is RouteNotificationSettings: self = .notificationSettings
         case is RouteCategoryMap: self = .categoryMap
         case let legalDocument as RouteLegalDocument: self = .legalDocument(legalDocument)
@@ -198,7 +201,7 @@ enum AppRoute: Hashable, Identifiable {
     /// The screens that are a sheet on every device and window size (the list `presentsAsSheet` opens with).
     private var isSheetEverywhere: Bool {
         switch self {
-        case .deleteAccount, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
+        case .deleteAccount, .contactSupport, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
              .contactInvite, .shareBill, .inAppUpdate, .appDownload, .editProfile: true
         default: false
         }
@@ -240,7 +243,7 @@ enum AppRoute: Hashable, Identifiable {
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
-        case .paymentKey, .payingMethod, .profilePhoto, .deleteAccount, .legalDocument: true
+        case .paymentKey, .payingMethod, .profilePhoto, .deleteAccount, .contactSupport, .legalDocument: true
         // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
         case let .inAppUpdate(route): route.source == .manual
         // Settings' iPhone row opens it there; Home's card over the main window
