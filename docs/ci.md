@@ -54,13 +54,14 @@ runs, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
 don't store the same entries twice.
 
 `apple-tests` is the slowest check of a pull request. Each module with tests links a test binary of its own for each
-target, every one compiling the modules it depends on to native code again, and a change to a core module links all of
-them: those links are half of the job. So a pull request runs every module's `commonTest` on macOS only, and `main`
-runs it on the iOS simulator too. The simulator's run repeats the macOS one: the suite is the same `commonTest`, the
-actuals it reaches are `appleMain`'s (only `core/profile` and `core/in_app_update` have an `iosMain` and a `macosMain`,
-one file each), `create-pr` compiles the main and the test code for the simulator before the pull request opens, and
-`apple-app` links `Shared` for it. A test that fails on the simulator alone therefore shows up after the merge, as a
-failed `apple` run on the `main` commit: fix it in a pull request of its own.
+target, and a change to a core module links all of them: those links are half of the job. So a pull request runs every
+module's `commonTest` on macOS only, and `main` runs it on the iOS simulator too. The simulator's run repeats the macOS
+one: the suite is the same `commonTest`, the actuals it reaches are `appleMain`'s (only `core/profile` and
+`core/in_app_update` have an `iosMain` and a `macosMain`, one file each), `create-pr` compiles the main and the test
+code for the simulator before the pull request opens, and `apple-app` links `Shared` for it. A test that fails on the
+simulator alone therefore shows up after the merge, as a failed `apple` run on the `main` commit, which no workflow
+reports anywhere else. Fix it in a pull request of its own, checked on the Mac, since that pull request's `apple-tests`
+runs macOS only: `./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test`.
 
 The Kotlin/Native entry (`~/.konan`) holds the toolchain and the native code each library is compiled to on its first
 link, so its key has the Kotlin version and a hash of the version catalog: a library bump saves a new entry on `main`,

@@ -199,9 +199,10 @@ stops every daemon of the machine, and the other sessions' builds with them.
 
 Locally, run only what catches a mistake in a few minutes: the JVM tests and coverage, a compile of
 the shared code for each backend, and the UI the branch touches. CI runs the rest on every pull
-request, and `merge-when-green` waits for it: every module's tests on the JS target, the iOS
-simulator and macOS, Android lint, the release APK and both schemes of the Apple app (see
-[docs/ci.md](../../../docs/ci.md)). Don't run those locally to be safe: they are what made a
+request, and `merge-when-green` waits for it: every module's tests on the JS target and macOS,
+Android lint, the release APK and both schemes of the Apple app (see
+[docs/ci.md](../../../docs/ci.md)). The tests on the iOS simulator run on `main` only, after the
+merge. Don't run those locally to be safe: they are what made a
 cross-platform branch take 30 to 40 minutes here, and CI runs them anyway. Run one locally only to
 reproduce a CI failure (step 12).
 
@@ -252,8 +253,9 @@ for each backend and takes a few minutes; that is the check working, not somethi
 
 A build change (`build-logic/`, `gradle/`, a `*.gradle.kts`, `gradle.properties`,
 `version.properties`) adds `assertModuleGraph`, which checks the module graph rules of the root
-`build.gradle.kts`, to the same call. CI then runs the tests of every target but the iOS device,
-whose main code it only compiles, and builds the Debug Apple apps; the Release frameworks are linked
+`build.gradle.kts`, to the same call. CI then runs the tests on the JVM, JS and macOS (on the
+iOS simulator once it is on `main`), compiles the main code of the iOS device, and builds the Debug
+Apple apps; the Release frameworks are linked
 only when the app is archived. A version bump runs more, see the `bump-versions` skill.
 
 **Android UI**: `:androidApp:assembleDebug`, in the Shared Kotlin call when that one runs, or on its

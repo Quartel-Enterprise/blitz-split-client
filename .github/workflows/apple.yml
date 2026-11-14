@@ -112,8 +112,8 @@ jobs:
       #
       # A pull request runs the suite on macOS only. The iOS simulator runs the same commonTest over
       # the same appleMain actuals (iosMain and macosMain differ in a couple of files), and each
-      # module links one more test binary for it, which is half of this job. The main code is still
-      # built for the simulator on every pull request: apple-app links Shared for it.
+      # module links one more test binary for it: the links of both targets were half of this job. The
+      # main code is still built for the simulator on every pull request: apple-app links Shared for it.
       - name: Run the tests on macOS
         if: github.event_name == 'pull_request'
         run: ./gradlew macosArm64Test compileKotlinIosArm64 compileAppleMainKotlinMetadata --continue
