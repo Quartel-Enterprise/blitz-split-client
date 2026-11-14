@@ -83,12 +83,16 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (`https://blitzsplit.com/legal/…`). The web keeps opening https://blitzsplit.com/privacy and
     https://blitzsplit.com/terms in another tab (`LegalLinks`), a browser's own way (Pierre's call).
     - The language is Profile › Language's, or the device's own while it follows the system, so a device in Turkish
-      reads them in Turkish though the app is in English; a language the site doesn't write them in (French, German,
-      Italian, Polish) reads the English text.
+      reads them in Turkish though the app is in English; the site writes them in all eleven of the app's languages
+      (blitz-split-site#29), and a language it doesn't write them in reads the English text.
     - The device keeps the last text it downloaded (`legal_document`, per page and language) and shows it at once,
-      offline too, while the current one downloads and takes its place. A device that never downloaded it draws the
+      offline too, while a newer one downloads and takes its place. A device that never downloaded it draws the
       shimmer, then "Couldn't load this page" with "Try again" when the download fails (Pierre's call: no copy ships
       inside the app).
+    - Both texts download at launch, once the first screen is drawn, and again when Profile › Language changes, so
+      the footer opens them offline too (not on the web, which opens the site's pages). The site is asked at most once
+      a day per text, at launch or on the screen, with the saved text's ETag: an unchanged one answers 304 with no
+      body, so a text only downloads again when the site changed it.
     - Android and iOS push it over Profile, the page's name in the bar; the Mac opens it as a sheet on Settings with
       Done. The text is one column, 640 dp / pt at most, centred in a wider window: "Updated November 5, 2026" in the
       device's date format, the summary in a tinted card, each section's number beside its title, and a table as

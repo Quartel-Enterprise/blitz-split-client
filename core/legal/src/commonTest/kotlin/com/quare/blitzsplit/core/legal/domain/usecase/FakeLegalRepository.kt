@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-// Why: the two use case tests of this module share it; no other module reads the legal texts.
+// Why: the use case tests of this module share it; no other module reads the legal texts.
 internal class FakeLegalRepository : LegalRepository {
     val documents = MutableStateFlow<Map<Pair<LegalPage, String>, LegalDocument>>(emptyMap())
     val observed = mutableListOf<Pair<LegalPage, String>>()
