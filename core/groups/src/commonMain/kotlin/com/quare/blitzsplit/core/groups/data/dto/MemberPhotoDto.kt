@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
 data class MemberPhotoDto(
     @SerialName("id") val userId: String,
     @SerialName("avatar_url") val photoUrl: String?,
-    @SerialName("share_code") val shareCode: String? = null,
+    @SerialName("share_code") val shareCode: String?,
 )

@@ -1737,11 +1737,12 @@ class GroupMapperImplTest {
     }
 
     @Test
-    fun `GIVEN a profile without a photo WHEN mapping it to an entity THEN there is no row`() {
+    fun `GIVEN a profile with neither a photo nor a link code WHEN mapping it to an entity THEN there is no row`() {
         // Given
         val dto = MemberPhotoDto(
             userId = "user-2",
             photoUrl = null,
+            shareCode = null,
         )
 
         // When
@@ -1752,11 +1753,35 @@ class GroupMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a profile with a link code and no photo WHEN mapping it to an entity THEN the row keeps the code`() {
+        // Given
+        val dto = MemberPhotoDto(
+            userId = "user-2",
+            photoUrl = null,
+            shareCode = "AnaCode123",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto)
+
+        // Then
+        assertEquals(
+            MemberPhotoEntity(
+                userId = "user-2",
+                photoUrl = null,
+                shareCode = "AnaCode123",
+            ),
+            entity,
+        )
+    }
+
+    @Test
     fun `GIVEN a profile with a photo WHEN mapping it to an entity THEN the row has its account and photo`() {
         // Given
         val dto = MemberPhotoDto(
             userId = "user-2",
             photoUrl = "https://photos/ana.jpg",
+            shareCode = null,
         )
 
         // When
@@ -2252,6 +2277,7 @@ class GroupMapperImplTest {
     ): MemberPhotoEntity = MemberPhotoEntity(
         userId = userId,
         photoUrl = photoUrl,
+        shareCode = null,
     )
 
     private fun groupEntity(

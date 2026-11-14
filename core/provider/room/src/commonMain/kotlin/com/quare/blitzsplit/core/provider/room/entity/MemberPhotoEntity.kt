@@ -15,5 +15,5 @@ data class MemberPhotoEntity(
     // Why: null for an account with no photo, whose face keeps the initials.
     val photoUrl: String?,
     // Why: the server's profiles.share_code, which every account has; null only until a sync brings it.
-    val shareCode: String? = null,
+    val shareCode: String?,
 )
