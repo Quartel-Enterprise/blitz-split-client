@@ -66,14 +66,17 @@ enum GroupStatsCopy {
         return (first..<last).formatted(.interval.month(.abbreviated).year())
     }
 
-    /// The label of a bar under the chart: the day ("today"), the week, the month or the year.
+    /// The label of a bar under the chart: the day ("today"), the week's first day ("Oct 19"), the month or the year.
+    /// A week's whole range overlapped the next one's under a phone's chart, so it stays in the callout and the sentence.
     static func barLabel(_ bar: StatsBar, grain: StatsGrain, isSparse: Bool) -> String {
         let date = ExpenseFormat.date(of: bar.startMillis)
         if grain == .day {
             return bar.isToday ? String(localized: "today", bundle: .appLanguage) : date.formatted(.dateTime.day())
         }
         if grain == .week {
-            return isSparse ? date.formatted(.dateTime.month(.abbreviated)) : week(bar)
+            return isSparse
+                ? date.formatted(.dateTime.month(.abbreviated))
+                : date.formatted(.dateTime.day().month(.abbreviated))
         }
         if grain == .month { return date.formatted(.dateTime.month(.abbreviated)) }
         return date.formatted(.dateTime.year())

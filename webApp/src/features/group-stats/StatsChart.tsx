@@ -3,6 +3,7 @@ import type { JsGroupStatsState } from 'blitzsplit-shared'
 import { t } from '@/i18n'
 import { formatCompactMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import { StatsChartLabels } from './StatsChartLabels'
 import { barLabel, barName, calloutCount, chartAria } from './statsFormat'
 import { useReplay } from './useReplay'
 
@@ -15,7 +16,7 @@ const dragSlop = 8
 /**
  * "Ao longo do tempo" as bars or a line, drawn with plain elements in the design's primary color and scaled by the top
  * value line: dashed value lines with their short amounts in a gutter on the end side, the dashed average, a label
- * under the bars the shared code marks, and the whole series for screen readers. The mouse over a bar, a tap or a drag
+ * under the bars the shared code marks (none overlapping), and the whole series for screen readers. The mouse over a bar, a tap or a drag
  * on it, or the arrow keys pick it, showing its period, amount and bills in a callout over it; a tap keeps it until a
  * second one.
  */
@@ -184,19 +185,11 @@ export function StatsChart({ state, money }: { state: JsGroupStatsState; money: 
           </span>
         ))}
       </div>
-      <div aria-hidden className="relative h-4 text-xs text-muted-foreground">
-        {bars.map((bar, index) =>
-          bar.showsLabel ? (
-            <span
-              key={index}
-              className={cn('absolute top-0 -translate-x-1/2 whitespace-nowrap', !state.hasSparseLabels && index === count - 1 && 'font-semibold text-foreground')}
-              style={{ left: `${centerOf(index)}%` }}
-            >
-              {barLabel(bar, state.grain, state.hasSparseLabels)}
-            </span>
-          ) : null,
-        )}
-      </div>
+      <StatsChartLabels
+        bars={bars}
+        boldsLast={!state.hasSparseLabels}
+        labelOf={(bar) => barLabel(bar, state.grain, state.hasSparseLabels)}
+      />
       <span />
       <span id="statsChartKeys" className="sr-only">
         {t('stats_chartKeys')}

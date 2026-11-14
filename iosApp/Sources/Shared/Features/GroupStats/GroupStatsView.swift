@@ -613,12 +613,14 @@ private struct StatsOverTimeSection: View {
                 StatsGrainSegments(model: model)
                 StatsChart(state: state)
                 if let peak = state.peak {
-                    HStack(spacing: 4) {
+                    HStack(alignment: .lastTextBaseline, spacing: 4) {
                         Text(verbatim: GroupStatsCopy.peak(peak, grain: state.grain))
                             .foregroundStyle(.secondary)
+                        // The amount stays whole; the week's range wraps instead
                         Text(verbatim: state.currency.format(peak.amountMinor))
                             .fontWeight(.semibold)
                             .monospacedDigit()
+                            .fixedSize()
                     }
                     .font(.footnote)
                 }

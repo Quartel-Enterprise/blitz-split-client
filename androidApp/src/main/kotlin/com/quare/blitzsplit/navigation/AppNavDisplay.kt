@@ -210,8 +210,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
     // Why: the screen right under the group is the one its row was tapped on; beside the list nothing flies.
-    val groupSharedOriginOf = { route: Route.GroupDetail ->
-        when (backStack.getOrNull(backStack.lastIndexOf(route) - 1)) {
+    val groupSharedOriginOf = { routeBelow: Route? ->
+        when (routeBelow) {
             Route.Home -> GroupSharedOrigin.HOME
             Route.Groups -> GroupSharedOrigin.GROUPS.takeIf { listDetail == null }
             else -> null
@@ -327,8 +327,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Invite> { route -> InviteScreen(route) }
             // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
+                /*
+                 * Why: read once, as the group opens. Back pops the group before its exit runs, so read live the
+                 * group was no longer on the back stack, the origin turned null and the avatar and name stopped flying
+                 * home (beta feedback of 2026-11-14).
+                 */
+                val routeBelow = remember(route) { backStack.getOrNull(backStack.lastIndexOf(route) - 1) }
                 InGroupPane {
-                    EntryTransitionLayout(origin = groupSharedOriginOf(route)) {
+                    EntryTransitionLayout(origin = groupSharedOriginOf(routeBelow)) {
                         GroupDetailScreen(
                             route = route,
                             membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },

@@ -180,27 +180,30 @@ private struct DebtRowView: View {
         Button(action: action) {
             HStack(spacing: 12) {
                 DebtFaces(from: row.fromFace, to: row.toFace)
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(alignment: .firstTextBaseline, spacing: 5) {
-                        Text(verbatim: sentence)
-                            .lineLimit(2)
-                        // A pair "Simplify debts" made, which no bill did (13.4)
-                        if row.isSimplified {
-                            SimplifiedPairIcon()
+                // In a narrow column the button goes under the amount, so the sentence keeps its width
+                TrailingOrBelowLayout {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(alignment: .firstTextBaseline, spacing: 5) {
+                            Text(verbatim: sentence)
+                                .lineLimit(2)
+                            // A pair "Simplify debts" made, which no bill did (13.4)
+                            if row.isSimplified {
+                                SimplifiedPairIcon()
+                            }
                         }
+                        Text(verbatim: amount)
+                            .font(.subheadline.weight(.semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(amountColor)
                     }
-                    Text(verbatim: amount)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Text(buttonTitle)
                         .font(.subheadline.weight(.semibold))
-                        .monospacedDigit()
-                        .foregroundStyle(amountColor)
+                        .foregroundStyle(row.kind == .youOwe ? Palette.onAccent : Palette.accent)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 7)
+                        .background(row.kind == .youOwe ? Palette.accent : Palette.accent.opacity(0.14), in: .capsule)
                 }
-                Spacer(minLength: 8)
-                Text(buttonTitle)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(row.kind == .youOwe ? Palette.onAccent : Palette.accent)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
-                    .background(row.kind == .youOwe ? Palette.accent : Palette.accent.opacity(0.14), in: .capsule)
             }
             .contentShape(.rect)
         }

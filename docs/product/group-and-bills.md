@@ -34,7 +34,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     gesture, following the finger (beta feedback of 2026-11-12): from Groups' list and grid and Home's group cards.
     Android: Compose's shared elements (`SharedTransitionLayout` around Navigation 3, `rememberGroupSharedModifiers`),
     keyed by the screen the group opens from (`GroupSharedOrigin`), so a tab switch between Home and Groups flies
-    nothing. From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
+    nothing. That screen is read once, as the group opens: back pops the group before its exit runs, so read live it
+    found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14). From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
     over the list, while beside it (a tablet lying down, a book) the row stays where it is. So the group opens over
     Groups as over Home, a screen of its own, outside Material's list-detail scene, wherever the two don't show side by
     side. The web: the View Transitions API
@@ -183,6 +184,12 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     (`StatsChartPreferences` in `device_settings`): Day only up to 3 months, the others once the period touches two of
     them, Year once the group's bills touch two years, and picking it switches to the whole period; a grain kept that
     doesn't fit opens on Day (up to 3 months) or Month, the disabled ones say why under the chart (`StatsGrainNote`).
+    Under the bars a day is its number ("28", "today"), a week its first day ("Oct 19"; its whole range, "Oct 19 –
+    25", overlapped the next one's under a phone's chart, beta feedback of 2026-11-14, so it stays in the callout and
+    the "Most expensive week" line, whose amount wraps to the next line whole), a month its short name and a year its
+    number. The shared code marks which bars carry a label (`StatsBar.showsLabel`); each UI then, working back from the last one, leaves out
+    any label that would touch the one after it, so the last one always shows and no two ever overlap, at any
+    width, font size and language (`StatsChartLabelsRow`, Swift Charts' greedy collision resolution, `StatsChartLabels`).
     The chart reads against up to three dashed value lines at round steps from 0 ("R$ 500", "R$ 1 mil", "R$ 1,5 mil",
     `GroupStatsUiState.chartTicksMinor`), their short amounts on the end side, the top one being the scale's top, and
     a dashed "Average per day" (week, month, year) line: the mean of every bar, the empty ones too
