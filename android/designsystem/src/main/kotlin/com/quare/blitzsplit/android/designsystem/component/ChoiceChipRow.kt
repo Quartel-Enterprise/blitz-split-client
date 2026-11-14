@@ -27,14 +27,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
+import com.quare.blitzsplit.android.designsystem.layout.FormBleed
 import com.quare.blitzsplit.android.designsystem.layout.horizontalBleed
 import kotlinx.coroutines.flow.first
 
 /*
  * Why: a single choice among more options than fit side by side (Dividir's six modes, beta feedback): a row of pill
  * chips that scrolls sideways, the picked one filled and always scrolled into sight. Each chip is a radio button to a
- * screen reader, the row their group. It reaches into the form's side margins (`LocalFormBleed`), so the chips scroll
+ * screen reader, the row their group. With `bleed`, it reaches into the form's side margins (`LocalFormBleed`), so the chips scroll
  * to the column's edge rather than being cut short of it (beta feedback), the first one still lined up with the form.
  */
 @Composable
@@ -46,8 +46,9 @@ fun ChoiceChipRow(
     modifier: Modifier = Modifier,
     height: Dp = 40.dp,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    // Why: opt in with `LocalFormBleed.current` where the row sits right in a form's column, never inside a card.
+    bleed: FormBleed = FormBleed.None,
 ) {
-    val bleed = LocalFormBleed.current
     val layoutDirection = LocalLayoutDirection.current
     val listState = rememberLazyListState()
     LaunchedEffect(selectedIndex) {

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.designsystem.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -200,7 +201,7 @@ fun ColumnsFormLayout(
                  * Why: the scaffold's padding already holds the navigation bar, which the keyboard's inset holds too;
                  * consumed first, the form ends right on the keyboard rather than a navigation bar above it.
                  */
-                Box(
+                BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
@@ -208,6 +209,11 @@ fun ColumnsFormLayout(
                         .imePadding(),
                     contentAlignment = Alignment.TopCenter,
                 ) {
+                    /*
+                     * Why: one column keeps its 592 dp cap as margins inside its scroll rather than a narrower scroll,
+                     * so a row that scrolls sideways still runs to the screen's edge on a wide window.
+                     */
+                    val sideSpace = ((maxWidth - singleColumnMaxWidth) / 2).coerceAtLeast(0.dp)
                     FormColumnsLayout(
                         usesTwoColumns = usesTwoColumns,
                         contentPadding = if (usesTwoColumns) {
@@ -219,15 +225,14 @@ fun ColumnsFormLayout(
                             )
                         } else {
                             PaddingValues(
-                                start = 16.dp,
-                                end = 16.dp,
+                                start = 16.dp + sideSpace,
+                                end = 16.dp + sideSpace,
                                 top = 8.dp,
                                 bottom = if (shownFloatingAction != null) floatingActionClearance else 24.dp,
                             )
                         },
                         first = first,
                         second = second,
-                        modifier = if (usesTwoColumns) Modifier else Modifier.widthIn(max = singleColumnMaxWidth),
                     )
                 }
             }

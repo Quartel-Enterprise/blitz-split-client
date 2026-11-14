@@ -200,8 +200,9 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     dialog). A dialog on an Android tablet and the Mac's form keep it in the form, under "Split", with its hint
     ("Fills in the amount, date and description from the photo."); elsewhere the button's label says enough and the
     hint went. Never on "Edit bill", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
-    leave it out there; Home's shortcut still opens it. Online only: offline the button gives way to "Needs
-    internet. Fill it in by hand or scan the receipt once you're back online." under "Split". It asks first where the photo comes from (Pierre's call, beta feedback
+    leave it out there; Home's shortcut still opens it. Online only: offline "Needs internet. Fill it in by
+    hand or scan the receipt once you're back online." shows under "Split", and the button leaves (Android's FAB,
+    the web's footer) or stays disabled (iOS's toolbar, so a source choice already open survives the drop). It asks first where the photo comes from (Pierre's call, beta feedback
     part 2, item 7, `SplitBillUiState.showsReceiptSourceChoice`, `OnReceiptSourcePicked`, `OnReceiptChoiceSkipped` where there is no camera), as Home's shortcut and
     "Take another photo" do too: Android a bottom sheet "Scan receipt" with "Take photo", "Choose from gallery"
     (the system Photo Picker, no storage permission) and "Choose file" (the documents picker, an image saved as a

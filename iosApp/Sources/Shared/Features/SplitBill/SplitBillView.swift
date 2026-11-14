@@ -317,10 +317,11 @@ private struct PhoneSplitBill: View {
         model.state
     }
 
-    /// "Scan receipt" in the bottom toolbar: a new bill, online. Only the layouts that offer it declare it, so an
-    /// iPhone Duo's halves (the board leaves it out) never do, whatever the fold.
+    /// "Scan receipt" in the bottom toolbar: a new bill, disabled offline (the form says why) rather than gone, so its
+    /// open source dialog survives the connection dropping. Only the layouts that offer it declare it, so an iPhone
+    /// Duo's halves (the board leaves it out) never do, whatever the fold.
     private var showsScanButton: Bool {
-        state.isLoaded && state.showsScanReceipt && state.isOnline
+        state.isLoaded && state.showsScanReceipt
     }
 
     @ToolbarContentBuilder

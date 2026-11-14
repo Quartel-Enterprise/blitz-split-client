@@ -182,20 +182,6 @@ function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money:
             {t('splitBill_delete')}
           </Button>
         )}
-        {/* Why: a new bill's, online (offline the form says why it isn't there); the footer's start on a dialog, its top on a phone. */}
-        {state.showsScanReceipt && state.isOnline && (
-          <Button
-            key="bill-scan"
-            type="button"
-            variant="outline"
-            disabled={!state.canScanReceipt}
-            onClick={receiptPicker.pick}
-            className="order-last md:order-first md:mr-auto"
-          >
-            <ScanText aria-hidden />
-            {t('splitBill_scanReceipt')}
-          </Button>
-        )}
         <Button key="bill-cancel" variant="outline" onClick={() => presenter.close()}>
           {t('common_cancel')}
         </Button>
@@ -203,6 +189,20 @@ function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money:
           {state.isSaving && <Loader2 className="animate-spin" />}
           {t('splitBill_save')}
         </Button>
+        {/* Why: a new bill's, online (offline the form says why it isn't there); last in the page, so a phone's reversed footer draws it on top in the order it reads; a dialog moves it to its start. */}
+        {state.showsScanReceipt && state.isOnline && (
+          <Button
+            key="bill-scan"
+            type="button"
+            variant="outline"
+            disabled={!state.canScanReceipt}
+            onClick={receiptPicker.pick}
+            className="md:order-first md:mr-auto"
+          >
+            <ScanText aria-hidden />
+            {t('splitBill_scanReceipt')}
+          </Button>
+        )}
       </>
     ),
   }
