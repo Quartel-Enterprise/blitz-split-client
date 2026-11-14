@@ -16,6 +16,8 @@ import org.koin.mp.KoinPlatform
 class JsAppDownloadState(
     val isLoaded: Boolean,
     val link: String,
+    // Why: the link as the code prints it, without its scheme nor the language it carries.
+    val displayLink: String,
     // Why: the QR code's modules row by row, qrSize by qrSize; empty until read.
     val qrSize: Int,
     val qrModules: Array<Boolean>,
@@ -48,6 +50,7 @@ class AppDownloadPresenter(
             JsAppDownloadState(
                 isLoaded = state.isLoaded,
                 link = state.link,
+                displayLink = state.displayLink,
                 qrSize = state.qrCode?.size ?: 0,
                 qrModules = toJsModules(state.qrCode),
                 stores = state.stores.name,

@@ -94,7 +94,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     and only its author may do either (the server's RLS). A deleted comment with replies stays as "Comment deleted"
     over them; one without replies, and a deleted reply, go. Edits, deletions and likes record no Activity event and
     push nothing: Comments' row shows the text as edited, and "Ana deleted a comment on Dinner" once deleted. A
-    comment's link, `https://blitzsplit.com/b/<bill>?comentario=<comment>` (`BillCommentLink`), which the apps claim
+    comment's link, `https://blitzsplit.com/b/<bill>?comentario=<comment>` (`BillCommentLink`, shared with
+    `&lang=<the app's language>` so its preview, which shows nothing of the bill, speaks it), which the apps claim
     (App Links, Universal Links) and the web opens, opens the bill's Bill screen over its group's Expenses, over Groups,
     scrolled to the comment and highlighted, after a sync of a few seconds, since the comment may be newer than the device's copy
     (`Route.BillDetail.focusCommentId`); a deleted comment opens Bill with "That comment was deleted.", a deleted

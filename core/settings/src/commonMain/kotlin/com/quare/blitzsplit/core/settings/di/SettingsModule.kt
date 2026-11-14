@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastUpdatePromptAt
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveDynamicColo
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveGroupsLayoutUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastNotificationPromptAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastUpdatePromptAtUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveSpokenLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveThemePreferenceUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveUsageDataSharingUseCase
@@ -80,6 +82,7 @@ val settingsModule = module {
     // Why: one copy of the language for the whole app, so Profile's pick redraws the Apple app's root at once.
     singleOf(::AppLanguageRepositoryImpl).bind<AppLanguageRepository>()
     factoryOf(::ObserveAppLanguageUseCase).bind<ObserveAppLanguage>()
+    factoryOf(::ObserveSpokenLanguageUseCase).bind<ObserveSpokenLanguage>()
     factoryOf(::UpdateAppLanguageUseCase).bind<UpdateAppLanguage>()
     factoryOf(::RefreshAppLanguageUseCase).bind<RefreshAppLanguage>()
 }

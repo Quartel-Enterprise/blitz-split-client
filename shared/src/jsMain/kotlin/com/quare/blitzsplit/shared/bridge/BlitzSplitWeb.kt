@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLink
 import com.quare.blitzsplit.core.expenses.domain.model.SharedBillLink
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
@@ -17,6 +18,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.shared.app.AppUiState
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -59,11 +62,17 @@ fun startBlitzSplit(
     val launchUrl = window.location.href
     // Why: the UI's language is picked once at startup, so its separator is read once too.
     val decimalSeparator = decimalSeparatorOf(languageTag)
+    /*
+     * Why: the language the pages speak, which src/i18n picks from the pick or the first of the browser's languages
+     * the app has, not navigator.language alone; a pick reloads the page, so it never changes while it runs.
+     */
+    val spokenLanguage = AppLanguage.languageOf(languageTag) ?: "en"
     startBlitzSplitKoin(
         extraModules = listOf(
             module {
                 single<Worker> { sqliteWorker }
                 single { DeviceDecimalSeparator { decimalSeparator } }
+                single { ObserveSpokenLanguage { flowOf(spokenLanguage) } }
             },
         ),
     )

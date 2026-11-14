@@ -42,6 +42,7 @@ import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
@@ -123,6 +124,7 @@ class ProfileViewModel(
     observePushEnabled: ObservePushEnabled,
     observeFirstDownload: ObserveFirstDownload,
     observeShowsPix: ObserveShowsPix,
+    observeSpokenLanguage: ObserveSpokenLanguage,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
@@ -141,7 +143,13 @@ class ProfileViewModel(
 
     private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
 
-    private val shareLink = ProfileShareLink(uiState, trackEvent, ::emit)
+    private val shareLink = ProfileShareLink(
+        uiState = uiState,
+        scope = viewModelScope,
+        observeSpokenLanguage = observeSpokenLanguage,
+        trackEvent = trackEvent,
+        emit = { action -> uiAction.emit(action) },
+    )
 
     // Why: the theme a tap asked for, which the stored theme reaches only once written.
     private var requestedTheme: ThemePreference? = null

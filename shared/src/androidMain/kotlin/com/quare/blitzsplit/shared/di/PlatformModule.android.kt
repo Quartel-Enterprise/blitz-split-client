@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSo
 import com.quare.blitzsplit.core.settings.domain.model.DynamicColorSupport
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.core.utils.DeviceLanguage
+import com.quare.blitzsplit.core.utils.DeviceLanguages
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.shared.settings.AndroidAppLanguageLocalDataSource
 import org.koin.core.module.Module
@@ -37,6 +38,13 @@ internal actual val platformModule: Module = module {
                 .getSystem()
                 .configuration.locales[0]
                 .toLanguageTag()
+        }
+    }
+    // Why: the system's whole list, in its order: Android draws the app in the first of them it has strings for.
+    single {
+        DeviceLanguages {
+            val locales = Resources.getSystem().configuration.locales
+            List(locales.size()) { index -> locales[index].toLanguageTag() }
         }
     }
     single { DeviceDecimalSeparator { DecimalFormatSymbols.getInstance().decimalSeparator } }

@@ -41,6 +41,7 @@ val billDetailModule = module {
             observeBillAttachments = get(),
             connectivityObserver = get(),
             minuteTicks = get(),
+            observeSpokenLanguage = get(),
             trackEvent = get(),
         )
     }

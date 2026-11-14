@@ -1856,6 +1856,7 @@ class BillDetailAttachmentsTest {
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             // Why: at once, then on each minute, as SystemMinuteTicks.
             minuteTicks = MinuteTicks { minutes.onStart { emit(Unit) } },
+            observeSpokenLanguage = { flowOf("pt") },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }

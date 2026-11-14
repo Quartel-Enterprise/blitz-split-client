@@ -11,6 +11,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.core.model)
             implementation(projects.core.utils)
+            implementation(projects.core.settings)
             // Why: OpenLegalPage opens the legal texts' screen.
             implementation(projects.core.navigation)
             implementation(projects.core.provider.room)

@@ -1,25 +1,30 @@
 package com.quare.blitzsplit.core.profile.domain.usecase.impl
 
+import com.quare.blitzsplit.core.model.LinkLanguage
 import com.quare.blitzsplit.core.model.StoreListing
 import com.quare.blitzsplit.core.profile.domain.model.AppInvite
 import com.quare.blitzsplit.core.profile.domain.model.AppStores
 import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
 import com.quare.blitzsplit.core.profile.domain.repository.AppInviteRepository
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 
 class ObserveAppInviteUseCase(
     private val repository: AppInviteRepository,
     private val platform: ClientPlatform,
     private val stores: AppStores,
+    private val observeSpokenLanguage: ObserveSpokenLanguage,
 ) : ObserveAppInvite {
     override fun invoke(): Flow<AppInvite?> {
         val (link, listing) = findOffer() ?: return flowOf(null)
-        return repository.observeStatus().map { status ->
+        // Why: the site's link says the app's language, for its preview and its page; a store's own doesn't.
+        val language = if (platform == ClientPlatform.WEB) observeSpokenLanguage() else flowOf(null)
+        return combine(repository.observeStatus(), language) { status, spoken ->
             AppInvite(
-                link = link,
+                link = spoken?.let { LinkLanguage.buildLink(link, it) } ?: link,
                 stores = listing,
                 isDismissed = status.isDismissed,
                 phoneUse = status.phoneUse,
