@@ -13,6 +13,8 @@ struct GroupScreenActions {
     let editGroup: () -> Void
     /// "Pin to Home" or "Unpin from Home", as the header says the group is.
     let togglePin: () -> Void
+    /// "Export group data", which asks for the format.
+    let export: () -> Void
     let leaveGroup: () -> Void
     let deleteGroup: () -> Void
     let splitBill: () -> Void
@@ -32,6 +34,7 @@ struct GroupScreenActions {
         photo: {},
         editGroup: {},
         togglePin: {},
+        export: {},
         leaveGroup: {},
         deleteGroup: {},
         splitBill: {},
@@ -172,16 +175,18 @@ private struct GroupScreenBars: ViewModifier {
         #endif
     }
 
-    /// "⋯": only what changes the group itself (6.1i), Pin to Home first, which works offline; offline, Leave and
-    /// Delete say they need the internet (6.1j). The Mac's items that open a dialog end in "…".
+    /// "⋯": what is done to the group itself (6.1i): Edit group, Pin to Home and Export group data, which work
+    /// offline, then Leave and Delete, which say they need the internet offline (6.1j). The Mac's items that open a
+    /// dialog end in "…".
     private var groupMenu: some View {
         Menu("More group options", systemImage: "ellipsis") {
+            Button(editGroupTitle, systemImage: "pencil", action: actions.editGroup)
             if header?.isPinned == true {
                 Button("Unpin from Home", systemImage: "pin.slash", action: actions.togglePin)
             } else {
                 Button("Pin to Home", systemImage: "pin", action: actions.togglePin)
             }
-            Button(editGroupTitle, systemImage: "pencil", action: actions.editGroup)
+            Button(exportTitle, systemImage: "square.and.arrow.down", action: actions.export)
             Divider()
             Button(action: actions.leaveGroup) {
                 menuLabel(leaveGroupTitle, systemImage: "rectangle.portrait.and.arrow.right")
@@ -204,6 +209,14 @@ private struct GroupScreenBars: ViewModifier {
         } icon: {
             Image(systemName: systemImage)
         }
+    }
+
+    private var exportTitle: LocalizedStringKey {
+        #if os(macOS)
+        "Export group data…"
+        #else
+        "Export group data"
+        #endif
     }
 
     private var editGroupTitle: LocalizedStringKey {

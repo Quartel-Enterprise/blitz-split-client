@@ -111,6 +111,7 @@ internal fun SampleTrip.groupDetailState(tab: GroupTab): GroupDetailUiState {
         isAccountUnprotected = false,
         simplification = null,
         simplifyConflict = null,
+        showsExportFormats = false,
     )
 }
 

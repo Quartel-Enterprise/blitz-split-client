@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ExportGroup
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeRecordedPaymentUseCase
@@ -1086,6 +1087,7 @@ class GroupDetailCurrenciesViewModelTest {
                 },
                 observePinnedGroupIds = ObservePinnedGroupIdsUseCase(pins),
                 setGroupPinned = SetGroupPinnedUseCase(pins) { nowMillis },
+                exportGroup = ExportGroup { _, _, _ -> Result.failure(UnsupportedOperationException()) },
             ),
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

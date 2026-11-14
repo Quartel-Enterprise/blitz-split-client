@@ -60,6 +60,8 @@ data class GroupDetailUiState(
     val simplification: DebtSimplificationSummary?,
     // Why: "Ana desligou depois de você" (13.1e), when this screen is the group's on top as it comes.
     val simplifyConflict: SimplifyDebtsConflictNotice?,
+    // Why: "Export group data" asks which file to make: CSV, Excel, JSON or text.
+    val showsExportFormats: Boolean,
 ) {
     // Why: the card over the pairs, only while there is any to explain.
     val showsSimplificationCard: Boolean

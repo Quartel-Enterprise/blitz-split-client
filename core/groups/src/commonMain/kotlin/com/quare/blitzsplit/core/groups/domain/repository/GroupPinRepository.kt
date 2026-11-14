@@ -2,7 +2,7 @@ package com.quare.blitzsplit.core.groups.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-// Why: "Fixar na Início", this device's user's own pins, synced with the account.
+// Why: "Fixar no Início", this device's user's own pins, synced with the account.
 interface GroupPinRepository {
     fun observePinnedGroupIds(): Flow<Set<String>>
 

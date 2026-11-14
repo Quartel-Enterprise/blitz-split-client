@@ -1,4 +1,4 @@
-import { ArrowLeft, BarChart3, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, UserPlus } from 'lucide-react'
+import { ArrowLeft, BarChart3, Download, Ellipsis, LogOut, Pencil, Pin, PinOff, Trash2, UserPlus } from 'lucide-react'
 import type { JsGroupExit, JsGroupHeader } from 'blitzsplit-shared'
 import { useRef, type ReactNode } from 'react'
 import { Avatar, GroupTabs, SplitBillIcon, type GroupTab } from '@/components/common'
@@ -31,6 +31,7 @@ export interface GroupPageEvents extends GroupExitEvents {
   photo(): void
   togglePin(): void
   editGroup(): void
+  openExport(): void
   leaveGroup(): void
   deleteGroup(): void
   splitBill(): void
@@ -288,8 +289,8 @@ function GroupBodySkeleton() {
 }
 
 /**
- * The ⋯ menu keeps only what changes the group itself (6.1i); offline, Sair and Apagar need the internet (6.1j). "Fixar
- * na Início" comes first and works offline: it puts the group first in Início's "Seus grupos".
+ * The ⋯ menu keeps what is done to the group itself (6.1i): Editar grupo, Fixar no Início (first in Início's "Seus
+ * grupos") and Exportar dados do grupo, which work offline, then Sair and Apagar, which need the internet (6.1j).
  */
 function GroupMenu({ isOnline, isPinned, events, isOutlined = false }: { isOnline: boolean; isPinned: boolean; events: GroupPageEvents; isOutlined?: boolean }) {
   const needsInternet = !isOnline && <span className="ml-auto text-xs text-muted-foreground">{t('groupExit_needsInternet')}</span>
@@ -301,13 +302,17 @@ function GroupMenu({ isOnline, isPinned, events, isOutlined = false }: { isOnlin
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuItem onSelect={() => events.editGroup()}>
+          <Pencil />
+          {t('groupDetail_editGroup')}
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => events.togglePin()}>
           {isPinned ? <PinOff /> : <Pin />}
           {t(isPinned ? 'groupDetail_unpin' : 'groupDetail_pin')}
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => events.editGroup()}>
-          <Pencil />
-          {t('groupDetail_editGroup')}
+        <DropdownMenuItem onSelect={() => events.openExport()}>
+          <Download />
+          {t('groupExport_title')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled={!isOnline} onSelect={() => events.leaveGroup()}>

@@ -178,6 +178,7 @@ private fun eventOf(action: GroupAction): GroupDetailUiEvent = when (action) {
     GroupAction.STATS -> GroupDetailUiEvent.OnStatsClicked
     GroupAction.PIN -> GroupDetailUiEvent.OnPinToggled
     GroupAction.EDIT_GROUP -> GroupDetailUiEvent.OnEditGroupClicked
+    GroupAction.EXPORT -> GroupDetailUiEvent.OnExportClicked
     GroupAction.LEAVE_GROUP -> GroupDetailUiEvent.OnLeaveGroupClicked
     GroupAction.DELETE_GROUP -> GroupDetailUiEvent.OnDeleteGroupClicked
     GroupAction.MEMBERS -> GroupDetailUiEvent.OnTabSelected(GroupTab.MEMBERS)

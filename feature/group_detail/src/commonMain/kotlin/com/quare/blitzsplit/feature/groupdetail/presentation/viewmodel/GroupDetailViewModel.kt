@@ -41,6 +41,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUi
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -100,6 +101,7 @@ class GroupDetailViewModel(
                 isAccountUnprotected = false,
                 simplification = null,
                 simplifyConflict = null,
+                showsExportFormats = false,
             ),
         )
 
@@ -165,6 +167,8 @@ class GroupDetailViewModel(
 
     // Why: Membros was picked for the ask waiting now, which picks it only once.
     private var isAddPersonAskShown = false
+
+    private var exportJob: Job? = null
 
     // Why: the chip picked over Saldos' pairs and the header's amounts, the group's default currency until one is.
     private var pickedCurrency: GroupCurrency? = null
@@ -292,6 +296,18 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnPinToggled -> screen.togglePin()?.let { isPinned ->
                 trackEvent("group_pin_toggled", mapOf("is_pinned" to isPinned))
+            }
+
+            GroupDetailUiEvent.OnExportClicked -> if (uiState.value.isLoaded) {
+                trackEvent("group_export_clicked", emptyMap())
+                uiState.update { it.copy(showsExportFormats = true) }
+            }
+
+            is GroupDetailUiEvent.OnExportFormatPicked -> export(event)
+
+            GroupDetailUiEvent.OnExportDismissed -> if (uiState.value.showsExportFormats) {
+                trackEvent("group_export_cancelled", emptyMap())
+                uiState.update { it.copy(showsExportFormats = false) }
             }
 
             GroupDetailUiEvent.OnLeaveGroupClicked -> screen.exit.askToLeave()
@@ -449,6 +465,20 @@ class GroupDetailViewModel(
                 simplification = balances?.let(DebtSimplificationSummary::ofOrNull),
                 isLoaded = true,
             )
+        }
+    }
+
+    // Why: the file is made from what the device has, offline too, and handed to the UI, which only saves it.
+    private fun export(event: GroupDetailUiEvent.OnExportFormatPicked) {
+        uiState.update { it.copy(showsExportFormats = false) }
+        // Why: one file at a time, so a double tap on a format doesn't save it twice.
+        if (exportJob?.isActive == true) return
+        trackEvent("group_export_format_picked", mapOf("format" to event.format.extension))
+        exportJob = viewModelScope.launch {
+            screen
+                .createExport(event.format, event.words)
+                .onSuccess { file -> uiAction.emit(GroupDetailUiAction.SaveExport(file)) }
+                .onFailure { uiAction.emit(GroupDetailUiAction.ShowExportError) }
         }
     }
 

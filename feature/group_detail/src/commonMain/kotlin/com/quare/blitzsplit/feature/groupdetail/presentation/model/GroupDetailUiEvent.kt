@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
+import com.quare.blitzsplit.core.expenses.export.GroupExportFormat
+import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
@@ -46,6 +48,15 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             // Why: a toggle, sent with where it ended up.
             OnPinToggled -> EventAnalytics.Manual("group_pin_toggled")
+
+            // Why: only once the group is read, when the formats open.
+            OnExportClicked -> EventAnalytics.Manual("group_export_clicked")
+
+            // Why: only a pick that makes a file, never a second tap while the first one is being made.
+            is OnExportFormatPicked -> EventAnalytics.Manual("group_export_format_picked")
+
+            // Why: only the formats' question still open, since Apple's dialog also closes itself after a format.
+            OnExportDismissed -> EventAnalytics.Manual("group_export_cancelled")
 
             OnLeaveGroupClicked -> EventAnalytics.Automatic(
                 "leave_group_clicked",
@@ -184,8 +195,20 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: "Editar grupo" in the ⋮ menu.
     data object OnEditGroupClicked : GroupDetailUiEvent
 
-    // Why: "Fixar na Início" or "Desafixar da Início" in the ⋮ menu.
+    // Why: "Pin to Home" or "Unpin from Home" in the ⋮ menu.
     data object OnPinToggled : GroupDetailUiEvent
+
+    // Why: "Export group data" in the ⋮ menu, which asks for the format.
+    data object OnExportClicked : GroupDetailUiEvent
+
+    // Why: CSV, Excel, JSON or text, with the UI's words for the file's headers.
+    data class OnExportFormatPicked(
+        val format: GroupExportFormat,
+        val words: GroupExportWords,
+    ) : GroupDetailUiEvent
+
+    // Why: "Cancel" on the formats, or the dialog closed some other way.
+    data object OnExportDismissed : GroupDetailUiEvent
 
     // Why: "Sair do grupo" in the ⋮ menu.
     data object OnLeaveGroupClicked : GroupDetailUiEvent

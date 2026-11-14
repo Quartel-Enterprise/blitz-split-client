@@ -5,7 +5,7 @@ import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
 
 /*
- * Why: "Fixar na Início", this device's user's pin on a group, synced with the account like a preference. Kept when
+ * Why: "Fixar no Início", this device's user's pin on a group, synced with the account like a preference. Kept when
  * unpinned, so the unpin wins over an older pin of another device by updatedAt. It goes with its group.
  */
 @Entity(

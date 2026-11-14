@@ -8,6 +8,7 @@ internal enum class GroupAction {
     STATS,
     PIN,
     EDIT_GROUP,
+    EXPORT,
     LEAVE_GROUP,
     DELETE_GROUP,
     MEMBERS,

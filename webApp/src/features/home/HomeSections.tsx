@@ -579,7 +579,7 @@ function groupMetaText(group: JsHomeGroup): string {
 }
 
 /**
- * "Seus grupos": up to three, the pinned first ("Fixar na Início" in the group's ⋯ menu), then the latest activity;
+ * "Seus grupos": up to three, the pinned first ("Fixar no Início" in the group's ⋯ menu), then the latest activity;
  * settled groups stay out. Each opens its group; "Ver todos" is the Grupos tab.
  */
 export function YourGroups({ presenter, state }: SectionProps) {

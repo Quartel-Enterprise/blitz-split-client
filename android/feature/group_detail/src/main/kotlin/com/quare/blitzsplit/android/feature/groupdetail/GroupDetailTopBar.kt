@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.PushPin
@@ -244,8 +245,8 @@ private fun GroupBarActionsComponent(
 }
 
 /*
- * Why: the ⋮ menu keeps only what changes the group itself (6.1i), with "Fixar na Início" first, which works offline;
- * offline, Sair and Apagar need the internet (6.1j).
+ * Why: the ⋮ menu keeps what is done to the group itself (6.1i): Edit group, Pin to Home and Export group data, which
+ * work offline, then Leave and Delete, which need the internet (6.1j).
  */
 @Composable
 private fun GroupMenu(
@@ -266,6 +267,19 @@ private fun GroupMenu(
             onDismissRequest = { isOpen = false },
         ) {
             DropdownMenuItem(
+                text = { Text(stringResource(R.string.group_detail_edit_group)) },
+                onClick = {
+                    isOpen = false
+                    onAction(GroupAction.EDIT_GROUP)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = null,
+                    )
+                },
+            )
+            DropdownMenuItem(
                 text = {
                     Text(stringResource(if (isPinned) R.string.group_detail_unpin else R.string.group_detail_pin))
                 },
@@ -281,14 +295,14 @@ private fun GroupMenu(
                 },
             )
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.group_detail_edit_group)) },
+                text = { Text(stringResource(R.string.group_detail_export)) },
                 onClick = {
                     isOpen = false
-                    onAction(GroupAction.EDIT_GROUP)
+                    onAction(GroupAction.EXPORT)
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Edit,
+                        imageVector = Icons.Outlined.FileDownload,
                         contentDescription = null,
                     )
                 },

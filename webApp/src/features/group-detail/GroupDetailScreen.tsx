@@ -3,6 +3,7 @@ import {
   GroupDetailPresenter,
   type JsExpenseRow,
   type JsGroupDetailState,
+  type JsGroupExportFile,
   type JsPaymentRow,
   type JsRoute,
 } from 'blitzsplit-shared'
@@ -27,6 +28,7 @@ import { formatTime, formatWhen } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
 import { CategoryTeachDialog, useCategoryTeachNotice } from './CategoryTeach'
 import { toastGroupAction } from './GroupExitDialog'
+import { downloadGroupExport, GroupExportDialog } from './GroupExportDialog'
 import { GroupPage, GroupPageSkeleton } from './GroupPage'
 import { pickedTabOf, rememberPickedTab } from './pickedTabs'
 import { DayRow, DayRowGroup, DayRowsTable, ExpenseLine } from './ExpenseRows'
@@ -43,6 +45,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const members = useMembers(route)
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
+  useActions(presenter, (p, onExport: (file: JsGroupExportFile) => void) => p.observeExports(onExport), downloadGroupExport)
   // Why: back from a page the group opened draws the group anew, on the tab picked before it.
   const pageKey = useContext(PageKeyContext)
   useEffect(() => {
@@ -112,6 +115,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
         />
       )}
       {state.teach?.isPickingWord && <CategoryTeachDialog presenter={presenter} teach={state.teach} />}
+      {state.showsExportFormats && <GroupExportDialog presenter={presenter} />}
       {membersPresenter && membersState && <MembersDialogs presenter={membersPresenter} state={membersState} />}
     </GroupPage>
   )
