@@ -15,8 +15,8 @@ const config = {
 }
 
 /**
- * Firebase Analytics collects in production builds, so the consent decision (#184) has to be settled before the web
- * app is served to the public (docs/analytics/README.md#consent).
+ * Firebase Analytics collects in production builds, on by default under legitimate interest, until Profile's "Share
+ * usage data" turns it off in this browser (docs/analytics/README.md#consent). false turns it off for everyone.
  */
 const collectsAnalytics = true
 
@@ -24,16 +24,22 @@ export async function startAnalytics(): Promise<void> {
   if (!collectsAnalytics || import.meta.env.DEV || Object.values(config).some((value) => value === '')) return
   try {
     // Why: loaded only here, so a build without the config, or a page that never gets this far, downloads no Firebase
-    const [{ initializeApp }, { initializeAnalytics, isSupported, logEvent }] = await Promise.all([
+    const [{ initializeApp }, { initializeAnalytics, isSupported, logEvent, setUserId }] = await Promise.all([
       import('firebase/app'),
       import('firebase/analytics'),
     ])
     if (!(await isSupported())) return
+    // Why: off until the shared code read this browser's "Share usage data", so gtag sends nothing of its own before
+    disableCollection(true)
     const app = initializeApp(config)
     const analytics = initializeAnalytics(app, {
       config: { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false },
     })
-    attachAnalytics((name, params) => logEvent(analytics, name, name === 'screen_view' ? webScreenView(params) : params))
+    attachAnalytics(
+      (name, params) => logEvent(analytics, name, name === 'screen_view' ? webScreenView(params) : params),
+      (isEnabled) => disableCollection(!isEnabled),
+      (userId) => setUserId(analytics, userId ?? null),
+    )
   } catch {
     // Analytics only counts what people do; a page that can't load it works as before
   }
@@ -46,4 +52,12 @@ export async function startAnalytics(): Promise<void> {
 function webScreenView(params: Record<string, unknown>): Record<string, unknown> {
   const { screen_name: screen, screen_class: screenClass, ...rest } = params
   return { ...rest, firebase_screen: screen, firebase_screen_class: screenClass }
+}
+
+/**
+ * gtag's own switch, read before anything it sends, which firebase/analytics' setAnalyticsCollectionEnabled sets the
+ * same way; set here first so it holds from initializeAnalytics on.
+ */
+function disableCollection(isDisabled: boolean): void {
+  ;(window as unknown as Record<string, boolean>)[`ga-disable-${config.measurementId}`] = isDisabled
 }

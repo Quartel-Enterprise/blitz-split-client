@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Utiliser sans compte</string>
     <string name="welcome_used_on_another_device">Je l’ai déjà utilisée sur un autre appareil</string>
     <string name="welcome_sign_in_failed">Connexion impossible pour le moment. Réessaie.</string>
+    <string name="welcome_legal_notice">En continuant, tu acceptes les %1$s et reconnais avoir pris connaissance de la %2$s.</string>
+    <string name="welcome_legal_terms">Conditions d’utilisation</string>
+    <string name="welcome_legal_privacy">Politique de confidentialité</string>
 </resources>

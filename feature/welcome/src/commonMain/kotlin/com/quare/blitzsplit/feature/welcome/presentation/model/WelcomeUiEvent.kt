@@ -24,6 +24,10 @@ sealed interface WelcomeUiEvent : UiEvent {
 
             OnUsedOnAnotherDeviceClicked -> EventAnalytics.Automatic("welcome_restore_clicked")
 
+            OnPrivacyPolicyClicked -> EventAnalytics.Automatic("privacy_policy_clicked", mapOf("source" to SOURCE))
+
+            OnTermsClicked -> EventAnalytics.Automatic("terms_clicked", mapOf("source" to SOURCE))
+
             // Why: no UI sends it today: an error goes away with the screen's next action.
             OnErrorDismissed -> EventAnalytics.NotTracked
         }
@@ -50,6 +54,11 @@ sealed interface WelcomeUiEvent : UiEvent {
     data object OnUseWithoutAccountClicked : WelcomeUiEvent
 
     data object OnUsedOnAnotherDeviceClicked : WelcomeUiEvent
+
+    // Why: the links of the notice under the buttons, "By continuing, you accept the Terms of Service…".
+    data object OnPrivacyPolicyClicked : WelcomeUiEvent
+
+    data object OnTermsClicked : WelcomeUiEvent
 
     data object OnErrorDismissed : WelcomeUiEvent
 }

@@ -21,6 +21,8 @@ internal class FakeDeviceSettingsRepository(
     val bitcoinInSats = MutableStateFlow(false)
     val updatedBitcoinInSats = mutableListOf<Boolean>()
     val lastUpdatePromptAt = MutableStateFlow<Long?>(null)
+    val usageDataSharing = MutableStateFlow(true)
+    val updatedUsageDataSharing = mutableListOf<Boolean>()
     val lastNotificationPromptAt = MutableStateFlow<Long?>(null)
 
     override fun observeTheme(): Flow<ThemePreference> = theme
@@ -76,5 +78,12 @@ internal class FakeDeviceSettingsRepository(
 
     override suspend fun dismissAppBanner() {
         isAppBannerDismissed.value = true
+    }
+
+    override fun observeUsageDataSharing(): Flow<Boolean> = usageDataSharing
+
+    override suspend fun updateUsageDataSharing(isOn: Boolean) {
+        updatedUsageDataSharing += isOn
+        usageDataSharing.value = isOn
     }
 }

@@ -117,4 +117,6 @@
     <string name="profile_share">プロフィールを共有</string>
     <string name="profile_share_message">Blitz Splitの私のプロフィールです：%1$s</string>
     <string name="profile_link_copied">リンクをコピーしました</string>
+    <string name="profile_share_usage_data">利用データを共有</string>
+    <string name="profile_share_usage_data_detail">開いた画面と操作をアプリの改善に使います。名前や金額は送りません。</string>
 </resources>

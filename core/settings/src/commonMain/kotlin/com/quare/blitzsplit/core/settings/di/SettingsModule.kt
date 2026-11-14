@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.settings.data.repository.DeviceSettingsReposito
 import com.quare.blitzsplit.core.settings.domain.repository.AppLanguageRepository
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
 import com.quare.blitzsplit.core.settings.domain.usecase.DismissAppBanner
+import com.quare.blitzsplit.core.settings.domain.usecase.FollowUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppBannerDismissed
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
@@ -16,6 +17,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotification
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastUpdatePromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.RefreshAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
@@ -25,7 +27,9 @@ import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationP
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastUpdatePromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.DismissAppBannerUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.FollowUsageDataSharingUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveAppBannerDismissedUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveAppLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveBitcoinInSatsUseCase
@@ -35,6 +39,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastNotific
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastUpdatePromptAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveThemePreferenceUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveUsageDataSharingUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.RefreshAppLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateAppLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateBitcoinInSatsUseCase
@@ -44,6 +49,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateLastNotifica
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateLastUpdatePromptAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateThemePreferenceUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateUsageDataSharingUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -68,6 +74,9 @@ val settingsModule = module {
     factoryOf(::UpdateLastNotificationPromptAtUseCase).bind<UpdateLastNotificationPromptAt>()
     factoryOf(::ObserveAppBannerDismissedUseCase).bind<ObserveAppBannerDismissed>()
     factoryOf(::DismissAppBannerUseCase).bind<DismissAppBanner>()
+    factoryOf(::ObserveUsageDataSharingUseCase).bind<ObserveUsageDataSharing>()
+    factoryOf(::UpdateUsageDataSharingUseCase).bind<UpdateUsageDataSharing>()
+    factoryOf(::FollowUsageDataSharingUseCase).bind<FollowUsageDataSharing>()
     // Why: one copy of the language for the whole app, so Profile's pick redraws the Apple app's root at once.
     singleOf(::AppLanguageRepositoryImpl).bind<AppLanguageRepository>()
     factoryOf(::ObserveAppLanguageUseCase).bind<ObserveAppLanguage>()

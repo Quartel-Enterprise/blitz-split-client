@@ -59,6 +59,9 @@ export const nl: Record<MessageKey, string> = {
   welcome_offlineNotice: 'Inloggen met een account heeft internet nodig. Gebruik het nu zonder account en verbind later in Profiel.',
   welcome_useWithoutAccount: 'Zonder account gebruiken',
   welcome_usedOnAnotherDevice: 'Ik heb het op een ander apparaat gebruikt',
+  welcome_legalNotice: "Door verder te gaan, accepteer je de {terms} en bevestig je dat je het {privacy} kent.",
+  welcome_legalTerms: "Servicevoorwaarden",
+  welcome_legalPrivacy: "Privacybeleid",
 
   profileSetup_title: 'Hoe noemen je vrienden je?',
   profileSetup_subtitle: 'Je groepen en iedereen met de link naar je profiel zien je naam.',
@@ -824,6 +827,8 @@ export const nl: Record<MessageKey, string> = {
   profile_languageIndonesian: 'Indonesisch',
   profile_bitcoinInSats: 'Bitcoin in satoshi’s',
   profile_bitcoinInSatsDetail: 'Toont en typt bitcoinbedragen in sats (1 ₿ = 100.000.000 sats).',
+  profile_shareUsageData: "Gebruiksgegevens delen",
+  profile_shareUsageDataDetail: "Schermen en tikken, om de app te verbeteren. Nooit namen of bedragen.",
   money_sats: '{amount} sats',
   money_satsSymbol: 'sats',
   currency_cryptoHeader: 'Cryptovaluta',

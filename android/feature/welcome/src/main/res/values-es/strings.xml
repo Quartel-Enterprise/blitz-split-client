@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Usar sin cuenta</string>
     <string name="welcome_used_on_another_device">Ya la usé en otro dispositivo</string>
     <string name="welcome_sign_in_failed">No se pudo iniciar sesión en este momento. Inténtalo de nuevo.</string>
+    <string name="welcome_legal_notice">Al continuar, aceptas los %1$s y declaras conocer la %2$s.</string>
+    <string name="welcome_legal_terms">Términos de Servicio</string>
+    <string name="welcome_legal_privacy">Política de Privacidad</string>
 </resources>

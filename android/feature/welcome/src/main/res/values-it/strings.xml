@@ -13,4 +13,7 @@
     <string name="welcome_use_without_account">Usa senza account</string>
     <string name="welcome_used_on_another_device">Ho già usato l’app su un altro dispositivo</string>
     <string name="welcome_sign_in_failed">Impossibile accedere ora. Riprova.</string>
+    <string name="welcome_legal_notice">Continuando, accetti i %1$s e dichiari di aver letto l’%2$s.</string>
+    <string name="welcome_legal_terms">Termini di servizio</string>
+    <string name="welcome_legal_privacy">Informativa sulla privacy</string>
 </resources>

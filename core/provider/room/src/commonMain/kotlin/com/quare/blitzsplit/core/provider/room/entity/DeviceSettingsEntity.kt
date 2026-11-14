@@ -46,4 +46,7 @@ data class DeviceSettingsEntity(
     // Why: the ✕ of Home's "Blitz Split in the app" banner in a phone's browser (14.3), for good on this device.
     @ColumnInfo(defaultValue = "0")
     val isAppBannerDismissed: Boolean,
+    // Why: Profile's "Share usage data" (Firebase Analytics), on until turned off on this device.
+    @ColumnInfo(defaultValue = "1")
+    val sharesUsageData: Boolean,
 )

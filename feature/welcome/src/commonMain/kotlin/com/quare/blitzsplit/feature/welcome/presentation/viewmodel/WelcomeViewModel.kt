@@ -2,10 +2,12 @@ package com.quare.blitzsplit.feature.welcome.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.OpenLegalPage
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.signin.ProviderSignIn
 import com.quare.blitzsplit.core.sync.signin.ProviderSignInController
@@ -20,10 +22,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 
 class WelcomeViewModel(
     private val navigator: Navigator,
+    private val openLegalPage: OpenLegalPage,
     providerSignIn: ProviderSignIn,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
@@ -69,7 +73,13 @@ class WelcomeViewModel(
             WelcomeUiEvent.OnUseWithoutAccountClicked -> navigator.navigate(Route.ProfileSetup)
             WelcomeUiEvent.OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)
             WelcomeUiEvent.OnErrorDismissed -> uiState.update { it.copy(error = null) }
+            WelcomeUiEvent.OnPrivacyPolicyClicked -> openLegalPage(LegalPage.PRIVACY_POLICY, ::openUrl)
+            WelcomeUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE, ::openUrl)
         }
+    }
+
+    private fun openUrl(url: String) {
+        viewModelScope.launch { uiAction.emit(WelcomeUiAction.OpenUrl(url)) }
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {

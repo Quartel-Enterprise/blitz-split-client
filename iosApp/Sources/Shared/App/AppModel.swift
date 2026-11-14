@@ -98,7 +98,8 @@ final class AppModel {
             return
         }
         if let buried = routes.indices.dropFirst().first(where: { index in
-            routes[index].opensInSettings && routes[index...].contains { !$0.opensInSettings }
+            Self.opensInSettings(routes[index], over: routes[0])
+                && routes[index...].contains { !Self.opensInSettings($0, over: routes[0]) }
         }) {
             closeSettingsEntries(from: buried, of: value)
             return
@@ -205,7 +206,13 @@ final class AppModel {
 
     /// How many entries on top the Mac's Ajustes opened (`AppRoute.opensInSettings`), never the root.
     private var settingsEntryCount: Int {
-        min(backStack.reversed().prefix { $0.opensInSettings }.count, backStack.count - 1)
+        min(backStack.reversed().prefix { Self.opensInSettings($0, over: root) }.count, backStack.count - 1)
+    }
+
+    /// What the Mac's Ajustes open, once a profile exists to show them (Início or the groups at the root). Before it,
+    /// Welcome's legal links open their text in the main window, as on iOS: Ajustes would have nothing to show it over.
+    private static func opensInSettings(_ route: AppRoute, over root: AppRoute) -> Bool {
+        route.opensInSettings && (root == .home || root == .groups)
     }
 
     /// The entries above the root, but the ones the sheets show. A native back gesture shortens it, and
@@ -368,7 +375,7 @@ final class AppModel {
     /// Before the window is measured no entry opens as a sheet, and the root draws none of the stack either. What the
     /// Mac's Ajustes open is their sheet, never the main window's.
     private func presentsAsSheet(_ route: AppRoute) -> Bool {
-        guard let isLargeWindow, !route.opensInSettings else { return false }
+        guard let isLargeWindow, !Self.opensInSettings(route, over: root) else { return false }
         return route.presentsAsSheet(isLargeWindow: isLargeWindow)
     }
 
