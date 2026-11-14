@@ -51,6 +51,8 @@ private val tabletopHalvesGap = 48.dp
 private val dialogPadding = 24.dp
 private val columnsGap = 32.dp
 private val floatingActionClearance = 88.dp // Why: the extended FAB's 56 dp, its 16 dp margin and a gap.
+private val tabletopSidePadding = 24.dp
+private val tabletopBleed = FormBleed(tabletopSidePadding, tabletopSidePadding)
 
 // Why: what the top bar (or the dialog's header and actions) of Rachar conta, Dividir and Divisão padrão hold.
 class FormChrome(
@@ -108,6 +110,8 @@ fun ColumnsFormLayout(
 ) {
     val usesTwoColumns = rememberUsesFormColumns(isDialog)
     val tabletopForm = tabletop?.takeIf { rememberUsesTabletopHalves(isDialog) }
+    // Why: the keyboard's own keys sit where it is; it comes back once the keyboard goes down.
+    val shownFloatingAction = floatingAction?.takeIf { tabletopForm == null && !WindowInsets.isImeVisible }
     if (isDialog) {
         DialogCard(
             isWide = usesTwoColumns,
@@ -167,17 +171,16 @@ fun ColumnsFormLayout(
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
             floatingActionButton = {
-                // Why: the keyboard's own keys sit where it is; it comes back once the keyboard goes down.
-                if (floatingAction != null && tabletopForm == null && !WindowInsets.isImeVisible) {
+                if (shownFloatingAction != null) {
                     ExtendedFloatingActionButton(
-                        onClick = floatingAction.onClick,
+                        onClick = shownFloatingAction.onClick,
                         icon = {
                             Icon(
-                                imageVector = floatingAction.icon,
+                                imageVector = shownFloatingAction.icon,
                                 contentDescription = null,
                             )
                         },
-                        text = { Text(floatingAction.label) },
+                        text = { Text(shownFloatingAction.label) },
                     )
                 }
             },
@@ -212,14 +215,14 @@ fun ColumnsFormLayout(
                                 start = 56.dp,
                                 end = 24.dp,
                                 top = 4.dp,
-                                bottom = if (floatingAction != null) floatingActionClearance else 16.dp,
+                                bottom = if (shownFloatingAction != null) floatingActionClearance else 16.dp,
                             )
                         } else {
                             PaddingValues(
                                 start = 16.dp,
                                 end = 16.dp,
                                 top = 8.dp,
-                                bottom = if (floatingAction != null) floatingActionClearance else 24.dp,
+                                bottom = if (shownFloatingAction != null) floatingActionClearance else 24.dp,
                             )
                         },
                         first = first,
@@ -272,13 +275,13 @@ private fun TabletopHalvesLayout(
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
                         .padding(
-                            horizontal = 24.dp,
+                            horizontal = tabletopSidePadding,
                             vertical = 12.dp,
                         ),
                     verticalArrangement = Arrangement.spacedBy(columnSpacing),
                 ) {
                     val column = this
-                    CompositionLocalProvider(LocalFormBleed provides FormBleed(24.dp, 24.dp)) { column.first() }
+                    CompositionLocalProvider(LocalFormBleed provides tabletopBleed) { column.first() }
                 }
             }
         },
@@ -295,15 +298,15 @@ private fun TabletopHalvesLayout(
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
                         .padding(
-                            start = 24.dp,
-                            end = 24.dp,
+                            start = tabletopSidePadding,
+                            end = tabletopSidePadding,
                             top = 12.dp,
                             bottom = 24.dp,
                         ),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     val column = this
-                    CompositionLocalProvider(LocalFormBleed provides FormBleed(24.dp, 24.dp)) { column.second() }
+                    CompositionLocalProvider(LocalFormBleed provides tabletopBleed) { column.second() }
                     if (tabletop == TabletopForm.ConfirmAtBottom) {
                         Button(
                             onClick = chrome.onConfirm,

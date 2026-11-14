@@ -79,6 +79,10 @@ internal fun BillFieldsSection(
     )
     // Why: the symbol before the total opens the same menu as the chip beside it (beta feedback).
     var isCurrencyMenuOpen by rememberSaveable { mutableStateOf(false) }
+    // Why: a menu the form locked closes for good, rather than opening again by itself once the lock lifts.
+    LaunchedEffect(state.canChangeCurrency) {
+        if (!state.canChangeCurrency) isCurrencyMenuOpen = false
+    }
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,

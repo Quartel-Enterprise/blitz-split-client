@@ -50,6 +50,7 @@ export function AmountInput({
         <button
           type="button"
           aria-label={symbolAction.label}
+          aria-haspopup="menu"
           disabled={symbolAction.disabled}
           onClick={symbolAction.onClick}
           className="-mx-1 rounded-sm px-1 text-xl font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none"
