@@ -90,4 +90,3 @@ function LegalNotice({ presenter }: { presenter: WelcomePresenter }) {
     </p>
   )
 }
-

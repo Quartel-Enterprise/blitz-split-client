@@ -55,7 +55,7 @@ data class ProfileUiState(
     val usesDynamicColors: Boolean,
     // Why: Preferências' "Bitcoin em satoshis", every bitcoin amount shown and typed in whole sats on this device.
     val showsBitcoinInSats: Boolean,
-    // Why: Preferences' "Share usage data" (Firebase Analytics) on this device, on until turned off.
+    // Why: "Privacy and about"'s "Share usage data" (Firebase Analytics) on this device, on until turned off.
     val sharesUsageData: Boolean,
     // Why: Preferences' "Language", this device's pick, SYSTEM following the device.
     val language: AppLanguage,

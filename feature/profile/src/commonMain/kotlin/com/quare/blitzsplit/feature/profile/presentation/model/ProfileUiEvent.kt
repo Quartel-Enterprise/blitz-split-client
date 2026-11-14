@@ -194,7 +194,7 @@ sealed interface ProfileUiEvent : UiEvent {
         val isOn: Boolean,
     ) : ProfileUiEvent
 
-    // Why: Preferences' "Share usage data", Analytics' opt out on this device.
+    // Why: "Privacy and about"'s "Share usage data", Analytics' opt out on this device.
     data class OnUsageDataToggled(
         val isOn: Boolean,
     ) : ProfileUiEvent
