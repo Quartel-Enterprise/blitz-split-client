@@ -31,10 +31,11 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     its row and its dialog, are gone): the top bar's share button shares the account's profile link,
     `https://blitzsplit.com/u/<code>`, with "Here's my profile on Blitz Split: <link>" ("Esse é meu perfil no Bora
     Rachar" in Portuguese). The link shared or copied ends in `?lang=<the app's language>` (`LinkLanguage`): a profile
-    has no currency to pick its link's preview language by, so blitzsplit.com writes the preview in that one
-    (any of the app's eleven languages), and the site's own pages read the same parameter (the web app,
-    once it serves `/u/<code>` itself, doesn't read it yet). The language is the one the app is speaking
-    (`ObserveSpokenLanguage`): the pick, or the first of the device's languages the app has, English otherwise. Android and iOS open the system share, whose own Copy covers copying; the Mac's toolbar and
+    has no currency to pick its link's preview language by, so blitzsplit.com writes the preview in that one (any of
+    the app's eleven languages), and the site's own pages read the same parameter (the web app, once it serves
+    `/u/<code>` itself, doesn't read it yet). The language is the one the app is speaking (`ObserveSpokenLanguage`):
+    the pick, or the first of the device's languages the app has, English otherwise. Android and iOS open the system
+    share, whose own Copy covers copying; the Mac's toolbar and
     the web's header (the page's heading from 768 px) open a menu with "Share profile" (the Mac's sharing picker,
     the browser's share where there is one, else a copy) and "Copy link" ("Link copied"). The link is made on the
     device the moment the account exists (its first sync, `ProfileUiState.shareLink`), so it is there offline right
