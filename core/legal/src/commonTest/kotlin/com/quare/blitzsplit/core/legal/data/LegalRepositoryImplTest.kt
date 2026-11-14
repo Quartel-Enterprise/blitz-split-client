@@ -1,7 +1,9 @@
 package com.quare.blitzsplit.core.legal.data
 
 import com.quare.blitzsplit.core.legal.data.datasource.LegalLocalDataSource
+import com.quare.blitzsplit.core.legal.data.datasource.LegalRemoteAnswer
 import com.quare.blitzsplit.core.legal.data.datasource.LegalRemoteDataSource
+import com.quare.blitzsplit.core.legal.data.datasource.SavedLegalText
 import com.quare.blitzsplit.core.legal.data.parser.LegalDocumentParserImpl
 import com.quare.blitzsplit.core.legal.data.repository.LegalRepositoryImpl
 import com.quare.blitzsplit.core.legal.domain.model.LegalDate
@@ -22,6 +24,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 class LegalRepositoryImplTest {
     private lateinit var local: FakeLegalLocalDataSource
@@ -304,30 +308,185 @@ class LegalRepositoryImplTest {
         assertEquals(0, local.saveCount)
     }
 
+    @Test
+    fun `GIVEN the terms were checked an hour ago WHEN refreshing them THEN succeeds without asking the site`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf((LegalPage.TERMS_OF_USE to "pt") to markdown(title = "Termos")),
+                savedChecks = mapOf((LegalPage.TERMS_OF_USE to "pt") to SavedLegalText("\"a\"", NOW - 1.hours.ms)),
+                site = mapOf("pt" to markdown(title = "Termos novos")),
+            )
+
+            // When
+            val result = repository.refreshDocument(LegalPage.TERMS_OF_USE, "pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(remote.requests.isEmpty())
+            assertEquals(0, local.saveCount)
+        }
+
+    @Test
+    fun `GIVEN the terms were checked yesterday and are unchanged WHEN refreshing THEN only their check time moves`() =
+        runTest {
+            // Given
+            val saved = mapOf((LegalPage.TERMS_OF_USE to "pt") to markdown(title = "Termos"))
+            prepareScenario(
+                saved = saved,
+                savedChecks = mapOf((LegalPage.TERMS_OF_USE to "pt") to SavedLegalText("\"a\"", NOW - 25.hours.ms)),
+                site = mapOf("pt" to markdown(title = "Termos")),
+                siteEtags = mapOf("pt" to "\"a\""),
+            )
+
+            // When
+            val result = repository.refreshDocument(LegalPage.TERMS_OF_USE, "pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf<String?>("\"a\""), remote.sentEtags)
+            assertEquals(saved, local.saved.value)
+            assertEquals(0, local.saveCount)
+            assertEquals(SavedLegalText("\"a\"", NOW), local.checks[LegalPage.TERMS_OF_USE to "pt"])
+        }
+
+    @Test
+    fun `GIVEN the terms were checked yesterday and changed WHEN refreshing THEN saves the new text and its ETag`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf((LegalPage.TERMS_OF_USE to "pt") to markdown(title = "Termos")),
+                savedChecks = mapOf((LegalPage.TERMS_OF_USE to "pt") to SavedLegalText("\"a\"", NOW - 25.hours.ms)),
+                site = mapOf("pt" to markdown(title = "Termos novos")),
+                siteEtags = mapOf("pt" to "\"b\""),
+            )
+
+            // When
+            repository.refreshDocument(LegalPage.TERMS_OF_USE, "pt")
+
+            // Then
+            assertEquals(
+                mapOf((LegalPage.TERMS_OF_USE to "pt") to markdown(title = "Termos novos")),
+                local.saved.value,
+            )
+            assertEquals(SavedLegalText("\"b\"", NOW), local.checks[LegalPage.TERMS_OF_USE to "pt"])
+        }
+
+    @Test
+    fun `GIVEN the device clock was set back since the check WHEN refreshing THEN asks the site`() = runTest {
+        // Given
+        prepareScenario(
+            saved = mapOf((LegalPage.TERMS_OF_USE to "pt") to markdown(title = "Termos")),
+            savedChecks = mapOf((LegalPage.TERMS_OF_USE to "pt") to SavedLegalText("\"a\"", NOW + 1.hours.ms)),
+            site = mapOf("pt" to markdown(title = "Termos")),
+            siteEtags = mapOf("pt" to "\"a\""),
+        )
+
+        // When
+        repository.refreshDocument(LegalPage.TERMS_OF_USE, "pt")
+
+        // Then
+        assertEquals(listOf(LegalPage.TERMS_OF_USE to "pt"), remote.requests)
+    }
+
+    @Test
+    fun `GIVEN French kept the unchanged English text WHEN refreshing in French THEN English answers it unchanged`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf((LegalPage.PRIVACY_POLICY to "fr") to markdown(title = "Privacy")),
+                savedChecks = mapOf((LegalPage.PRIVACY_POLICY to "fr") to SavedLegalText("\"en\"", NOW - 25.hours.ms)),
+                site = mapOf("en" to markdown(title = "Privacy")),
+                siteEtags = mapOf("en" to "\"en\""),
+            )
+
+            // When
+            val result = repository.refreshDocument(LegalPage.PRIVACY_POLICY, "fr")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(LegalPage.PRIVACY_POLICY to "fr", LegalPage.PRIVACY_POLICY to "en"), remote.requests)
+            assertEquals(0, local.saveCount)
+            assertEquals(SavedLegalText("\"en\"", NOW), local.checks[LegalPage.PRIVACY_POLICY to "fr"])
+        }
+
+    @Test
+    fun `GIVEN the privacy policy was just downloaded WHEN refreshing it again THEN the site is asked once`() =
+        runTest {
+            // Given
+            prepareScenario(site = mapOf("pt" to markdown(title = "Privacidade")))
+            repository.refreshDocument(LegalPage.PRIVACY_POLICY, "pt")
+
+            // When
+            val result = repository.refreshDocument(LegalPage.PRIVACY_POLICY, "pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(LegalPage.PRIVACY_POLICY to "pt"), remote.requests)
+        }
+
+    @Test
+    fun `GIVEN a text checked yesterday WHEN refreshing offline THEN fails and keeps its check time`() = runTest {
+        // Given
+        val check = SavedLegalText("\"a\"", NOW - 25.hours.ms)
+        prepareScenario(
+            saved = mapOf((LegalPage.TERMS_OF_USE to "pt") to markdown(title = "Termos")),
+            savedChecks = mapOf((LegalPage.TERMS_OF_USE to "pt") to check),
+            siteError = IllegalStateException("offline"),
+        )
+
+        // When
+        val result = repository.refreshDocument(LegalPage.TERMS_OF_USE, "pt")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals(check, local.checks[LegalPage.TERMS_OF_USE to "pt"])
+    }
+
     private fun markdown(title: String): String = "---\ntitle: $title\nupdated: 2026-11-05\n---\n"
 
     private fun prepareScenario(
         saved: Map<Pair<LegalPage, String>, String> = emptyMap(),
+        savedChecks: Map<Pair<LegalPage, String>, SavedLegalText> = emptyMap(),
         site: Map<String, String> = emptyMap(),
+        siteEtags: Map<String, String> = emptyMap(),
         siteError: Throwable? = null,
     ) {
-        local = FakeLegalLocalDataSource(saved)
+        local = FakeLegalLocalDataSource(
+            initial = saved,
+            initialChecks = savedChecks,
+        )
         remote = FakeLegalRemoteDataSource(
             site = site,
+            etags = siteEtags,
             error = siteError,
         )
         repository = LegalRepositoryImpl(
             local = local,
             remote = remote,
             parser = LegalDocumentParserImpl(),
+            currentTimeMillis = { NOW },
         )
+    }
+
+    private companion object {
+        const val NOW = 1_800_000_000_000L
     }
 }
 
+private val Duration.ms: Long
+    get() = inWholeMilliseconds
+
+/*
+ * Why: saved holds each text's Markdown and checks its ETag and check time; a text saved without a check is one the
+ * app kept before it knew when, so it is stale.
+ */
 private class FakeLegalLocalDataSource(
     initial: Map<Pair<LegalPage, String>, String>,
+    initialChecks: Map<Pair<LegalPage, String>, SavedLegalText>,
 ) : LegalLocalDataSource {
     val saved = MutableStateFlow(initial)
+    val checks = initialChecks.toMutableMap()
     var saveCount = 0
 
     override fun observeMarkdown(
@@ -335,29 +494,66 @@ private class FakeLegalLocalDataSource(
         language: String,
     ): Flow<String?> = saved.map { it[page to language] }
 
+    override suspend fun getSavedText(
+        page: LegalPage,
+        language: String,
+    ): SavedLegalText? {
+        if (page to language !in saved.value) return null
+        return checks[page to language] ?: SavedLegalText(
+            etag = null,
+            checkedAt = null,
+        )
+    }
+
     override suspend fun saveMarkdown(
         page: LegalPage,
         language: String,
         markdown: String,
+        etag: String?,
+        checkedAt: Long,
     ) {
         saveCount++
         saved.update { it + ((page to language) to markdown) }
+        checks[page to language] = SavedLegalText(etag, checkedAt)
+    }
+
+    override suspend fun markChecked(
+        page: LegalPage,
+        language: String,
+        checkedAt: Long,
+    ) {
+        checks[page to language] = SavedLegalText(
+            etag = checks[page to language]?.etag,
+            checkedAt = checkedAt,
+        )
     }
 }
 
-// Why: site holds the languages the site writes the texts in; any other answers 404, which is null here.
+/*
+ * Why: site holds the languages the site writes the texts in, any other answering 404; etags their ETags, a matching
+ * one answering 304.
+ */
 private class FakeLegalRemoteDataSource(
     private val site: Map<String, String>,
+    private val etags: Map<String, String>,
     private val error: Throwable?,
 ) : LegalRemoteDataSource {
     val requests = mutableListOf<Pair<LegalPage, String>>()
+    val sentEtags = mutableListOf<String?>()
 
     override suspend fun fetchMarkdown(
         page: LegalPage,
         language: String,
-    ): String? {
+        etag: String?,
+    ): LegalRemoteAnswer {
         requests += page to language
+        sentEtags += etag
         error?.let { throw it }
-        return site[language]
+        val markdown = site[language] ?: return LegalRemoteAnswer.Missing
+        if (etag != null && etag == etags[language]) return LegalRemoteAnswer.Unchanged
+        return LegalRemoteAnswer.Text(
+            markdown = markdown,
+            etag = etags[language],
+        )
     }
 }

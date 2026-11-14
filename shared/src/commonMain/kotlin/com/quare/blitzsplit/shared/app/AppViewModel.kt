@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
+import com.quare.blitzsplit.core.legal.domain.usecase.PrefetchLegalDocuments
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
@@ -72,6 +73,7 @@ class AppViewModel(
     private val observeAppForeground: ObserveAppForeground,
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val startScreenViews: StartScreenViews,
+    private val prefetchLegalDocuments: PrefetchLegalDocuments,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -129,6 +131,7 @@ class AppViewModel(
         returnToWelcomeOnceErased()
         openInviteLinks()
         offerUpdatesInFront()
+        prefetchLegalTexts()
     }
 
     fun goBack() {
@@ -171,6 +174,19 @@ class AppViewModel(
         observeAppLanguage()
             .onEach { language.value = it }
             .launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: once the first screen is drawn, and again in each language Profile › Language switches to, so Profile's
+     * footer opens the legal texts offline too. The repository asks the site at most once a day per text.
+     */
+    private fun prefetchLegalTexts() {
+        observeAppLanguage()
+            .distinctUntilChanged()
+            .onEach {
+                uiState.first { it == AppUiState.READY }
+                prefetchLegalDocuments()
+            }.launchIn(viewModelScope)
     }
 
     // Why: Android's own settings may change the app's language while it runs; its activity comes back in the new one.

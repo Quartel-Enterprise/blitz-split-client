@@ -38,6 +38,8 @@ class RoomLegalLocalDataSourceTest {
                     page = "terms",
                     language = "pt",
                     markdown = "Termos",
+                    etag = null,
+                    checkedAt = null,
                 ),
             ),
         )
@@ -59,12 +61,20 @@ class RoomLegalLocalDataSourceTest {
                         page = "privacy",
                         language = "pt",
                         markdown = "Old",
+                        etag = null,
+                        checkedAt = null,
                     ),
                 ),
             )
 
             // When
-            dataSource.saveMarkdown(LegalPage.PRIVACY_POLICY, "pt", "New")
+            dataSource.saveMarkdown(
+                page = LegalPage.PRIVACY_POLICY,
+                language = "pt",
+                markdown = "New",
+                etag = "\"new\"",
+                checkedAt = 1_000L,
+            )
 
             // Then
             assertEquals(
@@ -73,11 +83,90 @@ class RoomLegalLocalDataSourceTest {
                         page = "privacy",
                         language = "pt",
                         markdown = "New",
+                        etag = "\"new\"",
+                        checkedAt = 1_000L,
                     ),
                 ),
                 dao.rows.value,
             )
         }
+
+    @Test
+    fun `GIVEN nothing saved WHEN reading the saved privacy policy THEN there is none`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val saved = dataSource.getSavedText(LegalPage.PRIVACY_POLICY, "pt")
+
+        // Then
+        assertNull(saved)
+    }
+
+    @Test
+    fun `GIVEN the terms saved with an ETag WHEN reading them THEN gives their ETag and check time`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                LegalDocumentEntity(
+                    page = "terms",
+                    language = "pt",
+                    markdown = "Termos",
+                    etag = "\"abc\"",
+                    checkedAt = 1_000L,
+                ),
+            ),
+        )
+
+        // When
+        val saved = dataSource.getSavedText(LegalPage.TERMS_OF_USE, "pt")
+
+        // Then
+        assertEquals(
+            SavedLegalText(
+                etag = "\"abc\"",
+                checkedAt = 1_000L,
+            ),
+            saved,
+        )
+    }
+
+    @Test
+    fun `GIVEN the terms saved WHEN marking them checked THEN only their check time moves`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                LegalDocumentEntity(
+                    page = "terms",
+                    language = "pt",
+                    markdown = "Termos",
+                    etag = "\"abc\"",
+                    checkedAt = 1_000L,
+                ),
+            ),
+        )
+
+        // When
+        dataSource.markChecked(
+            page = LegalPage.TERMS_OF_USE,
+            language = "pt",
+            checkedAt = 2_000L,
+        )
+
+        // Then
+        assertEquals(
+            listOf(
+                LegalDocumentEntity(
+                    page = "terms",
+                    language = "pt",
+                    markdown = "Termos",
+                    etag = "\"abc\"",
+                    checkedAt = 2_000L,
+                ),
+            ),
+            dao.rows.value,
+        )
+    }
 
     private fun prepareScenario(stored: List<LegalDocumentEntity> = emptyList()) {
         dao = FakeLegalDocumentDao(stored)
@@ -95,7 +184,22 @@ private class FakeLegalDocumentDao(
         language: String,
     ): Flow<LegalDocumentEntity?> = rows.map { all -> all.firstOrNull { it.page == page && it.language == language } }
 
+    override suspend fun find(
+        page: String,
+        language: String,
+    ): LegalDocumentEntity? = rows.value.firstOrNull { it.page == page && it.language == language }
+
     override suspend fun upsert(entity: LegalDocumentEntity) {
         rows.update { all -> all.filterNot { it.page == entity.page && it.language == entity.language } + entity }
+    }
+
+    override suspend fun markChecked(
+        page: String,
+        language: String,
+        checkedAt: Long,
+    ) {
+        rows.update { all ->
+            all.map { if (it.page == page && it.language == language) it.copy(checkedAt = checkedAt) else it }
+        }
     }
 }

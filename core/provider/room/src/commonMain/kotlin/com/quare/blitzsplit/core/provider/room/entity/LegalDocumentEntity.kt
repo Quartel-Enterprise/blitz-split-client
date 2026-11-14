@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.provider.room.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 
 /*
@@ -16,4 +17,10 @@ data class LegalDocumentEntity(
     val page: String,
     val language: String,
     val markdown: String,
+    // Why: the site's ETag for this text, sent back so an unchanged one answers 304 with no body; null without one.
+    @ColumnInfo(defaultValue = "NULL")
+    val etag: String?,
+    // Why: when the site last confirmed this text (epoch millis); null for a text saved before the app kept it.
+    @ColumnInfo(defaultValue = "NULL")
+    val checkedAt: Long?,
 )

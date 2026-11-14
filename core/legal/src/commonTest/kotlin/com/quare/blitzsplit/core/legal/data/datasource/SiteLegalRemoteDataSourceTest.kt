@@ -4,8 +4,10 @@ import com.quare.blitzsplit.core.model.LegalPage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,6 +16,7 @@ import kotlin.test.assertNull
 
 class SiteLegalRemoteDataSourceTest {
     private lateinit var requests: MutableList<Pair<HttpMethod, String>>
+    private val sentEtags = mutableListOf<String?>()
     private lateinit var dataSource: SiteLegalRemoteDataSource
 
     @Test
@@ -26,10 +29,16 @@ class SiteLegalRemoteDataSourceTest {
             )
 
             // When
-            val markdown = dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "pt")
+            val answer = dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "pt", etag = null)
 
             // Then
-            assertEquals("---\ntitle: Privacidade\n---\n", markdown)
+            assertEquals(
+                LegalRemoteAnswer.Text(
+                    markdown = "---\ntitle: Privacidade\n---\n",
+                    etag = null,
+                ),
+                answer,
+            )
             assertEquals(listOf(HttpMethod.Get to "https://blitzsplit.com/legal/privacy.pt.md"), requests)
         }
 
@@ -42,15 +51,88 @@ class SiteLegalRemoteDataSourceTest {
         )
 
         // When
-        val markdown = dataSource.fetchMarkdown(LegalPage.TERMS_OF_USE, "en")
+        val answer = dataSource.fetchMarkdown(LegalPage.TERMS_OF_USE, "en", etag = null)
 
         // Then
-        assertEquals("terms", markdown)
+        assertEquals(
+            LegalRemoteAnswer.Text(
+                markdown = "terms",
+                etag = null,
+            ),
+            answer,
+        )
         assertEquals(listOf(HttpMethod.Get to "https://blitzsplit.com/legal/terms.en.md"), requests)
     }
 
     @Test
-    fun `GIVEN the site has no file for the language WHEN fetching THEN returns nothing`() = runTest {
+    fun `GIVEN the site sends an ETag WHEN fetching THEN keeps it with the text`() = runTest {
+        // Given
+        prepareScenario(
+            status = HttpStatusCode.OK,
+            body = "terms",
+            etag = "\"abc\"",
+        )
+
+        // When
+        val answer = dataSource.fetchMarkdown(LegalPage.TERMS_OF_USE, "en", etag = null)
+
+        // Then
+        assertEquals(
+            LegalRemoteAnswer.Text(
+                markdown = "terms",
+                etag = "\"abc\"",
+            ),
+            answer,
+        )
+    }
+
+    @Test
+    fun `GIVEN no saved text WHEN fetching THEN asks without If-None-Match`() = runTest {
+        // Given
+        prepareScenario(
+            status = HttpStatusCode.OK,
+            body = "terms",
+        )
+
+        // When
+        dataSource.fetchMarkdown(LegalPage.TERMS_OF_USE, "en", etag = null)
+
+        // Then
+        assertEquals(listOf<String?>(null), sentEtags)
+    }
+
+    @Test
+    fun `GIVEN the ETag of a saved text WHEN fetching THEN sends it as If-None-Match`() = runTest {
+        // Given
+        prepareScenario(
+            status = HttpStatusCode.NotModified,
+            body = "",
+        )
+
+        // When
+        dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "pt", etag = "\"abc\"")
+
+        // Then
+        assertEquals(listOf<String?>("\"abc\""), sentEtags)
+    }
+
+    @Test
+    fun `GIVEN the saved text is the current one WHEN the site answers 304 THEN it is unchanged`() = runTest {
+        // Given
+        prepareScenario(
+            status = HttpStatusCode.NotModified,
+            body = "",
+        )
+
+        // When
+        val answer = dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "pt", etag = "\"abc\"")
+
+        // Then
+        assertEquals(LegalRemoteAnswer.Unchanged, answer)
+    }
+
+    @Test
+    fun `GIVEN the site has no file for the language WHEN fetching THEN it is missing`() = runTest {
         // Given
         prepareScenario(
             status = HttpStatusCode.NotFound,
@@ -58,10 +140,10 @@ class SiteLegalRemoteDataSourceTest {
         )
 
         // When
-        val markdown = dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "tr")
+        val answer = dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "tr", etag = null)
 
         // Then
-        assertNull(markdown)
+        assertEquals(LegalRemoteAnswer.Missing, answer)
     }
 
     @Test
@@ -74,7 +156,7 @@ class SiteLegalRemoteDataSourceTest {
 
         // When
         val failure = assertFailsWith<IllegalStateException> {
-            dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "pt")
+            dataSource.fetchMarkdown(LegalPage.PRIVACY_POLICY, "pt", etag = null)
         }
 
         // Then
@@ -91,23 +173,42 @@ class SiteLegalRemoteDataSourceTest {
 
         // When
         val failure = assertFailsWith<IllegalStateException> {
-            dataSource.fetchMarkdown(LegalPage.TERMS_OF_USE, "pt")
+            dataSource.fetchMarkdown(LegalPage.TERMS_OF_USE, "pt", etag = null)
         }
 
         // Then
         assertEquals(true, failure.message?.contains("403"))
     }
 
+    @Test
+    fun `GIVEN the site answers without an ETag WHEN fetching THEN the text has none`() = runTest {
+        // Given
+        prepareScenario(
+            status = HttpStatusCode.OK,
+            body = "terms",
+        )
+
+        // When
+        val answer = dataSource.fetchMarkdown(LegalPage.TERMS_OF_USE, "en", etag = null)
+
+        // Then
+        assertNull((answer as LegalRemoteAnswer.Text).etag)
+    }
+
     private fun prepareScenario(
         status: HttpStatusCode,
         body: String,
+        etag: String? = null,
     ) {
         requests = mutableListOf()
+        sentEtags.clear()
         val engine = MockEngine { request ->
             requests += request.method to request.url.toString()
+            sentEtags += request.headers[HttpHeaders.IfNoneMatch]
             respond(
                 content = body,
                 status = status,
+                headers = etag?.let { headersOf(HttpHeaders.ETag, it) } ?: headersOf(),
             )
         }
         dataSource = SiteLegalRemoteDataSource(HttpClient(engine))

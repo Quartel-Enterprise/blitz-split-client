@@ -28,8 +28,9 @@ import kotlinx.coroutines.launch
 
 /*
  * Why: "Privacy Policy" and "Terms of Service" drawn by the app itself, from the Markdown the site's own pages are
- * made of, so the text is written once. The text the device last saved shows at once, offline too, while the current
- * one downloads and takes its place; only a device that never saved it and can't download it shows "Couldn't load".
+ * made of, so the text is written once. The text the device last saved (usually at launch) shows at once, offline
+ * too, while the site is asked for a newer one when a day passed since; only a device that never saved it and can't
+ * download it shows "Couldn't load".
  */
 class LegalDocumentViewModel(
     private val route: Route.LegalDocument,
