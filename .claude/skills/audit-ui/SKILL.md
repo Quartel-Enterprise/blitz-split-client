@@ -19,8 +19,8 @@ never ask again:
 - Whether a contrast fix may change a token's value, and whether a layout the docs don't decide follows the sibling
   screens (both recommended).
 - Device access, while they are at the keyboard: boot the iPhone Duo, an iPhone and an iPad simulator and take one
-  screenshot of each through the simulator tool, so each permission prompt shows now; ask them to unfold the Duo in
-  Device Hub if the open Duo matters, since no tool can.
+  screenshot of each through the simulator tool, so each permission prompt shows now; ask them to press Open in
+  Device Hub if the open Duo matters, since no command line tool moves the hinge.
 
 ## 2. One read-only subagent per platform
 

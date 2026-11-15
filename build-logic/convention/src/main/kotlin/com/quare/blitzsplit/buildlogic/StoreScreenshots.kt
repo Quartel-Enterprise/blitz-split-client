@@ -11,7 +11,9 @@ import java.io.File
 // These tasks copy it where people look at it (store_listings/, git-ignored) and where the fastlane lanes upload from.
 // Play and Apple each fan Latin America's Spanish set out to their own regional codes; Spain has a set of its own.
 // The devices map each generator output folder to store_listings/' and to the one the store's tool reads; the Mac's
-// go apart, as the Mac app is a version of its own on App Store Connect (platform osx).
+// go apart, as the Mac app is a version of its own on App Store Connect (platform osx). The iPhone Duo open
+// (appleCollectOnlyDevices) is collected to look at and not staged yet: both Duo sizes share one shelf of ten on App
+// Store Connect, and which screens go there open is Pierre's call.
 private const val GROUP = "store-screenshots"
 private const val GENERATE_TASK = "testDebugUnitTest"
 private val listingLocales =
@@ -59,6 +61,7 @@ private val appleDevices = mapOf(
     "ipad11" to "ipad_11",
     "iphoneduo" to "iphone_duo",
 )
+private val appleCollectOnlyDevices = mapOf("iphoneduoopen" to "iphone_duo_open")
 private val macDevices = mapOf("mac" to "mac")
 private val appleFrameClasses = listOf("*.IPhone*", "*.IPad*", "*.Mac*")
 
@@ -141,7 +144,10 @@ fun Project.configureStoreScreenshots() {
         doFirst { generatedDir.deleteRecursively() }
     }
 
-    listOf("android" to playDevices, "ios" to appleDevices + macDevices).forEach { (platform, devices) ->
+    listOf(
+        "android" to playDevices,
+        "ios" to appleDevices + appleCollectOnlyDevices + macDevices,
+    ).forEach { (platform, devices) ->
         val storeName = if (platform == "android") "PlayStore" else "AppStore"
         val listings = rootProject.file("store_listings/$platform")
         tasks.register("collect${storeName}Screenshots") {

@@ -114,13 +114,25 @@ photos than the screenshots use, to pick from.
 | Device | Play | App Store (Apple's screenshot specifications, November 2026) |
 | --- | --- | --- |
 | Phone | `phoneScreenshots`, 1242x2484 | **Dynamic Island (medium), 1206x2622, the one App Store Connect requires**, from an iPhone 17 Pro. Dynamic Island (large), 1290x2796, from an iPhone 16 Plus. Face ID (large) is only a fallback for the large size, so it isn't made |
-| Foldable | | iPhone Duo closed, its outer display at 1398x2034, from the Duo simulator (on the runtime that has it), which boots closed. Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
+| Foldable | | iPhone Duo, from the Duo simulator (on the runtime that has it): closed, as it boots, its outer display at 1398x2034, and open, its inner display lying down at 2853x2007 (XCTest hands the capture as 2852x2006, which the frame draws on the display's own canvas). Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
 | Tablet | `sevenInchScreenshots`, `tenInchScreenshots` | 13" (2048x2732) from an iPad Air 13", and 11" framing the same capture on a taller canvas |
 | Mac | | The Mac app's window at 1440x900 points, framed on 2880x1800 (16:10) |
 
-**The Duo's inner display isn't captured.** The simulator boots closed, and neither `simctl` nor XCUITest can unfold
-it. deliver files either Duo size under the one Duo display type. If the inner one (2007x2853) is wanted, unfold the
-simulator by hand (Device menu), capture with `xcrun simctl io <udid> screenshot --display=3`, and add a slot.
+**The Duo open needs Device Hub.** The simulator boots closed, and its hinge moves only from Device Hub: its Open
+button, in the bar under the device, sends the simulator a HID event that neither `simctl`, `devicectl` nor XCUITest
+sends. So for the `iphoneduoopen` slot `capture-ios.sh` opens Device Hub and tries to select the simulator and press
+Open through accessibility, which the terminal running it must be allowed to (System Settings › Privacy & Security ›
+Accessibility). That press had not run anywhere when this was written: the captures were made the other way. Where
+it fails, the script says so and waits two minutes for a person to press Open (`STORE_SCREENSHOTS_OPEN_TIMEOUT`, in
+seconds), then skips the slot and goes on with the others. It knows the Duo
+is open by its inner display (`xcrun simctl io <udid> screenshot --display=3`), which then draws lying down. Open,
+the outer display is off and still XCTest's main screen, so the UI test photographs the larger of the two screens.
+
+**The Duo open is collected, not uploaded yet.** `collectAppStoreScreenshots` frames it into
+`store_listings/ios/<locale>/iphone_duo_open/`, and `stageAppStoreScreenshots` leaves it out: deliver files either
+Duo size under the one Duo display type, whose shelf holds ten screenshots, so the closed set already fills it. Which
+screens go there open is Pierre's call; once taken, move the slot from `appleCollectOnlyDevices` to `appleDevices`
+(`build-logic/.../StoreScreenshots.kt`) and add it to the capture's matrix in `release-production`.
 
 **The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short
 of the screen. On an iPad slot, the UI test first switches Settings › Multitasking & Gestures to full-screen apps.
