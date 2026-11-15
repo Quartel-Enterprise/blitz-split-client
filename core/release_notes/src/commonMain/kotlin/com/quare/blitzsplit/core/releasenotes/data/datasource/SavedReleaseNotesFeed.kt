@@ -7,4 +7,6 @@ data class SavedReleaseNotesFeed(
     val etag: String?,
     // Why: when the site last confirmed it (epoch millis).
     val checkedAt: Long,
+    // Why: null when it was checked on a version whose name can't be read, or before the app kept it.
+    val installedVersion: SeenInstalledVersion?,
 )
