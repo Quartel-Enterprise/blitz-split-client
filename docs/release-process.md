@@ -420,14 +420,19 @@ static library ships in its own bundle doesn't answer for the app's.
 | File timestamps (`stat`, `fstat`, `lstat`) | The linked libraries | `C617.1`: files in the app's own container, where the database is |
 | Disk space (`statfs`, `fstatfs`) | The linked libraries | `E174.1`: whether there is room to write |
 
-A library added later may call another one. After adding one, build the app for the simulator (the Apple check of
-the `create-pr` skill), then list what its binary asks the system for and compare with the table. The first line
-prints the C functions and the Foundation classes and keys, the second the two that are only method names:
+A library added later may call another one. After adding one, build both apps (the Apple check of the `create-pr`
+skill: the iOS simulator and the Mac), since the Mac links its own Kotlin target and Swift sources, then list what
+each binary asks the system for and compare with the table. The `nm` line prints the C functions and the Foundation
+classes and keys, the `strings` line the ones that are only method names:
 
 ```bash
-BIN=iosApp/build/DerivedData/Build/Products/Debug-iphonesimulator/BoraRachar.app/BoraRachar.debug.dylib
-nm -u "$BIN" | grep -E '^_[fl]?stat(at|fs|vfs)?$|^_fstatvfs$|getattrlist|mach_absolute_time|NSUserDefaults|NSURL(Creation|ContentModification)DateKey|NSFile(Creation|Modification)Date|NSFileSystem(Free)?Size|NSURLVolume.*CapacityKey'
-strings - "$BIN" | grep -xE 'systemUptime|activeInputModes'
+for BIN in \
+  iosApp/build/DerivedData/Build/Products/Debug-iphonesimulator/BoraRachar.app/BoraRachar.debug.dylib \
+  iosApp/build/DerivedData/Build/Products/Debug/BoraRachar.app/Contents/MacOS/BoraRachar.debug.dylib; do
+  echo "== $BIN"
+  nm -u "$BIN" | grep -E '^_[fl]?stat(at|fs|vfs)?$|getattrlist|mach_absolute_time|NSUserDefaults|NSURL(Creation|ContentModification)DateKey|NSFile(Creation|Modification)Date|NSFileSystem(Free)?Size|NSURLVolume.*CapacityKey'
+  strings - "$BIN" | grep -xE 'systemUptime|activeInputModes|fileCreationDate|fileModificationDate'
+done
 ```
 
 Apple also writes to the account's e-mail after an upload that misses one (`ITMS-91053`), naming the API.
