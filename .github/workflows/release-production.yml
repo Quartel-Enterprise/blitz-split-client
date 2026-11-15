@@ -106,6 +106,7 @@ jobs:
       branch: ${{ steps.resolve.outputs.branch }}
       sha: ${{ steps.sha.outputs.sha }}
       has_notes: ${{ steps.notes.outputs.has_notes }}
+      github_notes: ${{ steps.notes.outputs.github_notes }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -165,12 +166,19 @@ jobs:
         with:
           node-version: '24'
 
+      # Every release with its notes: the build numbers the earlier releases, betas too, recorded in them.
+      - name: Read the releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+            --jq '.[] | {tag: .tag_name, body: .body, prerelease: .prerelease}' | jq -s . > "$RUNNER_TEMP/releases.json"
+
       - name: Resolve version
         id: resolve
         env:
           VERSION_INPUT: ${{ inputs.version }}
-          # To read the build numbers the earlier releases recorded in their notes.
-          GH_TOKEN: ${{ github.token }}
+          RELEASES_FILE: ${{ runner.temp }}/releases.json
         run: ./scripts/release/suggest-version.sh --stable "$VERSION_INPUT"
 
       - name: Say what the run publishes
@@ -223,7 +231,9 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      # Once, here, for every job after it: the stores' "What's new" by locale and the GitHub release's notes.
+      # Picked here, once, for every job after it: a later job that picked them again could fail after the builds
+      # went out. The stores' "What's new" by locale go on as a build artifact, and `github_notes` is what the
+      # GitHub release opens with.
       - name: Pick the release notes
         id: notes
         env:
@@ -232,6 +242,13 @@ jobs:
         run: |
           node scripts/release/release-notes.mjs collect "$VERSION" --ref "$SHA" --site site \
             --out "$RUNNER_TEMP/release-notes"
+          # A delimiter no note can hold, since the notes are text the pull requests wrote.
+          delimiter="notes_$(openssl rand -hex 16)"
+          {
+            echo "github_notes<<${delimiter}"
+            cat "$RUNNER_TEMP/release-notes/github.md"
+            echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
           if [ -s "$RUNNER_TEMP/release-notes/github.md" ]; then
             cat "$RUNNER_TEMP/release-notes/github.md" >> "$GITHUB_STEP_SUMMARY"
           fi
@@ -1020,17 +1037,10 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      # What `plan` picked, for the GitHub release. Kept a week: a re-run after that publishes without it.
-      - name: Download the release notes
-        continue-on-error: true
-        uses: actions/download-artifact@v8
-        with:
-          name: release-notes
-          path: ${{ runner.temp }}/release-notes
-
       # The run released when a build reached the production track or was sent to App Store review: the version
       # then gets its tag and its GitHub release, which is also what tells the next release where to count the
-      # notes and the build numbers from. First, so it is recorded even when the merge-back below fails. A re-run
+      # notes and the build numbers from. First, so it is recorded even when the merge-back below fails. It opens
+      # with what the version tells, in English, as `plan` picked it. A re-run
       # (after "Re-run failed jobs" fixed a platform), or a later run that adds a platform to the version, keeps
       # the release and rewrites the rows of the platforms it ran, so the record follows the results.
       - name: Publish the GitHub release
@@ -1048,6 +1058,7 @@ jobs:
           IOS_SUBMIT: ${{ needs.ios-submit.result }}
           MACOS_UPLOAD: ${{ needs.macos-upload.result }}
           MACOS_SUBMIT: ${{ needs.macos-submit.result }}
+          NOTES: ${{ needs.plan.outputs.github_notes }}
         run: |
           released=false
           if [ "$TRACK" = production ] && [ "$ANDROID" = success ]; then released=true; fi
@@ -1091,9 +1102,8 @@ jobs:
           {
             echo "Build number: $VERSION_CODE"
             echo
-            if [ -s "$RUNNER_TEMP/release-notes/github.md" ]; then
-              cat "$RUNNER_TEMP/release-notes/github.md"
-              echo
+            if [ -n "$NOTES" ]; then
+              printf '%s\n\n' "$NOTES"
             fi
             echo "## Channels"
             echo

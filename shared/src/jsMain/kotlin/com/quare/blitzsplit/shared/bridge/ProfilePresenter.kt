@@ -259,6 +259,10 @@ class ProfilePresenter {
         viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
     }
 
+    fun contactSupport() {
+        viewModel.onEvent(ProfileUiEvent.OnContactSupportClicked)
+    }
+
     fun retrySync() {
         viewModel.onEvent(ProfileUiEvent.OnRetrySyncClicked)
     }
@@ -305,6 +309,10 @@ class ProfilePresenter {
 
     fun terms() {
         viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
+    }
+
+    fun releaseNotes() {
+        viewModel.onEvent(ProfileUiEvent.OnReleaseNotesClicked)
     }
 
     fun signOut() {

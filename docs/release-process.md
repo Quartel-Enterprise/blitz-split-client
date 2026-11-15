@@ -46,16 +46,18 @@ Or **Actions → release-beta → Run workflow**. The script dispatches the work
    a public repository, and the App Store IPA and the package for a week, since they install nowhere but TestFlight:
    a re-run of an upload after that needs a new beta.
 3. `finalize` tags the commit the run built and publishes the GitHub pre-release, whose notes list what the beta
-   changed, what each channel got and the build number, then squash-merges a pull request with the new `versionCode`
-   into `main`. It runs when at
+   changed (as `plan` picked it), what each channel got, the build number and the platforms whose testers got a
+   build (`Sent to testers:`, which the next beta reads), then squash-merges a pull request with the new
+   `versionCode`, and the version when the release notes raised it, into `main`. It runs when at
    least one platform published, and a platform that failed does not hold the release back. A re-run of `finalize`
    after "Re-run failed jobs" rewrites the table of channels, so the release follows the results. A beta that only
    published the web leaves `main` alone, since it consumed no build number a store cares about.
 4. `site-release-notes` sends the notes to blitz-split-site: `send-release-notes-to-site.sh` writes the version's
    files in a checkout of it, runs the site's own check, and opens and merges a pull request there, which deploys the
    site with the notes on its "What's new" page and in the feed the apps read. A beta with no note skips it, and so
-   does one whose version the site already has. It runs after `finalize` even when the merge-back failed, and
-   **Re-run failed jobs** sends the notes again without touching the release.
+   does one whose version the site already has. It runs after `finalize` even when the merge-back failed, but
+   only for a version that got its tag: with `finalize` failed before the pre-release it stops, asking for
+   `finalize` to be re-run first. **Re-run failed jobs** sends the notes again without touching the release.
 
 One release runs at a time, betas and stable versions together, and one more can wait: GitHub keeps a single pending
 run per concurrency group, so a third dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch

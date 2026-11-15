@@ -26,6 +26,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInvit
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ProfileLinkViewModel
+import com.quare.blitzsplit.feature.contactsupport.presentation.viewmodel.ContactSupportViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
@@ -58,6 +59,7 @@ import com.quare.blitzsplit.feature.profilesetup.presentation.viewmodel.ProfileS
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.PickPaymentViewModel
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
+import com.quare.blitzsplit.feature.releasenotes.presentation.viewmodel.ReleaseNotesViewModel
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewModel
@@ -207,11 +209,17 @@ object BlitzSplitApple : KoinComponent {
     fun createDeleteAccountViewModel(): ViewModelHolder<DeleteAccountViewModel> =
         ViewModelHolder(DeleteAccountViewModel::class) { get() }
 
+    fun createContactSupportViewModel(): ViewModelHolder<ContactSupportViewModel> =
+        ViewModelHolder(ContactSupportViewModel::class) { get() }
+
     fun createNotificationSettingsViewModel(): ViewModelHolder<NotificationSettingsViewModel> =
         ViewModelHolder(NotificationSettingsViewModel::class) { get() }
 
     fun createCategoryMapViewModel(): ViewModelHolder<CategoryMapViewModel> =
         ViewModelHolder(CategoryMapViewModel::class) { get() }
+
+    fun createReleaseNotesViewModel(): ViewModelHolder<ReleaseNotesViewModel> =
+        ViewModelHolder(ReleaseNotesViewModel::class) { get() }
 
     // Why: each group opens its own ViewModel, which reads the group from its route.
     fun createInviteViewModel(route: Route.Invite): ViewModelHolder<InviteViewModel> =

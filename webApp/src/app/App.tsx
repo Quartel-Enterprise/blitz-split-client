@@ -14,6 +14,7 @@ import { ShareBillDialog } from '@/features/bill-detail/ShareBillDialog'
 import { ContactInviteDialog } from '@/features/contacts/ContactInviteDialog'
 import { ContactsScreen } from '@/features/contacts/ContactsScreen'
 import { CreateGroupDialog } from '@/features/create-group/CreateGroupDialog'
+import { ContactSupportDialog } from '@/features/contact-support/ContactSupportDialog'
 import { DeleteAccountDialog } from '@/features/delete-account/DeleteAccountDialog'
 import { DefaultSplitDialog } from '@/features/edit-group/DefaultSplitDialog'
 import { EditGroupDialog } from '@/features/edit-group/EditGroupDialog'
@@ -41,6 +42,7 @@ import { NotificationSettingsDialog } from '@/features/notification-settings/Not
 import { ProfileSetupScreen } from '@/features/profile-setup/ProfileSetupScreen'
 import { PickPaymentDialog } from '@/features/register-payment/PickPaymentDialog'
 import { RegisterPaymentDialog } from '@/features/register-payment/RegisterPaymentDialog'
+import { ReleaseNotesScreen } from '@/features/release-notes/ReleaseNotesScreen'
 import { RestoreScreen } from '@/features/restore/RestoreScreen'
 import { SharedBillScreen } from '@/features/shared-bill/SharedBillScreen'
 import { ProfileLinkScreen } from '@/features/profile-link/ProfileLinkScreen'
@@ -197,6 +199,8 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   // Why: a payment method's form opens over the profile the same way.
   const isPayingMethod = top.name === 'paying-method'
   const isDeleteAccount = top.name === 'delete-account'
+  // Why: "Contact support" opens over the profile the same way.
+  const isContactSupport = top.name === 'contact-support'
   // Why: the profile's photo big, over the profile, whose avatar opened it.
   const isProfilePhoto = top.name === 'profile-photo'
   // Why: the group's photo big, over the group, whose avatar opened it.
@@ -231,7 +235,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   const isDialog =
     isNotificationSettings ||
     isAppDownload ||
-    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isPayingMethod || isDeleteAccount || isProfilePhoto || isGroupPhoto
+    isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isPayingMethod || isDeleteAccount || isContactSupport || isProfilePhoto || isGroupPhoto
   let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
@@ -250,7 +254,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       ? stack[pageIndex - 1]
       : undefined
   const payment = isRegisterPayment ? top : paymentUnderPage
-  const pageName = page?.name ?? (isPaymentKey || isPayingMethod || isDeleteAccount || isProfilePhoto ? 'profile' : 'home')
+  const pageName = page?.name ?? (isPaymentKey || isPayingMethod || isDeleteAccount || isContactSupport || isProfilePhoto ? 'profile' : 'home')
   // Why: another tab or group in the same place of the stack is a new page, which fades in (HomeShell). The place
   // counts from the whole stack, so a page over the map never shares its key with one under it.
   const pageKey = `${offset + pageIndex}/${pageName}/${page?.groupId ?? ''}/${page?.groupTab ?? ''}`
@@ -273,6 +277,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}
       {isPayingMethod && <PayingMethodDialog key={top.payingMethodId ?? 'new'} route={top} />}
       {isDeleteAccount && <DeleteAccountDialog />}
+      {isContactSupport && <ContactSupportDialog />}
       {isNotificationSettings && <NotificationSettingsDialog />}
       {isAppDownload && <AppDownloadDialog route={top} />}
       {isProfilePhoto && <ProfilePhotoDialog />}
@@ -346,6 +351,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return <ProfileScreen />
     case 'category-map':
       return <CategoryMapScreen />
+    // Why: Profile's "Release notes", a page of its own over the profile, as the category map is.
+    case 'release-notes':
+      return <ReleaseNotesScreen />
     // Why: a bill's link (7.3h), a page of its own outside the home's frame.
     case 'shared-bill':
       return route ? <SharedBillScreen key={route.sharedBillCode} route={route} /> : null

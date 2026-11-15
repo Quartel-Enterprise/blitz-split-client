@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.DismissAppBanner
 import com.quare.blitzsplit.core.settings.domain.usecase.FollowUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppBannerDismissed
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBetaReleaseNotesChoice
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
@@ -21,6 +22,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.RefreshAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBetaReleaseNotesChoice
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
@@ -33,6 +35,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.DismissAppBannerUs
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.FollowUsageDataSharingUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveAppBannerDismissedUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveAppLanguageUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveBetaReleaseNotesChoiceUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveBitcoinInSatsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveDynamicColorsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveGroupsLayoutUseCase
@@ -44,6 +47,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveThemePrefer
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveUsageDataSharingUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.RefreshAppLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateAppLanguageUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateBetaReleaseNotesChoiceUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateBitcoinInSatsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateDynamicColorsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateGroupsLayoutUseCase
@@ -79,6 +83,8 @@ val settingsModule = module {
     factoryOf(::ObserveUsageDataSharingUseCase).bind<ObserveUsageDataSharing>()
     factoryOf(::UpdateUsageDataSharingUseCase).bind<UpdateUsageDataSharing>()
     factoryOf(::FollowUsageDataSharingUseCase).bind<FollowUsageDataSharing>()
+    factoryOf(::ObserveBetaReleaseNotesChoiceUseCase).bind<ObserveBetaReleaseNotesChoice>()
+    factoryOf(::UpdateBetaReleaseNotesChoiceUseCase).bind<UpdateBetaReleaseNotesChoice>()
     // Why: one copy of the language for the whole app, so Profile's pick redraws the Apple app's root at once.
     singleOf(::AppLanguageRepositoryImpl).bind<AppLanguageRepository>()
     factoryOf(::ObserveAppLanguageUseCase).bind<ObserveAppLanguage>()

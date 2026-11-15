@@ -14,8 +14,8 @@
 //       already has the version, whose notes then are the ones every output gets. --out writes github.md, the
 //       testers' text and, for a stable version, the stores' text: by language in stores/, and again in fastlane/ by
 //       each store's locale codes, in the folders supply and deliver upload from. --releases is the GitHub releases
-//       as JSON (each a tag and a body), which lets a platform's testers read every note since the last beta they got
-//       a build of.
+//       as JSON (each a tag and a body), which lets a platform's testers read every note since the last beta that
+//       sent them a build.
 //
 // Plain Node, no dependencies: the release workflow and the check run it as it is.
 
@@ -37,10 +37,11 @@ export const FRAGMENTS_DIR = "release-notes/unreleased";
 /** The language of the text the testers get with a build (Firebase App Distribution takes one text). */
 export const TESTERS_LANG = "pt";
 /**
- * The platforms whose testers get a text with the build, each with the name of its row in the table of channels a
- * release's GitHub notes keep (release-beta.yml's finalize): the one that says whether its build went out.
+ * The platforms whose testers get a text with the build. They are also the names a release's GitHub notes list in
+ * their "Sent to testers:" line (release-beta.yml's finalize writes it), which says whose build went out.
  */
-export const TESTERS_ROWS = { android: "Android", ios: "iOS, ad hoc" };
+export const TESTERS = ["android", "ios"];
+const SENT_TO_TESTERS = "Sent to testers:";
 /** What a store takes as a version's "What's new", in characters. */
 export const STORE_LIMITS = { play: 500, appStore: 4000 };
 /**
@@ -112,10 +113,13 @@ function only(file, value, keys, what) {
   if (other !== undefined) fail(file, `${what} takes only ${keys.join(", ")}, not ${other}`);
 }
 
+/** Whether a note is for every platform: `["all"]` and nothing else, a nested list or a longer one included. */
+const isForAll = (platforms) => platforms.length === 1 && platforms[0] === "all";
+
 function checkPlatforms(file, what, platforms) {
   const choices = `["all"], or some of ${PLATFORMS.join(", ")}`;
   if (!Array.isArray(platforms) || platforms.length === 0) fail(file, `${what}'s platforms is a list: ${choices}`);
-  if (platforms.join() === "all") return;
+  if (isForAll(platforms)) return;
   const unknown = platforms.find((platform) => !PLATFORMS.includes(platform));
   if (unknown !== undefined) fail(file, `${what}'s platforms takes ${choices}, not ${JSON.stringify(unknown)}`);
   if (new Set(platforms).size !== platforms.length) fail(file, `${what} names a platform twice`);
@@ -214,10 +218,14 @@ export function selectNotes(fragments, toldBefore, stable) {
   return KINDS.flatMap((kind) => notes.filter((note) => note.kind === kind));
 }
 
-/** Whether a release sent a platform's testers a build, as the table of channels in its GitHub notes says. */
+/**
+ * Whether a release sent a platform's testers a build, as the "Sent to testers:" line of its GitHub notes says. A
+ * release without the line, one from before the releases wrote it, sent nothing as far as the notes go.
+ */
 export function sentToTesters(body, platform) {
-  const row = (body ?? "").split(/\r?\n/).find((line) => line.startsWith(`| ${TESTERS_ROWS[platform]} |`));
-  return row !== undefined && row.split("|").at(-2).trim() === "success";
+  const line = (body ?? "").split(/\r?\n/).find((each) => each.startsWith(SENT_TO_TESTERS));
+  if (line === undefined) return false;
+  return line.slice(SENT_TO_TESTERS.length).split(",").some((name) => name.trim() === platform);
 }
 
 /** The version after `stable` that these notes, the ones since it, lead to: a minor one unless they only fix. */
@@ -229,7 +237,7 @@ export function bump(stable, notes) {
 
 // --- What a release publishes ----------------------------------------------------------------------------------------
 
-const isFor = (note, platform) => note.platforms.join() === "all" || note.platforms.includes(platform);
+const isFor = (note, platform) => isForAll(note.platforms) || note.platforms.includes(platform);
 
 /** A version's file of blitz-split-site in one language (its docs/release-notes.md). */
 export function siteFile(notes, lang, date) {
@@ -240,7 +248,7 @@ export function siteFile(notes, lang, date) {
 export function githubNotes(notes) {
   if (notes.length === 0) return "";
   const line = (note) => {
-    const platforms = note.platforms.join() === "all" ? "" : ` (${note.platforms.map((platform) => PLATFORM_NAMES[platform]).join(", ")})`;
+    const platforms = isForAll(note.platforms) ? "" : ` (${note.platforms.map((platform) => PLATFORM_NAMES[platform]).join(", ")})`;
     return `- ${note.text.en}${platforms}`;
   };
   return `## What's new\n\n${notes.map(line).join("\n")}\n`;
@@ -284,11 +292,15 @@ function fragmentsAt(ref) {
 /** The versions released from a commit or from one before it. */
 const tagsAt = (ref) => git("tag", "--merged", ref).split("\n").filter((tag) => VERSION.test(tag));
 
+const toldAtRef = new Map();
+
 /**
  * The keys of the notes a release's commit had. Read without checking them: a fragment of an older release may
- * predate a rule of today's (a language added since), and one it couldn't read told nothing.
+ * predate a rule of today's (a language added since), and one it couldn't read told nothing. Kept per release, since
+ * a run asks for the same one for the version and for each platform's testers.
  */
 function toldAt(ref) {
+  if (toldAtRef.has(ref)) return toldAtRef.get(ref);
   const keys = new Set();
   for (const path of fragmentPathsAt(ref)) {
     try {
@@ -297,6 +309,7 @@ function toldAt(ref) {
       continue;
     }
   }
+  toldAtRef.set(ref, keys);
   return keys;
 }
 
@@ -365,7 +378,7 @@ function writeSiteVersion(site, version, date, notes) {
 
 function writeOutputs(out, version, notes, testers) {
   write(join(out, "github.md"), githubNotes(notes));
-  for (const platform of Object.keys(TESTERS_ROWS)) write(join(out, "testers", `${platform}.txt`), plainNotes(testers[platform], platform, TESTERS_LANG));
+  for (const platform of TESTERS) write(join(out, "testers", `${platform}.txt`), plainNotes(testers[platform], platform, TESTERS_LANG));
   if (isBeta(version)) return;
   for (const lang of LANGS) {
     const play = storeNotes(notes, "android", lang, STORE_LIMITS.play);
@@ -403,10 +416,10 @@ function check() {
  * tag with no release among them sent nothing, which tells a note again rather than never.
  */
 function testersNotes(version, notes, fragments, tags, releases) {
-  if (releases === undefined) return Object.fromEntries(Object.keys(TESTERS_ROWS).map((platform) => [platform, notes]));
+  if (releases === undefined) return Object.fromEntries(TESTERS.map((platform) => [platform, notes]));
   const bodies = new Map(JSON.parse(readFileSync(releases, "utf8")).map((release) => [release.tag, release.body]));
   return Object.fromEntries(
-    Object.keys(TESTERS_ROWS).map((platform) => [platform, notesOf(version, fragments, tags.filter((tag) => sentToTesters(bodies.get(tag), platform)))]),
+    TESTERS.map((platform) => [platform, notesOf(version, fragments, tags.filter((tag) => sentToTesters(bodies.get(tag), platform)))]),
   );
 }
 
@@ -430,7 +443,8 @@ function options(args, names) {
   for (let index = 0; index < args.length; index += 1) {
     const name = args[index].replace(/^--/, "");
     if (!args[index].startsWith("--")) rest.push(args[index]);
-    else if (!names.includes(name) || args[index + 1] === undefined) throw new NotesError(`${args[index]}: takes one of --${names.join(", --")}, each with a value`);
+    // Why the value can't start with --: `--ref --out dir` would otherwise read "--out" as the commit.
+    else if (!names.includes(name) || args[index + 1] === undefined || args[index + 1].startsWith("--")) throw new NotesError(`${args[index]}: takes one of --${names.join(", --")}, each with a value`);
     else found[name] = args[(index += 1)];
   }
   return [rest, found];

@@ -3,7 +3,6 @@ package com.quare.blitzsplit.android.feature.splitbill
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -43,7 +42,9 @@ import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
+import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
+import com.quare.blitzsplit.android.designsystem.layout.bleedingHorizontalScroll
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -259,7 +260,7 @@ private fun PeopleChipsRow(
         ) { chips() }
     } else {
         Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            modifier = Modifier.bleedingHorizontalScroll(LocalFormBleed.current, rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) { chips() }
     }

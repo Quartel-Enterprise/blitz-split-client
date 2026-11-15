@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Releaseopmerkingen</string>
+    <string name="release_notes_show_beta">Bètaversies tonen</string>
+    <string name="release_notes_beta_badge">Bèta %1$d</string>
+    <string name="release_notes_installed_badge">Deze versie</string>
+    <string name="release_notes_empty">Nog geen releaseopmerkingen.</string>
+    <string name="release_notes_empty_only_betas">Er is nog geen stabiele versie. Zet bètaversies aan om te zien wat er wordt getest.</string>
+    <string name="release_notes_load_failed_title">Releaseopmerkingen laden is mislukt</string>
+    <string name="release_notes_load_failed_body">Controleer je verbinding en probeer het opnieuw.</string>
+    <string name="release_notes_retry">Opnieuw proberen</string>
+</resources>

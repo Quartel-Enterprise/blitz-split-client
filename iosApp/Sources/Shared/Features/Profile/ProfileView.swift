@@ -222,6 +222,7 @@ struct ProfileView: View {
                     NotificationSettingsSections(model: notificationModel)
                         .id(ProfileSettingsPane.notifications)
                 }
+                SupportSection(model: model)
                 AboutSection(model: model)
                     .id(ProfileSettingsPane.privacy)
                 if model.state.showsDeleteAccount {
@@ -269,6 +270,7 @@ struct ProfileView: View {
                     PaymentKeysSection(model: model)
                     PayingMethodsSection(model: model)
                     PreferencesSection(model: model)
+                    SupportSection(model: model)
                     AboutSection(model: model)
                     if model.state.showsDeleteAccount {
                         DeleteAccountSection(model: model)
@@ -294,6 +296,8 @@ struct ProfileView: View {
             IdentitySection(model: model)
             AccountSection(model: model)
             SignOutSection(model: model)
+            // With the preferences in the other column, it still comes right before "Privacy and about"
+            SupportSection(model: model)
             AboutSection(model: model)
             if model.state.showsDeleteAccount {
                 DeleteAccountSection(model: model)
@@ -1060,6 +1064,30 @@ private extension PaymentKeyFormat {
     }
 }
 
+/// "Support and feedback", between the preferences and "Privacy and about": how to reach whoever makes the app.
+private struct SupportSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Section("Support and feedback") {
+            Button {
+                model.send(ProfileUiEventOnContactSupportClicked.shared)
+            } label: {
+                LabeledContent {
+                    Image(systemName: "chevron.forward")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
+                } label: {
+                    Text("Contact support")
+                }
+                .contentShape(.rect)
+            }
+            .foregroundStyle(.primary)
+        }
+    }
+}
+
 private struct AboutSection: View {
     let model: ProfileModel
 
@@ -1077,6 +1105,7 @@ private struct AboutSection: View {
                 Text("Screens and taps, to improve the app. Never names or amounts.")
             }
             .disabled(!model.state.isLoaded)
+            ReleaseNotesRow(model: model)
             // The version itself sits in the legal footer, at the end of the profile (beta feedback 18)
             if model.state.showsCheckForUpdates {
                 CheckForUpdatesRow(model: model)
@@ -1119,6 +1148,29 @@ private struct LegalFooter: View {
             model.send(ProfileUiEventOnTermsClicked.shared)
         }
         .buttonStyle(.borderless)
+    }
+}
+
+/// "Release notes": what each version changed, pushed on iPhone and iPad and a sheet on the Mac's Settings. The
+/// whole row opens it, a chevron at its end, as a key's row does on both.
+private struct ReleaseNotesRow: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Button {
+            model.send(ProfileUiEventOnReleaseNotesClicked.shared)
+        } label: {
+            LabeledContent {
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            } label: {
+                Text("Release notes").foregroundStyle(.primary)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 }
 

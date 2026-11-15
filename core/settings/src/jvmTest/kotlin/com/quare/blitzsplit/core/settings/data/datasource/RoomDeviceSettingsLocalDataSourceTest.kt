@@ -45,6 +45,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -79,6 +80,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -107,6 +109,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -142,6 +145,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -171,6 +175,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -206,6 +211,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -235,6 +241,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     lastNotificationPromptAt = null,
                     isAppBannerDismissed = false,
                     sharesUsageData = false,
+                    showsBetaReleaseNotes = null,
                 ),
                 dataSource.observe().first(),
             )
@@ -263,6 +270,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -300,6 +308,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = false,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -329,6 +338,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 lastNotificationPromptAt = null,
                 isAppBannerDismissed = false,
                 sharesUsageData = false,
+                showsBetaReleaseNotes = null,
             ),
             dataSource.observe().first(),
         )
@@ -343,6 +353,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 it.copy(
                     theme = "dark",
                     sharesUsageData = false,
+                    showsBetaReleaseNotes = null,
                 )
             }
 
@@ -364,6 +375,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     lastNotificationPromptAt = null,
                     isAppBannerDismissed = false,
                     sharesUsageData = true,
+                    showsBetaReleaseNotes = null,
                 ),
                 dataSource.observe().first(),
             )

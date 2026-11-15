@@ -45,6 +45,7 @@ import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactProfileScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactsScreen
 import com.quare.blitzsplit.android.feature.contacts.ProfileLinkScreen
+import com.quare.blitzsplit.android.feature.contactsupport.ContactSupportScreen
 import com.quare.blitzsplit.android.feature.creategroup.CreateGroupScreen
 import com.quare.blitzsplit.android.feature.deleteaccount.DeleteAccountScreen
 import com.quare.blitzsplit.android.feature.editgroup.DefaultSplitScreen
@@ -78,6 +79,7 @@ import com.quare.blitzsplit.android.feature.profilesetup.ProfileSetupScreen
 import com.quare.blitzsplit.android.feature.recoverycode.RecoveryCodeSheet
 import com.quare.blitzsplit.android.feature.registerpayment.PickPaymentScreen
 import com.quare.blitzsplit.android.feature.registerpayment.RegisterPaymentScreen
+import com.quare.blitzsplit.android.feature.releasenotes.ReleaseNotesScreen
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
@@ -312,6 +314,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.NotificationSettings> { NotificationSettingsScreen() }
             entry<Route.CategoryMap> { CategoryMapScreen() }
             entry<Route.LegalDocument> { route -> LegalDocumentScreen(route = route) }
+            entry<Route.ReleaseNotes> { ReleaseNotesScreen() }
             // Why: a tablet keeps the profile behind the key, a phone or an unfolded foldable opens it full screen.
             entry<Route.PaymentKey>(metadata = formDialogMetadata) { route ->
                 PaymentKeyScreen(
@@ -328,6 +331,11 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             entry<Route.DeleteAccount>(metadata = deleteAccountMetadata) {
                 DeleteAccountScreen(isDialog = usesDeleteAccountDialog)
+            }
+            // Why: "Contact support" over the profile, as short as "Who paid whom?": a sheet on a phone, a dialog wider.
+            entry<Route.ContactSupport>(metadata = pickPaymentMetadata) {
+                val isDialog = remember { usesPickPaymentDialog }
+                ContactSupportScreen(isDialog = isDialog)
             }
             // Why: a dialog over the home wider than a phone; a phone opens it full screen, in two columns lying down.
             entry<Route.CreateGroup>(metadata = createGroupMetadata) {

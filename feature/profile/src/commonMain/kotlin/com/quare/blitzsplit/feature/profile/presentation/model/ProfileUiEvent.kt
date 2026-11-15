@@ -42,6 +42,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnNotificationsClicked -> EventAnalytics.Automatic("profile_notifications_clicked")
 
+            OnContactSupportClicked -> EventAnalytics.Automatic("profile_contact_support_clicked")
+
             OnAppInviteClicked -> EventAnalytics.Automatic("app_invite_code_clicked", mapOf("source" to PROFILE_SOURCE))
 
             OnAppLinkClicked -> EventAnalytics.Automatic("app_link_clicked", mapOf("source" to PROFILE_SOURCE))
@@ -57,6 +59,8 @@ sealed interface ProfileUiEvent : UiEvent {
             )
 
             OnTermsClicked -> EventAnalytics.Automatic("terms_clicked", mapOf("source" to PROFILE_SOURCE))
+
+            OnReleaseNotesClicked -> EventAnalytics.Automatic("release_notes_clicked")
 
             OnCancelScheduledSignOutClicked -> EventAnalytics.Automatic("sign_out_scheduled_cancel_clicked")
 
@@ -181,6 +185,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     data object OnDeleteAccountClicked : ProfileUiEvent
 
+    // Why: "Contact support", the first row of "Support and feedback".
+    data object OnContactSupportClicked : ProfileUiEvent
+
     data object OnRetrySyncClicked : ProfileUiEvent
 
     data class OnThemeSelected(
@@ -240,6 +247,9 @@ sealed interface ProfileUiEvent : UiEvent {
     data object OnPrivacyPolicyClicked : ProfileUiEvent
 
     data object OnTermsClicked : ProfileUiEvent
+
+    // Why: "Privacy and about" › "Release notes"; the Mac opens it as a sheet on its Settings.
+    data object OnReleaseNotesClicked : ProfileUiEvent
 
     // Why: "Buscar atualizações", in the place of "Versão" on Android, iOS and macOS.
     data object OnCheckForUpdatesClicked : ProfileUiEvent

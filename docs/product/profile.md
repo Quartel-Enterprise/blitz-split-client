@@ -115,6 +115,21 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Esc close it. Android draws it as a dialog over the whole window (a book's right half), iOS covers the screen,
     the Mac opens it as a sheet on Settings and the web as a dialog over the profile. The group's own photo opens the same
     way from its header ([The group screen](group-and-bills.md)).
+  - "Release notes" (`Route.ReleaseNotes`, `:core:release_notes`, `:feature:release_notes`), a row of "Privacy and
+    about" right before "Check for updates" (the About card's last row on the web), lists what each version changed
+    on the platform the app runs on: a card per version, newest first, with its number, its date and its notes, the
+    version this app is marked "This version". The notes are written once, in `blitz-split-site`
+    (`release-notes/<language>/<version>.json`), and each app downloads its language's feed
+    (`https://blitzsplit.com/release-notes/<language>.json`, English when the site lacks the language) at launch and
+    when the screen opens, keeps it in Room for offline and asks again at most once a day with the saved feed's
+    `ETag`, as the legal texts (the web, which asks from another origin, never sees the `ETag` and leaves that to the
+    browser's own cache). Each note names the platforms it is for, and an app shows only its own: the web never
+    shows a note written for Android and iOS alone, and a version with no note for the platform isn't listed. Nor is a
+    version newer than the app itself, which a store may not offer yet (Pierre's call). "Show beta versions", a switch
+    over the list kept per device like the theme, is off in a stable version and on in a beta build, until switched
+    (Pierre's call): off, only stable versions show. A device that never saved the notes and can't download them
+    shows "Couldn't load the release notes" with "Try again". An Android or iOS screen of its own, a sheet on the
+    Mac's Settings, a page on the web. The language is the one the app speaks (`ObserveSpokenLanguage`).
   - In-app update, as Bible Planner's (`:core:in_app_update`, `:feature:in_app_update`): each time the app comes to
     the front (`AppViewModel`, once the first screen is in place) a newer version is offered at most once an hour,
     kept per device (`lastUpdatePromptAt` in `device_settings`), and the offer waits until a home tab or a group's
@@ -125,12 +140,29 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     and Mac apps are one purchase with one listing, whose version both read) and open "Update available"
     ("Version 3.1.0", "Open in the App Store", "Not now", only its buttons and Esc closing it) over the app, a sheet as
     tall as its content on an iPhone, a form sheet with an iPad's room, a sheet on the Mac (on Settings when its check
-    opened it). Profile's "Privacy and about" ("Export my data") ends in "Check for updates" with
+    opened it). Profile's "Privacy and about" ("Export my data", "Release notes") ends in "Check for updates" with
     "Version <versionName>" under it (Pierre's call; the Mac's row keeps "Version <versionName>" with the button), as
     Bible Planner's keeps it next to its footer's version, "Checking…" while it
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update
     is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks: its
     version is only the footer's.
+  - Profile's "Support and feedback" comes right before "Privacy and about" on every platform (Pierre's call, as
+    Bible Planner's "Support & comments"): after "Preferences" in one column, and in the first column, over "Privacy
+    and about", where the preferences go to the second; a card of its own on the web. Its first row, "Contact
+    support", opens Contact support (`Route.ContactSupport`) over the profile: a bottom sheet on an Android phone and a
+    dialog anywhere wider, a sheet on iPhone and iPad, a sheet on Settings on the Mac, a dialog on the web (a drawer
+    on a phone). It shows the address under "To" (appborarachar@gmail.com, selectable, with a copy button), "Will be
+    included in the email" (the app's version, the platform, the language, as its tag or "System (pt)" with the one the app speaks while it follows the device, the account as "This device only", "Not
+    connected", Google or Apple, and the profile's link once it has one, shimmering until they were read), "Open
+    email" and "Copy email address". "Open email" hands the platform a mailto link whose subject ("Blitz Split
+    support", the platform and the version) and diagnostics are in English whatever the app's language, since whoever
+    answers reads them; the person writes above them in their own. Never the account's email nor its id: the
+    profile's link is what finds the person. A device with no email app (Android and Apple say so; a browser never
+    does) copies the address instead and says "No email app found. The address was copied instead."; a copy says
+    "Email address copied.", which VoiceOver hears on every tap. A browser that refuses the clipboard takes that line
+    back and toasts "Couldn't copy. Select it and copy by hand.". On Android the subject and the body also go as the
+    intent's extras, for the email apps that never read them from the link. An iPad shows the sheet at the form's
+    size.
   - Profile's "Privacy and about" holds "Share usage data" ("Screens and taps, to improve the app. Never names or
     amounts."), a switch right under "Export my data" (Pierre's call, #184): on by default, per device like the theme,
     it turns Firebase Analytics off on this device, the user id included. Nothing asks about it first: Analytics rests
@@ -207,7 +239,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     its name (or its type's name) with the type under a name, and "Default" on the default one; "Add a payment method"
     ends the list, and a row or the add opens "New payment method" / "Edit payment method" (`Route.PayingMethod`,
     presented as a key's form on each platform). Types: Credit card, Debit card, Cash, Pix, Bank transfer, Bitcoin,
-    Other. Pix follows [the Pix rule](general.md) (a Pix method being edited keeps it); Cash is one per person; Other
+    Other (on Android a row of chips that scrolls sideways out into the form's side margins, as Dividir's modes do in
+    [split-bill.md](split-bill.md)). Pix follows [the Pix rule](general.md) (a Pix method being edited keeps it); Cash is one per person; Other
     needs a name, the rest take an optional one (up to 30 characters). Once the form is filled, a sync never changes
     the type picked (a Cash added on another device meanwhile makes saving a second one fail instead). A card picks one of eight brand-neutral colors
     (purple, blue, green, orange, red, pink, gold, graphite) that fill its tile with a white card glyph: never a bank's

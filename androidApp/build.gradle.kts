@@ -137,10 +137,12 @@ dependencies {
     implementation(projects.android.feature.paymentKey)
     implementation(projects.android.feature.payingMethod)
     implementation(projects.android.feature.deleteAccount)
+    implementation(projects.android.feature.contactSupport)
     implementation(projects.android.feature.notificationSettings)
     implementation(projects.android.feature.categoryMap)
     implementation(projects.android.feature.inAppUpdate)
     implementation(projects.android.feature.legal)
+    implementation(projects.android.feature.releaseNotes)
 
     // Atividade's push notifications (Crashlytics comes with :core:provider:crashlytics)
     implementation(platform(libs.firebase.bom))

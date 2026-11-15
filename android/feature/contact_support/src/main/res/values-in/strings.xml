@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Hubungi dukungan</string>
+    <string name="contact_support_description">Kami akan membuka aplikasi emailmu dengan pesan yang sudah siap. Ceritakan apa yang terjadi lalu kirim: setiap pesan dibaca oleh orang sungguhan.</string>
+    <string name="contact_support_to">Kepada</string>
+    <string name="contact_support_diagnostics">Akan disertakan dalam email</string>
+    <string name="contact_support_app_version">Versi aplikasi</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Bahasa</string>
+    <string name="contact_support_account">Akun</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Sistem</string>
+    <string name="contact_support_account_local">Hanya di perangkat ini</string>
+    <string name="contact_support_account_anonymous">Tidak terhubung</string>
+    <string name="contact_support_open_email">Buka email</string>
+    <string name="contact_support_copy_email">Salin alamat email</string>
+    <string name="contact_support_notice_copied">Alamat email disalin.</string>
+    <string name="contact_support_notice_no_app">Aplikasi email tidak ditemukan. Alamat sudah disalin.</string>
+    <string name="contact_support_close">Tutup</string>
+</resources>

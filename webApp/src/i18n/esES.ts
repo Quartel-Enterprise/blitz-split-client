@@ -128,4 +128,6 @@ export const esES: Partial<Record<MessageKey, string>> = {
   payingMethod_add: 'Añadir método de pago',
   payingMethod_defaultHint: 'Los nuevos gastos que pagues empiezan con este.',
   payingMethod_deleteBody: 'Los gastos que has marcado con él dejarán de mostrarlo.',
+  contactSupport_description: 'Abriremos tu app de correo con un mensaje listo. Describe lo que ha pasado y envíalo: personas reales leen cada mensaje.',
+  contactSupport_noticeNoApp: 'No se ha encontrado ninguna app de correo. Se ha copiado la dirección.',
 }

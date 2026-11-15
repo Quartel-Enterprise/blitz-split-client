@@ -101,6 +101,19 @@ describe("the version of a release", () => {
     assert.equal(outputsOf(["--stable", "3.0.0"]).tagged, "true");
   });
 
+  test("the versionCode is one past the highest build number a release recorded, a stable one's too", () => {
+    const releases = join(root, "releases.json");
+    writeFileSync(releases, JSON.stringify([{ tag: "3.0.0-beta_1", body: "Build number: 84\r\nSent to testers: android", prerelease: true }, { tag: "3.0.0", body: "Build number: 90\n\n## What's new", prerelease: false }, { tag: "2.4.0", body: null, prerelease: false }]));
+    const outputs = (args) => {
+      const output = join(root, "output");
+      writeFileSync(output, "");
+      run("suggest-version.sh", args, { GITHUB_OUTPUT: output, RELEASES_FILE: releases });
+      return readFileSync(output, "utf8");
+    };
+    assert.match(outputs([]), /version_code=91\n/);
+    assert.match(outputs(["--stable"]), /version_code=91\n/);
+  });
+
   test("a version that isn't X.Y.Z is refused", () => {
     assert.throws(() => outputsOf(["--stable", "3.0"]), /must be in X\.Y\.Z format/);
     assert.throws(() => outputsOf(["3.0.0-beta_1"]), /must be in X\.Y\.Z format/);
@@ -155,7 +168,7 @@ describe("the merge-back", () => {
     assert.equal(onRemote(BRANCH, fragment("export")), null);
     assert.equal(onRemote(BRANCH, fragment("totals")), '{"notes":2}');
     assert.equal(onRemote(BRANCH, fragment("widget")), '{"notes":1}');
-    assert.ok(ghCalls().some((call) => call.includes("the 1 release notes' fragment(s) it told")));
+    assert.ok(ghCalls().some((call) => call.includes("Removes the 1 release notes' fragment(s) it told")));
   });
 
   test("of a stable version run again, with main already holding it all, changes nothing", () => {

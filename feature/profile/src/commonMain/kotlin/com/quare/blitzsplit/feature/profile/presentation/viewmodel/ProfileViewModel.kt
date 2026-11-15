@@ -5,7 +5,6 @@ import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePayingMethods
-import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateMechanism
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
@@ -17,7 +16,6 @@ import com.quare.blitzsplit.core.model.PaymentKey
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.ThemePreference
-import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -25,7 +23,6 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
-import com.quare.blitzsplit.core.profile.domain.model.PaymentKeyValidation
 import com.quare.blitzsplit.core.profile.domain.usecase.DismissAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveAppInvite
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveNotificationPreferences
@@ -61,15 +58,13 @@ import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
-import com.quare.blitzsplit.feature.profile.presentation.mapper.toMaskedPaymentKey
+import com.quare.blitzsplit.feature.profile.presentation.mapper.toItemOrNull
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toProfileAppInvite
 import com.quare.blitzsplit.feature.profile.presentation.model.PROFILE_SOURCE
-import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileDialog
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
-import com.quare.blitzsplit.feature.profile.presentation.model.UpdateCheckResult
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -98,11 +93,11 @@ class ProfileViewModel(
     private val signOut: SignOut,
     private val signOutWhenSynced: SignOutWhenSynced,
     private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
-    private val validatePaymentKey: ValidatePaymentKey,
     private val exportUserData: ExportUserData,
-    private val checkForUpdate: CheckForUpdate,
-    private val showUpdatePrompt: ShowUpdatePrompt,
     private val openLegalPage: OpenLegalPage,
+    validatePaymentKey: ValidatePaymentKey,
+    checkForUpdate: CheckForUpdate,
+    showUpdatePrompt: ShowUpdatePrompt,
     dismissAppInvite: DismissAppInvite,
     observeAppInvite: ObserveAppInvite,
     updateMechanism: UpdateMechanism,
@@ -145,6 +140,15 @@ class ProfileViewModel(
     private val dialogs = ProfileDialogs(uiState, trackEvent)
 
     private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
+
+    private val updateCheck = ProfileUpdateCheck(
+        uiState = uiState,
+        scope = viewModelScope,
+        checkForUpdate = checkForUpdate,
+        showUpdatePrompt = showUpdatePrompt,
+        trackEvent = trackEvent,
+        emit = ::emit,
+    )
 
     private val shareLink = ProfileShareLink(
         uiState = uiState,
@@ -204,7 +208,11 @@ class ProfileViewModel(
          * so the add rows never draw one way and switch to the other.
          */
         combine(observePaymentKeys(), firstDownload, observeShowsPix()) { keys, download, showsPix ->
-            val items = if (download != null) Loadable.Loading else keys.mapNotNull(::toItem).toLoaded()
+            val items = if (download != null) {
+                Loadable.Loading
+            } else {
+                keys.mapNotNull { it.toItemOrNull(validatePaymentKey) }.toLoaded()
+            }
             items to showsPix
         }.onEach { (keys, showsPix) ->
             uiState.update {
@@ -314,6 +322,8 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
 
+            ProfileUiEvent.OnContactSupportClicked -> navigator.navigate(Route.ContactSupport)
+
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
 
             ProfileUiEvent.OnPrivacyPolicyClicked -> openLegalPage(
@@ -322,7 +332,9 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE) { emit(ProfileUiAction.OpenUrl(it)) }
 
-            ProfileUiEvent.OnCheckForUpdatesClicked -> checkForUpdates()
+            ProfileUiEvent.OnReleaseNotesClicked -> navigator.navigate(Route.ReleaseNotes)
+
+            ProfileUiEvent.OnCheckForUpdatesClicked -> updateCheck.check()
 
             ProfileUiEvent.OnSignOutClicked -> dialogs.openSignOut()
 
@@ -347,27 +359,6 @@ class ProfileViewModel(
             ) {
                 clearSession { trackEvent("profile_erase_confirmed", emptyMap()) }
             }
-        }
-    }
-
-    /*
-     * Why: Perfil's "Buscar atualizações", as Bible Planner's: an update found opens what opening the app would (Google
-     * Play's flow, or "Atualização disponível"), even within the hour; nothing to offer says so.
-     */
-    private fun checkForUpdates() {
-        if (!uiState.value.showsCheckForUpdates || uiState.value.isCheckingForUpdates) return
-        trackEvent("check_for_updates_clicked", emptyMap())
-        uiState.update { it.copy(isCheckingForUpdates = true) }
-        viewModelScope.launch {
-            val availability = checkForUpdate()
-            uiState.update { it.copy(isCheckingForUpdates = false) }
-            val result = when (availability) {
-                is UpdateAvailability.Pending -> return@launch showUpdatePrompt(availability, UpdatePromptSource.MANUAL)
-                UpdateAvailability.Downloading -> UpdateCheckResult.DOWNLOADING
-                UpdateAvailability.NotAvailable -> UpdateCheckResult.UP_TO_DATE
-                UpdateAvailability.CheckFailed -> UpdateCheckResult.FAILED
-            }
-            uiAction.emit(ProfileUiAction.ShowUpdateCheckResult(result))
         }
     }
 
@@ -422,19 +413,6 @@ class ProfileViewModel(
                 method = method,
                 keyId = keyId,
             ),
-        )
-    }
-
-    // Why: the rules tell the format the row names ("· Taproot"); a key they reject never reaches here.
-    private fun toItem(key: PaymentKey): PaymentKeyItem? {
-        val validation = validatePaymentKey(key.type, key.value, otherKeys = emptyList())
-        val format = (validation as? PaymentKeyValidation.Valid)?.format ?: return null
-        return PaymentKeyItem(
-            id = key.id,
-            type = key.type,
-            format = format,
-            maskedValue = key.value.toMaskedPaymentKey(format),
-            isDefault = key.isDefault,
         )
     }
 

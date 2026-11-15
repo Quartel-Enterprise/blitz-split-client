@@ -77,10 +77,13 @@
     <string name="profile_dynamic_colors_info_body">Dynamische Farben passen die App an dein Hintergrundbild an: Schaltflächen, Hintergründe und Hervorhebungen übernehmen die Farben, die Android daraus wählt, und ändern sich, wenn du dein Hintergrundbild änderst.</string>
     <string name="profile_dynamic_colors_info_note">Gruppen, Avatare und Kategorien behalten ihre eigenen Farben, damit du sie weiterhin unterscheiden kannst. Das gilt nur für dieses Gerät.</string>
     <string name="profile_info_ok">Verstanden</string>
+    <string name="profile_section_support">Support und Feedback</string>
+    <string name="profile_contact_support">Support kontaktieren</string>
     <string name="profile_section_about">Datenschutz und Info</string>
     <string name="profile_privacy_policy">Datenschutzerklärung</string>
     <string name="profile_terms">Nutzungsbedingungen</string>
     <string name="profile_version_footer">Version %1$s</string>
+    <string name="profile_release_notes">Versionshinweise</string>
     <string name="profile_check_for_updates">Nach Updates suchen</string>
     <string name="profile_check_for_updates_version">Version %1$s</string>
     <string name="profile_check_for_updates_checking">Wird geprüft…</string>

@@ -188,6 +188,11 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `delete_account_clicked` | none | Delete account's "Delete account" | `:feature:delete_account` |
 | `delete_account_cancelled` | none | Delete account's Cancel, its back arrow, or a native dismiss | `:feature:delete_account` |
 | `data_export_clicked` | `source` (`delete_account`, `profile`) | "Export my data" | `:feature:delete_account`, `:feature:profile` |
+| `contact_support_open_email_clicked` | none | Contact support's "Open email", once what the email carries was read | `:feature:contact_support` |
+| `contact_support_no_email_app` | none | No app on the device took the email "Open email" asked for, so the address was copied instead (Android and Apple; a browser never says) | `:feature:contact_support` |
+| `contact_support_copy_email_clicked` | none | Contact support's copy button next to the address, or "Copy email address" | `:feature:contact_support` |
+| `contact_support_copy_email_failed` | none | The platform refused the clipboard, so the notice that said the address was copied goes (the web, when the browser denies it) | `:feature:contact_support` |
+| `contact_support_dismissed` | none | Contact support's Close or its back arrow, while it is the screen on top | `:feature:contact_support` |
 | `invite_link_copy_clicked` | `source` (`invite`, `members`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, on Members' "Invite link" card, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Invite's "Share link", "Share with Carla", or the share of "Invite with link or QR" and "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Invite's "See who joined" | `:feature:invite` |
@@ -531,6 +536,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `terms_clicked` | `source` (`profile`, `welcome`) | "Terms of Service", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
 | `legal_document_retry_clicked` | none | "Try again" on a legal text that couldn't be downloaded (Android, iOS, macOS) | `:feature:legal` |
 | `legal_document_link_clicked` | `target` (`external`, `privacy_policy`, `terms_of_use`) | A link inside a legal text: one that leaves the app, or the other text | `:feature:legal` |
+| `release_notes_clicked` | none | "Release notes", in Profile's "Privacy and about" | `:feature:profile` |
+| `release_notes_retry_clicked` | none | "Try again" on release notes that couldn't be downloaded | `:feature:release_notes` |
+| `release_notes_beta_toggled` | `is_on` | "Show beta versions" on Release notes, when it changes | `:feature:release_notes` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_share_clicked` | none | The top bar's "Share profile", while the account has a link (it opens the system share) | `:feature:profile` |
@@ -540,6 +548,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_key_add_clicked` | `method` (`pix`, `bitcoin`) | "Add a Pix or Bitcoin key", while a key can be added | `:feature:profile` |
 | `payment_key_clicked` | `method` | A key of "Keys to receive payments" | `:feature:profile` |
 | `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out | `:feature:profile` |
+| `profile_contact_support_clicked` | none | "Contact support", in "Support and feedback" | `:feature:profile` |
 | `theme_selected` | `theme` (`system`, `light`, `dark`) | A theme, another than the one picked | `:feature:profile` |
 | `profile_appearance_clicked` | none | "Appearance", once the theme was read | `:feature:profile` |
 | `profile_language_clicked` | none | Android's "Language" row, once the profile was read | `:feature:profile` |

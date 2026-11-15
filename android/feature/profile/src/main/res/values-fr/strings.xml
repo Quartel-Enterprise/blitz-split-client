@@ -79,10 +79,13 @@
     <string name="profile_dynamic_colors_info_body">Les couleurs dynamiques accordent l’app à ton fond d’écran : boutons, arrière-plans et accents prennent les couleurs qu’Android en tire, et changent quand ton fond d’écran change.</string>
     <string name="profile_dynamic_colors_info_note">Les groupes, les avatars et les catégories gardent leurs propres couleurs, pour que tu continues à les distinguer. Cela ne s’applique qu’à cet appareil.</string>
     <string name="profile_info_ok">Compris</string>
+    <string name="profile_section_support">Assistance et avis</string>
+    <string name="profile_contact_support">Contacter l’assistance</string>
     <string name="profile_section_about">Confidentialité et à propos</string>
     <string name="profile_privacy_policy">Politique de confidentialité</string>
     <string name="profile_terms">Conditions d’utilisation</string>
     <string name="profile_version_footer">Version %1$s</string>
+    <string name="profile_release_notes">Notes de version</string>
     <string name="profile_check_for_updates">Rechercher des mises à jour</string>
     <string name="profile_check_for_updates_version">Version %1$s</string>
     <string name="profile_check_for_updates_checking">Vérification…</string>

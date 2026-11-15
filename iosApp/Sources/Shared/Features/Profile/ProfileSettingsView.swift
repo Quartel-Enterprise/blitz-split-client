@@ -109,10 +109,12 @@ struct SettingsView: View {
                 case let .payingMethod(route): PayingMethodView(route: route)
                 case .profilePhoto: ProfilePhotoView()
                 case .deleteAccount: DeleteAccountView()
+                case .contactSupport: ContactSupportView()
                 case let .inAppUpdate(route): InAppUpdateView(route: route)
                 case let .appDownload(route): AppDownloadView(route: route)
                 // A new identity per text: a link to the other one swaps it in this sheet
                 case let .legalDocument(route): LegalDocumentView(route: route).id(route)
+                case .releaseNotes: ReleaseNotesView()
                 default: EmptyView()
                 }
             }

@@ -16,11 +16,13 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material.icons.outlined.SupportAgent
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ButtonDefaults
@@ -139,6 +141,25 @@ internal fun PreferencesSection(
     }
 }
 
+// Why: "Support and feedback", between the preferences and "Privacy and about": how to reach whoever makes the app.
+@Composable
+internal fun SupportSection(onEvent: (ProfileUiEvent) -> Unit) {
+    Section(title = R.string.profile_section_support) {
+        SectionRow(
+            icon = Icons.Outlined.SupportAgent,
+            headline = stringResource(R.string.profile_contact_support),
+            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnContactSupportClicked) },
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
+    }
+}
+
 @Composable
 internal fun AboutSection(
     state: ProfileUiState,
@@ -177,6 +198,20 @@ internal fun AboutSection(
                     checked = state.sharesUsageData,
                     onCheckedChange = null,
                     enabled = state.isLoaded,
+                )
+            },
+        )
+        HorizontalDivider()
+        // Why: "Release notes", what each version changed here; there even where the store updates the app.
+        SectionRow(
+            icon = Icons.Outlined.Description,
+            headline = stringResource(R.string.profile_release_notes),
+            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnReleaseNotesClicked) },
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
         )

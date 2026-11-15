@@ -70,6 +70,9 @@ sealed interface Route {
     // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.
     data object DeleteAccount : Route
 
+    // Why: "Contact support", over the profile: the address, what the email will carry and "Open email".
+    data object ContactSupport : Route
+
     // Why: "Notificações", a screen of its own on Android and iOS; the web and macOS keep it in the profile.
     data object NotificationSettings : Route
 
@@ -88,6 +91,12 @@ sealed interface Route {
         val page: LegalPage,
         val anchor: String?,
     ) : Route
+
+    /*
+     * Why: "Release notes", from Profile's "Privacy and about": what each version changed on this platform, with the
+     * beta versions behind "Show beta versions". A sheet on the Mac's Settings.
+     */
+    data object ReleaseNotes : Route
 
     // Why: "Convidar", the group's link and QR code. It takes the place of "Novo grupo" once the group is created.
     data class Invite(

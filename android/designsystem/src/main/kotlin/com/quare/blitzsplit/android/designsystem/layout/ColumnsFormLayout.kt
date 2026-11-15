@@ -53,7 +53,7 @@ private val dialogPadding = 24.dp
 private val columnsGap = 32.dp
 private val floatingActionClearance = 88.dp // Why: the extended FAB's 56 dp, its 16 dp margin and a gap.
 private val tabletopSidePadding = 24.dp
-private val tabletopBleed = FormBleed(tabletopSidePadding, tabletopSidePadding)
+private val tabletopBleed = FormBleed.ofMargin(tabletopSidePadding)
 
 // Why: what the top bar (or the dialog's header and actions) of Rachar conta, Dividir and Divisão padrão hold.
 class FormChrome(
@@ -126,7 +126,7 @@ fun ColumnsFormLayout(
              * Why: the columns reach the card's sides, its padding inside their scroll, and share the gap between
              * them, so a row that scrolls sideways runs to the card's edge or the gap's middle.
              */
-            val bleed = FormBleed(dialogPadding, dialogPadding)
+            val bleed = FormBleed.ofMargin(dialogPadding)
             FormColumnsLayout(
                 usesTwoColumns = usesTwoColumns,
                 contentPadding = PaddingValues(

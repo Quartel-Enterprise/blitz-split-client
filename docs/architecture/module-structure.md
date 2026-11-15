@@ -17,6 +17,8 @@ core/
 ├── groups/             # Groups domain + data, synced like the keys (not `group`: Gradle's getGroup() hides it)
 │   └── testing/        # FakeGroupRepository
 ├── legal/              # The privacy policy and the terms: the site's Markdown, downloaded, kept in Room and read into blocks
+├── release_notes/      # What each version changed: the site's feed, downloaded, kept in Room and narrowed to this platform's notes
+├── support/            # Contact support: the address, the diagnostics an email carries and its mailto link
 ├── in_app_update/      # In-app update: Google Play's flexible update, the App Store's version by bundle id, the hourly prompt
 ├── sync/               # SyncCoordinator, ProviderConnector, ProviderSignIn, use cases across profile and account
 └── provider/

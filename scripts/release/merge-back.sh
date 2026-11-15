@@ -64,16 +64,14 @@ if [ -n "$tag" ]; then
 fi
 
 if [ -z "$(git status --porcelain)" ]; then
-  echo "::notice::main already holds versionCode $main_code and version $main_version, nothing to merge back."
+  echo "::notice::main already holds version $main_version and versionCode $main_code, nothing to merge back."
   exit 0
 fi
 
+git commit --quiet -am "chore: bump the version to $new_version (versionCode $new_code) for $display_version"
+body="Merges the version $new_version and the versionCode $new_code that $display_version used back into main."
 if [ -n "$tag" ]; then
-  git commit --quiet -am "chore: bump version to $new_version (versionCode $new_code)"
-  body="Merges $display_version back into main: version $new_version, the versionCode $new_code it consumed, and the $removed release notes' fragment(s) it told, which leave \`$FRAGMENTS_DIR/\`."
-else
-  git commit --quiet -am "chore: bump versionCode to $new_code for $display_version"
-  body="Merges the versionCode $new_code that $display_version consumed back into main."
+  body="$body Removes the $removed release notes' fragment(s) it told from \`$FRAGMENTS_DIR/\`."
 fi
 git push --quiet --force-with-lease origin "$branch"
 
