@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -33,14 +32,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
 import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.component.collapsingBarsScroll
 import com.quare.blitzsplit.android.designsystem.component.homeTabBarsOf
@@ -207,20 +205,16 @@ private fun ContactsTopBar(
     onEvent: (ContactsUiEvent) -> Unit,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
-    val profile = stringResource(R.string.contacts_profile)
     TopAppBar(
         title = { HomeTabTitle(title) },
         actions = {
-            IconButton(
+            ProfileAvatarButton(
+                initial = state.avatarInitial,
+                color = state.avatarColor,
+                photoUrl = state.photoUrl,
+                contentDescription = stringResource(R.string.contacts_profile),
                 onClick = { onEvent(ContactsUiEvent.OnProfileClicked) },
-                modifier = Modifier.semantics { contentDescription = profile },
-            ) {
-                AvatarBadge(
-                    initial = state.avatarInitial,
-                    color = state.avatarColor,
-                    photoUrl = state.photoUrl,
-                )
-            }
+            )
         },
         scrollBehavior = scrollBehavior,
         windowInsets = windowInsets,
