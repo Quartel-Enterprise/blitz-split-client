@@ -11,6 +11,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
 | `release-notes` | `release-notes/`, `store-listing/`, `scripts/release/` and the screenshots' store locales (`StoreScreenshots.kt` of build-logic) | `node scripts/release/release-notes.mjs check`, which fails on a fragment a release couldn't publish, `node scripts/release/store-listing.mjs check`, which fails on a store listing over a store's limit ([store-listing.md](store-listing.md)), and the tests of the release scripts: `release-notes.test.mjs`, `release-scripts.test.mjs` and `store-listing.test.mjs` ([release-notes.md](release-notes.md)) |
+| `codeql` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes that touch no Python script, and once a week | GitHub's code scanning (CodeQL), one job per language: the workflows, JavaScript and TypeScript, Python, and Kotlin, which it reads from a build of the `jvm` target and of the Android debug variant. Its alerts are under Security → Code scanning, and a pull request gets the ones it adds as review comments ([Code scanning](#code-scanning)) |
 | `claude-review` | A pull request opened, or a draft marked ready; or the push that solves the conflict it opened with | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
@@ -159,7 +160,7 @@ away.
 The checks wait for the opening review instead of running next to it, so they don't run twice (once on the opening
 commit, again on the fix commit):
 
-- `build-and-test`, `apple`, `static-analysis`, `duplication`, `module-graph` and `release-notes` start with a `review-gate` job, the reusable
+- `build-and-test`, `apple`, `static-analysis`, `duplication`, `module-graph`, `release-notes` and `codeql` start with a `review-gate` job, the reusable
   `review-gate.yml`. On the commit a pull request opened with or a draft was marked ready on, and on the review's
   fix commit (a push by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end (on a draft
   marked ready, only a run that event created, never the one skipped while it was a draft). When the
@@ -248,6 +249,33 @@ When a workflow is added to or renamed in the pull request checks, update the `w
 not trigger one. A new workflow started by a label goes in the list of label workflows of its `Check whether every
 check passed` step instead: a run of it still queued would hold the merge, and its skipped completion would start
 nothing.
+
+## Code scanning
+
+`codeql` is CodeQL's advanced setup, a workflow of this repository, instead of the default setup of the repository's
+settings (Settings → Advanced Security → Code scanning). A repository runs one or the other: with the default setup
+on, GitHub refuses what the workflow uploads. The default setup can't build the Kotlin code, so it stays off, and the
+workflow also analyzes the languages that need no build.
+
+- Kotlin is read from inside the compiler, so CodeQL only sees the files a build compiles while it watches:
+  `compileKotlinJvm` and `:androidApp:compileDebugKotlin`, without the build cache, since a compile task restored
+  from it runs no compiler. The actuals of the Apple and JS targets are not analyzed.
+- CodeQL supports a range of Kotlin versions, and a new CodeQL release follows a new Kotlin one by some weeks. When a
+  bump of Kotlin fails `analyze (java-kotlin)` on an unsupported version, wait for the CodeQL release that supports
+  it, or merge without that check.
+- Swift is not analyzed: the Apple app needs Xcode 27 and Swift 6.4, and CodeQL supports neither yet
+  ([the announcement](https://github.blog/changelog/2026-10-19-codeql-changes-for-macos-27-xcode-27-and-swift-6-4/)).
+  Once it does, add a `swift` entry to the matrix, on the macOS runner, with the build of `apple-app` as its build,
+  and take `iosApp/**` out of the workflow's path filter.
+- Ruby is not analyzed either: the only Ruby is `fastlane/Fastfile`, and CodeQL's analysis of it failed.
+
+Besides the `analyze` jobs, code scanning adds a check of its own to a pull request, `CodeQL`, which fails when the
+pull request adds an alert of high severity. It has no run and no log: read the alert on the pull request, or with
+`gh api 'repos/{owner}/{repo}/code-scanning/alerts?ref=refs/pull/<number>/merge&state=open'`, and fix the code. An
+alert that is wrong is dismissed on GitHub with its reason, never by taking the query or the file out of the analysis.
+
+Secret scanning with push protection and code quality (JavaScript, TypeScript and Python) are also on, in the
+repository's settings alone.
 
 ## Adding a workflow
 

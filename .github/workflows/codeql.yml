@@ -1,0 +1,122 @@
+name: codeql
+
+# GitHub's code scanning, as an advanced setup: the default setup can't build the Kotlin code, and a
+# repository runs one setup or the other, never both (with the default setup on, GitHub refuses
+# what this workflow uploads). So the languages that need no build are analyzed here too.
+#
+# Swift is left out: the Apple app needs Xcode 27 and Swift 6.4, and CodeQL supports neither yet
+# (https://github.blog/changelog/2026-10-19-codeql-changes-for-macos-27-xcode-27-and-swift-6-4/).
+on:
+  pull_request:
+    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - '**'
+      - '!**/*.md'
+      - '!docs/**'
+      - '!.claude/**'
+      - '!iosApp/**'
+      # The last match wins: the Python scripts of the skills and of iosApp are analyzed too.
+      - '**/*.py'
+  push:
+    branches:
+      - main
+    paths:
+      - '**'
+      - '!**/*.md'
+      - '!docs/**'
+      - '!.claude/**'
+      - '!iosApp/**'
+      # The last match wins: the Python scripts of the skills and of iosApp are analyzed too.
+      - '**/*.py'
+  # A new CodeQL release brings new queries, which find what they look for in code nobody changed.
+  schedule:
+    - cron: '23 5 * * 1'
+
+permissions:
+  contents: read
+
+# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
+  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
+  # them, it holds the jobs below while a thread the review opened is unresolved. Every other event
+  # skips it, and the jobs below run on a skipped gate too. See .github/workflows/review-gate.yml.
+  review-gate:
+    if: >-
+      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
+  analyze:
+    name: analyze (${{ matrix.language }})
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    # A hung runner would otherwise hold the check, and merge-when-green, for six hours.
+    timeout-minutes: ${{ matrix.language == 'java-kotlin' && 45 || 15 }}
+    permissions:
+      contents: read
+      # Uploads the results to code scanning.
+      security-events: write
+    strategy:
+      # One language's failure doesn't hide the other languages' results.
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          - language: javascript-typescript
+            build-mode: none
+          - language: python
+            build-mode: none
+          # CodeQL reads Kotlin from inside the compiler, so it only sees what a build compiles
+          # while it watches.
+          - language: java-kotlin
+            build-mode: manual
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      # Before CodeQL starts, so it watches the build alone. It only reads main's Gradle cache:
+      # the jobs of build-and-test save it.
+      - name: Setup Gradle
+        if: matrix.build-mode == 'manual'
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: 'true'
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      # The jvm target of the shared modules and the debug variant of the Android app, which
+      # compiles every :android:* module and the androidMain of the shared ones: together, every
+      # Kotlin file but the actuals of the Apple and JS targets. A compile task restored from the
+      # build cache runs no compiler, and CodeQL would see none of its files, so the cache is off.
+      - name: Compile the Kotlin code
+        if: matrix.build-mode == 'manual'
+        run: >-
+          ./gradlew compileKotlinJvm :androidApp:compileDebugKotlin
+          --no-daemon --no-build-cache --no-configuration-cache
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}
