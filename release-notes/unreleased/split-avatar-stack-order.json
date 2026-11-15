@@ -1,0 +1,23 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": ["web"],
+      "betaOnly": true,
+      "text": {
+        "en": "Fixed the \"+N\" bubble of a stack of faces showing under the first face instead of over it.",
+        "pt": "Corrigimos a bolinha \"+N\" de uma pilha de rostos, que aparecia por baixo do primeiro rosto em vez de por cima.",
+        "pt-PT": "Corrigimos a bolinha \"+N\" de uma pilha de rostos, que aparecia por baixo do primeiro rosto em vez de por cima.",
+        "es": "Corregimos la burbuja \"+N\" de una pila de caras, que aparecía debajo de la primera cara en lugar de encima.",
+        "fr": "Correction de la bulle « +N » d'une pile de visages, qui s'affichait sous le premier visage au lieu de le recouvrir.",
+        "de": "Die „+N“-Blase eines Gesichterstapels erscheint nicht mehr unter dem ersten Gesicht, sondern darüber.",
+        "it": "Corretta la bolla \"+N\" di una pila di volti, che appariva sotto il primo volto invece che sopra.",
+        "pl": "Naprawiono dymek „+N” w stosie twarzy, który pojawiał się pod pierwszą twarzą zamiast nad nią.",
+        "nl": "De bel \"+N\" van een stapel gezichten verscheen onder het eerste gezicht in plaats van erover; dat is opgelost.",
+        "ja": "顔アイコンの重なりで「+N」の丸が最初の顔の下に隠れていた問題を修正しました。",
+        "tr": "Yüz yığınındaki \"+N\" balonunun ilk yüzün üstünde değil altında görünmesi düzeltildi.",
+        "id": "Memperbaiki gelembung \"+N\" pada tumpukan wajah yang muncul di bawah wajah pertama, bukan di atasnya."
+      }
+    }
+  ]
+}
