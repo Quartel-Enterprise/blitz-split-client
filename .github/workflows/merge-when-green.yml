@@ -45,6 +45,7 @@ on:
       - duplication
       - module-graph
       - release-notes
+      - codeql
       - claude-review
       - claude-review-on-request
       - claude-review-refs
@@ -177,55 +178,71 @@ jobs:
           pr=$(jq -r .number <<< "$match")
           head=$(jq -r .headRefOid <<< "$match")
 
-          # gh exits with 8 while checks are pending and with 1 when one failed or none exists. Those
-          # are answers here, not errors, so the JSON it prints is what gets inspected. A pull request
-          # whose changes run no check workflow (docs only) has nothing to wait for. GITHUB_TOKEN reads
-          # them, since it is granted checks: read and the personal token isn't.
-          checks=$(GH_TOKEN="$GITHUB_TOKEN" gh pr checks "$pr" --json name,workflow,bucket,link 2> "$RUNNER_TEMP/checks.err") || true
-          if ! jq -e 'type == "array"' <<< "$checks" > /dev/null 2>&1; then
-            if ! grep -q 'no checks reported' "$RUNNER_TEMP/checks.err"; then
-              cat "$RUNNER_TEMP/checks.err"
-              exit 1
+          # The check code scanning adds (CodeQL) is no workflow run: it turns green a little after
+          # the codeql workflow's run completes, and nothing starts this workflow then. So while the
+          # only checks left are pending ones no run of Actions owns, the checks are read again, for
+          # two minutes at most.
+          for attempt in 0 1 2 3 4 5 6; do
+            # gh exits with 8 while checks are pending and with 1 when one failed or none exists. Those
+            # are answers here, not errors, so the JSON it prints is what gets inspected. A pull request
+            # whose changes run no check workflow (docs only) has nothing to wait for. GITHUB_TOKEN reads
+            # them, since it is granted checks: read and the personal token isn't.
+            checks=$(GH_TOKEN="$GITHUB_TOKEN" gh pr checks "$pr" --json name,workflow,bucket,link 2> "$RUNNER_TEMP/checks.err") || true
+            if ! jq -e 'type == "array"' <<< "$checks" > /dev/null 2>&1; then
+              if ! grep -q 'no checks reported' "$RUNNER_TEMP/checks.err"; then
+                cat "$RUNNER_TEMP/checks.err"
+                exit 1
+              fi
+              checks='[]'
             fi
-            checks='[]'
-          fi
-          others=$(jq '[.[] | select(.workflow != "merge-when-green")]' <<< "$checks")
+            others=$(jq '[.[] | select(.workflow != "merge-when-green")]' <<< "$checks")
 
-          # GitHub sometimes leaves a job's check in progress after its workflow run completed: the
-          # job has no steps and never ends, so waiting on it would wait forever. A pending check
-          # whose run completed takes the run's conclusion instead: a run succeeds only when every
-          # job of it did.
-          pending_runs=$(jq -r '.[] | select(.bucket == "pending") | .link // ""
-            | capture("/actions/runs/(?<id>[0-9]+)/job/")? | .id' <<< "$others" | sort -u)
-          for run_id in $pending_runs; do
-            if ! run=$(GH_TOKEN="$GITHUB_TOKEN" gh api "repos/$GH_REPO/actions/runs/$run_id" \
-              --jq '"\(.status) \(.conclusion // "")"'); then
+            # GitHub sometimes leaves a job's check in progress after its workflow run completed: the
+            # job has no steps and never ends, so waiting on it would wait forever. A pending check
+            # whose run completed takes the run's conclusion instead: a run succeeds only when every
+            # job of it did.
+            pending_runs=$(jq -r '.[] | select(.bucket == "pending") | .link // ""
+              | capture("/actions/runs/(?<id>[0-9]+)/job/")? | .id' <<< "$others" | sort -u)
+            for run_id in $pending_runs; do
+              if ! run=$(GH_TOKEN="$GITHUB_TOKEN" gh api "repos/$GH_REPO/actions/runs/$run_id" \
+                --jq '"\(.status) \(.conclusion // "")"'); then
+                continue
+              fi
+              read -r status conclusion <<< "$run"
+              [ "$status" = completed ] || continue
+              case "$conclusion" in
+                success) bucket=pass ;;
+                skipped) bucket=skipping ;;
+                cancelled) bucket=cancel ;;
+                *) bucket=fail ;;
+              esac
+              echo "::warning::Run $run_id completed ($conclusion) with a check still in progress: counted as $bucket."
+              others=$(jq --arg id "$run_id" --arg bucket "$bucket" 'map(if .bucket == "pending"
+                and ((.link // "") | contains("/actions/runs/\($id)/job/")) then .bucket = $bucket else . end)' <<< "$others")
+            done
+
+            # A gate that held its workflow's checks for claude-review's open threads is the only
+            # review-gate check that fails. Its run completes failed, which starts this workflow too.
+            held=$(jq '[.[] | select((.name | startswith("review-gate")) and .bucket == "fail")] | length' <<< "$others")
+            unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping")
+              | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
+              | "\(.name): \(.bucket)"' <<< "$others")
+            if [ -z "$unfinished" ]; then
+              break
+            fi
+            outside_actions=$(jq '[.[] | select(.bucket != "pass" and .bucket != "skipping")
+              | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)]
+              | all(.[]; .bucket == "pending" and (((.link // "") | contains("/actions/runs/")) | not))' <<< "$others")
+            if [ "$outside_actions" = true ] && [ "$attempt" -lt 6 ]; then
+              echo "Waiting for the checks no workflow run owns:"
+              echo "$unfinished"
+              sleep 20
               continue
             fi
-            read -r status conclusion <<< "$run"
-            [ "$status" = completed ] || continue
-            case "$conclusion" in
-              success) bucket=pass ;;
-              skipped) bucket=skipping ;;
-              cancelled) bucket=cancel ;;
-              *) bucket=fail ;;
-            esac
-            echo "::warning::Run $run_id completed ($conclusion) with a check still in progress: counted as $bucket."
-            others=$(jq --arg id "$run_id" --arg bucket "$bucket" 'map(if .bucket == "pending"
-              and ((.link // "") | contains("/actions/runs/\($id)/job/")) then .bucket = $bucket else . end)' <<< "$others")
-          done
-
-          # A gate that held its workflow's checks for claude-review's open threads is the only
-          # review-gate check that fails. Its run completes failed, which starts this workflow too.
-          held=$(jq '[.[] | select((.name | startswith("review-gate")) and .bucket == "fail")] | length' <<< "$others")
-          unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping")
-            | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
-            | "\(.name): \(.bucket)"' <<< "$others")
-          if [ -n "$unfinished" ]; then
             echo "#$pr is not green yet:"
             echo "$unfinished"
             exit 0
-          fi
+          done
 
           # A job waiting on another (the checks behind review-gate) has no check until it starts, so
           # while review-gate waits for the review, or right after it passes, every check can be green
