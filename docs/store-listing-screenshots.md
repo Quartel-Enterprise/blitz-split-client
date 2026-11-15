@@ -135,8 +135,8 @@ What was checked of that, in November 2026:
   no Accessibility permission ("osascript is not allowed assistive access"), so the script waited and Open was
   pressed in Device Hub for it. The 13 languages were captured that way, and everything after the press ran as
   written: the script saw the inner display lying down and the UI test photographed it.
-- **In a release**, the slot has a runner of its own, with nobody to press Open, so it waits 30 seconds for its own
-  press and gives up. The `xcode-27` image has what the script needs on paper: Xcode 27.2 with Device Hub inside it,
+- **In a release**, the slot has a runner of its own, with nobody to press Open, so once its own attempt is over it
+  waits 30 seconds more and gives up. The `xcode-27` image has what the script needs on paper: Xcode 27.2 with Device Hub inside it,
   the iPhone Duo's runtime (iOS 27.1 and 27.2), a logged-in desktop, and `osascript` and `bash` allowed in
   Accessibility and to drive System Events (the image's `configure-tccdb-macos-27.sh`). Whether Device Hub shows its
   window there and the press lands is only known after the first release with `screenshots` on: nothing but a
@@ -194,7 +194,7 @@ fastlane/Fastfile                              # the screenshots and upload lane
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
   of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides. It goes on the iPhone Duo's
   shelf closed unless `duoScreensStagedOpen` (`StoreScreenshots.kt`) names it; a test of `store-listing.test.mjs`
-  holds that list to the names of `screens.tsv`.
+  holds that list, `StoreScreen` and `screens.tsv` to the same file names.
 - **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), a row of
   `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is

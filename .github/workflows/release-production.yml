@@ -571,8 +571,11 @@ jobs:
   # Every slot is captured whichever Apple platform the run releases, since the frames need the iPhone's and the
   # iPad's. The iPhone Duo has two, closed and open, each on a runner of its own. Both fail on a runner whose Xcode
   # has no runtime for the Duo, and the open one where the script can't press Open in Device Hub: nobody is there to
-  # press it, so it waits half a minute and gives up, and the job fails for having captured nothing. The Duo's shelf
-  # then takes its ten screens from the slot that was captured, and the listing goes without the Duo when neither was.
+  # press it, so once its own attempt is over (up to a minute and a half) it waits half a minute more and gives up,
+  # and the job fails for having captured nothing. The Duo's shelf then takes its ten screens from the slot that was
+  # captured, and the listing goes without the Duo when neither was. The two slots stay apart, although one job could
+  # share their build: the open capture is the one nobody has seen work, and a run of it that breaks halfway must
+  # not take the closed Duo's captures with it.
   apple-screenshots-capture:
     name: App Store, capture the ${{ matrix.slot }} screenshots
     needs: plan
