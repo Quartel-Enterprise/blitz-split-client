@@ -1,0 +1,93 @@
+name: 'Build the signed Android app'
+description: >-
+  Builds a release of the Android app signed with the release keystore: the APK a beta sends to Firebase App
+  Distribution (release-beta.yml) or the bundle a stable version sends to Google Play (release-production.yml), which
+  differ only in the Gradle task. Leaves the keystore at $RUNNER_TEMP/release.jks, for the step that shows the
+  certificate the build carries. The calling job checks out the repository first, since the steps run its scripts.
+
+inputs:
+  task:
+    description: "The Gradle task: ':androidApp:assembleRelease' or ':androidApp:bundleRelease'"
+    required: true
+  version:
+    description: 'The versionName, a beta suffix too'
+    required: true
+  version-code:
+    description: 'The versionCode'
+    required: true
+  keystore-base64:
+    description: 'The release keystore, base64 encoded'
+    required: true
+  keystore-password:
+    description: "The keystore's password"
+    required: true
+  key-alias:
+    description: "The key's alias"
+    required: true
+  key-password:
+    description: "The key's password"
+    required: true
+  google-services-json:
+    description: 'androidApp/google-services.json, base64 encoded'
+    required: true
+  google-web-client-id:
+    description: 'The Google OAuth web client id (the SUPABASE_GOOGLE_WEB_CLIENT_ID variable)'
+    required: true
+  cache-encryption-key:
+    description: 'Passed to the Gradle action'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    # A release build signed with the debug key would install, but the next beta could not update it, Google sign
+    # in is registered for the release key's SHA-1, and Google Play refuses the bundle. Without the web client id
+    # the app builds, but the native Google sign in fails (docs/getting-started.md).
+    - name: Check the signing secrets and the Google web client id
+      shell: bash
+      env:
+        ANDROID_KEYSTORE_BASE64: ${{ inputs.keystore-base64 }}
+        ANDROID_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
+        ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
+        ANDROID_KEY_PASSWORD: ${{ inputs.key-password }}
+        GOOGLE_SERVICES_JSON: ${{ inputs.google-services-json }}
+        SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ inputs.google-web-client-id }}
+      run: ./scripts/release/require-env.sh ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_SERVICES_JSON SUPABASE_GOOGLE_WEB_CLIENT_ID
+
+    # Through env, not spliced into the command: the script validates the values, but only after the shell has
+    # parsed the line.
+    - name: Bump version
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+        VERSION_CODE: ${{ inputs.version-code }}
+      run: ./scripts/release/bump-version.sh "$VERSION" "$VERSION_CODE"
+
+    - name: Setup Gradle and Java
+      uses: ./.github/actions/gradle
+      with:
+        cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        # Dispatched on main, where the action would save the cache: a release must not push out the entries the
+        # pull requests read.
+        cache-read-only: 'true'
+
+    - name: Decode signing and Firebase config
+      shell: bash
+      env:
+        ANDROID_KEYSTORE_BASE64: ${{ inputs.keystore-base64 }}
+        GOOGLE_SERVICES_JSON: ${{ inputs.google-services-json }}
+      run: |
+        echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+        echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+
+    - name: Build the signed app
+      shell: bash
+      env:
+        TASK: ${{ inputs.task }}
+        SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ inputs.google-web-client-id }}
+        ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+        ANDROID_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
+        ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
+        ANDROID_KEY_PASSWORD: ${{ inputs.key-password }}
+      run: ./gradlew "$TASK"

@@ -60,17 +60,23 @@ Or **Actions → release-beta → Run workflow**. The script dispatches the work
    `finalize` to be re-run first. **Re-run failed jobs** sends the notes again without touching the release.
 
 One release runs at a time, betas and stable versions together, and one more can wait: GitHub keeps a single pending
-run per concurrency group, so a third dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch
-while a run is already waiting. The two workflows share the group because both take the next `versionCode` from the
-same place.
+run per concurrency group, so a third dispatch would cancel the one waiting. `release-beta.sh` and
+`release-production.sh` refuse to dispatch while a run is already waiting
+([`dispatch-release.sh`](../scripts/release/dispatch-release.sh)). The two workflows share the group because both
+take the next `versionCode` from the same place.
 
 ## Releasing a stable version
 
-**Actions → release-production → Run workflow**, on `main`. Or from a terminal, every input written out:
-
 ```bash
-gh workflow run release-production.yml --ref main -f track=production -f rollout=100 -f submit_for_review=true
+./scripts/release/release-production.sh                                          # every platform, to everyone
+./scripts/release/release-production.sh track=internal submit_for_review=false   # reaches no user
+./scripts/release/release-production.sh version=3.1.0 rollout=20                 # a staged rollout of 3.1.0
 ```
+
+The script takes the workflow's inputs as `input=value`, dispatches it on `main` and prints the link to the run. It
+refuses to dispatch while a release is already waiting behind a running one, as `release-beta.sh` does. **Actions →
+release-production → Run workflow** works too, with no such check: look at the Actions tab first, since a release
+dispatched behind a waiting one cancels it without a word.
 
 | Input | Default | What it does |
 | --- | --- | --- |
@@ -88,7 +94,7 @@ that reaches no user, choose the `internal` track and turn `submit_for_review` o
 testers and the Apple builds to TestFlight, with no tag and no GitHub release.
 
 1. `plan` resolves the version and the next `versionCode`, checks that the approval can't be skipped, and picks the
-   notes the version tells, once, for every job after it: the stores' "What's new" by locale and the GitHub release's
+   notes the version tells, once, for every job after it: the stores' "What's new" by language and the GitHub release's
    ([release-notes.md](release-notes.md)). The run summary shows the version, where each platform goes and the notes.
 2. `approve` waits for [the approval](#the-approval). Nothing is built before it.
 3. Each platform builds and publishes, in jobs of its own, so **Re-run failed jobs** sends a failed upload again
@@ -131,13 +137,13 @@ a second one would cancel that beta. Approve or reject a run before starting ano
 - **App Store.** The `app_store_submit` lane waits for App Store Connect to process the build (up to 45 minutes),
   makes `X.Y.Z` the editable version, writes its "What's new", selects the build and submits it (`deliver`). An
   approved version is released by itself, to everyone, or over seven days with `phased_release`. The Mac app is a
-  version of its own, submitted by its own job. The lane refuses to submit a version with a locale left without
-  screenshots, which Apple would reject.
-- **The notes** are written once per store locale by `release-notes.mjs collect --out`
-  ([release-notes.md](release-notes.md#where-the-notes-go)). Each lane asks its store which languages the listing
-  has and sends those: a locale the listing lacks is left out (the App Store would open an empty listing for it),
-  and a listing locale the notes don't name (`en-GB`, `fr-CA`) gets the notes of its language, or English's. An
-  app's first version on a platform has no "What's new" and can't be phased, which the lane leaves out.
+  version of its own, submitted by its own job. A locale with no screenshots of its own shows the primary
+  language's, which the lane only reports; it refuses to submit when the primary language has none.
+- **The notes** are written once, by language, by `release-notes.mjs collect --out`
+  ([release-notes.md](release-notes.md#where-the-notes-go)). Each lane asks its store which locales the listing has
+  and gives each one its language's notes (`pt-BR` reads `pt`, `es-419` and `es-MX` read `es`), or English's for a
+  language the notes don't have. A locale the listing lacks gets nothing: the App Store would open an empty listing
+  for it. An app's first version on a platform has no "What's new" and can't be phased, which the lane leaves out.
 
 ### Screenshots with a release
 
@@ -198,8 +204,9 @@ The `versionCode` is one past the highest of two numbers: the one in `version.pr
 that every release records in its GitHub release's notes ([`suggest-version.sh`](../scripts/release/suggest-version.sh)
 resolves both, with `--stable` for a stable version). The release is published before the merge-back, so a release
 never reuses a number even when the merge-back fails (the `Main rules` ruleset requires a pull request, with threads
-resolved). A stable run that released nothing publishes no GitHub release, so only its merge-back records the number
-it used: re-run its `finalize` if that failed.
+resolved). A stable run that released nothing publishes no GitHub release, so its number is only in its merge-back:
+the script also reads the `versionCode` the `release/merge-back` branch holds, which stays on GitHub until its pull
+request merges, so the next release goes past it even then. Re-run its `finalize` if that failed.
 Re-running `finalize` finishes the job: it skips the release that exists, leaves a `versionCode` that `main` already
 holds (or a higher one someone raised meanwhile) alone, rebuilds the one merge-back branch, `release/merge-back`, from
 the current `main` and pushes it over the old one, and opens the pull request only when none is open (an open one is

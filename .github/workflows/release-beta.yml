@@ -179,50 +179,19 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      # A release build signed with the debug key would install, but the next beta could not update
-      # it, and Google sign in is registered for the release key's SHA-1.
-      - name: Check the signing secrets
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: ./scripts/release/require-env.sh ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_SERVICES_JSON
-
-      # Without the web client id the app builds, but the native Google sign in fails (docs/getting-started.md).
-      - name: Check the Google web client id
-        env:
-          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
-        run: ./scripts/release/require-env.sh SUPABASE_GOOGLE_WEB_CLIENT_ID
-
-      - name: Bump version
-        run: ./scripts/release/bump-version.sh "${{ needs.plan.outputs.display_version }}" "${{ needs.plan.outputs.version_code }}"
-
-      - name: Setup Gradle and Java
-        uses: ./.github/actions/gradle
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-          # Dispatched on main, where the action would save the cache: a beta must not push out the entries the
-          # pull requests read.
-          cache-read-only: 'true'
-
-      - name: Decode signing and Firebase config
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
-          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
-
       - name: Build the signed APK
-        run: ./gradlew :androidApp:assembleRelease
-        env:
-          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
-          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        uses: ./.github/actions/android-build
+        with:
+          task: ':androidApp:assembleRelease'
+          version: ${{ needs.plan.outputs.display_version }}
+          version-code: ${{ needs.plan.outputs.version_code }}
+          keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          google-web-client-id: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       # Google sign in only works for a signing key whose SHA-1 is registered on the Firebase app
       # (docs/release-process.md#google-sign-in), so the run says which one this APK carries. Invite links open

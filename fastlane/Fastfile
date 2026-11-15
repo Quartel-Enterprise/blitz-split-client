@@ -377,9 +377,10 @@ SUBMITTED_STATES = %w[
 PLAY_VERSION_CODE_USED_MESSAGE = "has already been used".freeze
 
 desc "Upload a signed AAB to a Google Play track with the version's \"What's new\""
-desc "Options: aab (its path); track (production|beta|alpha|internal); rollout (the percentage of the users who get"
-desc "it, 1 to 100: a staged rollout, production only); notes (a folder of <Play locale>/changelogs/default.txt, as"
-desc "release-notes.mjs collect --out writes fastlane/play). Needs PLAY_STORE_JSON_KEY_PATH."
+desc "Options: aab (its path, or a pattern that finds it alone); track (production|beta|alpha|internal); rollout (the percentage of the users who get"
+desc "it, 1 to 100: a staged rollout, production only); notes (the folder of <language>.txt that release-notes.mjs"
+desc "collect --out writes as stores/play); version_code (the bundle's, which lets a retry after a server error"
+desc "tell that the release landed). Needs PLAY_STORE_JSON_KEY_PATH."
 lane :play_upload do |options|
   repo_root = File.expand_path("..", __dir__)
   track = options.fetch(:track).to_s
@@ -388,14 +389,19 @@ lane :play_upload do |options|
   UI.user_error!("rollout is a percentage of the users, from 1 to 100") unless percentage.match?(/\A\d+\z/) && (1..100).cover?(percentage.to_i)
   # Only production is rolled out in stages: a testing track gets the release whole
   staged = track == "production" && percentage.to_i < 100
+  aabs = Dir.glob(File.expand_path(options.fetch(:aab), repo_root))
+  UI.user_error!("Expected one AAB at #{options[:aab]}, found #{aabs.size}") unless aabs.size == 1
   json_key = ENV.fetch("PLAY_STORE_JSON_KEY_PATH")
+  listed = retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+    play_listing_locales(json_key)
+  end
 
-  with_notes_for(File.expand_path(options.fetch(:notes), repo_root), play_listing_locales(json_key)) do |changelogs|
+  with_notes_for(File.expand_path(options.fetch(:notes), repo_root), listed, "changelogs/default.txt") do |changelogs|
     release = staged ? { release_status: "inProgress", rollout: (percentage.to_i / 100.0).to_s } : { release_status: "completed" }
     # supply sends the bundle, the track and the notes through one edit and commits it at the end, so a 5xx throws
     # the edit away and the next attempt starts over: Play holds nothing of a failed one. Unless the 5xx answered a
-    # commit that did land: the next attempt is then refused the versionCode, which after a server error, and only
-    # then, means the release is there.
+    # commit that did land: the next attempt is then refused the versionCode. That alone could be another upload's,
+    # so it counts as landed only when the track now lists this versionCode.
     attempt = 0
     retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
       attempt += 1
@@ -403,7 +409,7 @@ lane :play_upload do |options|
         upload_to_play_store(
           package_name: ANDROID_PACKAGE,
           json_key: json_key,
-          aab: File.expand_path(options.fetch(:aab), repo_root),
+          aab: aabs.first,
           track: track,
           **release,
           metadata_path: changelogs,
@@ -415,9 +421,10 @@ lane :play_upload do |options|
           skip_upload_screenshots: true,
         )
       rescue => e
-        raise unless attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE)
+        landed = attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE) && play_track_has?(track, options[:version_code], json_key)
+        raise unless landed
 
-        UI.important("Google Play already holds this versionCode: the attempt it answered with a server error had landed")
+        UI.important("The #{track} track already lists this versionCode: the attempt Google Play answered with a server error had landed")
       end
     end
   end
@@ -440,9 +447,9 @@ lane :app_store_prepare_version do |options|
 end
 
 desc "Put the version's \"What's new\" on the App Store version of an uploaded build and send it for review"
-desc "Options: platform (ios|osx); version (X.Y.Z); build (the build number, already uploaded); notes (a folder of"
-desc "<App Store locale>/release_notes.txt, as release-notes.mjs collect --out writes fastlane/app-store-ios and"
-desc "-mac); submit:false selects the build and writes the text without sending it for review; phased:true releases"
+desc "Options: platform (ios|osx); version (X.Y.Z); build (the build number, already uploaded); notes (the folder of"
+desc "<language>.txt that release-notes.mjs collect --out writes as stores/app-store-ios and -mac); submit:false"
+desc "selects the build and writes the text without sending it for review; phased:true releases"
 desc "an update over seven days. An approved version goes out by itself. Needs the App Store Connect key, as the"
 desc "screenshots lanes."
 lane :app_store_submit do |options|
@@ -490,14 +497,17 @@ lane :app_store_submit do |options|
   localizations = app.get_edit_app_store_version(platform: connect_platform).get_app_store_version_localizations
   if submit
     # deliver deletes a locale's screenshots before it uploads the new ones, so an upload that failed halfway can
-    # leave a locale with none, which Apple refuses: stop here, and run again once they are up
-    bare = localizations.reject { |localization| localization.get_app_screenshot_sets.any? { |set| set.app_screenshots.any? } }
-    UI.user_error!("No screenshots for #{bare.map(&:locale).join(', ')} on #{version} (#{platform}): upload them, then run this again") if bare.any?
+    # leave a locale with none. The App Store then shows the primary language's there (a language added to a
+    # listing starts with them), so only the primary one with none stops the submission: run again once they are up
+    bare = localizations.reject { |localization| localization.get_app_screenshot_sets.any? { |set| set.app_screenshots.any? } }.map(&:locale)
+    UI.user_error!("No screenshots for #{app.primary_locale}, the primary language, on #{version} (#{platform}): upload them, then run this again") if bare.include?(app.primary_locale)
+    UI.important("No screenshots of their own, so the App Store shows #{app.primary_locale}'s: #{bare.join(', ')}") if bare.any?
   end
-  # Not an update, so there is nothing to phase: App Store Connect refuses a phased release on a first version
-  first_version = app.get_app_store_versions(filter: { platform: connect_platform }, limit: 2).count < 2
+  # Not an update while the platform has no version on the store, whatever versions were made and never released:
+  # there is nothing to phase, and App Store Connect refuses a phased release then
+  never_released = app.get_live_app_store_version(platform: connect_platform).nil?
 
-  with_notes_for(File.expand_path(options.fetch(:notes), repo_root), localizations.map(&:locale)) do |metadata|
+  with_notes_for(File.expand_path(options.fetch(:notes), repo_root), localizations.map(&:locale), "release_notes.txt") do |metadata|
     upload_to_app_store(
       api_key: api_key,
       app_identifier: BUNDLE_ID,
@@ -512,7 +522,7 @@ lane :app_store_submit do |options|
       metadata_path: metadata,
       submit_for_review: submit,
       automatic_release: true,
-      **(first_version ? {} : { phased_release: phased }),
+      **(never_released ? {} : { phased_release: phased }),
       # Its findings would skip the submission without failing the lane; Apple's review is the check
       run_precheck_before_submit: false,
       precheck_include_in_app_purchases: false,
@@ -527,7 +537,8 @@ def app_store_platform(options)
   platform
 end
 
-# The languages the Play listing has; nil when Play can't be asked, which sends every language as it is.
+# The languages the Play listing has. Read with the key the upload uses, so a failure here is one the upload would
+# meet too.
 def play_listing_locales(json_key)
   require "supply"
 
@@ -541,29 +552,34 @@ def play_listing_locales(json_key)
     UI.error("Could not delete the Play edit used to read the listing: #{e.message}")
   end
   locales
-rescue => e
-  UI.error("Could not ask Google Play for the listing's languages, sending every one: #{e.message}")
-  nil
 end
 
-# Yields a folder with the notes of each locale the store's listing has (`listed`; nil keeps what `notes` holds). A
-# store refuses a language its listing doesn't have, or, on the App Store, opens an empty listing for it. A listed
-# locale the notes don't name (en-GB, fr-CA) gets the notes of its language, or English's: the App Store refuses to
-# review a version with a locale whose "What's new" is empty.
-def with_notes_for(notes, listed)
+# Whether a Play track lists a versionCode among its releases; false when the lane wasn't told the versionCode.
+def play_track_has?(track, version_code, json_key)
+  return false if version_code.to_s.empty?
+
+  google_play_track_version_codes(package_name: ANDROID_PACKAGE, track: track, json_key: json_key).include?(version_code.to_s.to_i)
+end
+
+# Yields a folder with the version's notes for each locale the store's listing has (`listed`), each in the file the
+# store's tool reads (`file`: changelogs/default.txt for supply, which takes it for a versionCode with no file of its
+# own, and release_notes.txt for deliver). `notes` holds them by the notes' language, <language>.txt. A locale reads
+# the file of its own name (pt-PT), else its language's (pt-BR reads pt, es-419 and es-MX read es, en-GB reads en),
+# else English's: the App Store refuses to review a version with a locale whose "What's new" is empty. Only the
+# listing's locales are written, since a store refuses a language its listing doesn't have or, on the App Store,
+# opens an empty listing for it.
+def with_notes_for(notes, listed, file)
   require "tmpdir"
 
-  staged = Dir.children(notes).select { |locale| File.directory?(File.join(notes, locale)) }.sort
-  UI.user_error!("No release notes under #{notes}") if staged.empty?
-  left_out = listed.nil? ? [] : staged - listed
-  UI.important("Not in the store's listing, so left out: #{left_out.join(', ')}") if left_out.any?
+  langs = Dir.glob(File.join(notes, "*.txt")).map { |path| File.basename(path, ".txt") }
+  UI.user_error!("No release notes in English under #{notes}") unless langs.include?("en")
   Dir.mktmpdir("release-notes-") do |dir|
-    (listed || staged).each do |locale|
-      source = [locale, staged.find { |each| each.split("-").first == locale.split("-").first }, "en-US"].find { |each| staged.include?(each) }
-      next if source.nil?
-
-      UI.message("#{locale} gets the notes of #{source}") unless source == locale
-      FileUtils.cp_r(File.join(notes, source), File.join(dir, locale))
+    listed.each do |locale|
+      lang = [locale, locale.split("-").first, "en"].find { |each| langs.include?(each) }
+      UI.message("#{locale} gets the notes in #{lang}")
+      target = File.join(dir, locale, file)
+      FileUtils.mkdir_p(File.dirname(target))
+      FileUtils.cp(File.join(notes, "#{lang}.txt"), target)
     end
     yield(dir)
   end

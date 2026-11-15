@@ -2,9 +2,8 @@ name: release-notes
 
 # Fails when a fragment of release-notes/unreleased/ has something a release couldn't publish (a language missing, a
 # platform the site doesn't know, Markdown in a note), and runs the tests of the scripts the releases run: the one
-# that reads the fragments, whose store locale codes follow the store screenshots' (StoreScreenshots.kt), and the
-# ones that resolve a release's version and merge it back. See docs/release-notes.md. Locally:
-# node scripts/release/release-notes.mjs check.
+# that reads the fragments, and the ones that resolve a release's version and merge it back. See
+# docs/release-notes.md. Locally: node scripts/release/release-notes.mjs check.
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -16,7 +15,6 @@ on:
     paths:
       - '.github/workflows/release-notes.yml'
       - 'scripts/release/**'
-      - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
       - 'release-notes/**'
   push:
     branches:
@@ -24,7 +22,6 @@ on:
     paths:
       - '.github/workflows/release-notes.yml'
       - 'scripts/release/**'
-      - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
       - 'release-notes/**'
 
 permissions:

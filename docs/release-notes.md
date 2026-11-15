@@ -129,21 +129,18 @@ had.
 | The GitHub release | "What's new", in English, each note naming its platforms unless it is for all | Every release |
 | Google Play and the App Store | `stores/play/<language>.txt` (the notes for all and for `android`, as many as fit the 500 characters Play takes, the last ones left out first), `stores/app-store-ios/` and `stores/app-store-mac/` (4000 characters), written by `collect --out`. A store with no note for its platform gets "Bug fixes and performance improvements." in its language | A stable version |
 
-The files under `stores/` are named by the notes' language, to read. `collect --out` writes the same text again
-under `fastlane/`, by each store's locale codes (`STORE_LOCALES` in the script) and in the folders the lanes upload
-from: `fastlane/play/<locale>/changelogs/default.txt` for `supply`, and
-`fastlane/app-store-ios/<locale>/release_notes.txt` and `fastlane/app-store-mac/…` for `deliver`. The codes are the
-ones the store screenshots go to ([store-listing-screenshots.md](store-listing-screenshots.md)), which a test keeps
-the same, plus Portugal's `pt-PT`: Spanish goes out to `es-419`, `es-ES` and `es-US` on Play and to `es-MX` and
-`es-ES` on the App Store, and `pt` is Brazil's `pt-BR`. `release-production` collects them once, with the site's
-checkout, and its lanes send each store the locales its listing has
-([release-process.md](release-process.md#what-the-stores-get)).
+The store files are named by the notes' language. `release-production` collects them once, with the site's
+checkout, and the lanes that upload them (`play_upload` and `app_store_submit` in `fastlane/Fastfile`) ask each
+store which locales its listing has and give each one its language's file: the file of its own name (`pt-PT`),
+else its language's (`pt-BR` reads `pt`, `es-419`, `es-MX` and `es-ES` read `es`, `en-GB` reads `en`), else
+English's. So no map of store locale codes is kept for the notes, and a language added to a listing gets its notes
+with the next release ([release-process.md](release-process.md#what-the-stores-get)).
 
 ## Adding a language
 
 The languages are `LANGS` in `release-notes.mjs`, and they are the site's: a language goes in both, with its "Bug
-fixes and performance improvements." in `NOTHING_TO_SAY` and its stores' locale codes in `STORE_LOCALES`, and every
-fragment in `release-notes/unreleased/` gets its text, or the check fails. The `add-language` skill lists it.
+fixes and performance improvements." in `NOTHING_TO_SAY`, and every fragment in `release-notes/unreleased/` gets its
+text, or the check fails. The `add-language` skill lists it.
 
 The two repositories gain a language in pull requests of their own, and either may merge first. So a release writes
 the languages the site's `release-notes/` has folders for, not `LANGS`: a language only the fragments have waits for

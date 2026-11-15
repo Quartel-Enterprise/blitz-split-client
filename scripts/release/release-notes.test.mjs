@@ -14,7 +14,6 @@ import {
   LANGS,
   NotesError,
   STORE_LIMITS,
-  STORE_LOCALES,
   bump,
   compareVersions,
   githubNotes,
@@ -192,30 +191,6 @@ describe("what a release publishes", () => {
     assert.ok(told.startsWith("• xxx") && told.endsWith("…"));
   });
 
-  test("each store has its locale codes for every language of the notes", () => {
-    for (const store of Object.values(STORE_LOCALES)) {
-      assert.deepEqual(Object.keys(store).sort(), [...LANGS].sort());
-      const codes = Object.values(store).flat();
-      assert.ok(codes.length > 0 && new Set(codes).size === codes.length);
-    }
-  });
-
-  test("the stores' locale codes are the ones the store screenshots go to, and Portugal's", () => {
-    const kotlin = readFileSync(join(dirname(SCRIPT), "../../build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt"), "utf8");
-    // The screenshots name English and Brazil's Portuguese by their listing's code.
-    const langOf = { "en-US": "en", "pt-BR": "pt" };
-    const mapOf = (name) => {
-      const [, body] = new RegExp(`private val ${name} = mapOf\\(([^]*?)\\n\\)`).exec(kotlin);
-      const entries = [...body.matchAll(/"([^"]+)" to listOf\(([^)]*)\)/g)];
-      return Object.fromEntries(entries.map(([, key, codes]) => [langOf[key] ?? key, [...codes.matchAll(/"([^"]+)"/g)].map(([, code]) => code)]));
-    };
-    for (const [store, name] of [["play", "playLocales"], ["appStore", "appStoreLocales"]]) {
-      const { "pt-PT": portugal, ...screenshots } = STORE_LOCALES[store];
-      assert.deepEqual(screenshots, mapOf(name));
-      assert.deepEqual(portugal, ["pt-PT"]);
-    }
-  });
-
   test("a store gets only the first notes that fit its limit, each whole", () => {
     const long = Array.from({ length: 10 }, (_, index) => note("new", `${index} ${"x".repeat(96)}`));
     const told = storeNotes(long, "android", "en", STORE_LIMITS.play);
@@ -311,18 +286,6 @@ describe("the commands", () => {
     assert.equal(readFileSync(join(out, "github.md"), "utf8"), "## What's new\n\n- Export a group (en)\n- Totals add up (en)\n");
   });
 
-  test("a stable version's notes are also written where fastlane uploads them from, by each store's locale", () => {
-    const out = join(site, "out-fastlane");
-    run("collect", "3.0.0", "--ref", "3.0.0", "--out", out);
-    const told = (lang) => `• Export a group (${lang})\n• Totals add up (${lang})`;
-    for (const locale of ["es-419", "es-ES", "es-US"]) assert.equal(readFileSync(join(out, "fastlane/play", locale, "changelogs/default.txt"), "utf8"), told("es"));
-    assert.equal(readFileSync(join(out, "fastlane/play/pt-BR/changelogs/default.txt"), "utf8"), told("pt"));
-    assert.equal(readFileSync(join(out, "fastlane/play/pt-PT/changelogs/default.txt"), "utf8"), told("pt-PT"));
-    assert.equal(readFileSync(join(out, "fastlane/app-store-ios/es-MX/release_notes.txt"), "utf8"), told("es"));
-    assert.equal(readFileSync(join(out, "fastlane/app-store-mac/ja/release_notes.txt"), "utf8"), told("ja"));
-    assert.equal(existsSync(join(out, "fastlane/app-store-ios/pt")), false);
-  });
-
   test("a version the site already has keeps its notes, and every output tells those", () => {
     const out = join(site, "out-written");
     writeInSite("3.0.1", (lang) => [{ text: `By hand (${lang})`, platforms: ["all"] }]);
@@ -384,7 +347,6 @@ describe("the commands", () => {
     assert.equal(existsSync(join(site, "release-notes", "en", "3.0.1-beta_2.json")), false);
     assert.equal(readFileSync(join(out, "testers/android.txt"), "utf8"), "");
     assert.equal(existsSync(join(out, "stores")), false);
-    assert.equal(existsSync(join(out, "fastlane")), false);
   });
 
   test("the testers of a platform get its notes in Portuguese", () => {

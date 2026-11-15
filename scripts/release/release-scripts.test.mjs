@@ -121,6 +121,19 @@ describe("the version of a release", () => {
     assert.match(outputs(["--stable"]), /version_code=91\n/);
   });
 
+  test("the versionCode is past the one a merge-back that never reached main still holds on its branch", () => {
+    git("push", "-q", "origin", "main");
+    git("checkout", "-q", "-b", BRANCH);
+    commit("a merge-back left open", versionFile("3.0.0", 95));
+    git("push", "-q", "origin", BRANCH);
+    git("checkout", "-q", "main");
+    git("branch", "-q", "-D", BRANCH);
+    assert.equal(outputsOf(["--stable"]).version_code, "96");
+    // Merged since: its branch is gone from the remote, and the copy fetched before no longer counts.
+    git("push", "-q", "origin", "--delete", BRANCH);
+    assert.equal(outputsOf(["--stable"]).version_code, "84");
+  });
+
   test("a version that isn't X.Y.Z is refused", () => {
     assert.throws(() => outputsOf(["--stable", "3.0"]), /must be in X\.Y\.Z format/);
     assert.throws(() => outputsOf(["3.0.0-beta_1"]), /must be in X\.Y\.Z format/);

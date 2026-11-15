@@ -10,11 +10,13 @@
 # overrides both. Either way it has to be X.Y.Z, since it goes into the tag, the branch name and the Apple version
 # string. A beta's number is one past the highest existing X.Y.Z-beta_N tag; a stable version is X.Y.Z as it is.
 #
-# The versionCode is one past the highest of two numbers: the one in version.properties, and the "Build
-# number: N" line every release, beta or stable, records in its notes. The second is what keeps a release from
-# reusing a code when the merge-back of the previous one did not reach main. The workflow hands the releases in a
-# file (RELEASES_FILE: a JSON list, each with its `body`); without it they are read with the GitHub CLI and a token
-# (GH_TOKEN), and run locally with neither, only the file counts.
+# The versionCode is one past the highest of three numbers: the one in version.properties, the "Build number: N"
+# line every release, beta or stable, records in its notes, and the one the merge-back branch holds on the remote.
+# The last two are what keep a release from reusing a code when the merge-back of the previous one did not reach
+# main: a stable run that only reached a testing track or TestFlight publishes no release, and its code is then
+# only on that branch, which stays until its pull request merges. The workflow hands the releases in a file
+# (RELEASES_FILE: a JSON list, each with its `body`); without it they are read with the GitHub CLI and a token
+# (GH_TOKEN), and run locally with neither, only the file and the branch count.
 #
 # Inside GitHub Actions, writes `version`, `display_version`, `version_code` and `branch` to $GITHUB_OUTPUT and a
 # human-readable plan to $GITHUB_STEP_SUMMARY, which says so when a stable version is already tagged: the run then
@@ -75,6 +77,16 @@ if [[ -n "$notes" ]]; then
     fi
   done < <(tr -d '\r' <<< "$notes" | sed -n 's/^Build number: *//p')
 fi
+# One branch for every merge-back: a pull request a failed run left open is rebuilt by the next one, not
+# left behind next to it.
+branch="release/merge-back"
+# Fetched now, so a branch deleted since (its pull request merged) isn't read from an old copy of it.
+if git fetch --quiet origin "+refs/heads/$branch:refs/remotes/origin/$branch" 2> /dev/null; then
+  pending="$(git show "refs/remotes/origin/$branch:$VERSION_FILE" | grep -E '^versionCode=' | cut -d= -f2 || true)"
+  if [[ "$pending" =~ ^[0-9]+$ ]] && (( pending > recorded )); then
+    recorded="$pending"
+  fi
+fi
 if (( recorded >= version_code )); then
   version_code=$(( recorded + 1 ))
 fi
@@ -91,9 +103,6 @@ else
   last_beta="$(git tag --list "${version}-beta_*" | sed "s/^${version}-beta_//" | grep -E '^[0-9]+$' | sort -n | tail -1 || true)"
   display_version="${version}-beta_$(( ${last_beta:-0} + 1 ))"
 fi
-# One branch for every merge-back: a pull request a failed run left open is rebuilt by the next one, not
-# left behind next to it.
-branch="release/merge-back"
 
 echo "Resolved version: ${display_version} (versionCode ${version_code})"
 
