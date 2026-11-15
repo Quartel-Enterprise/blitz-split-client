@@ -145,7 +145,10 @@ internal fun BillDetailsSection(
             enabled = !state.isFormLocked,
         )
     } else if (state.showsLockedPaidWith) {
-        LockedPaidWithChip(onClick = { onEvent(SplitBillUiEvent.OnLockedPaidWithClicked) })
+        LockedPaidWithChip(
+            onClick = { onEvent(SplitBillUiEvent.OnLockedPaidWithClicked) },
+            enabled = !state.isFormLocked,
+        )
     }
     if (state.showsOfflineNotice) {
         OfflineNoteRow()

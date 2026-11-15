@@ -155,12 +155,14 @@ private fun ChipIcon(imageVector: ImageVector) {
 
 /*
  * Why: "Paid with" while this device's user doesn't pay the bill (Pierre's call, beta feedback of November 15, 2026):
- * drawn as a disabled chip on None, yet still taking the tap, which raises a snackbar saying why it can't change.
+ * drawn as a disabled chip on None, yet still taking the tap, which raises a snackbar saying why it can't change. Truly
+ * disabled (enabled false) while the form is locked, as the rest of the form is.
  */
 @Composable
 fun LockedPaidWithChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val none = stringResource(R.string.designsystem_paid_with_none)
     val description = listOf(
@@ -180,11 +182,16 @@ fun LockedPaidWithChip(
         modifier = modifier.clearAndSetSemantics {
             contentDescription = description
             role = Role.Button
-            onClick {
-                onClick()
-                true
+            if (enabled) {
+                onClick {
+                    onClick()
+                    true
+                }
+            } else {
+                disabled()
             }
         },
+        enabled = enabled,
         leadingIcon = { ChipIcon(Icons.Outlined.CreditCard) },
         trailingIcon = { ChipIcon(Icons.Outlined.ExpandMore) },
         // Why: the disabled chip's look, while the chip itself stays enabled so the tap gets through.
