@@ -925,7 +925,8 @@ private struct PaidWithMenu: View {
             }
             .foregroundStyle(.primary)
         }
-        .fixedSize()
+        // As wide as its label up to the footer's width, where a long name truncates instead of being clipped
+        .fixedSize(horizontal: false, vertical: true)
         .accessibilityLabel(Text("Paid with"))
         .accessibilityValue(label)
         .accessibilityHint(Text("Only you see this."))

@@ -61,7 +61,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 
-private val tileShape = RoundedCornerShape(12.dp)
+// Why: the corner grows with the tile (12dp at 40dp), so a chip's 18dp tile stays a rounded square, not a dot.
+private const val CORNER_RATIO = 0.3f
 private const val ICON_RATIO = 0.55f
 
 /*
@@ -94,7 +95,7 @@ fun PayingMethodTile(
             .size(size)
             .background(
                 color = container,
-                shape = tileShape,
+                shape = RoundedCornerShape(size * CORNER_RATIO),
             ),
         contentAlignment = Alignment.Center,
     ) {

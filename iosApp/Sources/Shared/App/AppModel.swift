@@ -105,8 +105,8 @@ final class AppModel {
             return
         }
         if let buried = routes.indices.dropFirst().first(where: { index in
-            Self.opensInSettings(routes, at: index)
-                && routes.indices[index...].contains { !Self.opensInSettings(routes, at: $0) }
+            Self.opensInSettings(routes[index], over: routes[0])
+                && routes[index...].contains { !Self.opensInSettings($0, over: routes[0]) }
         }) {
             closeSettingsEntries(from: buried, of: value)
             return
@@ -168,11 +168,9 @@ final class AppModel {
 
     /// Keeps what the main window opened over Ajustes' entries from `index` up, in its order, without them.
     private func closeSettingsEntries(from index: Int, of value: Any?) {
-        let routes = (value as? [Any])?.compactMap { $0 as? any Route } ?? []
-        let appRoutes = routes.map { AppRoute($0) }
-        let above = routes.indices.dropFirst(index)
-            .filter { !Self.opensInSettings(appRoutes, at: $0) }
-            .map { routes[$0] }
+        let above = ((value as? [Any])?.compactMap { $0 as? any Route } ?? [])
+            .dropFirst(index)
+            .filter { !AppRoute($0).opensInSettings }
         guard let first = above.first else { return }
         let navigator = holder.viewModel.navigator
         navigator.replaceAbove(size: Int32(index), route: first)
@@ -215,21 +213,13 @@ final class AppModel {
 
     /// How many entries on top the Mac's Ajustes opened (`AppRoute.opensInSettings`), never the root.
     private var settingsEntryCount: Int {
-        min(backStack.indices.reversed().prefix { Self.opensInSettings(backStack, at: $0) }.count, backStack.count - 1)
+        min(backStack.reversed().prefix { Self.opensInSettings($0, over: root) }.count, backStack.count - 1)
     }
 
     /// What the Mac's Ajustes open, once a profile exists to show them (Início or the groups at the root). Before it,
     /// Welcome's legal links open their text in the main window, as on iOS: Ajustes would have nothing to show it over.
     private static func opensInSettings(_ route: AppRoute, over root: AppRoute) -> Bool {
         route.opensInSettings && (root == .home || root == .groups)
-    }
-
-    /// The same for the entry at `index` of `stack`: a payment method Split a bill's "Add a payment method" opened
-    /// stays over the bill in the main window, a sheet stacked on the bill's, rather than on Ajustes' window.
-    private static func opensInSettings(_ stack: [AppRoute], at index: Int) -> Bool {
-        guard let root = stack.first, opensInSettings(stack[index], over: root) else { return false }
-        if case .payingMethod = stack[index], index > 0, case .splitBill = stack[index - 1] { return false }
-        return true
     }
 
     /// The entries above the root, but the ones the sheets show. A native back gesture shortens it, and
@@ -390,11 +380,9 @@ final class AppModel {
     }
 
     /// Before the window is measured no entry opens as a sheet, and the root draws none of the stack either. What the
-    /// Mac's Ajustes open is their sheet, never the main window's; a payment method only reaches the main window's
-    /// stack over Split a bill (`opensInSettings(_:at:)`), where it is the main window's sheet.
+    /// Mac's Ajustes open is their sheet, never the main window's.
     private func presentsAsSheet(_ route: AppRoute) -> Bool {
-        let isPayingMethod = if case .payingMethod = route { true } else { false }
-        guard let isLargeWindow, isPayingMethod || !Self.opensInSettings(route, over: root) else { return false }
+        guard let isLargeWindow, !Self.opensInSettings(route, over: root) else { return false }
         return route.presentsAsSheet(isLargeWindow: isLargeWindow)
     }
 

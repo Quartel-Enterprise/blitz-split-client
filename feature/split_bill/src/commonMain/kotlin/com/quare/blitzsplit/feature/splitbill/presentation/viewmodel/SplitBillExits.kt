@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
 import com.quare.blitzsplit.core.navigation.isOverGroupScreen
+import kotlinx.coroutines.flow.first
 
 // Why: where "Rachar conta" and "Editar conta" go once closed, saved or deleted, only while still on top.
 internal class SplitBillExits(
@@ -18,11 +19,23 @@ internal class SplitBillExits(
         if (isOnTop()) navigator.navigate(Route.CategoryMap)
     }
 
-    // Why: "New payment method" from Paid with's "Add a payment method", over Rachar conta, which keeps what was typed.
-    fun openNewPayingMethod(): Boolean {
-        if (!isOnTop()) return false
-        navigator.navigate(Route.PayingMethod(methodId = null))
-        return true
+    /*
+     * Why: "New payment method" from Paid with's "Add a payment method", over Rachar conta, which keeps what was typed;
+     * the route it opened, or null while another screen covers the form.
+     */
+    fun openNewPayingMethod(): Route? {
+        if (!isOnTop()) return null
+        val form = Route.PayingMethod(
+            methodId = null,
+            isOverBill = true,
+        )
+        navigator.navigate(form)
+        return form
+    }
+
+    // Why: returns once the screen opened over the form is gone, saved, cancelled or swiped away.
+    suspend fun awaitClosed(route: Route) {
+        navigator.backStack.first { route !in it }
     }
 
     /*

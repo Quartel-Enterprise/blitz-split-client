@@ -118,7 +118,10 @@ internal val everyRouteKind: List<Route> = listOf(
         method = PaymentMethod.PIX,
         keyId = "secret-key",
     ),
-    Route.PayingMethod(methodId = "secret-method"),
+    Route.PayingMethod(
+        methodId = "secret-method",
+        isOverBill = false,
+    ),
     Route.LegalDocument(
         page = LegalPage.PRIVACY_POLICY,
         anchor = "secret-anchor",

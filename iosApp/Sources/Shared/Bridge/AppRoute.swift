@@ -248,7 +248,9 @@ enum AppRoute: Hashable, Identifiable {
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
-        case .paymentKey, .payingMethod, .profilePhoto, .deleteAccount, .contactSupport, .legalDocument, .releaseNotes: true
+        case .paymentKey, .profilePhoto, .deleteAccount, .contactSupport, .legalDocument, .releaseNotes: true
+        // Profile's opens there; Split a bill's "Add a payment method" over the bill, in the main window
+        case let .payingMethod(route): !route.isOverBill
         // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
         case let .inAppUpdate(route): route.source == .manual
         // Settings' iPhone row opens it there; Home's card over the main window

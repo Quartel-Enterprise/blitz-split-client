@@ -279,7 +279,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     needs a name, the rest take an optional one (up to 30 characters). Once the form is filled, a sync never changes
     the type picked (a Cash added on another device meanwhile makes saving a second one fail instead). A card picks one of eight brand-neutral colors
     (purple, blue, green, orange, red, pink, gold, graphite) that fill its tile with a white glyph, a card for a credit
-    card and a wallet for a debit card so the two tell apart at a glance (Pierre's call, November 15, 2026): never a
+    card and a wallet for a debit card so the two tell apart at a glance (Pierre asked on November 15, 2026 to tell
+    them apart; the wallet was settled while he was away, see PR #376): never a
     bank's or a card brand's logo. "Default method" is optional (the first method starts on, any can be turned off) and is
     what a new bill the person pays opens on in [Split a bill](split-bill.md). Deleting asks "Delete this payment
     method?"; bills marked with it stop showing it.

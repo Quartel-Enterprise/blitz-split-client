@@ -20,9 +20,9 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     receipt". The control is disabled while a receipt is being read or the bill is saving.
   - "Paid with" (private payment methods, Pierre's call, feedback of November 14, 2026): which of their own
     [payment methods](profile.md) this device's user paid with. It only shows while they pay the bill (alone or among
-    several payers) and have a method (`SplitBillUiState.showsPaidWith`). As discreet as a chip (Pierre's call,
-    feedback of November 15, 2026), under Split on every platform (on the Mac, a row of the form's columns under
-    "Split:"): the method's small tile and name, or a card glyph and "None", and a ▾ that opens a menu of None and each
+    several payers) and have a method (`SplitBillUiState.showsPaidWith`). As discreet as a chip, under Split (Pierre's call,
+    feedback of November 15, 2026, drawn on Android; the same spot on Apple and the web, a row of the Mac's form
+    columns under "Split:", was settled while Pierre was away, see PR #376): the method's small tile and name, or a card glyph and "None", and a ▾ that opens a menu of None and each
     method. There is no caption: screen readers hear "Paid with", the method and "Only you see this." (the web's
     `aria-description` and `title`, Apple's accessibility hint). A new bill opens on their default method, a duplicate
     on its original's mark, an edited bill on its own mark (`PaidWithPicking`). It is saved for them alone once the
@@ -33,13 +33,16 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     user pays the bill and has no method yet, once their methods were read (`SplitBillUiState.showsAddPayingMethod`), a
     button slightly more visible than the chip (Android's tonal button, Apple's bordered one, the web's secondary one). It opens
     "New payment method" (`Route.PayingMethod(methodId = null)`) over Split a bill, as the sheet or dialog
-    [Profile](profile.md) opens (the web draws it in the bill's place, which comes back with what was typed). The
+    [Profile](profile.md) opens (the web draws it in the bill's place, which comes back with what was typed, settled
+    while Pierre was away, see PR #376). The
     method saved there comes back already picked as the bill's "Paid with", which counts as a change ("Discard
     changes?"). The shared ViewModel does it, not a UI: the button only shows while the person has no method, so once
     tapped it picks the first method the methods' list brings (`PaidWithPicking.add`), and no route hands a result
-    back. It does nothing while the bill saves, which leaves the form. It waits until a method appears rather than until the form closes, since Room may tell of the
-    save a moment after the form is gone; a method that arrives from another device while it waits is picked the same
-    way.
+    back. It does nothing while the bill saves, which leaves the form. It waits until the form closes: a method the
+    list brings meanwhile is picked, and once closed a fresh read of the methods picks the one saved even if the list
+    hasn't told of it yet; a cancelled form leaves nothing waiting, so a method synced later is never picked for the
+    person. On the Mac it opens over the bill in the main window, not in Ajustes as Profile's does
+    (`Route.PayingMethod.isOverBill`).
   - "Split a bill" (`Route.SplitBill`): "Who paid" picks one person, who paid the whole bill, or "Several people",
     which opens "Several people paid" in its place: each person's amount, adding up to the total exactly ("R$
     312 of R$ 312. Adds up.", else "R$ X left" / "R$ X over"), and Done waits until it does
