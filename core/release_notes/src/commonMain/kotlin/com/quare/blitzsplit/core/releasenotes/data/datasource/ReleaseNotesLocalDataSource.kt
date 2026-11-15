@@ -14,11 +14,13 @@ interface ReleaseNotesLocalDataSource {
         json: String,
         etag: String?,
         checkedAt: Long,
+        installedVersion: SeenInstalledVersion?,
     )
 
     // Why: the site answered that the saved feed is still the current one.
     suspend fun markChecked(
         language: String,
         checkedAt: Long,
+        installedVersion: SeenInstalledVersion?,
     )
 }

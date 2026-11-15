@@ -15,6 +15,14 @@ internal class RoomReleaseNotesLocalDataSource(
             json = entity.json,
             etag = entity.etag,
             checkedAt = entity.checkedAt,
+            installedVersion = entity.installedVersion?.let { name ->
+                entity.installedVersionSeenAt?.let { seenAt ->
+                    SeenInstalledVersion(
+                        name = name,
+                        seenAt = seenAt,
+                    )
+                }
+            },
         )
     }
 
@@ -23,6 +31,7 @@ internal class RoomReleaseNotesLocalDataSource(
         json: String,
         etag: String?,
         checkedAt: Long,
+        installedVersion: SeenInstalledVersion?,
     ) {
         dao.upsert(
             ReleaseNotesFeedEntity(
@@ -30,6 +39,8 @@ internal class RoomReleaseNotesLocalDataSource(
                 json = json,
                 etag = etag,
                 checkedAt = checkedAt,
+                installedVersion = installedVersion?.name,
+                installedVersionSeenAt = installedVersion?.seenAt,
             ),
         )
     }
@@ -37,10 +48,13 @@ internal class RoomReleaseNotesLocalDataSource(
     override suspend fun markChecked(
         language: String,
         checkedAt: Long,
+        installedVersion: SeenInstalledVersion?,
     ) {
         dao.markChecked(
             language = language,
             checkedAt = checkedAt,
+            installedVersion = installedVersion?.name,
+            installedVersionSeenAt = installedVersion?.seenAt,
         )
     }
 }

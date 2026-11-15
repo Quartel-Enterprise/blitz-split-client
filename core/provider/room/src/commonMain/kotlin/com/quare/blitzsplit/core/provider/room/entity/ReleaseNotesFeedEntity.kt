@@ -17,4 +17,8 @@ data class ReleaseNotesFeedEntity(
     val etag: String?,
     // Why: when the site last confirmed this feed (epoch millis).
     val checkedAt: Long,
+    // Why: the app's version ("3.1.0-beta_2") when this feed was checked, null for one whose name can't be read.
+    val installedVersion: String?,
+    // Why: when this feed was first checked on that version (epoch millis), which bounds its quicker checks.
+    val installedVersionSeenAt: Long?,
 )

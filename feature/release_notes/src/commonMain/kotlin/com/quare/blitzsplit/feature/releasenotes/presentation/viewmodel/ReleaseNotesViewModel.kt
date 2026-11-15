@@ -31,8 +31,8 @@ import kotlinx.coroutines.launch
 /*
  * Why: "Release notes", what each version changed on the platform this app runs on, from the feed the site's own
  * "What's new" page is made of. The notes the device last saved (usually at launch) show at once, offline too, while
- * the site is asked for newer ones when a day passed since, or 15 minutes while they lack this app's version; only
- * a device that never saved them and can't download them shows "Couldn't load".
+ * the site is asked for newer ones when a day passed since, or 15 minutes in this version's first hours while they
+ * lack it; only a device that never saved them and can't download them shows "Couldn't load".
  */
 class ReleaseNotesViewModel(
     private val navigator: Navigator,
