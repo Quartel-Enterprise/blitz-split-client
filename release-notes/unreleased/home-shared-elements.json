@@ -1,0 +1,24 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "On Home, a group's balance now flies into the group as it opens, and a bill in \"Latest expenses\" carries its icon, title, total and your share into the bill. Both fly back when you go back.",
+        "pt": "No Início, o saldo do grupo agora voa para dentro do grupo ao abrir, e uma conta em \"Últimas despesas\" leva o ícone, o título, o total e a sua parte para a conta. Os dois voltam quando você volta.",
+        "pt-PT": "No Início, o saldo do grupo voa agora para dentro do grupo ao abri-lo, e uma despesa em \"Últimas despesas\" leva o ícone, o título, o total e a tua parte para o ecrã da despesa. Ambos voltam quando recuas.",
+        "es": "En Inicio, el saldo de un grupo ahora vuela hacia el grupo al abrirlo, y un gasto de \"Últimos gastos\" lleva su icono, título, total y tu parte a la cuenta. Ambos regresan al volver.",
+        "fr": "Sur l’accueil, le solde d’un groupe s’envole désormais vers le groupe à son ouverture, et une dépense des « Dernières dépenses » emporte son icône, son titre, son total et ta part vers la dépense. Les deux reviennent quand tu reviens en arrière.",
+        "de": "Auf der Startseite fliegt der Saldo einer Gruppe jetzt beim Öffnen in die Gruppe, und eine Ausgabe unter „Letzte Ausgaben“ nimmt Symbol, Titel, Betrag und deinen Anteil mit in die Rechnung. Beim Zurückgehen fliegt beides zurück.",
+        "it": "Nella Home, il saldo di un gruppo ora vola nel gruppo quando lo apri, e una spesa in \"Ultime spese\" porta icona, titolo, totale e la tua quota nel conto. Tornano indietro quando torni indietro.",
+        "pl": "Na ekranie głównym saldo grupy przelatuje teraz do grupy przy jej otwarciu, a wydatek z „Ostatnie wydatki” przenosi ikonę, tytuł, kwotę i Twój udział do rachunku. Po powrocie wszystko wraca na miejsce.",
+        "nl": "Op Home vliegt het saldo van een groep nu mee de groep in als je die opent, en een uitgave in \"Laatste uitgaven\" neemt het icoon, de titel, het totaal en jouw deel mee naar de rekening. Bij teruggaan vliegen ze terug.",
+        "ja": "ホームでグループを開くと残高がグループ画面へ移動するようになり、「最近の支出」の支出はアイコン、タイトル、合計、あなたの負担分ごと支出画面へ移動します。戻るとどちらも元の位置へ戻ります。",
+        "tr": "Ana sayfada bir grubu açınca bakiyesi artık gruba uçuyor, \"Son harcamalar\"daki bir harcama da simgesini, başlığını, toplamını ve senin payını harcamaya taşıyor. Geri dönünce ikisi de geri uçuyor.",
+        "id": "Di Beranda, saldo grup kini terbang ke dalam grup saat dibuka, dan tagihan di \"Pengeluaran terbaru\" membawa ikon, judul, total, dan bagianmu ke layar tagihan. Keduanya kembali saat kamu kembali."
+      }
+    }
+  ]
+}
