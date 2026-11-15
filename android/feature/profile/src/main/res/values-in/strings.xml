@@ -75,6 +75,8 @@
     <string name="profile_dynamic_colors_info_body">Warna dinamis menyesuaikan aplikasi dengan wallpaper-mu: tombol, latar, dan sorotan memakai warna yang dipilih Android dari wallpaper, dan berubah saat wallpaper-mu berganti.</string>
     <string name="profile_dynamic_colors_info_note">Grup, avatar, dan kategori tetap memakai warnanya sendiri, jadi kamu tetap bisa membedakannya. Ini hanya berlaku di perangkat ini.</string>
     <string name="profile_info_ok">Mengerti</string>
+    <string name="profile_section_support">Dukungan dan masukan</string>
+    <string name="profile_contact_support">Hubungi dukungan</string>
     <string name="profile_section_about">Privasi dan tentang</string>
     <string name="profile_privacy_policy">Kebijakan Privasi</string>
     <string name="profile_terms">Ketentuan Layanan</string>

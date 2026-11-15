@@ -70,6 +70,9 @@ sealed interface Route {
     // Why: "Excluir conta e dados", reached from the profile of a Google or Apple account.
     data object DeleteAccount : Route
 
+    // Why: "Contact support", over the profile: the address, what the email will carry and "Open email".
+    data object ContactSupport : Route
+
     // Why: "Notificações", a screen of its own on Android and iOS; the web and macOS keep it in the profile.
     data object NotificationSettings : Route
 

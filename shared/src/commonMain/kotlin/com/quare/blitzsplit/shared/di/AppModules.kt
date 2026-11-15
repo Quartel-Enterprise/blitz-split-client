@@ -16,6 +16,7 @@ import com.quare.blitzsplit.core.provider.room.di.roomModule
 import com.quare.blitzsplit.core.provider.supabase.di.supabaseModule
 import com.quare.blitzsplit.core.releasenotes.di.releaseNotesModule
 import com.quare.blitzsplit.core.settings.di.settingsModule
+import com.quare.blitzsplit.core.support.di.supportModule
 import com.quare.blitzsplit.core.sync.di.syncModule
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
@@ -28,6 +29,7 @@ import com.quare.blitzsplit.feature.appdownload.di.appDownloadModule
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
 import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
 import com.quare.blitzsplit.feature.contacts.di.contactsModule
+import com.quare.blitzsplit.feature.contactsupport.di.contactSupportModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
 import com.quare.blitzsplit.feature.deleteaccount.di.deleteAccountModule
 import com.quare.blitzsplit.feature.editgroup.di.editGroupModule
@@ -105,6 +107,7 @@ val sharedModules: List<Module> = listOf(
     inAppUpdateModule,
     legalModule,
     releaseNotesModule,
+    supportModule,
     welcomeModule,
     profileSetupModule,
     restoreModule,
@@ -115,6 +118,7 @@ val sharedModules: List<Module> = listOf(
     paymentKeyModule,
     payingMethodModule,
     deleteAccountModule,
+    contactSupportModule,
     notificationSettingsModule,
     categoryMapModule,
     createGroupModule,

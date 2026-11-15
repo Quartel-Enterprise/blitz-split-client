@@ -182,6 +182,7 @@ struct RootView: View {
         case let .groupPhoto(route): GroupPhotoView(route: route)
         case .profilePhoto: ProfilePhotoView()
         case .deleteAccount: DeleteAccountView()
+        case .contactSupport: ContactSupportView()
         case .notificationSettings: NotificationSettingsView()
         case .categoryMap: CategoryMapView()
         case .releaseNotes: ReleaseNotesView()

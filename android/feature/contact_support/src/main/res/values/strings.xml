@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contact support</string>
+    <string name="contact_support_description">We\'ll open your email app with a message ready to go. Describe what happened and send it: real people read every message.</string>
+    <string name="contact_support_to">To</string>
+    <string name="contact_support_diagnostics">Will be included in the email</string>
+    <string name="contact_support_app_version">App version</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Language</string>
+    <string name="contact_support_account">Account</string>
+    <string name="contact_support_profile">Profile</string>
+    <string name="contact_support_language_system">System</string>
+    <string name="contact_support_account_local">This device only</string>
+    <string name="contact_support_account_anonymous">Not connected</string>
+    <string name="contact_support_open_email">Open email</string>
+    <string name="contact_support_copy_email">Copy email address</string>
+    <string name="contact_support_notice_copied">Email address copied.</string>
+    <string name="contact_support_notice_no_app">No email app found. The address was copied instead.</string>
+    <string name="contact_support_close">Close</string>
+</resources>

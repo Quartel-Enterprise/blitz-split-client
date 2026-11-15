@@ -23,6 +23,7 @@ internal fun Route.toScreenView(): ScreenView = when (this) {
     is Route.InAppUpdate -> ScreenView("in_app_update", emptyMap())
     is Route.AppDownload -> ScreenView("app_download", emptyMap())
     Route.DeleteAccount -> ScreenView("delete_account", emptyMap())
+    Route.ContactSupport -> ScreenView("contact_support", emptyMap())
     Route.NotificationSettings -> ScreenView("notification_settings", emptyMap())
     Route.CategoryMap -> ScreenView("category_map", emptyMap())
     is Route.LegalDocument -> ScreenView("legal_document", mapOf("page" to page))

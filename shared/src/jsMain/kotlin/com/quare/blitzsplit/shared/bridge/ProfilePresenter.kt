@@ -259,6 +259,10 @@ class ProfilePresenter {
         viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
     }
 
+    fun contactSupport() {
+        viewModel.onEvent(ProfileUiEvent.OnContactSupportClicked)
+    }
+
     fun retrySync() {
         viewModel.onEvent(ProfileUiEvent.OnRetrySyncClicked)
     }

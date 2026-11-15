@@ -42,6 +42,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnNotificationsClicked -> EventAnalytics.Automatic("profile_notifications_clicked")
 
+            OnContactSupportClicked -> EventAnalytics.Automatic("profile_contact_support_clicked")
+
             OnAppInviteClicked -> EventAnalytics.Automatic("app_invite_code_clicked", mapOf("source" to PROFILE_SOURCE))
 
             OnAppLinkClicked -> EventAnalytics.Automatic("app_link_clicked", mapOf("source" to PROFILE_SOURCE))
@@ -182,6 +184,9 @@ sealed interface ProfileUiEvent : UiEvent {
     data object OnExportClicked : ProfileUiEvent
 
     data object OnDeleteAccountClicked : ProfileUiEvent
+
+    // Why: "Contact support", the first row of "Support and feedback".
+    data object OnContactSupportClicked : ProfileUiEvent
 
     data object OnRetrySyncClicked : ProfileUiEvent
 

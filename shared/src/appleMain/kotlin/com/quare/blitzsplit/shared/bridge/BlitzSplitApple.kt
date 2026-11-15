@@ -26,6 +26,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInvit
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ProfileLinkViewModel
+import com.quare.blitzsplit.feature.contactsupport.presentation.viewmodel.ContactSupportViewModel
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import com.quare.blitzsplit.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.DefaultSplitViewModel
@@ -207,6 +208,9 @@ object BlitzSplitApple : KoinComponent {
 
     fun createDeleteAccountViewModel(): ViewModelHolder<DeleteAccountViewModel> =
         ViewModelHolder(DeleteAccountViewModel::class) { get() }
+
+    fun createContactSupportViewModel(): ViewModelHolder<ContactSupportViewModel> =
+        ViewModelHolder(ContactSupportViewModel::class) { get() }
 
     fun createNotificationSettingsViewModel(): ViewModelHolder<NotificationSettingsViewModel> =
         ViewModelHolder(NotificationSettingsViewModel::class) { get() }

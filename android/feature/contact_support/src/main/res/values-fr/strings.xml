@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contacter l’assistance</string>
+    <string name="contact_support_description">Nous ouvrirons ton app de messagerie avec un message prêt. Décris ce qui s’est passé et envoie-le : chaque message est lu par de vraies personnes.</string>
+    <string name="contact_support_to">À</string>
+    <string name="contact_support_diagnostics">Sera inclus dans l’e-mail</string>
+    <string name="contact_support_app_version">Version de l’app</string>
+    <string name="contact_support_platform">Plateforme</string>
+    <string name="contact_support_language">Langue</string>
+    <string name="contact_support_account">Compte</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Système</string>
+    <string name="contact_support_account_local">Uniquement sur cet appareil</string>
+    <string name="contact_support_account_anonymous">Non connecté</string>
+    <string name="contact_support_open_email">Ouvrir l’e-mail</string>
+    <string name="contact_support_copy_email">Copier l’adresse e-mail</string>
+    <string name="contact_support_notice_copied">Adresse e-mail copiée.</string>
+    <string name="contact_support_notice_no_app">Aucune app de messagerie trouvée. L’adresse a été copiée.</string>
+    <string name="contact_support_close">Fermer</string>
+</resources>

@@ -92,6 +92,8 @@
     <string name="profile_dynamic_colors_info_body">Dynamic colors match the app to your wallpaper: buttons, backgrounds and highlights take the colors Android picks from it, and change when your wallpaper does.</string>
     <string name="profile_dynamic_colors_info_note">Groups, avatars and categories keep their own colors, so you still tell them apart. This only applies to this device.</string>
     <string name="profile_info_ok">Got it</string>
+    <string name="profile_section_support">Support and feedback</string>
+    <string name="profile_contact_support">Contact support</string>
     <string name="profile_section_about">Privacy and about</string>
     <string name="profile_privacy_policy">Privacy Policy</string>
     <string name="profile_terms">Terms of Service</string>

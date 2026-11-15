@@ -1,9 +1,11 @@
 package com.quare.blitzsplit.android.platform
 
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.PersistableBundle
 
 // Why: ClipDescription.EXTRA_IS_SENSITIVE, which only API 33 names; older versions just ignore it.
@@ -35,4 +37,22 @@ fun Context.shareText(text: String) {
         .setType("text/plain")
         .putExtra(Intent.EXTRA_TEXT, text)
     startActivity(Intent.createChooser(send, null))
+}
+
+/*
+ * Why: ACTION_SENDTO with a mailto link only offers email apps; the subject and the body go as extras too, since some
+ * email apps read them only from there and would open an empty draft. False when the device has none to take it.
+ */
+fun Context.openEmail(
+    mailtoLink: String,
+    subject: String,
+    body: String,
+): Boolean = try {
+    val send = Intent(Intent.ACTION_SENDTO, Uri.parse(mailtoLink))
+        .putExtra(Intent.EXTRA_SUBJECT, subject)
+        .putExtra(Intent.EXTRA_TEXT, body)
+    startActivity(send)
+    true
+} catch (_: ActivityNotFoundException) {
+    false
 }

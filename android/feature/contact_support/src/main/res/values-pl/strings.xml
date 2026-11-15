@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Skontaktuj się z pomocą</string>
+    <string name="contact_support_description">Otworzymy twoją aplikację pocztową z gotową wiadomością. Opisz, co się stało, i wyślij ją: każdą wiadomość czytają prawdziwi ludzie.</string>
+    <string name="contact_support_to">Do</string>
+    <string name="contact_support_diagnostics">Zostanie dołączone do e-maila</string>
+    <string name="contact_support_app_version">Wersja aplikacji</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Język</string>
+    <string name="contact_support_account">Konto</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">System</string>
+    <string name="contact_support_account_local">Tylko na tym urządzeniu</string>
+    <string name="contact_support_account_anonymous">Niepołączone</string>
+    <string name="contact_support_open_email">Otwórz e-mail</string>
+    <string name="contact_support_copy_email">Kopiuj adres e-mail</string>
+    <string name="contact_support_notice_copied">Skopiowano adres e-mail.</string>
+    <string name="contact_support_notice_no_app">Nie znaleziono aplikacji pocztowej. Adres został skopiowany.</string>
+    <string name="contact_support_close">Zamknij</string>
+</resources>

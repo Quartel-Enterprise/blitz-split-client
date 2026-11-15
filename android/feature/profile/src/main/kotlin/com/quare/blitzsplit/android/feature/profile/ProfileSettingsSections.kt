@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material.icons.outlined.SupportAgent
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ButtonDefaults
@@ -129,6 +130,25 @@ internal fun PreferencesSection(
             headline = stringResource(R.string.profile_category_map),
             modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnCategoryMapClicked) },
             supporting = stringResource(R.string.profile_category_map_detail),
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
+    }
+}
+
+// Why: "Support and feedback", between the preferences and "Privacy and about": how to reach whoever makes the app.
+@Composable
+internal fun SupportSection(onEvent: (ProfileUiEvent) -> Unit) {
+    Section(title = R.string.profile_section_support) {
+        SectionRow(
+            icon = Icons.Outlined.SupportAgent,
+            headline = stringResource(R.string.profile_contact_support),
+            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnContactSupportClicked) },
             trailing = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,

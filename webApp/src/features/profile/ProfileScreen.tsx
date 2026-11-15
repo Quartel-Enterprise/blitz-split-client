@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, Info, KeyRound, Link2, Loader2, LogOut, Plus, RotateCw, Share2, Tag, UserX, Zap } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, Info, KeyRound, LifeBuoy, Link2, Loader2, LogOut, Plus, RotateCw, Share2, Tag, UserX, Zap } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ComponentType, ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -186,6 +186,17 @@ export function ProfileScreen() {
                 <CardContent>
                   <Button variant="outline" onClick={() => presenter.categoryMap()}>
                     <Tag /> {t('profile_categoryMapOpen')}
+                  </Button>
+                </CardContent>
+              </Card>
+              {/* Why: "Support and feedback", right before "Privacy and about" (same order, before it in the page). */}
+              <Card className="order-7">
+                <CardHeader>
+                  <CardTitle>{t('profile_support')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" onClick={() => presenter.contactSupport()}>
+                    <LifeBuoy /> {t('profile_contactSupport')}
                   </Button>
                 </CardContent>
               </Card>

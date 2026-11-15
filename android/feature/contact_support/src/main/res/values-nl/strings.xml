@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contact opnemen met support</string>
+    <string name="contact_support_description">We openen je e-mailapp met een kant-en-klaar bericht. Beschrijf wat er is gebeurd en verstuur het: elk bericht wordt door echte mensen gelezen.</string>
+    <string name="contact_support_to">Aan</string>
+    <string name="contact_support_diagnostics">Wordt meegestuurd in de e-mail</string>
+    <string name="contact_support_app_version">Appversie</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Taal</string>
+    <string name="contact_support_account">Account</string>
+    <string name="contact_support_profile">Profiel</string>
+    <string name="contact_support_language_system">Systeem</string>
+    <string name="contact_support_account_local">Alleen op dit apparaat</string>
+    <string name="contact_support_account_anonymous">Niet gekoppeld</string>
+    <string name="contact_support_open_email">E-mail openen</string>
+    <string name="contact_support_copy_email">E-mailadres kopiëren</string>
+    <string name="contact_support_notice_copied">E-mailadres gekopieerd.</string>
+    <string name="contact_support_notice_no_app">Geen e-mailapp gevonden. Het adres is gekopieerd.</string>
+    <string name="contact_support_close">Sluiten</string>
+</resources>

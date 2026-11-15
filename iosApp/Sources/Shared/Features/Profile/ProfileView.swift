@@ -222,6 +222,7 @@ struct ProfileView: View {
                     NotificationSettingsSections(model: notificationModel)
                         .id(ProfileSettingsPane.notifications)
                 }
+                SupportSection(model: model)
                 AboutSection(model: model)
                     .id(ProfileSettingsPane.privacy)
                 if model.state.showsDeleteAccount {
@@ -269,6 +270,7 @@ struct ProfileView: View {
                     PaymentKeysSection(model: model)
                     PayingMethodsSection(model: model)
                     PreferencesSection(model: model)
+                    SupportSection(model: model)
                     AboutSection(model: model)
                     if model.state.showsDeleteAccount {
                         DeleteAccountSection(model: model)
@@ -294,6 +296,8 @@ struct ProfileView: View {
             IdentitySection(model: model)
             AccountSection(model: model)
             SignOutSection(model: model)
+            // With the preferences in the other column, it still comes right before "Privacy and about"
+            SupportSection(model: model)
             AboutSection(model: model)
             if model.state.showsDeleteAccount {
                 DeleteAccountSection(model: model)
@@ -1056,6 +1060,30 @@ private extension PaymentKeyFormat {
         case .taproot: " · Taproot"
         case .lnurl: " · LNURL"
         default: ""
+        }
+    }
+}
+
+/// "Support and feedback", between the preferences and "Privacy and about": how to reach whoever makes the app.
+private struct SupportSection: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Section("Support and feedback") {
+            Button {
+                model.send(ProfileUiEventOnContactSupportClicked.shared)
+            } label: {
+                LabeledContent {
+                    Image(systemName: "chevron.forward")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
+                } label: {
+                    Text("Contact support")
+                }
+                .contentShape(.rect)
+            }
+            .foregroundStyle(.primary)
         }
     }
 }

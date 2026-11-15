@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contatta l’assistenza</string>
+    <string name="contact_support_description">Apriremo la tua app di posta con un messaggio già pronto. Descrivi cosa è successo e invialo: ogni messaggio viene letto da persone vere.</string>
+    <string name="contact_support_to">A</string>
+    <string name="contact_support_diagnostics">Sarà incluso nell’email</string>
+    <string name="contact_support_app_version">Versione dell’app</string>
+    <string name="contact_support_platform">Piattaforma</string>
+    <string name="contact_support_language">Lingua</string>
+    <string name="contact_support_account">Account</string>
+    <string name="contact_support_profile">Profilo</string>
+    <string name="contact_support_language_system">Sistema</string>
+    <string name="contact_support_account_local">Solo su questo dispositivo</string>
+    <string name="contact_support_account_anonymous">Non collegato</string>
+    <string name="contact_support_open_email">Apri email</string>
+    <string name="contact_support_copy_email">Copia indirizzo email</string>
+    <string name="contact_support_notice_copied">Indirizzo email copiato.</string>
+    <string name="contact_support_notice_no_app">Nessuna app di posta trovata. L’indirizzo è stato copiato.</string>
+    <string name="contact_support_close">Chiudi</string>
+</resources>
