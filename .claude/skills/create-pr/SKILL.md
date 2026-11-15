@@ -589,6 +589,12 @@ When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
     label again. Ask the user only when a conflict needs a product choice nobody wrote down yet.
   - **GitHub refused the merge for another reason**, or **a `review-gate` check failed without
     holding anything**: tell the user what the comment and the `merge-when-green` run say, and stop.
+    When the pull request changes a file under `.github/workflows/` and the reason names the
+    `workflow` scope (or is only "the base branch policy prohibits the merge"), the
+    `MERGE_WHEN_GREEN_TOKEN` has no Workflows permission (see
+    [docs/ci.md](../../../docs/ci.md#merge-when-green)): say so, and that the pull request still
+    merges with "Squash and merge" on its page. Changing the token's permissions and clicking that
+    button are the user's to do.
   - **No such comment:** someone removed the label by hand. Tell the user and stop.
 - **1, closed without merging:** tell the user and stop.
 - **4, still open after two hours:** a check is stuck pending, or no workflow completion is left to

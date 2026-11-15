@@ -339,11 +339,13 @@ jobs:
 
       # A merge made with GITHUB_TOKEN triggers no other workflow, so the push to main would run none
       # of the checks of main. The merge is made with a token of its own instead: a fine-grained
-      # personal access token restricted to this repository, with Actions, Contents and Pull requests
-      # set to Read and write. It merges as its owner, under the ruleset like any merge: never with
-      # --admin. A refused merge (a conflict with main) would fail the same way on every later run,
-      # so the label goes, with a comment saying why. A push meanwhile is not a refusal: its checks
-      # decide.
+      # personal access token restricted to this repository, with Actions, Contents, Pull requests and
+      # Workflows set to Read and write. It merges as its owner, under the ruleset like any merge:
+      # never with --admin. A refused merge (a conflict with main, a pull request that changes a
+      # workflow merged by a token without Workflows) would fail the same way on every later run, so
+      # the label goes, with a comment saying why. A push meanwhile is not a refusal: its checks
+      # decide. The merge goes through the REST endpoint, whose answer names the reason: gh pr merge
+      # only says "the base branch policy prohibits the merge".
       - name: Merge the pull request
         if: steps.threads.outcome == 'success' && steps.threads.outputs.count == '0' && steps.green.outputs.held == '0'
         env:
@@ -352,10 +354,15 @@ jobs:
           PR_NUMBER: ${{ steps.green.outputs.pr }}
           HEAD_SHA: ${{ steps.green.outputs.head }}
         run: |
-          if ! gh pr merge "$PR_NUMBER" --squash --match-head-commit "$HEAD_SHA"; then
+          # Only gh's own line is kept, "gh: <GitHub's message> (HTTP <status>)": the answer's JSON goes.
+          if ! answer="$(gh api --method PUT "repos/$GH_REPO/pulls/$PR_NUMBER/merge" \
+            -f merge_method=squash -f sha="$HEAD_SHA" 2>&1 > /dev/null)"; then
+            echo "$answer"
             if [ "$(gh pr view "$PR_NUMBER" --json headRefOid --jq .headRefOid)" = "$HEAD_SHA" ]; then
-              body="Every check passed and every conversation is resolved, but GitHub refused the merge"
-              body+=" (see the \`merge-when-green\` run). Fix what it reports, then add the"
+              reason="$(printf '%s\n' "$answer" | sed -n 's/^gh: //p' | tail -n 1)"
+              body="Every check passed and every conversation is resolved, but GitHub refused the merge:"
+              body+=$'\n\n> '"${reason:-no reason given, see the \`merge-when-green\` run}"$'\n\n'
+              body+="Fix what it reports (docs/ci.md#merge-when-green), then add the"
               body+=" \`merge-when-green\` label again."
               gh pr comment "$PR_NUMBER" --body "$body"
               gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/merge-when-green" > /dev/null
