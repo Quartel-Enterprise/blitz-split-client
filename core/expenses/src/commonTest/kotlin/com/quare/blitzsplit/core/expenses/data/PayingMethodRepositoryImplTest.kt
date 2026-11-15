@@ -6,9 +6,10 @@ import com.quare.blitzsplit.core.expenses.data.dto.BillPayingMethodDto
 import com.quare.blitzsplit.core.expenses.data.dto.PayingMethodDto
 import com.quare.blitzsplit.core.expenses.data.mapper.PayingMethodMapperImpl
 import com.quare.blitzsplit.core.expenses.data.repository.PayingMethodRepositoryImpl
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.provider.room.entity.BillPayingMethodEntity
 import com.quare.blitzsplit.core.provider.room.entity.PayingMethodEntity
 import kotlinx.coroutines.flow.Flow
@@ -963,7 +964,7 @@ class PayingMethodRepositoryImplTest {
         id = id,
         type = type,
         name = name,
-        cardColor = CardColor.PURPLE.takeIf { type.isCard },
+        cardColor = CategoryColor.PURPLE.tint.takeIf { type.isCard },
         isDefault = isDefault,
         addedAt = 1L,
     )

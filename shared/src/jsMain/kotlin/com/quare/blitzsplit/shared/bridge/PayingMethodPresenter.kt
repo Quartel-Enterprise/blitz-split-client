@@ -2,7 +2,9 @@
 
 package com.quare.blitzsplit.shared.bridge
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -20,9 +22,9 @@ class JsPayingMethodState(
     val type: String,
     val types: Array<String>,
     val name: String,
-    // Why: the CardColor's code ("purple"); cardColors lists them all, in the order drawn.
+    // Why: the card's color code, a category's ("teal" or "#3A7BD5"), which the category color picker draws.
     val cardColor: String,
-    val cardColors: Array<String>,
+    val customColors: JsCustomColors,
     val showsCardColors: Boolean,
     val isNameRequired: Boolean,
     val nameMaxLength: Int,
@@ -41,6 +43,11 @@ class PayingMethodPresenter(
     }
     private val viewModel get() = holder.viewModel
 
+    val customColors: JsCustomColorActions = JsCustomColorActions(
+        send = { viewModel.onEvent(PayingMethodUiEvent.OnCustomColor(it)) },
+        current = { viewModel.uiState.value.customColors },
+    )
+
     fun observeState(onChange: (JsPayingMethodState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsPayingMethodState(
@@ -50,7 +57,7 @@ class PayingMethodPresenter(
                 types = state.types.map(PayingMethodType::code).toTypedArray(),
                 name = state.name,
                 cardColor = state.cardColor.code,
-                cardColors = state.cardColors.map(CardColor::code).toTypedArray(),
+                customColors = toJsCustomColors(state.customColors),
                 showsCardColors = state.showsCardColors,
                 isNameRequired = state.isNameRequired,
                 nameMaxLength = state.nameMaxLength,
@@ -78,7 +85,7 @@ class PayingMethodPresenter(
     }
 
     fun selectCardColor(code: String) {
-        val color = CardColor.ofCode(code) ?: return
+        val color = CategoryTint.fromCodeOrNull(code) ?: return
         viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(color))
     }
 
@@ -113,7 +120,7 @@ class JsPayingMethod(
     val type: String,
     // Why: empty for none, which the UI replaces with the type's name.
     val name: String,
-    // Why: a card's CardColor code, null for anything but a card.
+    // Why: a card's color code, a category's ("teal" or "#3A7BD5"), null for anything but a card.
     val cardColor: String?,
     val isDefault: Boolean,
 )
@@ -126,3 +133,6 @@ internal fun com.quare.blitzsplit.core.expenses.domain.model.PayingMethod.toJsPa
         cardColor = cardColor?.code,
         isDefault = isDefault,
     )
+
+// Why: a card tile's fill as a CSS color ("#RRGGBB"), the tone Android and the Apple app draw (CardTints.fillRgbOf).
+fun getCardFill(code: String?): String = CustomColor(CardTints.fillRgbOf(CardTints.fromCodeOrNull(code))).hex

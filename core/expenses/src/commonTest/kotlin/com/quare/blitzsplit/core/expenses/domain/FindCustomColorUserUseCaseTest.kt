@@ -1,15 +1,19 @@
 package com.quare.blitzsplit.core.expenses.domain
 
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUser
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryIcon
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.FindCustomColorUserUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,7 +34,7 @@ class FindCustomColorUserUseCaseTest {
         val user = useCase(blue)
 
         // Then
-        assertEquals(AppCategory.FOOD.key, user?.id)
+        assertEquals(AppCategory.FOOD.key, (user as? CustomColorUser.OfCategory)?.category?.id)
     }
 
     @Test
@@ -49,7 +53,7 @@ class FindCustomColorUserUseCaseTest {
         val user = useCase(blue)
 
         // Then
-        assertEquals("pet", user?.id)
+        assertEquals("pet", (user as? CustomColorUser.OfCategory)?.category?.id)
     }
 
     @Test
@@ -74,7 +78,7 @@ class FindCustomColorUserUseCaseTest {
             val user = useCase(blue)
 
             // Then
-            assertEquals("beach", user?.id)
+            assertEquals("beach", (user as? CustomColorUser.OfCategory)?.category?.id)
         }
 
     @Test
@@ -94,7 +98,7 @@ class FindCustomColorUserUseCaseTest {
         val user = useCase(blue)
 
         // Then
-        assertEquals(AppCategory.HOME.key, user?.id)
+        assertEquals(AppCategory.HOME.key, (user as? CustomColorUser.OfCategory)?.category?.id)
     }
 
     @Test
@@ -157,6 +161,105 @@ class FindCustomColorUserUseCaseTest {
         assertNull(user)
     }
 
+    @Test
+    fun `GIVEN only a card wears the color WHEN finding who uses it THEN gives that card`() = runTest {
+        // Given
+        val card = payingMethod(
+            id = "nubank",
+            cardColor = blue.tint,
+        )
+        prepareScenario(payingMethods = listOf(card))
+
+        // When
+        val user = useCase(blue)
+
+        // Then
+        assertEquals(CustomColorUser.OfPayingMethod(card), user)
+    }
+
+    @Test
+    fun `GIVEN a category and a card wear the color WHEN finding who uses it THEN gives the category`() = runTest {
+        // Given
+        prepareScenario(
+            appColors = mapOf(AppCategory.FOOD.key to blue.tint),
+            payingMethods = listOf(
+                payingMethod(
+                    id = "nubank",
+                    cardColor = blue.tint,
+                ),
+            ),
+        )
+
+        // When
+        val user = useCase(blue)
+
+        // Then
+        assertEquals(AppCategory.FOOD.key, (user as? CustomColorUser.OfCategory)?.category?.id)
+    }
+
+    @Test
+    fun `GIVEN two cards wear the color WHEN finding who uses it THEN gives the first listed`() = runTest {
+        // Given
+        val first = payingMethod(
+            id = "nubank",
+            cardColor = blue.tint,
+        )
+        val second = payingMethod(
+            id = "inter",
+            cardColor = blue.tint,
+            type = PayingMethodType.DEBIT_CARD,
+        )
+        prepareScenario(payingMethods = listOf(first, second))
+
+        // When
+        val user = useCase(blue)
+
+        // Then
+        assertEquals(CustomColorUser.OfPayingMethod(first), user)
+    }
+
+    @Test
+    fun `GIVEN cards in another custom color and a named one WHEN finding who uses the color THEN gives none`() =
+        runTest {
+            // Given
+            prepareScenario(
+                payingMethods = listOf(
+                    payingMethod(
+                        id = "nubank",
+                        cardColor = navy.tint,
+                    ),
+                    payingMethod(
+                        id = "inter",
+                        cardColor = CategoryColor.BLUE.tint,
+                    ),
+                    payingMethod(
+                        id = "pix",
+                        cardColor = null,
+                        type = PayingMethodType.PIX,
+                    ),
+                ),
+            )
+
+            // When
+            val user = useCase(blue)
+
+            // Then
+            assertNull(user)
+        }
+
+    private fun payingMethod(
+        id: String,
+        cardColor: CategoryTint?,
+        type: PayingMethodType = PayingMethodType.CREDIT_CARD,
+    ): PayingMethod = PayingMethod(
+        id = id,
+        type = type,
+        name = id,
+        cardColor = cardColor,
+        isDefault = false,
+        addedAt = 1L,
+    )
+
     private fun groupCategory(
         id: String,
         color: CategoryTint?,
@@ -178,9 +281,10 @@ class FindCustomColorUserUseCaseTest {
     private fun prepareScenario(
         appColors: Map<String, CategoryTint> = emptyMap(),
         groupCategories: List<GroupCategory> = emptyList(),
+        payingMethods: List<PayingMethod> = emptyList(),
     ) {
         val repository = FakeCategoryRepository(initialGroupCategories = groupCategories)
         repository.appColors.value = appColors
-        useCase = FindCustomColorUserUseCase(ObserveMapCategoriesUseCase(repository))
+        useCase = FindCustomColorUserUseCase(ObserveMapCategoriesUseCase(repository)) { flowOf(payingMethods) }
     }
 }

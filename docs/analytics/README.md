@@ -367,7 +367,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `paying_method_add_clicked` | none | Profile's "Add a payment method" | `:feature:profile` |
 | `paying_method_clicked` | `type` | A payment method's row in Profile, which opens it to edit | `:feature:profile` |
 | `paying_method_type_selected` | `type` | Another type for the method (Credit card, Cash, Pix…) | `:feature:paying_method` |
-| `paying_method_card_color_selected` | `color` | Another color for a card | `:feature:paying_method` |
+| `paying_method_card_color_selected` | `color` (a named color's key, `custom` for one of the person's) | Another color for a card | `:feature:paying_method` |
 | `paying_method_default_toggled` | `is_default` | "Default method" | `:feature:paying_method` |
 | `paying_method_save_clicked` | none | The method's Save, also when it can't save yet | `:feature:paying_method` |
 | `paying_method_saved` | `type`, `is_new`, `is_default` | A method saved | `:feature:paying_method` |
@@ -397,24 +397,24 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_map_restore_clicked` | none | "Restore default", which asks first, once the map is read | `:feature:category_map` |
 | `category_map_restore_confirmed` | none | Its question confirmed, while it was open | `:feature:category_map` |
 | `category_map_restore_cancelled` | none | Its question closed without confirming, while it was open | `:feature:category_map` |
-| `category_create_clicked` | `is_subcategory`, `source` (`category_map`, `split_bill`) | "New category" or "New subcategory in Transport" in the map, once it is read and there is a group; in Category, "New", "New in Food" or "Create “Pet”" from a search | `:feature:category_map`, `:feature:split_bill` |
-| `category_edit_clicked` | `source` (`category_map`, `split_bill`) | A group's category opened to edit, when its form opens: its pencil in the map, once read; a long press or right click in Category | `:feature:category_map`, `:feature:split_bill` |
+| `category_create_clicked` | `is_subcategory`, `source` (`category_map`, `split_bill`) | "New category" or "New subcategory in Transport" in the map, once it is read and there is a group; in Category, "New", "New in Food" or "Create “Pet”" from a search | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_edit_clicked` | `source` (`category_map`, `split_bill`, `paying_method`) | A group's category opened to edit, when its form opens: its pencil in the map, once read; a long press or right click in Category | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
 | `category_group_picked` | `source` (`category_map`) | The new category's Group | `:feature:category_map` |
-| `category_parent_picked` | `source` (`category_map`, `split_bill`) | The category's "Inside" | `:feature:category_map`, `:feature:split_bill` |
-| `category_icon_picked` | `icon`, `source` (`category_map`, `split_bill`) | One of the 18 icons | `:feature:category_map`, `:feature:split_bill` |
-| `category_color_picked` | `color` (a named color, or `custom` for one of the person's own), `source` (`category_map`, `split_bill`) | One of the colors in the category's form | `:feature:category_map`, `:feature:split_bill` |
+| `category_parent_picked` | `source` (`category_map`, `split_bill`, `paying_method`) | The category's "Inside" | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_icon_picked` | `icon`, `source` (`category_map`, `split_bill`) | One of the 18 icons | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_color_picked` | `color` (a named color, or `custom` for one of the person's own), `source` (`category_map`, `split_bill`) | One of the colors in the category's form | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
 | `app_category_color_picked` | `category` (the app category's key), `color` (a color, `custom` for one of the person's own, or `default` for "Restore color") | The color of one of the app's own categories, from the map | `:feature:category_map` |
-| `custom_color_add_clicked` | `source` (`category_map`, `split_bill`) | "+" in a category color picker, which opens "New color" | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_save_clicked` | `source` (`category_map`, `split_bill`) | "Add" in "New color", also when it can't save yet | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_cancelled` | `source` (`category_map`, `split_bill`) | "New color" closed without adding | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_delete_asked` | `source` (`category_map`, `split_bill`) | A long press or right click on one of the person's colors | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_delete_confirmed` | `source` (`category_map`, `split_bill`) | "Delete" in "Delete this color?"; a category given the color meanwhile still blocks it | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_delete_cancelled` | `source` (`category_map`, `split_bill`) | "Delete this color?" or "This color is in use" closed without deleting | `:feature:category_map`, `:feature:split_bill` |
-| `category_save_clicked` | `source` (`category_map`, `split_bill`) | The category's Save, also when it can't save yet | `:feature:category_map`, `:feature:split_bill` |
-| `category_saved` | `is_new`, `is_subcategory`, `source` (`category_map`, `split_bill`) | A category saved | `:feature:category_map`, `:feature:split_bill` |
-| `category_delete_clicked` | `source` (`category_map`, `split_bill`) | The category's Delete, which asks first | `:feature:category_map`, `:feature:split_bill` |
-| `category_delete_confirmed` | `source` (`category_map`, `split_bill`) | "Delete “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
-| `category_delete_cancelled` | `source` (`category_map`, `split_bill`) | "Delete “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill` |
+| `custom_color_add_clicked` | `source` (`category_map`, `split_bill`, `paying_method`) | "+" in a category color picker, which opens "New color" | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_save_clicked` | `source` (`category_map`, `split_bill`, `paying_method`) | "Add" in "New color", also when it can't save yet | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_cancelled` | `source` (`category_map`, `split_bill`, `paying_method`) | "New color" closed without adding | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_delete_asked` | `source` (`category_map`, `split_bill`, `paying_method`) | A long press or right click on one of the person's colors | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_delete_confirmed` | `source` (`category_map`, `split_bill`, `paying_method`) | "Delete" in "Delete this color?"; a category given the color meanwhile still blocks it | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_delete_cancelled` | `source` (`category_map`, `split_bill`, `paying_method`) | "Delete this color?" or "This color is in use" closed without deleting | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_save_clicked` | `source` (`category_map`, `split_bill`, `paying_method`) | The category's Save, also when it can't save yet | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_saved` | `is_new`, `is_subcategory`, `source` (`category_map`, `split_bill`) | A category saved | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_delete_clicked` | `source` (`category_map`, `split_bill`, `paying_method`) | The category's Delete, which asks first | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_delete_confirmed` | `source` (`category_map`, `split_bill`, `paying_method`) | "Delete “X”?" confirmed, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `category_delete_cancelled` | `source` (`category_map`, `split_bill`, `paying_method`) | "Delete “X”?" closed without confirming, while it was open and not deleting yet | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
 | `split_bill_group_clicked` | none | "Change" beside the new bill's group, which opens "Split in which group?" | `:feature:split_bill` |
 | `split_bill_group_opened` | none | The bill's group, which opens its screen over the form, while the bill isn't saving nor reading a receipt | `:feature:split_bill` |
 | `split_bill_group_picked` | none | A group marked in "Split in which group?", while it is open, another than the one marked | `:feature:split_bill` |

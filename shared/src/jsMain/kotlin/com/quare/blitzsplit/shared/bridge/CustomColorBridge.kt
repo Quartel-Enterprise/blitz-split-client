@@ -5,6 +5,7 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.expenses.customcolor.CustomColorDeletion
 import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
 import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUser
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.ColorDraft
 import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
@@ -48,10 +49,14 @@ class JsColorDraft(
     val canSave: Boolean,
 )
 
-// Why: "Delete this color?", or "This color is in use" while usedBy names the category to change first.
+/*
+ * Why: "Delete this color?", or "This color is in use" while usedBy names the category (or usedByMethod the payment
+ * method) to change first.
+ */
 class JsCustomColorDeletion(
     val color: String,
     val usedBy: JsCategory?,
+    val usedByMethod: JsPayingMethod?,
     val isDeleting: Boolean,
 )
 
@@ -172,7 +177,8 @@ private fun toJsColorDraft(draft: ColorDraft): JsColorDraft = JsColorDraft(
 
 private fun toJsCustomColorDeletion(deletion: CustomColorDeletion): JsCustomColorDeletion = JsCustomColorDeletion(
     color = deletion.color.hex,
-    usedBy = deletion.usedBy?.let(::toJsCategory),
+    usedBy = (deletion.usedBy as? CustomColorUser.OfCategory)?.category?.let(::toJsCategory),
+    usedByMethod = (deletion.usedBy as? CustomColorUser.OfPayingMethod)?.method?.toJsPayingMethod(),
     isDeleting = deletion.isDeleting,
 )
 

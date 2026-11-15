@@ -1,13 +1,18 @@
 package com.quare.blitzsplit.feature.payingmethod
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.SavePayingMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeletePayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePayingMethodsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SavePayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
+import com.quare.blitzsplit.core.expenses.testing.createFakeCustomColorUseCases
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.payingmethod.presentation.model.PayingMethodUiEvent
@@ -96,7 +101,7 @@ class PayingMethodViewModelTest {
             assertTrue(state.isEditing)
             assertEquals(PayingMethodType.CREDIT_CARD, state.type)
             assertEquals("Nubank", state.name)
-            assertEquals(CardColor.BLUE, state.cardColor)
+            assertEquals(CategoryColor.BLUE.tint, state.cardColor)
             assertTrue(state.isDefault)
         }
 
@@ -114,7 +119,7 @@ class PayingMethodViewModelTest {
             repository.methods.value = listOf(
                 card.copy(
                     name = "Roxinho",
-                    cardColor = CardColor.GREEN,
+                    cardColor = CategoryColor.GREEN.tint,
                     isDefault = false,
                 ),
             )
@@ -122,7 +127,7 @@ class PayingMethodViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals("Inter", state.name)
-            assertEquals(CardColor.BLUE, state.cardColor)
+            assertEquals(CategoryColor.BLUE.tint, state.cardColor)
             assertTrue(state.isDefault)
         }
 
@@ -158,7 +163,7 @@ class PayingMethodViewModelTest {
         val state = viewModel.uiState.value
         assertTrue(state.isLoaded)
         assertEquals("Nubank", state.name)
-        assertEquals(CardColor.BLUE, state.cardColor)
+        assertEquals(CategoryColor.BLUE.tint, state.cardColor)
     }
 
     @Test
@@ -357,11 +362,54 @@ class PayingMethodViewModelTest {
             prepareScenario()
 
             // When
-            viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CardColor.GREEN))
+            viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CategoryColor.GREEN.tint))
 
             // Then
-            assertEquals(CardColor.GREEN, viewModel.uiState.value.cardColor)
+            assertEquals(CategoryColor.GREEN.tint, viewModel.uiState.value.cardColor)
             assertEquals(listOf("paying_method_card_color_selected"), trackedEvents.map { it.first })
+        }
+
+    @Test
+    fun `GIVEN New color open WHEN adding a color THEN the card takes it and tracks it as custom`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(
+                PayingMethodUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(CardTints.default, categoryKey = null)),
+            )
+            viewModel.onEvent(PayingMethodUiEvent.OnCustomColor(CustomColorEvent.OnHexChanged("#3A7BD5")))
+
+            // When
+            viewModel.onEvent(PayingMethodUiEvent.OnCustomColor(CustomColorEvent.OnSaveClicked))
+
+            // Then
+            assertEquals(CustomColor(0x3A7BD5).tint, viewModel.uiState.value.cardColor)
+            assertEquals(listOf(CustomColor(0x3A7BD5)), viewModel.uiState.value.customColors.palette)
+            assertEquals(
+                listOf(
+                    "custom_color_add_clicked" to mapOf<String, Any>("source" to "paying_method"),
+                    "custom_color_save_clicked" to mapOf<String, Any>("source" to "paying_method"),
+                    "paying_method_card_color_selected" to mapOf<String, Any>("color" to "custom"),
+                ),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a new card WHEN a custom color is added THEN closing asks to discard changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(
+                PayingMethodUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(CardTints.default, categoryKey = null)),
+            )
+            viewModel.onEvent(PayingMethodUiEvent.OnCustomColor(CustomColorEvent.OnHexChanged("#3A7BD5")))
+
+            // When
+            viewModel.onEvent(PayingMethodUiEvent.OnCustomColor(CustomColorEvent.OnSaveClicked))
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasUnsavedInput)
         }
 
     @Test
@@ -373,10 +421,10 @@ class PayingMethodViewModelTest {
         )
 
         // When
-        viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CardColor.BLUE))
+        viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CategoryColor.BLUE.tint))
 
         // Then
-        assertEquals(CardColor.BLUE, viewModel.uiState.value.cardColor)
+        assertEquals(CategoryColor.BLUE.tint, viewModel.uiState.value.cardColor)
         assertTrue(trackedEvents.isEmpty())
     }
 
@@ -499,7 +547,6 @@ class PayingMethodViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.showsCardColors)
-        assertEquals(8, viewModel.uiState.value.cardColors.size)
     }
 
     @Test
@@ -537,7 +584,7 @@ class PayingMethodViewModelTest {
         // Given
         prepareScenario()
         viewModel.onEvent(PayingMethodUiEvent.OnNameChanged("Nubank"))
-        viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CardColor.GREEN))
+        viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CategoryColor.GREEN.tint))
         trackedEvents.clear()
 
         // When
@@ -548,7 +595,7 @@ class PayingMethodViewModelTest {
         assertTrue(saved.id.isNotBlank())
         assertEquals(PayingMethodType.CREDIT_CARD, saved.type)
         assertEquals("Nubank", saved.name)
-        assertEquals(CardColor.GREEN, saved.cardColor)
+        assertEquals(CategoryColor.GREEN.tint, saved.cardColor)
         assertTrue(saved.isDefault)
         assertEquals(
             listOf(
@@ -608,7 +655,7 @@ class PayingMethodViewModelTest {
     fun `GIVEN Cash picked after a card color WHEN saving THEN saves Cash without a color`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CardColor.GREEN))
+        viewModel.onEvent(PayingMethodUiEvent.OnCardColorSelected(CategoryColor.GREEN.tint))
         viewModel.onEvent(PayingMethodUiEvent.OnTypeSelected(PayingMethodType.CASH))
 
         // When
@@ -954,7 +1001,7 @@ class PayingMethodViewModelTest {
         id = "card-1",
         type = PayingMethodType.CREDIT_CARD,
         name = "Nubank",
-        cardColor = CardColor.BLUE,
+        cardColor = CategoryColor.BLUE.tint,
         isDefault = true,
         addedAt = 1L,
     )
@@ -1003,6 +1050,7 @@ class PayingMethodViewModelTest {
             deletePayingMethod = DeletePayingMethodUseCase(repository),
             observePayingMethods = ObservePayingMethodsUseCase(repository),
             observeShowsPix = { this.showsPix },
+            customColorUseCases = createFakeCustomColorUseCases(),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
     }

@@ -18,6 +18,11 @@ final class PayingMethodModel {
         })
     }
 
+    /// The ViewModel's state right now, which "New color"'s fields read before the next state reaches Swift.
+    var current: PayingMethodUiState {
+        holder.viewModel.uiState.value as! PayingMethodUiState
+    }
+
     func send(_ event: any PayingMethodUiEvent) {
         holder.viewModel.onEvent(event: event)
     }
@@ -174,7 +179,15 @@ private struct DetailSections: View {
         }
         if state.showsCardColors {
             Section {
-                ColorSwatches(model: model)
+                // A category's picker (Pierre's call): the twelve named colors, the person's own and "+" for "New color"
+                CategoryColorGrid(
+                    selected: state.cardColor,
+                    customColors: state.customColors,
+                    currentCustomColors: { model.current.customColors },
+                    pick: { model.send(PayingMethodUiEventOnCardColorSelected(color: $0)) },
+                    send: { model.send(PayingMethodUiEventOnCustomColor(event: $0)) },
+                )
+                .padding(.vertical, 4)
             } header: {
                 Text("Color")
             }
@@ -205,39 +218,5 @@ private struct DetailSections: View {
             get: { model.state.isDefault },
             set: { model.send(PayingMethodUiEventOnDefaultChanged(isDefault: $0)) },
         )
-    }
-}
-
-/// A card's eight swatches, wrapping on a narrow form, the picked one ringed; VoiceOver reads each one's name.
-private struct ColorSwatches: View {
-    let model: PayingMethodModel
-
-    @ScaledMetric(relativeTo: .body) private var swatchSize = 30.0
-
-    var body: some View {
-        let state = model.state
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: swatchSize + 10), spacing: 8)], spacing: 10) {
-            ForEach(state.cardColors, id: \.self) { color in
-                let isSelected = color == state.cardColor
-                Button {
-                    model.send(PayingMethodUiEventOnCardColorSelected(color: color))
-                } label: {
-                    Circle()
-                        .fill(color.color)
-                        .frame(width: swatchSize, height: swatchSize)
-                        .padding(3)
-                        .overlay {
-                            if isSelected {
-                                Circle().strokeBorder(color.color, lineWidth: 2)
-                            }
-                        }
-                        .contentShape(.circle)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text(verbatim: color.label))
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
-            }
-        }
-        .padding(.vertical, 4)
     }
 }

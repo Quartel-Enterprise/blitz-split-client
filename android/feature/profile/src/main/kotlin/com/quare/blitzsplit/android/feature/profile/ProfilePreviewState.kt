@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.android.feature.profile
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.model.AccountProvider
@@ -70,7 +70,7 @@ internal fun createPreviewProfileState(
             id = "card-travel",
             type = PayingMethodType.CREDIT_CARD,
             name = "Travel card",
-            cardColor = CardColor.PURPLE,
+            cardColor = CardTints.default,
             isDefault = true,
             addedAt = 0L,
         ),

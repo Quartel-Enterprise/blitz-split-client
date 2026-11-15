@@ -53,7 +53,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.CardColorPicker
+import com.quare.blitzsplit.android.designsystem.component.CategoryColorPicker
 import com.quare.blitzsplit.android.designsystem.component.ChoiceChipRow
 import com.quare.blitzsplit.android.designsystem.component.FlatListItem
 import com.quare.blitzsplit.android.designsystem.component.PayingMethodTile
@@ -65,7 +65,8 @@ import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.calculateCenteredColumnMargin
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.feature.payingmethod.presentation.model.PayingMethodUiEvent
 import com.quare.blitzsplit.feature.payingmethod.presentation.model.PayingMethodUiState
@@ -293,10 +294,12 @@ private fun ColumnScope.PayingMethodFieldsColumn(
     )
     if (state.showsCardColors) {
         FormSection(title = stringResource(R.string.paying_method_color)) {
-            CardColorPicker(
-                colors = state.cardColors,
+            // Why: a category's picker (Pierre's call): the twelve named colors, the person's own and "+" for "New color".
+            CategoryColorPicker(
                 selected = state.cardColor,
                 onSelected = { onEvent(PayingMethodUiEvent.OnCardColorSelected(it)) },
+                customColors = state.customColors,
+                onCustomColor = { onEvent(PayingMethodUiEvent.OnCustomColor(it)) },
             )
         }
     }
@@ -420,11 +423,12 @@ private fun PayingMethodCardPreview() {
                 types = PayingMethodType.entries,
                 type = PayingMethodType.CREDIT_CARD,
                 name = "Travel card",
-                cardColor = CardColor.PURPLE,
+                cardColor = CardTints.default,
                 isDefault = true,
                 isSaving = false,
                 isDeleteConfirmationShown = false,
                 openedInput = null,
+                customColors = CustomColorState.idle,
             ),
             presentation = FormPresentation.BottomSheet,
             onEvent = {},

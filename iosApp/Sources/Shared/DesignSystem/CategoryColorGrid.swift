@@ -132,10 +132,20 @@ extension View {
             }
         } message: { deletion in
             if let usedBy = deletion.usedBy {
-                Text("\(CategoryCopy.name(usedBy)) uses this color. Change its color first, then delete it.")
+                Text("\(CategoryColorGrid.name(of: usedBy)) uses this color. Change its color first, then delete it.")
             } else {
                 Text("It leaves your palette on all your devices.")
             }
         }
+    }
+}
+
+extension CategoryColorGrid {
+    /// What keeps a color from being deleted, named as each screen shows it: a category, or a payment method.
+    static func name(of user: CustomColorUser) -> String {
+        if let method = (user as? CustomColorUserOfPayingMethod)?.method {
+            return method.label
+        }
+        return (user as? CustomColorUserOfCategory).map { CategoryCopy.name($0.category) } ?? ""
     }
 }

@@ -302,14 +302,6 @@
     <string name="designsystem_paying_method_bank_transfer">Transferência bancária</string>
     <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
     <string name="designsystem_paying_method_other">Outra</string>
-    <string name="designsystem_card_color_purple">Roxo</string>
-    <string name="designsystem_card_color_blue">Azul</string>
-    <string name="designsystem_card_color_green">Verde</string>
-    <string name="designsystem_card_color_orange">Laranja</string>
-    <string name="designsystem_card_color_red">Vermelho</string>
-    <string name="designsystem_card_color_pink">Rosa</string>
-    <string name="designsystem_card_color_gold">Dourado</string>
-    <string name="designsystem_card_color_graphite">Grafite</string>
     <string name="designsystem_paid_with">Pago com</string>
     <string name="designsystem_paid_with_none">Nenhuma</string>
     <string name="designsystem_paid_with_private">Só você vê isso.</string>

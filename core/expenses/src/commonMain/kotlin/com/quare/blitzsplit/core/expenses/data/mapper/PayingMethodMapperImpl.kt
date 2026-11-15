@@ -2,7 +2,7 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 
 import com.quare.blitzsplit.core.expenses.data.dto.BillPayingMethodDto
 import com.quare.blitzsplit.core.expenses.data.dto.PayingMethodDto
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.provider.room.entity.BillPayingMethodEntity
@@ -29,7 +29,7 @@ class PayingMethodMapperImpl : PayingMethodMapper {
                     id = entity.id,
                     type = type,
                     name = entity.name,
-                    cardColor = if (type.isCard) CardColor.ofCode(entity.icon) else null,
+                    cardColor = if (type.isCard) CardTints.fromCodeOrNull(entity.icon) else null,
                     isDefault = entity.id == defaultId,
                     addedAt = entity.addedAt,
                 )

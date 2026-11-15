@@ -13,6 +13,8 @@ kotlin {
             // Why: Saldos and the exit dialogs name a debt's members as the group has them (debtRowOf, faceOf).
             implementation(project(":core:groups"))
             implementation(project(":core:utils"))
+            // Why: the Analytics of a color picker's own colors (customColorAnalyticsOf), the same on every screen.
+            implementation(project(":core:presentation"))
             implementation(project(":core:provider:room"))
             implementation(project(":core:provider:supabase"))
             implementation(libs.kotlinx.serialization.json)

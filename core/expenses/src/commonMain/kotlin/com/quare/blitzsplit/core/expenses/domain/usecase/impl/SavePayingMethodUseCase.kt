@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase.impl
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodRules
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
@@ -19,7 +19,7 @@ class SavePayingMethodUseCase(
         methodId: String?,
         type: PayingMethodType,
         name: String,
-        cardColor: CardColor?,
+        cardColor: CategoryTint?,
         isDefault: Boolean,
     ): Result<Unit> = suspendRunCatching {
         require(PayingMethodRules.isNameValid(type, name)) { "The name doesn't fit the type" }

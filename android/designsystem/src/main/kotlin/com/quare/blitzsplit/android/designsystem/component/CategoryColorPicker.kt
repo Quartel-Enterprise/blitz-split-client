@@ -30,6 +30,7 @@ import com.quare.blitzsplit.android.designsystem.theme.toContainerColor
 import com.quare.blitzsplit.android.designsystem.theme.toContentColor
 import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
 import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUser
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.tint
@@ -149,7 +150,7 @@ private fun CustomColorOverlay(
             onDismissRequest = { onEvent(CustomColorEvent.OnDeletionDismissed) },
             title = stringResource(R.string.designsystem_custom_color_in_use_title),
             text = {
-                Text(stringResource(R.string.designsystem_custom_color_in_use_message, categoryName(usedBy)))
+                Text(stringResource(R.string.designsystem_custom_color_in_use_message, colorUserName(usedBy)))
             },
             confirmButton = {
                 TextButton(onClick = { onEvent(CustomColorEvent.OnDeletionDismissed) }) {
@@ -187,3 +188,10 @@ val CategoryColor.labelRes: Int
         CategoryColor.BROWN -> R.string.designsystem_category_color_brown
         CategoryColor.GRAY -> R.string.designsystem_category_color_gray
     }
+
+// Why: what keeps a color from being deleted, named as each screen shows it: a category, or a payment method's own name.
+@Composable
+private fun colorUserName(user: CustomColorUser): String = when (user) {
+    is CustomColorUser.OfCategory -> categoryName(user.category)
+    is CustomColorUser.OfPayingMethod -> user.method.label()
+}

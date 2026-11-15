@@ -2,9 +2,11 @@ package com.quare.blitzsplit.core.expenses.data.mapper
 
 import com.quare.blitzsplit.core.expenses.data.dto.BillPayingMethodDto
 import com.quare.blitzsplit.core.expenses.data.dto.PayingMethodDto
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.provider.room.entity.BillPayingMethodEntity
 import com.quare.blitzsplit.core.provider.room.entity.PayingMethodEntity
 import kotlin.test.Test
@@ -37,7 +39,7 @@ class PayingMethodMapperImplTest {
                     id = "card",
                     type = PayingMethodType.CREDIT_CARD,
                     name = "Nubank",
-                    cardColor = CardColor.BLUE,
+                    cardColor = CategoryColor.BLUE.tint,
                     isDefault = false,
                     addedAt = 3L,
                 ),
@@ -202,7 +204,7 @@ class PayingMethodMapperImplTest {
             entity(
                 id = "debit",
                 type = "debit_card",
-                icon = "teal",
+                icon = "chartreuse",
             ),
         )
 
@@ -221,7 +223,7 @@ class PayingMethodMapperImplTest {
             id = "card",
             type = PayingMethodType.CREDIT_CARD,
             name = "  Nubank  ",
-            cardColor = CardColor.GOLD,
+            cardColor = CategoryColor.YELLOW.tint,
             isDefault = true,
             addedAt = 3L,
         )
@@ -239,7 +241,7 @@ class PayingMethodMapperImplTest {
                 id = "card",
                 type = "credit_card",
                 name = "Nubank",
-                icon = "gold",
+                icon = "yellow",
                 isDefault = true,
                 isDeleted = false,
                 addedAt = 3L,
@@ -258,7 +260,7 @@ class PayingMethodMapperImplTest {
             id = "pix",
             type = PayingMethodType.PIX,
             name = "",
-            cardColor = CardColor.GOLD,
+            cardColor = CategoryColor.YELLOW.tint,
             isDefault = false,
             addedAt = 3L,
         )
@@ -371,6 +373,89 @@ class PayingMethodMapperImplTest {
             ),
             dto,
         )
+    }
+
+    @Test
+    fun `GIVEN a card stored with a custom hex WHEN mapping to the domain THEN reads the custom color`() {
+        // Given
+        val entities = listOf(
+            entity(
+                id = "card",
+                icon = "#3A7BD5",
+            ),
+        )
+
+        // When
+        val methods = mapper.toDomain(entities)
+
+        // Then
+        assertEquals(CustomColor(0x3A7BD5).tint, methods.single().cardColor)
+    }
+
+    @Test
+    fun `GIVEN a card in a custom color WHEN mapping to an entity THEN stores its hex`() {
+        // Given
+        val method = PayingMethod(
+            id = "card",
+            type = PayingMethodType.CREDIT_CARD,
+            name = "Nubank",
+            cardColor = CustomColor(0x3A7BD5).tint,
+            isDefault = false,
+            addedAt = 3L,
+        )
+
+        // When
+        val entity = mapper.toEntity(
+            method,
+            updatedAt = 42L,
+            ownerUserId = USER,
+        )
+
+        // Then
+        assertEquals("#3A7BD5", entity.icon)
+    }
+
+    @Test
+    fun `GIVEN a card saved in gold WHEN read and saved again THEN stores yellow`() {
+        // Given
+        val method = mapper
+            .toDomain(
+                listOf(
+                    entity(
+                        id = "card",
+                        icon = "gold",
+                    ),
+                ),
+            ).single()
+
+        // When
+        val entity = mapper.toEntity(
+            method,
+            updatedAt = 42L,
+            ownerUserId = USER,
+        )
+
+        // Then
+        assertEquals(CategoryColor.YELLOW.tint, method.cardColor)
+        assertEquals("yellow", entity.icon)
+    }
+
+    @Test
+    fun `GIVEN a pix stored with a custom hex WHEN mapping to the domain THEN it has no color`() {
+        // Given
+        val entities = listOf(
+            entity(
+                id = "pix",
+                type = "pix",
+                icon = "#3A7BD5",
+            ),
+        )
+
+        // When
+        val methods = mapper.toDomain(entities)
+
+        // Then
+        assertNull(methods.single().cardColor)
     }
 
     private fun entity(

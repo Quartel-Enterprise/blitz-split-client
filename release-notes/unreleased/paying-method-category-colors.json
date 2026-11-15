@@ -1,0 +1,23 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "betaOnly": true,
+      "platforms": ["all"],
+      "text": {
+        "en": "A card's color in \"Payment methods\" now picks from the same colors as categories: the twelve colors, your own ones and \"New color\" to create another.",
+        "pt": "A cor de um cartão em \"Formas de pagamento\" agora usa as mesmas cores das categorias: as doze cores, as suas e \"Nova cor\" para criar outra.",
+        "pt-PT": "A cor de um cartão em \"Formas de pagamento\" passou a usar as mesmas cores das categorias: as doze cores, as tuas e \"Nova cor\" para criares outra.",
+        "es": "El color de una tarjeta en \"Métodos de pago\" ahora usa los mismos colores que las categorías: los doce colores, los tuyos y \"Nuevo color\" para crear otro.",
+        "fr": "La couleur d’une carte dans « Moyens de paiement » se choisit désormais parmi les mêmes couleurs que les catégories : les douze couleurs, les vôtres et « Nouvelle couleur » pour en créer une autre.",
+        "de": "Die Farbe einer Karte unter „Zahlungsmethoden“ stammt jetzt aus denselben Farben wie die Kategorien: die zwölf Farben, deine eigenen und „Neue Farbe“, um eine weitere anzulegen.",
+        "it": "Il colore di una carta in \"Metodi di pagamento\" ora si sceglie tra gli stessi colori delle categorie: i dodici colori, i tuoi e \"Nuovo colore\" per crearne un altro.",
+        "pl": "Kolor karty w „Metody płatności” wybierasz teraz z tych samych kolorów co kategorie: dwunastu kolorów, Twoich własnych i „Nowy kolor”, by utworzyć kolejny.",
+        "nl": "De kleur van een kaart in \"Betaalmethoden\" kies je nu uit dezelfde kleuren als categorieën: de twaalf kleuren, je eigen kleuren en \"Nieuwe kleur\" om er een te maken.",
+        "ja": "「支払い方法」のカードの色を、カテゴリと同じ色から選べるようになりました。12色、自分の色、そして「新しい色」で新しく作ることもできます。",
+        "tr": "\"Ödeme yöntemleri\"ndeki bir kartın rengi artık kategorilerle aynı renklerden seçiliyor: on iki renk, kendi renklerin ve yenisini oluşturmak için \"Yeni renk\".",
+        "id": "Warna kartu di \"Metode pembayaran\" sekarang dipilih dari warna yang sama dengan kategori: dua belas warna, warnamu sendiri, dan \"Warna baru\" untuk membuat yang lain."
+      }
+    }
+  ]
+}

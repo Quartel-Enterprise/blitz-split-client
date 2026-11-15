@@ -45,37 +45,6 @@ extension PayingMethodType {
     }
 }
 
-extension CardColor {
-    /// The card's swatch, the same in light and dark, so white reads on each.
-    var color: Color {
-        let hex: UInt32 = switch self {
-        case .purple: 0x6D4AB8
-        case .blue: 0x1565C0
-        case .green: 0x2E7D32
-        case .orange: 0xE65100
-        case .red: 0xC62828
-        case .pink: 0xAD1457
-        case .gold: 0x9A7500
-        default: 0x455A64
-        }
-        return Color(light: hex, dark: hex)
-    }
-
-    /// The swatch's name, which VoiceOver reads.
-    var label: String {
-        switch self {
-        case .purple: String(localized: "Purple (a card's color)", defaultValue: "Purple", bundle: .appLanguage)
-        case .blue: String(localized: "Blue (a card's color)", defaultValue: "Blue", bundle: .appLanguage)
-        case .green: String(localized: "Green (a card's color)", defaultValue: "Green", bundle: .appLanguage)
-        case .orange: String(localized: "Orange (a card's color)", defaultValue: "Orange", bundle: .appLanguage)
-        case .red: String(localized: "Red (a card's color)", defaultValue: "Red", bundle: .appLanguage)
-        case .pink: String(localized: "Pink (a card's color)", defaultValue: "Pink", bundle: .appLanguage)
-        case .gold: String(localized: "Gold (a card's color)", defaultValue: "Gold", bundle: .appLanguage)
-        default: String(localized: "Graphite (a card's color)", defaultValue: "Graphite", bundle: .appLanguage)
-        }
-    }
-}
-
 /// Pix's own mark (`PixKey` in the asset catalog, Material's Pix glyph, as Android draws it), scaling with Dynamic
 /// Type as the symbols beside it do.
 struct PixMark: View {
@@ -90,11 +59,11 @@ struct PixMark: View {
 /// tiles as the keys draw them, and a neutral tile for cash, a bank transfer and anything else.
 struct PayingMethodTile: View {
     let type: PayingMethodType
-    /// A card's swatch; nil for anything but a card.
-    let cardColor: CardColor?
+    /// A card's color, a category's (`CardTints`); nil for anything but a card.
+    let cardColor: CategoryTint?
     var size: CGFloat = 30
 
-    init(type: PayingMethodType, cardColor: CardColor?, size: CGFloat = 30) {
+    init(type: PayingMethodType, cardColor: CategoryTint?, size: CGFloat = 30) {
         self.type = type
         self.cardColor = cardColor
         self.size = size
@@ -125,8 +94,9 @@ struct PayingMethodTile: View {
 
     private var tileColors: (tile: AnyShapeStyle, content: AnyShapeStyle) {
         if type.isCard {
-            let swatch = (cardColor ?? .graphite).color
-            return (AnyShapeStyle(swatch), AnyShapeStyle(Color.white))
+            // The color's light data tone in both themes, which the white card reads on
+            let fill = UInt32(CardTints.shared.fillRgbOf(tint: cardColor))
+            return (AnyShapeStyle(Color(light: fill, dark: fill)), AnyShapeStyle(Color.white))
         }
         return switch type {
         case .pix: (AnyShapeStyle(Palette.pixTile), AnyShapeStyle(Palette.onPixTile))

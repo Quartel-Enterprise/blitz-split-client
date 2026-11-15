@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.expenses.export
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -11,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -198,7 +200,7 @@ internal fun exportPayingMethod(
     id: String,
     type: PayingMethodType = PayingMethodType.CREDIT_CARD,
     name: String = "Nubank",
-    cardColor: CardColor? = CardColor.PURPLE.takeIf { type.isCard },
+    cardColor: CategoryTint? = CategoryColor.PURPLE.tint.takeIf { type.isCard },
 ): PayingMethod = PayingMethod(
     id = id,
     type = type,
