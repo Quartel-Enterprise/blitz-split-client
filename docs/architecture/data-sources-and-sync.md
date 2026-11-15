@@ -521,7 +521,8 @@ The account is optional. Every install starts `AccountStatus.LocalOnly`, becomes
 `Connected` once Google or Apple is attached.
 
 The server deletes an `Anonymous` account once none of its devices synced for 30 days (`expire-anonymous-accounts` in
-blitz-split-api, which counts from `platforms_seen.last_seen_at`, moved on each sync). A device that comes back finds
+blitz-split-api, which counts from `platforms_seen.last_seen_at`, moved on each sync, and from the last token a
+session of the account got). A device that comes back finds
 its session refused, which supabase-kt answers by clearing it. The account row keeps when a sync last settled here
 (`lastSyncedAt`, written by `SyncCoordinator` through `recordSync()`), so `AccountRepositoryImpl.mirrorSession` tells
 that refusal apart: an anonymous account whose session ends 29 days or more after its last sync (a day short of the
