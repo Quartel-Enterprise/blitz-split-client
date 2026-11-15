@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.account.data.repository.AccountRepositoryImpl
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithBrowser
 import com.quare.blitzsplit.core.account.domain.usecase.ConnectWithIdToken
+import com.quare.blitzsplit.core.account.domain.usecase.DismissExpiredAccountNotice
 import com.quare.blitzsplit.core.account.domain.usecase.FollowAnalyticsUserId
 import com.quare.blitzsplit.core.account.domain.usecase.GetSessionUser
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
@@ -24,6 +25,7 @@ import com.quare.blitzsplit.core.account.domain.usecase.RestoreWithRecoveryCode
 import com.quare.blitzsplit.core.account.domain.usecase.UpdateRecoveryCodePrompt
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.DismissExpiredAccountNoticeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.FollowAnalyticsUserIdUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.GetSessionUserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.HandleAppPausedUseCase
@@ -54,12 +56,14 @@ val accountModule = module {
             local = get(),
             remote = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            currentTimeMillis = get(),
         )
     }
     factoryOf(::ObserveAccountStatusUseCase).bind<ObserveAccountStatus>()
     factoryOf(::FollowAnalyticsUserIdUseCase).bind<FollowAnalyticsUserId>()
     factoryOf(::ObserveAccountUseCase).bind<ObserveAccount>()
     factoryOf(::UpdateRecoveryCodePromptUseCase).bind<UpdateRecoveryCodePrompt>()
+    factoryOf(::DismissExpiredAccountNoticeUseCase).bind<DismissExpiredAccountNotice>()
     factoryOf(::GetSessionUserUseCase).bind<GetSessionUser>()
     factoryOf(::ObserveAccountPhotoUseCase).bind<ObserveAccountPhoto>()
     factoryOf(::ConnectWithIdTokenUseCase).bind<ConnectWithIdToken>()

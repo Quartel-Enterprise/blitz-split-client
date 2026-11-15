@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.account.domain.model.AccountExpiredException
 import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import io.github.jan.supabase.exceptions.HttpRequestException
@@ -129,6 +130,30 @@ class SyncFailureTest {
     fun `GIVEN a session waiting for its refresh WHEN checking the failure THEN it is a connection failure`() {
         // Given
         val failure = SessionRefreshingException()
+
+        // When
+        val isConnectionFailure = failure.isConnectionFailure()
+
+        // Then
+        assertTrue(isConnectionFailure)
+    }
+
+    @Test
+    fun `GIVEN an account deleted for inactivity WHEN checking the failure THEN it is a connection failure`() {
+        // Given
+        val failure = AccountExpiredException()
+
+        // When
+        val isConnectionFailure = failure.isConnectionFailure()
+
+        // Then
+        assertTrue(isConnectionFailure)
+    }
+
+    @Test
+    fun `GIVEN a failure caused by an expired account WHEN checking it THEN it is a connection failure`() {
+        // Given
+        val failure = IllegalStateException("sync failed", AccountExpiredException())
 
         // When
         val isConnectionFailure = failure.isConnectionFailure()

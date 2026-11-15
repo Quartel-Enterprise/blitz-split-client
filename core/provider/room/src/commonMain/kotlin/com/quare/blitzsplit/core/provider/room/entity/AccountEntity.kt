@@ -35,4 +35,14 @@ data class AccountEntity(
      */
     @ColumnInfo(defaultValue = "0")
     val awaitsFullSync: Boolean,
+    /*
+     * Why: when a sync of this account last settled on this device (epoch millis), null until one did. The server
+     * deletes an account without Google or Apple after 30 days with none, so a session it then refuses is told apart
+     * from one lost for another reason.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val lastSyncedAt: Long?,
+    // Why: the account the server deleted for inactivity, from the refused session until Welcome's notice is read.
+    @ColumnInfo(defaultValue = "NULL")
+    val inactivityExpiry: String?,
 )

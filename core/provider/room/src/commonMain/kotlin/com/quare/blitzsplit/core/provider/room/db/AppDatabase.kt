@@ -98,7 +98,7 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         ReleaseNotesFeedEntity::class,
         ReviewPromptEntity::class,
     ],
-    version = 52,
+    version = 53,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -308,6 +308,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         AutoMigration(
             from = 51,
             to = 52,
+        ),
+        AutoMigration(
+            from = 52,
+            to = 53,
         ),
     ],
 )

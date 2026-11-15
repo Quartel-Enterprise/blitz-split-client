@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,6 +33,7 @@ class FakeAccountRepository(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
+            inactivityExpiry = null,
         ),
     )
 
@@ -89,6 +91,7 @@ class FakeAccountRepository(
     var appResumeCount = 0
     var signOutCount = 0
     var endedDeletedSessions = 0
+    var recordedSyncs = 0
     var deleteAccountCount = 0
     var keepAppleTokensCount = 0
 
@@ -235,6 +238,7 @@ class FakeAccountRepository(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
+            inactivityExpiry = null,
         )
     }
 
@@ -242,6 +246,24 @@ class FakeAccountRepository(
         deleteAccountCount++
         deleteAccountError?.let { return Result.failure(it) }
         return Result.success(Unit)
+    }
+
+    override suspend fun recordSync() {
+        recordedSyncs++
+    }
+
+    // Why: like the real one, only an account still waiting to be erased leaves the welcome's notice.
+    override suspend fun endExpiredSession() {
+        sessionUser = null
+        if (snapshot.value.inactivityExpiry == InactivityExpiry.PENDING) {
+            snapshot.update { it.copy(inactivityExpiry = InactivityExpiry.NOTICE) }
+        }
+    }
+
+    override suspend fun dismissExpiredNotice() {
+        if (snapshot.value.inactivityExpiry == InactivityExpiry.NOTICE) {
+            snapshot.update { it.copy(inactivityExpiry = null) }
+        }
     }
 
     override suspend fun endDeletedSession() {
@@ -254,6 +276,7 @@ class FakeAccountRepository(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
+            inactivityExpiry = null,
         )
     }
 

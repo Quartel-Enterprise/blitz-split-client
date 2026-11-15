@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.data.datasource.RemoteSession
 import com.quare.blitzsplit.core.account.data.repository.AccountRepositoryImpl
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
+import com.quare.blitzsplit.core.account.domain.model.AccountExpiredException
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
@@ -17,6 +18,7 @@ import com.quare.blitzsplit.core.account.domain.model.SessionUser
 import com.quare.blitzsplit.core.account.domain.model.SocialAccountHasNoRecoveryCodeException
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import kotlinx.coroutines.CompletableDeferred
@@ -42,12 +44,18 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class AccountRepositoryImplTest {
     private lateinit var local: FakeAccountLocalDataSource
     private lateinit var remote: FakeAccountRemoteDataSource
     private lateinit var repository: AccountRepositoryImpl
+
+    // Why: the clock the repository reads, which a case moves to tell an idle account from a fresh one.
+    private var now = 0L
     private var abandonedSignIns = 0
     private val abandoned = mutableListOf<AbandonedBrowserSignIn>()
 
@@ -255,6 +263,7 @@ class AccountRepositoryImplTest {
                 email = null,
                 signOutWhenSynced = false,
                 awaitsFullSync = false,
+                inactivityExpiry = null,
             ),
             account,
         )
@@ -2507,6 +2516,573 @@ class AccountRepositoryImplTest {
         assertEquals(before, local.get())
     }
 
+    @Test
+    fun `GIVEN an anonymous account WHEN a sync of it settles THEN remembers when`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+        repository.ensureRegistered()
+        now = 42L
+
+        // When
+        repository.recordSync()
+
+        // Then
+        assertEquals(42L, local.get().lastSyncedAt)
+    }
+
+    @Test
+    fun `GIVEN a Google account WHEN a sync of it settles THEN remembers when`() = runTest {
+        // Given
+        prepareScenario(currentUser = googleUser)
+        repository.ensureRegistered()
+        now = 42L
+
+        // When
+        repository.recordSync()
+
+        // Then
+        assertEquals(42L, local.get().lastSyncedAt)
+    }
+
+    @Test
+    fun `GIVEN a device with no account WHEN a sync settles THEN records nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        now = 42L
+
+        // When
+        repository.recordSync()
+
+        // Then
+        assertNull(local.get().lastSyncedAt)
+    }
+
+    @Test
+    fun `GIVEN an account that synced before WHEN a second sync settles THEN remembers the later time`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+        repository.ensureRegistered()
+        now = 42L
+        repository.recordSync()
+        now = 99L
+
+        // When
+        repository.recordSync()
+
+        // Then
+        assertEquals(99L, local.get().lastSyncedAt)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account that synced WHEN its session refreshes THEN keeps the time of the sync`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            now = 42L
+            startAccountLastSynced(anonymousUser, ago = 1.days)
+
+            // When
+            sessions.emit(anonymousUser)
+            runCurrent()
+
+            // Then
+            assertEquals(42L, local.get().lastSyncedAt)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account that synced WHEN the same user comes with Google THEN keeps the sync time`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            now = 42L
+            startAccountLastSynced(anonymousUser, ago = 1.days)
+
+            // When
+            sessions.emit(anonymousUser.copy(socialProvider = AccountProvider.GOOGLE))
+            runCurrent()
+
+            // Then
+            assertEquals(42L, local.get().lastSyncedAt)
+            assertEquals(
+                AccountStatus.Connected("anonymous", AccountProvider.GOOGLE),
+                repository.observeStatus().first(),
+            )
+        }
+
+    @Test
+    fun `GIVEN an anonymous account that synced WHEN it links Apple THEN keeps the time of the sync`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+        repository.ensureRegistered()
+        now = 42L
+        repository.recordSync()
+
+        // When
+        val result = signInWithApple()
+
+        // Then
+        assertEquals(ConnectResult.LINKED, result.getOrNull())
+        assertEquals(42L, local.get().lastSyncedAt)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account that synced WHEN ensuring registration again THEN keeps the time of the sync`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser)
+            repository.ensureRegistered()
+            now = 42L
+            repository.recordSync()
+
+            // When
+            repository.ensureRegistered()
+
+            // Then
+            assertEquals(42L, local.get().lastSyncedAt)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account that synced WHEN the session becomes a Google user THEN forgets the time`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startAccountLastSynced(anonymousUser, ago = 1.days)
+
+            // When
+            sessions.emit(googleUser)
+            runCurrent()
+
+            // Then
+            assertNull(local.get().lastSyncedAt)
+        }
+
+    @Test
+    fun `GIVEN a Google account that synced WHEN the session becomes another anonymous user THEN forgets the time`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startAccountLastSynced(googleUser, ago = 1.days)
+
+            // When
+            sessions.emit(anonymousUser)
+            runCurrent()
+
+            // Then
+            assertNull(local.get().lastSyncedAt)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account that synced WHEN its Apple identity has another owner THEN forgets the time`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = anonymousUser,
+                linkError = IdentityAlreadyLinkedException(),
+                idTokenUser = appleUserWithName,
+            )
+            repository.ensureRegistered()
+            repository.recordSync()
+
+            // When
+            val result = signInWithApple()
+
+            // Then
+            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
+            assertNull(local.get().lastSyncedAt)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account last synced 29 days ago WHEN its session ends on its own THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startAccountLastSynced(anonymousUser, ago = 29.days)
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account last synced 45 days ago WHEN its session ends on its own THEN it is pending`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startAccountLastSynced(anonymousUser, ago = 45.days)
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            assertEquals(InactivityExpiry.PENDING, repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account synced just under 29 days ago WHEN its session ends THEN it has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startAccountLastSynced(anonymousUser, ago = 29.days - 1.milliseconds)
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(account.inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account that synced yesterday WHEN its session ends THEN it has no expiry`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startAccountLastSynced(anonymousUser, ago = 1.days)
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        assertNull(repository.observeAccount().first().inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account that never synced here WHEN its session ends long after THEN it has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startMirroring()
+            sessions.emit(anonymousUser)
+            runCurrent()
+            now += 45.days.inWholeMilliseconds
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(account.inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN a Google account last synced 45 days ago WHEN its session ends THEN it has no expiry`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startAccountLastSynced(googleUser, ago = 45.days)
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(account.inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account that linked Apple and synced 45 days ago WHEN its session ends THEN no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startAccountLastSynced(anonymousUser, ago = 45.days)
+            sessions.emit(anonymousUser.copy(socialProvider = AccountProvider.APPLE))
+            runCurrent()
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN a device with no account WHEN no session is mirrored THEN it has no expiry`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startMirroring()
+        repository.recordSync()
+        now += 45.days.inWholeMilliseconds
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(account.inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN no session is mirrored again THEN it stays pending`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startExpiredAccount()
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        assertEquals(InactivityExpiry.PENDING, repository.observeAccount().first().inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN ensuring registration THEN fails and signs nobody in`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startExpiredAccount()
+
+        // When
+        val result = repository.ensureRegistered()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertIs<AccountExpiredException>(result.exceptionOrNull())
+        assertEquals(0, remote.anonymousSignIns)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN its session is ended THEN leaves only the notice`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startMirroring()
+        sessions.emit(anonymousUser)
+        runCurrent()
+        repository.createRecoveryCode()
+        repository.recordSync()
+        now += 45.days.inWholeMilliseconds
+        sessions.emit(null)
+        runCurrent()
+
+        // When
+        repository.endExpiredSession()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertEquals(InactivityExpiry.NOTICE, account.inactivityExpiry)
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(account.recoveryCode)
+        assertEquals(RecoveryCodePrompt.NOT_DUE, account.recoveryCodePrompt)
+        assertNull(local.get().lastSyncedAt)
+    }
+
+    @Test
+    fun `GIVEN a sign out that got ahead of the expiry WHEN the expired session is ended THEN leaves no notice`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startExpiredAccount()
+            repository.signOut()
+            val before = local.get()
+
+            // When
+            repository.endExpiredSession()
+
+            // Then
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+            assertEquals(before, local.get())
+        }
+
+    @Test
+    fun `GIVEN an anonymous account with no expiry WHEN the expired session is ended THEN changes nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+        repository.ensureRegistered()
+        repository.createRecoveryCode()
+        repository.recordSync()
+        val before = local.get()
+
+        // When
+        repository.endExpiredSession()
+
+        // Then
+        assertEquals(before, local.get())
+        assertNull(repository.observeAccount().first().inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN the notice of an expired account WHEN the expired session is ended again THEN keeps the notice`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startExpiredAccount()
+            repository.endExpiredSession()
+
+            // When
+            repository.endExpiredSession()
+
+            // Then
+            assertEquals(InactivityExpiry.NOTICE, repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN the notice of an expired account WHEN it is dismissed THEN the account has no expiry`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startExpiredAccount()
+        repository.endExpiredSession()
+
+        // When
+        repository.dismissExpiredNotice()
+
+        // Then
+        assertNull(repository.observeAccount().first().inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN the notice is dismissed THEN it stays pending`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startExpiredAccount()
+        val before = local.get()
+
+        // When
+        repository.dismissExpiredNotice()
+
+        // Then
+        assertEquals(InactivityExpiry.PENDING, repository.observeAccount().first().inactivityExpiry)
+        assertEquals(before, local.get())
+    }
+
+    @Test
+    fun `GIVEN an account with no expiry WHEN the notice is dismissed THEN changes nothing`() = runTest {
+        // Given
+        prepareScenario(currentUser = anonymousUser)
+        repository.ensureRegistered()
+        repository.recordSync()
+        val before = local.get()
+
+        // When
+        repository.dismissExpiredNotice()
+
+        // Then
+        assertEquals(before, local.get())
+    }
+
+    @Test
+    fun `GIVEN the notice of an expired account WHEN ensuring registration THEN the new user has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startExpiredAccount()
+            repository.endExpiredSession()
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals("anonymous", result.getOrNull())
+            assertEquals(1, remote.anonymousSignIns)
+            assertEquals(AccountStatus.Anonymous("anonymous"), account.status)
+            assertNull(account.inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN the notice of an expired account WHEN signing in with Google THEN the account has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                idTokenUser = googleUser,
+            )
+            startExpiredAccount()
+            repository.endExpiredSession()
+
+            // When
+            val result = repository.signInWithIdToken(
+                AccountProvider.GOOGLE,
+                idToken = "token",
+                rawNonce = null,
+                fullName = null,
+                authorizationCode = null,
+            )
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), account.status)
+            assertNull(account.inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN the notice of an expired account WHEN an Apple session is mirrored THEN the account has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startExpiredAccount()
+            repository.endExpiredSession()
+
+            // When
+            sessions.emit(appleUserWithName)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN the notice of an expired account WHEN restoring with a code THEN the account has no expiry`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startExpiredAccount()
+        repository.endExpiredSession()
+
+        // When
+        val result = repository.restoreWithRecoveryCode("k7qm-4xpa-9tre")
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertTrue(result.isSuccess)
+        assertEquals(AccountStatus.Anonymous("restored"), account.status)
+        assertNull(account.inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN a Google session is mirrored THEN the account has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startExpiredAccount()
+
+            // When
+            sessions.emit(googleUser)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN an anonymous session is mirrored THEN the account has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startExpiredAccount()
+
+            // When
+            sessions.emit(anonymousUser)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
     private val anonymousUser =
         SessionUser(
             "anonymous",
@@ -2579,6 +3155,25 @@ class AccountRepositoryImplTest {
         runCurrent()
     }
 
+    // Why: a mirrored account whose last sync on this device settled that long before the clock's time.
+    private suspend fun TestScope.startAccountLastSynced(
+        user: SessionUser,
+        ago: Duration,
+    ) {
+        startMirroring()
+        sessions.emit(user)
+        runCurrent()
+        repository.recordSync()
+        now += ago.inWholeMilliseconds
+    }
+
+    // Why: an anonymous account idle for longer than the server keeps one, whose session then ended on its own.
+    private suspend fun TestScope.startExpiredAccount() {
+        startAccountLastSynced(anonymousUser, ago = 45.days)
+        sessions.emit(null)
+        runCurrent()
+    }
+
     private val signInCallbackUrl = "borarachar://auth-callback?code=abc"
 
     private fun TestScope.observeAbandonedSignIns() {
@@ -2638,6 +3233,7 @@ class AccountRepositoryImplTest {
             remote = remote,
             // Why: runs what a sign in leaves to the app's scope right away, so a test reads it on return.
             scope = CoroutineScope(Dispatchers.Unconfined),
+            currentTimeMillis = { now },
         )
     }
 }
@@ -2668,6 +3264,8 @@ private class FakeAccountLocalDataSource(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
+            lastSyncedAt = null,
+            inactivityExpiry = null,
         ),
     )
 
@@ -2694,6 +3292,8 @@ private class FakeAccountLocalDataSource(
             browserSignInProvider = null,
             email = null,
             signOutWhenSynced = false,
+            lastSyncedAt = null,
+            inactivityExpiry = null,
         )
     }
 }

@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.data.datasource.RemoteSession
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
+import com.quare.blitzsplit.core.account.domain.model.AccountExpiredException
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
@@ -16,8 +17,10 @@ import com.quare.blitzsplit.core.account.domain.model.SocialAccountHasNoRecovery
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
+import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +34,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalAtomicApi::class)
@@ -39,6 +43,7 @@ class AccountRepositoryImpl(
     private val remote: AccountRemoteDataSource,
     // Why: the app's, for work a sign in starts but needn't wait for.
     private val scope: CoroutineScope,
+    private val currentTimeMillis: CurrentTimeMillis,
 ) : AccountRepository {
     // Why: in memory, since a browser trip doesn't outlive the process that opened it.
     private val browserTrip = AtomicReference(BrowserTrip.NONE)
@@ -92,6 +97,7 @@ class AccountRepositoryImpl(
     override fun observeSessionRecoveries(): Flow<Unit> = remote.observeSessionRecoveries()
 
     override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
+        if (local.get().inactivityExpiry == InactivityExpiry.PENDING.code) throw AccountExpiredException()
         val user = getUserUnlessRefreshing() ?: remote.signInAnonymously()
         local.update { account -> account.toMirrorOf(user) }
         user.userId
@@ -265,6 +271,41 @@ class AccountRepositoryImpl(
         local.clear()
     }
 
+    override suspend fun recordSync() {
+        val syncedAt = currentTimeMillis()
+        local.update { account -> if (account.userId == null) account else account.copy(lastSyncedAt = syncedAt) }
+    }
+
+    // Why: a sign out that erased the device meanwhile leaves no expiry, and so no notice for the welcome.
+    override suspend fun endExpiredSession() {
+        local.update { account ->
+            if (account.inactivityExpiry == InactivityExpiry.PENDING.code) {
+                account.copy(
+                    recoveryCode = null,
+                    recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
+                    browserSignInProvider = null,
+                    browserSignInFromProfile = false,
+                    lastSyncedAt = null,
+                    inactivityExpiry = InactivityExpiry.NOTICE.code,
+                )
+            } else {
+                account
+            }
+        }
+    }
+
+    override suspend fun dismissExpiredNotice() {
+        local.update { account ->
+            if (account.inactivityExpiry ==
+                InactivityExpiry.NOTICE.code
+            ) {
+                account.copy(inactivityExpiry = null)
+            } else {
+                account
+            }
+        }
+    }
+
     /*
      * Why: the account works without it, so a failure only means a deletion that can't revoke at Apple. Apple
      * hands each token out once, so a flaky network gets a few more tries before it is given up.
@@ -396,6 +437,7 @@ class AccountRepositoryImpl(
         email = account.email,
         signOutWhenSynced = account.signOutWhenSynced,
         awaitsFullSync = account.awaitsFullSync,
+        inactivityExpiry = InactivityExpiry.fromCodeOrNull(account.inactivityExpiry),
     )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
@@ -423,6 +465,7 @@ class AccountRepositoryImpl(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
+            inactivityExpiry = if (wasDeletedForInactivity()) InactivityExpiry.PENDING.code else inactivityExpiry,
         )
 
         user.socialProvider != null -> copy(
@@ -434,6 +477,8 @@ class AccountRepositoryImpl(
             email = user.email,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
             awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
+            lastSyncedAt = lastSyncedAt.takeIf { userId == user.userId },
+            inactivityExpiry = null,
         )
 
         else -> copy(
@@ -451,7 +496,22 @@ class AccountRepositoryImpl(
             email = null,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
             awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
+            lastSyncedAt = lastSyncedAt.takeIf { userId == user.userId },
+            inactivityExpiry = null,
         )
+    }
+
+    /*
+     * Why: the server refuses the session of an account it deleted, and it deletes one without Google or Apple that no
+     * device synced for 30 days. A session that ends sooner after this device's last sync was lost for another reason,
+     * as is one of an account that never synced here, and the device keeps its profile as before. A day short of the
+     * 30, since the server counts from its own clock.
+     */
+    private fun AccountEntity.wasDeletedForInactivity(): Boolean {
+        val syncedAt = lastSyncedAt ?: return false
+        val isAnonymous = userId != null && provider == null
+        return isAnonymous &&
+            currentTimeMillis() - syncedAt >= (InactivityExpiry.IDLE_DAYS - 1).days.inWholeMilliseconds
     }
 
     private val appleTokenRetryDelay = 2.seconds

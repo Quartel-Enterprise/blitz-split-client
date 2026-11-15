@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.account.domain.model.AccountExpiredException
 import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import io.github.jan.supabase.exceptions.HttpRequestException
@@ -19,10 +20,14 @@ internal class SyncFailure(
 /*
  * Why: a request that never got an answer, a timeout or a connection that dropped, which the device may still call
  * online (supabase-kt wraps every failure in HttpRequestException except Ktor's request timeout, which it rethrows);
- * and a session whose token refresh got no answer the same way, so the sync didn't ask the server anything.
+ * and a session whose token refresh got no answer the same way, so the sync didn't ask the server anything. Nor did
+ * one of an account the server deleted for inactivity, which waits for the device to be erased.
  */
 internal fun Throwable.isConnectionFailure(): Boolean = getCauses().any { cause ->
-    cause is HttpRequestException || cause is HttpRequestTimeoutException || cause is SessionRefreshingException
+    cause is HttpRequestException ||
+        cause is HttpRequestTimeoutException ||
+        cause is SessionRefreshingException ||
+        cause is AccountExpiredException
 }
 
 private fun codesOf(failure: Throwable): String = failure.getCauses().joinToString(separator = " ← ") { cause ->

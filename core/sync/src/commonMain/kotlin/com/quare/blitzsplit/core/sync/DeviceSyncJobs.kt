@@ -1,11 +1,13 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.repository.AppInviteRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -13,7 +15,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -95,4 +100,29 @@ internal suspend fun syncOnSessionRecovery(
     sync: suspend () -> Unit,
 ) {
     accountRepository.observeSessionRecoveries().collect { if (lastSyncFailed.value) sync() }
+}
+
+/*
+ * Why: the server deleted the account for inactivity, so its copy leaves the device as in a deletion asked here, and
+ * the welcome tells why. Under the sync lock, and read again there: a sign out that got ahead already erased it.
+ */
+internal suspend fun eraseExpiredAccount(
+    accountRepository: AccountRepository,
+    syncLock: Mutex,
+    eraseDeviceCopy: suspend () -> Unit,
+) {
+    accountRepository
+        .observeAccount()
+        .map { account -> account.inactivityExpiry == InactivityExpiry.PENDING }
+        .distinctUntilChanged()
+        .filter { isPending -> isPending }
+        .collect {
+            syncLock.withLock {
+                val account = accountRepository.observeAccount().first()
+                if (account.inactivityExpiry == InactivityExpiry.PENDING) {
+                    eraseDeviceCopy()
+                    suspendRunCatching { accountRepository.endExpiredSession() }
+                }
+            }
+        }
 }

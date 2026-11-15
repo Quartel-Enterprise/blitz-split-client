@@ -28,6 +28,8 @@ sealed interface WelcomeUiEvent : UiEvent {
 
             OnTermsClicked -> EventAnalytics.Automatic("terms_clicked", mapOf("source" to SOURCE))
 
+            OnExpiredAccountNoticeDismissed -> EventAnalytics.Automatic("welcome_expired_account_notice_dismissed")
+
             // Why: no UI sends it today: an error goes away with the screen's next action.
             OnErrorDismissed -> EventAnalytics.NotTracked
         }
@@ -61,4 +63,7 @@ sealed interface WelcomeUiEvent : UiEvent {
     data object OnTermsClicked : WelcomeUiEvent
 
     data object OnErrorDismissed : WelcomeUiEvent
+
+    // Why: "OK" on the notice of an account deleted for inactivity.
+    data object OnExpiredAccountNoticeDismissed : WelcomeUiEvent
 }

@@ -974,6 +974,7 @@ class CategoryMapViewModelTest {
                         email = null,
                         signOutWhenSynced = false,
                         awaitsFullSync = false,
+                        inactivityExpiry = null,
                     ),
                 )
             },
