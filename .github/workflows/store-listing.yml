@@ -12,7 +12,7 @@ name: store-listing
 # included: leave `android` off while something there must wait for a release.
 #
 # Not while a release is running: both write through the same Play account and on the same App Store version, and a
-# second Play edit drops the one still open.
+# second Play edit drops the one still open. The `check` job refuses the run then.
 #
 # Repository secrets: PLAY_STORE_SERVICE_ACCOUNT_JSON and the three APP_STORE_CONNECT_API_* ones, the releases' own
 # (docs/release-process.md#secrets).
@@ -35,6 +35,14 @@ on:
         description: "Only ask Google Play whether it would take the text: nothing changes, the App Store is left out"
         type: boolean
         default: false
+      version_code:
+        description: "Google Play: the versionCode of the production release to read, while the track holds more than one (a staged rollout)"
+        type: string
+        default: ""
+      app_version:
+        description: "App Store: the version to write on, X.Y.Z, created when it is missing. Blank writes on the editable one"
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -45,20 +53,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # No environment here: this job reaches no store and reads no secret, and its own step checks the branch.
   check:
     name: Check the listings
     runs-on: ubuntu-latest
-    # The environment's rule is the branch: only main sends a listing to a store.
-    environment: Production
     timeout-minutes: 5
+    permissions:
+      contents: read
+      # To see whether a release is running.
+      actions: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
-      # The jobs below name the environment, whose branch rule keeps a copy of this workflow on another branch from
-      # reaching a store. GitHub makes a missing environment with no rule, so the ref is checked here too.
+      # The jobs that reach a store name the Production environment, whose branch rule keeps a copy of this workflow
+      # on another branch from reaching one. GitHub makes a missing environment with no rule, so the ref is checked
+      # here too.
       - name: Check where the listing comes from
         env:
           REF: ${{ github.ref }}
@@ -80,6 +92,8 @@ jobs:
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
           VALIDATE_ONLY: ${{ inputs.validate_only }}
+          VERSION_CODE: ${{ inputs.version_code }}
+          APP_VERSION: ${{ inputs.app_version }}
         run: |
           if [ "$ANDROID" != true ] && [ "$IOS" != true ] && [ "$MACOS" != true ]; then
             echo "::error::No store is selected."
@@ -89,6 +103,32 @@ jobs:
             echo "::error::validate_only checks Google Play alone, and android is off: the App Store has no such check."
             exit 1
           fi
+          # Both reach a lane as a word of its command line, so nothing but a number goes through.
+          if [[ -n "$VERSION_CODE" && ! "$VERSION_CODE" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::version_code is a versionCode, a whole number, or blank."
+            exit 1
+          fi
+          if [[ -n "$APP_VERSION" && ! "$APP_VERSION" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "::error::app_version is a version as the App Store writes it, X.Y.Z, or blank."
+            exit 1
+          fi
+
+      # A release writes through the same Play account and on the same App Store version: a second Play edit drops
+      # the one still open. The releases share a concurrency group this workflow can't join, since a listing run
+      # waiting in it would cancel a release waiting too, so a release in progress or waiting stops the run here.
+      - name: Check that no release is running
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for workflow in release-beta.yml release-production.yml; do
+            for status in in_progress queued waiting pending requested; do
+              runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?status=$status&per_page=1" --jq .total_count)"
+              if [ "$runs" != 0 ]; then
+                echo "::error::$workflow has a run that is $status: send the listing once the release is over."
+                exit 1
+              fi
+            done
+          done
 
       - name: Set up Node
         uses: actions/setup-node@v7
@@ -124,7 +164,9 @@ jobs:
       - name: Upload the listing
         uses: ./.github/actions/play-store-lane
         with:
-          lane: upload_listing platform:android validate_only:${{ inputs.validate_only }}
+          lane: >-
+            upload_listing platform:android validate_only:${{ inputs.validate_only }}
+            ${{ inputs.version_code != '' && format('version_code:{0}', inputs.version_code) || '' }}
           service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
 
   # The App Store has no check that changes nothing, so a run that only validates leaves it out. The iPhone's and
@@ -143,12 +185,12 @@ jobs:
           fetch-depth: 1
 
       - name: Check who sends
-        id: admin
         uses: ./.github/actions/release-admin
         with:
           token: ${{ github.token }}
 
       - name: Set up Node
+        id: node
         uses: actions/setup-node@v7
         with:
           node-version: '24'
@@ -158,17 +200,20 @@ jobs:
         uses: ./.github/actions/app-store-lane
         with:
           lane: upload_listing platform:ios
+          app-version: ${{ inputs.app_version }}
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
       # Runs when the iPhone's failed too: the two versions are apart, and one refused says nothing of the other.
-      # Never past the admin check, though: a status function drops the implicit success() of the steps before.
+      # Never past the steps before it, though: a status function drops their implicit success(), and Node is set up
+      # only once the admin check passed.
       - name: Upload the Mac's listing
-        if: ${{ !cancelled() && inputs.macos && steps.admin.outcome == 'success' }}
+        if: ${{ !cancelled() && inputs.macos && steps.node.outcome == 'success' }}
         uses: ./.github/actions/app-store-lane
         with:
           lane: upload_listing platform:mac
+          app-version: ${{ inputs.app_version }}
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}

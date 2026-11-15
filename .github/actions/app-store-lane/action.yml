@@ -9,7 +9,7 @@ inputs:
     description: 'The lane and its options, as they follow `fastlane` on a command line. Paths are read from the repository root'
     required: true
   app-version:
-    description: 'For the screenshots: the App Store version they go on (APP_VERSION), created when it is missing'
+    description: 'For the screenshots and the listing text: the App Store version they go on (APP_VERSION), created when it is missing'
     required: false
     default: ''
   key-id:

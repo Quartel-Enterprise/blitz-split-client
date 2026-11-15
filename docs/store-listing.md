@@ -37,7 +37,9 @@ gh workflow run store-listing.yml -f android=false          # the App Store alon
 gh workflow run store-listing.yml -f validate_only=true     # ask Google Play, change nothing
 ```
 
-Not while a release is running: both write through the same Play account and on the same App Store version.
+Not while a release is running: both write through the same Play account and on the same App Store version, so the
+workflow's first job refuses the run then. Its `version_code` input is the lane's option for a staged rollout, and
+`app_version` names the App Store version to write on (`APP_VERSION`), created when it is missing.
 
 On Play the upload reads the production track's release on its way. While the track holds more than one, as in a
 staged rollout, say which with `fastlane upload_listing platform:android version_code:<its versionCode>`.
