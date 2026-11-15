@@ -42,13 +42,18 @@ struct BillLoadingShimmer: View {
 /// "Bruno paid" next to Bruno's face, or "A former member paid". A lone payer opens their profile from here; several
 /// each have their row in the split, which opens them.
 struct BillPayerLine: View {
-    private static let faceId = "bill-payer"
-
     let payers: [BillPayer]
     let lonePayer: BillPayer?
     let size: CGFloat
     /// Nil where nobody opens a profile (a bill's link page).
     let onPerson: ((String) -> Void)?
+
+    /// Apart from the same payer's face on another bill still in the stack, which back must not zoom into.
+    @State private var instance = UUID()
+
+    private var faceId: String {
+        "bill-payer-\(instance)"
+    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -61,13 +66,13 @@ struct BillPayerLine: View {
                     size: size,
                 )
                 // A lone payer's face zooms into their profile (beta feedback of 2026-11-15)
-                .profileZoomSource(faceId: Self.faceId)
+                .profileZoomSource(faceId: faceId)
             }
             Text(verbatim: BillCopy.paid(payers))
         }
         .opensProfile(
             onPerson.flatMap { open in lonePayer.map { payer in { open(payer.memberId) } } },
-            zoomingFrom: Self.faceId,
+            zoomingFrom: faceId,
         )
     }
 }
@@ -104,8 +109,11 @@ struct BillShareRowView: View {
         .opensProfile(row.opensProfile ? onPerson.map { open in { open(row.memberId) } } : nil, zoomingFrom: faceId)
     }
 
+    /// Apart from the same person's row on another bill still in the stack, which back must not zoom into.
+    @State private var instance = UUID()
+
     private var faceId: String {
-        "bill-share-\(row.memberId)"
+        "bill-share-\(row.memberId)-\(instance)"
     }
 }
 

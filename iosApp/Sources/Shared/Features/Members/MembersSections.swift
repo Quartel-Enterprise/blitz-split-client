@@ -335,8 +335,11 @@ private struct MemberRow: View {
         }
     }
 
+    /// Apart from the same member's row of another group's Members still in the stack.
+    @State private var instance = UUID()
+
     private var faceId: String {
-        "member-\(member.id)"
+        "member-\(member.id)-\(instance)"
     }
 
     private var content: some View {

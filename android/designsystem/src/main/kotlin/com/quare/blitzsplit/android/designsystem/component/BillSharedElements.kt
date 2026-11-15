@@ -2,7 +2,14 @@ package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+
+/*
+ * Why: whether a bill opens as a dialog over the screen under it (anywhere wider than a phone), where nothing flies, so
+ * a list of bills there (the group's Expenses) sets up no shared element at all.
+ */
+val LocalBillOpensAsDialog = staticCompositionLocalOf { false }
 
 // Why: the modifiers a bill's category badge, title, total and share take to fly between its row and its screen.
 @Immutable

@@ -30,10 +30,19 @@ class ProfileFlightState {
         lastTap = faceId to SystemClock.uptimeMillis()
     }
 
-    // Why: the face a profile opening now flies out of: the one tapped in the last second, else none.
-    internal fun recentFaceOrNull(): String? = lastTap
-        ?.takeIf { (_, at) -> SystemClock.uptimeMillis() - at <= TAP_WINDOW_MILLIS }
-        ?.first
+    /*
+     * Why: the face a profile opening now flies out of: the one tapped in the last second, else none. The tap is used
+     * up, so it counts only for the profile it opened, never for one opened another way right after; the face stays
+     * flying as that profile's.
+     */
+    internal fun takeRecentFaceOrNull(): String? {
+        val face = lastTap
+            ?.takeIf { (_, at) -> SystemClock.uptimeMillis() - at <= TAP_WINDOW_MILLIS }
+            ?.first
+        lastTap = null
+        face?.let { openFaces += it }
+        return face
+    }
 
     internal fun isFlying(faceId: String): Boolean = lastTap?.first == faceId || faceId in openFaces
 
@@ -117,7 +126,7 @@ fun rememberProfileFlightSource(): ProfileFlightSource {
 @Composable
 fun rememberProfileFlightTarget(): Modifier {
     val flight = LocalProfileFlight.current
-    val faceId = rememberSaveable { flight?.recentFaceOrNull().orEmpty() }.ifEmpty { null }
+    val faceId = rememberSaveable { flight?.takeRecentFaceOrNull().orEmpty() }.ifEmpty { null }
     val transitionScope = LocalSharedTransitionScope.current
     val visibilityScope = LocalEntryVisibilityScope.current
     if (flight == null || faceId == null || transitionScope == null || visibilityScope == null) return Modifier

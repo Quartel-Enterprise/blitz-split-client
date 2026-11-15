@@ -23,6 +23,7 @@ import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
 import com.quare.blitzsplit.android.designsystem.component.EntryIconTile
 import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
+import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
 import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
@@ -104,7 +105,10 @@ private fun ExpenseEntryRow(
     // Why: the bill's own currency, not the one picked above the balances.
     val money = rememberMoneyFormatter(expense.currency)
     // Why: the badge, title, total and share fly into the bill's screen as Home's rows do (beta feedback of 2026-11-15).
-    val shared = rememberBillSharedModifiers(expense.id, origin = SharedOrigin.GROUP)
+    val shared = rememberBillSharedModifiers(
+        billId = expense.id,
+        origin = SharedOrigin.GROUP.takeUnless { LocalBillOpensAsDialog.current },
+    )
     EntryFrameRow(
         icon = Icons.AutoMirrored.Outlined.ReceiptLong,
         leading = {

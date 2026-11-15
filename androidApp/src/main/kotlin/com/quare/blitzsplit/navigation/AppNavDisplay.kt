@@ -27,6 +27,7 @@ import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
+import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.LocalProfileFlight
 import com.quare.blitzsplit.android.designsystem.component.LocalSharedTransitionScope
 import com.quare.blitzsplit.android.designsystem.component.ProfileFlightState
@@ -530,6 +531,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             CompositionLocalProvider(
                 LocalSharedTransitionScope provides this,
                 LocalProfileFlight provides profileFlight,
+                LocalBillOpensAsDialog provides opensBillOverGroup,
             ) {
                 NavDisplay(
                     entries = entries,

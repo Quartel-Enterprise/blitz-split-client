@@ -162,7 +162,7 @@ function profilePlanOf(
     return { from: face.element, to: '[data-profile-photo]', mark: markFace }
   }
   if (before && PROFILE_ROUTES.has(before.name) && next.length < previous.length) {
-    const photo = document.querySelector<HTMLElement>('[data-profile-photo]')
+    const photo = topmostInView('[data-profile-photo]')
     return leftFace && photo ? { from: photo, to: `[data-profile-link="${CSS.escape(leftFace)}"]`, mark: markFace } : null
   }
   return null
@@ -218,7 +218,7 @@ function run(plan: Plan, apply: () => void) {
  * crossfade alone.
  */
 function waitFor(selector: string): Promise<HTMLElement | null> {
-  const shown = () => Array.from(document.querySelectorAll<HTMLElement>(selector)).find(isInView) ?? null
+  const shown = () => topmostInView(selector)
   const found = shown()
   if (found) return Promise.resolve(found)
   return new Promise((resolve) => {
@@ -234,6 +234,14 @@ function waitFor(selector: string): Promise<HTMLElement | null> {
     }
     observer.observe(document.body, { childList: true, subtree: true })
   })
+}
+
+/*
+ * Why: the last match in sight, the page drawn on top: a stack over a bill (a group, a member, their profile) keeps the
+ * stack under it mounted, whose own profile or row would otherwise be found first.
+ */
+function topmostInView(selector: string): HTMLElement | null {
+  return Array.from(document.querySelectorAll<HTMLElement>(selector)).filter(isInView).pop() ?? null
 }
 
 function isInView(element: HTMLElement): boolean {
