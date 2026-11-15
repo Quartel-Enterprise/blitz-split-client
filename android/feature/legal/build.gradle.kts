@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.legal)
+    implementation(project(":feature:legal"))
 }

@@ -8,19 +8,19 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.model)
+            api(project(":core:model"))
             // Why: ClientPlatform, which the diagnostics name, and the profile's link.
-            implementation(projects.core.profile)
-            implementation(projects.core.account)
-            implementation(projects.core.settings)
+            implementation(project(":core:profile"))
+            implementation(project(":core:account"))
+            implementation(project(":core:settings"))
             // Why: EventAnalytics and TrackEvent, for the event a review request sends.
-            implementation(projects.core.presentation)
+            implementation(project(":core:presentation"))
             // Why: the review asks only over a resting screen, after a payment that settles a group.
-            implementation(projects.core.navigation)
-            implementation(projects.core.expenses)
-            implementation(projects.core.sync)
-            implementation(projects.core.utils)
-            implementation(projects.core.provider.room)
+            implementation(project(":core:navigation"))
+            implementation(project(":core:expenses"))
+            implementation(project(":core:sync"))
+            implementation(project(":core:utils"))
+            implementation(project(":core:provider:room"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)

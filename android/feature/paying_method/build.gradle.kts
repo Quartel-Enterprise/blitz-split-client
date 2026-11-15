@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.payingMethod)
+    implementation(project(":feature:paying_method"))
 }

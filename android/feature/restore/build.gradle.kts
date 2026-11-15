@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.restore)
-    implementation(projects.android.platform)
+    implementation(project(":feature:restore"))
+    implementation(project(":android:platform"))
 }

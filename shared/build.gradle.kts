@@ -3,49 +3,50 @@ plugins {
 }
 
 // The modules SwiftUI and React talk to directly: their ViewModels, UiState, UiEvent and UiAction
-// types are exported to the Apple framework (Swift sees them by name).
+// types are exported to the Apple framework (Swift sees them by name). Listed by path and turned into
+// dependencies by the map at the end: at the top of a build script, project(":core:model") is the Project itself.
 private val exportedToApple = listOf(
-    projects.core.model,
-    projects.core.presentation,
-    projects.core.navigation,
-    projects.core.expenses,
-    projects.core.activity,
-    projects.core.contacts,
-    projects.core.legal,
-    projects.core.releaseNotes,
-    projects.core.support,
-    projects.core.provider.analytics,
-    projects.feature.welcome,
-    projects.feature.profileSetup,
-    projects.feature.restore,
-    projects.feature.recoveryCode,
-    projects.feature.groups,
-    projects.feature.profile,
-    projects.feature.editProfile,
-    projects.feature.paymentKey,
-    projects.feature.payingMethod,
-    projects.feature.deleteAccount,
-    projects.feature.contactSupport,
-    projects.feature.notificationSettings,
-    projects.feature.createGroup,
-    projects.feature.invite,
-    projects.feature.members,
-    projects.feature.join,
-    projects.feature.groupDetail,
-    projects.feature.billDetail,
-    projects.feature.splitBill,
-    projects.feature.editGroup,
-    projects.feature.registerPayment,
-    projects.feature.globalBalances,
-    projects.feature.groupStats,
-    projects.feature.categoryMap,
-    projects.feature.activity,
-    projects.feature.contacts,
-    projects.feature.inAppUpdate,
-    projects.feature.legal,
-    projects.feature.releaseNotes,
-    projects.feature.appDownload,
-)
+    ":core:model",
+    ":core:presentation",
+    ":core:navigation",
+    ":core:expenses",
+    ":core:activity",
+    ":core:contacts",
+    ":core:legal",
+    ":core:release_notes",
+    ":core:support",
+    ":core:provider:analytics",
+    ":feature:welcome",
+    ":feature:profile_setup",
+    ":feature:restore",
+    ":feature:recovery_code",
+    ":feature:groups",
+    ":feature:profile",
+    ":feature:edit_profile",
+    ":feature:payment_key",
+    ":feature:paying_method",
+    ":feature:delete_account",
+    ":feature:contact_support",
+    ":feature:notification_settings",
+    ":feature:create_group",
+    ":feature:invite",
+    ":feature:members",
+    ":feature:join",
+    ":feature:group_detail",
+    ":feature:bill_detail",
+    ":feature:split_bill",
+    ":feature:edit_group",
+    ":feature:register_payment",
+    ":feature:global_balances",
+    ":feature:group_stats",
+    ":feature:category_map",
+    ":feature:activity",
+    ":feature:contacts",
+    ":feature:in_app_update",
+    ":feature:legal",
+    ":feature:release_notes",
+    ":feature:app_download",
+).map { dependencies.project(it) }
 
 kotlin {
     listOf(iosArm64(), iosSimulatorArm64(), macosArm64()).forEach { target ->
@@ -67,18 +68,18 @@ kotlin {
         commonMain.dependencies {
             exportedToApple.forEach { api(it) }
             api(libs.quare.loadable)
-            implementation(projects.core.utils)
-            implementation(projects.core.account)
-            implementation(projects.core.profile)
-            implementation(projects.core.groups)
-            implementation(projects.core.contacts)
-            implementation(projects.core.sync)
-            implementation(projects.core.settings)
-            implementation(projects.core.inAppUpdate)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.provider.supabase)
-            implementation(projects.core.provider.image)
-            implementation(projects.core.provider.crashlytics)
+            implementation(project(":core:utils"))
+            implementation(project(":core:account"))
+            implementation(project(":core:profile"))
+            implementation(project(":core:groups"))
+            implementation(project(":core:contacts"))
+            implementation(project(":core:sync"))
+            implementation(project(":core:settings"))
+            implementation(project(":core:in_app_update"))
+            implementation(project(":core:provider:room"))
+            implementation(project(":core:provider:supabase"))
+            implementation(project(":core:provider:image"))
+            implementation(project(":core:provider:crashlytics"))
             implementation(libs.quare.connectivity)
             implementation(libs.kermit)
             api(project.dependencies.platform(libs.koin.bom))

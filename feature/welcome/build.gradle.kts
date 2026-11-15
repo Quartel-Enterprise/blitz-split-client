@@ -5,13 +5,13 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.presentation)
-            api(projects.core.model)
-            implementation(projects.core.navigation)
-            api(projects.core.account)
-            implementation(projects.core.sync)
+            api(project(":core:presentation"))
+            api(project(":core:model"))
+            implementation(project(":core:navigation"))
+            api(project(":core:account"))
+            implementation(project(":core:sync"))
             // Why: OpenLegalPage, the way Profile's footer opens the legal texts too (the site's page on the web).
-            implementation(projects.core.profile)
+            implementation(project(":core:profile"))
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -19,8 +19,8 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
-            implementation(projects.core.account.testing)
-            implementation(projects.core.profile.testing)
+            implementation(project(":core:account:testing"))
+            implementation(project(":core:profile:testing"))
         }
     }
 }

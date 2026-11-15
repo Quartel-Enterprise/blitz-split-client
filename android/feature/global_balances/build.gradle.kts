@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.globalBalances)
-    implementation(projects.android.platform)
+    implementation(project(":feature:global_balances"))
+    implementation(project(":android:platform"))
 }

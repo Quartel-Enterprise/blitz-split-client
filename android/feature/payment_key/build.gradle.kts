@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.android.platform)
-    implementation(projects.feature.paymentKey)
+    implementation(project(":android:platform"))
+    implementation(project(":feature:payment_key"))
 }

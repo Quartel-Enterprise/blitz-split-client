@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.groupDetail)
+    implementation(project(":feature:group_detail"))
     // Why: "Export group data" hands its file to the system's save sheet.
-    implementation(projects.android.platform)
+    implementation(project(":android:platform"))
 }

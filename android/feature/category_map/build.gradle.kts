@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.categoryMap)
+    implementation(project(":feature:category_map"))
 }

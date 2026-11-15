@@ -70,10 +70,15 @@ The `jvm` target exists only so `commonTest` runs fast on the JVM and Kover can 
 | --- | --- | --- |
 | Android | `:android:feature:x` → `:feature:x` | Plain Gradle dependency; the screen gets its ViewModel with `koinViewModel()` |
 | Android app | `:shared`, `:core:navigation`, `:core:provider:supabase`, `:core:provider:crashlytics`, `:core:provider:analytics`, every `:android:*` | `startBlitzSplitKoin`, `AppViewModel`, `handleDeeplinks`, `startCrashReporting`, `AnalyticsHub.attach` |
-| SwiftUI | the static framework `Shared` | `:shared` exports the modules listed in `exportedToApple` (`shared/build.gradle.kts`): `core:model`, `core:presentation`, `core:navigation`, `core:provider:analytics` and every `feature:*`. Swift reaches the ViewModels through `BlitzSplitApple` |
+| SwiftUI | the static framework `Shared` | `:shared` exports the modules listed in `exportedToApple` (`shared/build.gradle.kts`): `core:model`, `core:presentation`, `core:navigation`, `core:expenses`, `core:activity`, `core:contacts`, `core:legal`, `core:release_notes`, `core:support`, `core:provider:analytics` and every `feature:*`. Swift reaches the ViewModels through `BlitzSplitApple` |
 | React | the npm package `blitzsplit-shared` | `:shared`'s JS library with TypeScript definitions. Only the `@JsExport` declarations of `shared/src/jsMain/.../bridge` cross: `startBlitzSplit`, `attachAnalytics`, `AppPresenter`, one `XPresenter` per screen and their plain `JsXState` classes |
 
 ## Dependency rules
+
+A module names the ones it depends on by path: `implementation(project(":core:model"))`. Gradle's typesafe project
+accessors (`projects.core.model`) stay off, and the root `build.gradle.kts` fails the build if the feature preview
+comes back: with them, adding a module made every task of the build miss the build cache
+([Speed and timeouts](../ci.md#speed-and-timeouts) has how).
 
 `assertModuleGraph` (modules-graph-assert, the `moduleGraphAssert` block of the root `build.gradle.kts`) checks the
 production configurations only (`api`, `implementation`, `commonMain*`, `androidMain*`, `appleMain*`, `jsMain*`,

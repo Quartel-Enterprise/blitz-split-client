@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.profile)
-    implementation(projects.android.platform)
+    implementation(project(":feature:profile"))
+    implementation(project(":android:platform"))
     implementation(libs.androidx.core.ktx)
 }

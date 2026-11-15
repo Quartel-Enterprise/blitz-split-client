@@ -6,19 +6,19 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.model)
-            implementation(projects.core.utils)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.provider.supabase)
+            api(project(":core:model"))
+            implementation(project(":core:utils"))
+            implementation(project(":core:provider:room"))
+            implementation(project(":core:provider:supabase"))
             // Why: FollowAnalyticsUserId hands the account's id to it.
-            implementation(projects.core.provider.analytics)
+            implementation(project(":core:provider:analytics"))
             implementation(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
-            implementation(projects.core.account.testing)
+            implementation(project(":core:account:testing"))
         }
     }
 }

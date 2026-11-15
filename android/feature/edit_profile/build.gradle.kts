@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.android.platform)
-    implementation(projects.feature.editProfile)
+    implementation(project(":android:platform"))
+    implementation(project(":feature:edit_profile"))
 }

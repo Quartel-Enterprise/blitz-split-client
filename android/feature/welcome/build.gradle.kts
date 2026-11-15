@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.welcome)
-    implementation(projects.android.platform)
+    implementation(project(":feature:welcome"))
+    implementation(project(":android:platform"))
 }

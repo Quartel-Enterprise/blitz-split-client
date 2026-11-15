@@ -9,11 +9,11 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.model)
-            implementation(projects.core.profile)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.settings)
-            implementation(projects.core.utils)
+            api(project(":core:model"))
+            implementation(project(":core:profile"))
+            implementation(project(":core:provider:room"))
+            implementation(project(":core:settings"))
+            implementation(project(":core:utils"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)

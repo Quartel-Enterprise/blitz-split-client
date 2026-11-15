@@ -5,8 +5,8 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.expenses)
-            api(projects.core.groups)
+            api(project(":core:expenses"))
+            api(project(":core:groups"))
             api(libs.kotlinx.coroutines.core)
         }
     }

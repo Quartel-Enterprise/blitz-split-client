@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.releaseNotes)
+    implementation(project(":feature:release_notes"))
 }

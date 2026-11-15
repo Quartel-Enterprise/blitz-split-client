@@ -14,6 +14,13 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+// With the typesafe project accessors on, each new module changes the build cache key of every task (docs/ci.md,
+// "Speed and timeouts"), and no other check shows it: the build stays green, only slower.
+check(extensions.findByName("projects") == null) {
+    "TYPESAFE_PROJECT_ACCESSORS is on in settings.gradle.kts. Turn it off and name modules by path, " +
+        "project(\":core:model\"): docs/ci.md, \"Speed and timeouts\", says why."
+}
+
 fun readProperties(name: String): Map<String, String> = providers
     .fileContents(layout.projectDirectory.file(name))
     .asText

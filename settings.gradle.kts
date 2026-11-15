@@ -1,5 +1,7 @@
 rootProject.name = "BlitzSplit"
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+// Modules name each other by path, project(":core:model"). TYPESAFE_PROJECT_ACCESSORS stays off, and the root
+// build.gradle.kts fails the build if it comes back: docs/ci.md, "Speed and timeouts", has what it cost.
 
 pluginManagement {
     includeBuild("build-logic")
