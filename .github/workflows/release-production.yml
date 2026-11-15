@@ -190,12 +190,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/$RELEASE_ENVIRONMENT" 2>&1)"; then
-            if grep -q "HTTP 404" <<< "$environment"; then
+          # What gh says on stderr is kept apart from its answer, which is read as JSON and as a name below.
+          errors="$RUNNER_TEMP/environment-errors.txt"
+          if ! environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/$RELEASE_ENVIRONMENT" 2> "$errors")"; then
+            if grep -q "HTTP 404" "$errors"; then
               echo "::error::The $RELEASE_ENVIRONMENT environment doesn't exist: create it, with a deployment branch policy that only allows main. See docs/release-process.md#who-releases."
               exit 1
             fi
-            echo "$environment"
+            cat "$errors"
             echo "::error::Could not read the $RELEASE_ENVIRONMENT environment, so nothing says which branches may deploy to it. Dispatch the release again."
             exit 1
           fi
@@ -203,8 +205,8 @@ jobs:
             echo "::error::The $RELEASE_ENVIRONMENT environment doesn't limit its deployments to branches it names: any branch, or any protected one, could deploy. Set its deployment branches to 'Selected branches and tags', with main alone. See docs/release-process.md#who-releases."
             exit 1
           fi
-          if ! allowed="$(gh api "repos/$GITHUB_REPOSITORY/environments/$RELEASE_ENVIRONMENT/deployment-branch-policies" --paginate --jq '.branch_policies[] | "\(.type):\(.name)"' 2>&1)"; then
-            echo "$allowed"
+          if ! allowed="$(gh api "repos/$GITHUB_REPOSITORY/environments/$RELEASE_ENVIRONMENT/deployment-branch-policies" --paginate --jq '.branch_policies[] | "\(.type):\(.name)"' 2> "$errors")"; then
+            cat "$errors"
             echo "::error::Could not read the deployment branch policy of the $RELEASE_ENVIRONMENT environment. Dispatch the release again."
             exit 1
           fi
@@ -358,6 +360,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Build the signed AAB
         uses: ./.github/actions/android-build
@@ -580,6 +587,11 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
       - name: Setup Gradle
         uses: ./.github/actions/gradle
         with:
@@ -638,6 +650,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
@@ -814,6 +831,11 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
       - name: Archive and export the iOS app
         uses: ./.github/actions/apple-build
         with:
@@ -930,6 +952,11 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
       - name: Archive and export the macOS app
         uses: ./.github/actions/apple-build
         with:
@@ -1031,16 +1058,31 @@ jobs:
   # ---------------------------------------------------------------------------------------------
   finalize:
     name: Tag, release and merge-back
-    needs: [plan, android-upload, ios-upload, ios-submit, macos-upload, macos-submit, web]
+    needs:
+      - plan
+      - android-build
+      - android-upload
+      - ios-build
+      - ios-upload
+      - ios-submit
+      - macos-build
+      - macos-upload
+      - macos-submit
+      - web
     # always() replaces the implicit success(): a platform the run skipped or that failed must not hold the
     # release back, and neither must a cancelled run, since cancelling is the only way to stop a release and what
     # a store or the web took before it has to be recorded all the same. A store that took a build, or the web
     # deployed, is enough: the versionCode a store used has to reach main whatever happened to the others, and a
-    # version that is out has to be recorded.
+    # version that is out has to be recorded. An upload cancelled after its build passed may have reached the
+    # store before it stopped, and nothing says which: it counts for the versionCode, which only has to grow, and
+    # never for the tag, which takes an upload that passed.
     if: >-
       ${{ always() && needs.plan.result == 'success' && (
       needs.android-upload.result == 'success' || needs.ios-upload.result == 'success' ||
-      needs.macos-upload.result == 'success' || needs.web.result == 'success') }}
+      needs.macos-upload.result == 'success' || needs.web.result == 'success' ||
+      (needs.android-build.result == 'success' && needs.android-upload.result == 'cancelled') ||
+      (needs.ios-build.result == 'success' && needs.ios-upload.result == 'cancelled') ||
+      (needs.macos-build.result == 'success' && needs.macos-upload.result == 'cancelled')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -1054,6 +1096,12 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+
+      # It tags, publishes and merges into main: an admin's to run again, as the jobs before it.
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       # The run released when a build reached the production track or was sent to App Store review, or the web app
       # was deployed, which is for everyone at once: the version
@@ -1087,12 +1135,13 @@ jobs:
           if [ "$WEB" = success ]; then released=true; fi
           # Only a 404 says the version has no release: any other failure read as "not released" would skip the
           # tag of a version that went out, or try to create a release that is there.
-          if release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$VERSION" 2>&1)"; then
+          errors="$RUNNER_TEMP/release-errors.txt"
+          if release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$VERSION" 2> "$errors")"; then
             exists=true
-          elif grep -q "HTTP 404" <<< "$release"; then
+          elif grep -q "HTTP 404" "$errors"; then
             exists=false
           else
-            echo "$release"
+            cat "$errors"
             echo "::error::Could not ask GitHub whether $VERSION has a release. Re-run this job."
             exit 1
           fi
@@ -1125,7 +1174,8 @@ jobs:
           if [ "$STORES" != true ]; then code=0; fi
 
           if [ "$exists" = true ]; then
-            # A platform this run left out keeps the row an earlier run wrote for it, and so does one this run
+            # A platform this run left out, or was cancelled on, keeps the row an earlier run wrote for it, and so
+            # does one this run
             # only sent to a testing track or to TestFlight when the row says it was released. The web's keeps a
             # success a later deployment that failed didn't undo: the site still serves the one that worked. A
             # release from before the web was part of a stable version has no Web row: it goes after macOS's.
@@ -1133,16 +1183,17 @@ jobs:
               -v code="$code" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
               -v android_channel="$android_channel" -v apple_channel="$apple_channel" \
               -v track="$TRACK" -v submit="$SUBMIT" -v web="$WEB" -v web_channel="$web_channel" '
-              function keeps(result, releases) { return result == "skipped" || (!releases && $0 ~ /production|sent for review/) }
+              function left_out(result) { return result == "skipped" || result == "cancelled" }
+              function keeps(result, releases) { return left_out(result) || (!releases && $0 ~ /production|sent for review/) }
               function web_row() { return "| Web | " web_channel " | " web " |" }
-              after_macos { if ($0 !~ /^\| Web \|/ && web != "skipped") print web_row(); after_macos = 0 }
+              after_macos { if ($0 !~ /^\| Web \|/ && !left_out(web)) print web_row(); after_macos = 0 }
               /^Build number: / { if ($3 + 0 < code + 0) print "Build number: " code; else print; next }
               /^\| Android \|/ && !keeps(android, track == "production") { print "| Android | " android_channel " | " android " |"; next }
               /^\| iOS \|/ && !keeps(ios, submit == "true")              { print "| iOS | " apple_channel " | " ios " |"; next }
               /^\| macOS \|/ { if (keeps(macos, submit == "true")) print; else print "| macOS | " apple_channel " | " macos " |"; after_macos = 1; next }
-              /^\| Web \|/ && web != "skipped" && (web == "success" || $0 !~ /\| success \|$/) { print web_row(); next }
+              /^\| Web \|/ && !left_out(web) && (web == "success" || $0 !~ /\| success \|$/) { print web_row(); next }
               { print }
-              END { if (after_macos && web != "skipped") print web_row() }' > "$RUNNER_TEMP/notes.md"
+              END { if (after_macos && !left_out(web)) print web_row() }' > "$RUNNER_TEMP/notes.md"
             # A release the web alone made names no build number: the first run that sends a store one adds it.
             if [ "$code" -gt 0 ] && ! grep -q '^Build number: ' "$RUNNER_TEMP/notes.md"; then
               { printf 'Build number: %s\n\n' "$code"; cat "$RUNNER_TEMP/notes.md"; } > "$RUNNER_TEMP/notes-with-build.md"
@@ -1214,14 +1265,16 @@ jobs:
   site-release-notes:
     name: Release notes, send to the site
     needs: [plan, finalize]
-    # Once the version is released, whatever the stores' reviews say later, and even when the merge-back failed:
-    # the notes are about a version that went out. A version with no note has nothing to send.
+    # Once the version is released, whatever the stores' reviews say later, even when the merge-back failed, and
+    # on a cancelled run too, whose finalize recorded the release: the notes are about a version that went out, and
+    # its fragments leave main with the merge-back. A version with no note has nothing to send.
     if: >-
-      ${{ !cancelled() && needs.plan.outputs.has_notes == 'true' && needs.finalize.outputs.released == 'true' &&
+      ${{ always() && needs.plan.outputs.has_notes == 'true' && needs.finalize.outputs.released == 'true' &&
       (needs.finalize.result == 'success' || needs.finalize.result == 'failure') }}
     uses: ./.github/workflows/site-release-notes.yml
     with:
       version: ${{ needs.plan.outputs.version }}
       sha: ${{ needs.plan.outputs.sha }}
+      admin-only: true
     secrets:
       SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}

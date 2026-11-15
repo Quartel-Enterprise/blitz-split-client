@@ -139,10 +139,11 @@ Nobody approves a stable release (Pierre's call: he and the other admins are the
 they dispatch waits for no one, as in Bible Planner). The dispatch is the gate, and `plan` checks it before anything
 is built:
 
-- **An administrator of the repository** started the run: `plan` and every job that reaches a store or the web read
-  the permission of whoever started that attempt (`collaborators/<login>/permission`, the
-  [`release-admin`](../.github/actions/release-admin/action.yml) action) and fail, naming them, when it isn't
-  `admin` or can't be read. So **Re-run failed jobs**, which runs those jobs again without `plan`, is an admin's too.
+- **An administrator of the repository** started the run: every job, from `plan` to `finalize` and the notes sent
+  to the site, reads the permission of whoever started that attempt (`collaborators/<login>/permission`, the
+  [`release-admin`](../.github/actions/release-admin/action.yml) action) and fails, naming them, when it isn't
+  `admin` or can't be read. So **Re-run failed jobs**, which runs jobs again without `plan`, is an admin's too, and
+  someone else's re-run stops before it builds anything.
 - **On `main`**: a run dispatched on another branch would take that branch's copy of the workflow, and fails.
 - **The `Production` environment only lets `main` deploy.** The jobs that reach a store or app.blitzsplit.com (the
   uploads, the submissions, the creation of the App Store version, the screenshots' uploads, the web) name the
@@ -203,10 +204,16 @@ editable.
 
 - **A cancelled run** stops the jobs that haven't finished, and nothing undoes the ones that did: a bundle Google
   Play took, a build App Store Connect holds, a web deployment. `finalize` still runs when a store or the web took
-  something, to record it: the tag and the GitHub release when the run released, and the `versionCode` on `main`.
-  The notes are not sent to the site by a cancelled run: a later run of the same version sends them. Cancelling is
-  clean only before the first upload job starts, a few minutes after the builds do. **Re-run failed jobs** on a
-  cancelled run runs every job that was cancelled, the web's too: dispatch a new run for what is still wanted.
+  something, to record it: the tag, the GitHub release and the notes sent to the site when the run released, and
+  the `versionCode` on `main`. Cancelling is clean only before the first upload job starts, a few minutes after the
+  builds do. A job cancelled while it was uploading may have reached its store, and nothing says which:
+  - An upload to a store counts for the `versionCode`, which is merged back all the same, since it only has to
+    grow, and never for the tag: look at the Play Console or App Store Connect for what is there.
+  - The web job is one step from built to live: look at https://app.blitzsplit.com. A deployment that landed in a
+    run that tagged nothing is recorded by dispatching the web alone, with the same `version` typed.
+
+  **Re-run failed jobs** on a cancelled run runs every job that was cancelled, the web's too: dispatch a new run for
+  what is still wanted.
 - **Re-run failed jobs** works for a week, while the build artifacts last. Every job after a build can run twice:
   Play takes or refuses an edit whole, `ios-submit` and `macos-submit` find a version already submitted (waiting
   for review, in review or beyond) and do nothing, and `finalize` skips what an earlier attempt did, as a beta's.

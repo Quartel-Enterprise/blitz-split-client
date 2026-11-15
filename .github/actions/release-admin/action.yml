@@ -1,8 +1,8 @@
 name: 'Check that an admin releases'
 description: >-
   Fails unless whoever started this attempt of the run is an administrator of the repository. Nothing waits for an
-  approval in release-production.yml, so its plan and each of its jobs that reach a store or the web start with this:
-  "Re-run failed jobs" runs those jobs again without the plan. The calling job checks out the repository first.
+  approval in release-production.yml, so every one of its jobs starts with this: "Re-run failed jobs" runs jobs
+  again without the plan. The calling job checks out the repository first.
 
 inputs:
   token:
@@ -12,16 +12,22 @@ inputs:
 runs:
   using: composite
   steps:
-    # A permission that can't be read stops the job as one that isn't enough does.
+    # A permission that can't be read stops the job as one that isn't enough does. What gh says on stderr is kept
+    # apart: a notice it prints with a good answer must not be read as part of the permission.
     - name: Check who releases
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTOR: ${{ github.triggering_actor }}
       run: |
-        if ! permission="$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$ACTOR/permission" --jq .permission 2>&1)"; then
-          echo "$permission"
-          echo "::error::Could not read $ACTOR's permission on the repository, so nothing says they may release. Run it again."
+        errors="$RUNNER_TEMP/release-admin-errors.txt"
+        if ! permission="$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$ACTOR/permission" --jq .permission 2> "$errors")"; then
+          cat "$errors"
+          if grep -q "HTTP 404" "$errors"; then
+            echo "::error::Only an administrator of the repository releases a stable version, and $ACTOR is not a user GitHub knows on it (an app or a bot can't release). See docs/release-process.md#who-releases."
+          else
+            echo "::error::Could not read $ACTOR's permission on the repository, so nothing says they may release. Run it again."
+          fi
           exit 1
         fi
         if [ "$permission" != admin ]; then
