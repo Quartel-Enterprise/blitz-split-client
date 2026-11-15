@@ -273,8 +273,9 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     marked until "Continue" (`SplitBillUiState.groupSelection`); closing it keeps the marked group's bill. With a
     single group it goes straight to the bill, and a sync bringing a second one never asks later. The bill's group
     opens that group's screen (its Expenses) over the form (beta feedback; the details below were settled while
-    Pierre was away, see PR #299: `OnOpenGroupClicked`, `SplitBillUiState.canOpenGroup`): Android's chip (its start follows the group photo's rounded square, its end a capsule), iOS's
-    "Group" row, the web's "Group" field and the Mac's "Open group" link beside it, a new bill and "Edit bill" alike,
+    Pierre was away, see PR #299: `OnOpenGroupClicked`, `SplitBillUiState.canOpenGroup`): Android's chip (its start
+    follows the group photo's rounded square, its end a capsule), iOS's "Group" row, the web's "Group" field and the
+    Mac's "Open group" link beside it, a new bill and "Edit bill" alike,
     never while the bill saves or a receipt is read. Back comes to the form with what was typed: Android keeps its
     entry under the group, iOS and the Mac push the group inside the bill's sheet (as the category map), with what it
     opens but a screen that is only ever a sheet, the web draws it over the form, which stays mounted. The group's

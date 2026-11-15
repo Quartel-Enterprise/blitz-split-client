@@ -59,12 +59,13 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiStat
  */
 private val groupChipHeight = 40.dp
 private val groupChipBadgeSize = 32.dp
-private val groupChipStartInset = 4.dp
+private val groupChipStartInset = (groupChipHeight - groupChipBadgeSize) / 2
+private val groupChipStartRadius = groupChipBadgeSize * GROUP_CORNER_RATIO + groupChipStartInset
 private val groupChipShape = RoundedCornerShape(
-    topStart = groupChipBadgeSize * GROUP_CORNER_RATIO + groupChipStartInset,
+    topStart = groupChipStartRadius,
     topEnd = groupChipHeight / 2,
     bottomEnd = groupChipHeight / 2,
-    bottomStart = groupChipBadgeSize * GROUP_CORNER_RATIO + groupChipStartInset,
+    bottomStart = groupChipStartRadius,
 )
 private const val DISABLED_CHIP_ALPHA = 0.38f
 
