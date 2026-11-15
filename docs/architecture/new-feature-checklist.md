@@ -44,7 +44,7 @@ each platform.
 
 ### Apple
 
-- [ ] Add `projects.feature.<name>` to `exportedToApple` in `shared/build.gradle.kts`, so Swift sees its types
+- [ ] Add `":feature:<name>"` to `exportedToApple` in `shared/build.gradle.kts`, so Swift sees its types
 - [ ] `fun createXViewModel(): ViewModelHolder<XViewModel>` in `BlitzSplitApple`
 - [ ] `iosApp/Sources/Shared/Features/<Name>/XView.swift`: an `@Observable final class XModel` (holder, `WatchBag`,
       `stateWatcher`, `actionWatcher`, `send`, `isolated deinit { holder.clear() }`) and the `XView`; code that

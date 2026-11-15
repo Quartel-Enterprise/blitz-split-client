@@ -5,10 +5,10 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.presentation)
-            api(projects.core.model)
-            api(projects.core.navigation)
-            api(projects.core.legal)
+            api(project(":core:presentation"))
+            api(project(":core:model"))
+            api(project(":core:navigation"))
+            api(project(":core:legal"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)

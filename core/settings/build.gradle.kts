@@ -5,11 +5,11 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.model)
-            implementation(projects.core.utils)
-            implementation(projects.core.provider.room)
+            api(project(":core:model"))
+            implementation(project(":core:utils"))
+            implementation(project(":core:provider:room"))
             // Why: FollowUsageDataSharing hands the device's choice to it.
-            implementation(projects.core.provider.analytics)
+            implementation(project(":core:provider:analytics"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }

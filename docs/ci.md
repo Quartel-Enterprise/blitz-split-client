@@ -49,6 +49,15 @@ Only `main` saves the Gradle caches, one set per job and shard, and pull request
 cache has 10 GB and drops the least recently used entries first, so it keeps the newest `main` commits' entries, the
 ones pull requests read.
 
+A task comes from that cache while its inputs and the classpath of the build scripts are the ones `main` built with.
+A new module leaves both alone for every other module, since modules name each other by path
+(`project(":core:model")`): with Gradle's typesafe project accessors, generated from the list of modules onto that
+classpath, each `include()` changed the key of every task, and the pull request that added a module, `main` after it
+and the pull requests that ran before `main` saved its caches recompiled everything. A change to
+`gradle/libs.versions.toml` still does that, an entry no module uses included, since the `libs` accessors are generated
+the same way, and so does a change to `build-logic/`. To see why a task missed, run it with
+`-Dorg.gradle.caching.debug=true` before and after the change and compare the lines of its key.
+
 The `apple` jobs run on `xcode-27`, GitHub's macOS image with Xcode 27 (a public preview, since the app uses the iOS 27
 SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and its app build are
 two jobs side by side, each compiling the Kotlin/Native code on its own, since two runners finish sooner than one.

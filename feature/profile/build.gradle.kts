@@ -5,16 +5,16 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.presentation)
-            api(projects.core.model)
-            api(projects.core.expenses)
-            implementation(projects.core.navigation)
-            implementation(projects.core.utils)
-            implementation(projects.core.profile)
-            implementation(projects.core.account)
-            implementation(projects.core.sync)
-            implementation(projects.core.settings)
-            implementation(projects.core.inAppUpdate)
+            api(project(":core:presentation"))
+            api(project(":core:model"))
+            api(project(":core:expenses"))
+            implementation(project(":core:navigation"))
+            implementation(project(":core:utils"))
+            implementation(project(":core:profile"))
+            implementation(project(":core:account"))
+            implementation(project(":core:sync"))
+            implementation(project(":core:settings"))
+            implementation(project(":core:in_app_update"))
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
@@ -22,9 +22,9 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
-            implementation(projects.core.account.testing)
-            implementation(projects.core.profile.testing)
-            implementation(projects.core.expenses.testing)
+            implementation(project(":core:account:testing"))
+            implementation(project(":core:profile:testing"))
+            implementation(project(":core:expenses:testing"))
         }
     }
 }

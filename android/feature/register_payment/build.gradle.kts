@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.registerPayment)
-    implementation(projects.android.platform)
+    implementation(project(":feature:register_payment"))
+    implementation(project(":android:platform"))
 }

@@ -1,5 +1,9 @@
 rootProject.name = "BlitzSplit"
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+// Modules name each other by path, project(":core:model"), and TYPESAFE_PROJECT_ACCESSORS stays off: the
+// `projects.core.model` accessors it generates sit on the classpath of every build script, so each new include()
+// below changed the build cache key of every task, and that pull request, main after it and the pull requests
+// behind them rebuilt every module.
 
 pluginManagement {
     includeBuild("build-logic")

@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.android.platform)
-    implementation(projects.feature.deleteAccount)
+    implementation(project(":android:platform"))
+    implementation(project(":feature:delete_account"))
 }

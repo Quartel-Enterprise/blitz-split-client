@@ -5,20 +5,20 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.presentation)
-            api(projects.core.model)
-            implementation(projects.core.navigation)
-            implementation(projects.core.utils)
-            implementation(projects.core.profile)
-            implementation(projects.core.groups)
+            api(project(":core:presentation"))
+            api(project(":core:model"))
+            implementation(project(":core:navigation"))
+            implementation(project(":core:utils"))
+            implementation(project(":core:profile"))
+            implementation(project(":core:groups"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
-            implementation(projects.core.profile.testing)
-            implementation(projects.core.groups.testing)
+            implementation(project(":core:profile:testing"))
+            implementation(project(":core:groups:testing"))
         }
     }
 }

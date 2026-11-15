@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.contacts)
-    implementation(projects.android.platform)
+    implementation(project(":feature:contacts"))
+    implementation(project(":android:platform"))
 }

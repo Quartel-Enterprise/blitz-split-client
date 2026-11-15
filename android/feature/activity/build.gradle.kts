@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.activity)
-    implementation(projects.android.platform)
+    implementation(project(":feature:activity"))
+    implementation(project(":android:platform"))
 }

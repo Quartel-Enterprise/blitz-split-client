@@ -34,8 +34,8 @@ Depend on it from a test source set only:
 ```kotlin
 commonTest.dependencies {
     implementation(libs.kotlinx.coroutines.test)
-    implementation(projects.core.account.testing)
-    implementation(projects.core.profile.testing)
+    implementation(project(":core:account:testing"))
+    implementation(project(":core:profile:testing"))
 }
 ```
 

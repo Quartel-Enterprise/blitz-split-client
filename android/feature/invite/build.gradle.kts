@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.android.platform)
-    implementation(projects.feature.invite)
+    implementation(project(":android:platform"))
+    implementation(project(":feature:invite"))
 }

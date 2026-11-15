@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.groupStats)
+    implementation(project(":feature:group_stats"))
 }

@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.android.platform)
-    implementation(projects.feature.splitBill)
+    implementation(project(":android:platform"))
+    implementation(project(":feature:split_bill"))
 }

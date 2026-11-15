@@ -6,21 +6,21 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.model)
+            api(project(":core:model"))
             // Why: a contact is someone the groups have, with the balance core:expenses works out.
-            api(projects.core.groups)
-            api(projects.core.expenses)
-            implementation(projects.core.utils)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.provider.supabase)
+            api(project(":core:groups"))
+            api(project(":core:expenses"))
+            implementation(project(":core:utils"))
+            implementation(project(":core:provider:room"))
+            implementation(project(":core:provider:supabase"))
             implementation(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
         commonTest.dependencies {
-            implementation(projects.core.contacts.testing)
-            implementation(projects.core.groups.testing)
-            implementation(projects.core.expenses.testing)
+            implementation(project(":core:contacts:testing"))
+            implementation(project(":core:groups:testing"))
+            implementation(project(":core:expenses:testing"))
             implementation(libs.kotlinx.coroutines.test)
         }
     }

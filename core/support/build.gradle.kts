@@ -8,11 +8,11 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.model)
+            api(project(":core:model"))
             // Why: ClientPlatform, which the diagnostics name, and the profile's link.
-            implementation(projects.core.profile)
-            implementation(projects.core.account)
-            implementation(projects.core.settings)
+            implementation(project(":core:profile"))
+            implementation(project(":core:account"))
+            implementation(project(":core:settings"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)

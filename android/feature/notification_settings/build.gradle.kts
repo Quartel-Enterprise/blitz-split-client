@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.android.platform)
-    implementation(projects.feature.notificationSettings)
+    implementation(project(":android:platform"))
+    implementation(project(":feature:notification_settings"))
 }

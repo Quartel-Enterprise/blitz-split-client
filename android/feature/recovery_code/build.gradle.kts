@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.recoveryCode)
-    implementation(projects.android.platform)
+    implementation(project(":feature:recovery_code"))
+    implementation(project(":android:platform"))
 }

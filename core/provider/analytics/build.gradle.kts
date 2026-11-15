@@ -10,7 +10,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             // Why: screen views come from its back stack (ScreenViewTracker).
-            implementation(projects.core.navigation)
+            implementation(project(":core:navigation"))
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)

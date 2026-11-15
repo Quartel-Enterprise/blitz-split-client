@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.android.platform)
-    implementation(projects.feature.editGroup)
+    implementation(project(":android:platform"))
+    implementation(project(":feature:edit_group"))
 }

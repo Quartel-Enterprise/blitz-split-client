@@ -9,20 +9,20 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.core.model)
-            implementation(projects.core.utils)
-            implementation(projects.core.settings)
+            api(project(":core:model"))
+            implementation(project(":core:utils"))
+            implementation(project(":core:settings"))
             // Why: OpenLegalPage opens the legal texts' screen.
-            implementation(projects.core.navigation)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.provider.supabase)
-            implementation(projects.core.provider.image)
+            implementation(project(":core:navigation"))
+            implementation(project(":core:provider:room"))
+            implementation(project(":core:provider:supabase"))
+            implementation(project(":core:provider:image"))
             implementation(libs.kotlinx.serialization.json)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
         commonTest.dependencies {
-            implementation(projects.core.profile.testing)
+            implementation(project(":core:profile:testing"))
             implementation(libs.kotlinx.coroutines.test)
         }
     }

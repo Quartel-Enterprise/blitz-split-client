@@ -75,6 +75,11 @@ The `jvm` target exists only so `commonTest` runs fast on the JVM and Kover can 
 
 ## Dependency rules
 
+A module names the ones it depends on by path: `implementation(project(":core:model"))`. Gradle's typesafe project
+accessors (`projects.core.model`) stay off. They are generated from the list of modules onto the classpath of every
+build script, so adding a module changed the build cache key of every task of the build (see
+[Speed and timeouts](../ci.md#speed-and-timeouts)).
+
 `assertModuleGraph` (modules-graph-assert, the `moduleGraphAssert` block of the root `build.gradle.kts`) checks the
 production configurations only (`api`, `implementation`, `commonMain*`, `androidMain*`, `appleMain*`, `jsMain*`,
 `jvmMain*`); test dependencies are not part of the architecture.
