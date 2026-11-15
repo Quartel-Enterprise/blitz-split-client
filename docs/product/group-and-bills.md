@@ -58,8 +58,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     stay put: the header in the list is centred, the group's square at 88 pt over the name (two lines at most), the
     subtitle and the faces; over the first 88 pt of scroll the square shrinks to half, fading out between 56 and 96
     pt, and between 100 and 132 pt a 30 pt square and the name fade into the bar's title, rising 8 pt (`GroupScreen`).
-    Both squares open the photo big. Lying down with the whole tab to itself (an iPhone,
-    an iPad, an iPhone Duo open; issue 388, Pierre's call) the screen is two columns: the header (a 72 pt square,
+    Both squares open the photo big. Lying down with the whole tab to itself (any iPhone,
+    by its compact height, an iPad, an iPhone Duo open; issue 388, Pierre's call) the screen is two columns: the header (a 72 pt square,
     which never folds), the faces, the currency chips and "Your balance in this group" in a 328 pt side column, the
     Expenses / Balances / Members picker and the list beside it, in 920 pt at most; an iPhone Duo open puts one
     column on each side of its fold, so nothing crosses it. In the column beside the groups (Groups and Search lying

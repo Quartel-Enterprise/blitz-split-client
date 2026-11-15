@@ -174,11 +174,13 @@ struct GroupDetailView: View {
     @Environment(\.windowLayout) private var windowLayout
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
 
-    /// The header and the card beside the tabs: lying down with the whole tab to itself (an iPhone, an iPad, an
-    /// iPhone Duo open), never in the column beside the groups. The window stands in until the first measure, so
-    /// the screen never opens in one column and then splits.
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    /// The header and the card beside the tabs: lying down with the whole tab to itself (any iPhone, by its compact
+    /// height, even one under 640 pt wide; an iPad; an iPhone Duo open), never in the column beside the groups. The
+    /// window stands in until the first measure, so the screen never opens in one column and then splits.
     private var usesTwoColumns: Bool {
-        (layout.size == .zero ? windowLayout : layout).usesTwoColumns && !showsGroupBesideList
+        (verticalSizeClass == .compact || layout.or(windowLayout).usesTwoColumns) && !showsGroupBesideList
     }
     #endif
 
@@ -190,7 +192,7 @@ struct GroupDetailView: View {
     /// The header's avatar with the name and the summary under it, as `PhoneGroupScaffold` draws them.
     private var shimmerHeader: some View {
         VStack(spacing: 10) {
-            let side = usesTwoColumns ? 72 : GroupHeaderScroll.avatarSize
+            let side = usesTwoColumns ? GroupSideColumn.avatarSize : GroupHeaderScroll.avatarSize
             ShimmerBlock(width: side, height: side, cornerRadius: side * GroupAvatar.cornerRatio)
             ShimmerLine(width: 180, height: 22)
             ShimmerLine(width: 120, height: 12)
@@ -238,15 +240,21 @@ struct GroupDetailView: View {
                 Group {
                     #if os(iOS)
                     if usesTwoColumns {
-                        // As the screen it stands for: nothing shimmers across an iPhone Duo's fold
-                        TwoColumnsLayout(firstWidth: 328, spacing: 8) {
-                            ShimmerScreen {
+                        // As the screen it stands for, nothing across an iPhone Duo's fold, in one sweep and one
+                        // "Loading" for VoiceOver
+                        TwoColumnsLayout(firstWidth: GroupSideColumn.width, spacing: GroupSideColumn.spacing) {
+                            VStack(spacing: 16) {
                                 shimmerHeader
                                 shimmerCard
                             }
+                            .padding(.horizontal, 20)
+                            .padding(.top, 12)
                         } second: {
-                            ShimmerScreen { shimmerList }
+                            VStack(alignment: .leading, spacing: 16) { shimmerList }
+                                .padding(16)
                         }
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .shimmering()
                     } else {
                         ShimmerScreen {
                             shimmerHeader
@@ -273,8 +281,6 @@ struct GroupDetailView: View {
         }
         #if os(iOS)
         .measuringScreenLayout($layout)
-        // The other layout's list starts at the top: a fold left from the one before would keep the bar's title in
-        .onChange(of: usesTwoColumns) { headerScroll.offset = 0 }
         #endif
         .groupScreenBars(
             tab: model?.tab ?? GroupTab(route.tab),

@@ -462,6 +462,13 @@ struct BalanceCard: View {
 /// sections on the right, in 920 pt at most and one on each side of the Duo's fold. An iPhone Duo open upright: the
 /// header and the card above the fold, the tabs and the sections below it (3.3, 6.2), on every tab so the header
 /// never moves. Only the sections change with the tab.
+/// The header and the card's column beside the tabs, which the loading placeholder draws too.
+enum GroupSideColumn {
+    static let width: CGFloat = 328
+    static let spacing: CGFloat = 8
+    static let avatarSize: CGFloat = 72
+}
+
 struct PhoneGroupScaffold<Sections: View>: View {
     let header: GroupHeader
     /// The account's copy isn't whole: "Your balance in this group" shimmers in its place rather than leaving it out.
@@ -478,7 +485,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
         Group {
             if usesTwoColumns {
                 // The fold of an iPhone Duo open between the two, each column on its side of it
-                TwoColumnsLayout(firstWidth: 328, spacing: 8) {
+                TwoColumnsLayout(firstWidth: GroupSideColumn.width, spacing: GroupSideColumn.spacing) {
                     summary
                 } second: {
                     list(withHeader: false)
@@ -524,7 +531,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
             VStack(spacing: 4) {
                 GroupHeaderAvatar(
                     header: header,
-                    size: collapses ? GroupHeaderScroll.avatarSize : 72,
+                    size: collapses ? GroupHeaderScroll.avatarSize : GroupSideColumn.avatarSize,
                     scroll: collapses ? headerScroll : nil,
                     action: actions.photo,
                 )
@@ -580,6 +587,11 @@ struct PhoneGroupScaffold<Sections: View>: View {
             withHeader ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd) : 0
         } action: { _, offset in
             headerScroll.offset = offset
+        }
+        // A list without the header starts with it whole beside or above it, and never reports a scroll: a fold
+        // left by the list before it (the device turned or opened) would keep the bar's title in
+        .onAppear {
+            if !withHeader { headerScroll.offset = 0 }
         }
     }
 }
