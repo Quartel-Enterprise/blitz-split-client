@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="designsystem_delete_bill_no_longer_owe">Deixas de dever %s.</string>
     <string name="designsystem_delete_bill_no_longer_get_back">Deixas de receber %s.</string>
     <string name="designsystem_delete_bill_error">Não foi possível apagar a conta. Tenta novamente.</string>
@@ -18,7 +18,8 @@
     <string name="designsystem_group_exit_leave_blocked_title">Acerta antes de sair</string>
     <string name="designsystem_group_exit_leave_blocked_message">Ainda tens saldo em aberto em “%s”. Sair agora deixaria a conta sem fechar para os outros.</string>
     <plurals name="designsystem_group_exit_leave_message">
-        <item quantity="one">O teu saldo está acertado. O grupo desaparece deste dispositivo e as tuas despesas continuam com o teu nome para o outro membro. Para voltares, alguém tem de te convidar de novo.</item>
+        <!-- Zero other members shows designsystem_group_exit_leave_message_alone, so "one" is only ever 1 -->
+        <item quantity="one" tools:ignore="ImpliedQuantity">O teu saldo está acertado. O grupo desaparece deste dispositivo e as tuas despesas continuam com o teu nome para o outro membro. Para voltares, alguém tem de te convidar de novo.</item>
         <item quantity="many">O teu saldo está acertado. O grupo desaparece deste dispositivo e as tuas despesas continuam com o teu nome para os outros %d membros. Para voltares, alguém tem de te convidar de novo.</item>
         <item quantity="other">O teu saldo está acertado. O grupo desaparece deste dispositivo e as tuas despesas continuam com o teu nome para os outros %d membros. Para voltares, alguém tem de te convidar de novo.</item>
     </plurals>
