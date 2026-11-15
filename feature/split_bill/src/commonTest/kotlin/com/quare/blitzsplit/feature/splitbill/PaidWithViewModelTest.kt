@@ -39,8 +39,10 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiActi
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -564,8 +566,342 @@ class PaidWithViewModelTest {
             assertEquals(listOf<SplitBillUiAction>(SplitBillUiAction.ShowSaveError), actions)
         }
 
+    @Test
+    fun `GIVEN no method saved WHEN the form opens THEN Add a payment method shows instead of Paid with`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsAddPayingMethod)
+            assertFalse(state.showsPaidWith)
+        }
+
+    @Test
+    fun `GIVEN the methods not read yet WHEN the form opens THEN Add a payment method is hidden`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                methods = emptyList(),
+                readsMethods = false,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.paidWith.isLoaded)
+            assertFalse(state.showsAddPayingMethod)
+            assertFalse(state.showsPaidWith)
+        }
+
+    @Test
+    fun `GIVEN methods saved WHEN the form opens THEN Add a payment method is hidden`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsAddPayingMethod)
+        assertTrue(state.showsPaidWith)
+    }
+
+    @Test
+    fun `GIVEN no method saved WHEN someone else is picked as the payer THEN Add a payment method is hidden`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+
+            // When
+            pickPayer(ANA)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsAddPayingMethod)
+        }
+
+    @Test
+    fun `GIVEN no method saved WHEN this device user is one of several payers THEN Add a payment method shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            typeAmount("312,00")
+
+            // When
+            payTogether(ANA to "200,00", PIERRE to "112,00")
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsAddPayingMethod)
+        }
+
+    @Test
+    fun `GIVEN no method saved WHEN tapping Add a payment method THEN opens New payment method and tracks the tap`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // Then
+            assertEquals(groupStack + newBill + Route.PayingMethod(methodId = null), navigator.backStack.value)
+            assertEquals(listOf(ADD_CLICKED to emptyMap<String, Any>()), addEvents())
+        }
+
+    @Test
+    fun `GIVEN methods saved WHEN tapping Add a payment method THEN nothing opens and nothing is tracked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // Then
+            assertEquals(groupStack + newBill, navigator.backStack.value)
+            assertTrue(addEvents().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no method saved and someone else pays WHEN tapping Add a payment method THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            pickPayer(ANA)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // Then
+            assertEquals(groupStack + newBill, navigator.backStack.value)
+            assertTrue(addEvents().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another screen covers the form WHEN tapping Add a payment method THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            navigator.navigate(Route.CategoryMap)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // Then
+            assertEquals(groupStack + newBill + Route.CategoryMap, navigator.backStack.value)
+            assertTrue(addEvents().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN another screen covers the form WHEN a method is saved after an ignored tap THEN it is not picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            navigator.navigate(Route.CategoryMap)
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // When
+            paying.methods.value = listOf(pix)
+
+            // Then
+            assertNull(viewModel.uiState.value.paidWith.methodId)
+        }
+
+    @Test
+    fun `GIVEN Add a payment method tapped WHEN the new method is saved THEN it comes back picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // When
+            paying.methods.value = listOf(pix)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(PIX, state.paidWith.methodId)
+            assertEquals(pix, state.paidWith.method)
+            assertTrue(state.showsPaidWith)
+            assertFalse(state.showsAddPayingMethod)
+        }
+
+    @Test
+    fun `GIVEN Add a payment method tapped WHEN the new default is saved THEN closing asks to discard changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // When
+            paying.methods.value = listOf(nubank)
+
+            // Then
+            assertEquals(NUBANK, viewModel.uiState.value.paidWith.methodId)
+            assertTrue(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN the new method came back picked WHEN a second method is saved later THEN the first stays picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+            paying.methods.value = listOf(pix)
+
+            // When
+            paying.methods.value = listOf(pix, cash)
+
+            // Then
+            assertEquals(PIX, viewModel.uiState.value.paidWith.methodId)
+        }
+
+    @Test
+    fun `GIVEN no tap on Add a payment method WHEN a method that is not the default arrives THEN none is picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+
+            // When
+            paying.methods.value = listOf(pix)
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsPaidWith)
+            assertNull(viewModel.uiState.value.paidWith.methodId)
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN no tap on Add a payment method WHEN the default method arrives THEN the form opens on it unchanged`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+
+            // When
+            paying.methods.value = listOf(nubank)
+
+            // Then
+            assertEquals(NUBANK, viewModel.uiState.value.paidWith.methodId)
+            assertEquals(NUBANK, viewModel.uiState.value.paidWith.openedMethodId)
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN the new method came back picked WHEN it is deleted THEN Paid with goes back to how it opened`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+            paying.methods.value = listOf(pix)
+
+            // When
+            paying.methods.value = emptyList()
+
+            // Then
+            assertNull(viewModel.uiState.value.paidWith.methodId)
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN the new method picked on a new bill WHEN tapping Salvar THEN the new bill is marked with it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            fillIn()
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+            paying.methods.value = listOf(pix)
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            val created = expenses.createdExpenses.single()
+            assertEquals(mapOf(created.id to PIX), paying.marks.value)
+        }
+
+    @Test
+    fun `GIVEN the new method came back picked on a saved bill WHEN reading it THEN only Paid with changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                screen = edit,
+                methods = emptyList(),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+            // When
+            paying.methods.value = listOf(pix)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isOnlyPaidWithChanged)
+            assertTrue(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN only the new method picked on a saved bill WHEN tapping Salvar THEN marks it and keeps the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                screen = edit,
+                methods = emptyList(),
+            )
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+            paying.methods.value = listOf(pix)
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(mapOf(EXPENSE_ID to PIX), paying.marks.value)
+            assertTrue(expenses.updatedExpenses.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN tapping Add a payment method THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(methods = emptyList())
+        readGate = CompletableDeferred()
+        viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(byteArrayOf(1, 2, 3)))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isFormLocked)
+        assertEquals(groupStack + newBill, navigator.backStack.value)
+        assertTrue(addEvents().isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a receipt being read WHEN picking None in Paid with THEN the method stays picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val picked = viewModel.uiState.value.paidWith.methodId
+            readGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(byteArrayOf(1, 2, 3)))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(null))
+
+            // Then
+            assertTrue(viewModel.uiState.value.isFormLocked)
+            assertEquals(picked, viewModel.uiState.value.paidWith.methodId)
+            assertTrue(paidWithEvents().isEmpty())
+        }
+
     private fun paidWithEvents(): List<Pair<String, Map<String, Any>>> =
         trackedEvents.filter { it.first == "split_bill_paid_with_picked" }
+
+    // Why: a receipt read waits on it while set, so the form stays locked.
+    private var readGate: CompletableDeferred<ReceiptScan>? = null
+
+    private fun addEvents(): List<Pair<String, Map<String, Any>>> = trackedEvents.filter { it.first == ADD_CLICKED }
 
     private fun typeAmount(text: String) {
         viewModel.onEvent(SplitBillUiEvent.OnAmountChanged(""))
@@ -723,6 +1059,7 @@ class PaidWithViewModelTest {
         methods: List<PayingMethod> = listOf(nubank, cash),
         marks: Map<String, String> = emptyMap(),
         updateError: Throwable? = null,
+        readsMethods: Boolean = true,
     ) {
         val groups = FakeGroupRepository(initialGroups = listOf(trip))
         expenses = FakeExpenseRepository(initialExpenses = listOf(storedExpense)).also {
@@ -740,7 +1077,10 @@ class PaidWithViewModelTest {
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
             noteReviewMoment = {},
-            paidWithUseCases = paidWithUseCasesOf(paying),
+            // Why: a list that never comes stands for the methods not read yet.
+            paidWithUseCases = paidWithUseCasesOf(paying).let { useCases ->
+                if (readsMethods) useCases else useCases.copy(observePayingMethods = { emptyFlow() })
+            },
             trackEvent = { name, params -> trackedEvents += name to params },
             route = screen,
             navigator = navigator,
@@ -767,9 +1107,7 @@ class PaidWithViewModelTest {
             saveSplitAsDefault = { _, _, _, _, _ -> Result.success(Unit) },
             offerCategoryTeach = {},
             takePickedReceipt = { null },
-            readReceipt = { _, _, _ ->
-                ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE)
-            },
+            readReceipt = { _, _, _ -> readGate?.await() ?: ReceiptScan.Failed(ReceiptReadFailure.UNREADABLE) },
             attachBillImage = { _, _, _, _, _ -> Result.success(BillAttachmentAddition.ADDED) },
             observeBitcoinInSats = { flowOf(false) },
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
@@ -786,6 +1124,7 @@ class PaidWithViewModelTest {
         const val NUBANK = "method-nubank"
         const val CASH = "method-cash"
         const val PIX = "method-pix"
+        const val ADD_CLICKED = "split_bill_add_paying_method_clicked"
 
         // Why: 2026-10-30T15:00:00Z.
         const val NOW_MILLIS = 1_793_372_400_000L

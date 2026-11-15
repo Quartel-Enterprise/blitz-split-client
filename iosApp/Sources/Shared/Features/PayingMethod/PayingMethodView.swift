@@ -50,9 +50,10 @@ final class PayingMethodModel {
     }
 }
 
-/// A payment method of the person's own, new or saved, presented as a Pix key is: the iPhone pushes it with Save in
-/// the bar, in two columns lying down; the iPad opens it as a form sheet and the Mac as a sheet on Settings' window,
-/// with Cancel and Save.
+/// A payment method of the person's own, new or saved: a sheet on every device (Pierre's call, feedback of November
+/// 15, 2026), over the profile or over Split a bill's "Add a payment method", with Cancel and Save. The iPhone's takes
+/// the whole height its seven types need, the iPad's is a form sheet and the Mac's a sheet on Settings' window or the
+/// bill's. A key, unlike it, is still pushed on an iPhone.
 struct PayingMethodView: View {
     let route: RoutePayingMethod
 
@@ -85,42 +86,32 @@ struct PayingMethodView: View {
             isLoaded: model?.state.isLoaded == true,
         ) {
             if let model {
-                PayingMethodForm(model: model, usesTwoColumns: layout.usesTwoColumns && !isSheet)
+                PayingMethodForm(model: model)
             }
         }
+        // A swipe down waits while it saves, and over unsaved input Cancel asks "Discard changes?" instead; one modifier,
+        // since an outer one would override SavingFormScreen's
+        .interactiveDismissDisabled(model.map { $0.state.isSaving || $0.state.hasUnsavedInput } ?? false)
+        #if os(iOS)
+        .presentationDetents([.large])
+        .formSheetSizing()
+        #endif
         .onAppear {
             if model == nil { model = PayingMethodModel(route: route) }
         }
     }
 }
 
-/// Upright, on iPad and on the Mac, one column. Lying down on the iPhone, the type on the left and the rest on the
-/// right, as the Pix key's form does.
+/// The type, then the name, a card's color and the default, in one column: a sheet on every device.
 private struct PayingMethodForm: View {
     let model: PayingMethodModel
-    let usesTwoColumns: Bool
 
     var body: some View {
-        if usesTwoColumns {
-            HStack(alignment: .top, spacing: 0) {
-                Form {
-                    TypeSection(model: model)
-                }
-                Form {
-                    DetailSections(model: model)
-                }
-            }
-            .formStyle(.grouped)
-            .frame(maxWidth: ScreenLayout.twoColumnsMaxWidth)
-            .frame(maxWidth: .infinity)
-            .background(Palette.groupedBackground)
-        } else {
-            Form {
-                TypeSection(model: model)
-                DetailSections(model: model)
-            }
-            .formStyle(.grouped)
+        Form {
+            TypeSection(model: model)
+            DetailSections(model: model)
         }
+        .formStyle(.grouped)
     }
 }
 

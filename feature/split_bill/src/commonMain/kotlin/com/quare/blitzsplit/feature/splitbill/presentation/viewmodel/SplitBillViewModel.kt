@@ -115,10 +115,10 @@ class SplitBillViewModel(
 
     private val tracking = SplitFormTracking(uiState, trackEvent)
     private val spentAtPicking = SpentAtPicking(uiState, currentTimeMillis, currentTimeZone)
-    private val paidWith = PaidWithPicking(uiState, route, paidWithUseCases, trackEvent, viewModelScope)
+    private val paidWith = PaidWithPicking(uiState, route, paidWithUseCases, trackEvent, exits, viewModelScope)
 
     // Why: "Quem pagou" and "Várias pessoas pagaram".
-    private val payerPicking = PayerPicking(uiState, { separator }, trackEvent, paidWith::pick)
+    private val payerPicking = PayerPicking(uiState, { separator }, trackEvent, paidWith::pick, paidWith::add)
 
     // Why: the group or the bill went while another screen covered this one, which leaves once it is on top again.
     private var isGroupGone = false

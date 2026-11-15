@@ -157,7 +157,17 @@ data class SplitBillUiState(
 
     // Why: "Paid with" only while this device's user pays the bill, alone or with others, and has a method to pick.
     val showsPaidWith: Boolean
-        get() = paidWith.methods.isNotEmpty() && meId != null && meId in payerIds
+        get() = paidWith.methods.isNotEmpty() && isMePaying
+
+    /*
+     * Why: "Add a payment method" in Paid with's place while this device's user pays the bill and has no method yet;
+     * the method saved there comes back picked (PaidWithPicking).
+     */
+    val showsAddPayingMethod: Boolean
+        get() = paidWith.isLoaded && paidWith.methods.isEmpty() && isMePaying
+
+    private val isMePaying: Boolean
+        get() = meId != null && meId in payerIds
 
     // Why: "Salvar" then saves only the person's own mark, so the group sees no edit of a bill that stayed as it was.
     val isOnlyPaidWithChanged: Boolean

@@ -221,6 +221,10 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   // Why: "Como funciona" of "Simplificar dívidas" takes Editar grupo's place the same way, or opens over the group's Saldos.
   const isSimplifyDebtsInfo = top.name === 'simplify-debts-info'
   const isOverEditGroup = (isDefaultSplit || isSimplifyDebtsInfo) && stack[stack.length - 2]?.name === 'edit-group'
+  // Why: Paid with's "Add a payment method" opens the method's form in Rachar conta's place the same way, and the bill
+  // comes back with what was typed and the new method picked.
+  const isPayingMethodOverBill = isPayingMethod && stack[stack.length - 2]?.name === 'split-bill'
+  const splitBill = isSplitBill ? top : isPayingMethodOverBill ? stack[stack.length - 2] : undefined
   const editGroup = isEditGroup ? top : isOverEditGroup ? stack[stack.length - 2] : undefined
   // Why: Cobrar over the page that opened it, Saldos or a contact's profile (in Contatos' pane too).
   const isCharge = top.name === 'charge'
@@ -236,7 +240,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
     isNotificationSettings ||
     isAppDownload ||
     isCreateGroup || isInvite || isContactInvite || isJoinWithLink || isSearch || isSplitBill || isShareBill || isEditGroup || isDefaultSplit || isSimplifyDebtsInfo || isRegisterPayment || isCharge || isPickPayment || isPaymentKey || isPayingMethod || isDeleteAccount || isContactSupport || isProfilePhoto || isGroupPhoto
-  let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup ? 1 : 0)
+  let pageIndex = stack.length - (isDialog ? 2 : 1) - (isOverEditGroup || isPayingMethodOverBill ? 1 : 0)
   // Why: a bill opens as a panel over the group's expenses, which keep watching their group under it. Editar conta
   // opens over the panel, which stays mounted (closed) so the bill comes back as it was.
   const bill = stack[pageIndex]?.name === 'bill-detail' ? stack[pageIndex] : undefined
@@ -287,7 +291,13 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
       {isContactInvite && <ContactInviteDialog key={top.personKey ?? ''} route={top} />}
       {isJoinWithLink && <JoinWithLinkDialog route={top} />}
       {isSearch && <SearchRouteDialog />}
-      {isSplitBill && <SplitBillDialog key={`${top.groupId}/${top.expenseId ?? ''}`} route={top} isCovered={isOverBill} />}
+      {splitBill && (
+        <SplitBillDialog
+          key={`${splitBill.groupId}/${splitBill.expenseId ?? ''}`}
+          route={splitBill}
+          isCovered={isOverBill || isPayingMethodOverBill}
+        />
+      )}
       {isOverBill && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
           <StackLayers backStack={backStack.slice(overBillIndex)} offset={offset + overBillIndex} />

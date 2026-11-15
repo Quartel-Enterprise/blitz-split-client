@@ -18,6 +18,13 @@ internal class SplitBillExits(
         if (isOnTop()) navigator.navigate(Route.CategoryMap)
     }
 
+    // Why: "New payment method" from Paid with's "Add a payment method", over Rachar conta, which keeps what was typed.
+    fun openNewPayingMethod(): Boolean {
+        if (!isOnTop()) return false
+        navigator.navigate(Route.PayingMethod(methodId = null))
+        return true
+    }
+
     /*
      * Why: the bill's group, its Despesas over Rachar conta, which keeps what was typed; says whether it opened. The
      * group's "Rachar conta" there comes back to this bill rather than opening a second one (GroupScreen).

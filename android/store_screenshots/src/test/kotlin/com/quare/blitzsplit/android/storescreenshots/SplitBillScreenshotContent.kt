@@ -197,6 +197,7 @@ private fun SampleTrip.splitBillState(
             methods = emptyList(),
             methodId = null,
             openedMethodId = null,
+            isLoaded = true,
         ),
     )
 }

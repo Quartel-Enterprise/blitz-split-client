@@ -1,0 +1,42 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "betaOnly": true,
+      "platforms": ["all"],
+      "text": {
+        "en": "In \"Split a bill\", \"Paid with\" is now a small button under Split, and if you have no payment method yet, \"Add a payment method\" creates one right there and picks it for the bill. Debit cards also have their own icon now.",
+        "pt": "Em \"Rachar conta\", o \"Pago com\" agora é um botão discreto embaixo da divisão e, se você ainda não tem forma de pagamento, \"Adicionar forma de pagamento\" cria uma ali mesmo e já marca na conta. O cartão de débito também ganhou um ícone próprio.",
+        "pt-PT": "Em \"Dividir conta\", o \"Pago com\" passou a ser um botão discreto por baixo da divisão e, se ainda não tens forma de pagamento, \"Adicionar forma de pagamento\" cria uma ali mesmo e marca-a logo na conta. O cartão de débito também passou a ter um ícone próprio.",
+        "es": "En \"Dividir un gasto\", \"Pagado con\" ahora es un botón discreto debajo de la división y, si todavía no tienes un método de pago, \"Agregar método de pago\" crea uno ahí mismo y lo marca en el gasto. La tarjeta de débito también tiene su propio ícono.",
+        "fr": "Dans « Partager une dépense », « Payé avec » est désormais un petit bouton sous « Répartition » et, si vous n’avez pas encore de moyen de paiement, « Ajouter un moyen de paiement » en crée un sur place et le choisit pour la dépense. La carte de débit a aussi sa propre icône.",
+        "de": "In „Ausgabe aufteilen“ ist „Bezahlt mit“ jetzt ein kleiner Button unter der Aufteilung. Hast du noch keine Zahlungsmethode, legt „Zahlungsmethode hinzufügen“ direkt dort eine an und wählt sie für die Ausgabe aus. Debitkarten haben jetzt außerdem ein eigenes Symbol.",
+        "it": "In \"Dividi una spesa\", \"Pagato con\" ora è un piccolo pulsante sotto la divisione e, se non hai ancora un metodo di pagamento, \"Aggiungi un metodo di pagamento\" ne crea uno lì stesso e lo sceglie per la spesa. Anche la carta di debito ha ora la sua icona.",
+        "pl": "W „Podziel wydatek” pole „Zapłacono za pomocą” to teraz mały przycisk pod podziałem, a jeśli nie masz jeszcze metody płatności, „Dodaj metodę płatności” utworzy ją od razu i wybierze dla wydatku. Karta debetowa ma też teraz własną ikonę.",
+        "nl": "In \"Uitgave verdelen\" is \"Betaald met\" nu een kleine knop onder de verdeling, en als je nog geen betaalmethode hebt, maakt \"Betaalmethode toevoegen\" er daar meteen een aan en kiest die voor de uitgave. Betaalkaarten hebben nu ook een eigen pictogram.",
+        "ja": "「支出を割り勘」の「支払い方法」が、「分け方」の下の小さなボタンになりました。まだ支払い方法がないときは「支払い方法を追加」でその場で作成でき、そのまま支出に選ばれます。デビットカードにも専用のアイコンが付きました。",
+        "tr": "\"Harcama böl\" ekranında \"Ödeme şekli\" artık bölüşümün altında küçük bir düğme. Henüz ödeme yöntemin yoksa \"Ödeme yöntemi ekle\" orada bir tane oluşturup harcama için seçer. Banka kartının da artık kendi simgesi var.",
+        "id": "Di \"Bagi tagihan\", \"Dibayar dengan\" sekarang jadi tombol kecil di bawah pembagian, dan kalau kamu belum punya metode pembayaran, \"Tambah metode pembayaran\" langsung membuatnya di sana dan memilihnya untuk tagihan. Kartu debit juga sekarang punya ikon sendiri."
+      }
+    },
+    {
+      "kind": "improved",
+      "betaOnly": true,
+      "platforms": ["android", "ios"],
+      "text": {
+        "en": "Adding or editing a payment method in Profile now opens over it instead of on a separate screen.",
+        "pt": "Adicionar ou editar uma forma de pagamento no Perfil agora abre por cima dele, em vez de numa tela separada.",
+        "pt-PT": "Adicionar ou editar uma forma de pagamento no Perfil passou a abrir por cima dele, em vez de num ecrã à parte.",
+        "es": "Agregar o editar un método de pago en Perfil ahora se abre encima, en lugar de en una pantalla aparte.",
+        "fr": "Ajouter ou modifier un moyen de paiement dans Profil s’ouvre désormais par-dessus, au lieu d’un écran séparé.",
+        "de": "Eine Zahlungsmethode im Profil hinzuzufügen oder zu bearbeiten öffnet sich jetzt darüber statt auf einem eigenen Bildschirm.",
+        "it": "Aggiungere o modificare un metodo di pagamento nel Profilo ora si apre sopra, invece che in una schermata a parte.",
+        "pl": "Dodawanie i edycja metody płatności w Profilu otwiera się teraz nad nim, a nie na osobnym ekranie.",
+        "nl": "Een betaalmethode toevoegen of bewerken in Profiel opent nu eroverheen in plaats van op een apart scherm.",
+        "ja": "プロフィールでの支払い方法の追加・編集が、別の画面ではなくプロフィールの上に開くようになりました。",
+        "tr": "Profil'de ödeme yöntemi eklemek veya düzenlemek artık ayrı bir ekran yerine profilin üzerinde açılıyor.",
+        "id": "Menambah atau mengubah metode pembayaran di Profil sekarang terbuka di atasnya, bukan di layar terpisah."
+      }
+    }
+  ]
+}

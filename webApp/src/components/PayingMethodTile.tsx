@@ -1,4 +1,4 @@
-import { Banknote, Bitcoin, CreditCard, Ellipsis, Landmark } from 'lucide-react'
+import { Banknote, Bitcoin, CreditCard, Ellipsis, Landmark, Wallet } from 'lucide-react'
 import type { JsPayingMethod } from 'blitzsplit-shared'
 import type { ComponentType } from 'react'
 import { PixIcon } from '@/components/PixIcon'
@@ -13,7 +13,8 @@ const cardTile = 'text-white'
 // Why: a Record, so a type added later can't fall through to another's glyph. Never a bank's or a card brand's logo.
 const looks: Record<PayingMethodType, Look> = {
   credit_card: { Icon: CreditCard, tileClass: cardTile },
-  debit_card: { Icon: CreditCard, tileClass: cardTile },
+  // Why: a wallet, so the two cards tell apart in a list and a menu at a glance (Pierre's call).
+  debit_card: { Icon: Wallet, tileClass: cardTile },
   cash: { Icon: Banknote, tileClass: neutralTile },
   // Why: the same tiles as Profile's keys, Pix's mark on the blue one and Bitcoin on the orange one.
   pix: { Icon: PixIcon, tileClass: 'bg-primary-container text-primary-container-foreground' },
@@ -25,6 +26,8 @@ const looks: Record<PayingMethodType, Look> = {
 const sizes = {
   md: { tile: 'size-10 rounded-xl', icon: 'size-6' },
   sm: { tile: 'size-6 rounded-md', icon: 'size-4' },
+  // Why: Split a bill's "Paid with" chip, the size of a small button's icon.
+  xs: { tile: 'size-4 rounded-[4px]', icon: 'size-3' },
 }
 
 /** A payment method's tile: a card filled with its color, Pix's and Bitcoin's as the keys draw them, the rest neutral. */

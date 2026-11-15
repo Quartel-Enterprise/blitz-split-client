@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.ExpandMore
@@ -23,8 +26,12 @@ import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Pix
 import androidx.compose.material.icons.outlined.RemoveCircleOutline
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -39,6 +46,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -138,84 +151,149 @@ val CardColor.swatch: Color
 
 private val PayingMethodType.icon: ImageVector
     get() = when (this) {
-        PayingMethodType.CREDIT_CARD, PayingMethodType.DEBIT_CARD -> Icons.Outlined.CreditCard
+        PayingMethodType.CREDIT_CARD -> Icons.Outlined.CreditCard
+
+        // Why: a wallet, so the two cards tell apart in a list and a menu at a glance (Pierre's call).
+        PayingMethodType.DEBIT_CARD -> Icons.Outlined.AccountBalanceWallet
+
         PayingMethodType.CASH -> Icons.Outlined.Payments
+
         PayingMethodType.PIX -> Icons.Outlined.Pix
+
         PayingMethodType.BANK_TRANSFER -> Icons.Outlined.AccountBalance
+
         PayingMethodType.BITCOIN -> Icons.Outlined.CurrencyBitcoin
+
         PayingMethodType.OTHER -> Icons.Outlined.MoreHoriz
     }
 
 /*
- * Why: "Paid with" on Split a bill: the method picked (or None), whose menu lists None and each of the person's
- * methods. "Only you see this." under it, since the group never sees it.
+ * Why: "Paid with" on Split a bill, as discreet as a chip (Pierre's call, feedback of November 15, 2026): the method
+ * picked (or None) with its tile, whose menu lists None and each of the person's methods. Screen readers hear "Paid
+ * with", the method and "Only you see this.", since the group never sees it.
  */
 @Composable
-fun PaidWithPickerRow(
+fun PaidWithChip(
     methods: List<PayingMethod>,
     picked: PayingMethod?,
     onPick: (String?) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Box {
-            Surface(
-                onClick = { isMenuOpen = true },
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-            ) {
-                PaidWithLine(
-                    method = picked,
-                    trailing = {
-                        Icon(
-                            imageVector = Icons.Outlined.ExpandMore,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    },
+    val pickedLabel = picked?.label() ?: stringResource(R.string.designsystem_paid_with_none)
+    val description = listOf(
+        stringResource(R.string.designsystem_paid_with),
+        pickedLabel,
+        stringResource(R.string.designsystem_paid_with_private),
+    ).joinToString(separator = ". ")
+    Box(modifier = modifier) {
+        AssistChip(
+            onClick = { isMenuOpen = true },
+            label = {
+                Text(
+                    text = pickedLabel,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            }
-            DropdownMenu(
-                expanded = isMenuOpen,
-                onDismissRequest = { isMenuOpen = false },
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.designsystem_paid_with_none)) },
-                    onClick = {
-                        isMenuOpen = false
-                        onPick(null)
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.RemoveCircleOutline,
-                            contentDescription = null,
-                        )
-                    },
-                )
-                methods.forEach { method ->
-                    DropdownMenuItem(
-                        text = { Text(method.label()) },
-                        onClick = {
-                            isMenuOpen = false
-                            onPick(method.id)
-                        },
-                        leadingIcon = {
-                            PayingMethodTile(
-                                type = method.type,
-                                cardColor = method.cardColor,
-                                size = 28.dp,
-                            )
-                        },
+            },
+            modifier = Modifier
+                .widthIn(max = 280.dp)
+                .clearAndSetSemantics {
+                    contentDescription = description
+                    role = Role.DropdownList
+                    if (enabled) {
+                        onClick {
+                            isMenuOpen = true
+                            true
+                        }
+                    } else {
+                        disabled()
+                    }
+                },
+            enabled = enabled,
+            leadingIcon = {
+                if (picked != null) {
+                    PayingMethodTile(
+                        type = picked.type,
+                        cardColor = picked.cardColor,
+                        size = AssistChipDefaults.IconSize,
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.CreditCard,
+                        contentDescription = null,
+                        modifier = Modifier.size(AssistChipDefaults.IconSize),
                     )
                 }
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.ExpandMore,
+                    contentDescription = null,
+                    modifier = Modifier.size(AssistChipDefaults.IconSize),
+                )
+            },
+        )
+        DropdownMenu(
+            expanded = isMenuOpen,
+            onDismissRequest = { isMenuOpen = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.designsystem_paid_with_none)) },
+                onClick = {
+                    isMenuOpen = false
+                    onPick(null)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.RemoveCircleOutline,
+                        contentDescription = null,
+                    )
+                },
+            )
+            methods.forEach { method ->
+                DropdownMenuItem(
+                    text = { Text(method.label()) },
+                    onClick = {
+                        isMenuOpen = false
+                        onPick(method.id)
+                    },
+                    leadingIcon = {
+                        PayingMethodTile(
+                            type = method.type,
+                            cardColor = method.cardColor,
+                            size = 28.dp,
+                        )
+                    },
+                )
             }
         }
-        PaidWithPrivateLabel(modifier = Modifier.padding(horizontal = 16.dp))
+    }
+}
+
+// Why: "Add a payment method" in Paid with's place while the person has none; the method saved comes back picked.
+@Composable
+fun AddPaidWithButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    FilledTonalButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Add,
+            contentDescription = null,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+        )
+        Text(
+            text = stringResource(R.string.designsystem_paid_with_add),
+            modifier = Modifier.padding(start = ButtonDefaults.IconSpacing),
+        )
     }
 }
 

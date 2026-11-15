@@ -564,9 +564,6 @@ private struct PhoneSplitBill: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            if state.showsPaidWith {
-                PaidWithRow(model: model)
-            }
             BillWhenPickerRows(
                 millis: state.spentAt,
                 relativeDay: state.spentDay,
@@ -601,6 +598,10 @@ private struct PhoneSplitBill: View {
             Text("Details")
         } footer: {
             VStack(alignment: .leading, spacing: 8) {
+                if state.showsPaidWith || state.showsAddPayingMethod {
+                    PaidWithControl(model: model)
+                        .padding(.top, 4)
+                }
                 if state.showsOfflineNotice {
                     OfflineBillNote()
                 }
@@ -681,25 +682,6 @@ private struct PhoneSplitBill: View {
                 if model.current.payerAmounts != nil { model.send(SplitBillUiEventOnSeveralPayersDismissed.shared) }
             },
         )
-    }
-}
-
-/// "Paid with", right under "Who paid" while this device's user is among who paid and has a method: the method
-/// picked, or "None", whose menu picks another. Only the person sees it, as the line under it says.
-private struct PaidWithRow: View {
-    let model: SplitBillModel
-
-    var body: some View {
-        HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Paid with")
-                Text("Only you see this.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer(minLength: 8)
-            PaidWithMenu(model: model)
-        }
     }
 }
 
@@ -892,6 +874,31 @@ private struct SeveralPayersSheet: View {
 }
 #endif
 
+/// "Paid with" under Split while this device's user is among who paid, as discreet as a chip (Pierre's call, feedback of
+/// November 15, 2026): the method picked, or "None", whose menu picks another; with no method yet, "Add a payment
+/// method" in its place, whose new method comes back picked. VoiceOver says only the person sees it.
+private struct PaidWithControl: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        let state = model.state
+        if state.showsPaidWith {
+            PaidWithMenu(model: model)
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
+                .controlSize(.small)
+                .tint(.secondary)
+        } else if state.showsAddPayingMethod {
+            Button("Add a payment method", systemImage: "plus") {
+                model.send(SplitBillUiEventOnAddPayingMethodClicked.shared)
+            }
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .accessibilityHint(Text("Only you see this."))
+        }
+    }
+}
+
 /// The menu of "Paid with": "None" then each of the person's methods, its label the one picked.
 private struct PaidWithMenu: View {
     let model: SplitBillModel
@@ -903,9 +910,28 @@ private struct PaidWithMenu: View {
                 model.send(SplitBillUiEventOnPaidWithPicked(methodId: methodId))
             }
         } label: {
-            PaidWithChoice(method: paidWith.method)
+            HStack(spacing: 6) {
+                if let method = paidWith.method {
+                    PayingMethodTile(method: method, size: 18)
+                } else {
+                    Image(systemName: "creditcard")
+                }
+                if let method = paidWith.method {
+                    Text(verbatim: method.label)
+                        .lineLimit(1)
+                } else {
+                    Text(LocalizedStringResource("None (no payment method)", defaultValue: "None"))
+                }
+                Image(systemName: "chevron.down")
+                    .font(.caption2.weight(.semibold))
+            }
+            .foregroundStyle(.primary)
         }
+        .fixedSize()
         .accessibilityLabel(Text("Paid with"))
+        .accessibilityValue(paidWith.method.map { Text(verbatim: $0.label) }
+            ?? Text(LocalizedStringResource("None (no payment method)", defaultValue: "None")))
+        .accessibilityHint(Text("Only you see this."))
     }
 }
 
@@ -1214,17 +1240,6 @@ private struct MacBillForm: View {
                             Text(verbatim: "")
                         }
                     }
-                    if state.showsPaidWith {
-                        LabeledContent("Paid with:") {
-                            VStack(alignment: .leading, spacing: 4) {
-                                PaidWithMenu(model: model)
-                                    .fixedSize()
-                                Text("Only you see this.")
-                                    .font(.callout)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
                     MacBillWhenField(
                         millis: state.spentAt,
                         relativeDay: state.spentDay,
@@ -1247,6 +1262,14 @@ private struct MacBillForm: View {
                             }
                             // The Mac store screenshots' UI test opens "Bill Items" through it, whatever the language
                             .accessibilityIdentifier("splitBill.split")
+                        }
+                    }
+                    // Paid with's chip, or "Add a payment method", under Split as on the iPhone
+                    if state.showsPaidWith || state.showsAddPayingMethod {
+                        LabeledContent {
+                            PaidWithControl(model: model)
+                        } label: {
+                            Text(verbatim: "")
                         }
                     }
                 }

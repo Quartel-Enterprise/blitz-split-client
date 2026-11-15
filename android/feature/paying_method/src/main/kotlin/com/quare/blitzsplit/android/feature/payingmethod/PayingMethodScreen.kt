@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
+import com.quare.blitzsplit.android.designsystem.layout.SheetDismissLockEffect
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.payingmethod.presentation.model.PayingMethodUiEvent
 import com.quare.blitzsplit.feature.payingmethod.presentation.viewmodel.PayingMethodViewModel
@@ -15,15 +17,20 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun PayingMethodScreen(
     route: Route.PayingMethod,
-    // Why: a tablet opens the method as a dialog over the profile, as it does a key, so the screen drops its scaffold.
-    isDialog: Boolean,
+    // Why: a sheet on a phone, a dialog wider (a book's right half), full screen on a tabletop (Pierre's call).
+    presentation: FormPresentation,
     viewModel: PayingMethodViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     BackHandler { viewModel.onEvent(PayingMethodUiEvent.OnBackClicked) }
+    // Why: a drag down or a tap on the scrim waits while it saves, and asks "Discard changes?" over unsaved input.
+    SheetDismissLockEffect(
+        isLocked = state.isSaving || state.hasUnsavedInput,
+        onBlockedDismiss = if (state.isSaving) null else ({ viewModel.onEvent(PayingMethodUiEvent.OnBackClicked) }),
+    )
     PayingMethodContent(
         state = state,
-        isDialog = isDialog,
+        presentation = presentation,
         onEvent = viewModel::onEvent,
     )
     if (state.isDeleteConfirmationShown) {

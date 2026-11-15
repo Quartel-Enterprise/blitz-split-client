@@ -11,8 +11,6 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
-import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitEditor
-import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitRow
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
@@ -26,39 +24,6 @@ class JsBillPerson(
     val photoUrl: String?,
     val isMe: Boolean,
     val hasJoined: Boolean,
-)
-
-class JsSplitRow(
-    val person: JsBillPerson,
-    val isIncluded: Boolean,
-    val valueText: String,
-    val parts: Double,
-    val shareMinor: Double?,
-    // Why: By income's percentage the income gives, shown beside the share; null in any other mode.
-    val incomePercent: Double?,
-)
-
-// Why: amounts in the currency's minor unit, as numbers JavaScript reads exactly.
-class JsSplitEditor(
-    // Why: the SplitMode's code: "equal", "amount", "percent", "shares", "items" or "income".
-    val mode: String,
-    val rows: Array<JsSplitRow>,
-    val totalMinor: Double,
-    val addsUp: Boolean,
-    val included: Array<JsBillPerson>,
-    val excluded: Array<JsBillPerson>,
-    val includedCount: Int,
-    val isEveryoneIncluded: Boolean,
-    val perPersonMinor: Double,
-    val assignedMinor: Double,
-    val remainingMinor: Double,
-    val withoutValue: Array<JsBillPerson>,
-    val percentSum: Double,
-    val remainingPercent: Double,
-    val totalParts: Double,
-    val partValueMinor: Double,
-    val statusTitle: JsSplitFact,
-    val statusDetails: Array<JsSplitFact>,
 )
 
 /*
@@ -127,6 +92,8 @@ class JsSplitBillState(
     val payer: JsBillPerson?,
     val payerIsMe: Boolean,
     val paidWith: JsPaidWith?,
+    // Why: "Add a payment method" where Paid with goes, while this device's user pays and has no method yet.
+    val showsAddPayingMethod: Boolean,
     val isPayerFormerMember: Boolean,
     // Why: who paid, whom Dividir marks as keeping the cents.
     val payerIds: Array<String>,
@@ -240,6 +207,7 @@ class SplitBillPresenter(
                 payer = state.payer?.let(::toJsBillPerson),
                 payerIsMe = state.payerIsMe,
                 paidWith = toJsPaidWithOrNull(state),
+                showsAddPayingMethod = state.showsAddPayingMethod,
                 isPayerFormerMember = state.isPayerFormerMember,
                 payerIds = state.payerIds.toTypedArray(),
                 severalPayers = state.severalPayers?.let(::toJsPayerAmounts),
@@ -432,6 +400,10 @@ class SplitBillPresenter(
         viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(methodId))
     }
 
+    fun addPayingMethod() {
+        viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+    }
+
     fun confirmPayer() {
         viewModel.onEvent(SplitBillUiEvent.OnPayerDone)
     }
@@ -562,39 +534,4 @@ internal fun toJsBillPerson(person: BillPerson): JsBillPerson = JsBillPerson(
     photoUrl = person.photoUrl,
     isMe = person.isMe,
     hasJoined = person.hasJoined,
-)
-
-private fun toJsSplitRow(
-    row: SplitRow,
-    incomePercent: Long?,
-): JsSplitRow = JsSplitRow(
-    person = toJsBillPerson(row.person),
-    isIncluded = row.isIncluded,
-    valueText = row.valueText,
-    parts = row.parts.toDouble(),
-    shareMinor = row.shareMinor?.toDouble(),
-    incomePercent = incomePercent?.toDouble(),
-)
-
-private fun toJsSplitEditor(editor: SplitEditor): JsSplitEditor = JsSplitEditor(
-    mode = editor.mode.code,
-    rows = editor.rows
-        .map { row -> toJsSplitRow(row, editor.incomePercents[row.person.id]) }
-        .toTypedArray(),
-    totalMinor = editor.totalMinor.toDouble(),
-    addsUp = editor.addsUp,
-    included = editor.included.map(::toJsBillPerson).toTypedArray(),
-    excluded = editor.excluded.map(::toJsBillPerson).toTypedArray(),
-    includedCount = editor.includedCount,
-    isEveryoneIncluded = editor.isEveryoneIncluded,
-    perPersonMinor = editor.perPersonMinor.toDouble(),
-    assignedMinor = editor.assignedMinor.toDouble(),
-    remainingMinor = editor.remainingMinor.toDouble(),
-    withoutValue = editor.withoutValue.map(::toJsBillPerson).toTypedArray(),
-    percentSum = editor.percentSum.toDouble(),
-    remainingPercent = editor.remainingPercent.toDouble(),
-    totalParts = editor.totalParts.toDouble(),
-    partValueMinor = editor.partValueMinor.toDouble(),
-    statusTitle = toJsSplitFact(editor.statusTitle),
-    statusDetails = editor.statusDetails.map(::toJsSplitFact).toTypedArray(),
 )

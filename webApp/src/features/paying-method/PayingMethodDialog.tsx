@@ -21,8 +21,8 @@ const typeLabelId = 'paying-method-type'
 const colorLabelId = 'paying-method-color'
 
 /**
- * A new or saved payment method, over the profile like a payment key: a dialog on desktop and tablet, a drawer on the
- * phone. Closing it any way (Esc, the overlay, Cancel) is the ViewModel's back, which also closes it once saved.
+ * A new or saved payment method, over the profile or in Rachar conta's place (Paid with's "Add a payment method"): a
+ * dialog on desktop and tablet, a drawer on the phone. Closing it any way (Esc, the overlay, Cancel) is the ViewModel's back, which also closes it once saved.
  */
 export function PayingMethodDialog({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new PayingMethodPresenter(route))

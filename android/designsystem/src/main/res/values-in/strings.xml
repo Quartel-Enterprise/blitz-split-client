@@ -303,4 +303,5 @@
     <string name="designsystem_paid_with">Dibayar dengan</string>
     <string name="designsystem_paid_with_none">Tidak ada</string>
     <string name="designsystem_paid_with_private">Hanya kamu yang melihat ini.</string>
+    <string name="designsystem_paid_with_add">Tambah metode pembayaran</string>
 </resources>

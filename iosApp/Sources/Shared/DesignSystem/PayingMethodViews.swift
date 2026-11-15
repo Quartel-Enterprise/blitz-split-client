@@ -34,7 +34,9 @@ extension PayingMethodType {
 
     fileprivate var symbol: String {
         switch self {
-        case .creditCard, .debitCard: "creditcard.fill"
+        // A debit card draws a wallet, so the two cards tell apart in a list and a menu at a glance (Pierre's call)
+        case .creditCard: "creditcard.fill"
+        case .debitCard: "wallet.bifold.fill"
         case .cash: "banknote"
         case .bankTransfer: "building.columns"
         case .bitcoin: "bitcoinsign"
@@ -188,23 +190,6 @@ struct PaidWithLine: View {
             .accessibilityElement(children: .combine)
             Text("Only you see this.")
                 .font(.footnote)
-        }
-    }
-}
-
-/// The picked method of a menu (Split a bill's "Paid with"): its tile and label, or "None".
-struct PaidWithChoice: View {
-    let method: PayingMethod?
-
-    var body: some View {
-        if let method {
-            HStack(spacing: 8) {
-                PayingMethodTile(method: method, size: 24)
-                Text(verbatim: method.label)
-                    .lineLimit(1)
-            }
-        } else {
-            Text(LocalizedStringResource("None (no payment method)", defaultValue: "None"))
         }
     }
 }

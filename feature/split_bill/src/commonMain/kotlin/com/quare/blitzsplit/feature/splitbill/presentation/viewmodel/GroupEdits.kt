@@ -103,6 +103,7 @@ internal fun createInitialBillState(
             methods = emptyList(),
             methodId = null,
             openedMethodId = null,
+            isLoaded = false,
         ),
     )
 }

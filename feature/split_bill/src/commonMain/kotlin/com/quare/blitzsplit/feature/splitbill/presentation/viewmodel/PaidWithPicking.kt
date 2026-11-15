@@ -23,9 +23,17 @@ internal class PaidWithPicking(
     private val route: Route.SplitBill,
     private val useCases: BillPayingMethodUseCases,
     private val trackEvent: TrackEvent,
+    // Why: opens "New payment method" over the form, unless another screen already covers it.
+    private val exits: SplitBillExits,
     scope: CoroutineScope,
 ) {
     private var hasOpened = false
+
+    /*
+     * Why: the methods known when "Add a payment method" was tapped, while waiting for the one it saves; null otherwise.
+     * Kept until a method appears rather than until the form closes, since Room may tell of the save a moment after.
+     */
+    private var knownBeforeAdd: Set<String>? = null
 
     init {
         val markedId = route.expenseId ?: route.duplicatesExpenseId
@@ -37,10 +45,19 @@ internal class PaidWithPicking(
 
     fun pick(methodId: String?) {
         val state = uiState.value
-        if (!state.showsPaidWith || methodId == state.paidWith.methodId) return
+        // Why: nothing changes while a receipt is read, whichever UI let the tap through (TalkBack included).
+        if (!state.showsPaidWith || state.isFormLocked || methodId == state.paidWith.methodId) return
         if (methodId != null && state.paidWith.methods.none { it.id == methodId }) return
         trackEvent("split_bill_paid_with_picked", mapOf("has_method" to (methodId != null)))
         uiState.update { it.copy(paidWith = it.paidWith.copy(methodId = methodId)) }
+    }
+
+    // Why: "Add a payment method", only while it shows.
+    fun add() {
+        val state = uiState.value
+        if (!state.showsAddPayingMethod || state.isFormLocked || !exits.openNewPayingMethod()) return
+        trackEvent("split_bill_add_paying_method_clicked", emptyMap())
+        knownBeforeAdd = state.paidWith.methods.mapTo(mutableSetOf()) { it.id }
     }
 
     /*
@@ -66,9 +83,17 @@ internal class PaidWithPicking(
     ) {
         val default = methods.firstOrNull { it.isDefault }?.id.takeIf { route.expenseId == null }
         val openedId = mark?.id ?: default
+        val added = knownBeforeAdd?.let { known -> methods.firstOrNull { it.id !in known } }
+        if (added != null) knownBeforeAdd = null
         uiState.update { state ->
-            val withMethods = state.paidWith.copy(methods = methods)
+            val withMethods = state.paidWith.copy(
+                methods = methods,
+                isLoaded = true,
+            )
             val paidWith = when {
+                // Why: the method saved from "Add a payment method" comes back picked, a change of the person's own.
+                added != null -> withMethods.copy(methodId = added.id)
+
                 !hasOpened -> withMethods.copy(
                     methodId = openedId,
                     openedMethodId = openedId,
@@ -82,6 +107,6 @@ internal class PaidWithPicking(
             }
             state.copy(paidWith = paidWith)
         }
-        if (methods.isNotEmpty()) hasOpened = true
+        if (methods.isNotEmpty() || added != null) hasOpened = true
     }
 }

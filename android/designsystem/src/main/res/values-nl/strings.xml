@@ -312,4 +312,5 @@
     <string name="designsystem_paid_with">Betaald met</string>
     <string name="designsystem_paid_with_none">Geen</string>
     <string name="designsystem_paid_with_private">Alleen jij ziet dit.</string>
+    <string name="designsystem_paid_with_add">Betaalmethode toevoegen</string>
 </resources>

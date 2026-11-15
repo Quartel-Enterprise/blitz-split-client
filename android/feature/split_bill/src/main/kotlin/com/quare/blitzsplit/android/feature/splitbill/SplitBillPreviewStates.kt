@@ -209,6 +209,7 @@ internal fun createPreviewBillState(
         methods = emptyList(),
         methodId = null,
         openedMethodId = null,
+        isLoaded = true,
     ),
 )
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -44,6 +45,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -57,6 +61,7 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.component.nameRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormBleed
+import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.calculateCenteredColumnMargin
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -69,19 +74,29 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 private const val SKELETON_FIELDS = 3
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
-private val sideMargin = 16.dp
+private val defaultSideMargin = 16.dp
 private val rowShape = RoundedCornerShape(20.dp)
 
+/*
+ * Why: a type, a name and a switch are too little for a screen of their own (Pierre's call, feedback of November 15,
+ * 2026), so the method opens as Edit profile does: a bottom sheet on a phone, also over Split a bill's "Add a payment
+ * method", a 560dp dialog anywhere wider (a book's half after the hinge) and full screen on a tabletop.
+ */
 @Composable
 fun PayingMethodContent(
     state: PayingMethodUiState,
-    // Why: a tablet draws the method as a 560dp dialog over the profile, always in one column.
-    isDialog: Boolean,
+    presentation: FormPresentation,
     onEvent: (PayingMethodUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (isDialog) {
-        Surface(
+    when (presentation) {
+        FormPresentation.BottomSheet -> PayingMethodSheet(
+            state = state,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+
+        FormPresentation.Dialog -> Surface(
             modifier = modifier
                 .widthIn(max = dialogWidth)
                 .fillMaxWidth()
@@ -102,8 +117,8 @@ fun PayingMethodContent(
                 )
             }
         }
-    } else {
-        Scaffold(
+
+        FormPresentation.TabletopHalves -> Scaffold(
             modifier = modifier.fillMaxSize(),
             topBar = {
                 PayingMethodTopBar(
@@ -133,6 +148,54 @@ fun PayingMethodContent(
     }
 }
 
+/*
+ * Why: a phone's sheet, its title beside Save as Edit profile's. The keyboard pushes the form up, so the name stays
+ * above it, and a tall form scrolls under the title, which stays put.
+ */
+@Composable
+private fun PayingMethodSheet(
+    state: PayingMethodUiState,
+    onEvent: (PayingMethodUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val title = stringResource(
+        if (state.isEditing) R.string.paying_method_edit_title else R.string.paying_method_new_title,
+    )
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { paneTitle = title }
+            .navigationBarsPadding()
+            .imePadding(),
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                start = 24.dp,
+                end = 24.dp,
+                bottom = 8.dp,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics { heading() },
+            )
+            Button(
+                onClick = { onEvent(PayingMethodUiEvent.OnSaveClicked) },
+                enabled = state.canSave,
+            ) { Text(stringResource(R.string.paying_method_save)) }
+        }
+        PayingMethodFormColumn(
+            state = state,
+            onEvent = onEvent,
+            sideMargin = 24.dp,
+        )
+    }
+}
+
 // Why: a saved method fills the form once read, so the form shimmers instead of flashing empty first.
 @Composable
 private fun PayingMethodFormColumn(
@@ -140,6 +203,7 @@ private fun PayingMethodFormColumn(
     onEvent: (PayingMethodUiEvent) -> Unit,
     modifier: Modifier = Modifier,
     maxContentWidth: Dp = Dp.Infinity,
+    sideMargin: Dp = defaultSideMargin,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val margin = calculateCenteredColumnMargin(
@@ -362,7 +426,7 @@ private fun PayingMethodCardPreview() {
                 isDeleteConfirmationShown = false,
                 openedInput = null,
             ),
-            isDialog = false,
+            presentation = FormPresentation.BottomSheet,
             onEvent = {},
         )
     }
