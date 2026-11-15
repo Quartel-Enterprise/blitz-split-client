@@ -20,9 +20,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     - A device that comes back to a deleted account is erased, profile included, and lands on Welcome with an alert,
       once: "Your data was deleted", "You were using the app without an account and didn't open it for 30 days, so
       your data was deleted. Connect Google or Apple to keep it next time." and "OK"
-      (`WelcomeUiState.showsExpiredAccountNotice`). Only a session the server refuses 29 days or more after this
-      device's last sync counts as that; one lost sooner, or on a device that never synced, keeps the profile as
-      before.
+      (`WelcomeUiState.showsExpiredAccountNotice`). The device asks the server first whether it deleted that
+      account: a session lost for any other reason (revoked, the account deleted from another device) keeps the
+      profile as before, with no alert.
   - Welcome ends in one small centered line under its buttons, "By continuing, you accept the Terms of Service and
     acknowledge the Privacy Policy.", both names links to the legal texts (the app's own screens; the site's page in
     another tab on the web), with no checkbox nor step of its own (Pierre's call, #184): Analytics rests on legitimate
