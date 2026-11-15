@@ -51,6 +51,7 @@ private class BottomSheetScene<T : Any>(
             CompositionLocalProvider(
                 LocalSheetDismissLock provides lock,
                 LocalSheetBlockedDismiss provides blockedDismiss,
+                LocalInOverlayScene provides true,
             ) {
                 entry.Content()
             }

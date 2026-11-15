@@ -1,0 +1,24 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "On a phone, opening a group or a bill from Home now flies the group's balance, or the bill's icon, title, total and your share, into its screen and back again when you return.",
+        "pt": "No celular, abrir um grupo ou uma conta pelo Início agora leva o saldo do grupo, ou o ícone, o título, o total e a sua parte da conta, voando até a tela dele e de volta quando você retorna.",
+        "pt-PT": "No telemóvel, abrir um grupo ou uma conta a partir do Início leva agora o saldo do grupo, ou o ícone, o título, o total e a tua parte da conta, a voar até ao ecrã e de volta quando regressas.",
+        "es": "En el teléfono, al abrir un grupo o una cuenta desde Inicio, el saldo del grupo, o el icono, el título, el total y tu parte de la cuenta, ahora vuelan hasta su pantalla y regresan cuando vuelves.",
+        "fr": "Sur téléphone, ouvrir un groupe ou une dépense depuis Accueil fait désormais voler le solde du groupe, ou l’icône, le titre, le total et ta part de la dépense, jusqu’à son écran, puis les ramène quand tu reviens.",
+        "de": "Auf dem Handy fliegen beim Öffnen einer Gruppe oder Rechnung aus Start jetzt der Saldo der Gruppe oder Symbol, Titel, Betrag und dein Anteil der Rechnung in ihren Bildschirm und beim Zurückgehen wieder zurück.",
+        "it": "Sul telefono, aprendo un gruppo o un conto dalla Home, il saldo del gruppo, o l’icona, il titolo, il totale e la tua quota del conto, ora volano nella sua schermata e tornano indietro quando torni.",
+        "pl": "Na telefonie otwarcie grupy lub rachunku z ekranu Start przenosi teraz saldo grupy albo ikonę, tytuł, kwotę i Twój udział w rachunku na jego ekran i z powrotem, gdy wracasz.",
+        "nl": "Op een telefoon vliegen bij het openen van een groep of rekening vanuit Start nu het saldo van de groep, of het icoon, de titel, het totaal en jouw deel van de rekening, naar het scherm en terug als je teruggaat.",
+        "ja": "スマートフォンでホームからグループや支出を開くと、グループの残高、または支出のアイコン、タイトル、合計、あなたの負担分が画面へ移動し、戻ると元の位置へ戻るようになりました。",
+        "tr": "Telefonda Ana Sayfa'dan bir grup ya da hesap açınca grubun bakiyesi, ya da hesabın simgesi, başlığı, toplamı ve senin payın artık ekranına uçuyor ve geri dönünce yerine dönüyor.",
+        "id": "Di ponsel, membuka grup atau tagihan dari Beranda kini menerbangkan saldo grup, atau ikon, judul, total, dan bagianmu dari tagihan, ke layarnya dan kembali lagi saat kamu kembali."
+      }
+    }
+  ]
+}

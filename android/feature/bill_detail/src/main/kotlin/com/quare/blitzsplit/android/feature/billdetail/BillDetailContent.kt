@@ -37,8 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.component.BillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
+import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -74,6 +76,8 @@ fun BillDetailContent(
     pickers: PhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    // Why: the bill whose row's badge, title, total and share fly in; null in previews and screenshots.
+    sharedBillId: String? = null,
 ) {
     // Why: a dialog is two columns wide on a tablet lying down only, one column in a book's or a tabletop's half.
     val usesTwoColumns = rememberUsesFormColumns(isDialog)
@@ -87,6 +91,7 @@ fun BillDetailContent(
             dates = dates,
             pickers = pickers,
             onEvent = onEvent,
+            shared = rememberBillSharedModifiers(sharedBillId),
         )
     }
     val second: @Composable ColumnScope.() -> Unit = {
@@ -307,6 +312,7 @@ private fun BillDetailBillSection(
     dates: DateTimeTextFormatter,
     pickers: PhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
+    shared: BillSharedModifiers,
 ) {
     BillSummaryColumn(
         category = state.category,
@@ -322,6 +328,7 @@ private fun BillDetailBillSection(
         onLonePayerClick = state.lonePayer?.let { payer ->
             { onEvent(BillDetailUiEvent.OnPersonClicked(payer.memberId)) }
         },
+        shared = shared,
     ) {
         if (state.isPending) PendingLine(stringResource(R.string.bill_detail_pending))
         if (state.showsUnknownCurrencyNote) {
@@ -338,6 +345,7 @@ private fun BillDetailBillSection(
         MyPartCard(
             state = state,
             money = money,
+            shareModifier = shared.share,
         )
     }
     BillAttachmentsSection(

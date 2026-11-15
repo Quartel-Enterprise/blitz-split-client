@@ -51,6 +51,7 @@ import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.billMenuItemsOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rowOptionsLabelOf
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
@@ -201,6 +202,7 @@ private fun HomeGroupCard(
             Column {
                 AmountText(
                     text = amount,
+                    modifier = shared.balance,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontSize = if (metrics.isCompact) 16.sp else 17.sp,
                     ),
@@ -209,6 +211,7 @@ private fun HomeGroupCard(
                 )
                 Text(
                     text = word,
+                    modifier = shared.balanceWord,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
@@ -316,6 +319,8 @@ internal fun HomeBillRow(
         )
     }
     val optionsLabel = rowOptionsLabelOf(bill.description)
+    // Why: only a row that opens the bill flies into it; the cover screen's rows open nothing.
+    val shared = rememberBillSharedModifiers(bill.id.takeIf { onClick != null })
     val money = rememberMoneyFormatter(bill.currency)
     val paidBy = paidTextOrNull(
         bill.payers,
@@ -338,13 +343,17 @@ internal fun HomeBillRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Why: as Despesas draws it (6.1).
-            CategoryBadge(category = bill.category)
+            CategoryBadge(
+                category = bill.category,
+                modifier = shared.category,
+            )
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text(
                     text = bill.description,
+                    modifier = shared.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
@@ -362,6 +371,7 @@ internal fun HomeBillRow(
             ) {
                 Text(
                     text = money.toText(bill.totalMinor),
+                    modifier = shared.total,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     softWrap = false,
@@ -384,7 +394,9 @@ internal fun HomeBillRow(
                     )
                     Text(
                         text = share,
-                        modifier = Modifier.semantics { contentDescription = shareLabel },
+                        modifier = Modifier
+                            .semantics { contentDescription = shareLabel }
+                            .then(shared.share),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = amountColorOf(bill.myBalanceMinor),

@@ -177,6 +177,7 @@ internal fun GroupGridCard(
                     Column {
                         Text(
                             text = money.toSignedText(group.netMinor),
+                            modifier = shared.balance,
                             style = MaterialTheme.typography.titleMedium.copy(fontSize = metrics.amount),
                             fontWeight = FontWeight.Bold,
                             color = amountColorOf(group.netMinor),
@@ -184,6 +185,7 @@ internal fun GroupGridCard(
                         )
                         Text(
                             text = stringResource(balanceLabelOf(group.balanceKind)),
+                            modifier = shared.balanceWord,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

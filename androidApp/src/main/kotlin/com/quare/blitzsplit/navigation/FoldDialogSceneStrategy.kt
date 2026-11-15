@@ -38,7 +38,10 @@ private class FoldDialogScene<T : Any>(
             properties = properties,
             placement = rememberDialogPlacement(isTopHalfOnTabletop = isTopHalfOnTabletop),
         ) {
-            CompositionLocalProvider(LocalLifecycleOwner provides rememberLifecycleOwner()) {
+            CompositionLocalProvider(
+                LocalLifecycleOwner provides rememberLifecycleOwner(),
+                LocalInOverlayScene provides true,
+            ) {
                 entry.Content()
             }
         }

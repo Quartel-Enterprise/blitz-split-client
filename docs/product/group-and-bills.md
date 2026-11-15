@@ -62,8 +62,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     keeps its 36 pt square beside the faces and the name in the window's title.
   - The group's avatar and name fly from the row or card tapped into the group's header, and back on back or the back
     gesture, following the finger (beta feedback of 2026-11-12): from Groups' list and grid and Home's group cards.
+    On Android the balance and its word ("+R$ 313,81", "to receive") fly too, into "Your balance in this group"'s
+    amount and word (beta feedback of 2026-11-15); once you are settled the group's screen shows the settled line,
+    which has no amount, so only the avatar and name fly.
     Android: Compose's shared elements (`SharedTransitionLayout` around Navigation 3, `rememberGroupSharedModifiers`),
-    keyed by the screen the group opens from (`GroupSharedOrigin`), so a tab switch between Home and Groups flies
+    keyed by the screen the group opens from (`SharedOrigin`), so a tab switch between Home and Groups flies
     nothing. That screen is kept while the group is on the back stack and read back once it leaves: back pops the group before
     its exit runs, so read live it found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14). From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
     over the list, while beside it (a tablet lying down, a book) the row stays where it is. So the group opens over
@@ -78,8 +81,16 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     of a row tapped in the last second, so a group opened from a bill or Activity never zooms out of a row below it;
     never beside the list nor on the Mac. Reduced motion turns it off everywhere: Android's animations off end it at
     once, the web skips it under `prefers-reduced-motion`, and iOS's Reduce Motion turns the zoom into the system's
-    crossfade and stills the header's scale and rise, keeping its fades. A bill's "Latest expenses" row on Home shows
-    the group's avatar but opens the bill, so it flies nowhere.
+    crossfade and stills the header's scale and rise, keeping its fades. iOS's zoom already carries the whole card,
+    balance included; the web names only the avatar and name, so its balance crossfades with the page. A bill's
+    "Latest expenses" row on Home shows the group's avatar but opens the bill, so the group's avatar flies nowhere.
+  - A bill's category badge, title, total and share fly from its row on Home's "Latest expenses" or "All expenses"
+    into the bill's screen (the badge, the title, the big total and "Your share"'s amount), and back on back or the back
+    gesture (beta feedback of 2026-11-15). Android only, where the bill covers the window (a phone; wider it is a dialog
+    over the screen it opened from, and nothing flies, even once the window narrows under it): `rememberBillSharedModifiers`, keyed by the bill and the screen it opened from
+    (`SharedOrigin`), the screen under the bill kept as the group's is. The row's ⋮ stays. A bill opened from the group's
+    Expenses, Search or Activity just slides in. iOS, the Mac and the web animate no bill between screens, so they keep
+    their own push.
   - The group's avatar in the header (its rounded square, the photo or the initials on the color; the web's page header, the top bar on Android, the header on iOS and the Mac) opens the photo big (Pierre's call, `Route.GroupPhoto`,
     `GroupPhotoViewModel`), as the profile's avatar does ([the profile's viewer](profile.md)): the group's square, 200 pt/dp/px (260 once both sides have 600) over the
     dimmed, blurred group, with "Camera" where there is one, "Gallery" and "Remove" (with a photo) under it. Each saves
