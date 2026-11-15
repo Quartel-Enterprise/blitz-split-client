@@ -6,8 +6,9 @@ import { t } from '@/i18n'
 import { cn } from '@/lib/utils'
 
 /**
- * A photo big, as Bible Planner's viewer, for the profile's and the group's: the photo over a dimmed and blurred page,
- * with the shortcuts that change it at once under it. Esc, ✕, a click outside them and the browser's back close it.
+ * A photo big, as Bible Planner's viewer, for the profile's, the group's and a contact's: the photo over a dimmed and
+ * blurred page, with the shortcuts that change it at once under it (none for a contact's, which isn't this user's).
+ * Esc, ✕, a click outside them and the browser's back close it.
  * `overlay` draws over the viewer, as "Ajustar foto" does for a picked photo.
  */
 export function PhotoViewerDialog({
@@ -18,7 +19,7 @@ export function PhotoViewerDialog({
   children,
 }: {
   title: string
-  description: string
+  description?: string
   onDismiss: () => void
   overlay?: ReactNode
   children: ReactNode
@@ -32,9 +33,11 @@ export function PhotoViewerDialog({
           className="fixed inset-0 z-50 flex overflow-y-auto p-4 text-white outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
           // Why: a click on the backdrop, around the photo and its shortcuts, closes it as a tap outside does.
           onClick={(event) => event.target === event.currentTarget && onDismiss()}
+          // Why: a viewer with nothing to change has nothing to describe beyond its title.
+          {...(description === undefined && { 'aria-describedby': undefined })}
         >
           <DialogPrimitive.Title className="sr-only">{title}</DialogPrimitive.Title>
-          <DialogPrimitive.Description className="sr-only">{description}</DialogPrimitive.Description>
+          {description !== undefined && <DialogPrimitive.Description className="sr-only">{description}</DialogPrimitive.Description>}
           {children}
           <DialogPrimitive.Close
             aria-label={t('common_close')}

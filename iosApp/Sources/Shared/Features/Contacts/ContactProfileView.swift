@@ -64,6 +64,16 @@ final class ContactProfileModel {
         )
     }
 
+    /// The face opened big; ✕, a tap outside, a swipe or Esc close it in the ViewModel too.
+    var isPhotoShown: Binding<Bool> {
+        Binding(
+            get: { self.state.isPhotoOpen },
+            set: { isShown in
+                if !isShown, self.current.isPhotoOpen { self.send(ContactProfileUiEventOnPhotoDismissed.shared) }
+            },
+        )
+    }
+
     var isAddingToGroup: Binding<Bool> {
         Binding(
             get: { self.state.addToGroup != nil },
@@ -173,6 +183,19 @@ struct ContactProfileView: View {
                 Text("\(contact.name) leaves your Contacts. They stay in \(groups) and come back by themselves if they join a new bill with you. You can show them again in Hidden.")
             }
         }
+        #if os(iOS)
+        .fullScreenCover(isPresented: model?.isPhotoShown ?? .constant(false)) {
+            if let model, let contact = model.state.contact {
+                ContactPhotoView(model: model, contact: contact)
+            }
+        }
+        #else
+        .sheet(isPresented: model?.isPhotoShown ?? .constant(false)) {
+            if let model, let contact = model.state.contact {
+                NavigationStack { ContactPhotoView(model: model, contact: contact) }
+            }
+        }
+        #endif
         .sheet(isPresented: model?.isAddingToGroup ?? .constant(false)) {
             if let model, let draft = model.state.addToGroup, let contact = model.state.contact {
                 AddToGroupSheet(model: model, draft: draft, contact: contact)
@@ -355,6 +378,7 @@ private struct ContactProfileContent: View {
             contact: contact,
             isRow: isInPane,
             scroll: foldingScroll,
+            openPhoto: { model.send(ContactProfileUiEventOnPhotoClicked.shared) },
         )
         if state.showsOfflineNotice {
             Label("Offline · what you do goes into the queue", systemImage: "wifi.slash")
@@ -405,6 +429,7 @@ private struct ContactProfileHeader: View {
     let isRow: Bool
     /// The scroll the face shrinks with as it goes under the bar; nil where it stays (beside the list).
     let scroll: GroupHeaderScroll?
+    let openPhoto: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -413,10 +438,15 @@ private struct ContactProfileHeader: View {
             ? AnyLayout(HStackLayout(spacing: 14))
             : AnyLayout(VStackLayout(spacing: 8))
         layout {
-            AvatarPhoto(initial: state.initials, color: contact.color, photoUrl: contact.photoUrl, size: isRow ? 56 : 88)
-                .scaleEffect(reduceMotion ? 1 : scroll?.avatarScale ?? 1, anchor: .bottom)
-                .opacity(Double(scroll?.avatarOpacity ?? 1))
-                .accessibilityHidden(true)
+            // The face opens big, as the profile's avatar and the group's photo do
+            Button(action: openPhoto) {
+                AvatarPhoto(initial: state.initials, color: contact.color, photoUrl: contact.photoUrl, size: isRow ? 56 : 88)
+                    .contentShape(.circle)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("View photo")
+            .scaleEffect(reduceMotion ? 1 : scroll?.avatarScale ?? 1, anchor: .bottom)
+            .opacity(Double(scroll?.avatarOpacity ?? 1))
             VStack(alignment: isRow ? .leading : .center, spacing: 4) {
                 Text(verbatim: contact.name)
                     .font(.title2.weight(.bold))
@@ -1093,6 +1123,21 @@ private struct MergeGuestSheet: View {
         } else if !model.state.isOnline {
             Label("Creating the personal invite needs internet.", systemImage: "wifi.slash")
                 .foregroundStyle(.secondary)
+        }
+    }
+}
+
+/// The person's face big, in the viewer the profile's and the group's photo share (`PhotoViewer`), with no shortcuts:
+/// the photo is theirs to change, not this user's.
+private struct ContactPhotoView: View {
+    let model: ContactProfileModel
+    let contact: Contact
+
+    var body: some View {
+        PhotoViewer(dismiss: { model.send(ContactProfileUiEventOnPhotoDismissed.shared) }) { size in
+            AvatarPhoto(initial: model.state.initials, color: contact.color, photoUrl: contact.photoUrl, size: size)
+                .shadow(color: .black.opacity(0.35), radius: 20, y: 8)
+                .accessibilityLabel(Text(verbatim: contact.name))
         }
     }
 }

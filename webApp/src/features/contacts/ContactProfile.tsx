@@ -10,6 +10,7 @@ import {
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
+import { PHOTO_VIEWER_SIZE, PhotoViewerDialog } from '@/components/PhotoViewer'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -106,7 +107,15 @@ export function ContactProfileView({
       */}
       {/* Why: the surface it sits on, the page's or the desktop pane's card, so the folded bar never shows a band. */}
       <header ref={headerRef} className={cn('contact-header flex items-center gap-3.5 backdrop-blur', onBack ? 'bg-background/95' : 'bg-card/95')}>
-        <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="contact-header-photo shrink-0" />
+        {/* Why: the face opens big, as the profile's avatar and the group's photo do. */}
+        <button
+          type="button"
+          aria-label={t('profilePhoto_open')}
+          onClick={() => presenter.openPhoto()}
+          className="shrink-0 rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+        >
+          <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="contact-header-photo" />
+        </button>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h2 className="contact-header-name truncate font-semibold tracking-tight">{name}</h2>
           <div className="contact-header-meta flex flex-wrap items-center gap-2">
@@ -213,6 +222,14 @@ export function ContactProfileView({
           onConfirm={() => presenter.confirmHide()}
           onDismiss={() => presenter.dismissHide()}
         />
+      )}
+      {state.isPhotoOpen && (
+        // Why: the person's face big, with no shortcuts: the photo is theirs to change, not this user's.
+        <PhotoViewerDialog title={name} onDismiss={() => presenter.dismissPhoto()}>
+          <div className="m-auto py-4">
+            <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className={PHOTO_VIEWER_SIZE} />
+          </div>
+        </PhotoViewerDialog>
       )}
       {state.addToGroup && <AddToGroupDialog presenter={presenter} draft={state.addToGroup} contact={contact} />}
       {state.merge && <MergeDialog presenter={presenter} sheet={state.merge} contact={contact} isOnline={state.isOnline} />}

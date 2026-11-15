@@ -85,7 +85,12 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     web's page scrolls as one); beside Contacts' list it keeps one (beta feedback of 2026-11-14). As the header scrolls up its face shrinks and
     fades while a small face and the name come into the top bar (Android and iOS, as the group's header does; the
     web's header sticks and folds into a compact bar, under the phone's top bar; the Mac, whose toolbar names the
-    person, and the pane beside Contacts' list keep their header as it is). "Request" and
+    person, and the pane beside Contacts' list keep their header as it is). The header's face ("View photo") opens
+    it big in the viewer of the profile's and the group's photo ([Profile](profile.md)), the initials on their color
+    when there is no photo, with no shortcuts under it: no Camera, Gallery or Remove, since the photo is the person's
+    to change (Pierre's call, `ContactProfileUiState.isPhotoOpen`); ✕, a tap outside, back and Esc close it, except
+    the browser's back, which leaves the profile as it does over the profile's other dialogs (it is the profile's
+    state, not a route of its own). "Request" and
     "Received" sit side by side while both labels fit and stack full width otherwise, as the guest card's "Merge"
     and "Invite". "Share profile" beside ⋯ shares the person's profile link
     (`https://blitzsplit.com/u/<code>?lang=<app language>`, as they would share it from their own Profile, the link

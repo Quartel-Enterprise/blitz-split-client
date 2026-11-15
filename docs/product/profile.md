@@ -114,7 +114,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     once, offline too, with no Save, and the viewer stays open showing the new one; a photo picked opens "Adjust photo" over it first, and is still saved when the viewer closes while it is prepared. ✕, a tap outside, back and
     Esc close it. Android draws it as a dialog over the whole window (a book's right half), iOS covers the screen,
     the Mac opens it as a sheet on Settings and the web as a dialog over the profile. The group's own photo opens the same
-    way from its header ([The group screen](group-and-bills.md)).
+    way from its header ([The group screen](group-and-bills.md)), and a contact's face from their profile, with no
+    shortcuts ([Contacts](balances-and-contacts.md)).
   - "Release notes" (`Route.ReleaseNotes`, `:core:release_notes`, `:feature:release_notes`), a row of "Privacy and
     about" right before "Check for updates" (the About card's last row on the web), lists what each version changed
     on the platform the app runs on: a card per version, newest first, with its number, its date and its notes, the

@@ -122,6 +122,8 @@ class JsContactProfileState(
     val showsOfflineNotice: Boolean,
     val isOnline: Boolean,
     val isHideConfirmOpen: Boolean,
+    // Why: the face opened big, with no shortcuts to change it.
+    val isPhotoOpen: Boolean,
     val addToGroup: JsAddToGroup?,
     val merge: JsGuestMergeSheet?,
     // Why: HomeTab's name in lowercase, the tab the frame selects and the back names.
@@ -254,6 +256,14 @@ class ContactProfilePresenter(
         viewModel.onEvent(ContactProfileUiEvent.OnShowClicked)
     }
 
+    fun openPhoto() {
+        viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+    }
+
+    fun dismissPhoto() {
+        viewModel.onEvent(ContactProfileUiEvent.OnPhotoDismissed)
+    }
+
     fun viewBalances() {
         viewModel.onEvent(ContactProfileUiEvent.OnViewBalancesClicked)
     }
@@ -342,6 +352,7 @@ private fun toJsContactProfileState(state: ContactProfileUiState): JsContactProf
     showsOfflineNotice = state.showsOfflineNotice,
     isOnline = state.isOnline,
     isHideConfirmOpen = state.isHideConfirmOpen,
+    isPhotoOpen = state.isPhotoOpen,
     addToGroup = state.addToGroup?.let(::toJsAddToGroup),
     merge = state.merge?.let(::toJsGuestMergeSheet),
     homeTab = toJsHomeTab(state.homeTab),

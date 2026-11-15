@@ -14,6 +14,7 @@ import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.shareText
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiAction
+import com.quare.blitzsplit.feature.contacts.presentation.model.ContactProfileUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -43,6 +44,15 @@ fun ContactProfileScreen(
         onEvent = viewModel::onEvent,
         snackbarHostState = snackbarHostState,
     )
+    if (state.isPhotoOpen) {
+        state.contact?.let { contact ->
+            ContactPhotoDialog(
+                contact = contact,
+                initials = state.initials,
+                onDismiss = { viewModel.onEvent(ContactProfileUiEvent.OnPhotoDismissed) },
+            )
+        }
+    }
     if (state.isHideConfirmOpen) {
         state.contact?.let { contact ->
             HideContactDialog(
