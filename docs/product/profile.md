@@ -238,9 +238,9 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     brand's Material scheme for the Android system's in light and dark alike, while the groups', avatars' and
     categories' own colors stay the brand's. Its subtitle ("Use your Android system colors in the app") and its ⓘ
     say the colors are the Android system's, which come from the wallpaper or from a palette picked in Android's
-    settings, never that they always come from the wallpaper (Pierre's call, beta feedback, November 2026). Kept per device and never synced (`usesDynamicColors` in `device_settings`, so it
-    outlives a sign out); a choice restored onto a device that can't draw it reads as off. The Apple apps and the web
-    have no such scheme and show nothing.
+    settings, never that they always come from the wallpaper (Pierre's call, beta feedback, November 2026). Kept per
+    device and never synced (`usesDynamicColors` in `device_settings`, so it outlives a sign out); a choice restored
+    onto a device that can't draw it reads as off. The Apple apps and the web have no such scheme and show nothing.
   - "Edit profile": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).

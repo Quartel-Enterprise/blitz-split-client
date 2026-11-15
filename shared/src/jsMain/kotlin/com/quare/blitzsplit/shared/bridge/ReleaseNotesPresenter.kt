@@ -10,7 +10,6 @@ import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotes
 import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.blitzsplit.feature.releasenotes.presentation.viewmodel.ReleaseNotesViewModel
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import org.koin.mp.KoinPlatform
 
 class JsReleaseNotes(
@@ -93,7 +92,7 @@ class ReleaseNotesPresenter {
 
     // Why: a GitHub release page to open in another tab.
     fun observeOpenUrls(onUrl: (String) -> Unit): JsWatch {
-        val urls = viewModel.uiAction.mapNotNull { action ->
+        val urls = viewModel.uiAction.map { action ->
             when (action) {
                 is ReleaseNotesUiAction.OpenUrl -> action.url
             }
