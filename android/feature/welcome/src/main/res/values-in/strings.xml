@@ -16,4 +16,8 @@
     <string name="welcome_legal_notice">Dengan melanjutkan, kamu menerima %1$s dan menyatakan telah membaca %2$s.</string>
     <string name="welcome_legal_terms">Ketentuan Layanan</string>
     <string name="welcome_legal_privacy">Kebijakan Privasi</string>
+    <string name="welcome_no_account_note">Tanpa akun, datamu dihapus setelah 30 hari tidak dipakai.</string>
+    <string name="welcome_expired_title">Datamu sudah dihapus</string>
+    <string name="welcome_expired_body">Kamu memakai aplikasi tanpa akun dan tidak membukanya selama 30 hari, jadi datamu dihapus. Hubungkan Google atau Apple agar tidak hilang lagi.</string>
+    <string name="welcome_expired_ok">OK</string>
 </resources>

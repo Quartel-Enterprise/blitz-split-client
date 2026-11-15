@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Toi seul vois ton e-mail</string>
     <string name="profile_email_info_body">Il est là pour que tu saches avec quel compte tu es connecté. Les personnes de tes groupes voient ton nom et ta photo, jamais ton e-mail.</string>
     <string name="profile_account_none">Pas de compte</string>
-    <string name="profile_account_none_detail">Identifiant anonyme de cet appareil</string>
+    <string name="profile_account_none_detail">Effacé après 30 jours sans utilisation</string>
     <string name="profile_account_local_detail">Enregistré uniquement sur cet appareil pour l’instant</string>
     <string name="profile_connect">Se connecter</string>
     <string name="profile_connect_failed">Connexion impossible. Réessaie.</string>
@@ -109,7 +109,7 @@
     <string name="profile_sign_out_now">Se déconnecter maintenant et perdre les modifications</string>
     <string name="profile_sign_out_failed">Impossible de se déconnecter. Réessaie.</string>
     <string name="profile_erase_title">Effacer le profil de cet appareil ?</string>
-    <string name="profile_erase_body">Ton compte n’a pas de connexion Google ou Apple. Quand tu te déconnectes, on efface la copie de cet appareil. Pour revenir, il te faut le code de récupération.</string>
+    <string name="profile_erase_body">Ton compte n’a pas de connexion Google ou Apple. Quand tu te déconnectes, on efface la copie de cet appareil. Pour revenir, il te faut le code de récupération. Après 30 jours sans utilisation, le compte est effacé et le code ne fonctionne plus.</string>
     <string name="profile_erase_body_no_code">Tu utilises l’app sans compte et tu n’as pas encore synchronisé, donc il n’y a pas de code de récupération. Quand tu pars, ton profil est perdu pour de bon.</string>
     <string name="profile_erase_code_saved">J’ai gardé le code en lieu sûr</string>
     <string name="profile_erase_no_code_ack">Je comprends que c’est irrécupérable</string>

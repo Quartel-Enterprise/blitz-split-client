@@ -5,7 +5,7 @@
     <string name="profile_email_info">Sobre o teu e-mail</string>
     <string name="profile_email_info_title">Só tu vês o teu e-mail</string>
     <string name="profile_email_info_body">Aparece aqui para saberes com que conta iniciaste sessão. As pessoas dos teus grupos veem o teu nome e a tua foto, nunca o teu e-mail.</string>
-    <string name="profile_account_none_detail">ID anónimo deste aparelho</string>
+    <string name="profile_account_none_detail">Apagada após 30 dias sem utilização</string>
     <string name="profile_account_local_detail">Fica guardado só neste aparelho por enquanto</string>
     <string name="profile_connect">Ligar</string>
     <string name="profile_connect_failed">Não foi possível ligar. Tenta de novo.</string>
@@ -42,7 +42,7 @@
     <string name="profile_sign_out_when_synced">Terminar sessão ao sincronizar</string>
     <string name="profile_sign_out_now">Terminar sessão agora e perder as alterações</string>
     <string name="profile_sign_out_failed">Não foi possível terminar a sessão. Tenta de novo.</string>
-    <string name="profile_erase_body">A tua conta não tem Google nem Apple. Ao terminares sessão, apagamos a cópia deste aparelho. Para voltares, só com o código de recuperação.</string>
+    <string name="profile_erase_body">A tua conta não tem Google nem Apple. Ao terminares sessão, apagamos a cópia deste aparelho. Para voltares, só com o código de recuperação. Após 30 dias sem utilização, a conta é apagada e o código deixa de funcionar.</string>
     <string name="profile_erase_body_no_code">Usas a app sem conta e ainda não sincronizaste, por isso não há código de recuperação. Ao terminares sessão, o teu perfil desaparece de vez.</string>
     <string name="profile_erase_code_saved">Guardei o código num lugar seguro</string>
     <string name="profile_erase_no_code_ack">Percebo que não é possível recuperar</string>

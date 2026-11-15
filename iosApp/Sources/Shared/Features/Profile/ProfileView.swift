@@ -681,7 +681,7 @@ private struct AccountSection: View {
                     } label: {
                         Text("No account")
                         if state.hasAnonymousId {
-                            Text("Anonymous ID of this \(DeviceName.current)")
+                            Text("Deleted after 30 days without use")
                         } else {
                             Text("Saved only on this \(DeviceName.current) for now")
                         }

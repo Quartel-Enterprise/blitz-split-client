@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Nur du siehst deine E-Mail</string>
     <string name="profile_email_info_body">Sie steht hier, damit du weißt, mit welchem Konto du angemeldet bist. Die Leute in deinen Gruppen sehen deinen Namen und dein Foto, nie deine E-Mail.</string>
     <string name="profile_account_none">Kein Konto</string>
-    <string name="profile_account_none_detail">Anonyme ID dieses Geräts</string>
+    <string name="profile_account_none_detail">Wird nach 30 Tagen ohne Nutzung gelöscht</string>
     <string name="profile_account_local_detail">Vorerst nur auf diesem Gerät gespeichert</string>
     <string name="profile_connect">Verbinden</string>
     <string name="profile_connect_failed">Verbindung fehlgeschlagen. Versuch es noch einmal.</string>
@@ -106,7 +106,7 @@
     <string name="profile_sign_out_now">Jetzt abmelden und Änderungen verlieren</string>
     <string name="profile_sign_out_failed">Abmelden fehlgeschlagen. Versuch es noch einmal.</string>
     <string name="profile_erase_title">Profil von diesem Gerät löschen?</string>
-    <string name="profile_erase_body">Dein Konto hat keine Anmeldung mit Google oder Apple. Wenn du dich abmeldest, löschen wir die Kopie auf diesem Gerät. Um zurückzukommen, brauchst du den Wiederherstellungscode.</string>
+    <string name="profile_erase_body">Dein Konto hat keine Anmeldung mit Google oder Apple. Wenn du dich abmeldest, löschen wir die Kopie auf diesem Gerät. Um zurückzukommen, brauchst du den Wiederherstellungscode. Nach 30 Tagen ohne Nutzung wird das Konto gelöscht und der Code funktioniert nicht mehr.</string>
     <string name="profile_erase_body_no_code">Du nutzt die App ohne Konto und hast noch nicht synchronisiert, daher gibt es keinen Wiederherstellungscode. Wenn du gehst, ist dein Profil endgültig weg.</string>
     <string name="profile_erase_code_saved">Ich habe den Code sicher aufbewahrt</string>
     <string name="profile_erase_no_code_ack">Ich verstehe, dass es sich nicht wiederherstellen lässt</string>

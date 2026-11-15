@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Só você vê o seu e-mail</string>
     <string name="profile_email_info_body">Ele aparece aqui para você saber com qual conta entrou. As pessoas dos seus grupos veem seu nome e sua foto, nunca o seu e-mail.</string>
     <string name="profile_account_none">Sem conta</string>
-    <string name="profile_account_none_detail">ID anônimo deste aparelho</string>
+    <string name="profile_account_none_detail">Apagada após 30 dias sem uso</string>
     <string name="profile_account_local_detail">Fica salvo só neste aparelho por enquanto</string>
     <string name="profile_connect">Conectar</string>
     <string name="profile_connect_failed">Não deu para conectar. Tente de novo.</string>
@@ -107,7 +107,7 @@
     <string name="profile_sign_out_now">Sair agora e perder as alterações</string>
     <string name="profile_sign_out_failed">Não deu para sair. Tente de novo.</string>
     <string name="profile_erase_title">Apagar o perfil deste aparelho?</string>
-    <string name="profile_erase_body">Sua conta não tem Google nem Apple. Ao sair, apagamos a cópia deste aparelho. Para voltar, só com o código de recuperação.</string>
+    <string name="profile_erase_body">Sua conta não tem Google nem Apple. Ao sair, apagamos a cópia deste aparelho. Para voltar, só com o código de recuperação. Após 30 dias sem uso, a conta é apagada e o código deixa de funcionar.</string>
     <string name="profile_erase_body_no_code">Você usa sem conta e ainda não sincronizou, então não há código de recuperação. Ao sair, seu perfil some de vez.</string>
     <string name="profile_erase_code_saved">Guardei o código em um lugar seguro</string>
     <string name="profile_erase_no_code_ack">Entendo que não dá para recuperar</string>

@@ -103,6 +103,7 @@ fun WelcomeContent(
             }
         }
     }
+    if (state.showsExpiredAccountNotice) ExpiredAccountDialog(onEvent = onEvent)
 }
 
 @Composable
@@ -461,6 +462,13 @@ private fun WelcomeActionsSection(
                 style = MaterialTheme.typography.titleMedium,
             )
         }
+        Text(
+            text = stringResource(R.string.welcome_no_account_note),
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
         TextButton(
             onClick = { onEvent(WelcomeUiEvent.OnUsedOnAnotherDeviceClicked) },
             modifier = Modifier.fillMaxWidth(),
@@ -558,6 +566,7 @@ private fun WelcomeOnlinePreview() {
                 isOnline = true,
                 connectingProvider = null,
                 error = null,
+                showsExpiredAccountNotice = false,
             ),
             onEvent = {},
         )
@@ -573,6 +582,7 @@ private fun WelcomeOfflinePreview() {
                 isOnline = false,
                 connectingProvider = null,
                 error = null,
+                showsExpiredAccountNotice = false,
             ),
             onEvent = {},
         )

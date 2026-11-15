@@ -2,6 +2,7 @@ import { CloudOff, Link2, ShieldCheck } from 'lucide-react'
 import { WelcomePresenter, type JsWelcomeState } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, BrandMark, OfflineAlert, OrDivider } from '@/components/common'
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { t } from '@/i18n'
 
@@ -14,6 +15,23 @@ export function WelcomeScreen() {
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
+      {/* Shown once, on the welcome a browser lands on after its account was deleted for 30 days without use */}
+      <AlertDialog
+        open={state.showsExpiredAccountNotice}
+        onOpenChange={(open) => {
+          if (!open) presenter.dismissExpiredAccountNotice()
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('welcome_expiredTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('welcome_expiredBody')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>{t('welcome_expiredOk')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="page-enter grid w-full max-w-4xl overflow-hidden rounded-xl border bg-card shadow-sm md:grid-cols-2">
         <aside className="relative overflow-hidden bg-brand-panel p-6 text-brand-panel-foreground sm:p-10">
           <div aria-hidden className="pointer-events-none absolute -top-9 -right-9 size-50 opacity-90">
@@ -40,6 +58,7 @@ export function WelcomeScreen() {
             <Button size="lg" onClick={() => presenter.useWithoutAccount()}>
               {t('welcome_useWithoutAccount')}
             </Button>
+            <p className="text-center text-xs text-muted-foreground">{t('welcome_noAccountNote')}</p>
             <Button variant="link" onClick={() => presenter.usedOnAnotherDevice()}>
               {t('welcome_usedOnAnotherDevice')}
             </Button>

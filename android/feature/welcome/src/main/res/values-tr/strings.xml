@@ -16,4 +16,8 @@
     <string name="welcome_legal_notice">Devam ederek %1$s kabul etmiş ve %2$s okumuş sayılırsın.</string>
     <string name="welcome_legal_terms">Hizmet Şartları’nı</string>
     <string name="welcome_legal_privacy">Gizlilik Politikası’nı</string>
+    <string name="welcome_no_account_note">Hesapsız kullanımda verilerin 30 gün kullanılmazsa silinir.</string>
+    <string name="welcome_expired_title">Verilerin silindi</string>
+    <string name="welcome_expired_body">Uygulamayı hesapsız kullanıyordun ve 30 gün boyunca açmadın, bu yüzden verilerin silindi. Bir dahaki sefere kaybetmemek için Google ya da Apple bağla.</string>
+    <string name="welcome_expired_ok">Tamam</string>
 </resources>
