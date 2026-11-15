@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_detail_export_error">Não foi possível exportar os dados do grupo. Tenta de novo.</string>
+    <string name="group_detail_tabs">Secções do grupo</string>
+    <string name="group_detail_empty_message">Regista a primeira despesa ou convida quem vai dividir contigo. Quem ainda não tem a app também entra na conta.</string>
+    <string name="group_detail_split_bill">Dividir conta</string>
+    <string name="group_detail_change_error">Não foi possível guardar a alteração. Tenta de novo.</string>
+    <string name="group_detail_payment_paid_you">%s pagou-te</string>
+    <string name="group_detail_payment_you_paid">Pagaste %s</string>
+    <string name="group_detail_balances_with_you">Contigo</string>
+    <string name="group_detail_balances_note">As dívidas de cada par já vêm compensadas: se a Ana te deve e tu lhe deves, aparece só a diferença. “Recebi” e “Já pagou” registam um pagamento feito fora da app (Pix, dinheiro, transferência).</string>
+    <string name="group_detail_balances_empty_message">Os saldos aparecem quando a primeira despesa for registada.</string>
+    <string name="group_detail_balances_settled_title">Toda a gente acertou</string>
+    <string name="group_detail_balances_settled_message">Ninguém deve nada neste grupo. Se a viagem acabou, podes apagar o grupo para todos.</string>
+    <string name="group_detail_teach_offer">Conta guardada em %1$s, e não em %2$s, que o mapa sugeriu. Ensinar ao mapa?</string>
+    <string name="group_detail_teach_offer_no_map">Conta guardada em %1$s. Ensinar ao mapa?</string>
+    <string name="group_detail_teach_footer">As contas já guardadas não mudam. Podes desfazer no Mapa de categorias.</string>
+    <string name="group_detail_teach_error">Não foi possível ensinar o mapa. Tenta de novo.</string>
+    <string name="group_detail_joined_title">Entraste como %s</string>
+    <string name="group_detail_joined_message">Tudo o que for registado para ti aparece aqui.</string>
+    <string name="group_detail_protect_title">Protege o teu acesso</string>
+    <string name="group_detail_protect_message">Entraste sem conta. Guarda o código ou associa uma conta Google ou Apple.</string>
+    <plurals name="group_detail_simplified_text">
+        <item quantity="one">%1$d pagamento em vez de %2$d. Podes pagar ou receber de quem não dividiu conta contigo.</item>
+        <item quantity="other">%1$d pagamentos em vez de %2$d. Podes pagar ou receber de quem não dividiu conta contigo.</item>
+    </plurals>
+    <string name="group_detail_balances_note_simplified">Com as dívidas simplificadas, a app sugere o menor número de pagamentos. “Recebi” e “Já pagou” registam um pagamento feito fora da app (Pix, dinheiro, transferência).</string>
+</resources>

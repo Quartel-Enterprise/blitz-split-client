@@ -483,6 +483,7 @@ private struct LanguageName: View {
         switch language {
         case .english: "English"
         case .portuguese: "Português (Brasil)"
+        case .portuguesePortugal: "Português (Portugal)"
         case .spanish: "Español"
         case .french: "Français"
         case .german: "Deutsch"
@@ -505,6 +506,11 @@ private struct LanguageName: View {
         )
         case .portuguese: String(
             localized: "Portuguese (Brazil)",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .portuguesePortugal: String(
+            localized: "Portuguese (Portugal)",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

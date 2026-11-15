@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_save">Guardar</string>
+
+    <string name="payment_key_pix_intro">Quem for pagar-te vê esta chave no acerto. Que tipo de chave?</string>
+    <string name="payment_key_pix_question">Que tipo de chave?</string>
+    <string name="payment_key_pix_explanation">Quem for pagar-te vê esta chave no acerto.</string>
+    <string name="payment_key_type_phone">Telemóvel</string>
+    <string name="payment_key_label_phone">Telemóvel com DDD</string>
+
+    <string name="payment_key_bitcoin_intro">Por onde queres receber?</string>
+
+    <string name="payment_key_hint_onchain">Endereço da rede principal a começar por bc1q ou bc1p</string>
+
+    <string name="payment_key_valid_cpf">Formato 000.000.000-00 · dígitos válidos</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF inválido: os dígitos verificadores não coincidem.</string>
+    <string name="payment_key_error_invalid_phone">Telemóvel incompleto: usa DDD e 9 dígitos, a começar por 9.</string>
+    <string name="payment_key_error_lightning_invoice">Isto é uma fatura Lightning (lnbc…): só serve para um pagamento e expira. Cola um Lightning Address ou um LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Endereço inválido. Usa um endereço bc1q ou bc1p da rede principal.</string>
+    <string name="payment_key_error_already_saved">Já tens esta chave.</string>
+
+    <string name="payment_key_switched_to_onchain">Isto é um endereço on-chain, por isso mudámos para On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Isto é um Lightning Address, por isso mudámos para Lightning.</string>
+    <string name="payment_key_cpf_notice">Quem for pagar-te vê o CPF completo. Se preferires não o expor, usa telemóvel, e-mail ou chave aleatória.</string>
+    <string name="payment_key_held_notice">Só podes ter uma chave Pix deste tipo, por isso esta é a que guardaste. Se quiseres, troca por aqui.</string>
+
+    <string name="payment_key_default_pix_title">Chave Pix predefinida</string>
+    <string name="payment_key_default_bitcoin_title">Chave Bitcoin predefinida</string>
+    <string name="payment_key_default_locked_editing">Para trocar, marca outra chave como predefinida.</string>
+    <string name="payment_key_default_locked_new">A tua primeira chave deste tipo é a predefinida.</string>
+    <string name="payment_key_default_type_phone">telemóvel</string>
+
+    <string name="payment_key_footer_pix">O Blitz Split não movimenta dinheiro: o pagamento é feito na app do banco de quem paga. Confirma se a chave está no teu nome.</string>
+
+    <string name="payment_key_delete">Eliminar chave</string>
+    <string name="payment_key_delete_title">Eliminar esta chave?</string>
+    <string name="payment_key_delete_confirm">Eliminar</string>
+</resources>

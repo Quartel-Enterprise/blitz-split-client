@@ -25,12 +25,14 @@ nonisolated struct JSONExportDocument: FileDocument {
 }
 
 enum DataExport {
-    /// "bora-rachar-dados-2026-10-29.json" in Portuguese and "blitz-split-data-2026-10-29.json" in any
-    /// other language, on the device's local date.
+    /// "bora-rachar-dados-2026-10-29.json" in Brazil's Portuguese, "blitz-split-dados-2026-10-29.json" in Portugal's and
+    /// "blitz-split-data-2026-10-29.json" in any other language, on the device's local date.
     static func fileName(on date: Date = .now) -> String {
-        let isPortuguese = Bundle.main.preferredLocalizations.first?.hasPrefix("pt") == true
+        let localization = Bundle.main.preferredLocalizations.first
+        let isPortuguese = localization?.hasPrefix("pt") == true
+        let brand = isPortuguese && localization != "pt-PT" ? "bora-rachar-" : "blitz-split-"
         let day = date.formatted(Date.ISO8601FormatStyle(timeZone: .current).year().month().day())
-        return (isPortuguese ? "bora-rachar-dados-" : "blitz-split-data-") + day + ".json"
+        return brand + (isPortuguese ? "dados-" : "data-") + day + ".json"
     }
 }
 

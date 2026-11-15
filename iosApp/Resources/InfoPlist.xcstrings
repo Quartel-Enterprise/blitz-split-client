@@ -2,7 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "CFBundleDisplayName" : {
-      "comment" : "The name under the app icon: Bora Rachar only in Portuguese",
+      "comment" : "The name under the app icon: Bora Rachar only in Brazil's Portuguese",
       "extractionState" : "manual",
       "localizations" : {
         "de" : {
@@ -63,6 +63,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bora Rachar"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
           }
         },
         "tr" : {
@@ -137,6 +143,12 @@
             "value" : "Bora Rachar"
           }
         },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -207,6 +219,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para ler o QR code de um convite ou do seu aparelho antigo, e tirar a foto do seu perfil e fotos das contas."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para ler o código QR de um convite ou do teu aparelho antigo, e tirar a fotografia do teu perfil e as fotografias das contas."
           }
         },
         "tr" : {
@@ -281,6 +299,12 @@
             "value" : "Para convidar gente da sua agenda com o link de um grupo. Os números ficam só neste aparelho."
           }
         },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para convidar pessoas dos teus contactos com o link de um grupo. Os números ficam só neste aparelho."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -351,6 +375,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para salvar as fotos das contas na sua galeria."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para guardar as fotografias das contas na tua galeria."
           }
         },
         "tr" : {

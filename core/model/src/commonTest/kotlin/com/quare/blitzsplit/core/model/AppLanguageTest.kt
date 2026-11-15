@@ -5,15 +5,57 @@ import kotlin.test.assertEquals
 
 class AppLanguageTest {
     @Test
-    fun `GIVEN any Portuguese tag the platform kept WHEN reading it THEN is Portuguese`() {
+    fun `GIVEN a Portuguese tag of Brazil or with no region WHEN reading it THEN is the Portuguese of Brazil`() {
         // Given
-        val tags = listOf("pt", "pt-BR", "pt-PT", "pt_BR", "PT-br")
+        val tags = listOf("pt", "pt-BR", "pt_BR", "PT-br", "pt-AO", "pt-u-fw-mon")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
 
         // Then
         assertEquals(List(tags.size) { AppLanguage.PORTUGUESE }, languages)
+    }
+
+    @Test
+    fun `GIVEN a Portuguese tag of Portugal WHEN reading it THEN is the Portuguese of Portugal`() {
+        // Given
+        val tags = listOf("pt-PT", "pt_PT", "PT-pt", "pt-PT-u-fw-mon", "pt-Latn-PT")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.PORTUGUESE_PORTUGAL }, languages)
+    }
+
+    @Test
+    fun `GIVEN tags with and without a region WHEN reading their region THEN it is the upper case code or null`() {
+        // Given
+        val tags = listOf("pt-PT", "pt_br", "zh-Hans-CN", "pt-u-fw-mon", "pt", "es-419", null)
+
+        // When
+        val regions = tags.map(AppLanguage::regionOf)
+
+        // Then
+        assertEquals(listOf("PT", "BR", "CN", null, null, null, null), regions)
+    }
+
+    @Test
+    fun `GIVEN the two Portuguese WHEN drawing the picker chips THEN each shows a region or a language`() {
+        // Given
+        val languages = listOf(
+            AppLanguage.SYSTEM,
+            AppLanguage.ENGLISH,
+            AppLanguage.PORTUGUESE,
+            AppLanguage.PORTUGUESE_PORTUGAL,
+            AppLanguage.SPANISH,
+        )
+
+        // When
+        val codes = languages.map { it.chipCode }
+
+        // Then
+        assertEquals(listOf(null, "EN", "BR", "PT", "ES"), codes)
     }
 
     @Test
@@ -219,12 +261,117 @@ class AppLanguageTest {
     @Test
     fun `GIVEN a device in Spain WHEN another language is picked THEN its tag stays`() {
         // Given
-        val languages = listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE)
+        val languages =
+            listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE, AppLanguage.PORTUGUESE_PORTUGAL)
 
         // When
         val tags = languages.map { it.toTag("ES") }
 
         // Then
-        assertEquals(listOf(null, "en", "pt-BR"), tags)
+        assertEquals(listOf(null, "en", "pt-BR", "pt-PT"), tags)
+    }
+
+    @Test
+    fun `GIVEN a Portuguese tag of Portugal in other spellings WHEN reading it THEN is the Portuguese of Portugal`() {
+        // Given
+        val tags = listOf("pt-PT-x-private", "PT-PT", "pt-pt", "pt_pt_x_private", "pt-Latn-pt-u-fw-mon")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.PORTUGUESE_PORTUGAL }, languages)
+    }
+
+    @Test
+    fun `GIVEN a Portuguese tag with no region or an odd one WHEN reading it THEN is the Portuguese of Brazil`() {
+        // Given
+        val tags = listOf("PT", "pt-", "pt--PT", "pt-419", "pt-Latn", "pt-Latn-BR", "pt-x-PT", "pt-PTT")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.PORTUGUESE }, languages)
+    }
+
+    @Test
+    fun `GIVEN every language WHEN its tag is read back THEN is that same language`() {
+        // Given
+        val languages = AppLanguage.entries
+
+        // When
+        val readBack = languages.map { AppLanguage.fromTag(it.tag) }
+
+        // Then
+        assertEquals(languages, readBack)
+    }
+
+    @Test
+    fun `GIVEN every language WHEN picked on a device in any region THEN read back is that same language`() {
+        // Given
+        val regions = listOf("ES", "PT", "BR", null)
+
+        // When
+        val readBack = AppLanguage.entries.map { language ->
+            regions.map { AppLanguage.fromTag(language.toTag(it)) }.distinct()
+        }
+
+        // Then
+        assertEquals(AppLanguage.entries.map { listOf(it) }, readBack)
+    }
+
+    @Test
+    fun `GIVEN a device in Portugal or Brazil WHEN a Portuguese is picked THEN writes its own tag`() {
+        // Given
+        val regions = listOf("PT", "pt", "BR", "ES", null)
+
+        // When
+        val portugal = regions.map(AppLanguage.PORTUGUESE_PORTUGAL::toTag)
+        val brazil = regions.map(AppLanguage.PORTUGUESE::toTag)
+
+        // Then
+        assertEquals(List(regions.size) { "pt-PT" }, portugal)
+        assertEquals(List(regions.size) { "pt-BR" }, brazil)
+    }
+
+    @Test
+    fun `GIVEN a device in Spain in lower case WHEN Spanish is picked THEN keeps the Spanish of Spain`() {
+        // Given
+        val region = "es"
+
+        // When
+        val tag = AppLanguage.SPANISH.toTag(region)
+
+        // Then
+        assertEquals("es-ES", tag)
+    }
+
+    @Test
+    fun `GIVEN every language WHEN drawing the picker chips THEN each shows its code or region and the system none`() {
+        // Given
+        val languages = AppLanguage.entries
+
+        // When
+        val codes = languages.map { it.chipCode }
+
+        // Then
+        assertEquals(
+            listOf(null, "EN", "BR", "PT", "ES", "FR", "DE", "IT", "PL", "NL", "JA", "TR", "ID"),
+            codes,
+        )
+        assertEquals(codes.filterNotNull().size, codes.filterNotNull().distinct().size)
+    }
+
+    @Test
+    fun `GIVEN odd tags WHEN reading their region THEN is a two letter one before any extension or null`() {
+        // Given
+        val tags = listOf("", "pt-", "pt--PT", "pt-x-PT", "pt-Latn", "pt-PT-x-BR", "PT_pt", "pt-Latn-br-u-fw-mon")
+
+        // When
+        val regions = tags.map(AppLanguage::regionOf)
+
+        // Then
+        assertEquals(listOf(null, null, null, null, null, "PT", "PT", "BR"), regions)
     }
 }

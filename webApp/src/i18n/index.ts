@@ -2,6 +2,7 @@ import { browserLanguages } from '@/lib/platform'
 import { en, type MessageKey } from './en'
 import { es } from './es'
 import { esES } from './esES'
+import { ptPT } from './ptPT'
 import { de } from './de'
 import { fr } from './fr'
 import { id } from './id'
@@ -13,20 +14,24 @@ import { pt } from './pt'
 import { tr } from './tr'
 
 export type { MessageKey }
-/** `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently. */
-export type Locale = 'en' | 'pt' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id'
+/**
+ * `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently.
+ * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
+ */
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['pt', 'en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id']
 
 /**
- * The first browser language the app has, in the browser's order: any `pt` tag (pt, pt-BR, pt-PT…) is Portuguese,
- * `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag (es, es-MX, es-419, es-AR…) is the neutral
- * Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`, `pl`, `nl`, `ja`, `tr` or `id`
- * tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID…) is German, Italian, Polish, Dutch,
- * Japanese, Turkish or Indonesian, any `en` tag is English, and English when none matches.
+ * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
+ * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag
+ * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
+ * `de`, `it`, `pl`, `nl`, `ja`, `tr` or `id` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID…)
+ * is German, Italian, Polish, Dutch, Japanese, Turkish or Indonesian, any `en` tag is English, and English when none
+ * matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
@@ -34,6 +39,7 @@ export function pickLocale(languages: readonly string[]): Locale {
     // Why: "in" is Indonesian's legacy code, which older Android WebViews still send; AppLanguage.fromTag maps it too.
     const language = subtag === 'in' ? 'id' : subtag
     if (bareLocales.includes(language as Locale)) return language as Locale
+    if (language === 'pt') return rest.length === 1 && rest[0] === 'pt' ? 'pt-PT' : 'pt'
     if (language === 'es') return rest.length === 1 && rest[0] === 'es' ? 'es-ES' : 'es'
   }
   return 'en'
@@ -78,6 +84,7 @@ export const clauseBreak = locale === 'ja' ? '。' : ', '
 const documentLanguages: Record<Locale, string> = {
   en: 'en',
   pt: 'pt-BR',
+  'pt-PT': 'pt-PT',
   es: 'es-419',
   'es-ES': 'es-ES',
   fr: 'fr',
@@ -127,6 +134,14 @@ const irregularSecondPerson: Record<string, string> = {
   leyó: 'leíste',
 }
 
+// Why: the preterite of the verbs an activity row says, which Portugal's Portuguese conjugates for "tu" ("dividiu" → "dividiste").
+const portugueseIrregularSecondPerson: Record<string, string> = {
+  fez: 'fizeste',
+  desfez: 'desfizeste',
+  saiu: 'saíste',
+  pôs: 'puseste',
+}
+
 // Why: the object pronoun Spanish puts before the verb ("lo adjuntó"), which stays as the verb changes ("lo adjuntaste").
 const spanishObjectPronouns = new Set(['lo', 'la', 'los', 'las', 'le', 'les'])
 
@@ -145,9 +160,11 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * user's ("as divisé", "hast geteilt", "bist beigetreten", "hai diviso", "hebt verdeeld", "bent lid geworden"). Polish
  * ones start with a past in "ł(a)", the app not knowing the gender: "podzielił(a)" becomes "podzieliłeś(-aś)". Turkish
  * ones end with their simple past, which takes an "n": "böldü" becomes "böldün". Other languages keep the verb as it
- * is. Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
+ * is, Brazil's Portuguese too ("Você dividiu"). Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or
+ * "-iste": "dividiu" becomes "dividiste". Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
 export function verbForYou(verb: string): string {
+  if (locale === 'pt-PT') return portugueseVerbForYou(verb)
   const auxiliary = secondPersonAuxiliaries[locale]
   if (auxiliary) {
     const [first, ...rest] = verb.split(' ')
@@ -164,6 +181,16 @@ export function verbForYou(verb: string): string {
   if (first.endsWith('ió')) return [`${first.slice(0, -2)}iste`, ...rest].join(' ')
   if (first.endsWith('ó')) return [`${first.slice(0, -1)}aste`, ...rest].join(' ')
   return verb
+}
+
+function portugueseVerbForYou(verb: string): string {
+  const [first, ...rest] = verb.split(' ')
+  const known = portugueseIrregularSecondPerson[first]
+  if (known) return [known, ...rest].join(' ')
+  const ending = /(ou|eu|iu)$/.exec(first)
+  if (!ending) return verb
+  const replacement = { ou: 'aste', eu: 'este', iu: 'iste' }[ending[1] as 'ou' | 'eu' | 'iu']
+  return [`${first.slice(0, -2)}${replacement}`, ...rest].join(' ')
 }
 
 /**
@@ -185,7 +212,7 @@ function turkishVerbForYou(verb: string): string {
   return verb.replace(/^([^:]*?[dt][ıiuü])(\s*(?::|$))/u, '$1n$2')
 }
 
-/** The page's language and title: Bora Rachar only in Portuguese, Blitz Split everywhere else. */
+/** The page's language and title: Bora Rachar only in Brazil's Portuguese, Blitz Split everywhere else. */
 export function applyDocumentLocale() {
   document.documentElement.lang = documentLanguage
   document.title = t('appName')

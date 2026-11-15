@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bill_detail_you_paid">Pagaste</string>
+    <string name="bill_detail_pending">Na fila · sincroniza quando a ligação voltar</string>
+    <string name="bill_detail_unknown_currency">Esta conta usa uma moeda que esta versão da app não conhece. Atualiza a app para a editares.</string>
+    <string name="bill_detail_my_part">A tua parte</string>
+    <string name="bill_detail_you_owe">deves</string>
+    <string name="bill_detail_owes_payer">Entra no que deves a %s em Saldos.</string>
+    <string name="bill_detail_you">Tu</string>
+    <string name="bill_detail_history_you">Tu</string>
+    <string name="bill_detail_offline">Sem internet. Comentários e fotos ficam na fila e saem quando a ligação voltar.</string>
+    <string name="bill_detail_no_comments">Ainda não há comentários. Pergunta ou combina algo sobre esta conta.</string>
+    <string name="bill_detail_comment_pending">Na fila · sai quando a ligação voltar</string>
+    <string name="bill_detail_comment_placeholder">Escreve um comentário</string>
+    <string name="bill_detail_replying_to">A responder a %s</string>
+    <string name="bill_detail_replying_to_you">A responder a ti</string>
+    <string name="bill_detail_comment_error">Não foi possível enviar o comentário. Tenta novamente.</string>
+    <string name="bill_detail_comment_share">Partilhar</string>
+    <string name="bill_detail_like">Gostar</string>
+    <string name="bill_detail_unlike">Deixar de gostar</string>
+    <plurals name="bill_detail_like_count">
+        <item quantity="one">%d gosto</item>
+        <item quantity="many">%d gostos</item>
+        <item quantity="other">%d gostos</item>
+    </plurals>
+    <string name="bill_detail_likes_title">Gostos</string>
+    <string name="bill_detail_editing_comment">A editar comentário</string>
+    <string name="bill_detail_save_comment">Guardar</string>
+    <string name="bill_detail_comment_change_error">Não foi possível guardar a alteração ao comentário.</string>
+    <string name="bill_detail_history_receipt_added">anexou o talão</string>
+    <string name="bill_detail_history_photo_removed">removeu uma foto</string>
+    <string name="bill_detail_history_receipt_removed">removeu o talão</string>
+    <string name="bill_detail_undo_error">Não foi possível desfazer. Tenta novamente.</string>
+    <string name="bill_detail_attachment_receipt">Talão</string>
+    <string name="bill_detail_attachment_receipt_badge">Talão</string>
+    <string name="bill_detail_add_photo_menu">Câmara ou galeria</string>
+    <string name="bill_detail_photo_unreadable">Não foi possível abrir essa imagem. Escolhe outra.</string>
+    <string name="bill_detail_photo_too_large">Essa foto é demasiado grande. Escolhe outra.</string>
+    <string name="bill_detail_photo_failed">Não foi possível anexar a foto. Tenta novamente.</string>
+    <string name="bill_detail_remove_photo_error">Não foi possível remover a foto. Tenta novamente.</string>
+    <string name="bill_detail_viewer_download">Transferir</string>
+    <string name="bill_detail_viewer_read_today">%1$s leu o talão hoje às %2$s</string>
+    <string name="bill_detail_viewer_read_yesterday">%1$s leu o talão ontem às %2$s</string>
+    <string name="bill_detail_viewer_read_other">%1$s leu o talão em %2$s às %3$s</string>
+    <string name="bill_detail_viewer_swipe">Desliza para o lado para ver a seguinte.</string>
+    <string name="bill_detail_photo_saved">Foto guardada na galeria</string>
+    <string name="bill_detail_photo_save_error">Não foi possível guardar a foto. Tenta novamente.</string>
+    <string name="bill_detail_photo_file_name">blitz-split-foto-%d.jpg</string>
+    <string name="bill_detail_receipt_file_name">blitz-split-talao.jpg</string>
+    <plurals name="bill_detail_owe_you_each">
+        <item quantity="one">%1$s deve-te %2$s.</item>
+        <item quantity="many">%1$s devem-te %2$s cada.</item>
+        <item quantity="other">%1$s devem-te %2$s cada.</item>
+    </plurals>
+    <plurals name="bill_detail_owe_you_total">
+        <item quantity="one">%1$s deve-te %2$s.</item>
+        <item quantity="many">%1$s devem-te %2$s no total.</item>
+        <item quantity="other">%1$s devem-te %2$s no total.</item>
+    </plurals>
+    <string name="bill_detail_share">Partilhar</string>
+    <string name="share_bill_title">Partilhar conta</string>
+    <string name="share_bill_failed">Não foi possível gerar o link.</string>
+    <plurals name="share_bill_members_named">
+        <item quantity="one">%s inicia sessão com a própria conta para ver e comentar.</item>
+        <item quantity="many">%s iniciam sessão com a própria conta para ver e comentar.</item>
+        <item quantity="other">%s iniciam sessão com a própria conta para ver e comentar.</item>
+    </plurals>
+    <string name="share_bill_members_anyone_in_group">Quem está no grupo inicia sessão com a própria conta para ver e comentar.</string>
+    <string name="share_bill_anyone_detail">Vê sem iniciar sessão. Para comentar, inicia sessão com uma conta, mesmo sem estar no grupo.</string>
+    <string name="share_bill_offline">Partilhar precisa de internet.</string>
+    <string name="share_bill_message">Conta “%1$s” no Blitz Split: %2$s</string>
+    <string name="share_bill_update_error">Não foi possível alterar quem pode abrir. Tenta novamente.</string>
+    <string name="share_bill_disable_error">Não foi possível desativar o link. Tenta novamente.</string>
+    <string name="shared_bill_sign_in">Iniciar sessão</string>
+    <string name="shared_bill_open_in_app">Abrir na app</string>
+    <string name="shared_bill_sign_in_to_comment_body">Queres comentar? Inicia sessão com uma conta. Não precisas de estar no grupo.</string>
+    <string name="shared_bill_sign_in_to_comment">Iniciar sessão para comentar</string>
+    <string name="shared_bill_not_found_title">Este link já não abre</string>
+    <string name="shared_bill_not_found_body">Quem partilhou pode ter desativado o link ou apagado a conta.</string>
+    <string name="shared_bill_members_only_body">Inicia sessão com a conta que usas no grupo.</string>
+    <string name="shared_bill_members_only_outside_body">A tua conta não está no grupo desta conta. Pede a quem partilhou para te convidar.</string>
+    <string name="shared_bill_failed_title">Não foi possível abrir a conta</string>
+    <string name="shared_bill_go_to_app">Ir para o Blitz Split</string>
+    <string name="shared_bill_comment_error">Não foi possível enviar o comentário. Tenta novamente.</string>
+    <string name="shared_bill_needs_name">Cria o teu perfil para comentar.</string>
+    <string name="shared_bill_comment_change_error">Não foi possível guardar a alteração ao comentário. Tenta novamente.</string>
+</resources>

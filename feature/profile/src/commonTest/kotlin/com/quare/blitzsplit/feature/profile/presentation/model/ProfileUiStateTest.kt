@@ -18,6 +18,7 @@ class ProfileUiStateTest {
             AppLanguage.SYSTEM -> listOf("Device language")
             AppLanguage.ENGLISH -> listOf("English", "English")
             AppLanguage.PORTUGUESE -> listOf("Português (Brasil)", "Portuguese (Brazil)")
+            AppLanguage.PORTUGUESE_PORTUGAL -> listOf("Português (Portugal)", "Portuguese (Portugal)")
             AppLanguage.SPANISH -> listOf("Español", "Spanish")
             AppLanguage.FRENCH -> listOf("Français", "French")
             AppLanguage.GERMAN -> listOf("Deutsch", "German")
@@ -43,6 +44,7 @@ class ProfileUiStateTest {
         AppLanguage.SYSTEM,
         AppLanguage.ENGLISH,
         AppLanguage.PORTUGUESE,
+        AppLanguage.PORTUGUESE_PORTUGAL,
         AppLanguage.SPANISH,
         AppLanguage.FRENCH,
         AppLanguage.GERMAN,
@@ -612,6 +614,7 @@ class ProfileUiStateTest {
                 AppLanguage.SYSTEM,
                 AppLanguage.ENGLISH,
                 AppLanguage.PORTUGUESE,
+                AppLanguage.PORTUGUESE_PORTUGAL,
                 AppLanguage.SPANISH,
                 AppLanguage.FRENCH,
                 AppLanguage.GERMAN,
@@ -640,6 +643,7 @@ class ProfileUiStateTest {
                 AppLanguage.SYSTEM,
                 AppLanguage.ENGLISH,
                 AppLanguage.PORTUGUESE,
+                AppLanguage.PORTUGUESE_PORTUGAL,
                 AppLanguage.SPANISH,
                 AppLanguage.FRENCH,
                 AppLanguage.GERMAN,
@@ -679,7 +683,7 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN portugues typed without its accent WHEN searching the languages THEN finds Portuguese`() {
+    fun `GIVEN portugues typed without its accent WHEN searching the languages THEN finds both Portuguese`() {
         // Given
         val profile = state(languageQuery = "portugues")
 
@@ -687,7 +691,19 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions(englishNames)
 
         // Then
-        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+        assertEquals(listOf(AppLanguage.PORTUGUESE, AppLanguage.PORTUGUESE_PORTUGAL), options)
+    }
+
+    @Test
+    fun `GIVEN portugal typed WHEN searching the languages THEN finds the Portuguese of Portugal only`() {
+        // Given
+        val profile = state(languageQuery = "portugal")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.PORTUGUESE_PORTUGAL), options)
     }
 
     @Test
@@ -727,7 +743,7 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN the code pt typed and no names WHEN searching the languages THEN finds Portuguese by its code`() {
+    fun `GIVEN the code pt typed and no names WHEN searching the languages THEN finds both Portuguese by their code`() {
         // Given
         val profile = state(languageQuery = "pt")
 
@@ -735,7 +751,7 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions({ emptyList() })
 
         // Then
-        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+        assertEquals(listOf(AppLanguage.PORTUGUESE, AppLanguage.PORTUGUESE_PORTUGAL), options)
     }
 
     @Test
@@ -811,7 +827,43 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN the region br of pt-BR typed and no names WHEN searching the languages THEN finds nothing by code`() {
+    fun `GIVEN the chip code PT in upper case and no names WHEN searching the languages THEN finds both Portuguese`() {
+        // Given
+        val profile = state(languageQuery = "PT")
+
+        // When
+        val options = profile.findLanguageOptions({ emptyList() })
+
+        // Then
+        assertEquals(listOf(AppLanguage.PORTUGUESE, AppLanguage.PORTUGUESE_PORTUGAL), options)
+    }
+
+    @Test
+    fun `GIVEN brazil typed WHEN searching the languages THEN finds the Portuguese of Brazil only`() {
+        // Given
+        val profile = state(languageQuery = "brazil")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+    }
+
+    @Test
+    fun `GIVEN the chip code br typed WHEN searching the languages THEN does not find the Portuguese of Portugal`() {
+        // Given
+        val profile = state(languageQuery = "br")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+    }
+
+    @Test
+    fun `GIVEN the chip code br of Brazil typed and no names WHEN searching the languages THEN finds Portuguese`() {
         // Given
         val profile = state(languageQuery = "br")
 
@@ -819,7 +871,7 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions({ emptyList() })
 
         // Then
-        assertEquals(emptyList<AppLanguage>(), options)
+        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
     }
 
     private fun state(

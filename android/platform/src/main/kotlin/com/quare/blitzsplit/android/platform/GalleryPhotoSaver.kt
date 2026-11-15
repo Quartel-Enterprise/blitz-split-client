@@ -50,7 +50,7 @@ private class PendingPhoto(
 )
 
 /*
- * Why: a bill's "Baixar" keeps the photo in the gallery, in Pictures/Bora Rachar (Blitz Split in English). Android 10
+ * Why: a bill's "Baixar" keeps the photo in the gallery, in Pictures/Bora Rachar (Blitz Split outside Brazil). Android 10
  * and later take it through MediaStore with no permission; older ones need the storage permission, asked for only
  * then (the manifest stops declaring it from Android 10). A refusal saves nothing and says nothing, as a cancel.
  */

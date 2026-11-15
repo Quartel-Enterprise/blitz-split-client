@@ -12,7 +12,12 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish and Indonesian: the device's language, English
-    for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Spanish variants, a neutral
+    for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
+    "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
+    `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
+    talks to the user as "tu" (friends splitting a bill), says "estar a + infinitive" where Brazil's uses the gerund,
+    and calls the app Blitz Split, as every language but Brazil's does; Brazil's keeps Bora Rachar. Two Spanish variants, a neutral
     Latin-American one for every `es` tag, and Spain's `es-ES` overriding only the words Spain says differently, the
     rest coming from `es` on every platform; Spanish calls the app Blitz Split, as English does). French is one
     variant for every `fr` tag (fr-FR, fr-CA, fr-BE, fr-CH…), talks to the user as "tu" (Pierre's call: friends splitting

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Fills each regional table of the built app (es-ES.lproj) with its language's table (es.lproj), the region's own
-keys winning.
+"""Fills each regional table of the built app (es-ES.lproj, pt-PT.lproj) with its language's table (es.lproj,
+pt-BR.lproj), the region's own keys winning.
 
-Localizable.xcstrings holds Spain's es-ES only for the words Spain says differently (docs/product/general.md), and
-Xcode compiles es-ES.lproj/Localizable.strings with only those. A bundle whose language is es-ES then reads every
-table from es-ES.lproj alone: the string lookup never goes on to es.lproj for a key the table lacks, so the rest shows
-the English source ("New group" next to "Añadir por nombre"). Once merged, each es-ES table holds every es key, so the
-catalog keeps no copy of them.
+Localizable.xcstrings holds Spain's es-ES and Portugal's pt-PT only for the words they say differently
+(docs/product/general.md), and Xcode compiles es-ES.lproj/Localizable.strings with only those. A bundle whose language
+is es-ES then reads every table from es-ES.lproj alone: the string lookup never goes on to es.lproj for a key the table
+lacks, so the rest shows the English source ("New group" next to "Añadir por nombre"). Once merged, each es-ES table
+holds every es key, so the catalog keeps no copy of them.
 
 Xcode runs it after Copy Bundle Resources, before the bundle is signed, on the app's resources folder:
   merge-regional-strings.py <TARGET_BUILD_DIR>/<UNLOCALIZED_RESOURCES_FOLDER_PATH>
@@ -24,6 +24,9 @@ from pathlib import Path
 
 # es-ES, es_ES, pt-PT, es-419, zh-Hant-TW: a language (and script) then a region of two letters or three digits
 REGIONAL = re.compile(r"^(?P<language>.+)[-_](?:[A-Z]{2}|\d{3})$")
+# The table a regional one is filled from, when the language's own is not named by the language alone: the app's
+# Portuguese is pt-BR (Brazil's), the one Portugal's pt-PT overrides
+BASE_OF = {"pt-PT": "pt-BR"}
 TABLE_SUFFIXES = (".strings", ".stringsdict")
 
 
@@ -73,7 +76,7 @@ def main(resources_dir: str) -> int:
         match = REGIONAL.match(regional_lproj.stem)
         if not match:
             continue
-        language_lproj = resources / f"{match['language']}.lproj"
+        language_lproj = resources / f"{BASE_OF.get(regional_lproj.stem, match['language'])}.lproj"
         if language_lproj.is_dir():
             merge(language_lproj, regional_lproj)
     return 0

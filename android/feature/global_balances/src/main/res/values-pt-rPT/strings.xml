@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_offline">Offline · saldos deste dispositivo</string>
+    <string name="global_balances_filter_you_owe">Deves</string>
+    <string name="global_balances_filter_owes_you">Devem-te</string>
+    <string name="global_balances_hint_empty">A somar todos os grupos deste dispositivo.</string>
+    <string name="global_balances_section_you_owe">Deves · %d</string>
+    <string name="global_balances_section_owes_you">Devem-te · %d</string>
+    <string name="global_balances_you_owe">deves</string>
+    <string name="global_balances_owes_you">deve-te</string>
+    <string name="global_balances_detail_owes_you">%s deve-te</string>
+    <string name="global_balances_detail_you_owe">Deves a %s</string>
+    <string name="global_balances_detail_note_owed">O líquido já compensa os grupos: Cobrar e Recebi usam %s. A app regista um pagamento em cada grupo.</string>
+    <string name="global_balances_detail_note_settle">O líquido já compensa os grupos: Acertar usa %s. A app regista um pagamento em cada grupo.</string>
+    <string name="global_balances_settled_body">Ninguém te deve e tu não deves a ninguém. Quando alguém registar uma conta, o saldo aparece aqui.</string>
+    <string name="global_balances_nothing_to_pay_title">Não deves nada</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Já acertaste com toda a gente. Ainda tens %2$s para receber de %1$d pessoa.</item>
+        <item quantity="other">Já acertaste com toda a gente. Ainda tens %2$s para receber de %1$d pessoas.</item>
+    </plurals>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Ainda deves %2$s a %1$d pessoa.</item>
+        <item quantity="other">Ainda deves %2$s a %1$d pessoas.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Ver a quem deves</string>
+    <string name="global_balances_change_error">Não foi possível guardar a alteração. Tenta de novo.</string>
+    <string name="global_balances_charge_owes">Deve-te %1$s · %2$s</string>
+    <string name="global_balances_charge_guest">%s é convidado e não tem a app. Só fica a saber por esta mensagem, por isso ela já leva o que entrou na conta.</string>
+    <string name="global_balances_charge_pix">Incluir a minha chave Pix</string>
+    <string name="global_balances_message">Olá, %1$s! Pelas contas do Blitz Split, ficou %2$s %3$s para me pagares.</string>
+    <string name="global_balances_message_guest">Olá, %1$s! Ficou %2$s %3$s para me pagares: a tua parte de %4$s.</string>
+    <string name="global_balances_message_guest_paid">Olá, %1$s! Ficou %2$s %3$s para me pagares: a tua parte de %4$s, menos os %5$s que já pagaste.</string>
+    <string name="global_balances_key_phone">Telemóvel</string>
+    <string name="global_balances_message_reroute">A %1$s simplificou as dívidas, por isso em vez de pagares %2$s pagas-me diretamente; o teu total não mudou.</string>
+</resources>

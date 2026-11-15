@@ -813,6 +813,7 @@ export const en = {
   profile_languageSystem: 'System',
   profile_languageEnglish: 'English',
   profile_languagePortuguese: 'Portuguese (Brazil)',
+  profile_languagePortuguesePortugal: 'Portuguese (Portugal)',
   profile_languageSpanish: 'Spanish',
   profile_languageFrench: 'French',
   profile_languageGerman: 'German',

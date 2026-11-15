@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="activity_you">Tu</string>
+    <string name="activity_person_you">Tu</string>
+    <string name="activity_pending">A aguardar envio</string>
+    <string name="activity_syncing">A sincronizar…</string>
+    <string name="activity_not_synced">Este dispositivo ainda não sincronizou, por isso aqui só aparece o que fizeste nele. A atividade dos grupos chega na primeira ligação, com ou sem conta.</string>
+    <string name="activity_loading_more">A carregar mais…</string>
+    <string name="activity_offline_end">Os últimos 90 dias ficam neste dispositivo. Os mais antigos carregam quando a internet voltar.</string>
+    <string name="activity_empty_body">Quando alguém dividir uma conta, pagar, comentar ou entrar num dos teus grupos, aparece aqui.</string>
+    <string name="activity_no_results_body">Tenta outro tipo ou outro grupo.</string>
+    <string name="activity_kind_bill_created">%1$s dividiu %2$s</string>
+    <string name="activity_kind_payment_recorded">%1$s registou um pagamento</string>
+    <string name="activity_kind_member_released">%1$s libertou o nome %2$s</string>
+    <string name="activity_detail_bill_gone">%s · a conta já não existe</string>
+    <string name="activity_detail_group_gone">O grupo já não existe</string>
+    <string name="activity_deleted_notice_bill">%2$s apagou %1$s em %3$s. O registo fica no feed, mas a conta já não abre.</string>
+    <string name="activity_deleted_notice_group">%2$s apagou %1$s em %3$s. O registo fica no feed, mas o grupo já não abre.</string>
+    <string name="activity_deleted_notice_bill_unknown">%s foi apagada. O registo fica no feed, mas a conta já não abre.</string>
+    <string name="activity_deleted_notice_group_unknown">%s foi apagado. O registo fica no feed, mas o grupo já não abre.</string>
+    <string name="activity_you_lowercase">tu</string>
+    <string name="activity_split_percent">Percentagem</string>
+    <string name="activity_detail_simplify_pays_you">Agora %1$s paga-te %2$s</string>
+    <string name="activity_detail_simplify_you_pay">Agora pagas %2$s a %1$s</string>
+    <string name="activity_detail_simplify_and_owed_you">, e %s já não te deve</string>
+    <string name="activity_detail_simplify_and_you_owed">, e já não deves a %s</string>
+    <string name="activity_detail_simplify_owed_you">%s já não te deve</string>
+    <string name="activity_detail_simplify_you_owed">Já não deves a %s</string>
+    <string name="activity_simplify_owed_you">devia-te %s</string>
+    <string name="activity_simplify_you_owed">devias %s</string>
+    <string name="activity_simplify_owes_you">deve-te %s</string>
+    <string name="activity_simplify_you_owe">deves %s</string>
+    <string name="activity_simplify_owes_nothing">já não deve</string>
+    <string name="activity_notification_settings">Definições de notificações</string>
+    <string name="activity_field_default_split">Divisão predefinida</string>
+</resources>

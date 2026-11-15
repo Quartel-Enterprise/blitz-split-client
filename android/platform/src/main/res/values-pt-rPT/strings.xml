@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · código de recuperação</string>
+    <string name="platform_export_file_name">blitz-split-dados-%1$s.json</string>
+    <string name="platform_camera_denied">Permite a câmara nas definições para tirar a foto.</string>
+    <string name="platform_camera_settings">Definições</string>
+    <string name="platform_receipt_source_file">Escolher ficheiro</string>
+    <string name="platform_receipt_camera_title">Ler talão</string>
+    <string name="platform_receipt_camera_hint">Enquadra o talão inteiro. Nós preenchemos o valor, a data e a descrição; tu verificas antes de guardar.</string>
+    <string name="platform_receipt_camera_unavailable">A câmara não está disponível. Escolhe uma foto do talão na galeria.</string>
+    <string name="platform_receipt_camera_permission">Permite a câmara para ler o talão, ou escolhe uma foto da galeria.</string>
+    <string name="platform_receipt_camera_allow">Permitir câmara</string>
+    <string name="platform_receipt_camera_settings">Abrir definições</string>
+</resources>

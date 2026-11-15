@@ -285,7 +285,7 @@ private fun LanguageRow(
     )
 }
 
-// Why: the language's code ("EN", "PT", "ES") as Bible Planner's chip, the phone for System.
+// Why: the language's code ("EN", "ES"; "BR" and "PT" for the two Portuguese) as Bible Planner's chip, a phone for System.
 @Composable
 private fun LanguageChip(
     language: AppLanguage,
@@ -300,7 +300,7 @@ private fun LanguageChip(
             .background(container),
         contentAlignment = Alignment.Center,
     ) {
-        val code = language.tag?.substringBefore('-')?.uppercase()
+        val code = language.chipCode
         if (code == null) {
             Icon(
                 imageVector = Icons.Outlined.Smartphone,
@@ -328,6 +328,7 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
     AppLanguage.ENGLISH -> stringResource(R.string.profile_language_native_english)
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_native_portuguese)
+    AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_native_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_native_spanish)
     AppLanguage.FRENCH -> stringResource(R.string.profile_language_native_french)
     AppLanguage.GERMAN -> stringResource(R.string.profile_language_native_german)
@@ -345,6 +346,7 @@ private fun translatedLanguageName(language: AppLanguage): String = when (langua
     AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
     AppLanguage.ENGLISH -> stringResource(R.string.profile_language_english)
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_portuguese)
+    AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_spanish)
     AppLanguage.FRENCH -> stringResource(R.string.profile_language_french)
     AppLanguage.GERMAN -> stringResource(R.string.profile_language_german)

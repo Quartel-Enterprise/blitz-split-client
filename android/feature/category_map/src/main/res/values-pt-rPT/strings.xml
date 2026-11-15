@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_search">Pesquisar termo</string>
+    <string name="category_map_restore">Restaurar predefinição</string>
+    <string name="category_map_intro">Quando o título da conta tem uma destas palavras, a categoria vem sozinha. “Uber para casa” passa a ser Transporte.</string>
+    <string name="category_map_intro_offline">O mapa funciona sem internet: as alterações valem na hora neste dispositivo e seguem para os outros quando este voltar a ligar-se.</string>
+    <string name="category_map_device_only">O teu mapa fica só neste dispositivo. Para o levares para outros dispositivos, inicia sessão com Google ou Apple no Perfil.</string>
+    <string name="category_map_no_result_body">Adiciona e as contas com essa palavra no título já chegam com a categoria certa.</string>
+    <string name="category_map_empty_title">O teu mapa está vazio</string>
+    <string name="category_map_empty_body">Sem termos, a categoria não vem pelo título: escolhes em cada conta.</string>
+    <string name="category_map_tip">Toca num termo para mudar a categoria ou remover. Corresponde à palavra inteira, sem distinguir acentos nem maiúsculas.</string>
+    <string name="category_map_term_help">Corresponde à palavra inteira, sem distinguir acentos nem maiúsculas.</string>
+    <string name="category_map_term_help_app">Termo da app. Restaurar predefinição traz de volta como veio.</string>
+    <string name="category_map_term_too_short">Usa pelo menos 2 letras.</string>
+    <string name="category_map_term_too_long">Usa no máximo 30 letras.</string>
+    <string name="category_map_term_invalid">Usa só letras, números e espaço.</string>
+    <string name="category_map_save">Guardar</string>
+    <string name="category_map_restore_title">Restaurar o mapa predefinido?</string>
+    <string name="category_map_restore_body">Os 60 termos da app voltam como vieram, incluindo os que removeste ou mudaste de categoria.</string>
+    <string name="category_map_restore_own_one">O termo que criaste, “%1$s”, continua.</string>
+    <string name="category_map_save_error">Não foi possível guardar o mapa. Tenta de novo.</string>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Os %d termos que criaste continuam.</item>
+        <item quantity="other">Os %d termos que criaste continuam.</item>
+    </plurals>
+</resources>

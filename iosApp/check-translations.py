@@ -8,8 +8,8 @@ too) and that the value keeps the key's placeholders (%lld, %@, %1$@, the privat
 sentences): a dropped or renamed one prints "%lld" on screen or crashes the formatting. A language whose plural has more
 forms than one and other (Polish's few and many) must give each of them in every plural variation.
 
-es-ES is not required: it holds only the words Spain says differently, and the build fills the rest from es
-(merge-regional-strings.py). A key with "shouldTranslate": false or a stale one is skipped.
+es-ES and pt-PT are not required: each holds only the words its region says differently, and the build fills the rest
+from es and pt-BR (merge-regional-strings.py). A key with "shouldTranslate": false or a stale one is skipped.
 
 Xcode runs it after Compile Sources, as a postCompileScript of project.yml:
   check-translations.py <Resources directory>
@@ -21,7 +21,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-# Every language the app is translated into, but English (the source) and es-ES (partial)
+# Every language the app is translated into, but English (the source), es-ES and pt-PT (partial)
 REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id")
 # The plural categories each language needs when it varies by plural, where it needs more than one and other: a
 # missing one shows English's other form, or nothing

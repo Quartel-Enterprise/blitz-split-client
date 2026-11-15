@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Divide a conta sem complicações</string>
+    <string name="welcome_offline_body">Tudo fica no dispositivo e sincroniza depois.</string>
+    <string name="welcome_optional_body">Google ou Apple só servem para não perderes nada ao trocares de dispositivo.</string>
+    <string name="welcome_invite_title">Convida por link ou QR</string>
+    <string name="welcome_no_connection_title">Sem ligação.</string>
+    <string name="welcome_no_connection_body">Iniciar sessão com conta precisa de internet. Usa sem conta agora e liga mais tarde em Perfil.</string>
+    <string name="welcome_used_on_another_device">Já usei noutro dispositivo</string>
+    <string name="welcome_sign_in_failed">Não foi possível iniciar sessão agora. Tenta novamente.</string>
+    <string name="welcome_legal_notice">Ao continuares, aceitas os %1$s e declaras estar ciente da %2$s.</string>
+</resources>

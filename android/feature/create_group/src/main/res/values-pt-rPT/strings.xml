@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_me">tu</string>
+    <string name="create_group_no_app_notice">Ninguém precisa de ter a app agora. Já podes lançar despesas para todos e enviar o link depois.</string>
+    <string name="create_group_save_error">Não foi possível guardar o grupo. Tenta de novo.</string>
+    <string name="create_group_photo_error">Não foi possível usar essa foto. Tenta outra.</string>
+    <string name="create_group_currency">Moeda predefinida</string>
+</resources>

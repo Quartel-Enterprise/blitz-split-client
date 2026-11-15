@@ -75,10 +75,14 @@ extension Bundle {
     /// The two-letter code of the language the app draws in ("es", "fr"…): the `.lproj` Profile › Language picked,
     /// which `Bundle.main` only follows at the next launch.
     nonisolated static var appLanguageCode: String? {
+        appLanguageIdentifier.map { String($0.prefix(2)) }
+    }
+
+    /// The whole name of that `.lproj` ("pt-BR", "pt-PT", "es-ES", "fr"…), for the few things a region changes.
+    nonisolated static var appLanguageIdentifier: String? {
         let bundle = appLanguage
-        let name = bundle.bundleURL.pathExtension == "lproj"
+        return bundle.bundleURL.pathExtension == "lproj"
             ? bundle.bundleURL.deletingPathExtension().lastPathComponent
             : bundle.preferredLocalizations.first
-        return name.map { String($0.prefix(2)) }
     }
 }

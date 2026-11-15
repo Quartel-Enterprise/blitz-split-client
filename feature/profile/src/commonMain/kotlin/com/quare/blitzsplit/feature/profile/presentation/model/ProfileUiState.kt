@@ -110,7 +110,8 @@ data class ProfileUiState(
     /*
      * Why: the options "Search languages" leaves, by any of the names the UI shows for each (its own name, the name in
      * the app's language, System's "Device language") or its chip's code, ignoring case and accents: "portugues",
-     * "brasil", "alemao" and "pt" all find Português (Brasil). The names are each platform's words, so the UI hands them.
+     * "brasil", "alemao" and "pt" all find Português (Brasil), and "pt" also finds Português (Portugal). The names are
+     * each platform's words, so the UI hands them.
      */
     fun findLanguageOptions(namesOf: (AppLanguage) -> List<String>): List<AppLanguage> = LanguageSearch.filter(
         options = languageOptions,

@@ -14,7 +14,8 @@ internal object LanguageSearch {
         if (folded.isEmpty()) return options
         return options.filter { language ->
             val code = language.tag?.substringBefore('-')
-            code == folded || namesOf(language).any { name -> folded in TextFolding.toFolded(name) }
+            code == folded || language.chipCode?.lowercase() == folded ||
+                namesOf(language).any { name -> folded in TextFolding.toFolded(name) }
         }
     }
 }
