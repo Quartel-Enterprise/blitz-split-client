@@ -15,4 +15,6 @@ data class AccountSnapshot(
     val awaitsFullSync: Boolean,
     // Why: the server deleted the account for inactivity; null for every other account.
     val inactivityExpiry: InactivityExpiry?,
+    // Why: an anonymous user's session ended on its own, and the server wasn't asked yet whether it deleted the account.
+    val hasLostAnonymousUser: Boolean,
 )

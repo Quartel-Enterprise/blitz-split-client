@@ -975,6 +975,7 @@ class CategoryMapViewModelTest {
                         signOutWhenSynced = false,
                         awaitsFullSync = false,
                         inactivityExpiry = null,
+                        hasLostAnonymousUser = false,
                     ),
                 )
             },

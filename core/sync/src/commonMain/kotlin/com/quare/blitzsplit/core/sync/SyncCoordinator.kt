@@ -139,6 +139,7 @@ class SyncCoordinator(
         scope.launch { accountRepository.keepAppleTokens() }
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
+        scope.launch { syncOnLostAnonymousUser(accountRepository, ::syncUntilSettled) }
         scope.launch { eraseExpiredAccount(accountRepository, profileRepository, syncLock, ::eraseDeviceCopy) }
         scope.launch { syncOnSessionRecovery(accountRepository, outcomes.lastSyncFailed, ::syncUntilSettled) }
         scope.launch { syncWhenDue() }

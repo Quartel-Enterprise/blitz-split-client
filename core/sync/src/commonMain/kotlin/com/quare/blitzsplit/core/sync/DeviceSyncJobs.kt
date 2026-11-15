@@ -104,6 +104,23 @@ internal suspend fun syncOnSessionRecovery(
 }
 
 /*
+ * Why: the session of an account without Google or Apple ended on its own, which nothing else answers with a sync:
+ * the device is as online as before and nothing is queued. One runs now, since registering is what asks the server
+ * whether it deleted the account, and what signs in a new user when it didn't.
+ */
+internal suspend fun syncOnLostAnonymousUser(
+    accountRepository: AccountRepository,
+    sync: suspend () -> Unit,
+) {
+    accountRepository
+        .observeAccount()
+        .map { account -> account.hasLostAnonymousUser }
+        .distinctUntilChanged()
+        .filter { hasLost -> hasLost }
+        .collect { sync() }
+}
+
+/*
  * Why: the server deleted the account for inactivity, so its copy leaves the device as in a deletion asked here, and
  * the welcome tells why. Under the sync lock, and read again there: a sign out that got ahead already erased it. A
  * profile that failed to go keeps the account pending, so no sync registers a new user with it and the next launch

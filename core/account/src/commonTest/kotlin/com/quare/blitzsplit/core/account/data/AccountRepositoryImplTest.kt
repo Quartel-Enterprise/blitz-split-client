@@ -259,6 +259,7 @@ class AccountRepositoryImplTest {
                 signOutWhenSynced = false,
                 awaitsFullSync = false,
                 inactivityExpiry = null,
+                hasLostAnonymousUser = false,
             ),
             account,
         )

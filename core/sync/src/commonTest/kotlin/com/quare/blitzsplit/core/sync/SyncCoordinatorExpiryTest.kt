@@ -461,6 +461,39 @@ class SyncCoordinatorExpiryTest {
             assertEquals(InactivityExpiry.NOTICE, account.snapshot.value.inactivityExpiry)
         }
 
+    // Why: nothing else syncs then, and registering is what asks the server whether it deleted the account.
+    @Test
+    fun `GIVEN the app running WHEN an anonymous session is lost THEN syncs again right away`() = runTest {
+        // Given
+        prepareScenario()
+        coordinator.start()
+        runCurrent()
+        val registrationsAtStart = account.registrationCount
+
+        // When
+        account.snapshot.update { it.copy(hasLostAnonymousUser = true) }
+        runCurrent()
+
+        // Then
+        assertEquals(registrationsAtStart + 1, account.registrationCount)
+    }
+
+    @Test
+    fun `GIVEN the app running WHEN the account changes without a lost session THEN starts no sync`() = runTest {
+        // Given
+        prepareScenario()
+        coordinator.start()
+        runCurrent()
+        val registrationsAtStart = account.registrationCount
+
+        // When
+        account.snapshot.update { it.copy(email = "pierre@example.com") }
+        runCurrent()
+
+        // Then
+        assertEquals(registrationsAtStart, account.registrationCount)
+    }
+
     @Test
     fun `GIVEN an account with no expiry WHEN the app starts THEN erases nothing`() = runTest {
         // Given

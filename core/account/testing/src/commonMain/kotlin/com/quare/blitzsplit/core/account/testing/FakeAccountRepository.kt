@@ -34,6 +34,7 @@ class FakeAccountRepository(
             signOutWhenSynced = false,
             awaitsFullSync = false,
             inactivityExpiry = null,
+            hasLostAnonymousUser = false,
         ),
     )
 
@@ -238,6 +239,7 @@ class FakeAccountRepository(
             signOutWhenSynced = false,
             awaitsFullSync = false,
             inactivityExpiry = null,
+            hasLostAnonymousUser = false,
         )
     }
 
@@ -272,6 +274,7 @@ class FakeAccountRepository(
             signOutWhenSynced = false,
             awaitsFullSync = false,
             inactivityExpiry = null,
+            hasLostAnonymousUser = false,
         )
     }
 

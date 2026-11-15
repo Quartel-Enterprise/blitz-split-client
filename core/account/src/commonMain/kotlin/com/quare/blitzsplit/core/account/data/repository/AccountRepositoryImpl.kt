@@ -427,6 +427,7 @@ class AccountRepositoryImpl(
         signOutWhenSynced = account.signOutWhenSynced,
         awaitsFullSync = account.awaitsFullSync,
         inactivityExpiry = InactivityExpiry.fromCodeOrNull(account.inactivityExpiry),
+        hasLostAnonymousUser = account.lostAnonymousUserId != null,
     )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
