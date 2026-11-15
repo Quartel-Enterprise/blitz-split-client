@@ -12,7 +12,10 @@ import com.quare.blitzsplit.core.support.domain.model.ReviewPromptState
 import com.quare.blitzsplit.core.support.domain.repository.ReviewPromptRepository
 import com.quare.blitzsplit.core.support.domain.usecase.impl.RequestReviewIfNeededUseCase
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -23,6 +26,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RequestReviewIfNeededUseCaseTest {
+    private val isForeground = MutableStateFlow(true)
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private lateinit var repository: FakeReviewPromptRepository
     private lateinit var navigator: BackStackNavigator
@@ -639,6 +643,37 @@ class RequestReviewIfNeededUseCaseTest {
         assertEquals(emptyList(), trackedEvents)
     }
 
+    @Test
+    fun `GIVEN the app left the front WHEN a bill is saved THEN does not ask nor remember having asked`() = runTest {
+        // Given
+        prepareScenario(stored = pastGrace)
+        isForeground.value = false
+
+        // When
+        val asks = useCase(ReviewMoment.BillCreated)
+
+        // Then
+        assertFalse(asks)
+        assertEquals(pastGrace.copy(billsCreated = pastGrace.billsCreated + 1), repository.state)
+    }
+
+    @Test
+    fun `GIVEN the app left the front WHEN it comes back within the wait THEN asks`() = runTest {
+        // Given
+        prepareScenario(stored = pastGrace)
+        isForeground.value = false
+        backgroundScope.launch {
+            delay(5_000)
+            isForeground.value = true
+        }
+
+        // When
+        val asks = useCase(ReviewMoment.BillCreated)
+
+        // Then
+        assertTrue(asks)
+    }
+
     private val pastGrace = state(
         billsCreated = 5,
         firstEligibleAt = NOW - 3 * DAY,
@@ -688,6 +723,7 @@ class RequestReviewIfNeededUseCaseTest {
             repository = repository,
             observeGroupBalances = { groupId -> flowOf(balances.getValue(groupId)) },
             currentTimeMillis = { NOW },
+            observeAppForeground = { isForeground },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
     }

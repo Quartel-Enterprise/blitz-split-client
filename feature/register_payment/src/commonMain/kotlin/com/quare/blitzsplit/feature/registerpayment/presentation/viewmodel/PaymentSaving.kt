@@ -27,10 +27,14 @@ internal class PaymentSaving(
         paidAt: Long,
     ): Result<List<String>> {
         // Why: a pair of one group may pay part of the debt; a settling up of a single group too, through its one payment.
-        val legs = target.legs
-            .singleOrNull()
-            ?.let { leg -> listOf(leg.copy(amountMinor = amountMinor)) }
-            ?: target.legs
+        val legs = if (isSettleUp) {
+            target.legs
+                .singleOrNull()
+                ?.let { leg -> listOf(leg.copy(amountMinor = amountMinor)) }
+                ?: target.legs
+        } else {
+            listOf(target.legs.first().copy(amountMinor = amountMinor))
+        }
         val result = if (isSettleUp) {
             settleUp(
                 legs = legs,
@@ -40,18 +44,18 @@ internal class PaymentSaving(
                 isPaidByMe = state.kind == PaymentKind.PAID,
             )
         } else {
-            val leg = target.legs.first()
+            val leg = legs.single()
             recordSettlement(
                 groupId = leg.groupId,
                 fromMemberId = leg.fromMemberId,
                 toMemberId = leg.toMemberId,
-                amountMinor = amountMinor,
+                amountMinor = leg.amountMinor,
                 currency = leg.currency,
                 method = method,
                 paidAt = paidAt,
             ).map { listOf(it) }
         }
-        val groupIds = if (isSettleUp) legs.map { it.groupId }.distinct() else listOf(target.legs.first().groupId)
-        return result.onSuccess { noteReviewMoment(ReviewMoment.PaymentRecorded(groupIds)) }
+        // Why: the groups of the legs recorded, each once.
+        return result.onSuccess { noteReviewMoment(ReviewMoment.PaymentRecorded(legs.map { it.groupId }.distinct())) }
     }
 }

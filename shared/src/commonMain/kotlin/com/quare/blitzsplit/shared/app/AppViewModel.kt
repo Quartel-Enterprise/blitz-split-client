@@ -37,11 +37,10 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -52,6 +51,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.minutes
@@ -132,8 +132,10 @@ class AppViewModel(
      * Why: the moment to ask the store for its review card (Google Play's in-app review, the App Store's
      * requestReview), which each native app does its own way; the stores decide whether it shows.
      */
-    val reviewRequests: SharedFlow<Unit>
-        field = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private val reviewRequestChannel = Channel<Unit>(Channel.CONFLATED)
+
+    // Why: a channel, so a request made while the activity is being recreated waits for the next one to take it.
+    val reviewRequests: Flow<Unit> = reviewRequestChannel.receiveAsFlow()
 
     val reviewRequestWatcher: FlowWatcher<Unit> = FlowWatcher(reviewRequests)
 
@@ -249,15 +251,13 @@ class AppViewModel(
 
     /*
      * Why: a payment that settles a group or the third bill saved may ask for a review (RequestReviewIfNeeded holds
-     * the rules), a moment after the form closed, so the card never opens over a screen still sliding away.
+     * the rules).
      */
     private fun askForReviewAfterGoodMoments() {
         storePrompts
             .observeReviewMoments()
             .onEach { moment ->
-                if (!storePrompts.requestReviewIfNeeded(moment)) return@onEach
-                delay(REVIEW_SETTLE_MILLIS)
-                reviewRequests.emit(Unit)
+                if (storePrompts.requestReviewIfNeeded(moment)) reviewRequestChannel.send(Unit)
             }.launchIn(viewModelScope)
     }
 
@@ -450,8 +450,5 @@ class AppViewModel(
     private companion object {
         // Why: how long a tapped notification waits for a sync before opening what the device already has.
         const val PUSH_LINK_SYNC_SECONDS = 5
-
-        // Why: how long the screen under a closed form takes to settle before the store's card opens over it.
-        const val REVIEW_SETTLE_MILLIS = 800L
     }
 }

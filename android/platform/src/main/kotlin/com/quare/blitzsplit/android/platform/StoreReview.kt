@@ -10,6 +10,6 @@ import com.google.android.play.core.review.ReviewManagerFactory
 fun Activity.launchStoreReview() {
     val manager = ReviewManagerFactory.create(this)
     manager.requestReviewFlow().addOnCompleteListener { request ->
-        if (request.isSuccessful && !isFinishing) manager.launchReviewFlow(this, request.result)
+        if (request.isSuccessful && !isFinishing && !isDestroyed) manager.launchReviewFlow(this, request.result)
     }
 }

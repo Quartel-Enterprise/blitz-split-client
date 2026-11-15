@@ -18,6 +18,7 @@ kotlin {
             // Why: the review asks only over a resting screen, after a payment that settles a group.
             implementation(projects.core.navigation)
             implementation(projects.core.expenses)
+            implementation(projects.core.sync)
             implementation(projects.core.utils)
             implementation(projects.core.provider.room)
             implementation(project.dependencies.platform(libs.koin.bom))

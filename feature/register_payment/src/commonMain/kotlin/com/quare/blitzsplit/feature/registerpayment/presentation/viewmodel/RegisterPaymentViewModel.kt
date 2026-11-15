@@ -503,7 +503,14 @@ class RegisterPaymentViewModel(
         val target = latest ?: return
         uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
-            val result = saving.save(route is Route.SettleUp, target, state, amountMinor, method, paidAt)
+            val result = saving.save(
+                isSettleUp = route is Route.SettleUp,
+                target = target,
+                state = state,
+                amountMinor = amountMinor,
+                method = method,
+                paidAt = paidAt,
+            )
             result
                 .onSuccess { settlementIds ->
                     trackEvent(

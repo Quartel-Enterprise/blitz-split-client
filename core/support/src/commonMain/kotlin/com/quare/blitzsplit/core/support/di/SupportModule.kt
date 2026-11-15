@@ -49,6 +49,7 @@ val supportModule = module {
             repository = get(),
             observeGroupBalances = get(),
             currentTimeMillis = get(),
+            observeAppForeground = get(),
             trackEvent = get(),
         )
     }

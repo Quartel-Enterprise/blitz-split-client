@@ -173,8 +173,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     with nobody owing, or the third bill created on this device (an edit is none, nor a bill or a payment a sync
     brings). The rules are Bible Planner's (`RequestReviewIfNeededUseCase`): the first such moment only starts three
     days of grace, each app version asks once at most, and never within 60 days of the last time. It waits up to ten
-    seconds for a home tab, a group's screen or Activity to be on top, so it never covers a form or a sheet, and
-    gives up otherwise. What it remembers (`review_prompt`) belongs to the device: never synced, and kept through
+    seconds for the app to be in front with a home tab, a group's screen or Activity on top, so it never covers a
+    form or a sheet nor asks while nobody looks, and gives up otherwise, without counting as asked. What it remembers (`review_prompt`) belongs to the device: never synced, and kept through
     a sign out. The stores decide whether the card shows and never say which, so asking counts as asked.
   - Profile's "Privacy and about" holds "Share usage data" ("Screens and taps, to improve the app. Never names or
     amounts."), a switch right under "Export my data" (Pierre's call, #184): on by default, per device like the theme,
