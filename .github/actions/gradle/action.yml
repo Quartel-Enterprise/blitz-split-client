@@ -25,11 +25,8 @@ outputs:
   konan-key:
     description: >-
       With kotlin-native: the prefix of the keys of the Kotlin/Native entry (~/.konan), for the job
-      that saves it to finish with a fingerprint of what the entry holds.
+      that saves it to finish with a fingerprint of what the entry holds and the run that saved it.
     value: ${{ steps.kotlin.outputs.konan-key }}
-  konan-restored-key:
-    description: 'With kotlin-native: the key of the entry that was restored, empty when there was none.'
-    value: ${{ steps.konan.outputs.cache-matched-key }}
 
 runs:
   using: "composite"
@@ -83,8 +80,9 @@ runs:
 
     # ~/.konan holds the toolchain, which changes with the Kotlin version and the runner, and the
     # native code Kotlin/Native compiles each library to on its first link (klib/cache), which changes
-    # with the libraries' versions. So an entry's key ends with a fingerprint of the libraries it
-    # holds, and every job restores the newest one of its Kotlin version, whatever its fingerprint.
+    # with the libraries' versions. So an entry's key has a fingerprint of the libraries it holds,
+    # then the run that saved it, and every job restores the newest one of its Kotlin version,
+    # whatever comes after the prefix.
     # Nothing is saved here, since a composite action has no step that runs when the job ends: the
     # job that compiles every Apple target saves it (apple-tests, on main). As with Gradle's cache, an
     # entry a pull request saves would be readable by that branch alone, and a gigabyte each would
@@ -104,11 +102,11 @@ runs:
         echo "konan-key=konan-$RUNNER_OS-$RUNNER_ARCH-$version-libraries-" >> "$GITHUB_OUTPUT"
 
     # No entry has the bare prefix as its key, so the match is always by prefix, and the newest entry
-    # it matches is restored. Don't add a restore key that is an entry's whole key: the entry saved
-    # before the keys had a fingerprint was one here, as a fallback after the prefix, and GitHub
-    # restored it on every run, ahead of the newer entries the prefix matched.
+    # it matches is restored. The restore key repeats the prefix on purpose: restore keys are what
+    # GitHub documents as matched by prefix. Don't add one that is an entry's whole key: the entry
+    # saved before the keys had a fingerprint was one here, after the prefix, and it was the one
+    # restored on every run, with newer entries matching the prefix.
     - name: Restore the Kotlin/Native toolchain
-      id: konan
       if: inputs.kotlin-native == 'true'
       uses: actions/cache/restore@v6
       with:
