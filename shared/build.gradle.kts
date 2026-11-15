@@ -4,7 +4,7 @@ plugins {
 
 // The modules SwiftUI and React talk to directly: their ViewModels, UiState, UiEvent and UiAction
 // types are exported to the Apple framework (Swift sees them by name). Listed by path and turned into
-// dependencies below: at the top of a build script, project(":core:model") is the Project itself.
+// dependencies by the map at the end: at the top of a build script, project(":core:model") is the Project itself.
 private val exportedToApple = listOf(
     ":core:model",
     ":core:presentation",
