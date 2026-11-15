@@ -193,8 +193,8 @@ usual). That entry point:
 
 **The language picks the strings, the region how amounts, dates and hours are written.** Launched in `es-419`, the
 app reads its `es` strings in every region, Spain's included. Latin America's set runs in `es_GQ`, Equatorial Guinea's
-region (Pierre's call): the only Spanish region that writes the trip's euros with the symbol in front ("€1145,80"),
-the hours on a 24-hour clock ("21:00") and the day before the month ("15 nov", "11–14 nov"). Every region was
+region (Pierre's call): the only Spanish region that writes the trip's euros with the symbol in front ("€1145,80")
+and also the hours on a 24-hour clock ("21:00") and the day before the month ("15 nov", "11–14 nov"). Every region was
 measured on iOS 27.2:
 
 - **Latin America's**, all of them, write the euro as its code, "EUR 1,145.80" or, in most of South America,
