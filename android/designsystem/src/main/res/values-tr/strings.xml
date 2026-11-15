@@ -304,5 +304,6 @@
     <string name="designsystem_paid_with">Ödeme şekli</string>
     <string name="designsystem_paid_with_none">Yok</string>
     <string name="designsystem_paid_with_private">Bunu yalnızca sen görürsün.</string>
+    <string name="designsystem_paid_with_only_payers">Ödeme şeklini yalnızca bu harcamayı ödeyenler seçebilir.</string>
     <string name="designsystem_paid_with_add">Ödeme yöntemi ekle</string>
 </resources>

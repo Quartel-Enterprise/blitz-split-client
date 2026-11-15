@@ -69,6 +69,9 @@ internal fun splitBillAnalyticsOf(event: SplitBillUiEvent): EventAnalytics = whe
     // Why: only a tap that opens the form, never one while another screen covers this one.
     SplitBillUiEvent.OnAddPayingMethodClicked -> EventAnalytics.Manual("split_bill_add_paying_method_clicked")
 
+    // Why: only a tap on the disabled chip while it shows, which raises the reason.
+    SplitBillUiEvent.OnLockedPaidWithClicked -> EventAnalytics.Manual("split_bill_paid_with_locked_clicked")
+
     // Why: only "Pronto" on a sheet still open.
     SplitBillUiEvent.OnPayerDone -> EventAnalytics.Manual("split_bill_payer_confirmed")
 

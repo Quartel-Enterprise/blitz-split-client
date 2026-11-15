@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.splitbill.presentation.viewmodel
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,8 @@ internal class PaidWithPicking(
     private val trackEvent: TrackEvent,
     // Why: opens "New payment method" over the form, unless another screen already covers it.
     private val exits: SplitBillExits,
+    // Why: the snackbar a tap on the disabled chip raises.
+    private val emit: suspend (SplitBillUiAction) -> Unit,
     private val scope: CoroutineScope,
 ) {
     private var hasOpened = false
@@ -70,6 +73,13 @@ internal class PaidWithPicking(
             if (isAwaitingAdded && methods.isNotEmpty()) show(methods, mark = null)
             isAwaitingAdded = false
         }
+    }
+
+    // Why: the disabled "Paid with" says why it can't change, only while it shows that way.
+    fun explainLocked() {
+        if (!uiState.value.showsLockedPaidWith) return
+        trackEvent("split_bill_paid_with_locked_clicked", emptyMap())
+        scope.launch { emit(SplitBillUiAction.ShowPaidWithOnlyForPayers) }
     }
 
     /*

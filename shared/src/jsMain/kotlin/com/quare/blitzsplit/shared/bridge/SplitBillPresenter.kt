@@ -94,6 +94,8 @@ class JsSplitBillState(
     val paidWith: JsPaidWith?,
     // Why: "Add a payment method" where Paid with goes, while this device's user pays and has no method yet.
     val showsAddPayingMethod: Boolean,
+    // Why: Paid with drawn disabled while this device's user doesn't pay the bill; a tap says why.
+    val showsLockedPaidWith: Boolean,
     val isPayerFormerMember: Boolean,
     // Why: who paid, whom Dividir marks as keeping the cents.
     val payerIds: Array<String>,
@@ -208,6 +210,7 @@ class SplitBillPresenter(
                 payerIsMe = state.payerIsMe,
                 paidWith = toJsPaidWithOrNull(state),
                 showsAddPayingMethod = state.showsAddPayingMethod,
+                showsLockedPaidWith = state.showsLockedPaidWith,
                 isPayerFormerMember = state.isPayerFormerMember,
                 payerIds = state.payerIds.toTypedArray(),
                 severalPayers = state.severalPayers?.let(::toJsPayerAmounts),
@@ -287,6 +290,7 @@ class SplitBillPresenter(
                 SplitBillUiAction.ShowDeleteError -> "delete-error"
                 SplitBillUiAction.ShowCategorySaveError -> "category-save-error"
                 SplitBillUiAction.ShowCategoryDeleteError -> "category-delete-error"
+                SplitBillUiAction.ShowPaidWithOnlyForPayers -> "paid-with-only-payers"
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -402,6 +406,10 @@ class SplitBillPresenter(
 
     fun addPayingMethod() {
         viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+    }
+
+    fun lockedPaidWithClicked() {
+        viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
     }
 
     fun confirmPayer() {

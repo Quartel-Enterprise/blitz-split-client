@@ -13,8 +13,7 @@ internal class PayerPicking(
     private val separator: () -> Char,
     private val trackEvent: TrackEvent,
     // Why: "Paid with" belongs with who paid, though its own helper keeps it.
-    private val onPaidWithPicked: (String?) -> Unit,
-    private val onAddPayingMethod: () -> Unit,
+    private val paidWith: PaidWithPicking,
 ) {
     fun onEvent(event: SplitBillUiEvent.Payers) {
         when (event) {
@@ -53,9 +52,11 @@ internal class PayerPicking(
 
             SplitBillUiEvent.OnSeveralPayersDismissed -> uiState.update { it.copy(payerAmounts = null) }
 
-            is SplitBillUiEvent.OnPaidWithPicked -> onPaidWithPicked(event.methodId)
+            is SplitBillUiEvent.OnPaidWithPicked -> paidWith.pick(event.methodId)
 
-            SplitBillUiEvent.OnAddPayingMethodClicked -> onAddPayingMethod()
+            SplitBillUiEvent.OnAddPayingMethodClicked -> paidWith.add()
+
+            SplitBillUiEvent.OnLockedPaidWithClicked -> paidWith.explainLocked()
         }
     }
 }

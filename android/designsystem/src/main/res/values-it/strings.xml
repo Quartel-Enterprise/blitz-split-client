@@ -313,5 +313,6 @@
     <string name="designsystem_paid_with">Pagato con</string>
     <string name="designsystem_paid_with_none">Nessuno</string>
     <string name="designsystem_paid_with_private">Lo vedi solo tu.</string>
+    <string name="designsystem_paid_with_only_payers">Solo chi ha pagato questa spesa può indicare con cosa ha pagato.</string>
     <string name="designsystem_paid_with_add">Aggiungi un metodo di pagamento</string>
 </resources>

@@ -29,6 +29,16 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     bill is (`MarkBillPayingMethod`), never with the bill: the group's other members never see it. A bill whose only
     change is the mark doesn't save the bill again (`SplitBillUiState.isOnlyPaidWithChanged`), so the group sees no
     edit; no longer paying a bill clears the mark. A change to it counts as unsaved input ("Discard changes?").
+    While this device's user is in the bill's group but doesn't pay it, the chip still shows, disabled-looking on
+    "None" (Pierre's call, beta feedback of November 15, 2026: "Edit bill" of a bill someone else paid had nowhere to
+    mark it), and a tap raises a snackbar, "Only those who paid this bill can mark what they paid with."
+    (`SplitBillUiState.showsLockedPaidWith`, `OnLockedPaidWithClicked`, `SplitBillUiAction.ShowPaidWithOnlyForPayers`;
+    Android's snackbar, Apple's glass toast, the web's toast). It is never truly disabled, so the tap gets through
+    (Android an enabled chip in the disabled colors, Apple a dimmed button, the web `aria-disabled`); screen readers
+    hear "Paid with", "None" and the same sentence. It stands for "Add a payment method" too, for someone with no method
+    yet: the chip says where the mark goes, while a dimmed "Add a payment method" would read as an invitation the tap
+    then refuses (settled while Pierre was away). The same goes for a new bill once someone else is picked in "Who
+    paid": the chip turns disabled and comes back with its pick once this device's user pays again.
   - "Add a payment method" (Pierre's call, feedback of November 15, 2026): in the chip's place while this device's
     user pays the bill and has no method yet, once their methods were read (`SplitBillUiState.showsAddPayingMethod`), a
     button slightly more visible than the chip (Android's tonal button, Apple's bordered one, the web's secondary one). It opens

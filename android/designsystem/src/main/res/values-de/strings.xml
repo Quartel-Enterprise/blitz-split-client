@@ -304,5 +304,6 @@
     <string name="designsystem_paid_with">Bezahlt mit</string>
     <string name="designsystem_paid_with_none">Keine</string>
     <string name="designsystem_paid_with_private">Nur du siehst das.</string>
+    <string name="designsystem_paid_with_only_payers">Nur wer diese Ausgabe bezahlt hat, kann angeben, womit.</string>
     <string name="designsystem_paid_with_add">Zahlungsmethode hinzufügen</string>
 </resources>

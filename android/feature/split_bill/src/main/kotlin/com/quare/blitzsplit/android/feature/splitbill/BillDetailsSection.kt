@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AddPaidWithButton
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
+import com.quare.blitzsplit.android.designsystem.component.LockedPaidWithChip
 import com.quare.blitzsplit.android.designsystem.component.PaidWithChip
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.StackFace
@@ -130,7 +131,7 @@ internal fun BillDetailsSection(
             StackedFacesRow(state.split.included)
         }
     }
-    // Why: the person's own "Paid with", only while they pay the bill; the group never sees it.
+    // Why: the person's own "Paid with" while they pay the bill, disabled-looking otherwise; the group never sees it.
     if (state.showsPaidWith) {
         PaidWithChip(
             methods = state.paidWith.methods,
@@ -143,6 +144,8 @@ internal fun BillDetailsSection(
             onClick = { onEvent(SplitBillUiEvent.OnAddPayingMethodClicked) },
             enabled = !state.isFormLocked,
         )
+    } else if (state.showsLockedPaidWith) {
+        LockedPaidWithChip(onClick = { onEvent(SplitBillUiEvent.OnLockedPaidWithClicked) })
     }
     if (state.showsOfflineNotice) {
         OfflineNoteRow()
