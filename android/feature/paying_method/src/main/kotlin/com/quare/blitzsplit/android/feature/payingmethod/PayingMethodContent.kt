@@ -53,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.component.PayingMethodTile
 import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.component.nameRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormBleed
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
@@ -63,6 +64,7 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 private const val SKELETON_FIELDS = 3
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
+private val sideMargin = 16.dp
 private val rowShape = RoundedCornerShape(20.dp)
 
 @Composable
@@ -144,8 +146,8 @@ private fun PayingMethodFormColumn(
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
             .padding(
-                start = 16.dp,
-                end = 16.dp,
+                start = sideMargin,
+                end = sideMargin,
                 top = 8.dp,
                 bottom = 32.dp,
             ),
@@ -184,6 +186,8 @@ private fun ColumnScope.PayingMethodFieldsColumn(
             selectedIndex = state.types.indexOf(state.type),
             groupLabel = stringResource(R.string.paying_method_type),
             onClick = { index -> onEvent(PayingMethodUiEvent.OnTypeSelected(state.types[index])) },
+            // Why: the form column's side margins, which the type chips scroll into.
+            bleed = FormBleed.ofMargin(sideMargin),
         )
     }
     OutlinedTextField(

@@ -46,6 +46,7 @@ import com.quare.blitzsplit.android.designsystem.component.EndReachedEffect
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
+import com.quare.blitzsplit.android.designsystem.layout.FormBleed
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
@@ -57,6 +58,7 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: one column, as Atividade's, centered on a tablet or a book: the rows read as Início's, never stretched.
 private val columnMaxWidth = 640.dp
+private val sideMargin = 16.dp
 
 /*
  * Why: "Todas as despesas", which Início's "Ver tudo" opens over it: a page on every size (a long list a page at a time
@@ -131,7 +133,8 @@ internal fun AllExpensesContent(
                                 onEvent = onEvent,
                                 modifier = Modifier
                                     .verticalScroll(rememberScrollState())
-                                    .padding(horizontal = 16.dp),
+                                    .padding(horizontal = sideMargin),
+                                bleed = FormBleed.ofMargin(sideMargin),
                             )
                         }
                     },
@@ -180,8 +183,8 @@ private fun AllExpensesList(
         modifier = modifier.fillMaxWidth(),
         state = listState,
         contentPadding = PaddingValues(
-            start = 16.dp,
-            end = 16.dp,
+            start = sideMargin,
+            end = sideMargin,
             bottom = 24.dp,
         ),
     ) {
@@ -194,6 +197,7 @@ private fun AllExpensesList(
                     state = state,
                     onEvent = onEvent,
                     modifier = Modifier.padding(bottom = 8.dp),
+                    bleed = FormBleed.ofMargin(sideMargin),
                 )
             }
         }

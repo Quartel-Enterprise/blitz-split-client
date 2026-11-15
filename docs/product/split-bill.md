@@ -57,7 +57,8 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     The row scrolls edge to edge, with no cut on either side (Pierre's call, beta feedback): at rest the first capsule
     lines up with the form, but scrolling carries the capsules out to the screen's (or the dialog's) edge rather than
     stopping at the form's side margins (Android's `LocalFormBleed`, SwiftUI's `scrollClipDisabled`, the web's
-    `--pane-gutter`).
+    `--pane-gutter`). On Android Items' people totals, the paying method's type and All expenses' filters scroll the
+    same way; the currency rows of the group's tabs still stop at the margins.
     "By income" (`SplitMode.INCOME`, Pierre's call: the incomes are synced) has each one's income field, prefilled with
     the group's incomes (`group_member_income`, the same ones Default split's By income keeps, in the group's currency,
     moved to the bill's as a total is), blank for whoever has none, and under each name their share and the
