@@ -12,6 +12,7 @@ import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Assume.assumeFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Test
+import java.io.File
 import java.util.TimeZone
 
 /**
@@ -71,6 +72,9 @@ internal abstract class StoreScreenshots(
     private companion object {
         // The logo's blue dimmed far down, so the app's own accents stay the brightest thing in each image.
         const val BANNER_BACKGROUND = 0xFF0E2433
+
+        // Where the library writes, as build-logic's StoreScreenshots.kt sets it; the module's folder when it doesn't.
+        const val OUTPUT_ROOT_PROPERTY = "storeScreenshots.outputRoot"
     }
 
     private fun shot(
@@ -85,8 +89,10 @@ internal abstract class StoreScreenshots(
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         storeLocales.forEach { locale ->
             val copy = bannerCopyOf(screen, locale.language)
+            // An Apple slot only frames a capture, which got its language and region on the simulator.
+            val drawnIn = if (appleSlot == null) locale.playLocale else locale.tag
             screenshot(
-                locales = listOf(locale.tag),
+                locales = listOf(drawnIn),
                 title = copy.title,
                 description = copy.description,
                 backgroundColor = Color(BANNER_BACKGROUND),
@@ -106,7 +112,27 @@ internal abstract class StoreScreenshots(
                     )
                 }
             }
+            moveToListingFolder(
+                drawnIn = drawnIn,
+                tag = locale.tag,
+            )
         }
+    }
+
+    // The library names an image's folder after the locale it drew it in; the collect and stage tasks, and the next
+    // person looking, go by the listing's tag.
+    private fun moveToListingFolder(
+        drawnIn: String,
+        tag: String,
+    ) {
+        if (drawnIn == tag) return
+        val outputRoot = File(System.getProperty(OUTPUT_ROOT_PROPERTY) ?: System.getProperty("user.dir"))
+        val drawn = outputRoot.resolve(drawnIn)
+        drawn.copyRecursively(
+            target = outputRoot.resolve(tag),
+            overwrite = true,
+        )
+        drawn.deleteRecursively()
     }
 }
 
