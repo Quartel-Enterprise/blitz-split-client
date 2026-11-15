@@ -203,7 +203,8 @@ project's Mac its own screenshot of the window failed as well ("Image creation f
   and nothing else. It then prints the window's number, which the script reads from the app's output and hands to
   `screencapture -l`. The hidden apps come back with a click on their Dock icon.
 - **On a Retina display.** The frame draws the window at twice its points (2880x1800). On a display that isn't
-  Retina the capture is 1440x900 and would go to the listing blurred; the release's job fails on that.
+  Retina the capture is 1440x900 and would go to the listing blurred, so the script fails on it, after writing
+  the captures: they are still there to look at.
 
 ## Things that bite
 

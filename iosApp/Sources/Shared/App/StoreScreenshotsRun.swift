@@ -4,9 +4,10 @@ import Foundation
 import AppKit
 #endif
 
-/// The App Store screenshots' launch (docs/store-listing-screenshots.md): the UI tests in UITests start a debug build
-/// with these arguments, and the shared code seeds the sample trip in that language and theme, then opens the screen.
-/// Compiled out of a release build, whose shared framework would ignore the seed anyway.
+/// The App Store screenshots' launch (docs/store-listing-screenshots.md): the captures (the iOS UI test in UITests,
+/// capture-mac.sh on the Mac) start a debug build with these arguments, and the shared code seeds the sample trip in
+/// that language and theme, then opens the screen. Compiled out of a release build, whose shared framework would
+/// ignore the seed anyway.
 struct StoreScreenshotsRun {
     let language: String
     let isDark: Bool
@@ -43,7 +44,7 @@ struct StoreScreenshotsRun {
         defaults.set(languages, forKey: savedLanguagesKey)
     }
 
-    /// The UI test's last launch, `-StoreScreenshotsRestore YES`, puts the app's own language back once every capture
+    /// The captures' last launch, `-StoreScreenshotsRestore YES`, puts the app's own language back once every capture
     /// is made.
     static func restoreLanguagesIfAsked() {
         let defaults = UserDefaults.standard
@@ -58,9 +59,9 @@ struct StoreScreenshotsRun {
         defaults.removeObject(forKey: savedLanguagesKey)
     }
 
-    /// The faces, the groups' photos and the receipt the UI test passed as base64, written where this app may read
-    /// them: the shared code reads `faces/person<n>.jpg`, `groups/<photo>.jpg` and `receipt.jpg` there. Nil when the
-    /// test passed none.
+    /// The faces, the groups' photos and the receipt the capture passed as base64, written where this app may read
+    /// them: the shared code reads `faces/person<n>.jpg`, `groups/<photo>.jpg` and `receipt.jpg` there. Nil when it
+    /// passed none.
     private static func writeAssets() -> String? {
         let prefix = "STORE_SCREENSHOTS_ASSET_"
         let assets = ProcessInfo.processInfo.environment.filter { $0.key.hasPrefix(prefix) }

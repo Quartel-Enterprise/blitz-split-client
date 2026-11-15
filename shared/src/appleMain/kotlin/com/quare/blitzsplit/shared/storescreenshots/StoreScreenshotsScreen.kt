@@ -4,9 +4,10 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 
 /*
- * Why: the screen each App Store screenshot opens on, by the code the iOS UI tests launch the app with
- * (iosApp/UITests). The routes go on the back stack over Início, as a person would have tapped their way there; Items
- * still needs its tap on the bill's split, which the test makes.
+ * Why: the screen each App Store screenshot opens on, by the code the captures launch the app with (the iOS UI test
+ * and capture-mac.sh, from scripts/store-screenshots/screens.tsv). The routes go on the back stack over Início, as a
+ * person would have tapped their way there; Items is the dinner's bill, whose screen then opens "Bill items" by
+ * itself (SplitBillModel).
  */
 internal enum class StoreScreenshotsScreen(
     val code: String,

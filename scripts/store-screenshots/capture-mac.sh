@@ -9,7 +9,8 @@
 # window alone, which takes the Screen Recording permission for whatever runs this script.
 #
 # The app takes this Mac's screen for the whole run, about ten seconds per capture: leave the keyboard and mouse
-# alone until it ends. STORE_SCREENSHOTS_LOCALES and STORE_SCREENSHOTS_SCREENS narrow it as in capture-ios.sh.
+# alone until it ends. The run fails when the window was on a display that isn't Retina, whose captures the frame
+# would blur. STORE_SCREENSHOTS_LOCALES and STORE_SCREENSHOTS_SCREENS narrow it as in capture-ios.sh.
 # STORE_SCREENSHOTS_BUILD_SETTINGS adds build settings to the build, for a machine with no signing account (the
 # release's runner: release-production.yml).
 
@@ -99,3 +100,12 @@ while IFS=$'\t' read -r tag language apple_language apple_locale; do
 done < <(rows locales)
 
 echo "Captured into $OUTPUT/mac"
+
+# The frame draws the window at twice its points: a capture from a display that isn't Retina would go to the listing
+# blurred, so the run fails and whatever called it stops before framing or uploading.
+capture="$(find "$OUTPUT/mac" -name '*.png' -print -quit)"
+width="$(sips -g pixelWidth "$capture" | awk '/pixelWidth/ { print $2 }')"
+if [ "$width" -lt 2880 ]; then
+  echo "The Mac captures are $width px wide, the frame takes 2880: the window was on a display that isn't Retina" >&2
+  exit 1
+fi

@@ -29,8 +29,8 @@ object SampleTrips {
 
     /*
      * Why: the three groups' photos, files of scripts/store-screenshots/bank/groups without their extension. The App
-     * Store's UI test passes the same three files to the app (StoreScreenshotsUITests), which can't read these: its
-     * bundle doesn't link the shared framework. The seed stops on one the test didn't pass.
+     * Store's captures hand the app the same three files, listed in scripts/store-screenshots/assets.tsv since
+     * neither the iOS UI test nor capture-mac.sh can read these names. The seed stops on one that list lacks.
      */
     const val TRIP_PHOTO = "trip-lisbon-tram"
     private const val ROOMMATES_PHOTO = "home-kitchen"
