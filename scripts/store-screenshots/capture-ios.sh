@@ -23,7 +23,8 @@ OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-capture
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData"
 SLOTS="${STORE_SCREENSHOTS_SLOTS:-iphone63 iphone67 ipad13 iphoneduo iphoneduoopen}"
 DEVICE_HUB="com.apple.dt.Devices"
-# How long the Duo may take to open, by the script's press or by a person's.
+# How long the Duo may take to open, by the script's press or by a person's, counted once the script's own attempt at
+# the press is over (which waits up to a minute for Device Hub's window and half a minute for its Open button).
 OPEN_TIMEOUT="${STORE_SCREENSHOTS_OPEN_TIMEOUT:-120}"
 # The Duo's inner display, as `simctl io enumerate` numbers it.
 DUO_INNER_DISPLAY=3
@@ -66,8 +67,16 @@ duo_is_open() {
 # Where the terminal isn't allowed to (System Settings › Privacy & Security › Accessibility), it waits for a person
 # to press Open in Device Hub instead, and fails after OPEN_TIMEOUT seconds, which skips the slot.
 open_duo() {
-  local udid="$1" name="$2"
-  open -g -b "$DEVICE_HUB"
+  local udid="$1" name="$2" hub
+  # The Device Hub of the Xcode in use, which is the one that knows its simulators: a runner has several Xcodes, and
+  # the bundle identifier alone lets macOS pick any of theirs.
+  hub="$(dirname "$(xcode-select -p)")/Applications/DeviceHub.app"
+  if [ -d "$hub" ]; then
+    open -g "$hub"
+  else
+    echo "No Device Hub at $hub: opening whichever Xcode's $DEVICE_HUB macOS picks" >&2
+    open -g -b "$DEVICE_HUB"
+  fi
   if ! osascript - "$name" << 'APPLESCRIPT' > /dev/null 2>&1; then
 on run arguments
   set simulatorName to item 1 of arguments
@@ -96,12 +105,16 @@ on run arguments
     end repeat
     -- Open acts on the device selected: without this one's row, it would open another session's Duo.
     if not isSelected then error "No " & simulatorName & " in Device Hub"
-    delay 2
-    repeat with element in entire contents of window 1
-      if class of element is button and description of element is "Open" then
-        click element
-        return
-      end if
+    -- The bar under the device is only there once Device Hub has connected to its display ("Connecting display…").
+    -- Its buttons have no words, so "Open" is the button's accessibility label, read both ways an app can give one.
+    repeat 15 times
+      delay 2
+      repeat with element in entire contents of window 1
+        if class of element is button and (description of element is "Open" or name of element is "Open") then
+          click element
+          return
+        end if
+      end repeat
     end repeat
     error "No Open button in Device Hub"
   end tell
@@ -163,6 +176,7 @@ xcodebuild build-for-testing \
   ARCHS=arm64 \
   -quiet
 
+captured=0
 for slot in $SLOTS; do
   udid="$(simulator_for "$slot")"
   echo "Capturing $slot on $udid"
@@ -192,6 +206,12 @@ for slot in $SLOTS; do
     -derivedDataPath "$DERIVED_DATA" \
     -quiet
   xcrun simctl shutdown "$udid" || true
+  captured=$((captured + 1))
 done
 
+# A run of the open iPhone Duo alone, as a release's job is, fails here rather than at whatever reads its captures.
+if [ "$captured" -eq 0 ]; then
+  echo "No slot was captured" >&2
+  exit 1
+fi
 echo "Captured into $OUTPUT"

@@ -19,8 +19,11 @@ on:
       - 'scripts/release/**'
       - 'release-notes/**'
       - 'store-listing/**'
-      # The screenshots' store locales, which a test compares with the listing text's
+      # The screenshots' store locales, which a test compares with the listing text's, and the screens the iPhone
+      # Duo's shelf takes open, which another compares with the captures' screens and the frames'
       - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
+      - 'scripts/store-screenshots/screens.tsv'
+      - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
   push:
     branches:
       - main
@@ -29,8 +32,11 @@ on:
       - 'scripts/release/**'
       - 'release-notes/**'
       - 'store-listing/**'
-      # The screenshots' store locales, which a test compares with the listing text's
+      # The screenshots' store locales, which a test compares with the listing text's, and the screens the iPhone
+      # Duo's shelf takes open, which another compares with the captures' screens and the frames'
       - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
+      - 'scripts/store-screenshots/screens.tsv'
+      - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
 
 permissions:
   contents: read

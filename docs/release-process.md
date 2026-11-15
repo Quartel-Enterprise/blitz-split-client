@@ -196,12 +196,19 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   and `macos-screenshots` upload them.
 
 None of the App Store's jobs holds the release back: one that fails is listed as failed, the run is not, and the
-submission goes on with the screenshots the version already has. Two captures are expected to fail on some runners:
-the iPhone Duo's, where Xcode has no runtime for it, and the Mac's, which had never run in CI when this was written.
-The runner has no signing account, so the Mac app is built signed to run locally and without its entitlements, and
-the job refuses captures from a display that isn't Retina, which would reach the listing blurred. The Mac's listing
-then keeps its screenshots: `fastlane screenshots platform:ios` on a Mac replaces them, on a version that is still
-editable.
+submission goes on with the screenshots the version already has. Three captures may fail on a runner, and none had
+run in CI when this was written:
+
+- **The iPhone Duo's two**, closed and open, each on a runner of its own. Both need the Duo's simulator runtime, which
+  the `xcode-27` image has (iOS 27.1 and 27.2). The open one also needs the script to press Open in Device Hub
+  through accessibility, which the image allows on paper and nobody has seen work
+  ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)). The Duo's shelf on the App
+  Store holds ten screenshots for both displays, so five screens go up open and five closed; when one of the two
+  captures fails, the other fills the shelf, and when both do the listing goes without the Duo.
+- **The Mac's.** The runner has no signing account, so the Mac app is built signed to run locally and without its
+  entitlements, and the job refuses captures from a display that isn't Retina, which would reach the listing
+  blurred. The Mac's listing then keeps its screenshots: `fastlane screenshots platform:ios` on a Mac replaces them,
+  on a version that is still editable.
 
 ### Re-runs and what a run leaves
 

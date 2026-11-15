@@ -569,7 +569,13 @@ jobs:
   # trip and runs them on its simulator; for `mac`, a script launches the debug Mac app on the runner's own screen and
   # photographs its window (docs/store-listing-screenshots.md).
   # Every slot is captured whichever Apple platform the run releases, since the frames need the iPhone's and the
-  # iPad's. The iPhone Duo's fails on a runner whose Xcode has no runtime for it, and the listing goes without it.
+  # iPad's. The iPhone Duo has two, closed and open, each on a runner of its own. Both fail on a runner whose Xcode
+  # has no runtime for the Duo, and the open one where the script can't press Open in Device Hub: nobody is there to
+  # press it, so once its own attempt is over (up to a minute and a half) it waits half a minute more and gives up,
+  # and the job fails for having captured nothing. The Duo's shelf then takes its ten screens from the slot that was
+  # captured, and the listing goes without the Duo when neither was. The two slots stay apart, although one job could
+  # share their build: the open capture is the one nobody has seen work, and a run of it that breaks halfway must
+  # not take the closed Duo's captures with it.
   apple-screenshots-capture:
     name: App Store, capture the ${{ matrix.slot }} screenshots
     needs: plan
@@ -580,7 +586,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slot: [iphone63, iphone67, ipad13, iphoneduo, mac]
+        slot: [iphone63, iphone67, ipad13, iphoneduo, iphoneduoopen, mac]
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -607,6 +613,7 @@ jobs:
         if: ${{ matrix.slot != 'mac' }}
         env:
           STORE_SCREENSHOTS_SLOTS: ${{ matrix.slot }}
+          STORE_SCREENSHOTS_OPEN_TIMEOUT: 30
         run: ./scripts/store-screenshots/capture-ios.sh
 
       # The runner has no signing account, so the app is signed to run locally and without its entitlements, which
