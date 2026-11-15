@@ -17,7 +17,9 @@
         "nl": "In Activiteit toont elke regel nu de foto van de groep naast de naam, als de groep er een heeft.",
         "ja": "アクティビティの各行に、グループの写真があればグループ名の横に表示されるようになりました。",
         "tr": "Etkinlik'te her satır artık grubun fotoğrafı varsa onu grubun adının yanında gösteriyor.",
-        "id": "Di Aktivitas, setiap baris kini menampilkan foto grup di samping namanya, jika grup punya foto."
+        "id": "Di Aktivitas, setiap baris kini menampilkan foto grup di samping namanya, jika grup punya foto.",
+        "ru": "В «Активности» рядом с названием группы теперь показывается её фото, если оно есть.",
+        "uk": "В «Активності» поруч із назвою групи тепер показується її фото, якщо воно є."
       }
     },
     {
@@ -37,7 +39,9 @@
         "nl": "Je saldo in deze groep herhaalt het bedrag niet meer op een tweede regel als je alleen iets krijgt of alleen iets schuldig bent.",
         "ja": "このグループでの残高は、受け取るだけ、または支払うだけのときに、2行目で同じ金額を繰り返さなくなりました。",
         "tr": "Bu gruptaki bakiyen, yalnızca alacağın ya da yalnızca borcun olduğunda tutarı ikinci bir satırda tekrarlamıyor.",
-        "id": "Saldomu di grup ini tidak lagi mengulang jumlahnya di baris kedua saat kamu hanya menerima atau hanya berutang."
+        "id": "Saldomu di grup ini tidak lagi mengulang jumlahnya di baris kedua saat kamu hanya menerima atau hanya berutang.",
+        "ru": "Твой баланс в группе больше не повторяет сумму второй строкой, когда тебе только должны или только ты должен(-на).",
+        "uk": "Твій баланс у групі більше не повторює суму другим рядком, коли тобі лише винні або лише ти винен(-на)."
       }
     },
     {
@@ -58,7 +62,9 @@
         "nl": "De eerste letter van \"Foto toevoegen\" bij de bijlagen van een uitgave wordt niet meer afgesneden.",
         "ja": "支出の添付にある「写真を追加」の最初の文字が切れなくなりました。",
         "tr": "Bir harcamanın eklerindeki \"Fotoğraf ekle\" yazısının ilk harfi artık kesilmiyor.",
-        "id": "Huruf pertama \"Tambah foto\" di lampiran tagihan tidak lagi terpotong."
+        "id": "Huruf pertama \"Tambah foto\" di lampiran tagihan tidak lagi terpotong.",
+        "ru": "Первая буква «Добавить фото» под вложениями счёта больше не обрезается.",
+        "uk": "Перша літера «Додати фото» під вкладеннями рахунку більше не обрізається."
       }
     }
   ]
