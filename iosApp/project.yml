@@ -92,11 +92,11 @@ targetTemplates:
     postBuildScripts:
       # Xcode compiles es-ES.lproj and pt-PT.lproj with only the words Spain and Portugal say differently, and an
       # es-ES or pt-PT app would show English for the rest: this fills each table with its language's (es, pt-BR),
-      # the region's keys winning, before signing
+      # the keys the catalogs give the region winning, before signing
       - name: Fill the regional tables with their language's
         basedOnDependencyAnalysis: false
         script: |
-          /usr/bin/python3 -I "$SRCROOT/merge-regional-strings.py" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
+          /usr/bin/python3 -I "$SRCROOT/merge-regional-strings.py" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH" "$SRCROOT/Resources"
       # The last phase, as Crashlytics asks: a release build with the Firebase config uploads its dSYM, which holds
       # the Shared framework's symbols too, since it is linked in
       - name: Upload the dSYM to Crashlytics

@@ -289,7 +289,10 @@ No linter runs on Swift yet; follow what the app already does.
   Never copy an es word into es-ES, nor a pt-BR word into pt-PT: Xcode compiles `es-ES.lproj` and `pt-PT.lproj` with
   only Spain's and Portugal's words, and the build's "Fill the regional tables with their language's" phase
   (`iosApp/merge-regional-strings.py`) fills them with the rest of `es` and `pt-BR`, since an es-ES or pt-PT app
-  reads its tables from its own `.lproj` alone and would show English for the missing keys.
+  reads its tables from its own `.lproj` alone and would show English for the missing keys. The phase takes the
+  region's own keys from the catalog, not from the built table: Xcode also writes there, with the key as its value,
+  each `extractionState: manual` key whose text takes arguments (`push.bill_deleted`, `You owe %@ (a member)`), and
+  those must take the language's sentence too.
 - A Kotlin `Int` is a Swift `Int32`: interpolate it as `Int(count)` in a localized literal, and a Kotlin `Float` as
   `Double(value)`. An `Int32` makes the key `%d …` and a `Float` `%f …`, which miss the catalog's `%lld …` and
   `%lf …` entries and their pt-BR and plural forms, so the build's "Check the localized keys" phase
