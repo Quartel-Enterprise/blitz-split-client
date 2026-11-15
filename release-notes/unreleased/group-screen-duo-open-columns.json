@@ -1,0 +1,24 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "ios"
+      ],
+      "text": {
+        "en": "On an iPad lying down and on an open iPhone Duo, a group opened from Home now uses the whole width: its photo, members and your balance on one side, the expenses on the other.",
+        "pt": "No iPad deitado e no iPhone Duo aberto, um grupo aberto pelo Início agora usa toda a largura: a foto, os membros e o seu saldo de um lado, as despesas do outro.",
+        "pt-PT": "No iPad deitado e no iPhone Duo aberto, um grupo aberto a partir do Início usa agora toda a largura: a foto, os membros e o teu saldo de um lado, as despesas do outro.",
+        "es": "En un iPad en horizontal y en un iPhone Duo abierto, un grupo abierto desde Inicio ahora usa todo el ancho: su foto, los miembros y tu saldo a un lado, los gastos al otro.",
+        "fr": "Sur un iPad à l’horizontale et sur un iPhone Duo ouvert, un groupe ouvert depuis Accueil utilise désormais toute la largeur : sa photo, ses membres et ton solde d’un côté, les dépenses de l’autre.",
+        "de": "Auf einem iPad im Querformat und auf einem geöffneten iPhone Duo nutzt eine über Start geöffnete Gruppe jetzt die ganze Breite: Foto, Mitglieder und dein Saldo auf der einen Seite, die Ausgaben auf der anderen.",
+        "it": "Su un iPad in orizzontale e su un iPhone Duo aperto, un gruppo aperto da Home ora usa tutta la larghezza: foto, membri e il tuo saldo da un lato, le spese dall’altro.",
+        "pl": "Na iPadzie w poziomie i na otwartym iPhonie Duo grupa otwarta z ekranu Start wykorzystuje teraz całą szerokość: zdjęcie, członkowie i Twoje saldo po jednej stronie, wydatki po drugiej.",
+        "nl": "Op een liggende iPad en op een geopende iPhone Duo gebruikt een groep die je vanuit Start opent nu de hele breedte: de foto, de leden en je saldo aan de ene kant, de uitgaven aan de andere.",
+        "ja": "横向きのiPadと開いたiPhone Duoで、ホームから開いたグループが横幅いっぱいを使うようになりました。写真、メンバー、あなたの残高が片側に、支出がもう片側に表示されます。",
+        "tr": "Yatay tutulan iPad’de ve açık iPhone Duo’da, Ana Sayfa’dan açılan grup artık tüm genişliği kullanıyor: fotoğraf, üyeler ve bakiyen bir yanda, harcamalar diğer yanda.",
+        "id": "Di iPad dalam posisi mendatar dan di iPhone Duo yang terbuka, grup yang dibuka dari Beranda sekarang memakai seluruh lebar layar: foto, anggota, dan saldomu di satu sisi, pengeluaran di sisi lain."
+      }
+    }
+  ]
+}

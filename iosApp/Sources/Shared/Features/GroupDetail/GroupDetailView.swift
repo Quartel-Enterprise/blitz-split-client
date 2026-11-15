@@ -169,11 +169,45 @@ struct GroupDetailView: View {
     @State private var headerScroll = GroupHeaderScroll()
 
     #if os(iOS)
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    /// What the screen itself gets: the whole tab, or the column beside the groups.
+    @State private var layout = ScreenLayout()
+    @Environment(\.windowLayout) private var windowLayout
+    @Environment(\.showsGroupBesideList) private var showsGroupBesideList
+
+    /// The header and the card beside the tabs: lying down with the whole tab to itself (an iPhone, an iPad, an
+    /// iPhone Duo open), never in the column beside the groups. The window stands in until the first measure, so
+    /// the screen never opens in one column and then splits.
+    private var usesTwoColumns: Bool {
+        (layout.size == .zero ? windowLayout : layout).usesTwoColumns && !showsGroupBesideList
+    }
     #endif
 
     private var host: AppRoute {
         .groupDetail(route)
+    }
+
+    #if os(iOS)
+    /// The header's avatar with the name and the summary under it, as `PhoneGroupScaffold` draws them.
+    private var shimmerHeader: some View {
+        VStack(spacing: 10) {
+            let side = usesTwoColumns ? 72 : GroupHeaderScroll.avatarSize
+            ShimmerBlock(width: side, height: side, cornerRadius: side * GroupAvatar.cornerRatio)
+            ShimmerLine(width: 180, height: 22)
+            ShimmerLine(width: 120, height: 12)
+        }
+        .frame(maxWidth: .infinity)
+    }
+    #endif
+
+    private var shimmerCard: some View {
+        ShimmerCard(showsButtons: false)
+            .background(Palette.card, in: .rect(cornerRadius: 26))
+    }
+
+    /// The tabs and the first bills.
+    @ViewBuilder private var shimmerList: some View {
+        ShimmerBlock(height: 32, cornerRadius: 16)
+        ShimmerList(count: 4, leading: .badge)
     }
 
     var body: some View {
@@ -187,7 +221,7 @@ struct GroupDetailView: View {
                     isMyBalanceLoading: model.state.isMyBalanceLoading,
                     hasExpenses: model.state.hasBills,
                     tab: model.tab,
-                    usesTwoColumns: verticalSizeClass == .compact,
+                    usesTwoColumns: usesTwoColumns,
                     headerScroll: headerScroll,
                     actions: model.actions,
                 ) {
@@ -201,33 +235,47 @@ struct GroupDetailView: View {
                 #endif
             } else {
                 // The group not read yet: its header, its balance and its bills shimmer in place
-                ShimmerScreen {
+                Group {
                     #if os(iOS)
-                    // The header's big avatar with the name and the summary under it, as `PhoneGroupScaffold` draws them
-                    VStack(spacing: 10) {
-                        let side = verticalSizeClass == .compact ? 72 : GroupHeaderScroll.avatarSize
-                        ShimmerBlock(width: side, height: side, cornerRadius: side * GroupAvatar.cornerRatio)
-                        ShimmerLine(width: 180, height: 22)
-                        ShimmerLine(width: 120, height: 12)
-                    }
-                    .frame(maxWidth: .infinity)
-                    #else
-                    HStack(spacing: 14) {
-                        ShimmerBlock(width: 56, height: 56, cornerRadius: 56 * GroupAvatar.cornerRatio)
-                        VStack(alignment: .leading, spacing: 8) {
-                            ShimmerLine(width: 180, height: 22)
-                            ShimmerLine(width: 120, height: 12)
+                    if usesTwoColumns {
+                        // As the screen it stands for: nothing shimmers across an iPhone Duo's fold
+                        TwoColumnsLayout(firstWidth: 328, spacing: 8) {
+                            ShimmerScreen {
+                                shimmerHeader
+                                shimmerCard
+                            }
+                        } second: {
+                            ShimmerScreen { shimmerList }
+                        }
+                    } else {
+                        ShimmerScreen {
+                            shimmerHeader
+                            shimmerCard
+                            shimmerList
                         }
                     }
+                    #else
+                    ShimmerScreen {
+                        HStack(spacing: 14) {
+                            ShimmerBlock(width: 56, height: 56, cornerRadius: 56 * GroupAvatar.cornerRatio)
+                            VStack(alignment: .leading, spacing: 8) {
+                                ShimmerLine(width: 180, height: 22)
+                                ShimmerLine(width: 120, height: 12)
+                            }
+                        }
+                        shimmerCard
+                        shimmerList
+                    }
                     #endif
-                    ShimmerCard(showsButtons: false)
-                        .background(Palette.card, in: .rect(cornerRadius: 26))
-                    ShimmerBlock(height: 32, cornerRadius: 16)
-                    ShimmerList(count: 4, leading: .badge)
                 }
                 .background(Palette.groupedBackground.ignoresSafeArea())
             }
         }
+        #if os(iOS)
+        .measuringScreenLayout($layout)
+        // The other layout's list starts at the top: a fold left from the one before would keep the bar's title in
+        .onChange(of: usesTwoColumns) { headerScroll.offset = 0 }
+        #endif
         .groupScreenBars(
             tab: model?.tab ?? GroupTab(route.tab),
             host: host,
