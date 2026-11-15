@@ -10,6 +10,8 @@ import kotlin.native.HiddenFromObjC
 data class SampleSideGroup(
     val name: String,
     val type: GroupType,
+    // Why: the group's photo, a file of scripts/store-screenshots/bank/groups without its extension.
+    val photo: String,
     val people: List<Int>,
     val billDescription: String,
     val billTotalMinor: Long,

@@ -115,14 +115,19 @@ final class StoreScreenshotsUITests: XCTestCase {
         return Set(list.split(separator: ",").map(String.init))
     }
 
-    /// The faces and the receipt's photo, base64 in the launch environment: the Mac app's sandbox can't read the
-    /// repository, so the app writes them to a folder of its own (StoreScreenshotsRun).
+    /// The faces, the groups' photos and the receipt's photo, base64 in the launch environment: the Mac app's sandbox
+    /// can't read the repository, so the app writes them to a folder of its own (StoreScreenshotsRun). The groups'
+    /// photos are the three SampleTrips names (TRIP_PHOTO and each side group's), not the whole bank: the environment
+    /// has a size limit.
     private static func assetsEnvironment(_ directory: String?) throws -> [String: String] {
         guard let directory else { return [:] }
         let root = URL(fileURLWithPath: directory)
         var files = ["receipt": root.appendingPathComponent("receipt.jpg")]
         for person in 0..<5 {
             files["person\(person)"] = root.appendingPathComponent("faces/person\(person).jpg")
+        }
+        for photo in ["trip-lisbon-tram", "home-kitchen", "other-soccer"] {
+            files["group_\(photo)"] = root.appendingPathComponent("bank/groups/\(photo).jpg")
         }
         return try files.reduce(into: [:]) { environment, file in
             environment["STORE_SCREENSHOTS_ASSET_\(file.key)"] = try Data(contentsOf: file.value).base64EncodedString()

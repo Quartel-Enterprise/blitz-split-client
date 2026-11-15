@@ -26,6 +26,12 @@ object SampleTrips {
         listOf(AvatarColor.BLUE, AvatarColor.PEACH, AvatarColor.GREEN, AvatarColor.LILAC, AvatarColor.SAND)
     val sideGroupColors: List<AvatarColor> = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
     const val INVITE_CODE = "Lx7Kp2Qa"
+
+    /*
+     * Why: the trip's photo, a file of scripts/store-screenshots/bank/groups without its extension, as each side
+     * group names its own. The App Store's UI test passes the same three files to the app (StoreScreenshotsUITests).
+     */
+    const val TRIP_PHOTO = "trip-lisbon-tram"
     private val italianDishes =
         listOf("Pizza margherita", "Burrata", "Risotto ai funghi", "Tiramisù", "Prosecco", "Espresso")
     private val copies = mapOf(
@@ -297,6 +303,7 @@ object SampleTrips {
                 SampleSideGroup(
                     name = copy.roommates,
                     type = GroupType.HOME,
+                    photo = "home-kitchen",
                     people = listOf(0, 2, 3),
                     billDescription = copy.groceries,
                     billTotalMinor = price(ROOMMATES_GROCERIES_CENTS),
@@ -307,6 +314,7 @@ object SampleTrips {
                 SampleSideGroup(
                     name = copy.soccer,
                     type = GroupType.EVENT,
+                    photo = "other-soccer",
                     people = listOf(0, 1, 3, 4),
                     billDescription = copy.court,
                     billTotalMinor = price(COURT_CENTS),

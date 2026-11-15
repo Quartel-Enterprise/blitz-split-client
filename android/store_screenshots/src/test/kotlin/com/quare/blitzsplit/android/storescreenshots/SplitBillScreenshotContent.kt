@@ -123,14 +123,14 @@ private fun SampleTrip.splitBillState(
         groupName = groupName,
         groupInitials = previewInitialsOf(groupName),
         groupColor = tripColor,
-        groupPhotoUrl = null,
+        groupPhotoUrl = tripPhotoUrl,
         groups = listOf(
             BillGroup(
                 id = GROUP_ID,
                 name = groupName,
                 initials = previewInitialsOf(groupName),
                 color = tripColor,
-                photoUrl = null,
+                photoUrl = tripPhotoUrl,
                 memberCount = people.size,
             ),
         ),

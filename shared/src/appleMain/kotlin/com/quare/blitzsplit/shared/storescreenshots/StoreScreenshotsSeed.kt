@@ -240,6 +240,12 @@ internal class StoreScreenshotsSeed(
                 "(${toSqlLiteral(userIdOf(person))}, ${toSqlLiteral(face)})"
             if (person == 0) statements += "UPDATE profile SET photoUrl = ${toSqlLiteral(face)}"
         }
+        val groupPhotos = listOf(tripId to SampleTrips.TRIP_PHOTO) +
+            sideGroups.mapIndexed { index, members -> members.groupId to trip.sideGroups[index].photo }
+        groupPhotos.forEach { (groupId, photo) ->
+            val url = groupPhotoOf(photo) ?: return@forEach
+            statements += "UPDATE split_group SET photoUrl = ${toSqlLiteral(url)} WHERE id = ${toSqlLiteral(groupId)}"
+        }
     }
 
     /*
@@ -306,10 +312,14 @@ internal class StoreScreenshotsSeed(
             "(${toSqlLiteral(SINGLE_ROW_ID)}, NULL, 0, 0, 0, 1)"
     }
 
-    // Why: a face as a data URI, which the avatars load like any photo's URL; none when the folder isn't there.
-    private fun faceOf(person: Int): String? {
+    private fun faceOf(person: Int): String? = photoOf("faces/person$person.jpg")
+
+    private fun groupPhotoOf(photo: String): String? = photoOf("groups/$photo.jpg")
+
+    // Why: a photo as a data URI, which the avatars load like any photo's URL; none when the file isn't there.
+    private fun photoOf(file: String): String? {
         val directory = assetsDirectory ?: return null
-        val data = NSData.dataWithContentsOfFile("$directory/faces/person$person.jpg") ?: return null
+        val data = NSData.dataWithContentsOfFile("$directory/$file") ?: return null
         return "data:image/jpeg;base64," + data.base64EncodedStringWithOptions(0u)
     }
 

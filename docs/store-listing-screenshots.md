@@ -101,8 +101,12 @@ without swiping. Play holds 8 per device type and the App Store 10 per display s
 
 **The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
-language's currency, at round rates and rounded the way a menu there prices them. The faces are AI-generated portraits of people who don't exist (`scripts/store-screenshots/faces/`), the same
-five in every language; the receipt's photo is `scripts/store-screenshots/receipt.jpg`.
+language's currency, at round rates and rounded the way a menu there prices them. The faces are AI-generated
+portraits of people who don't exist (`scripts/store-screenshots/faces/`), the same five in every language; the
+receipt's photo is `scripts/store-screenshots/receipt.jpg`. The three groups have a photo too, AI-generated as well:
+`SampleTrips` names each one by its file in the image bank, `scripts/store-screenshots/bank/groups/`, so no group is
+drawn as initials on a color. [The bank](../scripts/store-screenshots/bank/README.md) holds more faces and group
+photos than the screenshots use, to pick from.
 
 | Device | Play | App Store (Apple's screenshot specifications, November 2026) |
 | --- | --- | --- |
@@ -145,7 +149,7 @@ fastlane/Fastfile                              # the screenshots and upload lane
 ## How the iOS capture works
 
 The UI test launches the app once per screen and language with `-StoreScreenshotsLanguage`, `-StoreScreenshotsTheme`
-and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The faces and the receipt's photo go in
+and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The faces, the groups' photos and the receipt's photo go in
 the launch environment as base64, since the Mac app's sandbox can't read the repository. The app writes them to a
 temporary folder of its own. In a **debug**
 build, `BoraRacharApp` then calls `BlitzSplitApple.startForStoreScreenshots` in place of `start`

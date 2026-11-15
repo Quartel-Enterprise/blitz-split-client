@@ -93,6 +93,7 @@ fun Project.configureStoreScreenshots() {
         .get()
         .asFile
     val facesDir = rootProject.file("scripts/store-screenshots/faces")
+    val groupPhotosDir = rootProject.file("scripts/store-screenshots/bank/groups")
     // Decided from the tasks the build was asked for, as in Bible Planner: only a build that produces the App Store
     // shots runs the iPhone and iPad classes, which frame the iOS captures (scripts/store-screenshots/capture-ios.sh).
     // Any other build, the Play listing's included, leaves them out and needs no Mac.
@@ -113,8 +114,10 @@ fun Project.configureStoreScreenshots() {
         systemProperty("storeScreenshots.outputRoot", generatedDir.absolutePath)
         systemProperty("appleScreenshots.capturesDir", capturesDir.absolutePath)
         systemProperty("storeScreenshots.facesDir", facesDir.absolutePath)
+        systemProperty("storeScreenshots.groupPhotosDir", groupPhotosDir.absolutePath)
         systemProperty("roborazzi.test.record", "true")
         inputs.dir(facesDir)
+        inputs.dir(groupPhotosDir)
         outputs.dir(generatedDir)
         maxHeapSize = "4g"
         if (generatesAppStoreScreenshots) {
