@@ -159,6 +159,10 @@ class JsBillAttachment(
 
 class JsBillDetailState(
     val groupName: String,
+    // Why: the group's rounded square beside its name over the bill; the color's code ("blue").
+    val groupInitials: String,
+    val groupColor: String,
+    val groupPhotoUrl: String?,
     // Why: the ISO 4217 code ("BRL") and its digits after the decimal separator.
     val currency: String,
     val fractionDigits: Int,
@@ -237,6 +241,9 @@ class BillDetailPresenter(
         val states = viewModel.uiState.map { state ->
             JsBillDetailState(
                 groupName = state.groupName,
+                groupInitials = state.groupInitials,
+                groupColor = state.groupColor.code,
+                groupPhotoUrl = state.groupPhotoUrl,
                 currency = state.currency.code,
                 fractionDigits = state.currency.fractionDigits,
                 description = state.description,

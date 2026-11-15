@@ -209,6 +209,8 @@ function ContactRowButton({ row, isSelected, onClick }: { row: JsContactRow; isS
       type="button"
       aria-current={isSelected || undefined}
       onClick={onClick}
+      // Why: its face flies into the profile it opens over the list (lib/groupTransition); beside it nothing is pushed.
+      data-profile-link={`contact-${row.key}`}
       className={cn(
         'flex w-full items-center gap-3 border-b px-3.5 py-2.5 text-left outline-none last:border-b-0 hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset sm:px-4',
         isSelected && 'bg-muted',

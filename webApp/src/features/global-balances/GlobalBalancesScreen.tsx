@@ -301,7 +301,7 @@ function PersonSummary({ row, name, onPersonClick }: { row: JsPersonRow; name: s
   )
   return (
     <div className="flex items-center gap-3">
-      <PersonButton onOpen={onPersonClick && row.opensProfile ? onPersonClick : null} className="-m-1 flex min-w-0 flex-1 items-center gap-3 p-1">
+      <PersonButton onOpen={onPersonClick && row.opensProfile ? onPersonClick : null} flightKey={`balances-${row.id}`} className="-m-1 flex min-w-0 flex-1 items-center gap-3 p-1">
         {face}
       </PersonButton>
       <span className="flex flex-col items-end">
@@ -390,7 +390,7 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
           an ex-member has no profile.
         */}
         <h2 aria-labelledby={nameId} className="flex min-w-0 flex-1">
-          <PersonButton onOpen={row.opensProfile ? () => presenter.openPerson(row.id) : null} className="-m-1 flex min-w-0 flex-1 items-center gap-3 p-1">
+          <PersonButton onOpen={row.opensProfile ? () => presenter.openPerson(row.id) : null} flightKey={`balances-${row.id}`} className="-m-1 flex min-w-0 flex-1 items-center gap-3 p-1">
             {header}
           </PersonButton>
         </h2>

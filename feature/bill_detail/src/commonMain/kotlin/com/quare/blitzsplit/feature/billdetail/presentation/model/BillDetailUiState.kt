@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.countShownComments
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
@@ -18,6 +19,10 @@ import software.quare.loadable.valueOrNull
 data class BillDetailUiState(
     // Why: the top bar's title over the bill, as Despesas do grupo is the screen under it.
     val groupName: String,
+    // Why: the group's rounded square beside its name in the top bar, its photo or "VF" on its color (beta feedback of 2026-11-15).
+    val groupInitials: String,
+    val groupColor: AvatarColor,
+    val groupPhotoUrl: String?,
     val currency: GroupCurrency,
     val description: String,
     val totalMinor: Long,

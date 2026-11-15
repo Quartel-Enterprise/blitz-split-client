@@ -11,6 +11,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } f
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { LoadingRegion, Skeleton, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { balanceTone } from '@/features/balances/BalanceCard'
+import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
@@ -67,8 +68,12 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   }
   const openPerson = (memberId: string) => presenter.openPerson(memberId)
   const actions = isLoaded && <BillActions presenter={presenter} state={state} />
+  // Why: the group's rounded square beside its name, as Android and iOS draw it over the bill (beta feedback of 2026-11-15).
   const groupName = isLoaded ? (
-    <span className="mr-auto truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
+    <span className="mr-auto flex min-w-0 items-center gap-2">
+      <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-6 text-[10px]" />
+      <span className="truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
+    </span>
   ) : (
     <SkeletonLine className="mr-auto w-28" />
   )
@@ -292,6 +297,7 @@ export function BillBody({
           <span className="text-[32px] leading-10 font-semibold tracking-tight tabular-nums">{money(state.totalMinor)}</span>
           <PersonButton
             onOpen={onPerson && lonePayerId ? () => onPerson(lonePayerId) : null}
+            flightKey="bill-payer"
             className="flex items-center gap-2 self-start text-sm text-muted-foreground"
           >
             {faces.length > 0 && <AvatarStack {...stackOf(Array.from(faces), 'roomy')} size="xs" />}
@@ -398,7 +404,7 @@ function ShareRow({ row, money, onOpen }: { row: JsBillShareRow; money: Money; o
           : null
   return (
     <li className="flex">
-      <PersonButton onOpen={onOpen} className="flex min-h-12 min-w-0 flex-1 items-center gap-3 py-2">
+      <PersonButton onOpen={onOpen} flightKey={`bill-share-${row.memberId}`} className="flex min-h-12 min-w-0 flex-1 items-center gap-3 py-2">
       <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">{name}</span>

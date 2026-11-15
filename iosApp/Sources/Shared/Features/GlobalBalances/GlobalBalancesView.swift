@@ -437,6 +437,8 @@ private struct PersonSummary: View {
     let name: String
     var onPersonTap: (() -> Void)?
 
+    @Environment(\.profileZoomScope) private var profileZoom
+
     private var direction: LocalizedStringKey {
         row.owesYou ? "owes you" : "you owe"
     }
@@ -444,7 +446,10 @@ private struct PersonSummary: View {
     var body: some View {
         HStack(spacing: 12) {
             if let onPersonTap, row.opensProfile {
-                Button(action: onPersonTap) {
+                Button {
+                    profileZoom?.zoom.arm(faceId)
+                    onPersonTap()
+                } label: {
                     face
                         .contentShape(.rect)
                 }
@@ -465,9 +470,15 @@ private struct PersonSummary: View {
         }
     }
 
+    private var faceId: String {
+        "balances-\(row.id)"
+    }
+
     private var face: some View {
         HStack(spacing: 12) {
             PersonFace(row: row, size: 40)
+                // The face zooms into the profile it opens (beta feedback of 2026-11-15)
+                .profileZoomSource(faceId: faceId)
             VStack(alignment: .leading, spacing: 1) {
                 Text(verbatim: name)
                     .lineLimit(1)

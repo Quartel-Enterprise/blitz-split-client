@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.storescreenshots
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.feature.billdetail.BillDetailContent
 import com.quare.blitzsplit.android.platform.PhotoPickers
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -41,6 +42,9 @@ private fun SampleTrip.billDetailState(bill: SampleBill): BillDetailUiState {
     val payerIndexes = bill.payers.map { it.person }
     return BillDetailUiState(
         groupName = groupName,
+        groupInitials = previewInitialsOf(groupName),
+        groupColor = tripColor,
+        groupPhotoUrl = tripPhotoUrl,
         currency = bill.currency,
         description = bill.description,
         totalMinor = bill.totalMinor,

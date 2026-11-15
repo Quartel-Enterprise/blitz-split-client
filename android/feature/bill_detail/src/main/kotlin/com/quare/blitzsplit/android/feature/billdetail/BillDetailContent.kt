@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -33,12 +34,14 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.BillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
+import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -56,6 +59,8 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiSt
 import software.quare.loadable.isLoading
 import software.quare.loadable.valueOrNull
 
+// Why: the group's square beside its name in the top bar, as the group's own folded bar draws it.
+private val groupBadgeSize = 32.dp
 private val previewPickers = PhotoPickers(
     onTakePhotoClick = {},
     onChoosePhotoClick = {},
@@ -83,6 +88,7 @@ fun BillDetailContent(
     val usesTwoColumns = rememberUsesFormColumns(isDialog)
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
+    val shared = rememberBillSharedModifiers(sharedBillId)
     val first: @Composable ColumnScope.() -> Unit = {
         BillDetailBillSection(
             state = state,
@@ -91,7 +97,7 @@ fun BillDetailContent(
             dates = dates,
             pickers = pickers,
             onEvent = onEvent,
-            shared = rememberBillSharedModifiers(sharedBillId),
+            shared = shared,
         )
     }
     val second: @Composable ColumnScope.() -> Unit = {
@@ -152,10 +158,9 @@ fun BillDetailContent(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(
-                            text = state.groupName,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                        BillGroupTitle(
+                            state = state,
+                            badgeModifier = shared.group,
                         )
                     },
                     navigationIcon = {
@@ -280,15 +285,12 @@ private fun DialogHeader(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = state.groupName,
+        BillGroupTitle(
+            state = state,
             modifier = Modifier
                 .weight(1f)
                 .semantics { heading() },
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            textStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
         )
         BillTopBarAction(
             state = state,
@@ -493,6 +495,40 @@ private fun PreviewBillDetailContent(state: BillDetailUiState) {
             snackbarHostState = SnackbarHostState(),
             pickers = previewPickers,
             onEvent = {},
+        )
+    }
+}
+
+/*
+ * Why: the group's rounded square (its photo, or its initials on its color) beside its name over the bill (beta
+ * feedback of 2026-11-15), which Home's rows fly theirs into. Only once Room is read, never an empty square.
+ */
+@Composable
+private fun BillGroupTitle(
+    state: BillDetailUiState,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle = LocalTextStyle.current,
+    badgeModifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (state.isLoaded) {
+            GroupBadge(
+                initials = state.groupInitials,
+                color = state.groupColor,
+                photoUrl = state.groupPhotoUrl,
+                size = groupBadgeSize,
+                modifier = badgeModifier,
+            )
+        }
+        Text(
+            text = state.groupName,
+            style = textStyle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

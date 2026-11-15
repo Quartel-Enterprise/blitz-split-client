@@ -23,8 +23,11 @@ import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
 import com.quare.blitzsplit.android.designsystem.component.EntryIconTile
 import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
+import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
+import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rowOptionsLabelOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
@@ -101,10 +104,21 @@ private fun ExpenseEntryRow(
 ) {
     // Why: the bill's own currency, not the one picked above the balances.
     val money = rememberMoneyFormatter(expense.currency)
+    // Why: the badge, title, total and share fly into the bill's screen as Home's rows do (beta feedback of 2026-11-15).
+    val shared = rememberBillSharedModifiers(
+        billId = expense.id,
+        origin = SharedOrigin.GROUP.takeUnless { LocalBillOpensAsDialog.current },
+    )
     EntryFrameRow(
         icon = Icons.AutoMirrored.Outlined.ReceiptLong,
-        leading = { CategoryBadge(category = expense.category) },
+        leading = {
+            CategoryBadge(
+                category = expense.category,
+                modifier = shared.category,
+            )
+        },
         title = expense.description,
+        titleModifier = shared.title,
         shape = shape,
         onClick = { onEvent(GroupDetailUiEvent.OnExpenseClicked(expense.id)) },
         menuItems = expenseMenuItemsOf(expense.id, onEvent),
@@ -120,6 +134,8 @@ private fun ExpenseEntryRow(
             totalMinor = expense.totalMinor,
             myBalanceMinor = expense.myBalanceMinor,
             money = money,
+            totalModifier = shared.total,
+            shareModifier = shared.share,
         )
     }
 }
@@ -136,6 +152,7 @@ internal fun EntryFrameRow(
     meta: @Composable () -> Unit,
     // Why: a bill's category badge in place of the icon (6.1); a payment keeps its icon.
     leading: (@Composable () -> Unit)? = null,
+    titleModifier: Modifier = Modifier,
     trailing: @Composable ColumnScope.() -> Unit,
 ) {
     var isMenuOpen by rememberSaveable { mutableStateOf(false) }
@@ -148,6 +165,7 @@ internal fun EntryFrameRow(
         meta = meta,
         onLongClick = { isMenuOpen = true },
         onLongClickLabel = rowOptionsLabelOf(title),
+        titleModifier = titleModifier,
         end = {
             EntryMenu(
                 title = title,

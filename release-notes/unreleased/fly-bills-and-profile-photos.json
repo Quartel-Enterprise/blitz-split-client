@@ -1,0 +1,58 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": ["all"],
+      "text": {
+        "en": "A bill's top bar now shows the group's photo, or its initials, next to the group's name.",
+        "pt": "A barra do topo de uma conta agora mostra a foto do grupo, ou as iniciais dele, ao lado do nome do grupo.",
+        "pt-PT": "A barra do topo de uma conta mostra agora a fotografia do grupo, ou as iniciais dele, ao lado do nome do grupo.",
+        "es": "La barra superior de una cuenta ahora muestra la foto del grupo, o sus iniciales, junto al nombre del grupo.",
+        "fr": "La barre du haut d’une dépense affiche désormais la photo du groupe, ou ses initiales, à côté de son nom.",
+        "de": "Die obere Leiste einer Ausgabe zeigt jetzt das Foto der Gruppe oder ihre Initialen neben dem Gruppennamen.",
+        "it": "La barra in alto di una spesa ora mostra la foto del gruppo, o le sue iniziali, accanto al nome del gruppo.",
+        "pl": "Górny pasek wydatku pokazuje teraz zdjęcie grupy lub jej inicjały obok nazwy grupy.",
+        "nl": "De bovenbalk van een uitgave toont nu de foto van de groep, of haar initialen, naast de groepsnaam.",
+        "ja": "支出の上部バーに、グループ名の横にグループの写真（またはイニシャル）が表示されるようになりました。",
+        "tr": "Bir harcamanın üst çubuğu artık grubun adının yanında grubun fotoğrafını ya da baş harflerini gösteriyor.",
+        "id": "Bilah atas sebuah tagihan kini menampilkan foto grup, atau inisialnya, di samping nama grup."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": ["android", "ios", "web"],
+      "text": {
+        "en": "Tapping someone's photo now carries it into their profile, and back again when you return.",
+        "pt": "Tocar na foto de alguém agora leva a foto até o perfil da pessoa, e de volta quando você retorna.",
+        "pt-PT": "Tocar na fotografia de alguém leva-a agora até ao perfil da pessoa, e de volta quando regressas.",
+        "es": "Al tocar la foto de alguien, ahora viaja hasta su perfil, y vuelve cuando regresas.",
+        "fr": "Toucher la photo de quelqu’un l’emmène maintenant jusqu’à son profil, et la ramène quand vous revenez.",
+        "de": "Tippst du auf das Foto einer Person, wandert es jetzt in ihr Profil und beim Zurückgehen wieder zurück.",
+        "it": "Toccando la foto di qualcuno, ora la foto si sposta nel suo profilo e torna indietro quando rientri.",
+        "pl": "Dotknięcie czyjegoś zdjęcia przenosi je teraz do profilu tej osoby, a po powrocie z powrotem.",
+        "nl": "Tik je op iemands foto, dan beweegt die nu mee naar het profiel, en weer terug als je teruggaat.",
+        "ja": "誰かの写真をタップすると、写真がそのままプロフィールへ移動し、戻るときも元の場所へ戻るようになりました。",
+        "tr": "Birinin fotoğrafına dokunduğunda fotoğraf artık profiline taşınıyor, geri döndüğünde de yerine dönüyor.",
+        "id": "Mengetuk foto seseorang kini membawa foto itu ke profilnya, dan kembali lagi saat kamu kembali."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": ["android"],
+      "text": {
+        "en": "A bill opened from a group's Expenses now moves into place as it does from Home, and the group's photo on Home's bills flies into the bill's top bar.",
+        "pt": "Uma conta aberta pelas Despesas do grupo agora se move até o lugar como já fazia pelo Início, e a foto do grupo nas contas do Início voa até a barra do topo da conta.",
+        "pt-PT": "Uma conta aberta a partir das Despesas do grupo move-se agora para o lugar como já fazia a partir do Início, e a fotografia do grupo nas contas do Início voa até à barra do topo da conta.",
+        "es": "Una cuenta abierta desde los Gastos de un grupo ahora se desplaza a su lugar como ya lo hacía desde Inicio, y la foto del grupo en las cuentas de Inicio vuela hasta la barra superior de la cuenta.",
+        "fr": "Une dépense ouverte depuis les Dépenses d’un groupe se déplace maintenant comme depuis l’Accueil, et la photo du groupe des dépenses de l’Accueil s’envole vers la barre du haut de la dépense.",
+        "de": "Eine Ausgabe, die du in den Ausgaben einer Gruppe öffnest, gleitet jetzt wie auf der Startseite an ihren Platz, und das Gruppenfoto der Ausgaben auf der Startseite fliegt in die obere Leiste der Ausgabe.",
+        "it": "Una spesa aperta dalle Spese di un gruppo ora si sposta al suo posto come dalla Home, e la foto del gruppo nelle spese della Home vola nella barra in alto della spesa.",
+        "pl": "Wydatek otwarty z Wydatków grupy przesuwa się teraz na miejsce tak jak ze Strony głównej, a zdjęcie grupy przy wydatkach na Stronie głównej przelatuje na górny pasek wydatku.",
+        "nl": "Een uitgave die je opent vanuit de Uitgaven van een groep schuift nu op haar plek zoals vanaf Home, en de groepsfoto bij de uitgaven op Home vliegt naar de bovenbalk van de uitgave.",
+        "ja": "グループの支出から開いた支出も、ホームから開いたときと同じように移動して表示されるようになり、ホームの支出にあるグループの写真が支出の上部バーへ移動します。",
+        "tr": "Bir grubun Harcamalar sekmesinden açılan harcama artık Ana Sayfa'dan açıldığı gibi yerine kayıyor; Ana Sayfa'daki harcamalarda grubun fotoğrafı da harcamanın üst çubuğuna uçuyor.",
+        "id": "Tagihan yang dibuka dari Pengeluaran grup kini bergerak ke tempatnya seperti dari Beranda, dan foto grup di tagihan Beranda terbang ke bilah atas tagihan."
+      }
+    }
+  ]
+}

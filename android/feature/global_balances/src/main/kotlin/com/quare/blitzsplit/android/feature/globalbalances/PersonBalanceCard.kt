@@ -35,9 +35,11 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.LeadingTrailingRow
 import com.quare.blitzsplit.android.designsystem.component.PersonGroupsCard
+import com.quare.blitzsplit.android.designsystem.component.ProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.clickableWhen
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -108,6 +110,8 @@ private fun PersonSummaryRow(
     money: MoneyFormatter,
     onPersonClick: (() -> Unit)? = null,
 ) {
+    // Why: the face flies into the profile it opens and back (beta feedback of 2026-11-15); the list's pick opens none.
+    val flight = if (onPersonClick != null) rememberProfileFlightSource() else ProfileFlightSource.None
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -116,11 +120,16 @@ private fun PersonSummaryRow(
             modifier = Modifier
                 .weight(1f)
                 .clip(MaterialTheme.shapes.medium)
-                .clickableWhen(onPersonClick != null && row.opensProfile) { onPersonClick?.invoke() },
+                .clickableWhen(onPersonClick != null && row.opensProfile) {
+                    flight.toFlyingClickOrNull(onPersonClick)?.invoke()
+                },
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PersonFaceBadge(row)
+            PersonFaceBadge(
+                row = row,
+                modifier = flight.face,
+            )
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -203,12 +212,13 @@ internal fun PersonPickRow(
 internal fun PersonFaceBadge(
     row: PersonRow,
     size: Dp = faceSize,
+    modifier: Modifier = Modifier,
 ) {
     val color = row.color
     // Why: a blank face for someone no longer in the group, as the group's Saldos draws them.
     if (color == null) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .size(size)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh, CircleShape),
         )
@@ -219,6 +229,7 @@ internal fun PersonFaceBadge(
         color = color,
         photoUrl = row.photoUrl,
         size = size,
+        modifier = modifier,
     )
 }
 

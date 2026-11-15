@@ -114,7 +114,7 @@ export function ContactProfileView({
           onClick={() => presenter.openPhoto()}
           className="shrink-0 rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
-          <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="contact-header-photo" />
+          <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="contact-header-photo" isProfilePhoto />
         </button>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h2 className="contact-header-name truncate font-semibold tracking-tight">{name}</h2>

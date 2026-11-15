@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightTarget
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -101,6 +102,8 @@ internal fun ContactProfileContent(
      * feedback of 2026-11-14). Beside Contacts' list the pane keeps one column.
      */
     val usesTwoColumns = !isInPane && (isBook || layout.usesTwoColumns)
+    // Why: the face tapped flies into this one and back (beta feedback of 2026-11-15); beside the list nothing flies.
+    val faceFlight = if (isInPane) Modifier else rememberProfileFlightTarget()
     val listState = rememberLazyListState()
     val startScroll = rememberScrollState()
     var headerHeight by remember { mutableIntStateOf(0) }
@@ -191,6 +194,7 @@ internal fun ContactProfileContent(
                 state = state,
                 contact = contact,
                 avatarSize = if (isInPane || layout.isLandscape) 72.dp else 88.dp,
+                faceFlight = faceFlight,
                 fold = { headerFold },
                 onEvent = onEvent,
                 modifier = Modifier.onSizeChanged { headerHeight = it.height },
@@ -513,6 +517,7 @@ private fun ProfileHeader(
     state: ContactProfileUiState,
     contact: Contact,
     avatarSize: Dp,
+    faceFlight: Modifier,
     fold: () -> Float,
     onEvent: (ContactProfileUiEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -528,7 +533,7 @@ private fun ProfileHeader(
             color = contact.color,
             photoUrl = contact.photoUrl,
             size = avatarSize,
-            modifier = Modifier
+            modifier = faceFlight
                 .graphicsLayer {
                     val progress = fold()
                     val scale = 1f - progress * 0.5f
@@ -576,23 +581,4 @@ private fun ProfileHeader(
             )
         }
     }
-}
-
-@Composable
-private fun ProfileSectionTitle(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = text,
-        modifier = modifier
-            .padding(
-                start = 4.dp,
-                end = 4.dp,
-                top = 8.dp,
-            ).semantics { heading() },
-        style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
 }

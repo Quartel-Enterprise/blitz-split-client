@@ -37,8 +37,11 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.RemoveBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openPersonProfile
@@ -121,6 +124,9 @@ class BillDetailViewModel(
         field = MutableStateFlow(
             BillDetailUiState(
                 groupName = "",
+                groupInitials = "",
+                groupColor = AvatarColor.entries.first(),
+                groupPhotoUrl = null,
                 currency = GroupCurrency.BRL,
                 description = "",
                 totalMinor = 0L,
@@ -376,6 +382,9 @@ class BillDetailViewModel(
         uiState.update { state ->
             state.copy(
                 groupName = group.name,
+                groupInitials = Initials.of(group.name),
+                groupColor = group.color,
+                groupPhotoUrl = group.photo?.toImageUrl(),
                 currency = expense.currency,
                 description = expense.description,
                 totalMinor = expense.amountMinor,

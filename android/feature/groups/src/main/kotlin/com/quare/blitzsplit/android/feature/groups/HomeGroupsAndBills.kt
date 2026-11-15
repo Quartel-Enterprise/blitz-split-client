@@ -362,6 +362,7 @@ internal fun HomeBillRow(
                 BillOriginRow(
                     bill = bill,
                     description = meta,
+                    groupModifier = shared.group,
                 )
             }
             Column(
@@ -466,6 +467,8 @@ private fun Modifier.cappedAtHalfWidth(): Modifier = layout { measurable, constr
 private fun BillOriginRow(
     bill: HomeBill,
     description: String,
+    // Why: the group's square flies into the bill's top bar, beside the group's name (beta feedback of 2026-11-15).
+    groupModifier: Modifier,
 ) {
     Row(
         modifier = Modifier.clearAndSetSemantics { contentDescription = description },
@@ -477,6 +480,7 @@ private fun BillOriginRow(
             color = bill.groupColor,
             photoUrl = bill.groupPhotoUrl,
             size = billOriginSize,
+            modifier = groupModifier,
         )
         FacesRow(
             faces = bill.payerFaces,

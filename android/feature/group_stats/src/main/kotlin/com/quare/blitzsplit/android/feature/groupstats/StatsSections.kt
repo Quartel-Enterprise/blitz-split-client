@@ -26,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,6 +46,7 @@ import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.toDataColor
@@ -317,21 +319,28 @@ internal fun StatsPeopleSection(
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             state.people.forEachIndexed { index, person ->
                 val shape = groupedRowShapeOf(index, state.people.size)
-                // Why: the row opens their profile (Perfil for this device's user); an ex-member has none.
-                StatsPersonRowItem(
-                    person = person,
-                    money = money,
-                    modifier = Modifier
-                        .clip(shape)
-                        .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
-                        .opensProfile(
-                            {
-                                onEvent(
-                                    GroupStatsUiEvent.OnPersonClicked(person.memberId),
-                                )
-                            }.takeIf { person.opensProfile },
-                        ),
-                )
+                // Why: keyed by the person, so a face's id stays with them when the view reorders the list.
+                key(person.memberId) {
+                    // Why: the row opens their profile (Perfil for this device's user), its face flying into it; an ex-member has none.
+                    val flight = rememberProfileFlightSource()
+                    StatsPersonRowItem(
+                        person = person,
+                        money = money,
+                        modifier = Modifier
+                            .clip(shape)
+                            .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
+                            .opensProfile(
+                                flight.toFlyingClickOrNull(
+                                    {
+                                        onEvent(
+                                            GroupStatsUiEvent.OnPersonClicked(person.memberId),
+                                        )
+                                    }.takeIf { person.opensProfile },
+                                ),
+                            ),
+                        faceModifier = flight.face,
+                    )
+                }
             }
         }
         val showsPaid = state.peopleView == StatsPeopleView.PAID
@@ -355,6 +364,7 @@ private fun StatsPersonRowItem(
     person: StatsPersonRow,
     money: MoneyFormatter,
     modifier: Modifier = Modifier,
+    faceModifier: Modifier = Modifier,
 ) {
     val formerMember = stringResource(DesignR.string.designsystem_former_member)
     val name =
@@ -366,6 +376,7 @@ private fun StatsPersonRowItem(
         photoUrl = person.photoUrl,
         description = "$name: $amount",
         modifier = modifier,
+        faceModifier = faceModifier,
     ) {
         val hasAmount = person.amountMinor > 0
         Column(
@@ -437,15 +448,21 @@ internal fun StatsSettlingSection(
                 R.string.group_stats_settles_slowest to settling.slowest,
             ).forEachIndexed { index, (label, settler) ->
                 val shape = groupedRowShapeOf(index, 2)
-                StatsSettlerRow(
-                    label = stringResource(label),
-                    settler = settler,
-                    money = money,
-                    modifier = Modifier
-                        .clip(shape)
-                        .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
-                        .opensProfile { onEvent(GroupStatsUiEvent.OnPersonClicked(settler.memberId)) },
-                )
+                key(settler.memberId) {
+                    val flight = rememberProfileFlightSource()
+                    StatsSettlerRow(
+                        label = stringResource(label),
+                        settler = settler,
+                        money = money,
+                        modifier = Modifier
+                            .clip(shape)
+                            .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
+                            .opensProfile(
+                                flight.toFlyingClick { onEvent(GroupStatsUiEvent.OnPersonClicked(settler.memberId)) },
+                            ),
+                        faceModifier = flight.face,
+                    )
+                }
             }
         }
         Text(
@@ -467,6 +484,7 @@ private fun StatsSettlerRow(
     settler: StatsSettler,
     money: MoneyFormatter,
     modifier: Modifier = Modifier,
+    faceModifier: Modifier = Modifier,
 ) {
     val name = if (settler.isMe) stringResource(R.string.group_stats_you, settler.name) else settler.name
     val days = if (settler.averageDays == 0) {
@@ -483,6 +501,7 @@ private fun StatsSettlerRow(
         photoUrl = settler.photoUrl,
         description = listOfNotNull(label, name, days, open).joinToString(", "),
         modifier = modifier,
+        faceModifier = faceModifier,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -521,6 +540,7 @@ private fun StatsAvatarRow(
     photoUrl: String?,
     description: String,
     modifier: Modifier = Modifier,
+    faceModifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
     Row(
@@ -538,6 +558,7 @@ private fun StatsAvatarRow(
             color = avatarColor,
             photoUrl = photoUrl,
             size = 36.dp,
+            modifier = faceModifier,
         )
         content()
     }

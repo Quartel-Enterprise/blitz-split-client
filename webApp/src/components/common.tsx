@@ -116,10 +116,30 @@ export function OrDivider() {
 }
 
 /** The person's avatar: their initial on their avatar color. */
-/** The initial stays under the photo, so it shows while the photo loads or when it fails to. */
-export function Avatar({ initial, color, photoUrl, className }: { initial: string; color: string; photoUrl?: string | null; className?: string }) {
+/**
+ * The initial stays under the photo, so it shows while the photo loads or when it fails to. `isProfilePhoto` marks the
+ * profile's own photo, which the face clicked flies into (`data-profile-photo`, lib/groupTransition).
+ */
+export function Avatar({
+  initial,
+  color,
+  photoUrl,
+  className,
+  isProfilePhoto = false,
+}: {
+  initial: string
+  color: string
+  photoUrl?: string | null
+  className?: string
+  isProfilePhoto?: boolean
+}) {
   return (
-    <span aria-hidden style={avatarStyle(color)} className={cn('avatar relative flex shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold', className)}>
+    <span
+      aria-hidden
+      data-profile-photo={isProfilePhoto || undefined}
+      style={avatarStyle(color)}
+      className={cn('avatar relative flex shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold', className)}
+    >
       {initial}
       {photoUrl && <AvatarPhoto key={photoUrl} src={photoUrl} />}
     </span>
@@ -129,19 +149,22 @@ export function Avatar({ initial, color, photoUrl, className }: { initial: strin
 /**
  * A person's face and name, which open their profile while `onOpen` is set (beta feedback 18): the one Contatos opens,
  * or Perfil for this device's user. Someone with no profile to open (no longer in the group) gets them as plain text.
- * `isRound` is a face alone, named by `label` for a screen reader since it shows no name.
+ * `isRound` is a face alone, named by `label` for a screen reader since it shows no name. The face inside flies into the
+ * profile it opens (`data-profile-link`, lib/groupTransition), and back into the face of the same `flightKey`.
  */
 export function PersonButton({
   onOpen,
   label,
   isRound = false,
   className,
+  flightKey,
   children,
 }: {
   onOpen?: (() => void) | null
   label?: string
   isRound?: boolean
   className?: string
+  flightKey?: string
   children?: ReactNode
 }) {
   if (!onOpen) return <span className={className}>{children}</span>
@@ -149,6 +172,7 @@ export function PersonButton({
     <button
       type="button"
       aria-label={label}
+      data-profile-link={flightKey}
       onClick={onOpen}
       className={cn(
         'cursor-pointer text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
