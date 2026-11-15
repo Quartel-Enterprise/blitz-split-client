@@ -1,4 +1,5 @@
-import { setAppForeground, startBlitzSplit } from 'blitzsplit-shared'
+import { setAppForeground, startBlitzSplit, startBlitzSplitForStoreScreenshots } from 'blitzsplit-shared'
+import { storeScreenshotsRun } from '@/bridge/storeScreenshots'
 import { uiTag } from '@/lib/currency'
 
 const DATABASE_LOCK = 'borarachar-database'
@@ -41,7 +42,18 @@ async function start(onWaiting: () => void) {
   }
   const worker = new Worker(new URL('../sqlite/worker.js', import.meta.url), { type: 'module' })
   releaseOnPageCache(worker)
-  startBlitzSplit(worker, uiTag)
+  const screenshots = storeScreenshotsRun()
+  if (screenshots) {
+    await startBlitzSplitForStoreScreenshots(
+      worker,
+      screenshots.language,
+      screenshots.isDark,
+      screenshots.screen,
+      screenshots.photos,
+    )
+  } else {
+    startBlitzSplit(worker, uiTag)
+  }
   followVisibility()
 }
 

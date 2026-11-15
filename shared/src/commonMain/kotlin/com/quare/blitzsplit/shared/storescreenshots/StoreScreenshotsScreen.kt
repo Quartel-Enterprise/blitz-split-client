@@ -1,13 +1,16 @@
 package com.quare.blitzsplit.shared.storescreenshots
 
 import com.quare.blitzsplit.core.model.GroupTab
+import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import kotlinx.coroutines.flow.first
 
 /*
- * Why: the screen each App Store screenshot opens on, by the code the captures launch the app with (the iOS UI test
- * and capture-mac.sh, from scripts/store-screenshots/screens.tsv). The routes go on the back stack over Início, as a
- * person would have tapped their way there; Items is the dinner's bill, on which the bridge then opens "Bill items"
- * (BlitzSplitApple.createSplitBillViewModel).
+ * Why: the screen each screenshot opens on, by the code the captures launch the app with (the iOS UI test,
+ * capture-mac.sh and the web's capture-web.mjs, from scripts/store-screenshots/screens.tsv). The routes go on the back
+ * stack over Início, as a person would have tapped their way there; Items is the dinner's bill, on which the Apple
+ * bridge then opens "Bill items" (BlitzSplitApple.createSplitBillViewModel). The web has no such step, so it stops on
+ * the bill.
  */
 internal enum class StoreScreenshotsScreen(
     val code: String,
@@ -74,6 +77,15 @@ internal enum class StoreScreenshotsScreen(
     }
 
     companion object {
+        /*
+         * Why: the app puts Início at the root once it read the profile; the screen goes over it after that, on every
+         * platform the same way.
+         */
+        suspend fun Navigator.openOverHome(routes: List<Route>) {
+            backStack.first { it.firstOrNull() == Route.Home }
+            routes.forEach(::navigate)
+        }
+
         fun fromCodeOrNull(code: String?): StoreScreenshotsScreen? = entries.firstOrNull { it.code == code }
     }
 }

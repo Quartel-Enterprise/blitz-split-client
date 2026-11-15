@@ -1,5 +1,10 @@
 # Blitz Split
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-hero-dark.webp">
+  <img alt="The same group, Lisbon trip, on an Android phone, an iPhone, the Mac app and the web app, each drawn by its own native UI" src="docs/images/readme-hero-light.webp">
+</picture>
+
 Split bills with friends, even offline. [Blitz Split](https://blitzsplit.com) (**Bora Rachar** in Portuguese) keeps
 every group, bill and payment on your device first and syncs when the internet is back. An account is optional.
 
@@ -9,9 +14,10 @@ every group, bill and payment on your device first and syncs when the internet i
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
-| Android | iPhone, iPad and Mac | Web |
-| -- | -- | -- |
-| Jetpack Compose, Material 3 Expressive | SwiftUI, iOS, iPadOS and macOS 26 (Liquid Glass) | React, [app.blitzsplit.com](https://app.blitzsplit.com) |
+One codebase up to the ViewModel, a native UI on each platform: Jetpack Compose with Material 3 Expressive on Android,
+SwiftUI with Liquid Glass on iOS, iPadOS and macOS 26, and React on the web, at
+[app.blitzsplit.com](https://app.blitzsplit.com). The image above is the same group on each of them, captured from the
+real apps by [`scripts/readme-hero/generate.sh`](scripts/readme-hero/generate.sh).
 
 The apps keep the `com.quare.blitzsplit` application id and bundle id of the legacy Blitz Split, since they replace
 it in the stores.
