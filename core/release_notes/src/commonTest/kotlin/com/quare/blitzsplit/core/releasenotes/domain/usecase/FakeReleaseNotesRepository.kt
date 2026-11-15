@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.releasenotes.domain.usecase
 
+import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.model.PublishedRelease
 import com.quare.blitzsplit.core.releasenotes.domain.repository.ReleaseNotesRepository
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,7 @@ internal class FakeReleaseNotesRepository : ReleaseNotesRepository {
     val releases = MutableStateFlow<Map<String, List<PublishedRelease>>>(emptyMap())
     val observed = mutableListOf<String>()
     val refreshed = mutableListOf<String>()
+    val refreshedVersions = mutableListOf<AppVersion?>()
     var refreshResult: Result<Unit> = Result.success(Unit)
 
     override fun observeReleases(language: String): Flow<List<PublishedRelease>?> {
@@ -18,8 +20,12 @@ internal class FakeReleaseNotesRepository : ReleaseNotesRepository {
         return releases.map { it[language] }
     }
 
-    override suspend fun refreshReleases(language: String): Result<Unit> {
+    override suspend fun refreshReleases(
+        language: String,
+        installedVersion: AppVersion?,
+    ): Result<Unit> {
         refreshed += language
+        refreshedVersions += installedVersion
         return refreshResult
     }
 }

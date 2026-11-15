@@ -203,12 +203,26 @@ fastlane/Fastfile                              # the screenshots and upload lane
 The UI test launches the app once per screen and language with `-StoreScreenshotsLanguage`, `-StoreScreenshotsTheme`
 and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The languages, the screens and the photos
 are the tables of `scripts/store-screenshots/` (`locales.tsv`, `screens.tsv`, `assets.tsv`), which the Mac's capture
-reads too. The locale's region counts for Spanish:
-in Spain's the app reads its `es-ES` strings, so Latin America's set runs in `es_US`, the region that keeps the
-`es` strings and still writes the trip's euros as "€1,145.80" (Mexico's and Latin America's write "EUR 1,145.80").
-The trade-off: that region writes the hours on a 12-hour clock ("9:00 p.m.") and the month before the day, and Play's
-set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €". Changing the region is that one line
-of `locales.tsv`.
+reads too.
+
+**The language picks the strings, the region how amounts, dates and hours are written.** Launched in `es-419`, the
+app reads its `es` strings in every region, Spain's included. Latin America's set runs in `es_GQ`, Equatorial Guinea's
+region (Pierre's call): the only Spanish region that writes the trip's euros with the symbol in front ("€1145,80")
+and also the hours on a 24-hour clock ("21:00") and the day before the month ("15 nov", "11–14 nov"). Every Spanish
+region was measured with the app's format styles on iOS 27.2 and macOS 27.2, which write them alike:
+
+- **Latin America's**, all of them, write the euro as its code, "EUR 1,145.80" or, in most of South America,
+  "EUR 1.145,80", and nearly all on a 12-hour clock. Under Mexico's the wider amount also cut the group's rows short.
+- **The United States'** writes "€1,145.80", with "9:00 p.m.", "nov 15" and "nov 11–14".
+- **The Canary Islands'** and **Ceuta and Melilla's** write Spain's "1145,80 €", and so does **the Philippines'**,
+  on a 12-hour clock.
+
+The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and no thousands separator under 10 000,
+the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount from 1000 up puts
+the symbol after ("1 mil €"). The trip's Statistics stays under it: its most expensive day is €678, so the chart's
+value lines stop at "€750". Play's set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €".
+Changing the region is that one line of `locales.tsv`.
+
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
 sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
 build, `BoraRacharApp` then calls `BlitzSplitApple.startForStoreScreenshots` in place of `start`

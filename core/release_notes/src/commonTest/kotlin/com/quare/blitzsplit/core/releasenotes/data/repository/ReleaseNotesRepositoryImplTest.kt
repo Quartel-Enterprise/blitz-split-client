@@ -4,7 +4,9 @@ import com.quare.blitzsplit.core.releasenotes.data.datasource.ReleaseNotesLocalD
 import com.quare.blitzsplit.core.releasenotes.data.datasource.ReleaseNotesRemoteAnswer
 import com.quare.blitzsplit.core.releasenotes.data.datasource.ReleaseNotesRemoteDataSource
 import com.quare.blitzsplit.core.releasenotes.data.datasource.SavedReleaseNotesFeed
+import com.quare.blitzsplit.core.releasenotes.data.datasource.SeenInstalledVersion
 import com.quare.blitzsplit.core.releasenotes.data.parser.ReleaseNotesFeedParserImpl
+import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.model.PublishedRelease
 import com.quare.blitzsplit.core.releasenotes.feedJson
 import com.quare.blitzsplit.core.releasenotes.published
@@ -29,11 +31,13 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 class ReleaseNotesRepositoryImplTest {
     private lateinit var local: FakeReleaseNotesLocalDataSource
     private lateinit var remote: FakeReleaseNotesRemoteDataSource
     private lateinit var repository: ReleaseNotesRepositoryImpl
+    private var installed: AppVersion? = null
 
     private val oldFeed = feedJson(releaseJson("3.0.0"))
     private val newFeed = feedJson(releaseJson("3.1.0"), releaseJson("3.0.0"))
@@ -92,7 +96,7 @@ class ReleaseNotesRepositoryImplTest {
             runCurrent()
 
             // When
-            repository.refreshReleases("pt")
+            repository.refreshReleases("pt", installed)
             runCurrent()
 
             // Then
@@ -119,7 +123,7 @@ class ReleaseNotesRepositoryImplTest {
             runCurrent()
 
             // When
-            repository.refreshReleases("pt")
+            repository.refreshReleases("pt", installed)
             runCurrent()
 
             // Then
@@ -136,11 +140,11 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isSuccess)
-            assertEquals(mapOf("pt" to SavedRow(newFeed, "\"new\"", NOW)), local.rows.value)
+            assertEquals(mapOf("pt" to SavedRow(newFeed, "\"new\"", NOW, null)), local.rows.value)
             assertEquals(listOf("pt"), remote.requests)
             assertEquals(listOf<String?>(null), remote.sentEtags)
         }
@@ -152,11 +156,11 @@ class ReleaseNotesRepositoryImplTest {
             prepareScenario(site = mapOf("pt" to newFeed))
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isSuccess)
-            assertEquals(mapOf("pt" to SavedRow(newFeed, null, NOW)), local.rows.value)
+            assertEquals(mapOf("pt" to SavedRow(newFeed, null, NOW, null)), local.rows.value)
         }
 
     @Test
@@ -175,7 +179,7 @@ class ReleaseNotesRepositoryImplTest {
         )
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isSuccess)
@@ -197,7 +201,231 @@ class ReleaseNotesRepositoryImplTest {
         )
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.requests.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a feed confirmed an hour ago without the installed version WHEN refreshing THEN asks the site again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        etag = "\"old\"",
+                        checkedAt = NOW - 1.hours.ms,
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                siteEtags = mapOf("pt" to "\"new\""),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt", installed)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf<String?>("\"old\""), remote.sentEtags)
+            assertEquals(
+                mapOf("pt" to SavedRow(newFeed, "\"new\"", NOW, SeenInstalledVersion("3.1.0", NOW))),
+                local.rows.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a feed without the installed version and an unchanged site WHEN refreshing THEN only the time moves`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        etag = "\"old\"",
+                        checkedAt = NOW - 1.hours.ms,
+                    ),
+                ),
+                site = mapOf("pt" to oldFeed),
+                siteEtags = mapOf("pt" to "\"old\""),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt", installed)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                mapOf("pt" to SavedRow(oldFeed, "\"old\"", NOW, SeenInstalledVersion("3.1.0", NOW))),
+                local.rows.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a feed without the installed version confirmed a minute ago WHEN refreshing THEN asks nothing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        checkedAt = NOW - 1.minutes.ms,
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt", installed)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(remote.requests.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a feed without the installed version confirmed 15 minutes ago WHEN refreshing THEN asks again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        checkedAt = NOW - 15.minutes.ms,
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt", installed)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("pt"), remote.requests)
+        }
+
+    @Test
+    fun `GIVEN a feed without the installed version first checked on it 6 hours ago WHEN refreshing THEN waits`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        checkedAt = NOW - 1.hours.ms,
+                        installedVersion = SeenInstalledVersion("3.1.0", NOW - 6.hours.ms),
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt", installed)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(remote.requests.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a feed first checked on this version 5 hours ago WHEN asking again THEN keeps that first time`() =
+        runTest {
+            // Given
+            val seen = SeenInstalledVersion("3.1.0", NOW - 5.hours.ms)
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        checkedAt = NOW - 1.hours.ms,
+                        installedVersion = seen,
+                    ),
+                ),
+                site = mapOf("pt" to oldFeed),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt", installed)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("pt"), remote.requests)
+            assertEquals(mapOf("pt" to SavedRow(oldFeed, null, NOW, seen)), local.rows.value)
+        }
+
+    @Test
+    fun `GIVEN a feed checked on an older version WHEN refreshing on a new one THEN starts its first hours now`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        checkedAt = NOW - 1.hours.ms,
+                        installedVersion = SeenInstalledVersion("3.0.0", NOW - 7.days.ms),
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt", installed)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                mapOf("pt" to SavedRow(newFeed, null, NOW, SeenInstalledVersion("3.1.0", NOW))),
+                local.rows.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a fresh feed with a version newer than the installed one WHEN refreshing THEN asks nothing`() = runTest {
+        // Given
+        prepareScenario(
+            saved = mapOf(
+                "pt" to savedFeed(
+                    json = newFeed,
+                    checkedAt = NOW - 1.hours.ms,
+                ),
+            ),
+            site = mapOf("pt" to newFeed),
+            installedVersion = "3.0.1-beta_1",
+        )
+
+        // When
+        val result = repository.refreshReleases("pt", installed)
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.requests.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a feed confirmed an hour ago with the installed version WHEN refreshing THEN asks nothing`() = runTest {
+        // Given
+        prepareScenario(
+            saved = mapOf(
+                "pt" to savedFeed(
+                    json = newFeed,
+                    checkedAt = NOW - 1.hours.ms,
+                ),
+            ),
+            site = mapOf("pt" to newFeed),
+            installedVersion = "3.1.0",
+        )
+
+        // When
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isSuccess)
@@ -221,13 +449,13 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isSuccess)
             assertEquals(listOf("pt"), remote.requests)
             assertEquals(listOf<String?>("\"old\""), remote.sentEtags)
-            assertEquals(mapOf("pt" to SavedRow(newFeed, "\"new\"", NOW)), local.rows.value)
+            assertEquals(mapOf("pt" to SavedRow(newFeed, "\"new\"", NOW, null)), local.rows.value)
         }
 
     @Test
@@ -244,7 +472,7 @@ class ReleaseNotesRepositoryImplTest {
         )
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isSuccess)
@@ -266,12 +494,12 @@ class ReleaseNotesRepositoryImplTest {
         )
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isSuccess)
         assertEquals(listOf("pt"), remote.requests)
-        assertEquals(mapOf("pt" to SavedRow(newFeed, null, NOW)), local.rows.value)
+        assertEquals(mapOf("pt" to SavedRow(newFeed, null, NOW, null)), local.rows.value)
     }
 
     @Test
@@ -287,12 +515,12 @@ class ReleaseNotesRepositoryImplTest {
         )
 
         // When
-        val result = repository.refreshReleases("es")
+        val result = repository.refreshReleases("es", installed)
 
         // Then
         assertTrue(result.isSuccess)
         assertEquals(listOf("es"), remote.requests)
-        assertEquals(mapOf("pt" to portuguese, "es" to SavedRow(newFeed, null, NOW)), local.rows.value)
+        assertEquals(mapOf("pt" to portuguese, "es" to SavedRow(newFeed, null, NOW, null)), local.rows.value)
     }
 
     @Test
@@ -312,12 +540,12 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isSuccess)
             assertEquals(listOf<String?>("\"old\""), remote.sentEtags)
-            assertEquals(mapOf("pt" to SavedRow(oldFeed, "\"old\"", NOW)), local.rows.value)
+            assertEquals(mapOf("pt" to SavedRow(oldFeed, "\"old\"", NOW, null)), local.rows.value)
             assertEquals(0, local.saveCount)
         }
 
@@ -336,10 +564,10 @@ class ReleaseNotesRepositoryImplTest {
                 site = mapOf("pt" to newFeed),
                 siteEtags = mapOf("pt" to "\"old\""),
             )
-            repository.refreshReleases("pt")
+            repository.refreshReleases("pt", installed)
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isSuccess)
@@ -356,12 +584,12 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("tr")
+            val result = repository.refreshReleases("tr", installed)
 
             // Then
             assertTrue(result.isSuccess)
             assertEquals(listOf("tr", "en"), remote.requests)
-            assertEquals(mapOf("tr" to SavedRow(englishFeed, "\"en\"", NOW)), local.rows.value)
+            assertEquals(mapOf("tr" to SavedRow(englishFeed, "\"en\"", NOW, null)), local.rows.value)
         }
 
     @Test
@@ -381,13 +609,13 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("tr")
+            val result = repository.refreshReleases("tr", installed)
 
             // Then
             assertTrue(result.isSuccess)
             assertEquals(listOf("tr", "en"), remote.requests)
             assertEquals(listOf<String?>("\"en\"", "\"en\""), remote.sentEtags)
-            assertEquals(mapOf("tr" to SavedRow(englishFeed, "\"en\"", NOW)), local.rows.value)
+            assertEquals(mapOf("tr" to SavedRow(englishFeed, "\"en\"", NOW, null)), local.rows.value)
             assertEquals(0, local.saveCount)
         }
 
@@ -397,7 +625,7 @@ class ReleaseNotesRepositoryImplTest {
         prepareScenario(site = mapOf("pt" to newFeed))
 
         // When
-        val result = repository.refreshReleases("en")
+        val result = repository.refreshReleases("en", installed)
 
         // Then
         assertTrue(result.isFailure)
@@ -412,7 +640,7 @@ class ReleaseNotesRepositoryImplTest {
             prepareScenario(site = emptyMap())
 
             // When
-            val result = repository.refreshReleases("tr")
+            val result = repository.refreshReleases("tr", installed)
 
             // Then
             assertTrue(result.isFailure)
@@ -430,12 +658,12 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isSuccess)
             assertEquals(listOf("pt", "en"), remote.requests)
-            assertEquals(mapOf("pt" to SavedRow(englishFeed, "\"en\"", NOW)), local.rows.value)
+            assertEquals(mapOf("pt" to SavedRow(englishFeed, "\"en\"", NOW, null)), local.rows.value)
         }
 
     @Test
@@ -455,7 +683,7 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isFailure)
@@ -471,7 +699,7 @@ class ReleaseNotesRepositoryImplTest {
             prepareScenario(site = mapOf("en" to errorPage))
 
             // When
-            val result = repository.refreshReleases("en")
+            val result = repository.refreshReleases("en", installed)
 
             // Then
             assertTrue(result.isFailure)
@@ -496,7 +724,7 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertEquals("offline", result.exceptionOrNull()?.message)
@@ -513,7 +741,7 @@ class ReleaseNotesRepositoryImplTest {
         )
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isFailure)
@@ -525,10 +753,10 @@ class ReleaseNotesRepositoryImplTest {
     fun `GIVEN a refresh failed offline WHEN refreshing again THEN asks the site again`() = runTest {
         // Given
         prepareScenario(siteError = IllegalStateException("offline"))
-        repository.refreshReleases("pt")
+        repository.refreshReleases("pt", installed)
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isFailure)
@@ -541,7 +769,7 @@ class ReleaseNotesRepositoryImplTest {
         prepareScenario(siteError = CancellationException("left the screen"))
 
         // When
-        val failure = assertFailsWith<CancellationException> { repository.refreshReleases("pt") }
+        val failure = assertFailsWith<CancellationException> { repository.refreshReleases("pt", installed) }
 
         // Then
         assertEquals("left the screen", failure.message)
@@ -555,8 +783,8 @@ class ReleaseNotesRepositoryImplTest {
 
         // When
         val results = listOf(
-            async { repository.refreshReleases("pt") },
-            async { repository.refreshReleases("pt") },
+            async { repository.refreshReleases("pt", installed) },
+            async { repository.refreshReleases("pt", installed) },
         ).awaitAll()
 
         // Then
@@ -569,10 +797,10 @@ class ReleaseNotesRepositoryImplTest {
     fun `GIVEN the feed was just downloaded WHEN refreshing again THEN the site is asked once`() = runTest {
         // Given
         prepareScenario(site = mapOf("pt" to newFeed))
-        repository.refreshReleases("pt")
+        repository.refreshReleases("pt", installed)
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isSuccess)
@@ -588,7 +816,7 @@ class ReleaseNotesRepositoryImplTest {
         )
 
         // When
-        val result = repository.refreshReleases("pt")
+        val result = repository.refreshReleases("pt", installed)
 
         // Then
         assertTrue(result.isSuccess)
@@ -612,7 +840,7 @@ class ReleaseNotesRepositoryImplTest {
             )
 
             // When
-            val result = repository.refreshReleases("pt")
+            val result = repository.refreshReleases("pt", installed)
 
             // Then
             assertTrue(result.isSuccess)
@@ -624,10 +852,12 @@ class ReleaseNotesRepositoryImplTest {
         json: String,
         etag: String? = null,
         checkedAt: Long = NOW,
+        installedVersion: SeenInstalledVersion? = null,
     ): SavedRow = SavedRow(
         json = json,
         etag = etag,
         checkedAt = checkedAt,
+        installedVersion = installedVersion,
     )
 
     private fun prepareScenario(
@@ -635,6 +865,7 @@ class ReleaseNotesRepositoryImplTest {
         site: Map<String, String> = emptyMap(),
         siteEtags: Map<String, String> = emptyMap(),
         siteError: Throwable? = null,
+        installedVersion: String? = null,
     ) {
         local = FakeReleaseNotesLocalDataSource(saved)
         remote = FakeReleaseNotesRemoteDataSource(
@@ -648,6 +879,7 @@ class ReleaseNotesRepositoryImplTest {
             parser = ReleaseNotesFeedParserImpl(),
             currentTimeMillis = { NOW },
         )
+        installed = installedVersion?.let(AppVersion::parseOrNull)
     }
 
     private companion object {
@@ -672,6 +904,7 @@ private class FakeReleaseNotesLocalDataSource(
             json = row.json,
             etag = row.etag,
             checkedAt = row.checkedAt,
+            installedVersion = row.installedVersion,
         )
     }
 
@@ -680,17 +913,26 @@ private class FakeReleaseNotesLocalDataSource(
         json: String,
         etag: String?,
         checkedAt: Long,
+        installedVersion: SeenInstalledVersion?,
     ) {
         saveCount++
-        rows.update { it + (language to SavedRow(json, etag, checkedAt)) }
+        rows.update { it + (language to SavedRow(json, etag, checkedAt, installedVersion)) }
     }
 
     override suspend fun markChecked(
         language: String,
         checkedAt: Long,
+        installedVersion: SeenInstalledVersion?,
     ) {
         rows.update { all ->
-            all[language]?.let { row -> all + (language to row.copy(checkedAt = checkedAt)) } ?: all
+            all[language]?.let { row ->
+                all + (
+                    language to row.copy(
+                        checkedAt = checkedAt,
+                        installedVersion = installedVersion,
+                    )
+                )
+            } ?: all
         }
     }
 }

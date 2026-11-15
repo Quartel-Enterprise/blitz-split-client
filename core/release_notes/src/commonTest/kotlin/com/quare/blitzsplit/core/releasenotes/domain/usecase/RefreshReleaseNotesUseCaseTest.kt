@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.releasenotes.domain.usecase
 
+import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.usecase.impl.RefreshReleaseNotesUseCase
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -21,6 +22,7 @@ class RefreshReleaseNotesUseCaseTest {
         // Then
         assertTrue(result.isSuccess)
         assertEquals(listOf("pt"), repository.refreshed)
+        assertEquals(listOf(AppVersion.parseOrNull("3.1.0-beta_2")), repository.refreshedVersions)
     }
 
     @Test
@@ -38,6 +40,9 @@ class RefreshReleaseNotesUseCaseTest {
 
     private fun prepareScenario(refreshResult: Result<Unit> = Result.success(Unit)) {
         repository = FakeReleaseNotesRepository().also { it.refreshResult = refreshResult }
-        refresh = RefreshReleaseNotesUseCase(repository)
+        refresh = RefreshReleaseNotesUseCase(
+            repository = repository,
+            getInstalledVersion = { AppVersion.parseOrNull("3.1.0-beta_2") },
+        )
     }
 }
