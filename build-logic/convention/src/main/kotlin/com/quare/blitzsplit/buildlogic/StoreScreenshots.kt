@@ -14,10 +14,11 @@ import java.io.File
 // its own on App Store Connect (platform osx).
 private const val GROUP = "store-screenshots"
 private const val GENERATE_TASK = "testDebugUnitTest"
-private val listingLocales = listOf("en-US", "pt-BR", "es", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
+private val listingLocales = listOf("en-US", "pt-BR", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
 private val playLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
+    "pt-PT" to listOf("pt-PT"),
     "es" to listOf("es-419", "es-ES", "es-US"),
     "fr" to listOf("fr-FR"),
     "de" to listOf("de-DE"),
@@ -31,6 +32,7 @@ private val playLocales = mapOf(
 private val appStoreLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
+    "pt-PT" to listOf("pt-PT"),
     "es" to listOf("es-MX", "es-ES"),
     "fr" to listOf("fr-FR"),
     "de" to listOf("de-DE"),

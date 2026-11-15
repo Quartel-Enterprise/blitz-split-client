@@ -57,6 +57,20 @@ object SampleTrips {
             court = "Aluguel da quadra",
             items = italianDishes,
         ),
+        "pt-PT" to SampleTripCopy(
+            groupName = "Viagem a Lisboa",
+            people = listOf("Inês", "Tiago", "Beatriz", "Diogo", "Mariana"),
+            dinner = "Jantar na trattoria",
+            apartment = "Apartamento em Alfama",
+            groceries = "Supermercado",
+            carRental = "Aluguer do carro",
+            boatTour = "Passeio de barco",
+            taxi = "Táxi do aeroporto",
+            roommates = "Colegas de casa",
+            soccer = "Futebol à sexta",
+            court = "Aluguer do campo",
+            items = italianDishes,
+        ),
         "es" to SampleTripCopy(
             groupName = "Viaje a Lisboa",
             people = listOf("Lucía", "Mateo", "Sofía", "Diego", "Valentina"),
@@ -187,6 +201,7 @@ object SampleTrips {
     private val currencies = mapOf(
         "en" to GroupCurrency.USD,
         "pt" to GroupCurrency.BRL,
+        "pt-PT" to GroupCurrency.EUR,
         "es" to GroupCurrency.EUR,
         "fr" to GroupCurrency.EUR,
         "de" to GroupCurrency.EUR,

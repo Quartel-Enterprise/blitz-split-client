@@ -2,7 +2,8 @@ package com.quare.blitzsplit.android.storescreenshots
 
 /**
  * A language of the listings. [tag] names the generated folder and is what Robolectric switches the resources to;
- * [language] picks the sample trip and the banner copy. The stores' own codes (es-419, es-MX…) come from these in
+ * [language] picks the sample trip and the banner copy: the app language's code, Portugal's Portuguese by its whole
+ * tag (pt-PT), since "pt" is Brazil's. The stores' own codes (es-419, es-MX…) come from these in
  * the staging tasks of build-logic's StoreScreenshots.kt.
  */
 internal data class StoreLocale(
@@ -18,6 +19,10 @@ internal val storeLocales = listOf(
     StoreLocale(
         tag = "pt-BR",
         language = "pt",
+    ),
+    StoreLocale(
+        tag = "pt-PT",
+        language = "pt-PT",
     ),
     StoreLocale(
         tag = "es",

@@ -1,7 +1,7 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 11 languages
+showing a sample trip among five friends, inside a device frame with a title and description, in all 12 languages
 of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
 library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
 
@@ -137,8 +137,10 @@ fastlane/Fastfile                              # the screenshots and upload lane
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on iOS) and in the UI
   test's `screens`. The file names must match on both sides.
-- **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), the UI test's `locales` and
-  the two store maps in `StoreScreenshots.kt`.
+- **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), the UI test's `locales`,
+  and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
+  which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
+  Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings.
 
 ## How the iOS capture works
 

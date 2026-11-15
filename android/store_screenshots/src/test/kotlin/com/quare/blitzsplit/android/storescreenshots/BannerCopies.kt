@@ -4,6 +4,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.GROUP to mapOf(
         "en" to ("Who paid what, at a glance" over "Every bill of the trip in one place, with your balance on top"),
         "pt" to ("Quem pagou o quê, num relance" over "Todas as contas da viagem num só lugar, seu saldo no topo"),
+        "pt-PT" to
+            ("Quem pagou o quê, num relance" over "Todas as contas da viagem num só sítio, com o teu saldo no topo"),
         "es" to
             ("Quién pagó qué, de un vistazo" over "Todos los gastos del viaje en un solo lugar, con tu saldo arriba"),
         "fr" to
@@ -33,6 +35,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
         "pt" to
             ("Divida pelo que cada um consumiu" over "Marque quem pediu cada item e o serviço se divide na proporção"),
+        "pt-PT" to
+            ("Divide pelo que cada um consumiu" over "Marca quem pediu cada item e o serviço divide-se na proporção"),
         "es" to
             (
                 "Divide según lo que pidió cada uno" over
@@ -60,6 +64,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.RECEIPT to mapOf(
         "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
         "pt" to ("Fotografe o cupom e pronto" over "Os itens se preenchem sozinhos a partir da foto"),
+        "pt-PT" to ("Fotografa o talão e já está" over "Os itens preenchem-se sozinhos a partir da foto"),
         "es" to ("Saca una foto al ticket y listo" over "Los platos se completan solos a partir de la foto"),
         "fr" to
             ("Photographiez le ticket, c'est tout" over "Les articles se remplissent tout seuls à partir de la photo"),
@@ -74,6 +79,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.BALANCES to mapOf(
         "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
         "pt" to ("Saiba quem deve a quem" over "Acerte em um toque e registre o pagamento"),
+        "pt-PT" to ("Fica a saber quem deve a quem" over "Acerta com um toque e regista o pagamento"),
         "es" to ("Sabe quién le debe a quién" over "Salda cuentas con un toque y registra el pago"),
         "fr" to ("Sachez qui doit à qui" over "Réglez en un geste et enregistrez le paiement"),
         "de" to ("Wisse, wer wem was schuldet" over "Mit einem Tipp begleichen und die Zahlung eintragen"),
@@ -87,6 +93,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.INVITE to mapOf(
         "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
         "pt" to ("Convide por link ou QR code" over "A galera entra no grupo em segundos, sem cadastro"),
+        "pt-PT" to ("Convida por link ou QR code" over "Os amigos entram no grupo em segundos, sem criar conta"),
         "es" to ("Invita con un enlace o código QR" over "Tus amigos se unen en segundos, sin registrarse"),
         "fr" to
             ("Invitez par lien ou QR code" over "Vos amis rejoignent le groupe en quelques secondes, sans inscription"),
@@ -102,6 +109,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.STATISTICS to mapOf(
         "en" to ("See where the money went" over "Spending by category and by person"),
         "pt" to ("Veja para onde foi o dinheiro" over "Gastos por categoria e por pessoa"),
+        "pt-PT" to ("Vê para onde foi o dinheiro" over "Gastos por categoria e por pessoa"),
         "es" to ("Mira en qué se fue el dinero" over "Gastos por categoría y por persona"),
         "fr" to ("Voyez où est passé l'argent" over "Dépenses par catégorie et par personne"),
         "de" to ("Sieh, wohin das Geld ging" over "Ausgaben nach Kategorie und Person"),
@@ -115,6 +123,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.HOME to mapOf(
         "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
         "pt" to ("Seus grupos sempre à mão" over "Fixe os que você mais usa e veja seu saldo em cada um"),
+        "pt-PT" to ("Os teus grupos sempre à mão" over "Fixa os que mais usas e vê o teu saldo em cada um"),
         "es" to ("Tus grupos, siempre a mano" over "Fija los que más usas y mira tu saldo en cada uno"),
         "fr" to ("Vos groupes, toujours sous la main" over "Épinglez vos favoris et voyez votre solde dans chacun"),
         "de" to ("Deine Gruppen immer griffbereit" over "Pinne die wichtigsten an und sieh deinen Saldo in jeder"),
@@ -129,6 +138,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
         "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
         "pt" to ("Vários pagantes, qualquer moeda" over "Divida contas pagas por mais de uma pessoa, até em cripto"),
+        "pt-PT" to
+            ("Vários pagadores, qualquer moeda" over "Divide contas pagas por mais de uma pessoa, até em cripto"),
         "es" to
             ("Varios pagadores, cualquier moneda" over "Divide gastos que pagaron varias personas, incluso en cripto"),
         "fr" to ("Plusieurs payeurs, toutes les devises" over "Partagez une note réglée à plusieurs, même en crypto"),
@@ -146,6 +157,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.ACTIVITY to mapOf(
         "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
         "pt" to ("Não perca nenhuma novidade" over "Cada conta e pagamento novo dos seus grupos, na hora"),
+        "pt-PT" to ("Não percas nenhuma novidade" over "Cada conta e pagamento novo dos teus grupos, na hora"),
         "es" to ("No te pierdas ningún cambio" over "Cada gasto y pago nuevo de tus grupos, al instante"),
         "fr" to ("Ne manquez aucun changement" over "Chaque dépense et paiement de vos groupes, en direct"),
         "de" to ("Keine Änderung verpassen" over "Jede neue Ausgabe und Zahlung deiner Gruppen, sofort"),
@@ -159,6 +171,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
     StoreScreen.LIGHT_THEME to mapOf(
         "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
         "pt" to ("Claro ou escuro, do seu jeito" over "Funciona offline, com ou sem conta"),
+        "pt-PT" to ("Claro ou escuro, à tua maneira" over "Funciona offline, com ou sem conta"),
         "es" to ("Claro u oscuro, a tu gusto" over "Funciona sin conexión, con o sin cuenta"),
         "fr" to ("Clair ou sombre, à votre goût" over "Fonctionne hors ligne, avec ou sans compte"),
         "de" to ("Hell oder dunkel, wie du willst" over "Funktioniert offline, mit oder ohne Konto"),

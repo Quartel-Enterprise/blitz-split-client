@@ -23,6 +23,7 @@ final class StoreScreenshotsUITests: XCTestCase {
     private static let locales = [
         ListingLocale(tag: "en-US", language: "en", appleLanguage: "en-US", appleLocale: "en_US"),
         ListingLocale(tag: "pt-BR", language: "pt", appleLanguage: "pt-BR", appleLocale: "pt_BR"),
+        ListingLocale(tag: "pt-PT", language: "pt-PT", appleLanguage: "pt-PT", appleLocale: "pt_PT"),
         ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_ES"),
         ListingLocale(tag: "fr", language: "fr", appleLanguage: "fr-FR", appleLocale: "fr_FR"),
         ListingLocale(tag: "de", language: "de", appleLanguage: "de-DE", appleLocale: "de_DE"),
