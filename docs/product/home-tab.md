@@ -67,7 +67,8 @@ The home tab, its shortcuts and pinned groups.
     ("You get back", "You owe") and "Who paid" ("You paid", alone or with others, "Others paid"), a menu filled while
     it narrows the list, and "Clear filters" (which keeps the order) once one does; nothing matching shows "No
     expenses match" / "Try other words or clear the filters." with "Clear filters". Android draws them as a search
-    field and a row of filter chips that scrolls sideways, iOS and the Mac the bar's own search field (`.searchable`)
+    field and a row of filter chips that scrolls sideways (out into the column's side margins, the first chip at rest
+    lined up with the search field, as Dividir's modes do in [split-bill.md](split-bill.md)), iOS and the Mac the bar's own search field (`.searchable`)
     and a row of menus, the web an input and a row of menu buttons that wraps on a phone. At their default the list
     reads the device a page at a time; any filter, search or other order reads every bill of the device once and
     shows them a page at a time (`AllExpensesFilters`), the page going back to the first on each change.

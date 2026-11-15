@@ -1,8 +1,11 @@
 package com.quare.blitzsplit.android.designsystem.layout
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -25,6 +28,11 @@ data class FormBleed(
         val None = FormBleed(
             start = 0.dp,
             end = 0.dp,
+        )
+
+        fun ofMargin(margin: Dp): FormBleed = FormBleed(
+            start = margin,
+            end = margin,
         )
 
         fun of(
@@ -55,3 +63,24 @@ fun Modifier.horizontalBleed(bleed: FormBleed): Modifier = layout { measurable, 
         height = placeable.height,
     ) { placeable.placeRelative(-start, 0) }
 }
+
+// Why: a plain `Row` of chips that scrolls sideways to the column's edge, the first chip still lined up with the form.
+fun Modifier.bleedingHorizontalScroll(
+    bleed: FormBleed,
+    scrollState: ScrollState,
+): Modifier = horizontalBleed(bleed)
+    .horizontalScroll(scrollState)
+    .padding(
+        start = bleed.start,
+        end = bleed.end,
+    )
+
+/*
+ * Why: the side margin that centers a column capped at `maxWidth` in `available`, never under `minMargin`. The cap lives
+ * in the padding, so a row that scrolls sideways can bleed into it up to the screen's edge, not the column's.
+ */
+fun calculateCenteredColumnMargin(
+    available: Dp,
+    maxWidth: Dp,
+    minMargin: Dp,
+): Dp = maxOf(minMargin, (available - maxWidth) / 2)
