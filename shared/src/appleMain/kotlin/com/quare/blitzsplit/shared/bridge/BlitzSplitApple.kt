@@ -3,6 +3,7 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -61,6 +62,7 @@ import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.PickP
 import com.quare.blitzsplit.feature.registerpayment.presentation.viewmodel.RegisterPaymentViewModel
 import com.quare.blitzsplit.feature.releasenotes.presentation.viewmodel.ReleaseNotesViewModel
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
+import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
 import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewModel
 import com.quare.blitzsplit.shared.app.AppViewModel
@@ -105,12 +107,19 @@ object BlitzSplitApple : KoinComponent {
      */
     private val scope = MainScope() + Dispatchers.Main.immediate
 
+    /*
+     * Why: the store screenshots' "Bill items" launch, with the screen still to open. Its bill's screen opens "Bill
+     * items" by itself once the dinner is loaded, as its Split row does: nothing taps on the Mac's capture, and on a
+     * phone the row's place changes with the screen's height.
+     */
+    private var opensBillItems = false
+
     fun start() {
         startBlitzSplitKoin()
     }
 
     /*
-     * Why: the App Store screenshots (docs/store-listing-screenshots.md): the UI tests launch a debug build with the
+     * Why: the App Store screenshots (docs/store-listing-screenshots.md): the captures launch a debug build with the
      * sample trip seeded into a fresh Room, in their language and theme, before the first screen reads it, then open
      * the screen named by screenCode over Início. A release framework never seeds: it starts as usual, so the hook does
      * nothing even if something calls it.
@@ -139,7 +148,9 @@ object BlitzSplitApple : KoinComponent {
                 theme = if (isDark) ThemePreference.DARK else ThemePreference.LIGHT,
             )
         }
-        val routes = StoreScreenshotsScreen.fromCodeOrNull(screenCode)?.routesOf(seeded).orEmpty()
+        val screen = StoreScreenshotsScreen.fromCodeOrNull(screenCode)
+        opensBillItems = screen == StoreScreenshotsScreen.ITEMS
+        val routes = screen?.routesOf(seeded).orEmpty()
         val navigator = get<Navigator>()
         scope.launch {
             // Why: the app puts Início at the root once it read the profile; the screen goes over it after that.
@@ -272,7 +283,18 @@ object BlitzSplitApple : KoinComponent {
         ViewModelHolder(ContactInviteViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
-        ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }
+        ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }.also(::openBillItemsOnce)
+
+    // Why: only the first bill of the launch, the dinner the screenshot opens: a bill opened after it stays as it is.
+    private fun openBillItemsOnce(holder: ViewModelHolder<SplitBillViewModel>) {
+        if (!opensBillItems) return
+        opensBillItems = false
+        val viewModel = holder.viewModel
+        scope.launch {
+            viewModel.uiState.first { it.split.mode == SplitMode.ITEMS }
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        }
+    }
 
     fun createBillDetailViewModel(route: Route.BillDetail): ViewModelHolder<BillDetailViewModel> =
         ViewModelHolder(BillDetailViewModel::class) { get { parametersOf(route) } }

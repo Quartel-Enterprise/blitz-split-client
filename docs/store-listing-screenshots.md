@@ -178,8 +178,8 @@ usual). That entry point:
    It then does with SQL what a sync would: clears the pending flags, sets everyone as joined with a face, the
    invite code, and Activity's feed.
 4. Once the app has put Home at the root, pushes the screen's routes onto the shared back stack. Nothing is
-   tapped: for Items, the split bill screen opens "Bill items" by itself once the dinner is loaded
-   (`SplitBillModel`, debug only), as its "Split" row does. A tap would depend on where that row is, which
+   tapped: for Items, the bridge opens "Bill items" on the dinner's bill once it is loaded
+   (`BlitzSplitApple.createSplitBillViewModel`), as its "Split" row does. A tap would depend on where that row is, which
    changes with the screen's height (below the screen on the iPhone Duo closed), and the Mac's capture has
    nothing that taps.
 
@@ -203,8 +203,8 @@ project's Mac its own screenshot of the window failed as well ("Image creation f
   and nothing else. It then prints the window's number, which the script reads from the app's output and hands to
   `screencapture -l`. The hidden apps come back with a click on their Dock icon.
 - **On a Retina display.** The frame draws the window at twice its points (2880x1800). On a display that isn't
-  Retina the capture is 1440x900 and would go to the listing blurred, so the script fails on it, after writing
-  the captures: they are still there to look at.
+  Retina the capture is 1440x900 and would go to the listing blurred, so the script stops at the first one, which
+  is still there to look at.
 
 ## Things that bite
 

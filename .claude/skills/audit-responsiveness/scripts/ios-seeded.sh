@@ -4,9 +4,10 @@
 #   ios-seeded.sh <udid> <screen> <light|dark> <output.png> [display]
 #
 # <screen> is a code of StoreScreenshotsScreen: home, group, balances, statistics, activity, payers, items (the
-# dinner's bill with "Bill items" open over it), invite, receipt. The seed needs a debug build already installed (docs/store-listing-screenshots.md). The iPhone Duo has two
-# displays, so it needs [display]: 1 is the outer one (closed), 3 the inner one, which is black until the simulator is
-# unfolded by hand in Device Hub (no tool can unfold it). Other simulators take no [display].
+# dinner's bill with "Bill items" open over it), invite, receipt. The seed needs a debug build already installed
+# (docs/store-listing-screenshots.md). The iPhone Duo has two displays, so it needs [display]: 1 is the outer one
+# (closed), 3 the inner one, which is black until the simulator is unfolded by hand in Device Hub (no tool can unfold
+# it). Other simulators take no [display].
 set -eo pipefail
 UDID="$1"; SCREEN="$2"; THEME="$3"; OUTPUT="$4"; DISPLAY_ID="$5"
 xcrun simctl terminate "$UDID" com.quare.blitzsplit >/dev/null 2>&1 || true

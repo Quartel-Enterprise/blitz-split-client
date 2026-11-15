@@ -9,8 +9,8 @@
 # window alone, which takes the Screen Recording permission for whatever runs this script.
 #
 # The app takes this Mac's screen for the whole run, about ten seconds per capture: leave the keyboard and mouse
-# alone until it ends. The run fails when the window was on a display that isn't Retina, whose captures the frame
-# would blur. STORE_SCREENSHOTS_LOCALES and STORE_SCREENSHOTS_SCREENS narrow it as in capture-ios.sh.
+# alone until it ends. The run stops at the first capture when the window is on a display that isn't Retina, whose
+# captures the frame would blur. STORE_SCREENSHOTS_LOCALES and STORE_SCREENSHOTS_SCREENS narrow it as in capture-ios.sh.
 # STORE_SCREENSHOTS_BUILD_SETTINGS adds build settings to the build, for a machine with no signing account (the
 # release's runner: release-production.yml).
 
@@ -21,26 +21,46 @@ TABLES="$ROOT/scripts/store-screenshots"
 OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-captures}"
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData-mac"
 APP="$DERIVED_DATA/Build/Products/Debug/BoraRachar.app"
+# The app's processes, for pkill and pgrep, which read a regular expression: the path's own characters are escaped,
+# or a "+" or a "(" in a folder's name would match nothing and leave every launch running.
+APP_PROCESS="$(printf '%s' "$APP/Contents/MacOS/" | sed 's/[][\\.^$*+?(){}|]/\\&/g')"
 APP_OUTPUT="$DERIVED_DATA/store-screenshots-app-output.txt"
 # How long the app may take to open its window, and how long a screen takes to seed, open and settle after that.
 WINDOW_TIMEOUT=30
 SETTLE=4
 
-# The rows of a table of scripts/store-screenshots, without its # comment lines.
-rows() { grep -v '^#' "$TABLES/$1.tsv"; }
+# The rows of a table of scripts/store-screenshots, without its # comment lines and its empty ones, as the iOS test
+# reads them.
+rows() { grep -v -e '^#' -e '^[[:space:]]*$' "$TABLES/$1.tsv"; }
+
+# Stops on a row that hasn't the table's number of tab-separated fields (spaces typed for a tab), naming it: read as
+# it is, it would launch the app on the wrong screen and write the capture under an empty name.
+check_table() {
+  local bad
+  bad="$(rows "$1" | awk -F'\t' -v fields="$2" 'NF != fields { print; exit }')"
+  if [ -n "$bad" ]; then
+    echo "$1.tsv: \"$bad\" has not $2 fields" >&2
+    exit 1
+  fi
+}
 
 # Whether a comma-separated list (empty: everything) has the item.
 wanted() { [ -z "$1" ] || [[ ",$1," == *",$2,"* ]]; }
 
-# Asks the app to quit, and kills it if it is still there five seconds later, so a stuck launch can't hold the run.
+# Ends the app as the iOS test's terminate() does, and kills it if it is still there five seconds later, so a stuck
+# launch can't hold the run. Every launch starts from a fresh database, so nothing of the one ended is read again.
 quit_app() {
-  pkill -f "$APP/Contents/MacOS/" 2>/dev/null || true
+  pkill -f "$APP_PROCESS" 2>/dev/null || true
   for _ in $(seq 25); do
-    pgrep -f "$APP/Contents/MacOS/" > /dev/null || return 0
+    pgrep -f "$APP_PROCESS" > /dev/null || return 0
     sleep 0.2
   done
-  pkill -9 -f "$APP/Contents/MacOS/" 2>/dev/null || true
+  pkill -9 -f "$APP_PROCESS" 2>/dev/null || true
 }
+
+check_table locales 4
+check_table screens 3
+check_table assets 2
 
 "$ROOT/iosApp/generate-project.sh"
 
@@ -99,9 +119,25 @@ while IFS=$'\t' read -r tag language apple_language apple_locale; do
     sleep "$SETTLE"
     # The window alone, without its shadow, at the size StoreScreenshotsRun gives it, which the Mac's frame draws
     # on its own canvas
-    last_capture="$OUTPUT/mac/$tag/$file_name.png"
-    screencapture -x -o -l "$window" "$last_capture"
+    capture="$OUTPUT/mac/$tag/$file_name.png"
+    rm -f "$capture"
+    screencapture -x -o -l "$window" "$capture" || true
     quit_app
+    if [ ! -s "$capture" ]; then
+      echo "screencapture wrote no image of the window for $tag $code: whatever runs this script needs the Screen" \
+        "Recording permission (System Settings > Privacy & Security)" >&2
+      exit 1
+    fi
+    # The frame draws the window at twice its points: a capture from a display that isn't Retina would go to the
+    # listing blurred. Checked on the first capture, which stays there to look at, not after half an hour of them.
+    if [ -z "$last_capture" ]; then
+      width="$(sips -g pixelWidth "$capture" | awk '/pixelWidth/ { print $2 }')"
+      if [ "$width" -lt 2880 ]; then
+        echo "The Mac capture is $width px wide and the frame takes 2880: its display isn't Retina" >&2
+        exit 1
+      fi
+    fi
+    last_capture="$capture"
   done < <(rows screens)
   echo "Captured $tag"
 done < <(rows locales)
@@ -111,11 +147,3 @@ if [ -z "$last_capture" ]; then
   exit 1
 fi
 echo "Captured into $OUTPUT/mac"
-
-# The frame draws the window at twice its points: a capture from a display that isn't Retina would go to the listing
-# blurred, so the run fails and whatever called it stops before framing or uploading.
-width="$(sips -g pixelWidth "$last_capture" | awk '/pixelWidth/ { print $2 }')"
-if [ "$width" -lt 2880 ]; then
-  echo "The Mac captures are $width px wide, the frame takes 2880: the window was on a display that isn't Retina" >&2
-  exit 1
-fi

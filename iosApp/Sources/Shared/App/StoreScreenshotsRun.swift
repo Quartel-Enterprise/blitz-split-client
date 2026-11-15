@@ -91,10 +91,25 @@ struct StoreScreenshotsRun {
     /// A screenshot launch asks itself to reopen, as a click on its Dock icon does. The capture may launch the app
     /// without it coming forward (a Mac someone is using, a runner with no session in front), and an app launched
     /// behind the others gets no window until it is reopened or activated: nothing to capture. Activating itself is
-    /// not enough, the system refuses it to an app the person didn't start. With the window already there, the reopen
-    /// does nothing.
+    /// not enough, the system refuses it to an app the person didn't start. It waits a moment and only reopens with
+    /// no window on screen: a launch that did come forward opens its own, and a reopen sent before that one shows
+    /// would open a second.
     static func openWindowIfLaunchedBehind() {
         guard current != nil else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + launchWindowWait) {
+            if mainWindow == nil { reopen() }
+        }
+    }
+
+    /// How long a launch in front may take to show its window, measured at well under a second.
+    private static let launchWindowWait: TimeInterval = 2
+
+    /// The app's one window, the WindowGroup's: never a panel or one of the menu bar's.
+    private static var mainWindow: NSWindow? {
+        NSApplication.shared.windows.first { $0.canBecomeMain && $0.isVisible }
+    }
+
+    private static func reopen() {
         let reopen = NSAppleEventDescriptor(
             eventClass: AEEventClass(kCoreEventClass),
             eventID: AEEventID(kAEReopenApplication),
@@ -110,7 +125,8 @@ struct StoreScreenshotsRun {
     /// them. They come back with a click on their Dock icon. The window's number goes to the app's output, where
     /// capture-mac.sh reads it to photograph that window alone.
     static func sizeWindow() {
-        guard current != nil, let window = NSApplication.shared.windows.first else { return }
+        guard current != nil, let window = mainWindow ?? NSApplication.shared.windows.first(where: \.canBecomeMain)
+        else { return }
         NSApplication.shared.hideOtherApplications(nil)
         window.setContentSize(windowSize)
         window.center()

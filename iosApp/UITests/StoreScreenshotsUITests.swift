@@ -23,7 +23,7 @@ final class StoreScreenshotsUITests: XCTestCase {
     }
 
     /// How long a launched screen takes to seed, open and finish its transitions before the capture. "Bill items"
-    /// opens by itself in that time (SplitBillModel), so the test taps nothing.
+    /// opens by itself in that time (BlitzSplitApple.createSplitBillViewModel), so the test taps nothing.
     private static let settle: TimeInterval = 4
 
     override func setUp() {
