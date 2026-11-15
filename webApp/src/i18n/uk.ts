@@ -1072,8 +1072,6 @@ export const uk: Record<MessageKey, string> = {
   balance_youOwe: 'ти винен(-на)',
   balance_settled: '{amount} · у тебе все сплачено',
   balance_getAndOwe: 'Тобі винні {received}, твій борг {owed}',
-  balance_get: 'Тобі винні {amount}',
-  balance_owe: 'Твій борг {amount}',
   balance_everyoneSettled: 'Тут ніхто нікому нічого не винен.',
   balance_othersSettling: 'Іншим ще треба розрахуватися.',
   balance_settle: 'Розрахуватися',

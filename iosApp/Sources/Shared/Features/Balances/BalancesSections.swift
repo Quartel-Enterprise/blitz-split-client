@@ -145,7 +145,7 @@ enum DebtCopy {
         let to = PaymentCopy.name(row.toName)
         switch row.kind {
         case .youOwe:
-            // "You owe $118.00" is the balance card's: Portuguese words the two apart ("Você deve a Bruno")
+            // Its own key: Portuguese says whom you owe with "a" ("Você deve a Bruno"), unlike an amount owed
             return String(
                 localized: "You owe %@ (a member)",
                 defaultValue: "You owe \(to)",

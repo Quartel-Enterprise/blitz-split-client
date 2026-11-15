@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
+import com.quare.blitzsplit.android.designsystem.component.GroupPhotoImage
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
@@ -146,10 +147,14 @@ internal fun ActorAvatarIcon(
     }
 }
 
-// Why: the group's own shape from Grupos in its color's data tone, small before its name.
+/*
+ * Why: the group's own shape from Grupos in its color's data tone, small before its name, with the group's photo over
+ * it when it has one (beta feedback of Nov 15, 2026); the color shows while the photo loads or if it fails to.
+ */
 @Composable
 internal fun GroupDotIcon(
     color: AvatarColor?,
+    photoUrl: String?,
     modifier: Modifier = Modifier,
 ) {
     val isDark = LocalIsDarkTheme.current
@@ -161,7 +166,9 @@ internal fun GroupDotIcon(
                 color?.toDataColor(isDark) ?: neutralDataColorOf(isDark),
                 GroupAvatarShape,
             ),
-    )
+    ) {
+        GroupPhotoImage(photoUrl)
+    }
 }
 
 /*
@@ -249,7 +256,10 @@ private fun MetaLine(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        GroupDotIcon(color = item.groupColor)
+        GroupDotIcon(
+            color = item.groupColor,
+            photoUrl = item.groupPhotoUrl,
+        )
         Text(
             text = groupAndTimeTextOf(item, dates),
             style = MaterialTheme.typography.bodySmall,

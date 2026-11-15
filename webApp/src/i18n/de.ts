@@ -1069,8 +1069,6 @@ export const de: Record<MessageKey, string> = {
   balance_youOwe: 'schuldest du',
   balance_settled: '{amount} · alles ausgeglichen',
   balance_getAndOwe: 'Du bekommst {received} und schuldest {owed}',
-  balance_get: 'Du bekommst {amount}',
-  balance_owe: 'Du schuldest {amount}',
   balance_everyoneSettled: 'Hier schuldet niemand jemandem etwas.',
   balance_othersSettling: 'Andere müssen noch begleichen.',
   balance_settle: 'Begleichen',

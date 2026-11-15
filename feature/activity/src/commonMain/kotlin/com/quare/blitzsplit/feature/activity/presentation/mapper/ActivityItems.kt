@@ -20,6 +20,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityActor
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
@@ -110,6 +111,7 @@ private fun queuedEntryOf(
         groupId = group.id,
         groupName = group.name,
         groupColor = group.color,
+        groupPhotoUrl = group.photo?.toImageUrl(),
         groupType = group.type,
         occurredAt = change.savedAt,
         subject = change.subject,
@@ -165,6 +167,7 @@ private fun eventEntryOf(
         groupId = event.groupId,
         groupName = group?.name ?: event.groupName,
         groupColor = group?.color,
+        groupPhotoUrl = group?.photo?.toImageUrl(),
         groupType = group?.type,
         occurredAt = event.occurredAt,
         subject = event.subject,

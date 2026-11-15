@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from 'react'
+import { AvatarPhoto } from '@/components/common'
 import { avatarStyle, GROUP_SHAPE } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
@@ -17,18 +18,7 @@ export function GroupAvatar({
   return (
     <span {...attributes} aria-hidden style={avatarStyle(color)} className={cn('avatar relative flex shrink-0 items-center justify-center overflow-hidden font-extrabold', GROUP_SHAPE, className)}>
       {initials}
-      {photoUrl && (
-        <img
-          // Why: a new photo gets a fresh element, so one that failed before doesn't stay hidden.
-          key={photoUrl}
-          src={photoUrl}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 size-full object-cover"
-          onError={(event) => (event.currentTarget.hidden = true)}
-        />
-      )}
+      {photoUrl && <AvatarPhoto key={photoUrl} src={photoUrl} />}
     </span>
   )
 }

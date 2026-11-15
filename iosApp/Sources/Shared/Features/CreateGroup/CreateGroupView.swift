@@ -406,17 +406,7 @@ struct GroupAvatar: View {
             .foregroundStyle(color.content)
             .frame(width: size, height: size)
             .background(color.container, in: shape)
-            .overlay {
-                if let photoUrl, let url = URL(string: photoUrl) {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image.renderingMode(.original).resizable().scaledToFill()
-                        }
-                    }
-                    .frame(width: size, height: size)
-                    .clipShape(shape)
-                }
-            }
+            .avatarPhoto(photoUrl, size: size, shape: shape)
     }
 }
 

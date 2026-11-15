@@ -1068,8 +1068,6 @@ export const tr: Record<MessageKey, string> = {
   balance_youOwe: 'borcun',
   balance_settled: '{amount} · hesabın kapalı',
   balance_getAndOwe: 'Alacağın {received}, borcun {owed}',
-  balance_get: 'Alacağın {amount}',
-  balance_owe: 'Borcun {amount}',
   balance_everyoneSettled: 'Burada kimsenin kimseye borcu yok.',
   balance_othersSettling: 'Diğerlerinin hâlâ hesaplaşması gerekiyor.',
   balance_settle: 'Hesaplaş',

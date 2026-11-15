@@ -1066,8 +1066,6 @@ export const en = {
   balance_youOwe: 'you owe',
   balance_settled: "{amount} · you're settled up",
   balance_getAndOwe: 'You get {received} and owe {owed}',
-  balance_get: 'You get {amount}',
-  balance_owe: 'You owe {amount}',
   balance_everyoneSettled: 'Nobody owes anybody anything here.',
   balance_othersSettling: 'Others still have to settle up.',
   balance_settle: 'Settle up',

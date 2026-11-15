@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">ты должен(-на)</string>
     <string name="designsystem_balance_settled">%s · у тебя всё оплачено</string>
     <string name="designsystem_balance_get_and_owe">Тебе должны %1$s, ты должен(-на) %2$s</string>
-    <string name="designsystem_balance_get">Тебе должны %s</string>
-    <string name="designsystem_balance_owe">Ты должен(-на) %s</string>
     <string name="designsystem_balance_everyone_settled">Здесь никто никому ничего не должен.</string>
     <string name="designsystem_balance_others_settling">Остальным ещё нужно рассчитаться.</string>
     <string name="designsystem_balance_settle">Рассчитаться</string>

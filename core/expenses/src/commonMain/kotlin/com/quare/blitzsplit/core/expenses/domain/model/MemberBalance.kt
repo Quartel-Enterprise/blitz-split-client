@@ -16,4 +16,15 @@ data class MemberBalance(
     // Why: "Acertar" only for someone who owes.
     val canSettle: Boolean
         get() = owesMinor > 0L
+
+    /*
+     * Why: "Você recebe R$ 332,90 e deve R$ 118,00" under the net only when it adds something: with one side alone it
+     * would repeat the net ("+R$ 313,81 a receber" over "Você recebe R$ 313,81"), so no line.
+     */
+    fun detailOf(isEveryoneSettled: Boolean): BalanceDetail = when {
+        isSettled && isEveryoneSettled -> BalanceDetail.EVERYONE_SETTLED
+        isSettled -> BalanceDetail.OTHERS_SETTLING
+        receivesMinor > 0L && owesMinor > 0L -> BalanceDetail.BREAKDOWN
+        else -> BalanceDetail.NONE
+    }
 }

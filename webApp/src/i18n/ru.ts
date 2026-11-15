@@ -1072,8 +1072,6 @@ export const ru: Record<MessageKey, string> = {
   balance_youOwe: 'ты должен(-на)',
   balance_settled: '{amount} · у тебя всё оплачено',
   balance_getAndOwe: 'Тебе должны {received}, ты должен(-на) {owed}',
-  balance_get: 'Тебе должны {amount}',
-  balance_owe: 'Ты должен(-на) {amount}',
   balance_everyoneSettled: 'Здесь никто никому ничего не должен.',
   balance_othersSettling: 'Остальным ещё нужно рассчитаться.',
   balance_settle: 'Рассчитаться',

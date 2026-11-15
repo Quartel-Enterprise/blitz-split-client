@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.NotificationPreferences
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeRow
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityChangeValue
 import com.quare.blitzsplit.feature.activity.presentation.model.ActivityDebtChange
@@ -358,6 +359,34 @@ class ActivityItemsTest {
     }
 
     @Test
+    fun `GIVEN an event of a group with a photo WHEN mapping the feed THEN the item carries the group photo`() {
+        // Given
+        val photoUrl = "https://example.com/ape.jpg"
+        val withPhoto = groups.map { it.copy(photo = ProfilePhoto.Remote(photoUrl)) }
+        val feed = feed(events = listOf(event(id = "e1")))
+
+        // When
+        val item = entriesOf(feed, withPhoto).single().item
+
+        // Then
+        assertEquals(photoUrl, item.groupPhotoUrl)
+    }
+
+    @Test
+    fun `GIVEN a queued bill of a group with a photo WHEN mapping the feed THEN the item carries the group photo`() {
+        // Given
+        val photoUrl = "https://example.com/ape.jpg"
+        val withPhoto = groups.map { it.copy(photo = ProfilePhoto.Remote(photoUrl)) }
+        val feed = feed(queued = listOf(queued(id = BILL_MERCADO)))
+
+        // When
+        val item = entriesOf(feed, withPhoto).single().item
+
+        // Then
+        assertEquals(photoUrl, item.groupPhotoUrl)
+    }
+
+    @Test
     fun `GIVEN a group gone from the device WHEN mapping its event THEN shows the name the event wrote down`() {
         // Given
         val feed = feed(
@@ -376,6 +405,7 @@ class ActivityItemsTest {
         // Then
         assertEquals("Praia", item.groupName)
         assertNull(item.groupColor)
+        assertNull(item.groupPhotoUrl)
         assertNull(item.groupType)
         assertNull(item.currency)
     }

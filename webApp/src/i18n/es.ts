@@ -1068,8 +1068,6 @@ export const es: Record<MessageKey, string> = {
   balance_youOwe: 'debes',
   balance_settled: '{amount} · estás al día',
   balance_getAndOwe: 'Te deben {received} y debes {owed}',
-  balance_get: 'Te deben {amount}',
-  balance_owe: 'Debes {amount}',
   balance_everyoneSettled: 'Aquí nadie le debe nada a nadie.',
   balance_othersSettling: 'Los demás aún tienen que saldar cuentas.',
   balance_settle: 'Saldar cuentas',

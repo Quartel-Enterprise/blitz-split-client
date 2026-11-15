@@ -10,8 +10,6 @@
     <string name="designsystem_balance_you_owe">deves</string>
     <string name="designsystem_balance_settled">%s · estás quite</string>
     <string name="designsystem_balance_get_and_owe">Recebes %1$s e deves %2$s</string>
-    <string name="designsystem_balance_get">Recebes %s</string>
-    <string name="designsystem_balance_owe">Deves %s</string>
     <string name="designsystem_payment_recorded_from">Pagamento de %s registado.</string>
     <string name="designsystem_payment_recorded_to">Pagamento para %s registado.</string>
     <string name="designsystem_payment_recorded">Pagamento registado.</string>

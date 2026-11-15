@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">kamu berutang</string>
     <string name="designsystem_balance_settled">%s · kamu sudah lunas</string>
     <string name="designsystem_balance_get_and_owe">Kamu menerima %1$s dan berutang %2$s</string>
-    <string name="designsystem_balance_get">Kamu menerima %s</string>
-    <string name="designsystem_balance_owe">Kamu berutang %s</string>
     <string name="designsystem_balance_everyone_settled">Tidak ada yang berutang apa pun di sini.</string>
     <string name="designsystem_balance_others_settling">Yang lain masih harus melunasi.</string>
     <string name="designsystem_balance_settle">Lunasi</string>

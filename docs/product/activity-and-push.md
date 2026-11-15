@@ -14,7 +14,9 @@ The feed, unread state, real time and push notifications.
     deleted a group, changed its invite link, added, joined, left, was removed, released or renamed in it, and the
     payment requests sent from Balances, by day (Today, Yesterday, the date), the most recent first. Each row draws
     who did it by their profile photo, their initials on their color without one (`ActivityActor.photoUrl`), with
-    what it was as a badge on its corner. The server writes the events
+    what it was as a badge on its corner, and under the sentence the group's name and the time, after a small square
+    in the group's shape: the group's photo when it has one (`ActivityItem.groupPhotoUrl`, beta feedback of Nov 15,
+    2026), else its color, grey once the group is gone from the device. The server writes the events
     (`activity_events`, by triggers); each keeps the names it had, so it still reads once its bill, group or person is
     gone. Unread is someone else's event never opened and after the last "Mark all as read", of a row of
     Notifications whose In app toggle is on: a blue dot and bold names, counted on the bell's badge in the primary

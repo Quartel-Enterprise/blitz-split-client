@@ -355,7 +355,8 @@ struct GroupFaces: View {
 }
 
 /// "Your balance in this group", over the tabs of Expenses, Balances and Members: "+$214.90 to get back" or
-/// "−$118.00 you owe" with what makes it up, or "$0.00 · you're settled up"; "Settle up" while this person owes.
+/// "−$118.00 you owe", with what makes it up while this person both gets and owes, or "$0.00 · you're settled up";
+/// "Settle up" while this person owes.
 struct BalanceCard: View {
     let balance: MemberBalance
     let currency: GroupCurrency
@@ -369,10 +370,12 @@ struct BalanceCard: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 amount
-                Text(verbatim: details)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                if let details {
+                    Text(verbatim: details)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .accessibilityElement(children: .combine)
             Spacer(minLength: 8)
@@ -440,18 +443,20 @@ struct BalanceCard: View {
         }
     }
 
-    /// "You get $332.90 and owe $118.00", without the part that is zero.
-    private var details: String {
-        if balance.isSettled {
-            return isEveryoneSettled
-                ? String(localized: "Nobody owes anybody anything here.", bundle: .appLanguage)
-                : String(localized: "Others still have to settle up.", bundle: .appLanguage)
+    /// The words of the line the shared code picked (`BalanceDetail`); none when it would only repeat the net.
+    private var details: String? {
+        switch balance.detailOf(isEveryoneSettled: isEveryoneSettled) {
+        case .everyoneSettled:
+            return String(localized: "Nobody owes anybody anything here.", bundle: .appLanguage)
+        case .othersSettling:
+            return String(localized: "Others still have to settle up.", bundle: .appLanguage)
+        case .breakdown:
+            let receives = currency.format(balance.receivesMinor)
+            let owes = currency.format(balance.owesMinor)
+            return String(localized: "You get \(receives) and owe \(owes)", bundle: .appLanguage)
+        default:
+            return nil
         }
-        let receives = currency.format(balance.receivesMinor)
-        let owes = currency.format(balance.owesMinor)
-        if balance.owesMinor == 0 { return String(localized: "You get \(receives)", bundle: .appLanguage) }
-        if balance.receivesMinor == 0 { return String(localized: "You owe \(owes)", bundle: .appLanguage) }
-        return String(localized: "You get \(receives) and owe \(owes)", bundle: .appLanguage)
     }
 }
 

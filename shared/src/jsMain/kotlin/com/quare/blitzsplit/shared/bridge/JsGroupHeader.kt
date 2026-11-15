@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceDetail
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
@@ -48,6 +49,11 @@ class JsGroupHeader(
     val notJoinedCount: Int,
     val totalSpentMinor: Double,
     val myBalance: JsMemberBalance?,
+    /*
+     * Why: the line under the balance's amount, a BalanceDetail code ("everyone_settled", "others_settling",
+     * "breakdown" or "none"); null with myBalance.
+     */
+    val myBalanceDetail: String?,
     val isEveryoneSettled: Boolean,
     // Why: the ⋯ menu's "Fixar no Início" or "Desafixar do Início".
     val isPinned: Boolean,
@@ -67,6 +73,7 @@ internal fun toJsGroupHeader(header: GroupHeader): JsGroupHeader = JsGroupHeader
     notJoinedCount = header.notJoinedCount,
     totalSpentMinor = header.totalSpentMinor.toDouble(),
     myBalance = header.myBalance?.let(::toJsMemberBalance),
+    myBalanceDetail = header.myBalance?.detailOf(header.isEveryoneSettled)?.let(::toJsBalanceDetail),
     isEveryoneSettled = header.isEveryoneSettled,
     isPinned = header.isPinned,
 )
@@ -80,6 +87,13 @@ internal fun toJsMemberBalance(balance: MemberBalance): JsMemberBalance = JsMemb
     isSettled = balance.isSettled,
     canSettle = balance.canSettle,
 )
+
+private fun toJsBalanceDetail(detail: BalanceDetail): String = when (detail) {
+    BalanceDetail.EVERYONE_SETTLED -> "everyone_settled"
+    BalanceDetail.OTHERS_SETTLING -> "others_settling"
+    BalanceDetail.BREAKDOWN -> "breakdown"
+    BalanceDetail.NONE -> "none"
+}
 
 internal fun toJsPaymentNotice(notice: PaymentNotice): JsPaymentNotice = JsPaymentNotice(
     settlementId = notice.settlementId,
