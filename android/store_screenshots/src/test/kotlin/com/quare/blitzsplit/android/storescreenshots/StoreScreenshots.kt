@@ -120,7 +120,8 @@ internal abstract class StoreScreenshots(
     }
 
     // The library names an image's folder after the locale it drew it in; the collect and stage tasks, and the next
-    // person looking, go by the listing's tag.
+    // person looking, go by the listing's tag. The whole folder moves: the generators run in one fork, one class after
+    // the other, so nothing else is writing there.
     private fun moveToListingFolder(
         drawnIn: String,
         tag: String,
