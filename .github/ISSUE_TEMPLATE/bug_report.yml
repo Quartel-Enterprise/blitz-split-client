@@ -1,0 +1,81 @@
+name: Bug report
+description: Something in the app doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this! Please search the existing issues first, and never report a
+        security problem here: see the [security policy](https://github.com/Quartel-Enterprise/blitz-split-client/blob/main/SECURITY.md).
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Platform
+      description: Where did it happen? Pick every one you saw it on.
+      multiple: true
+      options:
+        - Android
+        - iPhone
+        - iPad
+        - Mac
+        - Web
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: "Shown as \"Version X\" at the bottom of Profile (Settings on the Mac). On the web, add the browser and its version."
+      placeholder: 3.0.0, or 3.0.0 on Safari 26
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and OS
+      placeholder: Pixel 9, Android 16 / iPhone 17, iOS 26.1 / MacBook Air, macOS 26
+  - type: dropdown
+    id: account
+    attributes:
+      label: Account
+      options:
+        - No account (local only)
+        - Anonymous with a recovery code
+        - Connected with Google
+        - Connected with Apple
+        - I don't know
+  - type: input
+    id: assistive-technology
+    attributes:
+      label: Assistive technology or accessibility settings
+      description: For an accessibility barrier, what you use. Leave it empty otherwise.
+      placeholder: TalkBack, VoiceOver, a larger font size, Reduce Motion, keyboard only...
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a group
+        2. Tap Split a bill
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: Screenshots or a screen recording help a lot. Hide names, amounts and Pix keys you don't want public.
+    validations:
+      required: true
+  - type: checkboxes
+    id: offline
+    attributes:
+      label: Connection
+      options:
+        - label: It happened while offline

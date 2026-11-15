@@ -110,7 +110,8 @@ unsure about.
   `PLAY_LOCALES` and `APP_STORE_LOCALES` in `scripts/release/store-listing.mjs`
   (`node scripts/release/store-listing.mjs check` fails until the file is there). See
   [docs/store-listing.md](../../../docs/store-listing.md#adding-a-language).
-- The docs that list the languages: `CLAUDE.md`, `README.md`, `docs/ai_agents.md`, `docs/architecture/code-style.md`,
+- The docs that list the languages: `CLAUDE.md`, `README.md`, `CONTRIBUTING.md` (step 2 of "Making a change"),
+  `ACCESSIBILITY.md` (the "Language" commitment), `docs/ai_agents.md`, `docs/architecture/code-style.md`,
   `docs/architecture/new-feature-checklist.md`, `docs/product/general.md`, `docs/product/profile.md`,
   `.claude/skills/review-conventions/SKILL.md`, the comments of `androidApp/build.gradle.kts` and `iosApp/project.yml`.
   `grep -rn "Spanish"` finds the places the last language reached.
