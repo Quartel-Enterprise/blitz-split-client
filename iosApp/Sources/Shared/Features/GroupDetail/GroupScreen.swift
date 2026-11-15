@@ -355,7 +355,8 @@ struct GroupFaces: View {
 }
 
 /// "Your balance in this group", over the tabs of Expenses, Balances and Members: "+$214.90 to get back" or
-/// "−$118.00 you owe" with what makes it up, or "$0.00 · you're settled up"; "Settle up" while this person owes.
+/// "−$118.00 you owe", with what makes it up while this person both gets and owes, or "$0.00 · you're settled up";
+/// "Settle up" while this person owes.
 struct BalanceCard: View {
     let balance: MemberBalance
     let currency: GroupCurrency

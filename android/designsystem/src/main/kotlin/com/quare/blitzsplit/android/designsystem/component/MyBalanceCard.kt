@@ -22,7 +22,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 
 /*
  * Why: "Seu saldo neste grupo" over the group's tabs, the same on Despesas, Saldos and Membros: what this device's
- * user gets back or owes, how that adds up, and "Acertar" while they owe anyone.
+ * user gets back or owes, how that adds up while they both get and owe, and "Acertar" while they owe anyone.
  */
 @Composable
 fun MyBalanceCard(
