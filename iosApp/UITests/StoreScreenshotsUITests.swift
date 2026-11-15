@@ -129,7 +129,8 @@ final class StoreScreenshotsUITests: XCTestCase {
     /// The faces, the groups' photos and the receipt's photo, base64 in the launch environment: the Mac app's sandbox
     /// can't read the repository, so the app writes them to a folder of its own (StoreScreenshotsRun). The groups'
     /// photos are the three SampleTrips names (TRIP_PHOTO and each side group's), not the whole bank: the environment
-    /// has a size limit.
+    /// has a size limit. This bundle doesn't link the shared framework, so the names are repeated here, and the seed
+    /// stops the launch on a name SampleTrips has and this list lacks.
     private static func assetsEnvironment(_ directory: String?) throws -> [String: String] {
         guard let directory else { return [:] }
         let root = URL(fileURLWithPath: directory)

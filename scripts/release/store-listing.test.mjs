@@ -4,6 +4,7 @@
 // file over a store's limit fails here as it does in the check.
 
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { LANGS } from "./release-notes.mjs";
 import {
@@ -120,4 +121,22 @@ test("staging writes each store's files under each of a language's locales", () 
   assert.equal(staged["play/es-ES/title.txt"], undefined);
   // Play: 3 files for Latin America's 2 locales and 1 English; App Store: 5 files for 1 locale of each
   assert.equal(Object.keys(staged).length, 3 * 3 + 5 * 2);
+});
+
+// The screenshots are staged from maps of their own, in Kotlin (build-logic's StoreScreenshots.kt). A store attaches a
+// locale's screenshots to the listing of that same locale, so the two must send each language to the same codes.
+const SCREENSHOTS_KT = "build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt";
+const storeLocalesOfScreenshots = (name) => {
+  const source = readFileSync(SCREENSHOTS_KT, "utf8");
+  const map = source.match(new RegExp(`private val ${name} = mapOf\\(([\\s\\S]*?)\\n\\)`));
+  assert.ok(map, `no ${name} in StoreScreenshots.kt`);
+  return [...map[1].matchAll(/to listOf\(([^)]*)\)/g)].map(([, codes]) =>
+    [...codes.matchAll(/"([^"]+)"/g)].map(([, code]) => code),
+  );
+};
+const sorted = (groups) => groups.map((codes) => [...codes].sort().join(",")).sort();
+
+test("the screenshots go to the store locales the listing text goes to", () => {
+  assert.deepEqual(sorted(storeLocalesOfScreenshots("playLocales")), sorted(Object.values(PLAY_LOCALES)));
+  assert.deepEqual(sorted(storeLocalesOfScreenshots("appStoreLocales")), sorted(Object.values(APP_STORE_LOCALES)));
 });

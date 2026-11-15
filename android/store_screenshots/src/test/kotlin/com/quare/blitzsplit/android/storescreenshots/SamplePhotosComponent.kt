@@ -32,7 +32,7 @@ internal fun SamplePhotosComponent(content: @Composable () -> Unit) {
         val file = when {
             data == null -> null
             data.startsWith(FACE_SCHEME) -> File(directory, "person${data.removePrefix(FACE_SCHEME)}.jpg")
-            data.startsWith(GROUP_PHOTO_SCHEME) -> File(groupPhotos, "${data.removePrefix(GROUP_PHOTO_SCHEME)}.jpg")
+            data.startsWith(GROUP_PHOTO_SCHEME) -> groupPhotoOf(groupPhotos, data.removePrefix(GROUP_PHOTO_SCHEME))
             else -> null
         }
         file?.takeIf(File::isFile)?.let { BitmapFactory.decodeFile(it.path).asImage() } ?: ColorImage()
@@ -43,3 +43,9 @@ internal fun SamplePhotosComponent(content: @Composable () -> Unit) {
         content = content,
     )
 }
+
+// A photo SampleTrips names and the bank lacks would draw a blank tile in every image, so it stops the run instead.
+private fun groupPhotoOf(
+    directory: String,
+    name: String,
+): File = File(directory, "$name.jpg").also { check(it.isFile) { "No bank photo named $name in $directory" } }

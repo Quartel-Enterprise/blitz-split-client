@@ -28,10 +28,13 @@ object SampleTrips {
     const val INVITE_CODE = "Lx7Kp2Qa"
 
     /*
-     * Why: the trip's photo, a file of scripts/store-screenshots/bank/groups without its extension, as each side
-     * group names its own. The App Store's UI test passes the same three files to the app (StoreScreenshotsUITests).
+     * Why: the three groups' photos, files of scripts/store-screenshots/bank/groups without their extension. The App
+     * Store's UI test passes the same three files to the app (StoreScreenshotsUITests), which can't read these: its
+     * bundle doesn't link the shared framework. The seed stops on one the test didn't pass.
      */
     const val TRIP_PHOTO = "trip-lisbon-tram"
+    private const val ROOMMATES_PHOTO = "home-kitchen"
+    private const val SOCCER_PHOTO = "event-soccer"
     private val italianDishes =
         listOf("Pizza margherita", "Burrata", "Risotto ai funghi", "Tiramisù", "Prosecco", "Espresso")
     private val copies = mapOf(
@@ -318,7 +321,7 @@ object SampleTrips {
                 SampleSideGroup(
                     name = copy.roommates,
                     type = GroupType.HOME,
-                    photo = "home-kitchen",
+                    photo = ROOMMATES_PHOTO,
                     people = listOf(0, 2, 3),
                     billDescription = copy.groceries,
                     billTotalMinor = price(ROOMMATES_GROCERIES_CENTS),
@@ -329,7 +332,7 @@ object SampleTrips {
                 SampleSideGroup(
                     name = copy.soccer,
                     type = GroupType.EVENT,
-                    photo = "event-soccer",
+                    photo = SOCCER_PHOTO,
                     people = listOf(0, 1, 3, 4),
                     billDescription = copy.court,
                     billTotalMinor = price(COURT_CENTS),

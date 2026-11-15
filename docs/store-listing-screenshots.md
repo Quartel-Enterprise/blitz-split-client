@@ -156,6 +156,9 @@ The UI test launches the app once per screen and language with `-StoreScreenshot
 and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The locale's region counts for Spanish:
 in Spain's the app reads its `es-ES` strings, so Latin America's set runs in `es_US`, the region that keeps the
 `es` strings and still writes the trip's euros as "€1,145.80" (Mexico's and Latin America's write "EUR 1,145.80").
+The trade-off: that region writes the hours on a 12-hour clock ("9:00 p.m.") and the month before the day, and Play's
+set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €". Changing the region is that one line
+of the UI test.
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
 sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
 build, `BoraRacharApp` then calls `BlitzSplitApple.startForStoreScreenshots` in place of `start`

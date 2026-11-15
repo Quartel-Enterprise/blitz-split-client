@@ -126,8 +126,12 @@ fun Project.configureStoreScreenshots() {
         if (generatesAppStoreScreenshots) {
             inputs.dir(capturesDir)
             doFirst {
-                check(listOf("iphone63", "iphone67", "ipad13").all { capturesDir.resolve(it).isDirectory }) {
-                    "No iOS captures in $capturesDir: run scripts/store-screenshots/capture-ios.sh first"
+                val captured = listOf("iphone63", "iphone67", "ipad13").all { slot ->
+                    listingLocales.all { capturesDir.resolve("$slot/$it").isDirectory }
+                }
+                check(captured) {
+                    "No iOS captures of every language in $capturesDir: " +
+                        "run scripts/store-screenshots/capture-ios.sh first"
                 }
             }
         } else {

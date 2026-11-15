@@ -314,7 +314,12 @@ internal class StoreScreenshotsSeed(
 
     private fun faceOf(person: Int): String? = photoOf("faces/person$person.jpg")
 
-    private fun groupPhotoOf(photo: String): String? = photoOf("groups/$photo.jpg")
+    // Why: a run with assets and without a photo SampleTrips names would capture that group as initials, unnoticed.
+    private fun groupPhotoOf(photo: String): String? = photoOf("groups/$photo.jpg").also { url ->
+        check(url != null || assetsDirectory == null) {
+            "No group photo named $photo in $assetsDirectory/groups: StoreScreenshotsUITests must pass it"
+        }
+    }
 
     // Why: a photo as a data URI, which the avatars load like any photo's URL; none when the file isn't there.
     private fun photoOf(file: String): String? {

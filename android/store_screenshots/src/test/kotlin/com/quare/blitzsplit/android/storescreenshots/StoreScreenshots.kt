@@ -80,7 +80,7 @@ internal abstract class StoreScreenshots(
         assumeFalse("${screen.name} only fills an App Store slot", appleSlot == null && screen.isAppStoreOnly)
         // The iPhone Duo and the Mac are captured only where their simulator or window could be: a run without them
         // skips their slots instead of failing the others.
-        appleSlot?.let { assumeTrue("No ${it.directoryName} captures", hasAppleCaptures(it)) }
+        appleSlot?.let { assumeTrue("No ${it.directoryName} captures of every language", hasAppleCaptures(it)) }
         // The fixtures' days and times are in UTC, so "Today" and "21:00" read the same on every machine.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         storeLocales.forEach { locale ->
