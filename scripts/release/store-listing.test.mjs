@@ -140,3 +140,17 @@ test("the screenshots go to the store locales the listing text goes to", () => {
   assert.deepEqual(sorted(storeLocalesOfScreenshots("playLocales")), sorted(Object.values(PLAY_LOCALES)));
   assert.deepEqual(sorted(storeLocalesOfScreenshots("appStoreLocales")), sorted(Object.values(APP_STORE_LOCALES)));
 });
+
+// The iPhone Duo's shelf takes each screen once, open for the ones StoreScreenshots.kt names by file name. A name no
+// screen has (a screen renamed, a typo) would send that screen up closed with nothing failing.
+test("the screens the iPhone Duo's shelf takes open are screens the captures write", () => {
+  const list = readFileSync(SCREENSHOTS_KT, "utf8").match(/private val duoScreensStagedOpen = setOf\(([^)]*)\)/);
+  assert.ok(list, "no duoScreensStagedOpen in StoreScreenshots.kt");
+  const open = [...list[1].matchAll(/"([^"]+)"/g)].map(([, name]) => name);
+  const screens = readFileSync("scripts/store-screenshots/screens.tsv", "utf8")
+    .split("\n")
+    .filter((row) => row && !row.startsWith("#"))
+    .map((row) => row.split("\t")[1]);
+  assert.ok(open.length > 0 && open.length < screens.length, "the shelf shows the Duo both closed and open");
+  assert.deepEqual(open.filter((name) => !screens.includes(name)), []);
+});

@@ -100,8 +100,9 @@ The rules the upload follows:
 | 10 | Light theme | | ✓ | The group again, light: "light or dark, it follows you" |
 
 The file prefix is the **shelf order**: both stores sort by file name, and only the first two or three show
-without swiping. Play holds 8 per device type and the App Store 10 per display size, so 09 and 10 are App Store only
-(`StoreScreen.isAppStoreOnly`). Every shot is in the dark theme except 10, on the logo's blue dimmed to `#0E2433`.
+without swiping. Play holds 8 per device type and the App Store 10 per device size, so 09 and 10 are App Store only
+(`StoreScreen.isAppStoreOnly`), and the iPhone Duo's two displays share their ten
+([below](#what-the-images-show)). Every shot is in the dark theme except 10, on the logo's blue dimmed to `#0E2433`.
 
 **The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
@@ -164,8 +165,9 @@ Not checked yet, since no Duo screenshot has gone to App Store Connect: that it 
 upright and lying down side by side. Apple's page lists the four sizes under the one device and fastlane's change
 says its upload was tried, but the API's own `ScreenshotDisplayType` didn't list `APP_IPHONE_DUO` in version 4.6 of
 its specification (its newer asset library does, as the display class `IPHONE_DUO`). Should App Store Connect refuse
-a size, deliver fails after the other devices' screenshots are up, the job is listed as failed and the release goes
-on ([release-process.md](release-process.md#screenshots-with-a-release)).
+a size, deliver fails after the other devices' screenshots are up; the lane still sorts the shelves that landed, then
+fails, the job is listed as failed and the release goes on
+([release-process.md](release-process.md#screenshots-with-a-release)).
 
 **The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short
 of the screen. On an iPad slot, the UI test first switches Settings › Multitasking & Gestures to full-screen apps.
@@ -190,7 +192,9 @@ fastlane/Fastfile                              # the screenshots and upload lane
   short.
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
-  of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides.
+  of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides. It goes on the iPhone Duo's
+  shelf closed unless `duoScreensStagedOpen` (`StoreScreenshots.kt`) names it; a test of `store-listing.test.mjs`
+  holds that list to the names of `screens.tsv`.
 - **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), a row of
   `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is

@@ -100,10 +100,11 @@ on run arguments
     -- Open acts on the device selected: without this one's row, it would open another session's Duo.
     if not isSelected then error "No " & simulatorName & " in Device Hub"
     -- The bar under the device is only there once Device Hub has connected to its display ("Connecting display…").
-    repeat 30 times
+    -- Its buttons have no words, so "Open" is the button's accessibility label, read both ways an app can give one.
+    repeat 15 times
       delay 2
       repeat with element in entire contents of window 1
-        if class of element is button and description of element is "Open" then
+        if class of element is button and (description of element is "Open" or name of element is "Open") then
           click element
           return
         end if
@@ -169,6 +170,7 @@ xcodebuild build-for-testing \
   ARCHS=arm64 \
   -quiet
 
+captured=0
 for slot in $SLOTS; do
   udid="$(simulator_for "$slot")"
   echo "Capturing $slot on $udid"
@@ -198,6 +200,12 @@ for slot in $SLOTS; do
     -derivedDataPath "$DERIVED_DATA" \
     -quiet
   xcrun simctl shutdown "$udid" || true
+  captured=$((captured + 1))
 done
 
+# A run of the open iPhone Duo alone, as a release's job is, fails here rather than at whatever reads its captures.
+if [ "$captured" -eq 0 ]; then
+  echo "No slot was captured" >&2
+  exit 1
+fi
 echo "Captured into $OUTPUT"

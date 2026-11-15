@@ -11,9 +11,18 @@ import java.io.File
 // These tasks copy it where people look at it (store_listings/, git-ignored) and where the fastlane lanes upload from.
 // Play and Apple each fan Latin America's Spanish set out to their own regional codes; Spain has a set of its own.
 // The devices map each generator output folder to store_listings/' and to the one the store's tool reads; the Mac's
-// go apart, as the Mac app is a version of its own on App Store Connect (platform osx). The iPhone Duo is collected
-// whole, closed and open, and staged one screen at a time (duoScreensStagedOpen): its two displays share one shelf of
-// ten on App Store Connect.
+// go apart, as the Mac app is a version of its own on App Store Connect (platform osx).
+//
+// The iPhone Duo is collected whole, closed and open, and staged one screen at a time. App Store Connect has one
+// iPhone Duo device size for its two displays, outer (closed) and inner (open), and takes ten screenshots per device
+// size; deliver files both under APP_IPHONE_DUO and skips the ones past ten. So each screen goes up once: open for the
+// ones duoScreensStagedOpen names, by their file name (StoreScreen.fileName), closed for the others. Open are the
+// screens that use the inner display's width (the group and Home in two columns, Statistics, Activity's feed beside
+// the item picked); closed, the bill's sheets, which open are a sheet over the screen behind, Invite, and the light
+// theme, so the group shows both ways. A display that wasn't captured gives its screens to the other, and the shelf
+// still holds ten. To change what goes up open, edit that list alone: a test of scripts/release/store-listing.test.mjs
+// holds its names to the screens of scripts/store-screenshots/screens.tsv, since a name no screen has would send that
+// screen up closed with nobody told.
 private const val GROUP = "store-screenshots"
 private const val GENERATE_TASK = "testDebugUnitTest"
 private const val DUO_CLOSED = "iphoneduo"
@@ -64,14 +73,6 @@ private val appleDevices = mapOf(
     DUO_CLOSED to "iphone_duo",
     DUO_OPEN to "iphone_duo_open",
 )
-
-// App Store Connect has one iPhone Duo device size for its two displays, outer (closed) and inner (open), and takes
-// ten screenshots per device size; deliver files both under APP_IPHONE_DUO and skips the ones past ten. So each screen
-// goes up once: open for the ones named here, by their file name (StoreScreen.fileName), closed for the others. Open
-// are the screens that use the inner display's width (the group and Home in two columns, Statistics, Activity's feed
-// beside the item picked); closed, the bill's sheets, which open are a sheet over the screen behind, Invite, and the
-// light theme, so the group shows both ways. A display that wasn't captured gives its screens to the other, and the
-// shelf still holds ten. To change what goes up open, edit this list alone.
 private val duoScreensStagedOpen = setOf("01_group", "04_balances", "06_statistics", "07_home", "09_activity")
 private val macDevices = mapOf("mac" to "mac")
 private val appleFrameClasses = listOf("*.IPhone*", "*.IPad*", "*.Mac*")
