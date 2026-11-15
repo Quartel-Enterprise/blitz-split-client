@@ -13,13 +13,31 @@ fastlane upload_listing platform:android                # one store: android, io
 VALIDATE_ONLY=true fastlane upload_listing              # ask Play whether it would take it, change nothing
 ```
 
-**Nothing goes to a store without Pierre's OK.** The lane has never run against the stores: the first run is a
-test of it too. It uploads text only: no build, no screenshots, no submission for review. `VALIDATE_ONLY=true` is
-Google Play's check alone: the App Store has none, so that run leaves the iPhone's and the Mac's listings out.
+**Nothing goes to a store without Pierre's OK.** The Google Play half of the lane has run, from a Mac. The App Store
+half had never run when this was written: its first run is a test of it too. It uploads text only: no build, no
+screenshots, no submission for review. `VALIDATE_ONLY=true` is Google Play's check alone: the App Store has none, so
+that run leaves the iPhone's and the Mac's listings out.
 
 The stores are uploaded one after the other, Play, then the iPhone, then the Mac, and one that fails leaves the ones
 before it changed: run the lane again for that platform alone once what stopped it is fixed (an App Store platform
 with no editable version, for one).
+
+**On Google Play, a change sent through the API takes every change waiting in Publishing overview to review with
+it**, the declarations of App content included (Data safety, the content rating, the sign-in details). Play also
+refuses any change sent through the API while a declaration contradicts the release that is live, for one the
+Advertising ID's "No" over a bundle that still has the `AD_ID` permission. So while something in Publishing overview
+must wait for a release, leave Play out of the upload, or take the changes back out of review afterwards (Publishing
+overview › Remove changes, which keeps them as not yet sent).
+
+From GitHub, where the stores' keys are, the [`store-listing`](../.github/workflows/store-listing.yml) workflow runs
+the lane, by hand, for an administrator of the repository, on `main`:
+
+```bash
+gh workflow run store-listing.yml -f android=false          # the App Store alone
+gh workflow run store-listing.yml -f validate_only=true     # ask Google Play, change nothing
+```
+
+Not while a release is running: both write through the same Play account and on the same App Store version.
 
 On Play the upload reads the production track's release on its way. While the track holds more than one, as in a
 staged rollout, say which with `fastlane upload_listing platform:android version_code:<its versionCode>`.

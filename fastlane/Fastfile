@@ -213,15 +213,15 @@ desc "Upload the stores' listing text, the files of store-listing/ (docs/store-l
 desc "descriptions and, on the App Store, the subtitle, the keywords and the promotional text, in every language."
 desc "Options: platform (android|ios|mac; all three when left out). Needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
 desc "App Store Connect key variables (App Store). version_code names the production release supply reads when the"
-desc "track holds more than one (a staged rollout). VALIDATE_ONLY=true only asks Play whether it would take the"
-desc "text and changes nothing: the App Store has no such check, so it is left out of that run."
+desc "track holds more than one (a staged rollout). VALIDATE_ONLY=true, or validate_only:true, only asks Play whether"
+desc "it would take the text and changes nothing: the App Store has no such check, so it is left out of that run."
 lane :upload_listing do |options|
   require "tmpdir"
 
   repo_root = File.expand_path("..", __dir__)
   platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios mac]
   UI.user_error!("platform is one of android, ios, mac") unless (platforms - %w[android ios mac]).empty?
-  validates_only = ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true"
+  validates_only = [ENV["VALIDATE_ONLY"], options[:validate_only]].any? { |value| value.to_s.strip.downcase == "true" }
   if validates_only && platforms != ["android"]
     UI.user_error!("VALIDATE_ONLY checks Google Play alone: the App Store has no such check") unless platforms.include?("android")
     UI.important("VALIDATE_ONLY: only Google Play is checked, the App Store listings are left as they are")
