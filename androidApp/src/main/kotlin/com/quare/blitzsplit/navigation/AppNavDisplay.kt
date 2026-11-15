@@ -416,7 +416,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 EntryTransitionLayout(origin = origin) {
                     BillDetailScreen(
                         route = route,
-                        isDialog = opensBillOverGroup,
+                        isDialog = opensAsDialog,
                     )
                 }
             }

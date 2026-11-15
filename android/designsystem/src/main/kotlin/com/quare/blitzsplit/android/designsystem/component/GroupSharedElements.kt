@@ -6,6 +6,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -100,9 +101,11 @@ internal fun rememberSharedScopes(id: String?): SharedScopes? {
     val visibilityScope = LocalEntryVisibilityScope.current
     val origin = LocalSharedOrigin.current
     if (id == null || transitionScope == null || visibilityScope == null || origin == null) return null
-    return SharedScopes(
-        transitionScope = transitionScope,
-        visibilityScope = visibilityScope,
-        key = "$origin-$id",
-    )
+    return remember(transitionScope, visibilityScope, origin, id) {
+        SharedScopes(
+            transitionScope = transitionScope,
+            visibilityScope = visibilityScope,
+            key = "$origin-$id",
+        )
+    }
 }
