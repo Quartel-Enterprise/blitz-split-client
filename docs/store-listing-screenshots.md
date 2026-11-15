@@ -159,12 +159,40 @@ fastlane/Fastfile                              # the screenshots and upload lane
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
   of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides.
-- **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), a row of
+- **A new language:** `storeLocales` (its `playLocale` is its tag), `bannerCopies`, `SampleTrips` (copy and currency), a row of
   `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
   Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish
   goes by `es-ES` the same way, since `es` is Latin America's: its own banners and trip ("ha pagado", "coche",
   "ticket"), over the app's `es-ES` strings.
+
+## The region Play's screens are drawn in
+
+Robolectric draws each Play set in its `StoreLocale.playLocale` (`StoreLocale.kt`): the language the resources are
+read in and the region the amounts, dates and hours are written in. It is the set's own tag for every set but Latin
+America's Spanish, whose tag, `es`, has no region: a bare `es` writes the symbol after the amount, as Spain does
+("84,08 €", "120 US$"), while the same listing's App Store set, captured in Equatorial Guinea's region, writes
+"€84,08" and "US$120". So that set is drawn in **`es-GQ`** (`LATIN_AMERICAN_PLAY_LOCALE`), **the region of the `es`
+line of `scripts/store-screenshots/locales.tsv`**, which is Pierre's choice. Nothing reads that line for Play: if it
+moves to another region, move this constant by hand, generate both sets and compare them, since Android's data and
+Apple's don't always agree on a region (in the United States', Apple writes the euro as "€" and Android as "EUR").
+
+- **The region alone does it.** Unicode's data, which Android and the generators' JVM format with, puts the symbol
+  in front in `es_GQ` by itself, with a 24-hour clock and the day before the month: "€84,08", "US$120", "21:00",
+  "15 nov", and "19–23 oct" for Statistics' range, as iOS writes them. Nothing is taught to the JVM.
+- **The strings stay Latin America's.** `es-GQ` reads `values-es` ("Agregar"), never `values-es-rES` ("Añadir").
+- **The folder stays `es`.** The library names an image's folder after the locale it drew it in, so the generator
+  moves `es-GQ/` to `es/` (`moveToListingFolder`), where the collect and stage tasks look.
+- **One value still differs: the thousands separator.** The App Store's set writes the trip's total as "€1145,80",
+  and Play's as "€1.145,80". Spanish only groups from five digits on ("12.345,60"), a rule iOS follows and
+  `java.text.NumberFormat`, which the Android app writes amounts with, doesn't: not the JVM's, which draws the
+  generators, and not ICU's, which a phone has (ICU4J 79.1 writes "€1.145,80" through that API too, and "€1145,80"
+  only through its newer `NumberFormatter`; not checked on a device). So it is not the region's doing, and no locale
+  changes it: the bare `es` wrote "1.145,80 €", and Spain's set has the same difference ("1.145,80 €" on Play,
+  "1145,80 €" on the App Store), as have Polish and Portugal's Portuguese. Whether the Android app should follow the
+  rule is a choice about the app, not about its screenshots.
+- **No `-u-` extension in a `playLocale`.** The library turns the tag into a resource qualifier (`es-rGQ`), which
+  has no room for one.
 
 ## How the iOS capture works
 
@@ -188,8 +216,9 @@ region was measured with the app's format styles on iOS 27.2 and macOS 27.2, whi
 The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and no thousands separator under 10 000,
 the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount from 1000 up puts
 the symbol after ("1 mil €"). The trip's Statistics stays under it: its most expensive day is €678, so the chart's
-value lines stop at "€750". Play's set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €".
-Changing the region is that one line of `locales.tsv`.
+value lines stop at "€750". Changing the region is that one line of `locales.tsv` for the App Store's set, and
+`LATIN_AMERICAN_PLAY_LOCALE` for Play's, which nothing changes by itself
+([the region Play's screens are drawn in](#the-region-plays-screens-are-drawn-in)).
 
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
 sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
