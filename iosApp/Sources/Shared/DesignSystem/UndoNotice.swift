@@ -9,6 +9,8 @@ private struct UndoNotice: ViewModifier {
     let onUndo: () -> Void
     let onExpire: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func body(content: Content) -> some View {
         content
             .overlay(alignment: .bottom) {
@@ -28,7 +30,7 @@ private struct UndoNotice: ViewModifier {
                     .glassEffect(.regular.interactive(), in: .capsule)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 12)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .transition(.slideIn(from: .bottom, reduceMotion: reduceMotion))
                     .accessibilityElement(children: .contain)
                 }
             }

@@ -259,7 +259,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     page and picks nothing), and the arrow keys on the web, the Mac and Android (Home, End and Escape too, but on the
     Mac). Each new bar picked by touch ticks the haptics; VoiceOver plays the series as an Audio Graph, and the web
     reads the picked bar aloud. The bars grow from the base, and the line draws in from the start side, when the
-    grain, the period or the chart type changes.
+    grain, the period or the chart type changes; with reduced motion on (Reduce Motion on iOS and the Mac, the
+    browser's setting on the web, animations off on Android) the chart comes in without animating.
     Then the most expensive one, and "Biggest expense", which opens its Bill and draws its category's badge as the
     group's Expenses draws the bill (its subcategory when it has one, "Other" for none). A group without bills says "Nothing to show yet" with "Split a bill"; a period without bills offers "See the whole trip". "By category" draws the
     period's spending as a ring in each main category's color (its own, or the one the person gave it), the largest in its center, then each main
@@ -271,7 +272,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     and the ring's middle names it with its share instead of the largest category. A tap or a click on a slice, a
     legend line (which makes even a 2% slice easy to reach) or a category's row, which ends in a chevron, opens that
     category's bills, "Expenses by category" (Pierre's beta feedback, `Route.CategoryExpenses`, below); a tap in the
-    hole does nothing. The ring sweeps in when the period changes.
+    hole does nothing. The ring sweeps in when the period changes; with reduced motion on it comes in without animating,
+    and the picked slice pops out at once.
     While a new device's first download still brings bills down it counts what came, as "Total spent so far"
     (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "By

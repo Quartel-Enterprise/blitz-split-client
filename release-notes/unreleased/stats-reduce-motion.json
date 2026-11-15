@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "betaOnly": true,
+      "platforms": [
+        "ios",
+        "mac"
+      ],
+      "text": {
+        "en": "With Reduce Motion on, a group's Statistics now shows its charts at once, without the bars growing or the ring sweeping in.",
+        "pt": "Com Reduzir Movimento ativado, as Estatísticas de um grupo agora mostram os gráficos de uma vez, sem as barras crescendo nem o anel girando.",
+        "pt-PT": "Com Reduzir movimento ativado, as Estatísticas de um grupo mostram agora os gráficos de uma vez, sem as barras a crescer nem o anel a rodar.",
+        "es": "Con Reducir movimiento activado, las Estadísticas de un grupo ahora muestran sus gráficos de una vez, sin que las barras crezcan ni el anillo gire.",
+        "fr": "Avec Réduire les animations activé, les Statistiques d’un groupe affichent désormais leurs graphiques d’un coup, sans barres qui grandissent ni anneau qui tourne.",
+        "de": "Mit „Bewegung reduzieren“ zeigen die Statistiken einer Gruppe ihre Diagramme jetzt sofort, ohne wachsende Balken oder einen sich aufbauenden Ring.",
+        "it": "Con Riduci movimento attivo, le Statistiche di un gruppo ora mostrano i grafici subito, senza barre che crescono né anello che ruota.",
+        "pl": "Przy włączonej opcji Ogranicz ruch Statystyki grupy pokazują teraz wykresy od razu, bez rosnących słupków i obracającego się pierścienia.",
+        "nl": "Met Verminder beweging aan toont Statistieken van een groep de grafieken nu meteen, zonder groeiende staven of een ring die rondloopt.",
+        "ja": "「視差効果を減らす」がオンのとき、グループの統計はバーが伸びたりリングが回ったりせず、グラフをすぐに表示するようになりました。",
+        "tr": "Hareketi Azalt açıkken bir grubun İstatistikler ekranı artık grafikleri çubuklar büyümeden ve halka dönmeden hemen gösteriyor.",
+        "id": "Dengan Kurangi Gerakan aktif, Statistik grup kini menampilkan grafiknya langsung, tanpa batang yang tumbuh atau cincin yang berputar."
+      }
+    }
+  ]
+}

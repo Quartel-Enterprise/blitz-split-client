@@ -5,12 +5,15 @@ import SwiftUI
 /// "By category" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
 /// legend with the percentages, then each main category with its bar. The slice the pointer is over (or its legend
 /// line) pops out, the others fade, and the center names it with its share; a tap or a click on a slice, a legend line
-/// or a row opens the category's bills ("Expenses by category"). The ring sweeps in when the period changes.
+/// or a row opens the category's bills ("Expenses by category"). The ring sweeps in when the period changes, and shows
+/// whole at once with Reduce Motion on.
 struct StatsCategoriesSection: View {
     let state: GroupStatsUiState
     var pieSize: CGFloat = 132
     /// The main category tapped and what of the card it was.
     let open: (String, StatsCategoryTarget) -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var selected: Int?
     /// 0 to 1 as the ring sweeps in, clockwise from the top.
@@ -23,6 +26,8 @@ struct StatsCategoriesSection: View {
 
     var body: some View {
         if let largest = state.topCategory {
+            // Reduce Motion shows the ring whole from its first frame, with no sweep
+            let swept = reduceMotion ? 1 : sweep
             let top = selected.flatMap { state.categories.indices.contains($0) ? state.categories[$0] : nil } ?? largest
             VStack(alignment: .leading, spacing: 8) {
                 StatsSectionTitle(title: "By category")
@@ -32,7 +37,7 @@ struct StatsCategoriesSection: View {
                     Chart {
                         ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
                             SectorMark(
-                                angle: .value("Share", Double(row.percent) * sweep),
+                                angle: .value("Share", Double(row.percent) * swept),
                                 innerRadius: .ratio(0.62),
                                 outerRadius: .ratio(selected == index ? 1 : 0.92),
                                 angularInset: state.categories.count > 1 ? 1.5 : 0,
@@ -41,7 +46,7 @@ struct StatsCategoriesSection: View {
                             .opacity(selected == nil || selected == index ? 1 : 0.4)
                         }
                         // The rest of the turn while the ring sweeps in, drawn in no color
-                        SectorMark(angle: .value("Share", 100 * (1 - sweep)), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
+                        SectorMark(angle: .value("Share", 100 * (1 - swept)), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
                             .foregroundStyle(.clear)
                     }
                     .chartLegend(.hidden)
@@ -118,13 +123,10 @@ struct StatsCategoriesSection: View {
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Palette.card, in: .rect(cornerRadius: 26))
-                .animation(.smooth(duration: 0.25), value: selected)
+                // The picked slice pops out at once with Reduce Motion, as the web's does
+                .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: selected)
                 .onChange(of: ringKey) { selected = nil }
-                .task(id: ringKey) {
-                    sweep = 0
-                    try? await Task.sleep(for: .milliseconds(20))
-                    withAnimation(.easeOut(duration: 0.6)) { sweep = 1 }
-                }
+                .playsIn($sweep, id: ringKey, duration: 0.6)
                 VStack(spacing: 0) {
                     ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
                         Button {

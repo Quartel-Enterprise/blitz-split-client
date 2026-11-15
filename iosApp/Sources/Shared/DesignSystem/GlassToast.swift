@@ -12,6 +12,8 @@ private struct GlassToast: ViewModifier {
     let messages: [GlassToastMessage]
     let duration: Duration
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     @State private var shown: LocalizedStringKey?
     @State private var hides: Task<Void, Never>?
 
@@ -26,7 +28,7 @@ private struct GlassToast: ViewModifier {
                         .padding(.vertical, 10)
                         .glassEffect(.regular, in: .capsule)
                         .padding(.top, 8)
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .transition(.slideIn(from: .top, reduceMotion: reduceMotion))
                         .accessibilityAddTraits(.isStaticText)
                 }
             }

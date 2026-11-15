@@ -9,10 +9,11 @@ import SwiftUI
 /// it, and VoiceOver reads the whole series and plays it as an Audio Graph. A bar or point picked by a tap, a drag,
 /// the pointer or the Mac's arrow keys shows its period, amount and bills over it; a tap keeps it until a second tap,
 /// a click keeps what hovering picked. The bars grow from the base, and the line draws in from the leading side, when
-/// the grain, the period or the chart type changes.
+/// the grain, the period or the chart type changes; with Reduce Motion on they show whole at once.
 struct StatsChart: View {
     let state: GroupStatsUiState
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selected: Int?
     @State private var isHovering = false
     /// 0 to 1 as the series comes in: the bars grow from the base and the line draws in from the leading side.
@@ -39,7 +40,8 @@ struct StatsChart: View {
     var body: some View {
         let rows = points
         let top = Double(state.chartTopMinor)
-        let grown = growth
+        // Reduce Motion shows the series whole from its first frame, with no growing bars nor line drawing in
+        let grown = reduceMotion ? 1 : growth
         let average = state.chartAverageMinor.map { Double(truncating: $0) }
         Group {
             if state.chartType == .line {
@@ -105,11 +107,7 @@ struct StatsChart: View {
             }
         }
         .onChange(of: seriesKey) { selected = nil }
-        .task(id: seriesKey) {
-            growth = 0
-            try? await Task.sleep(for: .milliseconds(20))
-            withAnimation(.easeOut(duration: 0.5)) { growth = 1 }
-        }
+        .playsIn($growth, id: seriesKey, duration: 0.5)
         .sensoryFeedback(.selection, trigger: selected) { _, new in new != nil && !isHovering }
     }
 
