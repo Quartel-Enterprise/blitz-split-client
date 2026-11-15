@@ -1,0 +1,72 @@
+name: release-notes
+
+# Fails when a fragment of release-notes/unreleased/ has something a release couldn't publish (a language missing, a
+# platform the site doesn't know, Markdown in a note), and runs the tests of the script the releases read them with.
+# See docs/release-notes.md. Locally: node scripts/release/release-notes.mjs check.
+on:
+  pull_request:
+    # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    paths:
+      - '.github/workflows/release-notes.yml'
+      - 'scripts/release/release-notes.mjs'
+      - 'scripts/release/release-notes.test.mjs'
+      - 'release-notes/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/release-notes.yml'
+      - 'scripts/release/release-notes.mjs'
+      - 'scripts/release/release-notes.test.mjs'
+      - 'release-notes/**'
+
+permissions:
+  contents: read
+
+# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Waits for the opening review on the commit a pull request opened with, or was marked ready for
+  # review on, since that review may push a commit of its fixes, and on that fix commit; on all of
+  # them, it holds the jobs below while a thread the review opened is unresolved. Every other event
+  # skips it, and the jobs below run on a skipped gate too. See .github/workflows/review-gate.yml.
+  review-gate:
+    if: >-
+      github.event.action == 'opened' || github.event.action == 'ready_for_review' ||
+      (github.event.action == 'synchronize' && github.event.sender.login == 'claude[bot]')
+    uses: ./.github/workflows/review-gate.yml
+    permissions:
+      actions: read
+      pull-requests: read
+
+  release-notes:
+    needs: review-gate
+    if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    # A hung runner would otherwise hold the check, and merge-when-green, for six hours.
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # No dependencies to install: the script and its tests are plain Node.
+      - name: Check the fragments
+        run: node scripts/release/release-notes.mjs check
+
+      - name: Test the script
+        run: node --test scripts/release/release-notes.test.mjs

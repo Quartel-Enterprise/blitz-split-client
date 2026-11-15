@@ -62,6 +62,7 @@ full:
 | A new screen or feature, or a change that reaches more than one UI | `docs/architecture/new-feature-checklist.md` |
 | A test, a fake, a `:testing` module | `docs/testing/README.md` and the guides it links |
 | `scripts/`, `.editorconfig`, `iosApp/project.yml`, `webApp/package.json`, setup steps | `docs/getting-started.md` |
+| A screen, a `UiState`, a string, anything the person using the app sees; `release-notes/` | `docs/release-notes.md` |
 
 Leave out anything ktlint already enforces: formatting, and the custom `quare:*` rules that
 `./scripts/ktlint.sh` runs from [ktlint-rules](https://github.com/Quartel-Enterprise/ktlint-rules)
@@ -232,6 +233,15 @@ otherwise clean.
   needs the backend deployed first. Once a version is in the stores, a change to a Room entity bumps
   the database `version` with a migration and commits the exported schema under
   `core/provider/room/schemas/`; a destructive migration loses the user's offline data.
+
+- **A change people notice tells them.** A pull request that changes what the person using the app
+  sees or can do adds its fragment to `release-notes/unreleased/`
+  ([docs/release-notes.md](../../../docs/release-notes.md)), and one that changes nothing they notice
+  adds none. A missing fragment is a finding, and so is one whose `kind` is wrong (it sets the next
+  version: a `new` or `improved` note makes it a minor one), whose `platforms` leave out a UI the diff
+  changes or name one it doesn't, whose text says what the code does instead of what the person sees,
+  names a screen or a button differently from the app's strings in that language, or whose
+  `betaOnly` is missing on the fix of a bug no stable version had.
 
 ## 5. Check the change against its intent
 

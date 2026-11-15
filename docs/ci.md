@@ -10,12 +10,13 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
+| `release-notes` | `release-notes/`, `scripts/release/release-notes.mjs` and its tests | `node scripts/release/release-notes.mjs check`, which fails on a fragment a release couldn't publish, and the script's tests ([release-notes.md](release-notes.md)) |
 | `claude-review` | A pull request opened, or a draft marked ready; or the push that solves the conflict it opened with | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
 | `claude-review-refs` | Pull requests that change a workflow | Fails when the workflows pin different releases of the shared review |
 | `merge-when-green` | The `merge-when-green` label, each pull request workflow that completes, every push to `main`, every 15 minutes (when GitHub fires it), and by hand | Squash merges the pull request once every check passed and every conversation is resolved |
-| `release-beta` | By hand, with `./scripts/release/release-beta.sh` | Ships a beta to the closed group: Android on Firebase App Distribution, the web on Cloudflare Pages, iOS and macOS on TestFlight, and iOS again on Firebase App Distribution as an ad hoc build. Merges the versionCode back into `main` and publishes the `X.Y.Z-beta_N` GitHub pre-release; see [release-process.md](release-process.md) |
+| `release-beta` | By hand, with `./scripts/release/release-beta.sh` | Ships a beta to the closed group: Android on Firebase App Distribution, the web on Cloudflare Pages, iOS and macOS on TestFlight, and iOS again on Firebase App Distribution as an ad hoc build. Merges the versionCode back into `main`, publishes the `X.Y.Z-beta_N` GitHub pre-release and sends the beta's release notes to blitz-split-site; see [release-process.md](release-process.md) |
 
 Before a pull request opens, `create-pr` runs only the fast part of these on the author's Mac: the JVM tests and
 coverage, a compile of the shared code for the iOS simulator and JS, the debug APK, and the UI the branch touches (the
@@ -144,7 +145,7 @@ away.
 The checks wait for the opening review instead of running next to it, so they don't run twice (once on the opening
 commit, again on the fix commit):
 
-- `build-and-test`, `apple`, `static-analysis`, `duplication` and `module-graph` start with a `review-gate` job, the reusable
+- `build-and-test`, `apple`, `static-analysis`, `duplication`, `module-graph` and `release-notes` start with a `review-gate` job, the reusable
   `review-gate.yml`. On the commit a pull request opened with or a draft was marked ready on, and on the review's
   fix commit (a push by `claude[bot]`), it waits for the `claude-review` run of the reviewed commit to end (on a draft
   marked ready, only a run that event created, never the one skipped while it was a draft). When the
