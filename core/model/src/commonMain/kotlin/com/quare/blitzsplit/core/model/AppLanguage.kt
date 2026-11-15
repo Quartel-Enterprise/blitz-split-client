@@ -12,6 +12,7 @@ enum class AppLanguage(
     PORTUGUESE("pt-BR"),
     PORTUGUESE_PORTUGAL("pt-PT"),
     SPANISH("es"),
+    SPANISH_SPAIN("es-ES"),
     FRENCH("fr"),
     GERMAN("de"),
     ITALIAN("it"),
@@ -23,24 +24,16 @@ enum class AppLanguage(
     ;
 
     /*
-     * Why: what the language picker's chip shows ("EN", "ES", "BR"): the language's code, but Portuguese comes written
-     * for two regions, so each shows its region and the two chips differ.
+     * Why: what the language picker's chip shows ("EN", "FR", "BR"): the language's code, but Portuguese and Spanish
+     * come written for two regions each, so each shows its region and the chips differ: "BR" and "PT", "419" (Latin
+     * America's UN code, as in es-419) and "ES".
      */
     val chipCode: String?
-        get() = if (this == PORTUGUESE || this == PORTUGUESE_PORTUGAL) {
-            tag?.substringAfter('-')
-        } else {
-            tag?.substringBefore('-')
+        get() = when (this) {
+            PORTUGUESE, PORTUGUESE_PORTUGAL, SPANISH_SPAIN -> tag?.substringAfter('-')
+            SPANISH -> LATIN_AMERICA
+            else -> tag?.substringBefore('-')
         }?.uppercase()
-
-    // Why: Spain's Spanish (es-ES) only overrides the words Spain says differently, so a device in Spain keeps them.
-    fun toTag(region: String?): String? = if (this == SPANISH &&
-        region.equals("ES", ignoreCase = true)
-    ) {
-        "es-ES"
-    } else {
-        tag
-    }
 
     companion object {
         // Why: Android still names Indonesian by its legacy code "in" (values-in), so a tag read from it may carry it.
@@ -48,16 +41,23 @@ enum class AppLanguage(
 
         private const val PORTUGUESE_LANGUAGE = "pt"
         private const val PORTUGAL = "PT"
+        private const val SPANISH_LANGUAGE = "es"
+        private const val SPAIN = "ES"
+        private const val LATIN_AMERICA = "419"
 
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian or English
          * tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, en-GB), SYSTEM for
          * none or any other. Portuguese is two entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's.
+         * Spanish too: es-ES is Spain's, every other tag (es, es-MX, es-419…) the neutral Latin-American one.
          */
         fun fromTag(tag: String?): AppLanguage {
             val language = languageOf(tag)
             if (language == PORTUGUESE_LANGUAGE) {
                 return if (regionOf(tag) == PORTUGAL) PORTUGUESE_PORTUGAL else PORTUGUESE
+            }
+            if (language == SPANISH_LANGUAGE) {
+                return if (regionOf(tag) == SPAIN) SPANISH_SPAIN else SPANISH
             }
             return entries.firstOrNull { it.tag?.substringBefore('-') == language } ?: SYSTEM
         }

@@ -41,6 +41,9 @@ each platform.
       in Polish in `res/values-pl/strings.xml` (with Polish's few and many plurals), in Dutch in
       `res/values-nl/strings.xml`, in Japanese in `res/values-ja/strings.xml`, in Turkish in
       `res/values-tr/strings.xml` and in Indonesian in `res/values-in/strings.xml` (Android's legacy code for `id`)
+- [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
+      Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR
+      device read Portugal's `designsystem_portugal_portuguese` and wrote "Você criaste a conta"
 
 ### Apple
 

@@ -197,21 +197,23 @@ The profile, its photo, appearance, in-app update and Adjust photo.
   - Profile › Preferences › "Language", as Bible Planner's (Pierre's call): "System" first, the default, which follows
     the device's language (English for one the app doesn't have), then each language in its own name, the way its
     speakers look for it, with its name in the app's language as a smaller line under it (Pierre's call, beta feedback,
-    back from only translated names): "English", "Português (Brasil)", "Português (Portugal)", "Español", "Français", "Deutsch", "Italiano",
+    back from only translated names): "English", "Português (Brasil)", "Português (Portugal)", "Español (Latinoamérica)", "Español (España)", "Français", "Deutsch", "Italiano",
     "Polski", "Nederlands", "日本語", "Türkçe" and "Bahasa Indonesia", the same in every language, under them "Portuguese
-    (Brazil)", "Portuguese (Portugal)", "Spanish"… in English and "Inglês", "Espanhol"… in Portuguese, the smaller line left out where both read
+    (Brazil)", "Portuguese (Portugal)", "Spanish (Latin America)", "Spanish (Spain)"… in English and "Inglês", "Espanhol (América Latina)"… in Portuguese, the smaller line left out where both read
     the same (Italian's "Italiano" in Portuguese, Portuguese's own row). A region is spelled out, never a code:
-    "Português (Brasil)", "Portuguese (Brazil)", and the Portuguese of Portugal is its own row, not picked by the
-    device's region as Spain's Spanish is (Pierre's call), so a Brazilian living in Portugal still picks Brazil's. Its
-    chip reads "PT" and Brazil's "BR" (every other chip is its language's code), and a search for "pt" finds both. "Spanish" is Spain's Spanish (es-ES) on a device whose region is Spain,
-    the neutral one anywhere else, so it carries no region. Each own name is marked with its language, so a screen
+    "Português (Brasil)", "Portuguese (Brazil)". The Portuguese of Portugal is its own row, never picked by the
+    device's region (Pierre's call), so a Brazilian living in Portugal still picks Brazil's, and so is the Spanish of
+    Spain (Pierre's call, November 2026: it used to be the one "Spanish" row, Spain's on a device whose region was
+    Spain), so "Español (Latinoamérica)" is the neutral `es` and "Español (España)" Spain's `es-ES` wherever the device
+    is. Portugal's chip reads "PT" and Brazil's "BR", Spain's "ES" and Latin America's "419" (its UN code, as in es-419;
+    every other chip is its language's code), and a search for "pt" or "es" finds both of the language. Each own name is marked with its language, so a screen
     reader reads "日本語" as Japanese and the font draws it as Japan's. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's
     LocaleManager, which the system's app language settings also change (the languages the build generates its locale config from), the app's
     own copy before 13; the Apple apps' AppleLanguages, which iOS's Settings › Bora Rachar › Language also changes; the
     browser's storage on the web. Android's row ("System", "Português (Brasil)") opens the picker as Bible Planner's
-    (`ProfileDialog.LANGUAGE`): a row per option with its chip ("EN", "PT", "ES", a phone for System, "Device language"
+    (`ProfileDialog.LANGUAGE`): a row per option with its chip ("EN", "PT", "419", a phone for System, "Device language"
     under it) and a radio. With eleven languages a bottom sheet filled a phone's screen (Pierre's feedback, November
     2026), so a phone, upright or lying down, opens it as a screen of its own, "Language" in its bar with back, and
     anywhere wider it stays a 560 dp dialog, a book's right half. Both start with "Search languages", which keeps the

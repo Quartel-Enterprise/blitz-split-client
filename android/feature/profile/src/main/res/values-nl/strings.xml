@@ -53,7 +53,8 @@
     <string name="profile_language_english">Engels</string>
     <string name="profile_language_portuguese">Portugees (Brazilië)</string>
     <string name="profile_language_portuguese_portugal">Portugees (Portugal)</string>
-    <string name="profile_language_spanish">Spaans</string>
+    <string name="profile_language_spanish">Spaans (Latijns-Amerika)</string>
+    <string name="profile_language_spanish_spain">Spaans (Spanje)</string>
     <string name="profile_language_french">Frans</string>
     <string name="profile_language_german">Duits</string>
     <string name="profile_language_italian">Italiaans</string>

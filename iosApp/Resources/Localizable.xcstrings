@@ -18991,67 +18991,144 @@
         }
       }
     },
-    "Spanish" : {
+    "Spanish (Latin America)" : {
       "comment" : "A language of Profile › Language, in the app's language",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spanisch"
+            "value" : "Spanisch (Lateinamerika)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Español"
+            "value" : "Español (Latinoamérica)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Espagnol"
+            "value" : "Espagnol (Amérique latine)"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bahasa Spanyol"
+            "value" : "Bahasa Spanyol (Amerika Latin)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spagnolo"
+            "value" : "Spagnolo (America Latina)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "スペイン語"
+            "value" : "スペイン語（ラテンアメリカ）"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spaans"
+            "value" : "Spaans (Latijns-Amerika)"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hiszpański"
+            "value" : "Hiszpański (Ameryka Łacińska)"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Espanhol"
+            "value" : "Espanhol (América Latina)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espanhol (América Latina)"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "İspanyolca"
+            "value" : "İspanyolca (Latin Amerika)"
+          }
+        }
+      }
+    },
+    "Spanish (Spain)" : {
+      "comment" : "A language of Profile › Language, in the app's language",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spanisch (Spanien)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Español (España)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espagnol (Espagne)"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bahasa Spanyol (Spanyol)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spagnolo (Spagna)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スペイン語（スペイン）"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spaans (Spanje)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiszpański (Hiszpania)"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espanhol (Espanha)"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espanhol (Espanha)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İspanyolca (İspanya)"
           }
         }
       }

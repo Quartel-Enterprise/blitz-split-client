@@ -285,7 +285,10 @@ private fun LanguageRow(
     )
 }
 
-// Why: the language's code ("EN", "ES"; "BR" and "PT" for the two Portuguese) as Bible Planner's chip, a phone for System.
+/*
+ * Why: the language's code ("EN"; "BR" and "PT", "419" and "ES" for the two of each) as Bible Planner's chip, a phone
+ * for System.
+ */
 @Composable
 private fun LanguageChip(
     language: AppLanguage,
@@ -321,7 +324,7 @@ private fun LanguageChip(
 
 /*
  * Why: each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), the region
- * spelled out for the one written for a region: "Português (Brasil)".
+ * spelled out for the ones written for a region: "Português (Brasil)", "Español (España)".
  */
 @Composable
 internal fun languageName(language: AppLanguage): String = when (language) {
@@ -330,6 +333,7 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_native_portuguese)
     AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_native_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_native_spanish)
+    AppLanguage.SPANISH_SPAIN -> stringResource(R.string.profile_language_native_spanish_spain)
     AppLanguage.FRENCH -> stringResource(R.string.profile_language_native_french)
     AppLanguage.GERMAN -> stringResource(R.string.profile_language_native_german)
     AppLanguage.ITALIAN -> stringResource(R.string.profile_language_native_italian)
@@ -348,6 +352,7 @@ private fun translatedLanguageName(language: AppLanguage): String = when (langua
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_portuguese)
     AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_spanish)
+    AppLanguage.SPANISH_SPAIN -> stringResource(R.string.profile_language_spanish_spain)
     AppLanguage.FRENCH -> stringResource(R.string.profile_language_french)
     AppLanguage.GERMAN -> stringResource(R.string.profile_language_german)
     AppLanguage.ITALIAN -> stringResource(R.string.profile_language_italian)

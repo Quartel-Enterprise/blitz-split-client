@@ -3,10 +3,7 @@ package com.quare.blitzsplit.shared.settings
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.settings.data.datasource.AppLanguageLocalDataSource
 import platform.Foundation.NSBundle
-import platform.Foundation.NSLocale
 import platform.Foundation.NSUserDefaults
-import platform.Foundation.countryCode
-import platform.Foundation.currentLocale
 
 /*
  * Why: the app's own AppleLanguages, which the Settings app's per-app language writes too and the system reads at
@@ -22,12 +19,9 @@ internal class AppleAppLanguageLocalDataSource : AppLanguageLocalDataSource {
         return AppLanguage.fromTag(languages?.firstOrNull() as? String)
     }
 
-    // Why: the device's region, which AppleLanguages never changes ("ES" keeps Spain's Spanish).
     override fun write(language: AppLanguage) {
-        val tag = language.toTag(NSLocale.currentLocale.countryCode)
-        if (tag ==
-            null
-        ) {
+        val tag = language.tag
+        if (tag == null) {
             defaults.removeObjectForKey(APPLE_LANGUAGES)
         } else {
             defaults.setObject(listOf(tag), APPLE_LANGUAGES)

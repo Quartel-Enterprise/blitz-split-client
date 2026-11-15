@@ -87,11 +87,11 @@ class ObserveSpokenLanguageUseCaseTest {
         }
 
     @Test
-    fun `GIVEN Spanish picked in Profile on a device in Spain WHEN observing the spoken language THEN it is es`() =
+    fun `GIVEN the Spanish of Spain picked in Profile WHEN observing the spoken language THEN it is es`() =
         runTest {
             // Given
             prepareScenario(
-                picked = AppLanguage.SPANISH,
+                picked = AppLanguage.SPANISH_SPAIN,
                 device = "es-ES",
             )
 

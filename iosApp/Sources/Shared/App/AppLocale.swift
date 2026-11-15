@@ -29,9 +29,9 @@ enum AppLocale {
         strings.withLock { $0 = bundle }
     }
 
-    /// Spain's Spanish (es-ES) on a device in Spain, as the shared code writes it to AppleLanguages.
+    /// The language's own tag ("pt-BR", "es-ES"), as the shared code writes it to AppleLanguages.
     private static func identifier(of language: AppLanguage) -> String {
-        language.toTag(region: Locale.current.region?.identifier) ?? systemLanguage
+        language.tag ?? systemLanguage
     }
 
     /// The app's language for the device's own languages, English when it has none of them, read from the device's

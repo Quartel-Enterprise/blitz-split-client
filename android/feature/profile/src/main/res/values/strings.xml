@@ -56,7 +56,8 @@
     <string name="profile_language_english">English</string>
     <string name="profile_language_portuguese">Portuguese (Brazil)</string>
     <string name="profile_language_portuguese_portugal">Portuguese (Portugal)</string>
-    <string name="profile_language_spanish">Spanish</string>
+    <string name="profile_language_spanish">Spanish (Latin America)</string>
+    <string name="profile_language_spanish_spain">Spanish (Spain)</string>
     <string name="profile_language_french">French</string>
     <string name="profile_language_german">German</string>
     <string name="profile_language_italian">Italian</string>
@@ -70,7 +71,8 @@
     <string name="profile_language_native_english" translatable="false">English</string>
     <string name="profile_language_native_portuguese" translatable="false">Português (Brasil)</string>
     <string name="profile_language_native_portuguese_portugal" translatable="false">Português (Portugal)</string>
-    <string name="profile_language_native_spanish" translatable="false">Español</string>
+    <string name="profile_language_native_spanish" translatable="false">Español (Latinoamérica)</string>
+    <string name="profile_language_native_spanish_spain" translatable="false">Español (España)</string>
     <string name="profile_language_native_french" translatable="false">Français</string>
     <string name="profile_language_native_german" translatable="false">Deutsch</string>
     <string name="profile_language_native_italian" translatable="false">Italiano</string>

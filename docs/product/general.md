@@ -35,8 +35,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
     talks to the user as "tu" (friends splitting a bill), says "estar a + infinitive" where Brazil's uses the gerund,
     and calls the app Blitz Split, as every language but Brazil's does; Brazil's keeps Bora Rachar. Two Spanish variants, a neutral
-    Latin-American one for every `es` tag, and Spain's `es-ES` overriding only the words Spain says differently, the
-    rest coming from `es` on every platform; Spanish calls the app Blitz Split, as English does). French is one
+    Latin-American one for every `es` tag but `es-ES`, and Spain's `es-ES` overriding only the words Spain says
+    differently, the rest coming from `es` on every platform (Android's `values-es-rES`, Apple's `es-ES` localization,
+    the web's `esES.ts`), each its own row of the picker since Pierre's feedback of November 2026 ("Español
+    (Latinoamérica)", "Español (España)"); Spanish calls the app Blitz Split, as English does). French is one
     variant for every `fr` tag (fr-FR, fr-CA, fr-BE, fr-CH…), talks to the user as "tu" (Pierre's call: friends splitting
     a bill, as Spanish's "tú") and calls the app Blitz Split. German, Italian and Polish (Pierre's calls) are likewise one
     variant each for every tag of theirs (de-AT and de-CH are `de`, it-CH is `it`), talk to the user informally ("du",
