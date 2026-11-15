@@ -17,7 +17,8 @@ object CardTints {
 
     /*
      * Why: a card tile's fill (0xRRGGBB), the same in light and dark: the color's light data tone, a named color's base or
-     * a custom color's derived one, which the white card glyph reads on (4.5:1), a light yellow included.
+     * a custom color's derived one, which the white card glyph reads on: 4.5:1 for a custom color (a light yellow
+     * included), about 4.4:1 to 4.5:1 for the named ones (yellow's 4.4:1), well above the 3:1 an icon needs.
      */
     fun fillRgbOf(tint: CategoryTint?): Int = when (val color = tint ?: default) {
         is CategoryTint.Named -> color.color.baseRgb
