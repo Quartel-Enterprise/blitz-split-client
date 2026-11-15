@@ -1,0 +1,77 @@
+# Store listing text
+
+What Google Play and the App Store show about the app, besides the screenshots
+([store-listing-screenshots.md](store-listing-screenshots.md)) and a version's "What's new"
+([release-notes.md](release-notes.md)): its name, its descriptions and, on the App Store, its subtitle, keywords and
+promotional text. It is versioned here, one file per language, so a change is reviewed like code and every language
+changes together.
+
+```bash
+node scripts/release/store-listing.mjs check            # every language is there and within the stores' limits
+fastlane upload_listing                                 # send it to both stores (needs Pierre's OK)
+fastlane upload_listing platform:android                # one store: android, ios or mac
+VALIDATE_ONLY=true fastlane upload_listing platform:android   # ask Play whether it would take it, change nothing
+```
+
+**Nothing goes to a store without Pierre's OK.** The lane has never run against the stores: the first run is a
+test of it too. It uploads text only: no build, no screenshots, no submission for review.
+
+## A language's file
+
+`store-listing/<language>.md`, for each language of the release notes (`LANGS` of `release-notes.mjs`): `en`, `pt`
+(Brazil), `pt-PT`, `es`, `fr`, `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`. A `# Title` line, then these sections, in
+this order:
+
+| Section | Store | Limit | What it is |
+| --- | --- | --- | --- |
+| `## Play title` | Google Play | 30 | The app's name on Play. Starts with the app's name |
+| `## Play short description` | Google Play | 80 | The line under the name, and the first thing searched |
+| `## App Store name` | App Store | 30 | The app's name. Starts with the app's name |
+| `## App Store subtitle` | App Store | 30 | The line under the name |
+| `## App Store keywords` | App Store | 100 | Search terms split by commas, never shown |
+| `## App Store promotional text` | App Store | 170 | The lines over the description, which change without a new version |
+| `## Description` | Both | 4000 | Play's full description and the App Store's description, the same text |
+
+The limits are in characters, as the stores count them. Every field but the description is one line.
+
+## Writing one
+
+- **The app's name** is Bora Rachar in Brazil's Portuguese and Blitz Split in every other language, Portugal's
+  included. The check refuses a name that doesn't start with it.
+- **Only what the app does.** A feature the listing promises and the app lacks is a rejection and a bad review:
+  check a claim against `docs/product/` before writing it. The app moves no money, and the description says so.
+- **No other store or platform by name** in the description, since it goes to both stores: "phone, tablet, computer
+  and the web", not the name of a phone. No competitor's name anywhere, keywords included: both stores remove
+  listings for it.
+- **Search.** Play searches the title, the short description and the full description, so the words people type
+  ("split bills", "expenses", "who owes whom") belong in all three, in natural sentences. The App Store searches the
+  name, the subtitle and the keywords, and not the description: a keyword already in the name or the subtitle is
+  wasted, and so is a space after a comma, both of which the check refuses. Prefer single words, which the App Store
+  combines by itself.
+- **Each language is written for its reader**, with the words people there search for (a "racha" in Brazil, a "talão"
+  in Portugal, a "coloc" in France), not translated word for word. Portugal's Portuguese is written in full: "tu",
+  "telemóvel", "partilhar".
+- **Plain text.** The stores show no Markdown: paragraphs, lines in capitals as headings, and `•` for a list.
+
+## How it reaches the stores
+
+`store-listing.mjs stage --out <folder>` writes every listing in the layout fastlane uploads, a folder per store
+locale: `play/<locale>/` with `title.txt`, `short_description.txt` and `full_description.txt` for supply, and
+`app-store/<locale>/` with `name.txt`, `subtitle.txt`, `keywords.txt`, `promotional_text.txt` and `description.txt`
+for deliver. `fastlane upload_listing` stages into a temporary folder and uploads it.
+
+A language goes to one or more locales of each store (`PLAY_LOCALES` and `APP_STORE_LOCALES` of the script): Spanish
+is `es-419`, `es-ES` and `es-US` on Play and `es-MX` and `es-ES` on the App Store. They are the codes the screenshots
+use (`StoreScreenshots.kt` of `build-logic`), and the two lists stay in step: a store attaches a locale's
+screenshots, and a version's "What's new", to the listing of that same locale. Both tools add a locale the listing
+doesn't have yet, so uploading the text is how a new language's listing is created.
+
+On the App Store the name and the subtitle belong to the app, and the rest to a version: deliver writes on the
+editable version of each platform, the iPhone's and the Mac's, which get the same text. `APP_VERSION` names another
+version.
+
+## Adding a language
+
+Write `store-listing/<language>.md`, add the language to `LANGS` (the release notes need it too:
+[release-notes.md](release-notes.md)) and its locales to `PLAY_LOCALES` and `APP_STORE_LOCALES`. The check then
+passes, and the next `upload_listing` creates the listing in that locale. The `add-language` skill lists the rest.

@@ -10,7 +10,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
-| `release-notes` | `release-notes/` and `scripts/release/` | `node scripts/release/release-notes.mjs check`, which fails on a fragment a release couldn't publish, and the tests of the release scripts: `release-notes.test.mjs` and `release-scripts.test.mjs` ([release-notes.md](release-notes.md)) |
+| `release-notes` | `release-notes/`, `store-listing/` and `scripts/release/` | `node scripts/release/release-notes.mjs check`, which fails on a fragment a release couldn't publish, `node scripts/release/store-listing.mjs check`, which fails on a store listing over a store's limit ([store-listing.md](store-listing.md)), and the tests of the release scripts: `release-notes.test.mjs`, `release-scripts.test.mjs` and `store-listing.test.mjs` ([release-notes.md](release-notes.md)) |
 | `claude-review` | A pull request opened, or a draft marked ready; or the push that solves the conflict it opened with | Reviews it, fixes what it found, posts the rest |
 | `claude-review-on-request` | The `ai-review` label | Reviews it again, only commenting |
 | `run-checks` | The `run-checks` label | Re-runs the checks the gate held, once the review's threads are resolved |
