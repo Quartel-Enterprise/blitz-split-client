@@ -89,8 +89,11 @@ jobs:
     # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
     # Xcode 26 only.
     runs-on: xcode-27
-    # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
-    timeout-minutes: 60
+    # A hung simulator or build would otherwise hold one of the few macOS runners for six hours. The
+    # bound that fits each run is on "Run the tests", which knows whether the simulator runs: this
+    # one only stops what hangs around it, with room for the caches restored before the longest test
+    # run and saved after it.
+    timeout-minutes: 100
     steps:
       # Two commits: on a pull request, GitHub's merge of it with main and main itself, its first
       # parent, which "Pick the test targets" compares it with.
@@ -127,12 +130,20 @@ jobs:
       # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
       # compiles the device target, which no other check builds, and compileAppleMainKotlinMetadata the
       # appleMain shared by the Apple targets, which only a macOS host compiles.
+      # Recompiling everything took 22 minutes on macOS alone and up to 48 with the simulator too.
+      # "finished" says Gradle ended on its own, with failed tests or without: a run this step's
+      # timeout killed may have left a library half compiled in ~/.konan, which main must not save.
       - name: Run the tests
+        id: tests
+        timeout-minutes: ${{ steps.targets.outputs.simulator && 80 || 60 }}
         env:
           SIMULATOR_TESTS: ${{ steps.targets.outputs.simulator }}
-        run: >-
-          ./gradlew ${SIMULATOR_TESTS:+"$SIMULATOR_TESTS"} macosArm64Test compileKotlinIosArm64
-          compileAppleMainKotlinMetadata --continue
+        run: |
+          status=0
+          ./gradlew ${SIMULATOR_TESTS:+"$SIMULATOR_TESTS"} macosArm64Test compileKotlinIosArm64 \
+            compileAppleMainKotlinMetadata --continue || status=$?
+          echo "finished=true" >> "$GITHUB_OUTPUT"
+          exit "$status"
 
       - name: Upload test reports
         if: failure()
@@ -146,11 +157,11 @@ jobs:
       # native code in it (the folders of klib/cache), so it is saved again when a link compiled a
       # library's new version, and only then: with the Kotlin version alone as the key it was saved
       # once, and every run compiled the libraries bumped since. A failed test doesn't stop it, since
-      # the libraries were compiled all the same. An entry keeps the versions bumped away until a new
-      # Kotlin version starts an empty one.
+      # the libraries were compiled all the same; a run the timeout killed does. An entry keeps the
+      # versions bumped away until a new Kotlin version starts an empty one.
       - name: Fingerprint the Kotlin/Native libraries
         id: konan
-        if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
+        if: ${{ !cancelled() && steps.tests.outputs.finished == 'true' && github.ref == 'refs/heads/main' }}
         env:
           KEY_PREFIX: ${{ steps.gradle.outputs.konan-key }}
         run: |

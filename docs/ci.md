@@ -63,6 +63,13 @@ main and the test code for the simulator before the pull request opens, and `app
 request that changes `gradle/libs.versions.toml` runs the simulator's suite too: a library publishes its code for each
 target apart, so a bump is the change the two targets can take differently.
 
+`apple-tests` bounds its test step rather than the job, since only the step knows which targets run: 60 minutes on
+macOS alone, where recompiling everything took 22, and 80 with the simulator too, where it took up to 48 on `main`.
+The run with the simulator is the exception to the three times above: three times 48 would hold a runner for over two
+hours. A run the step's timeout kills saves no Kotlin/Native entry, since it may have left a library half compiled.
+The job's own `timeout-minutes` of 100 only stops what hangs around the tests, with room for the caches restored
+before the longest run and saved after it.
+
 A test that fails on the simulator alone therefore shows up after the merge, as a failed `apple` run on the `main`
 commit. The `report-failure` job then opens the issue "The apple checks failed on main", assigned to whoever merged,
 or comments on it while it is open; it does the same when `apple-app` fails or a job times out there. Fix it in a pull
