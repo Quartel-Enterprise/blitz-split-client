@@ -250,12 +250,13 @@ Contents, Pull requests and Workflows set to Read and write, and save it as the 
 secret. Until then, the label does nothing but fail the workflow.
 
 Workflows is what lets it merge a pull request that changes a file under `.github/workflows/`. Without it GitHub
-refuses that merge and only says "the base branch policy prohibits the merge", with every check green and every
-conversation resolved: `merge-when-green` then removes its label with "GitHub refused the merge". The real reason
-shows from the merge endpoint (`gh api -X PUT repos/<owner>/<repo>/pulls/<number>/merge -f merge_method=squash`):
-"refusing to allow … to create or update workflow … without `workflow` scope". Such a pull request still merges from
-the pull request's page, with "Squash and merge". A token's permissions are edited in place (Settings › Developer
-settings › Personal access tokens › Fine-grained tokens), which keeps its value, so the secret stays as it is.
+refuses that merge, with every check green and every conversation resolved. `gh pr merge` then only says "the base
+branch policy prohibits the merge", while the REST endpoint's answer names the reason: "refusing to allow … to create
+or update workflow … without `workflow` scope". So `merge-when-green` merges through the REST endpoint, and quotes its
+answer in the comment it leaves when it removes its label. A merge that only failed for now (no answer, an error of
+GitHub's own, `main` moved under it) keeps the label, and the next run tries again. Such a pull request still merges from the pull request's page, with "Squash and merge". A token's permissions
+are edited in place (Settings › Developer settings › Personal access tokens › Fine-grained tokens), which keeps its
+value, so the secret stays as it is.
 
 When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
 `merge-when-green.yml` too. A workflow missing from it still blocks the merge while it runs, but its completion does
