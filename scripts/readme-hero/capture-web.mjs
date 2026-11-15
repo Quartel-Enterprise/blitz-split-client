@@ -88,7 +88,8 @@ async function capture(isDark) {
     await chrome.waitFor(
       `(() => {
         if (window.__storeScreenshotsError) throw new Error(window.__storeScreenshotsError)
-        return document.body.innerText.includes(${JSON.stringify(GROUP_READY)})
+        // Why: a document still loading has no body yet
+        return (document.body?.innerText ?? '').includes(${JSON.stringify(GROUP_READY)})
       })()`,
       180_000,
     )
