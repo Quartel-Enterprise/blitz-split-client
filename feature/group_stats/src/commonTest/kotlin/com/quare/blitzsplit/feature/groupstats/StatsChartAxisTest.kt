@@ -163,12 +163,12 @@ class StatsChartAxisTest {
     fun `GIVEN any largest day WHEN creating the lines THEN steps by the smallest round amount of a third or more`() {
         // Given
         val largests = largestsToCheck()
+        val roundSteps = roundSteps()
 
         // When
         val stepsByLargest = largests.associateWith { StatsChartAxis.createTicks(bars(it))[1] }
 
         // Then
-        val roundSteps = roundSteps()
         stepsByLargest.forEach { (largest, step) ->
             val third = (largest + 2) / 3
             val expected = roundSteps.first { it >= third }
