@@ -126,8 +126,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     more show the first face and a second bubble "+N" for the rest (three people: a face and "+2"). The rule is
     `FaceStack` in `:core:model`, which the ViewModels cut their faces by and each UI's one stack component uses
     (Android's `AvatarStackRow`, Apple's `AvatarStack`, the web's `AvatarStack` through `getStackedFaceCount`). Each
-    bubble is a true circle ringed in the surface behind it, covers the one before it ("+N" sits over the first face), and keeps its size whatever room the row leaves it (a
-    squeezed one read flattened); screen readers skip the stack, the row around it says who.
+    bubble is a true circle ringed in the surface behind it, covers the one before it ("+N" sits over the first face),
+    and keeps its size whatever room the row leaves it (a squeezed one read flattened); screen readers skip the stack,
+    the row around it says who.
   - A money amount is never broken in two lines nor cut to its sign (the same sweep): it stays on one line and
     shrinks to fit its card (Android's auto size, Apple's `minimumScaleFactor`, the web's `truncate`), and the words
     beside it ("to get back") drop under it when the row is too narrow.

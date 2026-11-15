@@ -36,13 +36,13 @@ export function AvatarStack({
   className?: string
 }) {
   const classes = sizes[size]
-  // Why: each bubble covers the one before it, as on Android and Apple. Avatar is `relative` for its photo, and a
-  // positioned element paints over a static one, so "+N" is `relative` too or it would slip under the first face.
   return (
     <span aria-hidden className={cn('flex shrink-0 items-center', className)}>
       {faces.map((face, index) => (
         <Avatar key={index} initial={face.initials} color={face.color} photoUrl={face.photoUrl} className={cn(classes.face, 'ring-2', ring, index > 0 && classes.overlap)} />
       ))}
+      {/* Why: each bubble covers the one before it, as on Android and Apple. Avatar is `relative` for its photo, and a
+          positioned element paints over a static one, so "+N" is `relative` too or it would slip under the first face. */}
       {extraCount > 0 && (
         <span
           className={cn(
