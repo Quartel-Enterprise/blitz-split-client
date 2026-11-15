@@ -42,6 +42,8 @@ struct BillLoadingShimmer: View {
 /// "Bruno paid" next to Bruno's face, or "A former member paid". A lone payer opens their profile from here; several
 /// each have their row in the split, which opens them.
 struct BillPayerLine: View {
+    private static let faceId = "bill-payer"
+
     let payers: [BillPayer]
     let lonePayer: BillPayer?
     let size: CGFloat
@@ -58,10 +60,15 @@ struct BillPayerLine: View {
                     stack: .roomy,
                     size: size,
                 )
+                // A lone payer's face zooms into their profile (beta feedback of 2026-11-15)
+                .profileZoomSource(faceId: Self.faceId)
             }
             Text(verbatim: BillCopy.paid(payers))
         }
-        .opensProfile(onPerson.flatMap { open in lonePayer.map { payer in { open(payer.memberId) } } })
+        .opensProfile(
+            onPerson.flatMap { open in lonePayer.map { payer in { open(payer.memberId) } } },
+            zoomingFrom: Self.faceId,
+        )
     }
 }
 
@@ -77,6 +84,8 @@ struct BillShareRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             ShareAvatar(row: row, size: avatarSize)
+                // The face zooms into the profile the row opens (beta feedback of 2026-11-15)
+                .profileZoomSource(faceId: faceId)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: BillCopy.name(row))
                     .lineLimit(1)
@@ -92,7 +101,11 @@ struct BillShareRowView: View {
                 .foregroundStyle(row.shareMinor == nil ? .secondary : .primary)
         }
         .accessibilityElement(children: .combine)
-        .opensProfile(row.opensProfile ? onPerson.map { open in { open(row.memberId) } } : nil)
+        .opensProfile(row.opensProfile ? onPerson.map { open in { open(row.memberId) } } : nil, zoomingFrom: faceId)
+    }
+
+    private var faceId: String {
+        "bill-share-\(row.memberId)"
     }
 }
 
@@ -262,6 +275,8 @@ struct MacBillTitles: View {
     let bill: any BillFacts
     let groupName: String?
     let isNarrow: Bool
+    /// The group's rounded square before its name (beta feedback of 2026-11-15); none on a bill's link page.
+    var groupAvatar: GroupAvatar?
 
     var body: some View {
         let day = ExpenseFormat.dayTime(bill.spentAt, relativeDay: bill.spentDay)
@@ -274,9 +289,15 @@ struct MacBillTitles: View {
                 .font(isNarrow ? .title3.bold() : .title2.bold())
                 .lineLimit(2)
                 .accessibilityAddTraits(.isHeader)
-            Text(verbatim: groupName.map { "\($0) · \(day)" } ?? day)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
+            HStack(spacing: 6) {
+                if groupName != nil, let groupAvatar {
+                    groupAvatar
+                        .accessibilityHidden(true)
+                }
+                Text(verbatim: groupName.map { "\($0) · \(day)" } ?? day)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
         }
     }
 }

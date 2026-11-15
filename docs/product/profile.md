@@ -2,7 +2,9 @@
 
 The profile, its photo, appearance, in-app update and Adjust photo.
 
-  - "Profile" (4.1, `Route.Profile`) opens from the avatar of each home tab (Home, Groups…). It is one column on a
+  - "Profile" (4.1, `Route.Profile`) opens from the avatar of each home tab (Home, Groups…), the avatar flying into
+    the profile's photo and back on Android, iOS and iPadOS and the web (beta feedback of 2026-11-15, as every face
+    that opens a profile: [Balances, Contacts and people](balances-and-contacts.md)). It is one column on a
     phone and upright (560 dp on an Android tablet or foldable, 520 pt with an iPad's room); lying down who you are,
     your account and "Privacy and about" go on the left (330 dp / 300 pt on a phone, 380 dp in a tablet's 1016 dp container, 360 pt on an iPad, as the
     glass panel of a Settings split) and the keys and preferences on the right, each column scrolling on its own.

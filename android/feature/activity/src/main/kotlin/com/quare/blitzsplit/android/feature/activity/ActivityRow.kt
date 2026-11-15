@@ -48,6 +48,7 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -113,16 +114,20 @@ internal fun ActorAvatarIcon(
     val (container, content) = badgeColorsOf(item)
     val rowColor = MaterialTheme.colorScheme.surfaceContainerLowest
     val name = personNameOf(item.actor.name, item.actor.isMe)
+    // Why: the face flies into the profile it opens and back (beta feedback of 2026-11-15).
+    val flight = rememberProfileFlightSource()
     Box(modifier = modifier) {
         AvatarBadge(
             initial = item.actor.initials,
             color = item.actor.color,
             photoUrl = item.actor.photoUrl,
-            modifier = Modifier
+            modifier = flight.face
                 .clip(CircleShape)
                 .semantics { if (item.actor.opensProfile) contentDescription = name }
                 .opensProfile(
-                    { onEvent(ActivityUiEvent.OnActorClicked(item.id)) }.takeIf { item.actor.opensProfile },
+                    flight.toFlyingClickOrNull(
+                        { onEvent(ActivityUiEvent.OnActorClicked(item.id)) }.takeIf { item.actor.opensProfile },
+                    ),
                 ),
         )
         Box(

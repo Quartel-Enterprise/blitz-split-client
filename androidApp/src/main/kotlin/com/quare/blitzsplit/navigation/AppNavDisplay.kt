@@ -27,7 +27,9 @@ import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
+import com.quare.blitzsplit.android.designsystem.component.LocalProfileFlight
 import com.quare.blitzsplit.android.designsystem.component.LocalSharedTransitionScope
+import com.quare.blitzsplit.android.designsystem.component.ProfileFlightState
 import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
@@ -234,11 +236,15 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             else -> null
         }
     }
-    // Why: a bill flies out of Home's "Latest expenses" or "All expenses" only where it covers the window.
+    /*
+     * Why: a bill flies out of Home's "Latest expenses", "All expenses" or the group's Expenses only where it covers the
+     * window; over the group wider than a phone it is a dialog, where nothing flies.
+     */
     val billSharedOriginOf = { routeBelow: Route? ->
         when (routeBelow) {
             Route.Home -> SharedOrigin.HOME
             Route.AllExpenses -> SharedOrigin.ALL_EXPENSES
+            is Route.GroupDetail -> SharedOrigin.GROUP
             else -> null
         }
     }
@@ -273,6 +279,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         rememberSaveableStateHolderNavEntryDecorator(rememberSaveableStateHolder()),
         rememberViewModelStoreNavEntryDecorator(),
         homeBarsEntryDecorator,
+        entryTransitionDecorator,
     )
     val entries = rememberAppNavEntries(
         backStack = backStack,
@@ -515,10 +522,15 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     } else {
         listOf(FoldDialogSceneStrategy(), BottomSheetSceneStrategy())
     }
+    // Why: the face tapped last, whose profile's photo flies out of it and back (beta feedback of 2026-11-15).
+    val profileFlight = remember { ProfileFlightState() }
     // Why: the home's bar or rail, drawn once around the navigation, so switching tabs swaps only the content.
     HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
         SharedTransitionLayout {
-            CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+            CompositionLocalProvider(
+                LocalSharedTransitionScope provides this,
+                LocalProfileFlight provides profileFlight,
+            ) {
                 NavDisplay(
                     entries = entries,
                     // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.

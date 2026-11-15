@@ -36,6 +36,7 @@ import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryPath
 import com.quare.blitzsplit.core.expenses.domain.model.Category
@@ -102,14 +103,19 @@ internal fun BillSummaryColumn(
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
         )
+        // Why: a lone payer's face flies into their profile and back (beta feedback of 2026-11-15).
+        val payerFlight = rememberProfileFlightSource()
         Row(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.small)
-                .opensProfile(onLonePayerClick),
+                .opensProfile(payerFlight.toFlyingClickOrNull(onLonePayerClick)),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PayerFacesRow(payers)
+            PayerFacesRow(
+                payers = payers,
+                modifier = payerFlight.face,
+            )
             Text(
                 text = payerTextOf(payers),
                 style = MaterialTheme.typography.bodyLarge,
@@ -229,6 +235,8 @@ private fun ShareRow(
     money: MoneyFormatter,
     onClick: (() -> Unit)?,
 ) {
+    // Why: the row's face flies into the profile it opens and back (beta feedback of 2026-11-15).
+    val flight = rememberProfileFlightSource()
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = shape,
@@ -237,7 +245,7 @@ private fun ShareRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .opensProfile(onClick?.takeIf { row.opensProfile })
+                .opensProfile(flight.toFlyingClickOrNull(onClick?.takeIf { row.opensProfile }))
                 .padding(
                     horizontal = 16.dp,
                     vertical = 12.dp,
@@ -253,6 +261,7 @@ private fun ShareRow(
                     color = row.avatarColor,
                     photoUrl = row.photoUrl,
                     size = rowAvatarSize,
+                    modifier = flight.face,
                 )
             }
             Column(
@@ -293,7 +302,10 @@ private fun ShareRow(
 
 // Why: the faces of whoever paid as a stack, as iOS and the web draw them: only members' faces.
 @Composable
-private fun PayerFacesRow(payers: List<BillPayer>) {
+private fun PayerFacesRow(
+    payers: List<BillPayer>,
+    modifier: Modifier = Modifier,
+) {
     val faces = payers.filter { it.name != null }
     if (faces.isEmpty()) {
         FormerMemberBadge(payerAvatarSize)
@@ -310,6 +322,7 @@ private fun PayerFacesRow(payers: List<BillPayer>) {
         stack = FaceStack.ROOMY,
         size = payerAvatarSize,
         ringColor = MaterialTheme.colorScheme.surface,
+        modifier = modifier,
     )
 }
 

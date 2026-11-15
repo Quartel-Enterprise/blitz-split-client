@@ -54,6 +54,21 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     iPad's room or in the Mac's inspector) closes while the profile shows and opens again on back, Record payment starting over
     there (the whole debt, Pix, now, "Pay Ana" again); Android keeps it as it was, and the web keeps Bill and
     Record payment mounted under the profile, whose back says "Back" (the tab's name only right above a tab).
+  - The face tapped flies into the profile's photo and back into it on back (beta feedback of 2026-11-15, "when
+    possible"), Profile's (from a home tab's avatar, "You" in a bill) as a contact's, following the group's
+    transition rules: only the face tapped in the last second (a bill shows its payer twice; a search hit, a link or a
+    pick beside Contacts' list flies nothing), never beside a list, never on the Mac, and reduced motion stills it.
+    Android: shared elements (`ProfileFlight`: `rememberProfileFlightSource` on the face, `rememberProfileFlightTarget`
+    on the profile's photo, keyed by the face tapped), from the home tabs' avatar, Bill's split rows, lone payer, comment
+    authors and History faces, Members' rows, Contacts' and Balances' people, Activity's actor face and Statistics'
+    people; what opens as a dialog or a sheet (Bill on a tablet, Record payment) flies nothing. iOS and iPadOS: the zoom
+    navigation transition (`ProfileZoomTransition.swift`, a namespace per tab's stack), from the tabs' avatar, Bill's
+    split rows and lone payer, Members' rows, Contacts' and Balances' people and Activity's actor face. The web: the
+    View Transitions API (`webApp/src/lib/groupTransition.ts`, `data-profile-link` around the face,
+    `data-profile-photo` on the profile's), from the top bar's avatar, the `PersonButton`s given a `flightKey` (Bill's
+    split rows, payer and History faces, Members, Balances, Statistics, Activity) and Contacts' rows; Record payment,
+    a dialog, flies nothing, as on Android; back flies into the same face once its page drew it
+    again, and a face under a closed panel (Bill under the profile) leaves the page to crossfade.
     A profile opened from settling up goes back to that form on its Settle up or Received rather than opening another;
     opened from one group's Record payment, they open settling up for the net over it (Pierre's call).
   - A profile link opened (`Route.ProfileLink`, `https://blitzsplit.com/u/<code>`, Profile's "Share profile") shows

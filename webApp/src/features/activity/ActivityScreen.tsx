@@ -225,7 +225,7 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
       </button>
       {/* Why: the face opens whoever did it (their profile, Perfil for you), apart from the row, which opens the item. */}
       {item.actorOpensProfile && (
-        <PersonButton isRound label={actorProfileLabel(item)} onOpen={() => presenter.openActor(item.id)} className="absolute top-3 left-4 size-8" />
+        <PersonButton isRound label={actorProfileLabel(item)} onOpen={() => presenter.openActor(item.id)} flightKey={`activity-${item.id}`} className="absolute top-3 left-4 size-8" />
       )}
       {showsChanges && <InlineChanges presenter={presenter} item={item} />}
     </div>
@@ -442,6 +442,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
           isRound
           label={actorProfileLabel(item)}
           onOpen={item.actorOpensProfile ? () => presenter.openActor(item.id) : null}
+          flightKey={`activity-detail-${item.id}`}
           className="flex shrink-0 self-start"
         >
           <ActorFace item={item} className="size-12 text-base" badgeClassName="size-[22px] [&>svg]:size-3" />

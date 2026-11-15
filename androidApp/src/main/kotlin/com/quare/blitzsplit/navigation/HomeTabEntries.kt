@@ -28,22 +28,28 @@ internal val homeBarsEntryDecorator: NavEntryDecorator<Route> = NavEntryDecorato
     },
 )
 
+// Why: every entry's transition, which a face tapped on any screen follows into the profile it opens (ProfileFlight).
+internal val entryTransitionDecorator: NavEntryDecorator<Route> = NavEntryDecorator(
+    decorate = { entry -> EntryTransitionLayout(origin = null) { entry.Content() } },
+)
+
 /*
- * Why: the entry's own transition, which a group's avatar and name or a bill's title and amounts follow from its row to
- * its screen and back. Only around the entries whose rows or header fly (Início, Grupos, "All expenses", the group, the
- * bill), which NavDisplay draws in its animated content. `origin` keys the flight by the screen the group or bill
- * opens from, null where nothing flies; only then is the transition read, since a dialog's or a sheet's entry (a bill
- * over the group) is drawn outside the animated content, where LocalNavAnimatedContentScope has no value.
+ * Why: the entry's own transition, which a group's avatar and name, a bill's title and amounts or a person's face
+ * follow from its row to its screen and back. NavDisplay draws an entry in its animated content unless it is a
+ * dialog's or a sheet's (a bill over the group), drawn outside it, where LocalNavAnimatedContentScope has no value and
+ * nothing flies. `origin` keys the group's and the bill's flights by the screen they open from, null where those fly
+ * nowhere (beside the list); a face keys its flight by the face tapped instead (ProfileFlight), so it needs only the
+ * transition.
  */
 @Composable
 internal fun EntryTransitionLayout(
     origin: SharedOrigin?,
     content: @Composable () -> Unit,
 ) {
-    val flownOrigin = origin.takeUnless { LocalInOverlayScene.current }
+    val isInAnimatedContent = !LocalInOverlayScene.current
     CompositionLocalProvider(
-        LocalEntryVisibilityScope provides flownOrigin?.let { LocalNavAnimatedContentScope.current },
-        LocalSharedOrigin provides flownOrigin,
+        LocalEntryVisibilityScope provides if (isInAnimatedContent) LocalNavAnimatedContentScope.current else null,
+        LocalSharedOrigin provides origin.takeIf { isInAnimatedContent },
         content = content,
     )
 }

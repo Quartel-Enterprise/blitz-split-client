@@ -46,6 +46,8 @@ fun EntryLineSurface(
     onLongClickLabel: String? = null,
     // Why: the line's ⋮, after the amounts; a list without one ends the line on them.
     end: (@Composable () -> Unit)? = null,
+    // Why: the title's shared bounds, which fly into the bill's screen; none for a payment.
+    titleModifier: Modifier = Modifier,
     trailing: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -76,6 +78,7 @@ fun EntryLineSurface(
             ) {
                 Text(
                     text = title,
+                    modifier = titleModifier,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
@@ -139,6 +142,9 @@ fun BillAmountsColumn(
     totalMinor: Long,
     myBalanceMinor: Long?,
     money: MoneyFormatter,
+    // Why: the total's and the share's shared bounds, which fly into the bill's screen.
+    totalModifier: Modifier = Modifier,
+    shareModifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.End,
@@ -146,12 +152,14 @@ fun BillAmountsColumn(
     ) {
         Text(
             text = money.toText(totalMinor),
+            modifier = totalModifier,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
         )
         myBalanceMinor?.let { balance ->
             Text(
                 text = money.toSignedText(balance),
+                modifier = shareModifier,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = amountColorOf(balance),

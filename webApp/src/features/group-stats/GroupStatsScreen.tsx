@@ -361,6 +361,7 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
             <PersonButton
               key={person.memberId}
               onOpen={person.opensProfile ? () => presenter.openPerson(person.memberId) : null}
+              flightKey={`stats-${person.memberId}`}
               className="flex items-center gap-2.5"
             >
               <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
@@ -400,7 +401,7 @@ function SettlingCard({ settling, presenter, money }: { settling: JsStatsSettlin
               : t(settler.averageDays === 1 ? 'stats_settlingDaysOne' : 'stats_settlingDaysOther', { count: settler.averageDays })
           return (
             // Why: the row opens their profile (Perfil for you); a settler is always still in the group.
-            <PersonButton key={label} onOpen={() => presenter.openPerson(settler.memberId)} className="flex items-center gap-2.5">
+            <PersonButton key={label} onOpen={() => presenter.openPerson(settler.memberId)} flightKey={`stats-settler-${label}`} className="flex items-center gap-2.5">
               <Avatar initial={settler.initials} color={settler.color} photoUrl={settler.photoUrl} className="size-8 text-xs" />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="text-xs text-muted-foreground">{label}</span>

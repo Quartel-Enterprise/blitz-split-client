@@ -279,6 +279,25 @@ struct BillDetailView: View {
     #if os(iOS)
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
+        // The group's rounded square beside its name over the bill, as the group's folded bar draws them (beta
+        // feedback of 2026-11-15); the navigation title stays for the back button and VoiceOver
+        if let state = model?.state, state.isLoaded {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 8) {
+                    GroupAvatar(
+                        initials: state.groupInitials,
+                        color: state.groupColor,
+                        photoUrl: state.groupPhotoUrl,
+                        size: GroupHeaderScroll.inlineAvatarSize,
+                    )
+                    .accessibilityHidden(true)
+                    Text(verbatim: state.groupName)
+                        .font(.headline)
+                        .lineLimit(1)
+                        .accessibilityAddTraits(.isHeader)
+                }
+            }
+        }
         // A form sheet on iPad has no back button: it closes
         if AppRoute.billDetail(route).presentsAsSheet(isLargeWindow: windowLayout.isLarge) {
             ToolbarItem(placement: .cancellationAction) {
@@ -631,7 +650,17 @@ private struct MacBillDetail: View {
     }
 
     private var headerTitles: some View {
-        MacBillTitles(bill: state, groupName: state.groupName, isNarrow: isNarrow)
+        MacBillTitles(
+            bill: state,
+            groupName: state.groupName,
+            isNarrow: isNarrow,
+            groupAvatar: GroupAvatar(
+                initials: state.groupInitials,
+                color: state.groupColor,
+                photoUrl: state.groupPhotoUrl,
+                size: 18,
+            ),
+        )
     }
 
     /// Share, Edit…, Delete and Close.

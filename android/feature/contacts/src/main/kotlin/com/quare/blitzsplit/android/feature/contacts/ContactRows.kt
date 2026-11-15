@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.feature.contacts.presentation.model.AgendaMatch
@@ -52,11 +53,13 @@ internal fun ContactListRow(
 ) {
     val money = rememberMoneyFormatter(row.net.currency)
     val amountMinor = row.net.amountMinor
+    // Why: the face flies into the profile it opens over the list and back (beta feedback of 2026-11-15).
+    val flight = rememberProfileFlightSource()
     SelectableListRow(
         isSelected = isSelected,
         index = index,
         count = count,
-        onClick = onClick,
+        onClick = flight.toFlyingClick(onClick),
         modifier = modifier,
     ) {
         AvatarBadge(
@@ -64,6 +67,7 @@ internal fun ContactListRow(
             color = row.color,
             photoUrl = row.photoUrl,
             size = faceSize,
+            modifier = flight.face,
         )
         NameColumn(
             name = row.name,

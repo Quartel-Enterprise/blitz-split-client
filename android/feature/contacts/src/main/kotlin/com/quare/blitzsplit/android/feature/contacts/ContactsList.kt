@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.designsystem.component.OfflineChip
 import com.quare.blitzsplit.android.designsystem.component.TappableCard
 import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
@@ -386,8 +387,9 @@ private fun HiddenContactRow(
     modifier: Modifier = Modifier,
 ) {
     val show = stringResource(R.string.contacts_hidden_show_person, row.name)
+    val flight = rememberProfileFlightSource()
     Surface(
-        onClick = { onEvent(ContactsUiEvent.OnContactClicked(row.key)) },
+        onClick = flight.toFlyingClick { onEvent(ContactsUiEvent.OnContactClicked(row.key)) },
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 64.dp),
@@ -408,6 +410,7 @@ private fun HiddenContactRow(
                 initial = row.initials,
                 color = row.color,
                 photoUrl = row.photoUrl,
+                modifier = flight.face,
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(

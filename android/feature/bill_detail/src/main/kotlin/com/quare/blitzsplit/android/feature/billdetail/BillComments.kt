@@ -55,6 +55,7 @@ import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
@@ -326,16 +327,17 @@ private fun CommentContent(
     ) {
         val authorName = personNameOf(row.authorName, row.isMe)
         val openAuthor = callbacks.onPersonClick?.let { open -> row.authorMemberId?.let { id -> { open(id) } } }
-        // Why: the author's face opens their profile while they are in the group, named for TalkBack.
+        // Why: the author's face opens their profile while they are in the group, named for TalkBack, and flies into it.
+        val flight = rememberProfileFlightSource()
         AvatarBadge(
             initial = row.initials,
             color = row.avatarColor,
             photoUrl = row.photoUrl,
             size = if (isReply) replyAvatarSize else commentAvatarSize,
-            modifier = Modifier
+            modifier = flight.face
                 .clip(CircleShape)
                 .semantics { if (openAuthor != null) contentDescription = authorName }
-                .opensProfile(openAuthor),
+                .opensProfile(flight.toFlyingClickOrNull(openAuthor)),
         )
         Column(
             modifier = Modifier.weight(1f),

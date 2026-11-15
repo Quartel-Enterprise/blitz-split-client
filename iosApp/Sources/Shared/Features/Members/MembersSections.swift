@@ -269,7 +269,7 @@ private struct MemberRow: View {
             content
                 .foregroundStyle(.primary)
                 .accessibilityElement(children: .combine)
-                .opensProfile { send(MembersUiEventOnMemberClicked(memberId: member.id)) }
+                .opensProfile({ send(MembersUiEventOnMemberClicked(memberId: member.id)) }, zoomingFrom: faceId)
                 // A long press (a right click on the Mac) holds the same items as the ⋯
                 .contextMenu { menuItems }
             Menu {
@@ -335,9 +335,15 @@ private struct MemberRow: View {
         }
     }
 
+    private var faceId: String {
+        "member-\(member.id)"
+    }
+
     private var content: some View {
         HStack(spacing: 12) {
             AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
+                // The face zooms into the profile the row opens (beta feedback of 2026-11-15)
+                .profileZoomSource(faceId: faceId)
             // In a narrow column the balance goes under the status, so the name and the status keep their width
             TrailingOrBelowLayout {
                 VStack(alignment: .leading, spacing: 2) {

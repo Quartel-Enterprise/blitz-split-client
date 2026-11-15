@@ -458,6 +458,8 @@ private struct ActivityRow: View {
     let item: ActivityItem
     let showsDetail: Bool
 
+    @Environment(\.profileZoomScope) private var profileZoom
+
     #if os(macOS)
     private static let faceSize: CGFloat = 28
     #else
@@ -502,6 +504,8 @@ private struct ActivityRow: View {
                 .accessibilityHidden(true)
             HStack(alignment: .top, spacing: 12) {
                 ActivityFace(item: item, size: Self.faceSize)
+                    // The face zooms into the profile it opens (beta feedback of 2026-11-15)
+                    .profileZoomSource(faceId: faceId)
                 VStack(alignment: .leading, spacing: 3) {
                     ActivityCopy.headline(item)
                         .font(rowFont)
@@ -561,7 +565,14 @@ private struct ActivityRow: View {
     /// The face opens whoever did it: their profile, or Profile for this device's user (Pierre's call, item 18).
     private var openActor: (() -> Void)? {
         guard item.actor.opensProfile else { return nil }
-        return { model.send(ActivityUiEventOnActorClicked(itemId: item.id)) }
+        return {
+            profileZoom?.zoom.arm(faceId)
+            model.send(ActivityUiEventOnActorClicked(itemId: item.id))
+        }
+    }
+
+    private var faceId: String {
+        "activity-\(item.id)"
     }
 
     private var rowFont: Font {

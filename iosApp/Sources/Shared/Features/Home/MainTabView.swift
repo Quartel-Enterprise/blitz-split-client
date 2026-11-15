@@ -48,8 +48,9 @@ struct MainTabView: View {
                     HomeView(model: home)
                         .navigationDestination(for: AppRoute.self) { Self.destination($0) }
                 }
-                // "Your groups" zooms into the group it pushes
+                // "Your groups" zooms into the group it pushes, a face into the profile it pushes
                 .groupZoomScope()
+                .profileZoomScope()
                 #if os(macOS)
                 .measuringNarrowWindow()
                 #endif
@@ -61,8 +62,9 @@ struct MainTabView: View {
                 GroupsColumns(model: model, path: stackPath(isSearch: false), isInFront: isInFront(isSearch: false)) {
                     GroupsView(model: model)
                 }
-                // A group's row or card zooms into the group it pushes
+                // A group's row or card zooms into the group it pushes, a face into the profile it pushes
                 .groupZoomScope()
+                .profileZoomScope()
                 #if os(macOS)
                 // What the View menu's Grid Size reads and changes, only while the groups are in front
                 .focusedSceneValue(\.groupsModel, isInFront(isSearch: false) && groupsPath.isEmpty ? model : nil)
@@ -83,6 +85,8 @@ struct MainTabView: View {
                         Color.clear
                     }
                 }
+                // A face zooms into the profile it pushes
+                .profileZoomScope()
                 #if os(macOS)
                 .measuringNarrowWindow()
                 #endif
@@ -91,6 +95,8 @@ struct MainTabView: View {
             // while another tab is in front, so coming back never reads it again.
             Tab("Contacts", systemImage: "person.crop.circle", value: MainTab.contacts) {
                 ContactsColumns(path: tabStack(isShown: isContactsShown))
+                    // A face zooms into the profile it pushes over the list
+                    .profileZoomScope()
                     #if os(macOS)
                     .measuringNarrowWindow()
                     #endif
@@ -182,6 +188,7 @@ struct MainTabView: View {
                 GroupsSearchView(model: model)
             }
             .groupZoomScope()
+            .profileZoomScope()
         }
         #endif
     }
@@ -374,7 +381,7 @@ struct MainTabView: View {
         case let .joinInvite(route): JoinInviteView(route: route)
         case let .joinPick(route): JoinPickView(route: route)
         case let .invite(route): InviteView(route: route)
-        case let .contactProfile(route): ContactProfileView(route: route)
+        case let .contactProfile(route): ContactProfileView(route: route).profileZoomDestination()
         // A profile link opened over a tab, until the contact's profile or the profile takes its place
         case let .profileLink(route): ProfileLinkView(route: route)
         case .contactsAgenda: AgendaView()
@@ -391,6 +398,7 @@ struct MainTabView: View {
             EmptyView()
             #else
             ProfileView()
+                .profileZoomDestination()
             #endif
         }
     }

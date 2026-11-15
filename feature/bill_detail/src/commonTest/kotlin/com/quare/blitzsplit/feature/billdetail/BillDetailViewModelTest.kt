@@ -65,6 +65,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.ProfilePhoto
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
@@ -221,6 +222,34 @@ class BillDetailViewModelTest {
         // Then
         assertNull(state.shownPaidWith)
     }
+
+    @Test
+    fun `GIVEN a group without a photo WHEN the bill opens THEN its top bar draws the group initials on its color`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("VF", state.groupInitials)
+            assertEquals(AvatarColor.LILAC, state.groupColor)
+            assertNull(state.groupPhotoUrl)
+        }
+
+    @Test
+    fun `GIVEN a group with a photo WHEN the bill opens THEN its top bar draws the group photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = trip.copy(photo = ProfilePhoto.Remote("https://cdn.example/trip.jpg")))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals("https://cdn.example/trip.jpg", state.groupPhotoUrl)
+        }
 
     @Test
     fun `GIVEN a bill on the device WHEN it opens THEN shows the group and the bill`() = runTest(testDispatcher) {
