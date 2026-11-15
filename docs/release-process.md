@@ -1,10 +1,15 @@
 # Release process
 
-How a beta of Bora Rachar reaches a closed group of testers without the stores or the app's domain. One command
-tags the release, publishes each platform to its own channel and records it as a GitHub pre-release. The workflow is
-[`release-beta.yml`](../.github/workflows/release-beta.yml).
+How a release of Bora Rachar goes out. A **beta** reaches a closed group of testers without the stores or the app's
+domain: one command tags it, publishes each platform to its own channel and records it as a GitHub pre-release
+([`release-beta.yml`](../.github/workflows/release-beta.yml)). A **stable version** goes to Google Play and the App
+Store, after an approval ([`release-production.yml`](../.github/workflows/release-production.yml),
+[Releasing a stable version](#releasing-a-stable-version)).
 
 ## Channels
+
+A stable version goes to Google Play and the App Store ([What the stores get](#what-the-stores-get)). A beta's
+channels:
 
 | Platform | Channel |
 | --- | --- |
@@ -54,8 +59,128 @@ Or **Actions → release-beta → Run workflow**. The script dispatches the work
    only for a version that got its tag: with `finalize` failed before the pre-release it stops, asking for
    `finalize` to be re-run first. **Re-run failed jobs** sends the notes again without touching the release.
 
-One beta runs at a time and one more can wait: GitHub keeps a single pending run per concurrency group, so a third
-dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch while a run is already waiting.
+One release runs at a time, betas and stable versions together, and one more can wait: GitHub keeps a single pending
+run per concurrency group, so a third dispatch would cancel the one waiting. `release-beta.sh` and
+`release-production.sh` refuse to dispatch while a run is already waiting
+([`dispatch-release.sh`](../scripts/release/dispatch-release.sh)). The two workflows share the group because both
+take the next `versionCode` from the same place.
+
+## Releasing a stable version
+
+```bash
+./scripts/release/release-production.sh                                          # every platform, to everyone
+./scripts/release/release-production.sh track=internal submit_for_review=false   # reaches no user
+./scripts/release/release-production.sh version=3.1.0 rollout=20                 # a staged rollout of 3.1.0
+```
+
+The script takes the workflow's inputs as `input=value`, dispatches it on `main` and prints the link to the run. It
+refuses to dispatch while a release is already waiting behind a running one, as `release-beta.sh` does. **Actions →
+release-production → Run workflow** works too, with no such check: look at the Actions tab first, since a release
+dispatched behind a waiting one cancels it without a word.
+
+| Input | Default | What it does |
+| --- | --- | --- |
+| `version` | blank | `X.Y.Z`. Blank takes the one `version.properties` and the release notes give ([Versions](#versions)) |
+| `android`, `ios`, `macos` | on | Turn a platform off for a run |
+| `track` | `production` | The Google Play track: `production`, `beta` (open testing), `alpha` (closed testing) or `internal` |
+| `rollout` | `100` | On the production track, the percentage of the users who get the release: under 100 is a staged rollout |
+| `submit_for_review` | on | Sends the iOS and macOS builds to App Store review. Off, they stop at TestFlight |
+| `phased_release` | off | Releases an approved update over seven days, to the people with automatic updates. Off, everyone gets it at once |
+| `screenshots` | on | Makes the store listings' screenshots again and uploads them, with a release |
+
+**A run with nothing changed publishes to everyone** (Pierre's call): the production track at 100%, and a submission
+for review that goes out by itself once Apple approves it. [The approval](#the-approval) is the one gate. For a run
+that reaches no user, choose the `internal` track and turn `submit_for_review` off: the bundle goes to Play's internal
+testers and the Apple builds to TestFlight, with no tag and no GitHub release.
+
+1. `plan` resolves the version and the next `versionCode`, checks that the approval can't be skipped, and picks the
+   notes the version tells, once, for every job after it: the stores' "What's new" by language and the GitHub release's
+   ([release-notes.md](release-notes.md)). The run summary shows the version, where each platform goes and the notes.
+2. `approve` waits for [the approval](#the-approval). Nothing is built before it.
+3. Each platform builds and publishes, in jobs of its own, so **Re-run failed jobs** sends a failed upload again
+   without building a second time. The bundle, the IPA and the package are kept as build artifacts for a week.
+   - `android-build` signs an AAB (`:androidApp:bundleRelease`) and prints its certificate, and `android-upload`
+     sends it to the track with the notes ([What the stores get](#what-the-stores-get)).
+   - `ios-build` and `ios-upload`, `macos-build` and `macos-upload` are the betas' jobs: the build lands on
+     TestFlight. `ios-submit` and `macos-submit` then send it for review, with `submit_for_review`.
+   - The screenshots' jobs run next to them ([Screenshots with a release](#screenshots-with-a-release)).
+4. `finalize` runs when a store took a build, and a platform that failed does not hold it back. When the run
+   **released**, that is, a bundle reached the production track or a build was sent for review, it tags the commit
+   the run built and publishes the GitHub release `X.Y.Z`: the build number, "What's new", what each store got and
+   the pull requests since the stable version before it. It then squash-merges a pull request into `main` with the
+   `versionCode`, the `versionName` and the removal of the release notes' fragments the version told
+   ([`merge-back.sh`](../scripts/release/merge-back.sh)). A run that released nothing leaves no tag and removes no
+   fragment: it merges back its `versionCode`, and its version when that is higher than `main`'s, as a beta does.
+5. `site-release-notes` sends the notes of a released version to blitz-split-site, with the job the betas use
+   ([`site-release-notes.yml`](../.github/workflows/site-release-notes.yml), which both workflows call). It doesn't
+   wait for the stores' reviews (Pierre's call): the notes are out when the build is submitted. A version the site
+   already has, as one written there by hand, is left as it is.
+
+### The approval
+
+The `approve` job names the GitHub Environment `Production`, and waits until one of its **required reviewers**
+approves the run on its page. Reject a run to change anything, and dispatch another. Create the environment once, in
+**Settings → Environments → New environment**: name it `Production`, tick **Required reviewers** and add who may
+release. GitHub makes an environment a job names and that doesn't exist, with no protection, and the run would then
+publish with no one asked: so `plan` fails when the environment is missing, has no required reviewer, or can't be
+read.
+
+A run waiting for its approval holds the releases' concurrency group: a beta dispatched meanwhile waits behind it, and
+a second one would cancel that beta. Approve or reject a run before starting another release.
+
+### What the stores get
+
+- **Google Play.** The `play_upload` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) sends the bundle, the track
+  and the notes in one edit (`supply`), so a failed attempt leaves nothing behind. On the production track a
+  `rollout` under 100 starts a staged rollout: raise it, halt it or finish it in the Play Console (Test and release ›
+  Production). The other tracks get the release whole. The listing's text is not touched.
+- **App Store.** The `app_store_submit` lane waits for App Store Connect to process the build (up to 45 minutes),
+  makes `X.Y.Z` the editable version, writes its "What's new", selects the build and submits it (`deliver`). An
+  approved version is released by itself, to everyone, or over seven days with `phased_release`. The Mac app is a
+  version of its own, submitted by its own job. A locale with no screenshots of its own shows the primary
+  language's, which the lane only reports; it refuses to submit when the primary language has none.
+- **The notes** are written once, by language, by `release-notes.mjs collect --out`
+  ([release-notes.md](release-notes.md#where-the-notes-go)). Each lane asks its store which locales the listing has
+  and gives each one its language's notes (`pt-BR` reads `pt`, `es-419` and `es-MX` read `es`), or English's for a
+  language the notes don't have. A locale the listing lacks gets nothing: the App Store would open an empty listing
+  for it. An app's first version on a platform has no "What's new" and can't be phased, which the lane leaves out.
+
+### Screenshots with a release
+
+With `screenshots` on, a run that releases makes the listings' screenshots again
+([store-listing-screenshots.md](store-listing-screenshots.md)), as Bible Planner's releases do:
+
+- **Google Play**, after the bundle reached the production track: `android-screenshots` draws them and uploads the
+  ones that changed. Play shows a listing's screenshots to everyone at once, so a testing track brings none.
+- **App Store**, before the submission, since a version in review can't take them, and only in a run that submits:
+  `app-store-versions` creates the version, `apple-screenshots-capture` runs the UI tests on one simulator per slot
+  and, for the Mac, on the runner's own screen, `apple-screenshots-frame` frames the captures, and `ios-screenshots`
+  and `macos-screenshots` upload them.
+
+None of the App Store's jobs holds the release back: one that fails is listed as failed, the run is not, and the
+submission goes on with the screenshots the version already has. Two captures are expected to fail on some runners:
+the iPhone Duo's, where Xcode has no runtime for it, and the Mac's, which had never run in CI when this was written.
+The runner has no signing account, so the Mac app is built signed to run locally and without its entitlements, and
+the job refuses captures from a display that isn't Retina, which would reach the listing blurred. The Mac's listing
+then keeps its screenshots: `fastlane screenshots platform:ios` on a Mac replaces them, on a version that is still
+editable.
+
+### Re-runs and what a run leaves
+
+- **Re-run failed jobs** works for a week, while the build artifacts last. Every job after a build can run twice:
+  Play takes or refuses an edit whole, `ios-submit` and `macos-submit` find a version already submitted (waiting
+  for review, in review or beyond) and do nothing, and `finalize` skips what an earlier attempt did, as a beta's.
+- **App Store Connect refuses a build number it already holds.** An `ios-upload` or `macos-upload` that failed
+  although its build shows on TestFlight fails the same way on a re-run, and its submit job never starts: submit
+  that build by hand in App Store Connect.
+- **A platform left for later** (or rejected by a store and fixed): dispatch again with the same `version` typed and
+  the other platforms off. The run builds `main` as it is then, with a new build number, keeps the tag and rewrites
+  that platform's row in the GitHub release. Prefer one run for every platform: a later one carries the changes
+  merged since, which the version's notes don't tell. While the version still waits for its review with the first
+  build, the submit job fails, saying which build is there: remove that submission in App Store Connect first.
+- **A store's review rejects the build.** Fix it and release the next version, or the same one again as above. The
+  `versionCode` is consumed either way, and it only has to grow.
+- **The web** is not part of this workflow.
 
 ## Versions
 
@@ -63,6 +188,7 @@ dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch whi
 | --- | --- |
 | Tag and GitHub release | `3.0.0-beta_7` (no `v`, an underscore before the number) |
 | Android `versionName` | `3.0.0-beta_7` |
+| A stable version | `3.0.0` everywhere: the tag, the GitHub release, Android's `versionName` and Apple's version string |
 | Apple version string (iOS and macOS) | `3.0.0`: Apple refuses a suffix, so a beta is told apart by its build number. Profile still shows `3.0.0-beta_7`, from the Info.plist's `BlitzSplitVersionName` ([generate-project.sh](../iosApp/generate-project.sh)) |
 | `versionCode`, and the Apple build number | the file's value plus one, on every beta |
 
@@ -75,12 +201,16 @@ beta number is one past the highest existing `X.Y.Z-beta_N` tag for that `X.Y.Z`
 `beta_1`.
 
 The `versionCode` is one past the highest of two numbers: the one in `version.properties` and the `Build number: N` line
-that every beta release records in its notes. The release is published before the merge-back, so a beta never reuses a
-number even when the merge-back fails (the `Main rules` ruleset requires a pull request, with threads resolved).
+that every release records in its GitHub release's notes ([`suggest-version.sh`](../scripts/release/suggest-version.sh)
+resolves both, with `--stable` for a stable version). The release is published before the merge-back, so a release
+never reuses a number even when the merge-back fails (the `Main rules` ruleset requires a pull request, with threads
+resolved). A stable run that released nothing publishes no GitHub release, so its number is only in its merge-back:
+the script also reads the `versionCode` the `release/merge-back` branch holds, which stays on GitHub until its pull
+request merges, so the next release goes past it even then. Re-run its `finalize` if that failed.
 Re-running `finalize` finishes the job: it skips the release that exists, leaves a `versionCode` that `main` already
 holds (or a higher one someone raised meanwhile) alone, rebuilds the one merge-back branch, `release/merge-back`, from
 the current `main` and pushes it over the old one, and opens the pull request only when none is open (an open one is
-renamed for this beta, so a pull request a failed run left behind never waits next to a newer one). The pull request is created with
+renamed for this release, so a pull request a failed run left behind never waits next to a newer one). The pull request is created with
 `GITHUB_TOKEN`, so no pull request workflow runs for a version bump, and merged with `MERGE_WHEN_GREEN_TOKEN`, so the
 push to `main` runs its workflows ([Merge when green](ci.md#merge-when-green)).
 
@@ -90,12 +220,13 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 
 | Secret | What it is |
 | --- | --- |
-| `ANDROID_KEYSTORE_BASE64` | The release keystore, `base64 -i release.jks`. The same key every beta, or testers cannot update, and Google sign in is registered for its SHA-1 |
+| `ANDROID_KEYSTORE_BASE64` | The release keystore, `base64 -i release.jks`. The same key every beta, or testers cannot update, and Google sign in is registered for its SHA-1. Google Play takes a stable version's bundle only when this is the app's **upload key** (Play Console › Test and release › App integrity › App signing): `android-build` prints the certificate's SHA-1 to compare. If it isn't, put the upload key's keystore here or ask Play to reset the upload key to this one |
 | `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Its store password, alias and key password |
 | `GOOGLE_SERVICES_JSON` | `androidApp/google-services.json`, `base64 -i` encoded: the file is not committed |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | A service account key (JSON) with the **Firebase App Distribution Admin** role on `blitz-split` |
+| `PLAY_STORE_SERVICE_ACCOUNT_JSON` | For the stable versions: the key (the JSON itself, not base64) of a Google Cloud service account that the Play Console knows ([Google Play access](#google-play-access)) |
 | `GOOGLE_SERVICE_INFO_PLIST` | `iosApp/Resources/GoogleService-Info.plist`, `base64 -i` encoded |
-| `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_P8` | An App Store Connect API key and the text of its `.p8`, for match and the upload. The Issuer ID is on Users and Access › Integrations |
+| `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_P8` | An App Store Connect API key and the text of its `.p8`, for match and the upload. The Issuer ID is on Users and Access › Integrations. A stable version also edits the App Store version and submits it with this key, which takes the **App Manager** role (or Admin): a Developer key uploads builds and is refused the rest |
 | `MATCH_PASSWORD` | The passphrase of `bible-planner-certs`, the certificates repository Bible Planner's releases use too ([Apple signing](#apple-signing)) |
 | `MATCH_SSH_PRIVATE_KEY` | The private half of a read-only deploy key of `bible-planner-certs` |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A token with **Account › Cloudflare Pages › Edit**, and the account's id |
@@ -110,7 +241,22 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `VITE_VAPID_PUBLIC_KEY` | The public half of the server's VAPID pair, see [Push](#push) |
 
 Also needed once: **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**, for the
-merge-back.
+merge-back, and for the stable versions the `Production` environment with its required reviewers
+([The approval](#the-approval)). Every secret above is a repository secret, which any job of the repository's
+workflows can read: the environment is a gate on the run, not on the secrets.
+
+### Google Play access
+
+Once, for `PLAY_STORE_SERVICE_ACCOUNT_JSON`:
+
+1. In the Google Cloud project linked to the Play Console (or any project of the account), enable the **Google Play
+   Android Developer API**, create a service account and a JSON key for it.
+2. In the Play Console, **Users and permissions → Invite new users**, with the service account's e-mail. Give it, for
+   Blitz Split only: **Release to production, exclude devices, and use Play App Signing**, **Release apps to testing
+   tracks** and **Manage store presence** (the screenshots).
+3. Paste the JSON file's content into the secret. Play can take a few hours to accept a new account's calls.
+
+The same file serves a local `fastlane screenshots`, as `PLAY_STORE_JSON_KEY_PATH`.
 
 ## Apple signing
 

@@ -1,4 +1,4 @@
-// The tests of release-notes.mjs: node --test scripts/release/
+// The tests of release-notes.mjs: node --test scripts/release/release-notes.test.mjs
 //
 // The rules a fragment follows and which notes a version tells are checked on plain values; the commands are run on
 // a repository made for the test, with its own commits and tags, since they read the fragments from git.

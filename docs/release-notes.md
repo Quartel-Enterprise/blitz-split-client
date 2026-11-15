@@ -114,9 +114,11 @@ Read from the commit the release builds, never from `main`, which may have moved
   its testers' text and its GitHub release without the site's checkout, so those two still tell the fragments' notes.
 
 The fragments stay in `release-notes/unreleased/` through the betas and leave `main` in the merge-back of a stable
-version, which removes the ones its commit had (`git ls-tree --name-only <commit> release-notes/unreleased/`), not
-the ones merged since. Which notes are told never depends on that cleaning: a note left behind is one the release
-before already had.
+version ([`merge-back.sh`](../scripts/release/merge-back.sh)), which removes the ones its tag's commit had
+(`git ls-tree --name-only <commit> release-notes/unreleased/`), not the ones merged since. A fragment a later pull
+request added a note to stays, since removing it would lose that note: its other notes were told, and are not told
+again. Which notes are told never depends on that cleaning: a note left behind is one the release before already
+had.
 
 ## Where the notes go
 
@@ -127,9 +129,12 @@ before already had.
 | The GitHub release | "What's new", in English, each note naming its platforms unless it is for all | Every release |
 | Google Play and the App Store | `stores/play/<language>.txt` (the notes for all and for `android`, as many as fit the 500 characters Play takes, the last ones left out first), `stores/app-store-ios/` and `stores/app-store-mac/` (4000 characters), written by `collect --out`. A store with no note for its platform gets "Bug fixes and performance improvements." in its language | A stable version |
 
-The store files are named by the app's language: the lane that uploads them maps each to the store's locale codes, as
-the store screenshots do ([store-listing-screenshots.md](store-listing-screenshots.md)). No workflow publishes a
-stable version yet (see [release-process.md](release-process.md)); the script already writes what it will need.
+The store files are named by the notes' language. `release-production` collects them once, with the site's
+checkout, and the lanes that upload them (`play_upload` and `app_store_submit` in `fastlane/Fastfile`) ask each
+store which locales its listing has and give each one its language's file: the file of its own name (`pt-PT`),
+else its language's (`pt-BR` reads `pt`, `es-419`, `es-MX` and `es-ES` read `es`, `en-GB` reads `en`), else
+English's. So no map of store locale codes is kept for the notes, and a language added to a listing gets its notes
+with the next release ([release-process.md](release-process.md#what-the-stores-get)).
 
 ## Adding a language
 

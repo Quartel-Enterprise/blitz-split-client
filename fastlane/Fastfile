@@ -166,7 +166,8 @@ lane :screenshots do |options|
   upload_store_screenshots(repo_root, platforms, options)
 end
 
-desc "Upload what `fastlane screenshots skip_upload:true` staged, without generating again. Same options."
+desc "Upload what `fastlane screenshots skip_upload:true` staged, without generating again. Same options, and"
+desc "platform:mac for the Mac's alone."
 lane :upload_screenshots do |options|
   repo_root = File.expand_path("..", __dir__)
   platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios]
@@ -175,21 +176,23 @@ end
 
 # The Mac app is a version of its own on App Store Connect, so its screenshots go up apart (platform osx), and only
 # when they were staged and skip_mac wasn't passed: a run with skip_mac leaves its listing as it is, even when an
-# earlier run's Mac captures were framed again. The stores name a language differently (es-419 on Play, es-MX on the
-# App Store), so a locale: goes only to the stores that have it staged.
+# earlier run's Mac captures were framed again. platform:mac sends the Mac's alone, as the release does from a job of
+# its own (release-production.yml). The stores name a language differently (es-419 on Play, es-MX on the App Store),
+# so a locale: goes only to the stores that have it staged.
 def upload_store_screenshots(repo_root, platforms, options)
   locale = options[:locale]
   play_path = File.join(repo_root, "fastlane/metadata/android")
   app_store_path = File.join(repo_root, "fastlane/screenshots")
-  stores = { "android" => play_path, "ios" => app_store_path }.select do |platform, path|
+  mac_path = File.join(repo_root, "fastlane/screenshots-mac")
+  stores = { "android" => play_path, "ios" => app_store_path, "mac" => mac_path }.select do |platform, path|
     platforms.include?(platform) && (locale.nil? || File.directory?(File.join(path, locale)))
   end
   UI.user_error!("No store has screenshots staged for #{locale}") if stores.empty?
   upload_play_screenshots(play_path, locale) if stores.key?("android")
+  upload_app_store_screenshots(mac_path, locale, "osx") if stores.key?("mac")
   return unless stores.key?("ios")
 
   upload_app_store_screenshots(app_store_path, locale, "ios")
-  mac_path = File.join(repo_root, "fastlane/screenshots-mac")
   if options[:skip_mac]
     UI.important("skip_mac: the Mac listing keeps its own")
   elsif Dir.glob(File.join(mac_path, "*", "*.png")).any?
@@ -201,7 +204,7 @@ end
 
 desc "Remove the duplicate screenshots deliver can leave on the editable App Store version and sort every shelf"
 lane :finish_app_store_screenshots do
-  app_store_screenshots_api_key
+  app_store_api_key
   tidy_app_store_screenshots("ios")
   tidy_app_store_screenshots("osx")
 end
@@ -235,7 +238,7 @@ end
 # it can't reorder (a copy of the previous version's screenshot still there) doesn't fail an upload that landed: the
 # tidy-up after the last locale removes the copy and sorts it.
 def upload_app_store_screenshots(screenshots_path, locale, platform)
-  api_key = app_store_screenshots_api_key
+  api_key = app_store_api_key
   with_locale_only(screenshots_path, locale) do |path|
     ensure_screenshots_staged(File.join(path, "*", "*.png"))
     tolerating(SCREENSHOT_REORDER_REFUSED_MESSAGE) do
@@ -261,7 +264,7 @@ def upload_app_store_screenshots(screenshots_path, locale, platform)
   tidy_app_store_screenshots(platform) if locale.nil?
 end
 
-def app_store_screenshots_api_key
+def app_store_api_key
   key = {
     key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
     issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
@@ -357,4 +360,227 @@ def tidy_app_store_screenshots(platform)
     end
   end
   UI.user_error!("App Store Connect refused to tidy #{refused.join(', ')} up") if refused.any?
+end
+
+# The stable releases (docs/release-process.md#releasing-a-stable-version): the bundle to a Google Play track and the
+# uploaded builds to App Store review, each with the version's "What's new" in the languages its listing has.
+# release-production.yml runs these lanes; nothing here builds.
+PLAY_TRACKS = %w[production beta alpha internal].freeze
+# How long App Store Connect may take to process an upload before the build can be selected:
+BUILD_PROCESSING_TIMEOUT_SECONDS = 45 * 60
+# The states of a version that was submitted already, from waiting for its review to being on the store:
+SUBMITTED_STATES = %w[
+  WAITING_FOR_REVIEW IN_REVIEW ACCEPTED PENDING_DEVELOPER_RELEASE PENDING_APPLE_RELEASE PROCESSING_FOR_DISTRIBUTION
+  READY_FOR_DISTRIBUTION
+].freeze
+# What Google Play answers to a bundle whose versionCode it already holds:
+PLAY_VERSION_CODE_USED_MESSAGE = "has already been used".freeze
+
+desc "Upload a signed AAB to a Google Play track with the version's \"What's new\""
+desc "Options: aab (its path, or a pattern that finds it alone); track (production|beta|alpha|internal); rollout (the percentage of the users who get"
+desc "it, 1 to 100: a staged rollout, production only); notes (the folder of <language>.txt that release-notes.mjs"
+desc "collect --out writes as stores/play); version_code (the bundle's, which lets a retry after a server error"
+desc "tell that the release landed). Needs PLAY_STORE_JSON_KEY_PATH."
+lane :play_upload do |options|
+  repo_root = File.expand_path("..", __dir__)
+  track = options.fetch(:track).to_s
+  UI.user_error!("track is one of #{PLAY_TRACKS.join(', ')}") unless PLAY_TRACKS.include?(track)
+  percentage = options.fetch(:rollout, 100).to_s
+  UI.user_error!("rollout is a percentage of the users, from 1 to 100") unless percentage.match?(/\A\d+\z/) && (1..100).cover?(percentage.to_i)
+  # Only production is rolled out in stages: a testing track gets the release whole
+  staged = track == "production" && percentage.to_i < 100
+  aabs = Dir.glob(File.expand_path(options.fetch(:aab), repo_root))
+  UI.user_error!("Expected one AAB at #{options[:aab]}, found #{aabs.size}") unless aabs.size == 1
+  json_key = ENV.fetch("PLAY_STORE_JSON_KEY_PATH")
+  listed = retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+    play_listing_locales(json_key)
+  end
+
+  with_notes_for(File.expand_path(options.fetch(:notes), repo_root), listed, "changelogs/default.txt") do |changelogs|
+    release = staged ? { release_status: "inProgress", rollout: (percentage.to_i / 100.0).to_s } : { release_status: "completed" }
+    # supply sends the bundle, the track and the notes through one edit and commits it at the end, so a 5xx throws
+    # the edit away and the next attempt starts over: Play holds nothing of a failed one. Unless the 5xx answered a
+    # commit that did land: the next attempt is then refused the versionCode. That alone could be another upload's,
+    # so it counts as landed only when the track now lists this versionCode.
+    attempt = 0
+    retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+      attempt += 1
+      begin
+        upload_to_play_store(
+          package_name: ANDROID_PACKAGE,
+          json_key: json_key,
+          aab: aabs.first,
+          track: track,
+          **release,
+          metadata_path: changelogs,
+          skip_upload_changelogs: false,
+          # The listing's text and images are not this lane's: the Play Console and the screenshots lanes hold them
+          skip_upload_apk: true,
+          skip_upload_metadata: true,
+          skip_upload_images: true,
+          skip_upload_screenshots: true,
+        )
+      rescue => e
+        landed = attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE) && play_track_has?(track, options[:version_code], json_key)
+        raise unless landed
+
+        UI.important("The #{track} track already lists this versionCode: the attempt Google Play answered with a server error had landed")
+      end
+    end
+  end
+end
+
+desc "Make X.Y.Z the editable App Store version, creating it when it doesn't exist yet"
+desc "Options: platform (ios|osx); version (X.Y.Z). The release runs it before the screenshots are captured, so App"
+desc "Store Connect is done copying the previous version's screenshots into the new one long before the upload"
+desc "replaces them (deliver deleting a shelf mid-copy leaves strays it then can't sort)."
+lane :app_store_prepare_version do |options|
+  app_store_api_key
+  platform = app_store_platform(options)
+  version = options.fetch(:version).to_s
+  app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
+  if app.ensure_version!(version, platform: Spaceship::ConnectAPI::Platform.map(platform))
+    UI.success("#{version} is now the editable #{platform} App Store version")
+  else
+    UI.message("#{version} is already the editable #{platform} App Store version")
+  end
+end
+
+desc "Put the version's \"What's new\" on the App Store version of an uploaded build and send it for review"
+desc "Options: platform (ios|osx); version (X.Y.Z); build (the build number, already uploaded); notes (the folder of"
+desc "<language>.txt that release-notes.mjs collect --out writes as stores/app-store-ios and -mac); submit:false"
+desc "selects the build and writes the text without sending it for review; phased:true releases"
+desc "an update over seven days. An approved version goes out by itself. Needs the App Store Connect key, as the"
+desc "screenshots lanes."
+lane :app_store_submit do |options|
+  require "fastlane_core/build_watcher"
+
+  repo_root = File.expand_path("..", __dir__)
+  api_key = app_store_api_key
+  platform = app_store_platform(options)
+  connect_platform = Spaceship::ConnectAPI::Platform.map(platform)
+  version = options.fetch(:version).to_s
+  build = options.fetch(:build).to_s
+  submit = options.fetch(:submit, true).to_s == "true"
+  phased = options.fetch(:phased, false).to_s == "true"
+  app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
+
+  # A re-run after the submission landed: App Store Connect refuses a second one, and nothing is left to do. Looked up
+  # by its number, since a version Apple has started to review is no longer the editable one. With another build
+  # on it, this run's was never submitted, and saying nothing would record it as sent.
+  submitted = app.get_app_store_versions(filter: { versionString: version, platform: connect_platform })
+                 .find { |each| SUBMITTED_STATES.include?(each.app_version_state) }
+  if submit && submitted
+    state = submitted.app_version_state.downcase.tr("_", " ")
+    on_it = submitted.build&.version
+    if on_it && on_it != build
+      UI.user_error!("#{version} (#{platform}) is already #{state} with build #{on_it}: build #{build} was not submitted. Remove that submission in App Store Connect to send this one")
+    end
+    UI.important("#{version} (#{platform}) is already #{state}: nothing to submit")
+    next
+  end
+
+  # A build App Store Connect is still processing can't be selected, and deliver only waits for one it uploaded itself
+  FastlaneCore::BuildWatcher.wait_for_build_processing_to_be_complete(
+    app_id: app.id,
+    platform: connect_platform,
+    app_version: version,
+    build_version: build,
+    poll_interval: 30,
+    timeout_duration: BUILD_PROCESSING_TIMEOUT_SECONDS,
+    return_when_build_appears: false,
+    return_spaceship_testflight_build: false,
+    select_latest: false,
+  )
+
+  app.ensure_version!(version, platform: connect_platform)
+  localizations = app.get_edit_app_store_version(platform: connect_platform).get_app_store_version_localizations
+  if submit
+    # deliver deletes a locale's screenshots before it uploads the new ones, so an upload that failed halfway can
+    # leave a locale with none. The App Store then shows the primary language's there (a language added to a
+    # listing starts with them), so only the primary one with none stops the submission: run again once they are up
+    bare = localizations.reject { |localization| localization.get_app_screenshot_sets.any? { |set| set.app_screenshots.any? } }.map(&:locale)
+    UI.user_error!("No screenshots for #{app.primary_locale}, the primary language, on #{version} (#{platform}): upload them, then run this again") if bare.include?(app.primary_locale)
+    UI.important("No screenshots of their own, so the App Store shows #{app.primary_locale}'s: #{bare.join(', ')}") if bare.any?
+  end
+  # Not an update while the platform has no version on the store, whatever versions were made and never released:
+  # there is nothing to phase, and App Store Connect refuses a phased release then
+  never_released = app.get_live_app_store_version(platform: connect_platform).nil?
+
+  with_notes_for(File.expand_path(options.fetch(:notes), repo_root), localizations.map(&:locale), "release_notes.txt") do |metadata|
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: BUNDLE_ID,
+      platform: platform,
+      app_version: version,
+      build_number: build,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      # Only release_notes.txt is there, so the rest of the listing stays as App Store Connect has it; deliver
+      # leaves the text out by itself on an app's first version, which has no "What's new"
+      skip_metadata: false,
+      metadata_path: metadata,
+      submit_for_review: submit,
+      automatic_release: true,
+      **(never_released ? {} : { phased_release: phased }),
+      # Its findings would skip the submission without failing the lane; Apple's review is the check
+      run_precheck_before_submit: false,
+      precheck_include_in_app_purchases: false,
+      force: true,
+    )
+  end
+end
+
+def app_store_platform(options)
+  platform = options.fetch(:platform).to_s
+  UI.user_error!("platform is ios or osx") unless %w[ios osx].include?(platform)
+  platform
+end
+
+# The languages the Play listing has. Read with the key the upload uses, so a failure here is one the upload would
+# meet too.
+def play_listing_locales(json_key)
+  require "supply"
+
+  client = Supply::Client.make_from_config(params: { json_key: json_key, timeout: 300 })
+  client.begin_edit(package_name: ANDROID_PACKAGE)
+  locales = client.listings.map(&:language)
+  # A leftover edit expires on its own, so failing to delete it must not throw the answer away
+  begin
+    client.abort_current_edit
+  rescue => e
+    UI.error("Could not delete the Play edit used to read the listing: #{e.message}")
+  end
+  locales
+end
+
+# Whether a Play track lists a versionCode among its releases; false when the lane wasn't told the versionCode.
+def play_track_has?(track, version_code, json_key)
+  return false if version_code.to_s.empty?
+
+  google_play_track_version_codes(package_name: ANDROID_PACKAGE, track: track, json_key: json_key).include?(version_code.to_s.to_i)
+end
+
+# Yields a folder with the version's notes for each locale the store's listing has (`listed`), each in the file the
+# store's tool reads (`file`: changelogs/default.txt for supply, which takes it for a versionCode with no file of its
+# own, and release_notes.txt for deliver). `notes` holds them by the notes' language, <language>.txt. A locale reads
+# the file of its own name (pt-PT), else its language's (pt-BR reads pt, es-419 and es-MX read es, en-GB reads en),
+# else English's: the App Store refuses to review a version with a locale whose "What's new" is empty. Only the
+# listing's locales are written, since a store refuses a language its listing doesn't have or, on the App Store,
+# opens an empty listing for it.
+def with_notes_for(notes, listed, file)
+  require "tmpdir"
+
+  langs = Dir.glob(File.join(notes, "*.txt")).map { |path| File.basename(path, ".txt") }
+  UI.user_error!("No release notes in English under #{notes}") unless langs.include?("en")
+  Dir.mktmpdir("release-notes-") do |dir|
+    listed.each do |locale|
+      lang = [locale, locale.split("-").first, "en"].find { |each| langs.include?(each) }
+      UI.message("#{locale} gets the notes in #{lang}")
+      target = File.join(dir, locale, file)
+      FileUtils.mkdir_p(File.dirname(target))
+      FileUtils.cp(File.join(notes, "#{lang}.txt"), target)
+    end
+    yield(dir)
+  end
 end

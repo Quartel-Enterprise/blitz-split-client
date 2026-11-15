@@ -1,0 +1,75 @@
+name: site-release-notes
+
+# Sends a released version's notes to blitz-split-site, whose "What's new" page and feed the apps read show them
+# once its pull request merges (docs/release-notes.md). The last job of release-beta.yml and release-production.yml,
+# which call it: it has no trigger of its own.
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "The release's name: X.Y.Z, or X.Y.Z-beta_N"
+        type: string
+        required: true
+      sha:
+        description: "The commit the release was built from"
+        type: string
+        required: true
+    secrets:
+      # Not required here, so that a missing one fails in the step that names it and points to the docs.
+      SITE_RELEASE_NOTES_TOKEN:
+        required: false
+
+permissions:
+  contents: read
+
+env:
+  SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
+
+jobs:
+  send:
+    name: Send
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # The whole history: which notes a version tells depends on the tags before it.
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.sha }}
+          fetch-depth: 0
+
+      # A missing token and an expired one both stop here, naming the secret: the checkout below would only say
+      # that the authentication failed. The site is public, and GitHub still refuses a token that isn't valid.
+      - name: Check the site's token
+        env:
+          SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+        run: |
+          ./scripts/release/require-env.sh SITE_RELEASE_NOTES_TOKEN
+          if ! GH_TOKEN="$SITE_RELEASE_NOTES_TOKEN" gh api "repos/$SITE_REPOSITORY" --silent; then
+            echo "::error::GitHub refused the SITE_RELEASE_NOTES_TOKEN secret: it expired or can't reach $SITE_REPOSITORY. See docs/release-process.md#secrets."
+            exit 1
+          fi
+
+      # With the token, so the push and the pull request below are made with it: GITHUB_TOKEN can't write to
+      # another repository.
+      - name: Checkout the site
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.SITE_REPOSITORY }}
+          token: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+          path: site
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # A version the site already has, as one written there by hand, is left as it is: the script finds it and
+      # sends nothing.
+      - name: Send the notes to the site
+        env:
+          GH_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+          VERSION: ${{ inputs.version }}
+          SHA: ${{ inputs.sha }}
+        run: ./scripts/release/send-release-notes-to-site.sh "$VERSION" "$SHA" site

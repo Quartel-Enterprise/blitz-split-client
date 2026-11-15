@@ -24,7 +24,8 @@ name: release-beta
 #      show them once its pull request merges. Skipped by a beta with no note to tell.
 #
 # One run at a time, and one more waiting: GitHub keeps a single pending run per concurrency group, so a third
-# dispatch cancels the one that waits. release-beta.sh refuses to dispatch while a run is already waiting.
+# dispatch cancels the one that waits. release-beta.sh refuses to dispatch while a run is already waiting. The group
+# is release-production.yml's too: both take the next versionCode from the same place, so they never run together.
 #
 # Repository secrets and variables: see docs/release-process.md#secrets.
 
@@ -57,7 +58,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-beta
+  group: release
   cancel-in-progress: false
 
 env:
@@ -70,8 +71,6 @@ env:
   FIREBASE_IOS_APP_ID: 1:791706056713:ios:a3d191b81ce12a0f99a0d8
   FIREBASE_IOS_GROUP: ios-beta
   CLOUDFLARE_PAGES_PROJECT: blitz-split-beta
-  # Where the release notes are published: its "What's new" page and the feed the apps read (docs/release-notes.md).
-  SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
   # Pinned: the versions the release was written with.
   FIREBASE_TOOLS_VERSION: 15.22.0
   WRANGLER_VERSION: 4.152.0
@@ -110,7 +109,7 @@ jobs:
         with:
           node-version: '24'
 
-      # Every release with its notes, read once for the two steps below: the build numbers the earlier betas
+      # Every release with its notes, read once for the two steps below: the build numbers the earlier releases
       # recorded in them, and the platforms whose testers each one sent a build to.
       - name: Read the releases
         env:
@@ -126,7 +125,7 @@ jobs:
         env:
           VERSION_INPUT: ${{ inputs.version }}
           RELEASES_FILE: ${{ runner.temp }}/releases.json
-        run: ./scripts/release/suggest-beta-version.sh "$VERSION_INPUT"
+        run: ./scripts/release/suggest-version.sh "$VERSION_INPUT"
 
       # Picked here, once, for every job: a later job that picked them again could fail after the builds went out,
       # or read other tags. `github_notes` is what the GitHub release opens with. `testers_*` is what the testers
@@ -180,50 +179,19 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      # A release build signed with the debug key would install, but the next beta could not update
-      # it, and Google sign in is registered for the release key's SHA-1.
-      - name: Check the signing secrets
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: ./scripts/release/require-env.sh ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_SERVICES_JSON
-
-      # Without the web client id the app builds, but the native Google sign in fails (docs/getting-started.md).
-      - name: Check the Google web client id
-        env:
-          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
-        run: ./scripts/release/require-env.sh SUPABASE_GOOGLE_WEB_CLIENT_ID
-
-      - name: Bump version
-        run: ./scripts/release/bump-version.sh "${{ needs.plan.outputs.display_version }}" "${{ needs.plan.outputs.version_code }}"
-
-      - name: Setup Gradle and Java
-        uses: ./.github/actions/gradle
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-          # Dispatched on main, where the action would save the cache: a beta must not push out the entries the
-          # pull requests read.
-          cache-read-only: 'true'
-
-      - name: Decode signing and Firebase config
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
-          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
-
       - name: Build the signed APK
-        run: ./gradlew :androidApp:assembleRelease
-        env:
-          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
-          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        uses: ./.github/actions/android-build
+        with:
+          task: ':androidApp:assembleRelease'
+          version: ${{ needs.plan.outputs.display_version }}
+          version-code: ${{ needs.plan.outputs.version_code }}
+          keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          google-web-client-id: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       # Google sign in only works for a signing key whose SHA-1 is registered on the Firebase app
       # (docs/release-process.md#google-sign-in), so the run says which one this APK carries. Invite links open
@@ -685,13 +653,9 @@ jobs:
             --prerelease
 
       # The versionCode, and the versionName when the release notes led this beta to a higher version than main's.
-      # Neither is ever lowered: a versionCode or a version someone raised by hand meanwhile stays. A re-run
-      # finishes the job wherever the last one stopped:
-      #   - main already holds this versionCode (or a higher one) and this version (or a higher one): done;
-      #   - the branch is rebuilt from the current main and pushed over the old one, so a PR left open by a failed
-      #     run follows main instead of staying in conflict;
-      #   - the pull request is created only when none is open.
-      # The PR is created with GITHUB_TOKEN, so no PR workflow runs for a version bump, and merged with the
+      # Neither is ever lowered: a versionCode or a version someone raised by hand meanwhile stays.
+      # scripts/release/merge-back.sh says how a re-run finishes the job wherever the last one stopped. The pull
+      # request is created with GITHUB_TOKEN, so no PR workflow runs for a version bump, and merged with the
       # MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md, "Merge when green").
       - name: Merge the versionCode back into main
         # A web-only beta consumed no build number a store cares about, so it leaves main alone.
@@ -706,45 +670,7 @@ jobs:
           VERSION_CODE: ${{ needs.plan.outputs.version_code }}
           DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
           ACTOR: ${{ github.actor }}
-        run: |
-          main_code="$(grep -E '^versionCode=' version.properties | cut -d= -f2)"
-          main_version="$(grep -E '^versionName=' version.properties | cut -d= -f2)"
-          version="$(printf '%s\n' "$main_version" "$VERSION" | sort -V | tail -1)"
-          code=$(( main_code > VERSION_CODE ? main_code : VERSION_CODE ))
-          if [ "$main_code" -ge "$VERSION_CODE" ] && [ "$main_version" = "$version" ]; then
-            echo "::notice::main already holds version $main_version and versionCode $main_code, nothing to merge back."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2> /dev/null || true
-          git checkout -B "$BRANCH"
-          ./scripts/release/bump-version.sh "$version" "$code"
-          git commit -am "chore: bump the version to $version (versionCode $code) for $DISPLAY_VERSION"
-          git push --force-with-lease origin "$BRANCH"
-
-          title="chore: merge back $DISPLAY_VERSION into main"
-          body="Merges the version $version and the versionCode $code that $DISPLAY_VERSION used back into main."
-          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
-            gh pr create --base main --head "$BRANCH" --title "$title" --body "$body"
-          else
-            # Left open by an earlier beta: the branch now holds this one's code, so the text says so too.
-            gh pr edit "$BRANCH" --title "$title" --body "$body"
-          fi
-          # Best effort: GitHub refuses an assignee it can't assign (a bot, an app), and the merge must not depend on it.
-          gh pr edit "$BRANCH" --add-assignee "$ACTOR" || true
-
-          # GitHub recomputes mergeability asynchronously, so the merge right after the create can
-          # still read the PR as blocked. Retry instead of failing the release on a race that
-          # resolves itself in seconds.
-          for _ in 1 2 3 4 5; do
-            if GH_TOKEN="${MERGE_TOKEN:-$GH_TOKEN}" gh pr merge "$BRANCH" --squash --delete-branch; then
-              exit 0
-            fi
-            sleep 10
-          done
-          exit 1
+        run: ./scripts/release/merge-back.sh "$VERSION" "$VERSION_CODE" "$DISPLAY_VERSION"
 
   # ---------------------------------------------------------------------------------------------
   # Release notes
@@ -757,46 +683,9 @@ jobs:
     if: >-
       ${{ !cancelled() && needs.plan.outputs.has_notes == 'true' &&
       (needs.finalize.result == 'success' || needs.finalize.result == 'failure') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      # The whole history: which notes a beta tells depends on the tags before it.
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 0
-
-      # A missing token and an expired one both stop here, naming the secret: the checkout below would only say
-      # that the authentication failed. The site is public, and GitHub still refuses a token that isn't valid.
-      - name: Check the site's token
-        env:
-          SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-        run: |
-          ./scripts/release/require-env.sh SITE_RELEASE_NOTES_TOKEN
-          if ! GH_TOKEN="$SITE_RELEASE_NOTES_TOKEN" gh api "repos/$SITE_REPOSITORY" --silent; then
-            echo "::error::GitHub refused the SITE_RELEASE_NOTES_TOKEN secret: it expired or can't reach $SITE_REPOSITORY. See docs/release-process.md#secrets."
-            exit 1
-          fi
-
-      # With the token, so the push and the pull request below are made with it: GITHUB_TOKEN can't write to
-      # another repository.
-      - name: Checkout the site
-        uses: actions/checkout@v7
-        with:
-          repository: ${{ env.SITE_REPOSITORY }}
-          token: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-          path: site
-          fetch-depth: 1
-
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
-      - name: Send the notes to the site
-        env:
-          GH_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-          DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
-          SHA: ${{ needs.plan.outputs.sha }}
-        run: ./scripts/release/send-release-notes-to-site.sh "$DISPLAY_VERSION" "$SHA" site
+    uses: ./.github/workflows/site-release-notes.yml
+    with:
+      version: ${{ needs.plan.outputs.display_version }}
+      sha: ${{ needs.plan.outputs.sha }}
+    secrets:
+      SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}

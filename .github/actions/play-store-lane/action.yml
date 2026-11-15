@@ -1,0 +1,50 @@
+name: 'Run a Google Play lane'
+description: >-
+  Runs a lane of fastlane/Fastfile that talks to Google Play: the bundle's upload, the listing's screenshots. Checks
+  and writes the service account key where the lanes read it (PLAY_STORE_JSON_KEY_PATH) and removes it afterwards.
+  The calling job checks out the repository first, since the steps run its scripts.
+
+inputs:
+  lane:
+    description: 'The lane and its options, as they follow `fastlane` on a command line. Paths are read from the repository root'
+    required: true
+  service-account-json:
+    description: 'The key of a Google Cloud service account the Play Console knows, as JSON'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set up fastlane
+      uses: ./.github/actions/fastlane
+
+    # A missing key and one pasted wrong both stop here, naming the secret: supply would only say it can't sign in.
+    - name: Write the Google Play key
+      shell: bash
+      env:
+        PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ inputs.service-account-json }}
+      run: |
+        ./scripts/release/require-env.sh PLAY_STORE_SERVICE_ACCOUNT_JSON
+        printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
+        if ! jq -e '.client_email' "$RUNNER_TEMP/play-service-account.json" > /dev/null 2>&1; then
+          echo "::error::The PLAY_STORE_SERVICE_ACCOUNT_JSON secret is not a service account key (JSON). See docs/release-process.md#secrets."
+          exit 1
+        fi
+
+    - name: Run the lane
+      shell: bash
+      env:
+        PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
+        LANE: ${{ inputs.lane }}
+      run: |
+        # Unquoted on purpose: the lane and each of its options are words of their own. Without the shell's globbing,
+        # so a pattern in an option reaches the lane as it is.
+        set -f
+        # shellcheck disable=SC2086
+        fastlane $LANE
+
+    # The key must not stay on the runner for the steps after this action, or for the next job on a reused one.
+    - name: Remove the Google Play key
+      if: always()
+      shell: bash
+      run: rm -f "$RUNNER_TEMP/play-service-account.json"
