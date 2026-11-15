@@ -282,6 +282,7 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `MATCH_PASSWORD` | The passphrase of `bible-planner-certs`, the certificates repository Bible Planner's releases use too ([Apple signing](#apple-signing)) |
 | `MATCH_SSH_PRIVATE_KEY` | The private half of a read-only deploy key of `bible-planner-certs` |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A token with **Account › Cloudflare Pages › Edit**, and the account's id. One token serves both Pages projects, the betas' `blitz-split-beta` and the stable versions' `blitz-split`, which have to be in that account |
+| `SENTRY_AUTH_TOKEN` | Optional: a Sentry organization token, which uploads the web app's source maps ([crash-reporting.md](crash-reporting.md#the-web)). Without it the web deploys the same, and its crash reports show the minified stack |
 | `MERGE_WHEN_GREEN_TOKEN` | Already there, for the pull request merges: `finalize` merges the merge-back with it |
 | `SITE_RELEASE_NOTES_TOKEN` | A fine-grained personal access token restricted to `Quartel-Enterprise/blitz-split-site`, with Contents and Pull requests set to Read and write: `site-release-notes` pushes the notes and merges their pull request with it. The organization caps a token at 366 days, so it has to be made again each year (the one made on 2026-11-14 expires on 2027-11-15); with it expired or missing the job fails naming the secret, the release itself is untouched, and a re-run of the job sends the notes |
 | `GRADLE_ENCRYPTION_KEY` | Optional, and not set today: the builds pass it to the Gradle action, which then keeps the configuration cache between runs ([ci.md](ci.md)) |
@@ -291,6 +292,7 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `SUPABASE_GOOGLE_WEB_CLIENT_ID` | See [Google sign in](#google-sign-in) |
 | `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_APP_ID`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_MEASUREMENT_ID` | The web app's Firebase config, `firebase apps:sdkconfig WEB <appId>` |
 | `VITE_VAPID_PUBLIC_KEY` | The public half of the server's VAPID pair, see [Push](#push) |
+| `VITE_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT` | The web's crash reporting: the Sentry project's DSN and the slugs its source maps are uploaded to, see [crash-reporting.md](crash-reporting.md#the-web) |
 
 Also needed once: **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**, for the
 merge-back, and for the stable versions the `Production` environment, with no reviewer and a deployment branch

@@ -321,6 +321,10 @@ jobs:
           firebase-app-id: ${{ vars.VITE_FIREBASE_APP_ID }}
           firebase-project-id: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
           firebase-measurement-id: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+          sentry-dsn: ${{ vars.VITE_SENTRY_DSN }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-org: ${{ vars.SENTRY_ORG }}
+          sentry-project: ${{ vars.SENTRY_PROJECT }}
           vapid-public-key: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 

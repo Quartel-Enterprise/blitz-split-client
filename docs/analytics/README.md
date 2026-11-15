@@ -80,8 +80,8 @@ nothing waits for a tap (Pierre's call, #184). What that rests on:
   out is a risk Pierre took knowingly.
 
 Until the device's choice is read from Room, `AnalyticsHub` keeps the first events waiting, so a device that turned
-sharing off sends nothing, not even its opening screen. Crashlytics doesn't follow the toggle: crash reports carry no
-usage and are a technical need ([crash-reporting.md](../crash-reporting.md)).
+sharing off sends nothing, not even its opening screen. Crashlytics, and Sentry on the web, don't follow the toggle: crash
+reports carry no usage and are a technical need ([crash-reporting.md](../crash-reporting.md)).
 
 Each platform's `collectsAnalytics` stays as a kill switch: `false` turns its collection off for everyone, in
 `androidApp/build.gradle.kts`, in `FirebaseSetup.swift` and in `webApp/src/analytics/firebaseAnalytics.ts`. The Play

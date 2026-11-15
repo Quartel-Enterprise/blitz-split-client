@@ -11,4 +11,6 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_APP_ID?: string
   readonly VITE_FIREBASE_PROJECT_ID?: string
   readonly VITE_FIREBASE_MEASUREMENT_ID?: string
+  /** The Sentry project's DSN, for crash reporting; unset, the web reports nothing. */
+  readonly VITE_SENTRY_DSN?: string
 }
