@@ -126,16 +126,7 @@ struct StatsCategoriesSection: View {
                 // The picked slice pops out at once with Reduce Motion, as the web's does
                 .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: selected)
                 .onChange(of: ringKey) { selected = nil }
-                .task(id: ringKey) {
-                    // Kept whole, so turning Reduce Motion off later doesn't leave the ring empty
-                    if reduceMotion {
-                        sweep = 1
-                        return
-                    }
-                    sweep = 0
-                    try? await Task.sleep(for: .milliseconds(20))
-                    withAnimation(.easeOut(duration: 0.6)) { sweep = 1 }
-                }
+                .playsIn($sweep, id: ringKey, duration: 0.6)
                 VStack(spacing: 0) {
                     ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
                         Button {

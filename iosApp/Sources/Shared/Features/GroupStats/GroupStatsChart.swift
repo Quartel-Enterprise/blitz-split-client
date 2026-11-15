@@ -107,16 +107,7 @@ struct StatsChart: View {
             }
         }
         .onChange(of: seriesKey) { selected = nil }
-        .task(id: seriesKey) {
-            // Kept whole, so turning Reduce Motion off later doesn't leave the series empty
-            if reduceMotion {
-                growth = 1
-                return
-            }
-            growth = 0
-            try? await Task.sleep(for: .milliseconds(20))
-            withAnimation(.easeOut(duration: 0.5)) { growth = 1 }
-        }
+        .playsIn($growth, id: seriesKey, duration: 0.5)
         .sensoryFeedback(.selection, trigger: selected) { _, new in new != nil && !isHovering }
     }
 

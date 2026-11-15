@@ -26,6 +26,8 @@ private struct SimplifyConflictBanner: ViewModifier {
     let onActivity: () -> Void
     let onDismiss: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func body(content: Content) -> some View {
         content
             .overlay(alignment: .bottom) {
@@ -46,7 +48,7 @@ private struct SimplifyConflictBanner: ViewModifier {
                     .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 26))
                     .padding(.horizontal, 12)
                     .padding(.bottom, 12)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .transition(.slideIn(from: .bottom, reduceMotion: reduceMotion))
                     .accessibilityElement(children: .contain)
                 }
             }
