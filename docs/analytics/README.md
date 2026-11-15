@@ -55,8 +55,9 @@ can't ship without one); a few routes add what kind of screen it is, which stays
   since the setting persists on the device; a debug build never attaches either, and the web only starts in a
   production build.
 - **The advertising id**: Android removes the `AD_ID` permission and turns its collection off, Apple links
-  `FirebaseAnalytics` without `FirebaseAnalyticsIdentitySupport`, and the web turns Google signals off. Ad
-  personalization is off on all of them.
+  `FirebaseAnalyticsCore`, the product without the advertising id (the plain `FirebaseAnalytics` brings
+  `GoogleAppMeasurementIdentitySupport` and `GoogleAdsOnDeviceConversion` with it), and the web turns Google signals
+  off. Ad personalization is off on all of them.
 - **A screen view the SDK makes up**: Android's and Apple's automatic screen reporting are off and gtag sends no
   `page_view`, since the activity, the view controllers and the browser's history don't name the app's screens.
   Screen views come from the shared back stack ([Screen views](#screen-views)), the same on every UI.

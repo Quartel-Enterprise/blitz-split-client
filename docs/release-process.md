@@ -406,6 +406,36 @@ builds and the web site all do. Whether the app asks first, or offers an opt-out
 App Store privacy labels, before a build reaches testers. The workflow does not enforce it. Until it is settled, a beta
 for people other than the team is a decision to make knowingly.
 
+## Apple's privacy manifest
+
+[`iosApp/Resources/PrivacyInfo.xcprivacy`](../iosApp/Resources/PrivacyInfo.xcprivacy) goes into the iOS and the Mac
+app. It says the app doesn't track, and gives Apple's reason for each
+[required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api)
+the app's binary calls, the libraries linked into it included: App Store Connect reads the binary, and a manifest a
+static library ships in its own bundle doesn't answer for the app's.
+
+| API | Who calls it | Reason |
+| --- | --- | --- |
+| User defaults | The app's language, multiplatform-settings, Firebase | `CA92.1`: values the app itself wrote |
+| File timestamps (`stat`, `fstat`, `lstat`) | The linked libraries | `C617.1`: files in the app's own container, where the database is |
+| Disk space (`statfs`, `fstatfs`) | The linked libraries | `E174.1`: whether there is room to write |
+
+A library added later may call another one. After adding one, build the app for the simulator (the Apple check of
+the `create-pr` skill), then list what its binary asks the system for and compare with the table. The first line
+prints the C functions and the Foundation classes and keys, the second the two that are only method names:
+
+```bash
+BIN=iosApp/build/DerivedData/Build/Products/Debug-iphonesimulator/BoraRachar.app/BoraRachar.debug.dylib
+nm -u "$BIN" | grep -E '^_[fl]?stat(at|fs|vfs)?$|^_fstatvfs$|getattrlist|mach_absolute_time|NSUserDefaults|NSURL(Creation|ContentModification)DateKey|NSFile(Creation|Modification)Date|NSFileSystem(Free)?Size|NSURLVolume.*CapacityKey'
+strings - "$BIN" | grep -xE 'systemUptime|activeInputModes'
+```
+
+Apple also writes to the account's e-mail after an upload that misses one (`ITMS-91053`), naming the API.
+
+The manifest doesn't list the data the app collects (`NSPrivacyCollectedDataTypes`) yet: it has to say what App
+Store Connect's App Privacy says, and those answers, like the ones of Play's Data safety form, wait for Pierre to
+confirm them. [analytics/README.md](analytics/README.md#consent) holds the ones Analytics already settled.
+
 ## Google sign in
 
 The Android beta signs in with Google through Credential Manager, which needs three things outside the code:
