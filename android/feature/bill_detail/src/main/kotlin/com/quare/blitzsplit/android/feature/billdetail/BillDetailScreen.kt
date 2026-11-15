@@ -79,7 +79,7 @@ fun BillDetailScreen(
         snackbarHostState = snackbarHostState,
         pickers = pickers,
         onEvent = viewModel::onEvent,
-        sharedBillId = route.expenseId.takeUnless { isDialog },
+        sharedBillId = route.expenseId,
     )
     val attachments = state.attachments.valueOrNull().orEmpty()
     BillAttachmentViewerDialog(

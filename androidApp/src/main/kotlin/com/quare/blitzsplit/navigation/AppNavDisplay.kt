@@ -240,7 +240,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             Route.Home -> SharedOrigin.HOME
             Route.AllExpenses -> SharedOrigin.ALL_EXPENSES
             else -> null
-        }.takeUnless { opensBillOverGroup }
+        }
     }
     val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     // Why: NavDisplay keeps an entry's metadata until the back stack changes, so the placeholder reads it as it draws.
@@ -407,7 +407,13 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: like Rachar conta, the group stays behind the bill wider than a phone, a tabletop included.
             entry<Route.BillDetail>(metadata = billOverGroupMetadata) { route ->
-                EntryTransitionLayout(origin = billSharedOriginOf(routeBelowOf(route))) {
+                /*
+                 * Why: the scene the bill opened in, which it keeps when the fold changes under it. A dialog's entry
+                 * has no transition to read, so a bill opened as one never flies, even once the window narrows.
+                 */
+                val opensAsDialog = remember { opensBillOverGroup }
+                val origin = billSharedOriginOf(routeBelowOf(route)).takeUnless { opensAsDialog }
+                EntryTransitionLayout(origin = origin) {
                     BillDetailScreen(
                         route = route,
                         isDialog = opensBillOverGroup,

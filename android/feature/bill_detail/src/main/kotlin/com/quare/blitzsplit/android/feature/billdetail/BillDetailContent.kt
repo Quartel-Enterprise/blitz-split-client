@@ -76,7 +76,7 @@ fun BillDetailContent(
     pickers: PhotoPickers,
     onEvent: (BillDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    // Why: the bill whose row's badge, title, total and share fly in; null where nothing flies (a dialog, previews).
+    // Why: the bill whose row's badge, title, total and share fly in; null in previews and screenshots.
     sharedBillId: String? = null,
 ) {
     // Why: a dialog is two columns wide on a tablet lying down only, one column in a book's or a tabletop's half.
