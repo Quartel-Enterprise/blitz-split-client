@@ -26,6 +26,8 @@ struct StatsCategoriesSection: View {
 
     var body: some View {
         if let largest = state.topCategory {
+            // Reduce Motion shows the ring whole from its first frame, with no sweep
+            let swept = reduceMotion ? 1 : sweep
             let top = selected.flatMap { state.categories.indices.contains($0) ? state.categories[$0] : nil } ?? largest
             VStack(alignment: .leading, spacing: 8) {
                 StatsSectionTitle(title: "By category")
@@ -35,7 +37,7 @@ struct StatsCategoriesSection: View {
                     Chart {
                         ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
                             SectorMark(
-                                angle: .value("Share", Double(row.percent) * sweep),
+                                angle: .value("Share", Double(row.percent) * swept),
                                 innerRadius: .ratio(0.62),
                                 outerRadius: .ratio(selected == index ? 1 : 0.92),
                                 angularInset: state.categories.count > 1 ? 1.5 : 0,
@@ -44,7 +46,7 @@ struct StatsCategoriesSection: View {
                             .opacity(selected == nil || selected == index ? 1 : 0.4)
                         }
                         // The rest of the turn while the ring sweeps in, drawn in no color
-                        SectorMark(angle: .value("Share", 100 * (1 - sweep)), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
+                        SectorMark(angle: .value("Share", 100 * (1 - swept)), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
                             .foregroundStyle(.clear)
                     }
                     .chartLegend(.hidden)
@@ -121,10 +123,11 @@ struct StatsCategoriesSection: View {
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Palette.card, in: .rect(cornerRadius: 26))
-                .animation(.smooth(duration: 0.25), value: selected)
+                // The picked slice pops out at once with Reduce Motion, as the web's does
+                .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: selected)
                 .onChange(of: ringKey) { selected = nil }
                 .task(id: ringKey) {
-                    // Reduce Motion shows the ring whole, with no sweep
+                    // Kept whole, so turning Reduce Motion off later doesn't leave the ring empty
                     if reduceMotion {
                         sweep = 1
                         return

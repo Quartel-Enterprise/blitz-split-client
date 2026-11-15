@@ -2,6 +2,7 @@
   "notes": [
     {
       "kind": "improved",
+      "betaOnly": true,
       "platforms": [
         "ios",
         "mac"

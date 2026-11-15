@@ -272,7 +272,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     and the ring's middle names it with its share instead of the largest category. A tap or a click on a slice, a
     legend line (which makes even a 2% slice easy to reach) or a category's row, which ends in a chevron, opens that
     category's bills, "Expenses by category" (Pierre's beta feedback, `Route.CategoryExpenses`, below); a tap in the
-    hole does nothing. The ring sweeps in when the period changes, and shows whole at once with reduced motion on.
+    hole does nothing. The ring sweeps in when the period changes; with reduced motion on it shows whole at once, and the
+    picked slice pops out without animating.
     While a new device's first download still brings bills down it counts what came, as "Total spent so far"
     (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
     scroll one column; lying down (a phone, a tablet, in the group's pane beside the groups too) the total and "By

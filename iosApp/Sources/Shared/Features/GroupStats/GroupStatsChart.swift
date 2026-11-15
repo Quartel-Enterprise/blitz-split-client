@@ -40,7 +40,8 @@ struct StatsChart: View {
     var body: some View {
         let rows = points
         let top = Double(state.chartTopMinor)
-        let grown = growth
+        // Reduce Motion shows the series whole from its first frame, with no growing bars nor line drawing in
+        let grown = reduceMotion ? 1 : growth
         let average = state.chartAverageMinor.map { Double(truncating: $0) }
         Group {
             if state.chartType == .line {
@@ -107,7 +108,7 @@ struct StatsChart: View {
         }
         .onChange(of: seriesKey) { selected = nil }
         .task(id: seriesKey) {
-            // Reduce Motion shows the series whole, with no growing bars nor line drawing in
+            // Kept whole, so turning Reduce Motion off later doesn't leave the series empty
             if reduceMotion {
                 growth = 1
                 return
