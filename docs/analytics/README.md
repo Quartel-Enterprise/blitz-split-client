@@ -193,6 +193,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `contact_support_copy_email_clicked` | none | Contact support's copy button next to the address, or "Copy email address" | `:feature:contact_support` |
 | `contact_support_copy_email_failed` | none | The platform refused the clipboard, so the notice that said the address was copied goes (the web, when the browser denies it) | `:feature:contact_support` |
 | `contact_support_dismissed` | none | Contact support's Close or its back arrow, while it is the screen on top | `:feature:contact_support` |
+| `in_app_review_requested` | `trigger` (`group_settled`, `bill_saved`) | The app asked the store for its review card, after a payment that settles a group or from the third bill created on the device; the store decides whether it shows (never on the web) | `:core:support` |
 | `invite_link_copy_clicked` | `source` (`invite`, `members`, `personal_invite`, `contact_invite`, `contact_merge`) | Copy on Invite, on Members' "Invite link" card, a personal invite, "Invite with link or QR" or "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_link_share_clicked` | `source` (`invite`, `personal_invite`, `contact_invite`, `contact_merge`) | Invite's "Share link", "Share with Carla", or the share of "Invite with link or QR" and "Merge with an account" | `:feature:invite`, `:feature:members`, `:feature:contacts` |
 | `invite_see_who_joined_clicked` | none | Invite's "See who joined" | `:feature:invite` |
@@ -550,6 +551,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `payment_key_clicked` | `method` | A key of "Keys to receive payments" | `:feature:profile` |
 | `profile_delete_account_clicked` | none | "Delete account…", while nothing signs out | `:feature:profile` |
 | `profile_contact_support_clicked` | none | "Contact support", in "Support and feedback" | `:feature:profile` |
+| `profile_rate_app_clicked` | none | "Rate the app", in "Support and feedback", which opens the store's listing | `:feature:profile` |
 | `theme_selected` | `theme` (`system`, `light`, `dark`) | A theme, another than the one picked | `:feature:profile` |
 | `profile_appearance_clicked` | none | "Appearance", once the theme was read | `:feature:profile` |
 | `profile_language_clicked` | none | Android's "Language" row, once the profile was read | `:feature:profile` |

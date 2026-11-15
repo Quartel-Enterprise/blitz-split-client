@@ -14,7 +14,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
@@ -38,7 +37,9 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -50,6 +51,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.minutes
@@ -80,9 +82,9 @@ class AppViewModel(
     private val locateBill: LocateBill,
     private val noticeBillGone: NoticeBillGone,
     private val observeAppForeground: ObserveAppForeground,
-    private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val startScreenViews: StartScreenViews,
     private val siteTexts: SiteTextUseCases,
+    private val storePrompts: StorePromptUseCases,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -126,6 +128,17 @@ class AppViewModel(
 
     val billLinkNoticeWatcher: FlowWatcher<BillLinkNoticeState> = FlowWatcher(billLinkNotice)
 
+    /*
+     * Why: the moment to ask the store for its review card (Google Play's in-app review, the App Store's
+     * requestReview), which each native app does its own way; the stores decide whether it shows.
+     */
+    private val reviewRequestChannel = Channel<Unit>(Channel.CONFLATED)
+
+    // Why: a channel, so a request made while the activity is being recreated waits for the next one to take it.
+    val reviewRequests: Flow<Unit> = reviewRequestChannel.receiveAsFlow()
+
+    val reviewRequestWatcher: FlowWatcher<Unit> = FlowWatcher(reviewRequests)
+
     // Why: the Mac's mouse back and forward buttons, and Go › Back and Forward.
     private val forwardHistory = ForwardHistory(navigator, viewModelScope)
 
@@ -142,6 +155,7 @@ class AppViewModel(
         reopenSharedBillLeftForWelcome()
         offerUpdatesInFront()
         keepSiteTextsFresh()
+        askForReviewAfterGoodMoments()
     }
 
     fun goBack() {
@@ -231,7 +245,19 @@ class AppViewModel(
             .filter { isForeground -> isForeground }
             .onEach {
                 uiState.first { it == AppUiState.READY }
-                requestUpdatePromptIfNeeded()
+                storePrompts.requestUpdatePromptIfNeeded()
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: a payment that settles a group or the third bill saved may ask for a review (RequestReviewIfNeeded holds
+     * the rules).
+     */
+    private fun askForReviewAfterGoodMoments() {
+        storePrompts
+            .observeReviewMoments()
+            .onEach { moment ->
+                if (storePrompts.requestReviewIfNeeded(moment)) reviewRequestChannel.send(Unit)
             }.launchIn(viewModelScope)
     }
 

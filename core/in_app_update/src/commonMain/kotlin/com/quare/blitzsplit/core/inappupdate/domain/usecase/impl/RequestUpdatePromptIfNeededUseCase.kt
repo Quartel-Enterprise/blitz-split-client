@@ -7,8 +7,7 @@ import com.quare.blitzsplit.core.inappupdate.domain.usecase.RequestUpdatePromptI
 import com.quare.blitzsplit.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.navigation.Navigator
-import com.quare.blitzsplit.core.navigation.Route
-import com.quare.blitzsplit.core.navigation.isHomeTab
+import com.quare.blitzsplit.core.navigation.isRestingScreen
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastUpdatePromptAt
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import kotlinx.coroutines.flow.first
@@ -59,13 +58,6 @@ class RequestUpdatePromptIfNeededUseCase(
         val elapsed = (currentTimeMillis() - lastPromptAt).milliseconds
         return elapsed < Duration.ZERO || elapsed >= cooldown
     }
-
-    /*
-     * Why: Atividade too, no tab since its bell, where a push notification's cold start lands. Not the group opened over
-     * Rachar conta, whose form still holds what was typed under it.
-     */
-    private fun Route.isRestingScreen(): Boolean =
-        isHomeTab() || (this is Route.GroupDetail && !isOverBill) || this is Route.Activity
 
     private val UpdateAvailability.Pending.cooldown: Duration
         get() = when (this) {

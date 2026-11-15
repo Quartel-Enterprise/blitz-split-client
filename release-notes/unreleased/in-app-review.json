@@ -1,0 +1,22 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": ["android", "web"],
+      "text": {
+        "en": "You can now rate the app from Profile › Support and feedback, with \"Rate the app\".",
+        "pt": "Agora você pode avaliar o app em Perfil › Suporte e feedback, com \"Avaliar o app\".",
+        "pt-PT": "Agora podes avaliar a app em Perfil › Suporte e feedback, com \"Avaliar o app\".",
+        "es": "Ahora puedes calificar la app en Perfil › Soporte y comentarios, con \"Calificar la app\".",
+        "fr": "Vous pouvez désormais noter l’app dans Profil › Assistance et avis, avec « Noter l’app ».",
+        "de": "Du kannst die App jetzt unter Profil › Support und Feedback mit „App bewerten“ bewerten.",
+        "it": "Ora puoi valutare l’app in Profilo › Assistenza e feedback, con \"Valuta l’app\".",
+        "pl": "Możesz teraz ocenić aplikację w sekcji Profil › Pomoc i opinie, wybierając „Oceń aplikację”.",
+        "nl": "Je kunt de app nu beoordelen via Profiel › Support en feedback, met \"Beoordeel de app\".",
+        "ja": "プロフィール › サポートとフィードバックの「アプリを評価」から、アプリを評価できるようになりました。",
+        "tr": "Artık Profil › Destek ve geri bildirim bölümündeki \"Uygulamayı değerlendir\" ile uygulamayı değerlendirebilirsin.",
+        "id": "Sekarang kamu bisa memberi nilai aplikasi di Profil › Dukungan dan masukan, lewat \"Beri nilai aplikasi\"."
+      }
+    }
+  ]
+}

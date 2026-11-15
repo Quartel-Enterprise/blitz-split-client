@@ -14,6 +14,7 @@ kotlin {
             implementation(project(":core:account"))
             implementation(project(":core:sync"))
             implementation(project(":core:settings"))
+            implementation(project(":core:support"))
             implementation(project(":core:in_app_update"))
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))

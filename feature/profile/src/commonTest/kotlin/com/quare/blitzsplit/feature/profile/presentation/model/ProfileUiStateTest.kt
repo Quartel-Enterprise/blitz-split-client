@@ -917,6 +917,7 @@ class ProfileUiStateTest {
         languageQuery = languageQuery,
         activeNotificationCount = 3.toLoaded(),
         showsCheckForUpdates = true,
+        showsRateApp = false,
         isCheckingForUpdates = false,
         dialog = null,
         hasConfirmedCodeSaved = hasConfirmedCodeSaved,

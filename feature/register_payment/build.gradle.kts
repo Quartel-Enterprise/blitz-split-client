@@ -12,6 +12,7 @@ kotlin {
             implementation(project(":core:groups"))
             implementation(project(":core:profile"))
             implementation(project(":core:settings"))
+            implementation(project(":core:support"))
             implementation(project(":core:utils"))
             implementation(project(":core:sync"))
             implementation(libs.quare.connectivity)

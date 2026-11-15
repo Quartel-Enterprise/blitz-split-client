@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.playServicesAuth)
     implementation(libs.googleid)
+    // Why: Google Play's in-app review card.
+    implementation(libs.play.review)
     implementation(libs.play.services.code.scanner)
     implementation(libs.play.services.mlkit.barcodeScanning)
 }

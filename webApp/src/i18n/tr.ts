@@ -838,6 +838,7 @@ export const tr: Record<MessageKey, string> = {
   profile_themeDark: 'Koyu',
   profile_support: 'Destek ve geri bildirim',
   profile_contactSupport: 'Destekle iletişime geç',
+  profile_rateApp: 'Uygulamayı değerlendir',
   profile_about: 'Gizlilik ve hakkında',
   profile_privacyPolicy: 'Gizlilik Politikası',
   profile_terms: 'Hizmet Şartları',

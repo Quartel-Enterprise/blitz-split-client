@@ -28,6 +28,7 @@ import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.dao.PushSettingsDao
 import com.quare.blitzsplit.core.provider.room.dao.ReleaseNotesFeedDao
+import com.quare.blitzsplit.core.provider.room.dao.ReviewPromptDao
 import com.quare.blitzsplit.core.provider.room.dao.SettlementDao
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.provider.room.entity.ActivityBackfillEntity
@@ -59,6 +60,7 @@ import com.quare.blitzsplit.core.provider.room.entity.PaymentKeyEntity
 import com.quare.blitzsplit.core.provider.room.entity.ProfileEntity
 import com.quare.blitzsplit.core.provider.room.entity.PushSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.ReleaseNotesFeedEntity
+import com.quare.blitzsplit.core.provider.room.entity.ReviewPromptEntity
 import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
 
 @Database(
@@ -94,8 +96,9 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
         PayingMethodEntity::class,
         BillPayingMethodEntity::class,
         ReleaseNotesFeedEntity::class,
+        ReviewPromptEntity::class,
     ],
-    version = 51,
+    version = 52,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -302,6 +305,10 @@ import com.quare.blitzsplit.core.provider.room.entity.SettlementEntity
             from = 50,
             to = 51,
         ),
+        AutoMigration(
+            from = 51,
+            to = 52,
+        ),
     ],
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -355,4 +362,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun payingMethodDao(): PayingMethodDao
 
     abstract fun releaseNotesFeedDao(): ReleaseNotesFeedDao
+
+    abstract fun reviewPromptDao(): ReviewPromptDao
 }

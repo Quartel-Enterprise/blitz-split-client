@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
+import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentPerson
@@ -78,6 +79,7 @@ class RegisterPaymentViewModelTest {
     private lateinit var route: Route.RegisterPayment
     private lateinit var viewModel: RegisterPaymentViewModel
     private val actions = mutableListOf<RegisterPaymentUiAction>()
+    private val reviewMoments = mutableListOf<ReviewMoment>()
 
     // Why: what the device clock says, which a case moves on after the screen opened.
     private var clockMillis = 0L
@@ -1355,6 +1357,197 @@ class RegisterPaymentViewModelTest {
                 ),
                 navigator.backStack.value,
             )
+        }
+
+    @Test
+    fun `GIVEN the whole debt WHEN the save succeeds THEN notes one payment recorded in the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(GROUP_ID))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN part of the debt between two others WHEN the save succeeds THEN notes one payment in the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = DIEGO,
+                to = BRUNO,
+            )
+            typeAmount("30,50")
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.TRANSFER))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(GROUP_ID))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN no internet WHEN the save succeeds THEN notes one payment recorded in the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(GROUP_ID))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN the form edited but not saved WHEN reading the review moments THEN none was noted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+            // When
+            val noted = reviewMoments.toList()
+
+            // Then
+            assertEquals(emptyList(), noted)
+        }
+
+    @Test
+    fun `GIVEN an amount over the debt WHEN tapping confirm THEN notes no review moment`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        typeAmount("200")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(emptyList(), reviewMoments)
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN reading the review moments THEN none was noted yet`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(recordGate = CompletableDeferred())
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // When
+        val noted = reviewMoments.toList()
+
+        // Then
+        assertEquals(emptyList(), noted)
+    }
+
+    @Test
+    fun `GIVEN a second tap on confirm while saving WHEN the save finishes THEN notes the payment once`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(recordGate = gate)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(GROUP_ID))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN the screen closed by a native back while saving WHEN the save finishes THEN notes the payment`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(recordGate = gate)
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            navigator.navigateBack()
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(GROUP_ID))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN the device fails to save WHEN tapping confirm THEN notes no review moment`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(recordError = IllegalStateException("disk full"))
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(emptyList(), reviewMoments)
+    }
+
+    @Test
+    fun `GIVEN a failed save WHEN tapping confirm again and it saves THEN notes the payment once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(recordError = IllegalStateException("disk full"))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+            settlements.recordError = null
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(GROUP_ID))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN tapping close THEN notes no review moment`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+        // Then
+        assertEquals(emptyList(), reviewMoments)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN a sync settles the whole debt elsewhere THEN notes no review moment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            settlements.settlements.update {
+                it + settlement(
+                    from = ANA,
+                    to = PIERRE,
+                    amountMinor = 16_230L,
+                )
+            }
+
+            // Then
+            assertEquals(emptyList(), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN no debt between the pair WHEN the screen opens and closes THEN notes no review moment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                from = ANA,
+                to = BRUNO,
+            )
+
+            // When
+            val noted = reviewMoments.toList()
+
+            // Then
+            assertEquals(emptyList(), noted)
         }
 
     @Test
@@ -3160,6 +3353,7 @@ class RegisterPaymentViewModelTest {
         val groupNeverAnswers = MutableSharedFlow<Group?>()
         val balancesNeverAnswer = MutableSharedFlow<List<CurrencyBalances>>()
         viewModel = RegisterPaymentViewModel(
+            noteReviewMoment = { reviewMoments += it },
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,

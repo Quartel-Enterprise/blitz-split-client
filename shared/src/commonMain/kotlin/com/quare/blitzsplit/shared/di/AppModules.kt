@@ -57,6 +57,7 @@ import com.quare.blitzsplit.shared.app.AnalyticsChoices
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.app.SiteTextUseCases
+import com.quare.blitzsplit.shared.app.StorePromptUseCases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -75,6 +76,7 @@ private val appModule = module {
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
     factoryOf(::SiteTextUseCases)
+    factoryOf(::StorePromptUseCases)
     viewModelOf(::AppViewModel)
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
     single {

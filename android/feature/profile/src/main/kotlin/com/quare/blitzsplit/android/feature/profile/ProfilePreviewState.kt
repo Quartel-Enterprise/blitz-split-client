@@ -93,6 +93,7 @@ internal fun createPreviewProfileState(
     languageQuery = "",
     activeNotificationCount = 3.toLoaded(),
     showsCheckForUpdates = true,
+    showsRateApp = true,
     isCheckingForUpdates = false,
     dialog = null,
     hasConfirmedCodeSaved = false,

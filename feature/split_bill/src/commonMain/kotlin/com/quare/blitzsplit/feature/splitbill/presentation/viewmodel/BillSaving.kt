@@ -6,14 +6,20 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
+import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
+import com.quare.blitzsplit.core.support.domain.usecase.NoteReviewMoment
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
-// Why: "Salvar" on a new bill, or on a duplicate, which is one: the form as typed, in the group it was opened for.
+/*
+ * Why: "Salvar" on a new bill, or on a duplicate, which is one: the form as typed, in the group it was opened for. A
+ * new bill saved is a moment the app may ask for a review after; an edit is none.
+ */
 internal suspend fun CreateExpense.saveNew(
     state: SplitBillUiState,
     amountMinor: Long,
     payers: List<ExpensePayer>,
     shares: List<ExpenseShare>,
+    noteReviewMoment: NoteReviewMoment,
 ): Result<String> = invoke(
     groupId = state.groupId,
     description = state.description,
@@ -25,7 +31,7 @@ internal suspend fun CreateExpense.saveNew(
     items = state.split.items,
     categoryId = state.categoryIdToSave,
     spentAt = state.spentAt,
-)
+).onSuccess { noteReviewMoment(ReviewMoment.BillCreated) }
 
 /*
  * Why: "Salvar" on "Editar conta": the form as typed, over the bill it was opened for. A bill whose only change is the

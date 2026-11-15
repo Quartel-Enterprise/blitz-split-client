@@ -28,6 +28,7 @@ val profileModule = module {
             observeAppInvite = get(),
             updateMechanism = get(),
             openLegalPage = get(),
+            findRateAppLink = get(),
             observeAccount = get(),
             observeProfile = get(),
             observeProfileShareLink = get(),

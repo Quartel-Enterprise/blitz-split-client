@@ -1,4 +1,5 @@
 import Shared
+import StoreKit
 import SwiftUI
 
 /// The first access flow lives in one NavigationStack; once a profile exists the shared back stack is replaced by
@@ -15,6 +16,8 @@ import SwiftUI
 struct RootView: View {
     /// Owned by the app, which the Mac's Settings window shares.
     @Bindable var app: AppModel
+
+    @Environment(\.requestReview) private var requestReview
 
     #if os(macOS)
     @Environment(\.openSettings) private var openSettings
@@ -94,6 +97,10 @@ struct RootView: View {
         }
         .onChange(of: app.theme, initial: true) { _, theme in
             WindowAppearance.apply(theme)
+        }
+        // The App Store's review card, which it shows a few times a year at most and may not show at all
+        .onChange(of: app.reviewRequestCount) {
+            requestReview()
         }
         #if os(macOS)
         .onChange(of: app.settingsRequestCount) {

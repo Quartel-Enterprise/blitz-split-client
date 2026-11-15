@@ -164,6 +164,19 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     back and toasts "Couldn't copy. Select it and copy by hand.". On Android the subject and the body also go as the
     intent's extras, for the email apps that never read them from the link. An iPad shows the sheet at the form's
     size.
+  - "Support and feedback"'s second row, "Rate the app" (`ProfileUiState.showsRateApp`, `FindRateAppLink`), opens the
+    store's listing, never the in-app card, which the stores may not show: Google Play's page on Android, always;
+    the App Store's page at "Write a Review" on iPhone, iPad and the Mac, only once `stores.properties` has an
+    `appStoreId`; on the web, which no store lists, the page that leads to the phone app's store
+    (blitzsplit.com/app-download) (Pierre's call).
+  - The app also asks for a review on its own, with the store's card (Google Play's in-app review, the App Store's
+    `requestReview`; never on the web), after something went well (Pierre's call): a payment that leaves a group
+    with nobody owing, or the third bill created on this device (an edit is none, nor a bill or a payment a sync
+    brings). The rules are Bible Planner's (`RequestReviewIfNeededUseCase`): the first such moment only starts three
+    days of grace, each app version asks once at most, and never within 60 days of the last time. It waits up to ten
+    seconds for the app to be in front with a home tab, a group's screen or Activity on top, so it never covers a
+    form or a sheet nor asks while nobody looks, and gives up otherwise, without counting as asked. What it remembers (`review_prompt`) belongs to the device: never synced, and kept through
+    a sign out. The stores decide whether the card shows and never say which, so asking counts as asked.
   - Profile's "Privacy and about" holds "Share usage data" ("Screens and taps, to improve the app. Never names or
     amounts."), a switch right under "Export my data" (Pierre's call, #184): on by default, per device like the theme,
     it turns Firebase Analytics off on this device, the user id included. Nothing asks about it first: Analytics rests

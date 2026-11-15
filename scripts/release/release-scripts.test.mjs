@@ -191,6 +191,16 @@ describe("the merge-back", () => {
     assert.ok(ghCalls().some((call) => call.includes("Removes the 1 release notes' fragment(s) it told")));
   });
 
+  test("of a release that consumed no versionCode leaves main's, and still writes the version and removes the fragments", () => {
+    commit("export", { [fragment("export")]: '{"notes":1}' });
+    git("tag", "3.1.0");
+    git("push", "-q", "origin", "main", "3.1.0");
+    mergeBack(["3.1.0", "0", "3.1.0", "3.1.0"]);
+    assert.match(onRemote(BRANCH, "version.properties"), /versionName=3\.1\.0\nversionCode=83\n/);
+    assert.equal(onRemote(BRANCH, fragment("export")), null);
+    assert.ok(ghCalls().some((call) => call.includes("It consumed no versionCode.") && !call.includes("versionCode 83")));
+  });
+
   test("of a stable version run again, with main already holding it all, changes nothing", () => {
     git("tag", "3.0.0");
     commit("merged back", versionFile("3.0.0", 84));

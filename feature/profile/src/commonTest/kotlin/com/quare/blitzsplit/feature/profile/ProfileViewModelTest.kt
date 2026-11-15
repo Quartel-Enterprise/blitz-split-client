@@ -4476,6 +4476,68 @@ class ProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN a store lists the app WHEN the profile opens THEN shows Rate the app`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(rateAppLink = storeListing)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsRateApp)
+    }
+
+    @Test
+    fun `GIVEN no store lists the app WHEN the profile opens THEN hides Rate the app`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(rateAppLink = null)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsRateApp)
+    }
+
+    @Test
+    fun `GIVEN a store lists the app WHEN tapping Rate the app THEN opens only the listing of the store`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(rateAppLink = storeListing)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnRateAppClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.OpenUrl(storeListing)), actions)
+        }
+
+    @Test
+    fun `GIVEN a store lists the app WHEN tapping Rate the app THEN stays on the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(rateAppLink = storeListing)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnRateAppClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN no store lists the app WHEN tapping Rate the app THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(rateAppLink = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnRateAppClicked)
+
+        // Then
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf(Route.Groups, Route.Profile), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN the profile WHEN tapping the category map THEN opens it over the profile`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -4812,6 +4874,18 @@ class ProfileViewModelTest {
 
         // Then
         assertEquals(listOf("profile_contact_support_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a store lists the app WHEN tapping Rate the app THEN sends it clicked once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(rateAppLink = storeListing)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnRateAppClicked)
+
+        // Then
+        assertEquals(listOf("profile_rate_app_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
     @Test
@@ -7175,6 +7249,8 @@ class ProfileViewModelTest {
 
     private val recoveryCode = "K7QM4XPA9TRE"
 
+    private val storeListing = "https://play.google.com/store/apps/details?id=com.quare.blitzsplit"
+
     private val anonymous = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID)
 
     private val connectedWithGoogle =
@@ -7216,6 +7292,7 @@ class ProfileViewModelTest {
         clientPlatform: ClientPlatform = ClientPlatform.ANDROID,
         shareCode: String? = null,
         pixRuleOn: Boolean = true,
+        rateAppLink: String? = null,
     ) {
         showsPix.value = pixRuleOn
         appInvite = MutableStateFlow(invite)
@@ -7259,6 +7336,7 @@ class ProfileViewModelTest {
         this@ProfileViewModelTest.supportsDynamicColors = supportsDynamicColors
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
+            findRateAppLink = { rateAppLink },
             // Why: like the repository, a dismissal ends the invite the flow emits.
             dismissAppInvite = DismissAppInvite {
                 appInviteDismissals++

@@ -1076,21 +1076,31 @@ private struct SupportSection: View {
 
     var body: some View {
         Section("Support and feedback") {
-            Button {
+            row("Contact support") {
                 model.send(ProfileUiEventOnContactSupportClicked.shared)
-            } label: {
-                LabeledContent {
-                    Image(systemName: "chevron.forward")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.tertiary)
-                        .accessibilityHidden(true)
-                } label: {
-                    Text("Contact support")
-                }
-                .contentShape(.rect)
             }
-            .foregroundStyle(.primary)
+            // Only once the App Store lists the app: it opens its page at "Write a Review"
+            if model.state.showsRateApp {
+                row("Rate the app") {
+                    model.send(ProfileUiEventOnRateAppClicked.shared)
+                }
+            }
         }
+    }
+
+    private func row(_ title: LocalizedStringKey, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            LabeledContent {
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            } label: {
+                Text(title)
+            }
+            .contentShape(.rect)
+        }
+        .foregroundStyle(.primary)
     }
 }
 

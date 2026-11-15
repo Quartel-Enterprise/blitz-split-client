@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, Info, KeyRound, LifeBuoy, Link2, Loader2, LogOut, Plus, RotateCw, Share2, Tag, UserX, Zap } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CloudOff, Copy, Download, Info, KeyRound, LifeBuoy, Link2, Loader2, LogOut, Plus, RotateCw, Share2, Star, Tag, UserX, Zap } from 'lucide-react'
 import { ProfilePresenter, type JsPaymentKeyItem, type JsProfileAction, type JsProfileState } from 'blitzsplit-shared'
 import type { ComponentType, ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -196,10 +196,15 @@ export function ProfileScreen() {
                 <CardHeader>
                   <CardTitle>{t('profile_support')}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-wrap gap-2">
                   <Button variant="outline" onClick={() => presenter.contactSupport()}>
                     <LifeBuoy /> {t('profile_contactSupport')}
                   </Button>
+                  {state.showsRateApp && (
+                    <Button variant="outline" onClick={() => presenter.rateApp()}>
+                      <Star /> {t('profile_rateApp')}
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
               <AboutCard presenter={presenter} state={state} className="order-7" />

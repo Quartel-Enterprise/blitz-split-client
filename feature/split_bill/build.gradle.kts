@@ -11,6 +11,7 @@ kotlin {
             api(project(":core:expenses"))
             implementation(project(":core:groups"))
             implementation(project(":core:settings"))
+            implementation(project(":core:support"))
             implementation(project(":core:utils"))
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))

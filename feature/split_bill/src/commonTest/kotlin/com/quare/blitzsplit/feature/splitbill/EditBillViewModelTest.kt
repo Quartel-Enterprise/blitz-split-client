@@ -33,6 +33,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillConflict
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -71,6 +72,7 @@ class EditBillViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
     private val actions = mutableListOf<SplitBillUiAction>()
+    private val notedMoments = mutableListOf<ReviewMoment>()
 
     @BeforeTest
     fun setUp() {
@@ -378,6 +380,48 @@ class EditBillViewModelTest {
             assertFalse(viewModel.uiState.value.isSaving)
             assertTrue(viewModel.uiState.value.canSave)
             assertEquals(fullStack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a bill edited WHEN tapping Salvar THEN notes nothing for the review`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Feira"))
+        viewModel.onEvent(SplitBillUiEvent.OnAmountChanged("300,00"))
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // Then
+        assertEquals(1, expenses.updatedExpenses.size)
+        assertTrue(notedMoments.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a saved bill left as it was WHEN tapping Salvar THEN notes nothing for the review`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertTrue(notedMoments.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the device fails to save the edit WHEN tapping Salvar THEN notes nothing for the review`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(updateError = IllegalStateException("disk full"))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Feira"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertTrue(notedMoments.isEmpty())
         }
 
     @Test
@@ -1502,6 +1546,7 @@ class EditBillViewModelTest {
             navigator.navigate(screen)
         }
         viewModel = SplitBillViewModel(
+            noteReviewMoment = notedMoments::add,
             paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { name, params -> trackedEvents += name to params },
             route = screen,

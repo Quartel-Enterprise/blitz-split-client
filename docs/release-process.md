@@ -2,14 +2,21 @@
 
 How a release of Bora Rachar goes out. A **beta** reaches a closed group of testers without the stores or the app's
 domain: one command tags it, publishes each platform to its own channel and records it as a GitHub pre-release
-([`release-beta.yml`](../.github/workflows/release-beta.yml)). A **stable version** goes to Google Play and the App
-Store, after an approval ([`release-production.yml`](../.github/workflows/release-production.yml),
+([`release-beta.yml`](../.github/workflows/release-beta.yml)). A **stable version** goes to Google Play, the App
+Store and the web, after an approval ([`release-production.yml`](../.github/workflows/release-production.yml),
 [Releasing a stable version](#releasing-a-stable-version)).
 
 ## Channels
 
-A stable version goes to Google Play and the App Store ([What the stores get](#what-the-stores-get)). A beta's
-channels:
+A stable version's:
+
+| Platform | Channel |
+| --- | --- |
+| Android | Google Play, the track of the run ([What the stores and the web get](#what-the-stores-and-the-web-get)) |
+| iOS and macOS | The App Store, after Apple's review |
+| Web | Cloudflare Pages, project `blitz-split`: https://app.blitzsplit.com ([The production web app](#the-production-web-app)) |
+
+A beta's:
 
 | Platform | Channel |
 | --- | --- |
@@ -68,9 +75,9 @@ take the next `versionCode` from the same place.
 ## Releasing a stable version
 
 ```bash
-./scripts/release/release-production.sh                                          # every platform, to everyone
-./scripts/release/release-production.sh track=internal submit_for_review=false   # reaches no user
-./scripts/release/release-production.sh version=3.1.0 rollout=20                 # a staged rollout of 3.1.0
+./scripts/release/release-production.sh                                                    # every platform, to everyone
+./scripts/release/release-production.sh track=internal submit_for_review=false web=false   # reaches no user
+./scripts/release/release-production.sh version=3.1.0 rollout=20                           # a staged rollout of 3.1.0
 ```
 
 The script takes the workflow's inputs as `input=value`, dispatches it on `main` and prints the link to the run. It
@@ -81,17 +88,20 @@ dispatched behind a waiting one cancels it without a word.
 | Input | Default | What it does |
 | --- | --- | --- |
 | `version` | blank | `X.Y.Z`. Blank takes the one `version.properties` and the release notes give ([Versions](#versions)) |
-| `android`, `ios`, `macos` | on | Turn a platform off for a run |
+| `android`, `ios`, `macos`, `web` | on | Turn a platform off for a run |
 | `track` | `production` | The Google Play track: `production`, `beta` (open testing), `alpha` (closed testing) or `internal` |
 | `rollout` | `100` | On the production track, the percentage of the users who get the release: under 100 is a staged rollout |
 | `submit_for_review` | on | Sends the iOS and macOS builds to App Store review. Off, they stop at TestFlight |
 | `phased_release` | off | Releases an approved update over seven days, to the people with automatic updates. Off, everyone gets it at once |
 | `screenshots` | on | Makes the store listings' screenshots again and uploads them, with a release |
 
-**A run with nothing changed publishes to everyone** (Pierre's call): the production track at 100%, and a submission
-for review that goes out by itself once Apple approves it. [The approval](#the-approval) is the one gate. For a run
-that reaches no user, choose the `internal` track and turn `submit_for_review` off: the bundle goes to Play's internal
-testers and the Apple builds to TestFlight, with no tag and no GitHub release.
+**A run with nothing changed publishes to everyone** (Pierre's call): the production track at 100%, a submission
+for review that goes out by itself once Apple approves it, and the web app at app.blitzsplit.com.
+[The approval](#the-approval) is the one gate. For a run that reaches no user, choose the `internal` track and turn
+`submit_for_review` and `web` off: the bundle goes to Play's internal testers and the Apple builds to TestFlight, with
+no tag and no GitHub release. The web has no testing channel in this workflow: its trial is a beta. With `web` left
+on, such a run still deploys the web for everyone and so tags the version, which `plan` says in the run summary,
+before the approval.
 
 1. `plan` resolves the version and the next `versionCode`, checks that the approval can't be skipped, and picks the
    notes the version tells, once, for every job after it: the stores' "What's new" by language and the GitHub release's
@@ -100,17 +110,22 @@ testers and the Apple builds to TestFlight, with no tag and no GitHub release.
 3. Each platform builds and publishes, in jobs of its own, so **Re-run failed jobs** sends a failed upload again
    without building a second time. The bundle, the IPA and the package are kept as build artifacts for a week.
    - `android-build` signs an AAB (`:androidApp:bundleRelease`) and prints its certificate, and `android-upload`
-     sends it to the track with the notes ([What the stores get](#what-the-stores-get)).
+     sends it to the track with the notes ([What the stores and the web get](#what-the-stores-and-the-web-get)).
    - `ios-build` and `ios-upload`, `macos-build` and `macos-upload` are the betas' jobs: the build lands on
      TestFlight. `ios-submit` and `macos-submit` then send it for review, with `submit_for_review`.
+   - `web` builds the web app at the stable version and deploys it to the Pages project `blitz-split`, with the
+     action the beta's job uses ([`web-deploy`](../.github/actions/web-deploy/action.yml)). It is live at once.
    - The screenshots' jobs run next to them ([Screenshots with a release](#screenshots-with-a-release)).
-4. `finalize` runs when a store took a build, and a platform that failed does not hold it back. When the run
-   **released**, that is, a bundle reached the production track or a build was sent for review, it tags the commit
-   the run built and publishes the GitHub release `X.Y.Z`: the build number, "What's new", what each store got and
-   the pull requests since the stable version before it. It then squash-merges a pull request into `main` with the
-   `versionCode`, the `versionName` and the removal of the release notes' fragments the version told
-   ([`merge-back.sh`](../scripts/release/merge-back.sh)). A run that released nothing leaves no tag and removes no
-   fragment: it merges back its `versionCode`, and its version when that is higher than `main`'s, as a beta does.
+4. `finalize` runs when a store took a build or the web was deployed, and a platform that failed does not hold it
+   back. When the run **released**, that is, a bundle reached the production track, a build was sent for review or
+   the web was deployed, it tags the commit the run built and publishes the GitHub release `X.Y.Z`: the build
+   number, "What's new", what each channel got and the pull requests since the stable version before it. It then
+   squash-merges a pull request into `main` with the `versionCode`, the `versionName` and the removal of the release
+   notes' fragments the version told ([`merge-back.sh`](../scripts/release/merge-back.sh)). A run that released
+   nothing leaves no tag and removes no fragment: it merges back its `versionCode`, and its version when that is
+   higher than `main`'s, as a beta does. A run of the web alone, with every store platform off, leaves the
+   `versionCode` of `main` alone, as a web-only beta does, and its GitHub release names no build number, since it
+   consumed none a store cares about: the version and the fragments are all it merges back.
 5. `site-release-notes` sends the notes of a released version to blitz-split-site, with the job the betas use
    ([`site-release-notes.yml`](../.github/workflows/site-release-notes.yml), which both workflows call). It doesn't
    wait for the stores' reviews (Pierre's call): the notes are out when the build is submitted. A version the site
@@ -128,7 +143,7 @@ read.
 A run waiting for its approval holds the releases' concurrency group: a beta dispatched meanwhile waits behind it, and
 a second one would cancel that beta. Approve or reject a run before starting another release.
 
-### What the stores get
+### What the stores and the web get
 
 - **Google Play.** The `play_upload` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) sends the bundle, the track
   and the notes in one edit (`supply`), so a failed attempt leaves nothing behind. On the production track a
@@ -144,6 +159,11 @@ a second one would cancel that beta. Approve or reject a run before starting ano
   and gives each one its language's notes (`pt-BR` reads `pt`, `es-419` and `es-MX` read `es`), or English's for a
   language the notes don't have. A locale the listing lacks gets nothing: the App Store would open an empty listing
   for it. An app's first version on a platform has no "What's new" and can't be phased, which the lane leaves out.
+- **The web.** The `web-deploy` action builds `webApp/dist` at the version and deploys it with `wrangler pages
+  deploy` to the production branch of the Pages project, which Cloudflare serves at once: there is no review and no
+  rollout. Before building, it asks Cloudflare for the project and stops, naming it, when it doesn't exist or when
+  its production branch isn't `main`, which would make the deployment a preview no domain serves. It warns when the
+  project doesn't serve the domain yet ([The production web app](#the-production-web-app)).
 
 ### Screenshots with a release
 
@@ -180,7 +200,9 @@ editable.
   build, the submit job fails, saying which build is there: remove that submission in App Store Connect first.
 - **A store's review rejects the build.** Fix it and release the next version, or the same one again as above. The
   `versionCode` is consumed either way, and it only has to grow.
-- **The web** is not part of this workflow.
+- **The web** is one job: a deployment that failed leaves the site as it was, and **Re-run failed jobs** builds and
+  deploys again. To go back to an earlier deployment, use Cloudflare's dashboard (Workers & Pages › `blitz-split` ›
+  Deployments › Rollback), then release a fix.
 
 ## Versions
 
@@ -229,7 +251,7 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_API_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_P8` | An App Store Connect API key and the text of its `.p8`, for match and the upload. The Issuer ID is on Users and Access › Integrations. A stable version also edits the App Store version and submits it with this key, which takes the **App Manager** role (or Admin): a Developer key uploads builds and is refused the rest |
 | `MATCH_PASSWORD` | The passphrase of `bible-planner-certs`, the certificates repository Bible Planner's releases use too ([Apple signing](#apple-signing)) |
 | `MATCH_SSH_PRIVATE_KEY` | The private half of a read-only deploy key of `bible-planner-certs` |
-| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A token with **Account › Cloudflare Pages › Edit**, and the account's id |
+| `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A token with **Account › Cloudflare Pages › Edit**, and the account's id. One token serves both Pages projects, the betas' `blitz-split-beta` and the stable versions' `blitz-split`, which have to be in that account |
 | `MERGE_WHEN_GREEN_TOKEN` | Already there, for the pull request merges: `finalize` merges the merge-back with it |
 | `SITE_RELEASE_NOTES_TOKEN` | A fine-grained personal access token restricted to `Quartel-Enterprise/blitz-split-site`, with Contents and Pull requests set to Read and write: `site-release-notes` pushes the notes and merges their pull request with it. The organization caps a token at 366 days, so it has to be made again each year (the one made on 2026-11-14 expires on 2027-11-15); with it expired or missing the job fails naming the secret, the release itself is untouched, and a re-run of the job sends the notes |
 | `GRADLE_ENCRYPTION_KEY` | Optional, and not set today: the builds pass it to the Gradle action, which then keeps the configuration cache between runs ([ci.md](ci.md)) |
@@ -244,6 +266,42 @@ Also needed once: **Settings → Actions → General → Allow GitHub Actions to
 merge-back, and for the stable versions the `Production` environment with its required reviewers
 ([The approval](#the-approval)). Every secret above is a repository secret, which any job of the repository's
 workflows can read: the environment is a gate on the run, not on the secrets.
+
+### The production web app
+
+A stable version deploys the web app to the Cloudflare Pages project `blitz-split` (`CLOUDFLARE_PAGES_PROJECT` in
+`release-production.yml`), served at https://app.blitzsplit.com. The workflow never creates a project or a domain:
+this was set up once, by hand, in the Cloudflare account of `CLOUDFLARE_ACCOUNT_ID`, the one that has
+`blitz-split-beta` and the zone `blitzsplit.com`, and the token and the account id of the secrets reach it:
+
+- **The Pages project** `blitz-split`, with `main` as its production branch, the branch the workflow deploys to, at
+  `blitz-split.pages.dev`.
+- **Its custom domain** `app.blitzsplit.com` (Workers & Pages › `blitz-split` › Custom domains), active, with its
+  certificate.
+- **The DNS record** in the zone `blitzsplit.com`: a proxied CNAME, `app`, pointing at `blitz-split.pages.dev`.
+
+The domain answers 522 until the project has a deployment: the first run of the `web` job is what puts the app
+there.
+
+Should any of it ever have to be made again, the `web` job says what is missing before it builds: it fails naming
+the project when there is none, or when its production branch isn't `main`, and warns when the project doesn't
+serve the domain. To create the project, make a Direct Upload project of that name from that account's dashboard
+(Workers & Pages), or run `npx wrangler pages project create blitz-split --production-branch main`. wrangler
+creates it in the account it is logged into, which may be another one: check `npx wrangler whoami` first, or run it
+with that account's `CLOUDFLARE_ACCOUNT_ID` and a `CLOUDFLARE_API_TOKEN` exported.
+
+What the production web app needs outside this repository, or its sign in fails:
+
+- `https://app.blitzsplit.com` in the redirect URLs of the Supabase project (`docs/auth.md` of `blitz-split-api`).
+- The same origin in the Google OAuth web client's authorized JavaScript origins and redirect URIs.
+- `app.blitzsplit.com` in the domains of the Apple Services ID, for Sign in with Apple on the web.
+
+Two changes in `blitz-split-site` wait for the first production deploy, and are not this workflow's:
+
+- The invite links blitzsplit.com redirects to a web app still go to the beta's
+  ([Joining and foldables](product/joining-and-folds.md)), until they point at app.blitzsplit.com.
+- The site only offers the web app once `webAppLive` is on in its `public/stores.js`, next to the `webAppUrl` that
+  already names https://app.blitzsplit.com.
 
 ### Google Play access
 
@@ -353,10 +411,11 @@ are used is in [push-notifications.md](push-notifications.md).
 
 ## Outside the stores
 
-- **Web sign in.** Supabase's redirect URLs and the Google and Apple providers know the production domain only. For the
-  beta site, add `https://blitz-split-beta.pages.dev` to the redirect URLs of the Supabase project, to the Google OAuth
-  client's authorized JavaScript origins and redirect URIs, and (for Sign in with Apple on the web) to the Services ID's
-  domains.
+- **Web sign in.** Supabase's redirect URLs and the Google and Apple providers only know the domains they were
+  given. For the beta site, add `https://blitz-split-beta.pages.dev` to the redirect URLs of the Supabase project, to
+  the Google OAuth client's authorized JavaScript origins and redirect URIs, and (for Sign in with Apple on the web)
+  to the Services ID's domains. The production web app needs the same for its own domain
+  ([The production web app](#the-production-web-app)).
 - **Invite links** open the app only through a domain the app owns (see
   [Joining and foldables](product/joining-and-folds.md)), and on Android only when the APK's signing key's SHA-256 is
   in blitzsplit.com's `assetlinks.json`, which lists the Play keys. The `android-build` job prints that SHA-256 beside
