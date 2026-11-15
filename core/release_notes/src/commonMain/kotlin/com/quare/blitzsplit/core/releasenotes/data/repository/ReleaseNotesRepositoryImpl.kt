@@ -55,10 +55,15 @@ class ReleaseNotesRepositoryImpl(
              */
             val saved = local.getSavedFeed(language)
             val savedReleases = saved?.let { parser.parse(it.json) }
-            if (saved == null || savedReleases == null || !saved.isFresh(savedReleases)) {
+            if (saved == null || savedReleases == null) {
                 download(
                     language = language,
-                    savedEtag = savedReleases?.let { saved.etag },
+                    savedEtag = null,
+                )
+            } else if (!saved.isFresh(savedReleases)) {
+                download(
+                    language = language,
+                    savedEtag = saved.etag,
                 )
             }
         }
