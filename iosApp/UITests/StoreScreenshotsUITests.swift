@@ -61,7 +61,7 @@ final class StoreScreenshotsUITests: XCTestCase {
             let directory = output.appendingPathComponent(slot).appendingPathComponent(locale.tag)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             for screen in screens where onlyScreens?.contains(screen.code) ?? true {
-                let png = capture(screen, in: locale, assets: assets, isDuoOpen: slot == Self.duoOpenSlot)
+                let png = try capture(screen, in: locale, assets: assets, isDuoOpen: slot == Self.duoOpenSlot)
                 try png.write(to: directory.appendingPathComponent("\(screen.fileName).png"))
             }
         }
@@ -130,7 +130,7 @@ final class StoreScreenshotsUITests: XCTestCase {
         in locale: ListingLocale,
         assets: [String: String],
         isDuoOpen: Bool
-    ) -> Data {
+    ) throws -> Data {
         let app = XCUIApplication()
         app.launchArguments = [
             "-StoreScreenshotsLanguage", locale.language,
@@ -144,26 +144,33 @@ final class StoreScreenshotsUITests: XCTestCase {
         Thread.sleep(forTimeInterval: Self.settle)
         let png = isDuoOpen ? Self.innerDisplayPNG() : XCUIScreen.main.screenshot().pngRepresentation
         app.terminate()
-        return png
+        return try XCTUnwrap(png, "The iPhone Duo isn't open: no screen of its inner display's size is lying down")
     }
 
-    /// The iPhone Duo's inner display. Open, the Duo draws there, on what XCTest lists as a second screen, while the
-    /// main one, the outer display, is off: of the two, the larger is the one in use. A screen longer than the inner
-    /// display is none of the Duo's own (the simulator has a resizable scene display too) and is left out. XCTest
-    /// hands the display lying down as upright pixels with a rotation tag, which the frame's decoder doesn't read, so
-    /// the image is drawn again the way it is seen.
+    /// The iPhone Duo's inner display, nil while the Duo isn't open. Open, the Duo draws there, on what XCTest lists
+    /// as a second screen, while the main one, the outer display, is off: of the two, the larger is the one in use. A
+    /// screen longer than the inner display is none of the Duo's own (the simulator has a resizable scene display
+    /// too) and is left out. XCTest hands the display lying down as upright pixels with a rotation tag, which the
+    /// frame's decoder doesn't read, so the image is drawn again the way it is seen, pixel for pixel. Closed, the
+    /// inner display is off and upright, and nothing is returned rather than a black capture for the frame to stretch.
     @MainActor
-    private static func innerDisplayPNG() -> Data {
+    private static func innerDisplayPNG() -> Data? {
         let images = XCUIScreen.screens.map { $0.screenshot().image }.filter { image in
             image.cgImage.map { max($0.width, $0.height) <= innerDisplayLongSide } ?? false
         }
-        guard let image = images.max(by: { pixels(of: $0) < pixels(of: $1) }) else {
-            return XCUIScreen.main.screenshot().pngRepresentation
-        }
+        guard let image = images.max(by: { pixels(of: $0) < pixels(of: $1) }),
+              image.size.width > image.size.height
+        else { return nil }
+        let size = CGSize(
+            width: (image.size.width * image.scale).rounded(),
+            height: (image.size.height * image.scale).rounded()
+        )
         let format = UIGraphicsImageRendererFormat()
-        format.scale = image.scale
+        format.scale = 1
         format.opaque = true
-        return UIGraphicsImageRenderer(size: image.size, format: format).pngData { _ in image.draw(at: .zero) }
+        return UIGraphicsImageRenderer(size: size, format: format).pngData { _ in
+            image.draw(in: CGRect(origin: .zero, size: size))
+        }
     }
 
     private static func pixels(of image: UIImage) -> Int {

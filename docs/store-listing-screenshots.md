@@ -32,7 +32,8 @@ lane by hand between releases, or when a release's screenshot jobs failed.
 The lane runs, each step under `scripts/heavy-check.sh`:
 
 1. `scripts/store-screenshots/capture-ios.sh`: builds the `BoraRachar-iOS-StoreScreenshots` UI tests and runs them
-   on one simulator per App Store slot. They write `build/outputs/apple-screenshot-captures/<slot>/<locale>/`.
+   on one simulator per App Store slot (the iPhone Duo's two slots, closed and open, share theirs). They write
+   `build/outputs/apple-screenshot-captures/<slot>/<locale>/`.
    Then `scripts/store-screenshots/capture-mac.sh` builds the Mac app and photographs its window itself, with no
    UI test ([why](#how-the-mac-capture-works)). **It takes this Mac's own screen for about half an hour**, so leave
    the keyboard and mouse alone, or pass `skip_mac:true` to leave the Mac listing as it is. Whatever runs it needs

@@ -49,7 +49,8 @@ print(fits[-1] if fits else '')
 " "$(device_type "$1")"
 }
 
-# Whether the Duo is open: its inner display, off and upright while closed, then draws the screen lying down.
+# Whether the Duo is open: its inner display, off and upright while closed, then draws the screen lying down. simctl
+# writes it as it is seen, 2853x2007, with no rotation tag (XCTest's capture is the one that has it).
 duo_is_open() {
   local probe width height
   probe="$(mktemp -d)"
@@ -66,22 +67,31 @@ duo_is_open() {
 # to press Open in Device Hub instead, and fails after OPEN_TIMEOUT seconds, which skips the slot.
 open_duo() {
   local udid="$1" name="$2"
-  if duo_is_open "$udid"; then return; fi
   open -g -b "$DEVICE_HUB"
   if ! osascript - "$name" << 'APPLESCRIPT' > /dev/null 2>&1; then
 on run arguments
   set simulatorName to item 1 of arguments
+  -- Just launched, Device Hub may be neither a process nor a window yet.
+  tell application "System Events"
+    repeat 30 times
+      if exists (first process whose bundle identifier is "com.apple.dt.Devices") then exit repeat
+      delay 1
+    end repeat
+  end tell
   tell application "System Events" to tell (first process whose bundle identifier is "com.apple.dt.Devices")
     repeat 30 times
       if exists window 1 then exit repeat
       delay 1
     end repeat
+    -- The sidebar is an outline: the simulator's row is the one holding its name, selected as a click would.
     set isSelected to false
     repeat with element in entire contents of window 1
-      if class of element is static text and value of element is simulatorName then
-        click element
-        set isSelected to true
-        exit repeat
+      if class of element is row then
+        if (value of every static text of entire contents of element) contains simulatorName then
+          set value of attribute "AXSelected" of element to true
+          set isSelected to true
+          exit repeat
+        end if
       end if
     end repeat
     -- Open acts on the device selected: without this one's row, it would open another session's Duo.
