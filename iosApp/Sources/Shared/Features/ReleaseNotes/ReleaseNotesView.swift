@@ -17,12 +17,8 @@ final class ReleaseNotesModel {
         })
         // A version's GitHub release, or all of them, in the browser
         watches.add(viewModel.actionWatcher.observe { action in
-            guard let open = action as? ReleaseNotesUiActionOpenUrl, let url = URL(string: open.url) else { return }
-            #if os(iOS)
-            UIApplication.shared.open(url)
-            #else
-            NSWorkspace.shared.open(url)
-            #endif
+            guard let open = action as? ReleaseNotesUiActionOpenUrl else { return }
+            ExternalURL.open(open.url)
         })
     }
 
@@ -220,7 +216,6 @@ private struct ReleaseCard: View {
     private var heading: some View {
         Text(verbatim: release.version.name)
             .font(.title3.bold())
-            .accessibilityAddTraits(.isHeader)
         if let beta = release.version.beta {
             // Int, not KotlinInt's Int32, so the key is the catalog's "%lld"
             ReleaseBadge(text: Text("Beta \(Int(truncating: beta))"), isProminent: false)

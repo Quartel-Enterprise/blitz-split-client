@@ -1,6 +1,6 @@
 import { ArrowLeft, CloudOff } from 'lucide-react'
 import { ReleaseNotesPresenter, type JsReleaseNotes, type JsReleaseNotesState } from 'blitzsplit-shared'
-import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { PageProblem } from '@/components/common'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -26,7 +26,6 @@ function formatReleaseDate(date: string): string {
 export function ReleaseNotesScreen() {
   const presenter = usePresenter(() => new ReleaseNotesPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsReleaseNotesState) => void) => p.observeState(onChange))
-  useActions(presenter, (p, onUrl: (url: string) => void) => p.observeOpenUrls(onUrl), (url) => window.open(url, '_blank', 'noopener,noreferrer'))
   if (!presenter || !state) return null
 
   return (
@@ -36,8 +35,11 @@ export function ReleaseNotesScreen() {
           <ArrowLeft />
         </Button>
         <h1 className="mr-auto text-lg font-semibold">{t('releaseNotes_title')}</h1>
-        <Button variant="ghost" size="icon" aria-label={t('releaseNotes_openOnGitHub')} title={t('releaseNotes_openOnGitHub')} onClick={() => presenter.openAllReleases()}>
-          <GitHubLogo />
+        {/* Why: a real link, so the browser opens the tab from the click itself; the presenter only counts it. */}
+        <Button variant="ghost" size="icon" asChild>
+          <a href={state.allReleasesUrl} target="_blank" rel="noopener noreferrer" aria-label={t('releaseNotes_openOnGitHub')} title={t('releaseNotes_openOnGitHub')} onClick={() => presenter.allReleasesOpened()}>
+            <GitHubLogo />
+          </a>
         </Button>
       </header>
       {/* Why: a reading width, since the notes are sentences. */}
@@ -60,7 +62,7 @@ export function ReleaseNotesScreen() {
           <p className="pt-8 text-center text-sm text-muted-foreground">{t(state.hasOnlyBetaReleases ? 'releaseNotes_emptyOnlyBeta' : 'releaseNotes_empty')}</p>
         )}
         {state.releases.map((release) => (
-          <ReleaseCard key={release.version} release={release} onOpen={() => presenter.openRelease(release.version)} />
+          <ReleaseCard key={release.version} release={release} onOpen={() => presenter.releaseOpened(release.version)} />
         ))}
       </main>
     </div>
@@ -68,26 +70,19 @@ export function ReleaseNotesScreen() {
 }
 
 /**
- * A version's card; a click (or Enter on it) opens its release on GitHub in another tab, unless the click ended a
- * selection of the notes' text.
+ * A version's card: its title is a link to its release on GitHub, stretched over the whole card so a click anywhere
+ * opens it in another tab, the browser's own way.
  */
 function ReleaseCard({ release, onOpen }: { release: JsReleaseNotes; onOpen: () => void }) {
   return (
-    <Card
-      role="link"
-      tabIndex={0}
-      className="cursor-pointer transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      onClick={() => {
-        if (window.getSelection()?.toString()) return
-        onOpen()
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter') onOpen()
-      }}
-    >
+    <Card className="relative transition-colors hover:bg-accent/40 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-ring">
       <CardHeader>
         <CardTitle className="flex flex-wrap items-center gap-2">
-          <h2>{release.name}</h2>
+          <h2>
+            <a href={release.releaseUrl} target="_blank" rel="noopener noreferrer" aria-label={release.version} className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none" onClick={onOpen}>
+              {release.name}
+            </a>
+          </h2>
           {release.betaNumber != null && <Badge variant="outline">{t('releaseNotes_beta', { number: release.betaNumber })}</Badge>}
           {release.isInstalled && <Badge variant="secondary">{t('releaseNotes_thisVersion')}</Badge>}
         </CardTitle>

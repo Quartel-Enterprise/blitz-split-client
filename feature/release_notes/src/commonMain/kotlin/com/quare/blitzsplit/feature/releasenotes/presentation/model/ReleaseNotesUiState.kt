@@ -17,7 +17,8 @@ data class ReleaseNotesUiState(
     val visibleReleases: List<ReleaseNotes>
         get() = releases.orEmpty().filter { release -> showsBeta == true || !release.version.isBeta }
 
-    private val isLoaded: Boolean
+    // Why: the notes and the switch's choice were both read, so the list (and its cards) can show.
+    val isLoaded: Boolean
         get() = releases != null && showsBeta != null
 
     val showsSkeleton: Boolean

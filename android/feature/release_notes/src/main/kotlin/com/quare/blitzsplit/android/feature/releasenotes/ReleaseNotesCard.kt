@@ -20,8 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.core.releasenotes.domain.model.ReleaseDate
@@ -70,7 +68,6 @@ internal fun ReleaseNotesCard(
                         text = release.version.name,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.semantics { heading() },
                     )
                     release.version.beta?.let { beta ->
                         VersionBadge(

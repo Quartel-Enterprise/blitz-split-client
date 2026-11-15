@@ -6,7 +6,7 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.model.ReleaseDate
-import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotesUiAction
+import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseLinks
 import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.blitzsplit.feature.releasenotes.presentation.viewmodel.ReleaseNotesViewModel
 import kotlinx.coroutines.flow.map
@@ -23,6 +23,8 @@ class JsReleaseNotes(
     val date: String,
     val isInstalled: Boolean,
     val notes: Array<String>,
+    // Why: its release on GitHub, the card's link.
+    val releaseUrl: String,
 )
 
 class JsReleaseNotesState(
@@ -35,6 +37,8 @@ class JsReleaseNotesState(
     val showsEmpty: Boolean,
     // Why: the empty list says to turn the switch on when that would show something.
     val hasOnlyBetaReleases: Boolean,
+    // Why: every release on GitHub, the header's link.
+    val allReleasesUrl: String,
 )
 
 class ReleaseNotesPresenter {
@@ -53,6 +57,7 @@ class ReleaseNotesPresenter {
                             date = release.date.toIsoDate(),
                             isInstalled = release.isInstalled,
                             notes = release.notes.toTypedArray(),
+                            releaseUrl = ReleaseLinks.toReleaseUrl(release.version),
                         )
                     }.toTypedArray(),
                 showsBeta = state.showsBeta == true,
@@ -61,6 +66,7 @@ class ReleaseNotesPresenter {
                 showsLoadFailed = state.showsLoadFailed,
                 showsEmpty = state.showsEmpty,
                 hasOnlyBetaReleases = state.hasOnlyBetaReleases,
+                allReleasesUrl = ReleaseLinks.ALL_RELEASES_URL,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -79,26 +85,18 @@ class ReleaseNotesPresenter {
         viewModel.onEvent(ReleaseNotesUiEvent.OnShowBetaToggled(isOn))
     }
 
-    // Why: the top bar's GitHub button.
-    fun openAllReleases() {
+    /*
+     * Why: the header's GitHub link was clicked. The browser opens it from the click itself, since a tab opened once the
+     * ViewModel answered would be a popup Safari blocks, so this only tells the ViewModel, which counts it.
+     */
+    fun allReleasesOpened() {
         viewModel.onEvent(ReleaseNotesUiEvent.OnAllReleasesClicked)
     }
 
-    // Why: a version's card, by the whole name that keys it; the ViewModel ignores one no longer on screen.
-    fun openRelease(version: String) {
+    // Why: a version's card link was clicked, by the whole name that keys it; counted as the header's is.
+    fun releaseOpened(version: String) {
         val appVersion = AppVersion.parseOrNull(version) ?: return
         viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(appVersion))
-    }
-
-    // Why: a GitHub release page to open in another tab.
-    fun observeOpenUrls(onUrl: (String) -> Unit): JsWatch {
-        val urls = viewModel.uiAction.map { action ->
-            when (action) {
-                is ReleaseNotesUiAction.OpenUrl -> action.url
-            }
-        }
-        val watch = FlowWatcher(urls).observe(onUrl)
-        return JsWatch(watch::cancel)
     }
 
     fun dispose() {
