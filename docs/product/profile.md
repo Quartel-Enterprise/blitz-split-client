@@ -284,7 +284,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     custom color's derived through `CustomColor.toTones`), under a white glyph that reads on it, a card for a credit card
     and a wallet for a debit card so the two tell apart at a glance (Pierre asked on November 15, 2026 to tell them
     apart; the wallet was settled while he was away, see PR #376): never a bank's or a card brand's logo. Cards saved
-    with the first eight card colors keep their key until saved again and read as the nearest named color: purple,
+    with the first eight card colors keep their key until their color is changed (a rename or a default moving to another method writes it back as it was) and read as the nearest named color: purple,
     blue, green, orange, red and pink as themselves, gold as yellow and graphite as gray. A version older than this
     draws a named color it doesn't know, or a custom one, as graphite, and its form opens such a card on purple, which
     saving there writes back. "Default method" is optional (the first method starts on, any can be turned off) and is

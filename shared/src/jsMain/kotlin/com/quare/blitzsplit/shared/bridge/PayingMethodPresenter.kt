@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
+// Why: the card tiles' fills, per color code (getCardFill).
+private val cardFills = mutableMapOf<String?, String>()
+
 class JsPayingMethodState(
     val isEditing: Boolean,
     val isLoaded: Boolean,
@@ -134,5 +137,10 @@ internal fun com.quare.blitzsplit.core.expenses.domain.model.PayingMethod.toJsPa
         isDefault = isDefault,
     )
 
-// Why: a card tile's fill as a CSS color ("#RRGGBB"), the tone Android and the Apple app draw (CardTints.fillRgbOf).
-fun getCardFill(code: String?): String = CustomColor(CardTints.fillRgbOf(CardTints.fromCodeOrNull(code))).hex
+/*
+ * Why: a card tile's fill as a CSS color ("#RRGGBB"), the tone Android and the Apple app draw (CardTints.fillRgbOf).
+ * Kept per code, since the tiles render on every state change and a custom color's tone is a contrast search.
+ */
+fun getCardFill(code: String?): String = cardFills.getOrPut(code) {
+    CustomColor(CardTints.fillRgbOf(CardTints.fromCodeOrNull(code))).hex
+}

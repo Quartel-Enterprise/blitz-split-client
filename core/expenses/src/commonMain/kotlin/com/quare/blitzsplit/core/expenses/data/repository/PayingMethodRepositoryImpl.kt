@@ -3,9 +3,11 @@ package com.quare.blitzsplit.core.expenses.data.repository
 import com.quare.blitzsplit.core.expenses.data.datasource.PayingMethodLocalDataSource
 import com.quare.blitzsplit.core.expenses.data.datasource.PayingMethodRemoteDataSource
 import com.quare.blitzsplit.core.expenses.data.mapper.PayingMethodMapper
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.repository.PayingMethodRepository
 import com.quare.blitzsplit.core.provider.room.entity.BillPayingMethodEntity
+import com.quare.blitzsplit.core.provider.room.entity.PayingMethodEntity
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
@@ -46,11 +48,12 @@ class PayingMethodRepositoryImpl(
         val saved = methods.map { method ->
             val previous = byId[method.id]
             val floor = if (method.isDefault) latest else previous?.updatedAt ?: 0L
-            mapper.toEntity(
+            val entity = mapper.toEntity(
                 method = method,
                 updatedAt = maxOf(now, floor + 1),
                 ownerUserId = previous?.ownerUserId,
             )
+            entity.copy(icon = findKeptIcon(previous, method) ?: entity.icon)
         }
         val savedIds = methods.map { it.id }.toSet()
         val unflagged = if (methods.none { it.isDefault }) {
@@ -68,6 +71,16 @@ class PayingMethodRepositoryImpl(
         }
         local.upsertMethods(saved + unflagged)
     }
+
+    /*
+     * Why: a card whose color wasn't changed keeps the key it was stored with ("gold", or one a newer version added),
+     * so a former default unflagged here, or a card only renamed, isn't rewritten to this version's code for the other
+     * devices: an older version reads "yellow" or a hex as its default card color.
+     */
+    private fun findKeptIcon(
+        previous: PayingMethodEntity?,
+        method: PayingMethod,
+    ): String? = previous?.icon?.takeIf { method.type.isCard && CardTints.fromCodeOrNull(it) == method.cardColor }
 
     // Why: a tombstone without its name, so the deletion reaches the person's other devices and no name stays behind.
     override suspend fun deleteMethod(id: String) {

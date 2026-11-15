@@ -151,6 +151,121 @@ class PayingMethodRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a default card saved with a legacy key WHEN a new default is saved THEN the card keeps its key`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedMethods = listOf(
+                    method(
+                        id = "travel",
+                        icon = "gold",
+                        isDefault = true,
+                    ),
+                ),
+            )
+            val formerDefault = repository.observeMethods().first().single()
+            val newDefault = domainMethod(
+                id = "cash",
+                type = PayingMethodType.CASH,
+                isDefault = true,
+            )
+
+            // When
+            repository.saveMethods(listOf(formerDefault.copy(isDefault = false), newDefault))
+
+            // Then
+            assertEquals(
+                "gold",
+                local.methods.value
+                    .single { it.id == "travel" }
+                    .icon,
+            )
+        }
+
+    @Test
+    fun `GIVEN a card with a color this version does not know WHEN only renaming it THEN keeps its stored key`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedMethods = listOf(
+                    method(
+                        id = "card",
+                        icon = "aurora",
+                    ),
+                ),
+            )
+            val card = repository.observeMethods().first().single()
+
+            // When
+            repository.saveMethods(listOf(card.copy(name = "Inter")))
+
+            // Then
+            assertEquals(
+                "aurora",
+                local.methods.value
+                    .single()
+                    .icon,
+            )
+        }
+
+    @Test
+    fun `GIVEN a card saved with a legacy key WHEN giving it another color THEN stores the new color code`() = runTest {
+        // Given
+        prepareScenario(
+            storedMethods = listOf(
+                method(
+                    id = "card",
+                    icon = "gold",
+                ),
+            ),
+        )
+        val card = repository.observeMethods().first().single()
+
+        // When
+        repository.saveMethods(listOf(card.copy(cardColor = CategoryColor.TEAL.tint)))
+
+        // Then
+        assertEquals(
+            "teal",
+            local.methods.value
+                .single()
+                .icon,
+        )
+    }
+
+    @Test
+    fun `GIVEN a card with a color this version does not know WHEN making it cash THEN stores no color`() = runTest {
+        // Given
+        prepareScenario(
+            storedMethods = listOf(
+                method(
+                    id = "card",
+                    icon = "aurora",
+                ),
+            ),
+        )
+        val card = repository.observeMethods().first().single()
+
+        // When
+        repository.saveMethods(
+            listOf(
+                card.copy(
+                    type = PayingMethodType.CASH,
+                    cardColor = null,
+                ),
+            ),
+        )
+
+        // Then
+        assertEquals(
+            "",
+            local.methods.value
+                .single()
+                .icon,
+        )
+    }
+
+    @Test
     fun `GIVEN two defaults from devices ahead of this clock WHEN saving a new default THEN it is the default`() =
         runTest {
             // Given

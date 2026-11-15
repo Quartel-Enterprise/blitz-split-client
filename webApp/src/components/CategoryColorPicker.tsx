@@ -132,7 +132,7 @@ function CustomColorDialogs({ customColors, actions }: { customColors: JsCustomC
   return (
     <>
       {customColors.draft && <NewColorDialog draft={customColors.draft} actions={actions} />}
-      {deletion && deletion.usedBy == null && deletion.usedByMethod == null && (
+      {deletion && !deletion.isInUse && (
         <ConfirmDialog
           title={t('customColor_deleteTitle')}
           description={t('customColor_deleteMessage')}
@@ -142,7 +142,7 @@ function CustomColorDialogs({ customColors, actions }: { customColors: JsCustomC
           onDismiss={() => actions.dismissDeletion()}
         />
       )}
-      {deletion && (deletion.usedBy || deletion.usedByMethod) && (
+      {deletion?.isInUse && (
         <AlertDialog open onOpenChange={(open) => !open && actions.dismissDeletion()}>
           <AlertDialogContent>
             <AlertDialogHeader>

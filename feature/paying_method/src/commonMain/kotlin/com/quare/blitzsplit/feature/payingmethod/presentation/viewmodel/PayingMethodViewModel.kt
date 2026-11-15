@@ -176,6 +176,8 @@ class PayingMethodViewModel(
         val state = uiState.value
         if (type == state.type || type !in state.types) return
         trackEvent("paying_method_type_selected", mapOf("type" to type.code))
+        // Why: the picker leaves with the card, on every platform, so an "Add" still saving never colors a hidden card.
+        if (state.type.isCard && !type.isCard) customColors.close()
         uiState.update { it.copy(type = type) }
     }
 

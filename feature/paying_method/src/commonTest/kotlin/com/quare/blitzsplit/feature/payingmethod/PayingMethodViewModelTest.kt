@@ -396,6 +396,22 @@ class PayingMethodViewModelTest {
         }
 
     @Test
+    fun `GIVEN New color open on a card WHEN switching the type to cash THEN New color closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(
+                PayingMethodUiEvent.OnCustomColor(CustomColorEvent.OnAddClicked(CardTints.default, categoryKey = null)),
+            )
+
+            // When
+            viewModel.onEvent(PayingMethodUiEvent.OnTypeSelected(PayingMethodType.CASH))
+
+            // Then
+            assertNull(viewModel.uiState.value.customColors.draft)
+        }
+
+    @Test
     fun `GIVEN a new card WHEN a custom color is added THEN closing asks to discard changes`() =
         runTest(testDispatcher) {
             // Given

@@ -11,7 +11,7 @@ object CardTints {
     /*
      * Why: the first cards were saved with eight keys of their own. Purple, blue, green, orange, red and pink are named
      * colors already; gold reads as yellow and graphite as gray, the nearest of the twelve by hue. Nothing is rewritten:
-     * the card keeps its old key until it is saved again. A code this version doesn't know reads as none.
+     * the card keeps its stored key until its color is changed. A code this version doesn't know reads as none.
      */
     fun fromCodeOrNull(code: String?): CategoryTint? = CategoryTint.fromCodeOrNull(code) ?: legacyColors[code]?.tint
 

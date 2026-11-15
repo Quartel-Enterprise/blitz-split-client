@@ -50,11 +50,12 @@ class JsColorDraft(
 )
 
 /*
- * Why: "Delete this color?", or "This color is in use" while usedBy names the category (or usedByMethod the payment
- * method) to change first.
+ * Why: "Delete this color?", or "This color is in use" while isInUse, whose message names the category (usedBy) or the
+ * payment method (usedByMethod) to change first. One flag, so the web asks one question whatever keeps the color.
  */
 class JsCustomColorDeletion(
     val color: String,
+    val isInUse: Boolean,
     val usedBy: JsCategory?,
     val usedByMethod: JsPayingMethod?,
     val isDeleting: Boolean,
@@ -177,6 +178,7 @@ private fun toJsColorDraft(draft: ColorDraft): JsColorDraft = JsColorDraft(
 
 private fun toJsCustomColorDeletion(deletion: CustomColorDeletion): JsCustomColorDeletion = JsCustomColorDeletion(
     color = deletion.color.hex,
+    isInUse = deletion.usedBy != null,
     usedBy = (deletion.usedBy as? CustomColorUser.OfCategory)?.category?.let(::toJsCategory),
     usedByMethod = (deletion.usedBy as? CustomColorUser.OfPayingMethod)?.method?.toJsPayingMethod(),
     isDeleting = deletion.isDeleting,
