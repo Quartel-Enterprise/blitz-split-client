@@ -1032,7 +1032,10 @@ class PayingMethodViewModelTest {
     ) {
         repository = FakePayingMethodRepository(initialMethods = methods)
         this.showsPix = MutableStateFlow(showsPix)
-        route = Route.PayingMethod(methodId)
+        route = Route.PayingMethod(
+            methodId = methodId,
+            isOverBill = false,
+        )
         navigator = BackStackNavigator(startRoute = Route.Groups).also {
             it.navigate(Route.Profile)
             it.navigate(route)

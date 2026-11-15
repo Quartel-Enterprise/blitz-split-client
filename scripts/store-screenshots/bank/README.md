@@ -15,8 +15,8 @@ photographed, so no image needs a release from anyone.
 
 The store screenshots draw the five people of `../faces/` and three group photos of this bank, named in
 `SampleTrips` (`TRIP_PHOTO` and each side group's `photo`): `groups/trip-lisbon-tram.jpg`, `groups/home-kitchen.jpg`
-and `groups/event-soccer.jpg`. The App Store's UI test passes those same three files to the app
-(`iosApp/UITests/StoreScreenshotsUITests.swift`): change the names in both places. The rest of the bank is there to
+and `groups/event-soccer.jpg`. The App Store's captures hand those same three files to the app, from
+`../assets.tsv`: change the names in both places. The rest of the bank is there to
 pick from, see [store-listing-screenshots.md](../../../docs/store-listing-screenshots.md).
 
 ## Names

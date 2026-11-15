@@ -3,7 +3,9 @@ import XCTest
 /// Captures the App Store screenshots (docs/store-listing-screenshots.md) on the simulator it runs on: for every
 /// language, it launches the app seeded with the sample trip on each listing screen and writes the whole screen to
 /// `$STORE_SCREENSHOTS_OUTPUT/<slot>/<locale>/<file>.png`, which the Robolectric generators then frame. Run through
-/// scripts/store-screenshots/capture-ios.sh, which picks the simulator of each slot and passes these variables.
+/// scripts/store-screenshots/capture-ios.sh, which picks the simulator of each slot and passes these variables. The
+/// Mac's window is captured by capture-mac.sh instead, with no test: a Mac's UI test runner is sandboxed and can't
+/// write the captures out.
 final class StoreScreenshotsUITests: XCTestCase {
     /// The listing's languages: the generated folder, the app's language code, and what iOS is told to run in.
     private struct ListingLocale {
@@ -20,48 +22,9 @@ final class StoreScreenshotsUITests: XCTestCase {
         let isDark: Bool
     }
 
-    /// Latin America's Spanish runs in the United States' region: in Spain's the app reads its es-ES strings
-    /// (AppLanguage.toTag), and Mexico's or Latin America's write the trip's euros as "EUR 1,145.80".
-    private static let locales = [
-        ListingLocale(tag: "en-US", language: "en", appleLanguage: "en-US", appleLocale: "en_US"),
-        ListingLocale(tag: "pt-BR", language: "pt", appleLanguage: "pt-BR", appleLocale: "pt_BR"),
-        ListingLocale(tag: "pt-PT", language: "pt-PT", appleLanguage: "pt-PT", appleLocale: "pt_PT"),
-        ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_US"),
-        ListingLocale(tag: "es-ES", language: "es-ES", appleLanguage: "es-ES", appleLocale: "es_ES"),
-        ListingLocale(tag: "fr", language: "fr", appleLanguage: "fr-FR", appleLocale: "fr_FR"),
-        ListingLocale(tag: "de", language: "de", appleLanguage: "de-DE", appleLocale: "de_DE"),
-        ListingLocale(tag: "it", language: "it", appleLanguage: "it-IT", appleLocale: "it_IT"),
-        ListingLocale(tag: "pl", language: "pl", appleLanguage: "pl-PL", appleLocale: "pl_PL"),
-        ListingLocale(tag: "nl", language: "nl", appleLanguage: "nl-NL", appleLocale: "nl_NL"),
-        ListingLocale(tag: "tr", language: "tr", appleLanguage: "tr-TR", appleLocale: "tr_TR"),
-        ListingLocale(tag: "id", language: "id", appleLanguage: "id-ID", appleLocale: "id_ID"),
-        ListingLocale(tag: "ja", language: "ja", appleLanguage: "ja-JP", appleLocale: "ja_JP"),
-    ]
-
-    /// The same order and file names as StoreScreen in :android:store_screenshots.
-    private static let screens = [
-        ListingScreen(code: "group", fileName: "01_group", isDark: true),
-        ListingScreen(code: "items", fileName: "02_split_by_items", isDark: true),
-        ListingScreen(code: "receipt", fileName: "03_receipt", isDark: true),
-        ListingScreen(code: "balances", fileName: "04_balances", isDark: true),
-        ListingScreen(code: "invite", fileName: "05_invite", isDark: true),
-        ListingScreen(code: "statistics", fileName: "06_statistics", isDark: true),
-        ListingScreen(code: "home", fileName: "07_home", isDark: true),
-        ListingScreen(code: "payers", fileName: "08_payers_and_currencies", isDark: true),
-        ListingScreen(code: "activity", fileName: "09_activity", isDark: true),
-        ListingScreen(code: "light", fileName: "10_light_theme", isDark: false),
-    ]
-
-    /// How long a launched screen takes to seed, open and finish its transitions before the capture.
+    /// How long a launched screen takes to seed, open and finish its transitions before the capture. "Bill items"
+    /// opens by itself in that time (BlitzSplitApple.createSplitBillViewModel), so the test taps nothing.
     private static let settle: TimeInterval = 4
-
-    /// How many times the bill is scrolled looking for its Split row before the capture gives up.
-    private static let maxScrolls = 3
-
-    #if os(macOS)
-    /// How far each scroll moves the bill on the Mac, whose window has no swipe.
-    private static let macScrollDelta: CGFloat = 400
-    #endif
 
     override func setUp() {
         continueAfterFailure = false
@@ -72,26 +35,31 @@ final class StoreScreenshotsUITests: XCTestCase {
         let environment = ProcessInfo.processInfo.environment
         let output = URL(fileURLWithPath: try XCTUnwrap(environment["STORE_SCREENSHOTS_OUTPUT"]))
         let slot = try XCTUnwrap(environment["STORE_SCREENSHOTS_SLOT"])
-        let assets = try Self.assetsEnvironment(environment["STORE_SCREENSHOTS_ASSETS"])
+        // The tables capture-mac.sh reads too, beside the photos: scripts/store-screenshots
+        let tables = URL(fileURLWithPath: try XCTUnwrap(environment["STORE_SCREENSHOTS_ASSETS"]))
+        let locales = try Self.rows(of: "locales", fields: 4, in: tables).map {
+            ListingLocale(tag: $0[0], language: $0[1], appleLanguage: $0[2], appleLocale: $0[3])
+        }
+        let screens = try Self.rows(of: "screens", fields: 3, in: tables).map {
+            ListingScreen(code: $0[0], fileName: $0[1], isDark: $0[2] == "dark")
+        }
+        let assets = try Self.assetsEnvironment(tables)
         let onlyLocales = Self.subset(environment["STORE_SCREENSHOTS_LOCALES"])
         let onlyScreens = Self.subset(environment["STORE_SCREENSHOTS_SCREENS"])
-        #if os(iOS)
         XCUIDevice.shared.orientation = .portrait
         if slot.hasPrefix("ipad") { useFullScreenApps() }
-        #endif
         // The app's own language comes back once the captures end, whatever they stopped on.
         defer { restoreAppLanguage() }
-        for locale in Self.locales where onlyLocales?.contains(locale.tag) ?? true {
+        for locale in locales where onlyLocales?.contains(locale.tag) ?? true {
             let directory = output.appendingPathComponent(slot).appendingPathComponent(locale.tag)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            for screen in Self.screens where onlyScreens?.contains(screen.code) ?? true {
+            for screen in screens where onlyScreens?.contains(screen.code) ?? true {
                 let png = capture(screen, in: locale, assets: assets)
                 try png.write(to: directory.appendingPathComponent("\(screen.fileName).png"))
             }
         }
     }
 
-    #if os(iOS)
     /// iPadOS 26 opens apps in windows by default, which leaves the app short of the screen: Settings' Multitasking &
     /// Gestures switches the simulator to full-screen apps first. Settings runs in the simulator's own language,
     /// English, whatever the listing's.
@@ -109,7 +77,6 @@ final class StoreScreenshotsUITests: XCTestCase {
         }
         settings.terminate()
     }
-    #endif
 
     /// One last launch, without the seed, that puts back the language the app had before the run (StoreScreenshotsRun).
     @MainActor
@@ -126,23 +93,27 @@ final class StoreScreenshotsUITests: XCTestCase {
         return Set(list.split(separator: ",").map(String.init))
     }
 
-    /// The faces, the groups' photos and the receipt's photo, base64 in the launch environment: the Mac app's sandbox
-    /// can't read the repository, so the app writes them to a folder of its own (StoreScreenshotsRun). The groups'
-    /// photos are the three SampleTrips names (TRIP_PHOTO and each side group's), not the whole bank: the environment
-    /// has a size limit. This bundle doesn't link the shared framework, so the names are repeated here, and the seed
-    /// stops the launch on a name SampleTrips has and this list lacks.
-    private static func assetsEnvironment(_ directory: String?) throws -> [String: String] {
-        guard let directory else { return [:] }
-        let root = URL(fileURLWithPath: directory)
-        var files = ["receipt": root.appendingPathComponent("receipt.jpg")]
-        for person in 0..<5 {
-            files["person\(person)"] = root.appendingPathComponent("faces/person\(person).jpg")
+    /// The rows of `<name>.tsv`, each its tab-separated fields, without the `#` comment lines and the empty ones. A
+    /// row short of a field (spaces typed for a tab) fails the test here, by name, instead of trapping where it is
+    /// read.
+    private static func rows(of name: String, fields: Int, in directory: URL) throws -> [[String]] {
+        let rows = try String(contentsOf: directory.appendingPathComponent("\(name).tsv"), encoding: .utf8)
+            .split(separator: "\n")
+            .filter { !$0.hasPrefix("#") }
+            .map { $0.split(separator: "\t").map(String.init) }
+        for row in rows {
+            XCTAssertEqual(row.count, fields, "\(name).tsv: \(row.joined(separator: " ")) has not \(fields) fields")
         }
-        for photo in ["trip-lisbon-tram", "home-kitchen", "event-soccer"] {
-            files["group_\(photo)"] = root.appendingPathComponent("bank/groups/\(photo).jpg")
-        }
-        return try files.reduce(into: [:]) { environment, file in
-            environment["STORE_SCREENSHOTS_ASSET_\(file.key)"] = try Data(contentsOf: file.value).base64EncodedString()
+        return rows
+    }
+
+    /// The faces, the groups' photos and the receipt's photo of assets.tsv, base64 in the launch environment, which
+    /// the app writes to a folder of its own (StoreScreenshotsRun): the Mac's capture hands them the same way, since
+    /// the Mac app's sandbox can't read the repository.
+    private static func assetsEnvironment(_ directory: URL) throws -> [String: String] {
+        try rows(of: "assets", fields: 2, in: directory).reduce(into: [:]) { environment, asset in
+            let photo = try Data(contentsOf: directory.appendingPathComponent(asset[1]))
+            environment["STORE_SCREENSHOTS_ASSET_\(asset[0])"] = photo.base64EncodedString()
         }
     }
 
@@ -159,29 +130,7 @@ final class StoreScreenshotsUITests: XCTestCase {
         app.launchEnvironment = assets
         app.launch()
         Thread.sleep(forTimeInterval: Self.settle)
-        if screen.code == "items" {
-            let split = app.buttons["splitBill.split"]
-            // The bill outgrows a short screen (the iPhone Duo closed), and a row below it isn't in the tree yet.
-            var scrolls = 0
-            while !split.waitForExistence(timeout: Self.settle), scrolls < Self.maxScrolls {
-                // swipeUp() is iOS only: the Mac's UI tests, built from this same file, scroll the wheel instead.
-                #if os(iOS)
-                app.swipeUp()
-                #else
-                app.scroll(byDeltaX: 0, deltaY: -Self.macScrollDelta)
-                #endif
-                scrolls += 1
-            }
-            XCTAssertTrue(split.exists, "No Split row to open Bill items")
-            split.tap()
-            Thread.sleep(forTimeInterval: Self.settle / 2)
-        }
-        #if os(macOS)
-        // The window alone, at the size StoreScreenshotsRun gives it, which the Mac's frame draws on its own canvas
-        let png = app.windows.firstMatch.screenshot().pngRepresentation
-        #else
         let png = XCUIScreen.main.screenshot().pngRepresentation
-        #endif
         app.terminate()
         return png
     }

@@ -317,7 +317,7 @@ internal class StoreScreenshotsSeed(
     // Why: a run with assets and without a photo SampleTrips names would capture that group as initials, unnoticed.
     private fun groupPhotoOf(photo: String): String? = photoOf("groups/$photo.jpg").also { url ->
         check(url != null || assetsDirectory == null) {
-            "No group photo named $photo in $assetsDirectory/groups: StoreScreenshotsUITests must pass it"
+            "No group photo named $photo in $assetsDirectory/groups: scripts/store-screenshots/assets.tsv must list it"
         }
     }
 

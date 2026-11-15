@@ -649,7 +649,13 @@ class PaidWithViewModelTest {
             viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
 
             // Then
-            assertEquals(groupStack + newBill + Route.PayingMethod(methodId = null), navigator.backStack.value)
+            assertEquals(
+                groupStack + newBill + Route.PayingMethod(
+                    methodId = null,
+                    isOverBill = true,
+                ),
+                navigator.backStack.value,
+            )
             assertEquals(listOf(ADD_CLICKED to emptyMap<String, Any>()), addEvents())
         }
 
@@ -728,6 +734,23 @@ class PaidWithViewModelTest {
             assertEquals(pix, state.paidWith.method)
             assertTrue(state.showsPaidWith)
             assertFalse(state.showsAddPayingMethod)
+        }
+
+    @Test
+    fun `GIVEN New payment method cancelled WHEN a method syncs later THEN nothing is picked for the person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+            viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+            navigator.navigateBack()
+
+            // When
+            paying.methods.value = listOf(pix)
+
+            // Then
+            assertEquals(groupStack + newBill, navigator.backStack.value)
+            assertFalse(viewModel.uiState.value.paidWith.hasChanged)
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
         }
 
     @Test
@@ -874,6 +897,23 @@ class PaidWithViewModelTest {
 
         // Then
         assertTrue(viewModel.uiState.value.isFormLocked)
+        assertEquals(groupStack + newBill, navigator.backStack.value)
+        assertTrue(addEvents().isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill saving WHEN tapping Add a payment method THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(methods = emptyList())
+        fillIn()
+        expenses.createGate = CompletableDeferred()
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isSaving)
         assertEquals(groupStack + newBill, navigator.backStack.value)
         assertTrue(addEvents().isEmpty())
     }

@@ -1,0 +1,34 @@
+Copyright (c) 2026 Quartel Enterprise. All rights reserved.
+
+The source code in this repository is published so that it can be read, studied and
+reviewed, and so that people can contribute to Blitz Split (Bora Rachar). It is not
+open source.
+
+No license is granted to copy, modify, merge, publish, distribute, sublicense, sell or
+otherwise use this software, in source or binary form, in whole or in part, except:
+
+  1. Viewing the source code on GitHub, and forking this repository on GitHub, as
+     GitHub's Terms of Service allow.
+  2. Modifying, building and running it on your own devices for the sole purpose of
+     preparing a contribution to this repository.
+
+Files that carry their own license notice, and third-party code included in this
+repository (such as the Gradle wrapper, under the Apache License 2.0, and the shadcn/ui
+components under webApp/src/components/ui, under the MIT License), remain under their
+own licenses.
+
+By submitting a contribution (a pull request, a patch or any other material) to this
+repository, you agree that Quartel Enterprise may use, modify, relicense and distribute
+it as part of Blitz Split, and you confirm that you have the right to grant this.
+
+The names "Blitz Split" and "Bora Rachar", their logos and the app's icons are the
+property of Quartel Enterprise and may not be used without written permission.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR ITS USE.
+
+For any other use, contact the maintainers through
+https://github.com/Quartel-Enterprise/blitz-split-client.

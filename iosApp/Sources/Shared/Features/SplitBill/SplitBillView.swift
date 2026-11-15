@@ -592,8 +592,6 @@ private struct PhoneSplitBill: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            // The App Store screenshots' UI test opens "Bill items" through it, whatever the language
-            .accessibilityIdentifier("splitBill.split")
         } header: {
             Text("Details")
         } footer: {
@@ -905,6 +903,8 @@ private struct PaidWithMenu: View {
 
     var body: some View {
         let paidWith = model.state.paidWith
+        let label = paidWith.method.map { Text(verbatim: $0.label) }
+            ?? Text(LocalizedStringResource("None (no payment method)", defaultValue: "None"))
         Menu {
             PaidWithMenuItems(methods: paidWith.methods) { methodId in
                 model.send(SplitBillUiEventOnPaidWithPicked(methodId: methodId))
@@ -916,21 +916,17 @@ private struct PaidWithMenu: View {
                 } else {
                     Image(systemName: "creditcard")
                 }
-                if let method = paidWith.method {
-                    Text(verbatim: method.label)
-                        .lineLimit(1)
-                } else {
-                    Text(LocalizedStringResource("None (no payment method)", defaultValue: "None"))
-                }
+                label
+                    .lineLimit(1)
                 Image(systemName: "chevron.down")
                     .font(.caption2.weight(.semibold))
             }
             .foregroundStyle(.primary)
         }
-        .fixedSize()
+        // As wide as its label up to the footer's width, where a long name truncates instead of being clipped
+        .fixedSize(horizontal: false, vertical: true)
         .accessibilityLabel(Text("Paid with"))
-        .accessibilityValue(paidWith.method.map { Text(verbatim: $0.label) }
-            ?? Text(LocalizedStringResource("None (no payment method)", defaultValue: "None")))
+        .accessibilityValue(label)
         .accessibilityHint(Text("Only you see this."))
     }
 }
@@ -1260,8 +1256,6 @@ private struct MacBillForm: View {
                             Button("Change…") {
                                 model.send(SplitBillUiEventOnSplitClicked.shared)
                             }
-                            // The Mac store screenshots' UI test opens "Bill Items" through it, whatever the language
-                            .accessibilityIdentifier("splitBill.split")
                         }
                     }
                     // Paid with's chip, or "Add a payment method", under Split as on the iPhone

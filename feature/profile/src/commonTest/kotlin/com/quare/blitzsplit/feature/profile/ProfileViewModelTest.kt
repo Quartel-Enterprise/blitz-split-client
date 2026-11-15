@@ -7059,7 +7059,14 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = null)),
+                listOf(
+                    Route.Groups,
+                    Route.Profile,
+                    Route.PayingMethod(
+                        methodId = null,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
             assertEquals(listOf("paying_method_add_clicked" to emptyMap<String, Any>()), trackedEvents)
@@ -7077,7 +7084,14 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = null)),
+                listOf(
+                    Route.Groups,
+                    Route.Profile,
+                    Route.PayingMethod(
+                        methodId = null,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }
@@ -7094,7 +7108,14 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = cash.id)),
+                listOf(
+                    Route.Groups,
+                    Route.Profile,
+                    Route.PayingMethod(
+                        methodId = cash.id,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
             assertEquals(listOf("paying_method_clicked" to mapOf<String, Any>("type" to "cash")), trackedEvents)
@@ -7112,7 +7133,14 @@ class ProfileViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Groups, Route.Profile, Route.PayingMethod(methodId = nubankCard.id)),
+                listOf(
+                    Route.Groups,
+                    Route.Profile,
+                    Route.PayingMethod(
+                        methodId = nubankCard.id,
+                        isOverBill = false,
+                    ),
+                ),
                 navigator.backStack.value,
             )
         }

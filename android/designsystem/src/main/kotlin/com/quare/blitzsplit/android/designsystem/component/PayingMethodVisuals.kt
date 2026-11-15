@@ -61,7 +61,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 
-private val tileShape = RoundedCornerShape(12.dp)
+// Why: the corner grows with the tile (12dp at 40dp), so a chip's 18dp tile stays a rounded square, not a dot.
+private const val CORNER_RATIO = 0.3f
 private const val ICON_RATIO = 0.55f
 
 /*
@@ -94,7 +95,7 @@ fun PayingMethodTile(
             .size(size)
             .background(
                 color = container,
-                shape = tileShape,
+                shape = RoundedCornerShape(size * CORNER_RATIO),
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -286,20 +287,14 @@ fun PaidWithCard(
             shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
-            PaidWithLine(
-                method = method,
-                trailing = {},
-            )
+            PaidWithLine(method = method)
         }
         PaidWithPrivateLabel(modifier = Modifier.padding(horizontal = 16.dp))
     }
 }
 
 @Composable
-private fun PaidWithLine(
-    method: PayingMethod?,
-    trailing: @Composable () -> Unit,
-) {
+private fun PaidWithLine(method: PayingMethod) {
     Row(
         modifier = Modifier
             .heightIn(min = 56.dp)
@@ -310,13 +305,11 @@ private fun PaidWithLine(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (method != null) {
-            PayingMethodTile(
-                type = method.type,
-                cardColor = method.cardColor,
-                size = 32.dp,
-            )
-        }
+        PayingMethodTile(
+            type = method.type,
+            cardColor = method.cardColor,
+            size = 32.dp,
+        )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.designsystem_paid_with),
@@ -324,14 +317,13 @@ private fun PaidWithLine(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = method?.label() ?: stringResource(R.string.designsystem_paid_with_none),
+                text = method.label(),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        trailing()
     }
 }
 
