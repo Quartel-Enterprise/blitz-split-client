@@ -209,9 +209,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
   - Nothing comes over from the legacy app (Pierre's call): 3.0.0 is a clean break. The legacy Blitz Split (2.4.0)
     kept its groups and bills on its own server, which this app never reads, so someone who updates starts on
-    Welcome like anyone new. Of its own data, the legacy app only left a preferences file on the device, under
-    another name, which this app neither reads nor removes. What the Firebase SDKs keep there is theirs: both apps
-    use the same Firebase project.
+    Welcome like anyone new. Of its own data, the legacy app only left a DataStore file on the device
+    (`blitz_split_data.preferences_pb`), which this app neither reads nor removes; it wrote nothing of its own to the
+    user defaults the two apps share on Apple, having the same bundle id. What the Firebase SDKs keep on the device
+    is theirs: both apps use the same Firebase project.
   - Nothing is guessed while loading (Pierre's call): a section with no concrete answer yet (Room not read, the
     server not answered, or data only the account's first full sync brings while `AccountSnapshot.awaitsFullSync`)
     shows a shimmer in the shape of what comes, never an empty state, a zero, a default or a disabled guess. A read

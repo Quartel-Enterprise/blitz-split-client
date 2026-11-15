@@ -411,12 +411,12 @@ for people other than the team is a decision to make knowingly.
 [`iosApp/Resources/PrivacyInfo.xcprivacy`](../iosApp/Resources/PrivacyInfo.xcprivacy) goes into the iOS and the Mac
 app. It says the app doesn't track, and gives Apple's reason for each
 [required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api)
-the app's binary calls, the libraries linked into it included: App Store Connect reads the binary, and a manifest a
-static library ships in its own bundle doesn't answer for the app's.
+the app's binary calls, the libraries linked into it included: the Kotlin ones ship no manifest of their own, so the
+app's is where their calls are declared.
 
 | API | Who calls it | Reason |
 | --- | --- | --- |
-| User defaults | The app's language, multiplatform-settings, Firebase | `CA92.1`: values the app itself wrote |
+| User defaults | The app's language, multiplatform-settings, Firebase | `CA92.1`: values the app itself wrote. `AppLocale.systemLanguage` also reads the device's language list from the global domain, which no reason names: the list `Locale.preferredLanguages` gives every app |
 | File timestamps (`stat`, `fstat`, `lstat`) | The linked libraries | `C617.1`: files in the app's own container, where the database is |
 | Disk space (`statfs`, `fstatfs`) | The linked libraries | `E174.1`: whether there is room to write |
 
