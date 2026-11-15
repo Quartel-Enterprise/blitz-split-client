@@ -2323,4 +2323,13 @@ export const nl: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1} heeft Schulden vereenvoudigen uitgezet. Nu betaalt {2} jou {3}.',
   push_debtsUnsimplifiedFromYou: '{1} heeft Schulden vereenvoudigen uitgezet. Nu betaal jij {2} {3}.',
   push_debtsUnsimplifiedOther: '{1} heeft Schulden vereenvoudigen uitgezet. Bekijk wat het voor jou betekent.',
+  releaseNotes_title: 'Releaseopmerkingen',
+  releaseNotes_showBeta: 'Bètaversies tonen',
+  releaseNotes_beta: 'Bèta {number}',
+  releaseNotes_thisVersion: 'Deze versie',
+  releaseNotes_empty: 'Nog geen releaseopmerkingen.',
+  releaseNotes_emptyOnlyBeta: 'Er is nog geen stabiele versie. Zet bètaversies aan om te zien wat er wordt getest.',
+  releaseNotes_loadFailedTitle: 'Releaseopmerkingen laden is mislukt',
+  releaseNotes_loadFailedBody: 'Controleer je verbinding en probeer het opnieuw.',
+  releaseNotes_retry: 'Opnieuw proberen',
 }

@@ -887,6 +887,47 @@ class DeviceSettingsRepositoryImplTest {
         assertEquals(listOf(false), observedUsageDataSharing)
     }
 
+    @Test
+    fun `GIVEN a fresh install with no row WHEN observing the beta release notes choice THEN there is none`() =
+        runTest {
+            // Given
+            prepareScenario(stored = null)
+
+            // When
+            val choice = repository.observeBetaReleaseNotesChoice().first()
+
+            // Then
+            assertNull(choice)
+        }
+
+    @Test
+    fun `GIVEN dark with usage data off WHEN showing beta release notes THEN stores the choice keeping the rest`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "dark",
+                    sharesUsageData = false,
+                ),
+            )
+
+            // When
+            repository.updateBetaReleaseNotesChoice(true)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "dark",
+                        sharesUsageData = false,
+                        showsBetaReleaseNotes = true,
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(true, repository.observeBetaReleaseNotesChoice().first())
+        }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
@@ -899,6 +940,7 @@ class DeviceSettingsRepositoryImplTest {
         lastNotificationPromptAt: Long? = null,
         isAppBannerDismissed: Boolean = false,
         sharesUsageData: Boolean = true,
+        showsBetaReleaseNotes: Boolean? = null,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -912,6 +954,7 @@ class DeviceSettingsRepositoryImplTest {
         lastNotificationPromptAt = lastNotificationPromptAt,
         isAppBannerDismissed = isAppBannerDismissed,
         sharesUsageData = sharesUsageData,
+        showsBetaReleaseNotes = showsBetaReleaseNotes,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -975,6 +1018,7 @@ private class FakeDeviceSettingsLocalDataSource(
             lastNotificationPromptAt = null,
             isAppBannerDismissed = false,
             sharesUsageData = true,
+            showsBetaReleaseNotes = null,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

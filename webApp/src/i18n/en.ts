@@ -2320,6 +2320,15 @@ export const en = {
   push_debtsUnsimplifiedToYou: '{1} turned off Simplify debts. Now {2} pays you {3}.',
   push_debtsUnsimplifiedFromYou: '{1} turned off Simplify debts. Now you pay {2} {3}.',
   push_debtsUnsimplifiedOther: '{1} turned off Simplify debts. See how it is for you.',
+  releaseNotes_title: 'Release notes',
+  releaseNotes_showBeta: 'Show beta versions',
+  releaseNotes_beta: 'Beta {number}',
+  releaseNotes_thisVersion: 'This version',
+  releaseNotes_empty: 'No release notes yet.',
+  releaseNotes_emptyOnlyBeta: 'There is no stable version yet. Turn on beta versions to see what is being tested.',
+  releaseNotes_loadFailedTitle: "Couldn't load the release notes",
+  releaseNotes_loadFailedBody: 'Check your connection and try again.',
+  releaseNotes_retry: 'Try again',
 } satisfies Record<string, string>
 
 export type MessageKey = keyof typeof en

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Notifications
@@ -197,6 +198,20 @@ internal fun AboutSection(
                     checked = state.sharesUsageData,
                     onCheckedChange = null,
                     enabled = state.isLoaded,
+                )
+            },
+        )
+        HorizontalDivider()
+        // Why: "Release notes", what each version changed here; there even where the store updates the app.
+        SectionRow(
+            icon = Icons.Outlined.Description,
+            headline = stringResource(R.string.profile_release_notes),
+            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnReleaseNotesClicked) },
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
         )

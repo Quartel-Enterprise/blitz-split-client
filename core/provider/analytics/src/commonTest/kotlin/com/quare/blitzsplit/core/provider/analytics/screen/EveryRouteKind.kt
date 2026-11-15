@@ -123,4 +123,5 @@ internal val everyRouteKind: List<Route> = listOf(
         page = LegalPage.PRIVACY_POLICY,
         anchor = "secret-anchor",
     ),
+    Route.ReleaseNotes,
 )

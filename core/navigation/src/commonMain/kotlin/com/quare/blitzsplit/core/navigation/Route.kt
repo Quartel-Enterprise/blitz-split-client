@@ -92,6 +92,12 @@ sealed interface Route {
         val anchor: String?,
     ) : Route
 
+    /*
+     * Why: "Release notes", from Profile's "Privacy and about": what each version changed on this platform, with the
+     * beta versions behind "Show beta versions". A sheet on the Mac's Settings.
+     */
+    data object ReleaseNotes : Route
+
     // Why: "Convidar", the group's link and QR code. It takes the place of "Novo grupo" once the group is created.
     data class Invite(
         val groupId: String,

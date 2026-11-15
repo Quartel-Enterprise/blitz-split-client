@@ -85,6 +85,7 @@
     <string name="profile_privacy_policy">Politique de confidentialité</string>
     <string name="profile_terms">Conditions d’utilisation</string>
     <string name="profile_version_footer">Version %1$s</string>
+    <string name="profile_release_notes">Notes de version</string>
     <string name="profile_check_for_updates">Rechercher des mises à jour</string>
     <string name="profile_check_for_updates_version">Version %1$s</string>
     <string name="profile_check_for_updates_checking">Vérification…</string>

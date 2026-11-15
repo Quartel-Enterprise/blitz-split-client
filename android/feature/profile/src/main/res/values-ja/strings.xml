@@ -81,6 +81,7 @@
     <string name="profile_privacy_policy">プライバシーポリシー</string>
     <string name="profile_terms">利用規約</string>
     <string name="profile_version_footer">バージョン%1$s</string>
+    <string name="profile_release_notes">リリースノート</string>
     <string name="profile_check_for_updates">アップデートを確認</string>
     <string name="profile_check_for_updates_version">バージョン%1$s</string>
     <string name="profile_check_for_updates_checking">確認中…</string>

@@ -114,6 +114,7 @@ struct SettingsView: View {
                 case let .appDownload(route): AppDownloadView(route: route)
                 // A new identity per text: a link to the other one swaps it in this sheet
                 case let .legalDocument(route): LegalDocumentView(route: route).id(route)
+                case .releaseNotes: ReleaseNotesView()
                 default: EmptyView()
                 }
             }
