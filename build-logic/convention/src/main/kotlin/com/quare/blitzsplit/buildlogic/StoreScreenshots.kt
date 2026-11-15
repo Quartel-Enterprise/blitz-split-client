@@ -11,11 +11,13 @@ import java.io.File
 // These tasks copy it where people look at it (store_listings/, git-ignored) and where the fastlane lanes upload from.
 // Play and Apple each fan Latin America's Spanish set out to their own regional codes; Spain has a set of its own.
 // The devices map each generator output folder to store_listings/' and to the one the store's tool reads; the Mac's
-// go apart, as the Mac app is a version of its own on App Store Connect (platform osx). The iPhone Duo open
-// (appleCollectOnlyDevices) is collected to look at and not staged yet: both Duo sizes share one shelf of ten on App
-// Store Connect, and which screens go there open is Pierre's call.
+// go apart, as the Mac app is a version of its own on App Store Connect (platform osx). The iPhone Duo is collected
+// whole, closed and open, and staged one screen at a time (duoScreensStagedOpen): its two displays share one shelf of
+// ten on App Store Connect.
 private const val GROUP = "store-screenshots"
 private const val GENERATE_TASK = "testDebugUnitTest"
+private const val DUO_CLOSED = "iphoneduo"
+private const val DUO_OPEN = "iphoneduoopen"
 private val listingLocales =
     listOf("en-US", "pt-BR", "pt-PT", "es", "es-ES", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
 private val playLocales = mapOf(
@@ -59,9 +61,18 @@ private val appleDevices = mapOf(
     "iphone67" to "iphone_6_7",
     "ipad13" to "ipad_13",
     "ipad11" to "ipad_11",
-    "iphoneduo" to "iphone_duo",
+    DUO_CLOSED to "iphone_duo",
+    DUO_OPEN to "iphone_duo_open",
 )
-private val appleCollectOnlyDevices = mapOf("iphoneduoopen" to "iphone_duo_open")
+
+// App Store Connect has one iPhone Duo device size for its two displays, outer (closed) and inner (open), and takes
+// ten screenshots per device size; deliver files both under APP_IPHONE_DUO and skips the ones past ten. So each screen
+// goes up once: open for the ones named here, by their file name (StoreScreen.fileName), closed for the others. Open
+// are the screens that use the inner display's width (the group and Home in two columns, Statistics, Activity's feed
+// beside the item picked); closed, the bill's sheets, which open are a sheet over the screen behind, Invite, and the
+// light theme, so the group shows both ways. A display that wasn't captured gives its screens to the other, and the
+// shelf still holds ten. To change what goes up open, edit this list alone.
+private val duoScreensStagedOpen = setOf("01_group", "04_balances", "06_statistics", "07_home", "09_activity")
 private val macDevices = mapOf("mac" to "mac")
 private val appleFrameClasses = listOf("*.IPhone*", "*.IPad*", "*.Mac*")
 
@@ -71,11 +82,15 @@ private fun copyGenerated(
     devices: Map<String, String>,
     destinationOf: (storeLocale: String, device: String) -> File,
     nameOf: (png: File, device: String) -> String,
+    copies: (png: File, sourcePath: String) -> Boolean = { _, _ -> true },
 ): Int {
     var copied = 0
     locales.forEach { (locale, storeLocales) ->
         devices.forEach { (sourcePath, device) ->
-            val pngs = generated.resolve("$locale/$sourcePath").listFiles { file -> file.extension == "png" }.orEmpty()
+            val pngs = generated
+                .resolve("$locale/$sourcePath")
+                .listFiles { file -> file.extension == "png" && copies(file, sourcePath) }
+                .orEmpty()
             storeLocales.forEach { storeLocale ->
                 val destination = destinationOf(storeLocale, device)
                 destination.mkdirs()
@@ -87,6 +102,25 @@ private fun copyGenerated(
         }
     }
     return copied
+}
+
+// Whether a generated image goes on its App Store shelf. Every image does but the iPhone Duo's, which shares its shelf
+// between two displays: a screen goes up from the display duoScreensStagedOpen gives it, or from the other one when
+// that display's image of it isn't there.
+private fun isStagedForAppStore(
+    png: File,
+    sourcePath: String,
+): Boolean {
+    val otherDisplay = when (sourcePath) {
+        DUO_CLOSED -> DUO_OPEN
+        DUO_OPEN -> DUO_CLOSED
+        else -> return true
+    }
+    val isItsDisplay = (png.nameWithoutExtension in duoScreensStagedOpen) == (sourcePath == DUO_OPEN)
+    return isItsDisplay || !png.parentFile
+        .resolveSibling(otherDisplay)
+        .resolve(png.name)
+        .isFile
 }
 
 fun Project.configureStoreScreenshots() {
@@ -146,7 +180,7 @@ fun Project.configureStoreScreenshots() {
 
     listOf(
         "android" to playDevices,
-        "ios" to appleDevices + appleCollectOnlyDevices + macDevices,
+        "ios" to appleDevices + macDevices,
     ).forEach { (platform, devices) ->
         val storeName = if (platform == "android") "PlayStore" else "AppStore"
         val listings = rootProject.file("store_listings/$platform")
@@ -210,6 +244,7 @@ fun Project.configureStoreScreenshots() {
                 devices = appleDevices,
                 destinationOf = { locale, _ -> appleScreenshots.resolve(locale) },
                 nameOf = nameOf,
+                copies = ::isStagedForAppStore,
             ) + copyGenerated(
                 generated = generatedDir,
                 locales = appStoreLocales,

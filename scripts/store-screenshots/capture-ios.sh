@@ -66,8 +66,11 @@ duo_is_open() {
 # Where the terminal isn't allowed to (System Settings › Privacy & Security › Accessibility), it waits for a person
 # to press Open in Device Hub instead, and fails after OPEN_TIMEOUT seconds, which skips the slot.
 open_duo() {
-  local udid="$1" name="$2"
-  open -g -b "$DEVICE_HUB"
+  local udid="$1" name="$2" hub
+  # The Device Hub of the Xcode in use, which is the one that knows its simulators: a runner has several Xcodes, and
+  # the bundle identifier alone lets macOS pick any of theirs.
+  hub="$(dirname "$(xcode-select -p)")/Applications/DeviceHub.app"
+  if [ -d "$hub" ]; then open -g "$hub"; else open -g -b "$DEVICE_HUB"; fi
   if ! osascript - "$name" << 'APPLESCRIPT' > /dev/null 2>&1; then
 on run arguments
   set simulatorName to item 1 of arguments
@@ -96,12 +99,15 @@ on run arguments
     end repeat
     -- Open acts on the device selected: without this one's row, it would open another session's Duo.
     if not isSelected then error "No " & simulatorName & " in Device Hub"
-    delay 2
-    repeat with element in entire contents of window 1
-      if class of element is button and description of element is "Open" then
-        click element
-        return
-      end if
+    -- The bar under the device is only there once Device Hub has connected to its display ("Connecting display…").
+    repeat 30 times
+      delay 2
+      repeat with element in entire contents of window 1
+        if class of element is button and description of element is "Open" then
+          click element
+          return
+        end if
+      end repeat
     end repeat
     error "No Open button in Device Hub"
   end tell
