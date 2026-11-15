@@ -1,0 +1,23 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": ["ios", "mac"],
+      "betaOnly": true,
+      "text": {
+        "en": "Fixed notifications and a few sentences that showed in English, or as a code like \"push.bill_deleted\", in Spain's Spanish and Portugal's Portuguese.",
+        "pt": "Corrigimos notificações e algumas frases que apareciam em inglês, ou como um código do tipo \"push.bill_deleted\", no espanhol da Espanha e no português de Portugal.",
+        "pt-PT": "Corrigimos notificações e algumas frases que apareciam em inglês, ou como um código do género \"push.bill_deleted\", no espanhol de Espanha e no português de Portugal.",
+        "es": "Corregimos notificaciones y algunas frases que aparecían en inglés, o como un código del tipo \"push.bill_deleted\", en el español de España y el portugués de Portugal.",
+        "fr": "Correction des notifications et de quelques phrases qui s'affichaient en anglais, ou sous forme de code comme « push.bill_deleted », en espagnol d'Espagne et en portugais du Portugal.",
+        "de": "Mitteilungen und einige Sätze erschienen im Spanisch Spaniens und im Portugiesisch Portugals auf Englisch oder als Code wie „push.bill_deleted“; das ist behoben.",
+        "it": "Corrette le notifiche e alcune frasi che comparivano in inglese, o come un codice del tipo \"push.bill_deleted\", nello spagnolo di Spagna e nel portoghese del Portogallo.",
+        "pl": "Naprawiono powiadomienia i kilka zdań, które w hiszpańskim z Hiszpanii i portugalskim z Portugalii pojawiały się po angielsku albo jako kod w rodzaju „push.bill_deleted”.",
+        "nl": "Meldingen en enkele zinnen verschenen in het Spaans van Spanje en het Portugees van Portugal in het Engels of als een code zoals \"push.bill_deleted\"; dat is opgelost.",
+        "ja": "スペインのスペイン語とポルトガルのポルトガル語で、通知や一部の文が英語や「push.bill_deleted」のようなコードで表示されていた問題を修正しました。",
+        "tr": "İspanya İspanyolcasında ve Portekiz Portekizcesinde bildirimlerin ve birkaç cümlenin İngilizce ya da \"push.bill_deleted\" gibi bir kod olarak görünmesi düzeltildi.",
+        "id": "Memperbaiki notifikasi dan beberapa kalimat yang tampil dalam bahasa Inggris, atau sebagai kode seperti \"push.bill_deleted\", dalam bahasa Spanyol Spanyol dan Portugis Portugal."
+      }
+    }
+  ]
+}

@@ -8,19 +8,28 @@ is es-ES then reads every table from es-ES.lproj alone: the string lookup never 
 lacks, so the rest shows the English source ("New group" next to "Añadir por nombre"). Once merged, each es-ES table
 holds every es key, so the catalog keeps no copy of them.
 
-Xcode runs it after Copy Bundle Resources, before the bundle is signed, on the app's resources folder:
-  merge-regional-strings.py <TARGET_BUILD_DIR>/<UNLOCALIZED_RESOURCES_FOLDER_PATH>
+The region's own keys are the ones the catalog gives that region, not every key of its built table: Xcode also
+writes there, untranslated, each key it is told to keep (extractionState "manual") whose text takes arguments, with
+the key as its value. Left to win, those showed "You owe %@ (a member)" and "push.bill_deleted" in Spain where es
+has the sentence. So the catalogs are read too, and a key of the built table the catalog has no es-ES for takes es's.
+
+Xcode runs it after Copy Bundle Resources, before the bundle is signed, on the app's resources folder and the folder
+of its catalogs:
+  merge-regional-strings.py <TARGET_BUILD_DIR>/<UNLOCALIZED_RESOURCES_FOLDER_PATH> <SRCROOT>/Resources
 
 It merges every table of the language's lproj: the .strings (Localizable, InfoPlist) and the .stringsdict of the
 plurals. A key the region gives as a plain string drops the language's plural of that key, since the lookup reads the
 .stringsdict first. Running it again on merged tables changes nothing.
 """
 
+import functools
+import json
 import plistlib
 import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 
 # es-ES, es_ES, pt-PT, es-419, zh-Hant-TW: a language (and script) then a region of two letters or three digits
 REGIONAL = re.compile(r"^(?P<language>.+)[-_](?:[A-Z]{2}|\d{3})$")
@@ -47,9 +56,38 @@ def read_tables(lproj: Path) -> dict:
     }
 
 
-def merge(language_lproj: Path, regional_lproj: Path) -> None:
+@functools.cache
+def read_catalog(catalog: Path) -> Optional[dict]:
+    """The catalog's strings, read once however many tables and regions ask; None when there is no such catalog."""
+    if not catalog.is_file():
+        return None
+    return json.loads(catalog.read_text(encoding="utf-8")).get("strings", {})
+
+
+@functools.cache
+def read_translated_keys(catalog: Path, region: str) -> Optional[frozenset]:
+    """The keys the catalog translates into `region`, once for its .strings and .stringsdict; None for no catalog."""
+    strings = read_catalog(catalog)
+    if strings is None:
+        return None
+    return frozenset(key for key, entry in strings.items() if region in entry.get("localizations", {}))
+
+
+def own_entries(table: dict, translated_keys: Optional[frozenset]) -> dict:
+    if translated_keys is None:
+        return table
+    return {key: value for key, value in table.items() if key in translated_keys}
+
+
+def merge(language_lproj: Path, regional_lproj: Path, catalogs: Path) -> None:
     language_tables = read_tables(language_lproj)
-    regional_tables = read_tables(regional_lproj)
+    built_tables = read_tables(regional_lproj)
+    # The catalogs name a region with a hyphen (es-ES), whichever separator its lproj took
+    region = regional_lproj.stem.replace("_", "-")
+    regional_tables = {
+        name: own_entries(table, read_translated_keys(catalogs / f"{Path(name).stem}.xcstrings", region))
+        for name, table in built_tables.items()
+    }
     for name, language_table in language_tables.items():
         regional_table = regional_tables.get(name, {})
         inherited = dict(language_table)
@@ -58,7 +96,7 @@ def merge(language_lproj: Path, regional_lproj: Path) -> None:
             for key in plain_twin:
                 inherited.pop(key, None)
         merged = inherited | regional_table
-        if merged == regional_table:
+        if merged == built_tables.get(name, {}):
             continue
         (regional_lproj / name).write_bytes(plistlib.dumps(merged, fmt=plistlib.FMT_BINARY))
         print(
@@ -67,23 +105,25 @@ def merge(language_lproj: Path, regional_lproj: Path) -> None:
         )
 
 
-def main(resources_dir: str) -> int:
+def main(resources_dir: str, catalogs_dir: str) -> int:
     resources = Path(resources_dir)
-    if not resources.is_dir():
-        print(f"error: {resources} is not a folder")
-        return 1
+    catalogs = Path(catalogs_dir)
+    for folder in (resources, catalogs):
+        if not folder.is_dir():
+            print(f"error: {folder} is not a folder")
+            return 1
     for regional_lproj in sorted(resources.glob("*.lproj")):
         match = REGIONAL.match(regional_lproj.stem)
         if not match:
             continue
         language_lproj = resources / f"{BASE_OF.get(regional_lproj.stem, match['language'])}.lproj"
         if language_lproj.is_dir():
-            merge(language_lproj, regional_lproj)
+            merge(language_lproj, regional_lproj, catalogs)
     return 0
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("error: usage: merge-regional-strings.py <the app's resources folder>")
+    if len(sys.argv) != 3:
+        print("error: usage: merge-regional-strings.py <the app's resources folder> <the catalogs' folder>")
         sys.exit(1)
-    sys.exit(main(sys.argv[1]))
+    sys.exit(main(sys.argv[1], sys.argv[2]))
