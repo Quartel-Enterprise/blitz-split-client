@@ -64,7 +64,6 @@ import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 // Why: the corner grows with the tile (12dp at 40dp), so a chip's 18dp tile stays a rounded square, not a dot.
 private const val CORNER_RATIO = 0.3f
 private const val ICON_RATIO = 0.55f
-private const val DISABLED_CONTENT_ALPHA = 0.38f
 
 /*
  * Why: a payment method's tile, the same on Profile, its form, Split a bill and Bill: a card filled with its color, a
@@ -170,35 +169,38 @@ fun LockedPaidWithChip(
         none,
         stringResource(R.string.designsystem_paid_with_only_payers),
     ).joinToString(separator = ". ")
-    val dimmed = MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_CONTENT_ALPHA)
+    val defaults = AssistChipDefaults.assistChipColors()
     AssistChip(
         onClick = onClick,
         label = {
             Text(
                 text = none,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         },
-        modifier = modifier.clearAndSetSemantics {
-            contentDescription = description
-            role = Role.Button
-            if (enabled) {
-                onClick {
-                    onClick()
-                    true
+        modifier = modifier
+            .widthIn(max = 280.dp)
+            .clearAndSetSemantics {
+                contentDescription = description
+                role = Role.Button
+                if (enabled) {
+                    onClick {
+                        onClick()
+                        true
+                    }
+                } else {
+                    disabled()
                 }
-            } else {
-                disabled()
-            }
-        },
+            },
         enabled = enabled,
         leadingIcon = { ChipIcon(Icons.Outlined.CreditCard) },
         trailingIcon = { ChipIcon(Icons.Outlined.ExpandMore) },
         // Why: the disabled chip's look, while the chip itself stays enabled so the tap gets through.
         colors = AssistChipDefaults.assistChipColors(
-            labelColor = dimmed,
-            leadingIconContentColor = dimmed,
-            trailingIconContentColor = dimmed,
+            labelColor = defaults.disabledLabelColor,
+            leadingIconContentColor = defaults.disabledLeadingIconContentColor,
+            trailingIconContentColor = defaults.disabledTrailingIconContentColor,
         ),
         border = AssistChipDefaults.assistChipBorder(enabled = false),
     )

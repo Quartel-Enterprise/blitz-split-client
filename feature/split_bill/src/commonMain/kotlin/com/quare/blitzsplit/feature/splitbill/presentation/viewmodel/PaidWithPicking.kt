@@ -75,10 +75,13 @@ internal class PaidWithPicking(
         }
     }
 
-    // Why: the disabled "Paid with" says why it can't change, only while it shows that way and no receipt is read.
+    /*
+     * Why: the disabled "Paid with" says why it can't change, only while it shows that way, no receipt is read and the
+     * form isn't leaving (a save or a delete).
+     */
     fun explainLocked() {
         val state = uiState.value
-        if (!state.showsLockedPaidWith || state.isFormLocked) return
+        if (!state.showsLockedPaidWith || state.isFormLocked || state.isSaving || state.isDeleting) return
         trackEvent("split_bill_paid_with_locked_clicked", emptyMap())
         scope.launch { emit(SplitBillUiAction.ShowPaidWithOnlyForPayers) }
     }

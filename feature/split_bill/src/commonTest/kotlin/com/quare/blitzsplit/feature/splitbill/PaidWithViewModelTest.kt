@@ -919,6 +919,25 @@ class PaidWithViewModelTest {
     }
 
     @Test
+    fun `GIVEN the bill saving and someone else pays WHEN tapping the locked Paid with THEN nothing is said`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            fillIn()
+            pickPayer(ANA)
+            expenses.createGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isSaving)
+            assertTrue(actions.isEmpty())
+            assertTrue(lockedEvents().isEmpty())
+        }
+
+    @Test
     fun `GIVEN a receipt being read WHEN picking None in Paid with THEN the method stays picked`() =
         runTest(testDispatcher) {
             // Given
