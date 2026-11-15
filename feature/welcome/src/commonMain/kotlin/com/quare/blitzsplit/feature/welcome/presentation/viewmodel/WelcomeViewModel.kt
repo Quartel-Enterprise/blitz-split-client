@@ -86,10 +86,19 @@ class WelcomeViewModel(
             WelcomeUiEvent.OnUseWithoutAccountClicked -> navigator.navigate(Route.ProfileSetup)
             WelcomeUiEvent.OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)
             WelcomeUiEvent.OnErrorDismissed -> uiState.update { it.copy(error = null) }
-            WelcomeUiEvent.OnExpiredAccountNoticeDismissed -> viewModelScope.launch { dismissExpiredAccountNotice() }
+            WelcomeUiEvent.OnExpiredAccountNoticeDismissed -> handleExpiredAccountNoticeDismissed()
             WelcomeUiEvent.OnPrivacyPolicyClicked -> openLegalPage(LegalPage.PRIVACY_POLICY, ::openUrl)
             WelcomeUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE, ::openUrl)
         }
+    }
+
+    /*
+     * Why: hidden at once, not only once the account's write comes back, so a UI whose dialog reads the state
+     * (SwiftUI's alert binding, Radix's open) never shows it again in between.
+     */
+    private fun handleExpiredAccountNoticeDismissed() {
+        uiState.update { it.copy(showsExpiredAccountNotice = false) }
+        viewModelScope.launch { dismissExpiredAccountNotice() }
     }
 
     private fun openUrl(url: String) {

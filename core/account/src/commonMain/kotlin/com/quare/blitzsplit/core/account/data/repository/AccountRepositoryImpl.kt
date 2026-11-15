@@ -304,13 +304,8 @@ class AccountRepositoryImpl(
 
     override suspend fun dismissExpiredNotice() {
         local.update { account ->
-            if (account.inactivityExpiry ==
-                InactivityExpiry.NOTICE.code
-            ) {
-                account.copy(inactivityExpiry = null)
-            } else {
-                account
-            }
+            val isNoticeDue = account.inactivityExpiry == InactivityExpiry.NOTICE.code
+            if (isNoticeDue) account.copy(inactivityExpiry = null) else account
         }
     }
 
