@@ -2342,4 +2342,5 @@ export const pl: Record<MessageKey, string> = {
   releaseNotes_loadFailedTitle: 'Nie udało się wczytać informacji o wersji',
   releaseNotes_loadFailedBody: 'Sprawdź połączenie i spróbuj ponownie.',
   releaseNotes_retry: 'Spróbuj ponownie',
+  releaseNotes_openOnGitHub: 'Otwórz w GitHubie',
 }

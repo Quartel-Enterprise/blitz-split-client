@@ -2340,4 +2340,5 @@ export const nl: Record<MessageKey, string> = {
   releaseNotes_loadFailedTitle: 'Releaseopmerkingen laden is mislukt',
   releaseNotes_loadFailedBody: 'Controleer je verbinding en probeer het opnieuw.',
   releaseNotes_retry: 'Opnieuw proberen',
+  releaseNotes_openOnGitHub: 'Openen op GitHub',
 }

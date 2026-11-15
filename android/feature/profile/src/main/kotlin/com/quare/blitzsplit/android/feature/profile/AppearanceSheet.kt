@@ -18,11 +18,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.SettingsBrightness
-import androidx.compose.material.icons.outlined.Wallpaper
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -87,7 +87,7 @@ internal fun DynamicColorsInfoDialog(
         onDismissRequest = onDismiss,
         icon = {
             Icon(
-                imageVector = Icons.Outlined.Wallpaper,
+                imageVector = Icons.Outlined.ColorLens,
                 contentDescription = null,
             )
         },
@@ -117,7 +117,7 @@ private fun AppearanceContent(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
-    // Why: the previews show the light and the dark scheme the app would draw, the wallpaper's while it is on.
+    // Why: the previews show the light and the dark scheme the app would draw, the Android system's while it is on.
     val lightScheme = blitzSplitColorScheme(
         isDark = false,
         usesDynamicColors = state.usesDynamicColors,

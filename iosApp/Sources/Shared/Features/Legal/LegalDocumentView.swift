@@ -25,12 +25,8 @@ final class LegalDocumentModel {
                 self?.sectionScroll = LegalSectionScroll(blockIndex: scroll.blockIndex?.intValue)
                 return
             }
-            guard let open = action as? LegalDocumentUiActionOpenUrl, let url = URL(string: open.url) else { return }
-            #if os(iOS)
-            UIApplication.shared.open(url)
-            #else
-            NSWorkspace.shared.open(url)
-            #endif
+            guard let open = action as? LegalDocumentUiActionOpenUrl else { return }
+            ExternalURL.open(open.url)
         })
     }
 

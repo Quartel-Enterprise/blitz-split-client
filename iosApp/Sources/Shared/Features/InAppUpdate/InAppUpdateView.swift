@@ -17,12 +17,8 @@ final class InAppUpdateModel {
             self?.state = state
         })
         watches.add(viewModel.actionWatcher.observe { action in
-            guard let open = action as? InAppUpdateUiActionOpenStore, let url = URL(string: open.url) else { return }
-            #if os(iOS)
-            UIApplication.shared.open(url)
-            #else
-            NSWorkspace.shared.open(url)
-            #endif
+            guard let open = action as? InAppUpdateUiActionOpenStore else { return }
+            ExternalURL.open(open.url)
         })
     }
 

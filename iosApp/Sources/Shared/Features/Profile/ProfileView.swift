@@ -39,12 +39,7 @@ final class ProfileModel {
             RecoveryCodeSaver.copy(copy.formattedCode)
             didCopy = true
         case let open as ProfileUiActionOpenUrl:
-            guard let url = URL(string: open.url) else { return }
-            #if os(iOS)
-            UIApplication.shared.open(url)
-            #else
-            NSWorkspace.shared.open(url)
-            #endif
+            ExternalURL.open(open.url)
         case let export as ProfileUiActionSaveExport:
             exportJson = export.json
         case let share as ProfileUiActionShareProfileLink:

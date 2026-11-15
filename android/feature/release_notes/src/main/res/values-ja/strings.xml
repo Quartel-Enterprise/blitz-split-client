@@ -9,4 +9,5 @@
     <string name="release_notes_load_failed_title">リリースノートを読み込めませんでした</string>
     <string name="release_notes_load_failed_body">接続を確認して、もう一度お試しください。</string>
     <string name="release_notes_retry">再試行</string>
+    <string name="release_notes_open_on_github">GitHubで開く</string>
 </resources>

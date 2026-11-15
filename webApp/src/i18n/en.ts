@@ -2337,6 +2337,7 @@ export const en = {
   releaseNotes_loadFailedTitle: "Couldn't load the release notes",
   releaseNotes_loadFailedBody: 'Check your connection and try again.',
   releaseNotes_retry: 'Try again',
+  releaseNotes_openOnGitHub: 'Open on GitHub',
 } satisfies Record<string, string>
 
 export type MessageKey = keyof typeof en

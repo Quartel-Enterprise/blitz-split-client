@@ -9,4 +9,5 @@
     <string name="release_notes_load_failed_title">Impossible de charger les notes de version</string>
     <string name="release_notes_load_failed_body">Vérifie ta connexion et réessaie.</string>
     <string name="release_notes_retry">Réessayer</string>
+    <string name="release_notes_open_on_github">Ouvrir sur GitHub</string>
 </resources>

@@ -75,10 +75,10 @@
     <string name="profile_theme_light">Chiaro</string>
     <string name="profile_theme_dark">Scuro</string>
     <string name="profile_dynamic_colors">Colori dinamici</string>
-    <string name="profile_dynamic_colors_detail">Usa i colori del tuo sfondo nell’app</string>
+    <string name="profile_dynamic_colors_detail">Usa i colori di sistema di Android nell’app</string>
     <string name="profile_appearance_dynamic_summary">%1$s · colori dinamici</string>
     <string name="profile_dynamic_colors_info">Informazioni sui colori dinamici</string>
-    <string name="profile_dynamic_colors_info_body">I colori dinamici adattano l’app al tuo sfondo: pulsanti, sfondi ed evidenziazioni prendono i colori che Android ne ricava e cambiano quando cambia lo sfondo.</string>
+    <string name="profile_dynamic_colors_info_body">I colori dinamici adattano l’app ai colori di sistema di Android: pulsanti, sfondi ed evidenziazioni prendono i colori di Android, che vengono dal tuo sfondo o dalla tavolozza scelta nelle impostazioni di Android, e cambiano insieme a loro.</string>
     <string name="profile_dynamic_colors_info_note">Gruppi, avatar e categorie mantengono i propri colori, così continui a distinguerli. Vale solo per questo dispositivo.</string>
     <string name="profile_info_ok">Ho capito</string>
     <string name="profile_section_support">Assistenza e feedback</string>

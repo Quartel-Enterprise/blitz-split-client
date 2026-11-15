@@ -9,4 +9,5 @@
     <string name="release_notes_load_failed_title">Couldn\'t load the release notes</string>
     <string name="release_notes_load_failed_body">Check your connection and try again.</string>
     <string name="release_notes_retry">Try again</string>
+    <string name="release_notes_open_on_github">Open on GitHub</string>
 </resources>

@@ -9,4 +9,5 @@
     <string name="release_notes_load_failed_title">Impossibile caricare le note di rilascio</string>
     <string name="release_notes_load_failed_body">Controlla la connessione e riprova.</string>
     <string name="release_notes_retry">Riprova</string>
+    <string name="release_notes_open_on_github">Apri su GitHub</string>
 </resources>

@@ -1,0 +1,46 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "In Release notes, tap a version to open its release on GitHub, or the GitHub button to see every release.",
+        "pt": "Nas Notas de versão, toque numa versão para abrir a página dela no GitHub, ou no botão do GitHub para ver todas.",
+        "pt-PT": "Nas Notas de versão, toca numa versão para abrir a página dela no GitHub, ou no botão do GitHub para veres todas.",
+        "es": "En Notas de la versión, toca una versión para abrir su página en GitHub, o el botón de GitHub para ver todas.",
+        "fr": "Dans Notes de version, touchez une version pour ouvrir sa page sur GitHub, ou le bouton GitHub pour les voir toutes.",
+        "de": "Tippe in den Versionshinweisen auf eine Version, um ihre Seite auf GitHub zu öffnen, oder auf den GitHub-Button, um alle zu sehen.",
+        "it": "Nelle Note di rilascio, tocca una versione per aprire la sua pagina su GitHub, o il pulsante di GitHub per vederle tutte.",
+        "pl": "W Informacjach o wersji dotknij wersji, aby otworzyć jej stronę w GitHubie, albo przycisku GitHub, aby zobaczyć wszystkie.",
+        "nl": "Tik in Releaseopmerkingen op een versie om de pagina ervan op GitHub te openen, of op de GitHub-knop om ze allemaal te zien.",
+        "ja": "リリースノートでバージョンをタップするとGitHubのページが開き、GitHubボタンですべてのリリースを見られます。",
+        "tr": "Sürüm notlarında bir sürüme dokunarak GitHub'daki sayfasını, GitHub düğmesiyle de tüm sürümleri açabilirsin.",
+        "id": "Di Catatan rilis, ketuk versi untuk membuka halamannya di GitHub, atau tombol GitHub untuk melihat semuanya."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "Dynamic colors now explains that the app takes Android's system colors, which come from your wallpaper or from the palette you picked in Android's settings.",
+        "pt": "As Cores dinâmicas agora explicam que o app usa as cores do sistema Android, que vêm do seu papel de parede ou da paleta escolhida nas configurações do Android.",
+        "pt-PT": "As Cores dinâmicas explicam agora que a app usa as cores do sistema Android, que vêm do teu fundo de ecrã ou da paleta escolhida nas definições do Android.",
+        "es": "Colores dinámicos ahora explica que la app usa los colores del sistema Android, que vienen de tu fondo de pantalla o de la paleta elegida en los ajustes de Android.",
+        "fr": "Couleurs dynamiques explique désormais que l’app reprend les couleurs du système Android, qui viennent de votre fond d’écran ou de la palette choisie dans les paramètres d’Android.",
+        "de": "Dynamische Farben erklärt jetzt, dass die App die Systemfarben von Android nutzt, die aus deinem Hintergrundbild oder aus der in den Android-Einstellungen gewählten Palette stammen.",
+        "it": "Colori dinamici ora spiega che l’app usa i colori di sistema di Android, che vengono dal tuo sfondo o dalla tavolozza scelta nelle impostazioni di Android.",
+        "pl": "Kolory dynamiczne wyjaśniają teraz, że aplikacja używa kolorów systemu Android, które pochodzą z tapety albo z palety wybranej w ustawieniach Androida.",
+        "nl": "Dynamische kleuren legt nu uit dat de app de systeemkleuren van Android gebruikt, die uit je achtergrond komen of uit het palet dat je in de Android-instellingen hebt gekozen.",
+        "ja": "ダイナミックカラーの説明を更新しました。アプリはAndroidのシステムカラーを使い、その色は壁紙またはAndroidの設定で選んだパレットから決まります。",
+        "tr": "Dinamik renkler artık uygulamanın Android sistem renklerini kullandığını, bu renklerin duvar kağıdından ya da Android ayarlarında seçtiğin paletten geldiğini açıklıyor.",
+        "id": "Warna dinamis kini menjelaskan bahwa aplikasi memakai warna sistem Android, yang berasal dari wallpaper-mu atau dari palet yang kamu pilih di setelan Android."
+      }
+    }
+  ]
+}

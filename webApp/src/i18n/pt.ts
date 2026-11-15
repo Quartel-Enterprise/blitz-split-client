@@ -2338,4 +2338,5 @@ export const pt: Record<MessageKey, string> = {
   releaseNotes_loadFailedTitle: 'Não foi possível carregar as notas de versão',
   releaseNotes_loadFailedBody: 'Confira sua conexão e tente de novo.',
   releaseNotes_retry: 'Tentar de novo',
+  releaseNotes_openOnGitHub: 'Abrir no GitHub',
 }

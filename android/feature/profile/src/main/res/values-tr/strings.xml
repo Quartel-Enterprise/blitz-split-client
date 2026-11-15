@@ -73,10 +73,10 @@
     <string name="profile_theme_light">Açık</string>
     <string name="profile_theme_dark">Koyu</string>
     <string name="profile_dynamic_colors">Dinamik renkler</string>
-    <string name="profile_dynamic_colors_detail">Duvar kağıdının renklerini uygulamada kullan</string>
+    <string name="profile_dynamic_colors_detail">Android sistem renklerini uygulamada kullan</string>
     <string name="profile_appearance_dynamic_summary">%1$s · dinamik renkler</string>
     <string name="profile_dynamic_colors_info">Dinamik renkler hakkında</string>
-    <string name="profile_dynamic_colors_info_body">Dinamik renkler uygulamayı duvar kağıdına uydurur: düğmeler, arka planlar ve vurgular Android\'in duvar kağıdından seçtiği renkleri alır ve duvar kağıdın değişince onlar da değişir.</string>
+    <string name="profile_dynamic_colors_info_body">Dinamik renkler uygulamayı Android sistem renklerine uydurur: düğmeler, arka planlar ve vurgular, duvar kağıdından ya da Android ayarlarında seçtiğin paletten gelen Android renklerini alır ve onlar değişince değişir.</string>
     <string name="profile_dynamic_colors_info_note">Gruplar, avatarlar ve kategoriler kendi renklerini korur, böylece onları yine ayırt edersin. Bu yalnızca bu cihazda geçerlidir.</string>
     <string name="profile_info_ok">Anladım</string>
     <string name="profile_section_support">Destek ve geri bildirim</string>

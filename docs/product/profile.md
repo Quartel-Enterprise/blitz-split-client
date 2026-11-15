@@ -133,7 +133,13 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     over the list kept per device like the theme, is off in a stable version and on in a beta build, until switched
     (Pierre's call): off, only stable versions show. A device that never saved the notes and can't download them
     shows "Couldn't load the release notes" with "Try again". An Android or iOS screen of its own, a sheet on the
-    Mac's Settings, a page on the web. The language is the one the app speaks (`ObserveSpokenLanguage`).
+    Mac's Settings, a page on the web. The language is the one the app speaks (`ObserveSpokenLanguage`). As Bible
+    Planner's (Pierre's call, beta feedback, November 2026), a tap on a version's card opens its release on GitHub,
+    `https://github.com/Quartel-Enterprise/blitz-split-client/releases/tag/<version>`, the tag being the version's
+    whole name as the release workflows write it ("3.0.0" for a stable one, "3.0.0-beta_11" for a beta), and a GitHub
+    button ("Open on GitHub") opens the list of every release: in the top bar on Android, iOS and the web, beside the
+    sheet's title on the Mac. The ViewModel makes the address (`ReleaseNotesUiAction.OpenUrl`) and each platform
+    opens it in the browser (a new tab on the web).
   - In-app update, as Bible Planner's (`:core:in_app_update`, `:feature:in_app_update`): each time the app comes to
     the front (`AppViewModel`, once the first screen is in place) a newer version is offered at most once an hour,
     kept per device (`lastUpdatePromptAt` in `device_settings`), and the offer waits until a home tab or a group's
@@ -191,8 +197,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     it (the Mac and the web keep it inside the profile, as before).
   - Android's Profile › Preferences › "Appearance" is a row ("System", "System · dynamic colors") opening a sheet
     as Bible Planner's theme picker (`ProfileDialog.APPEARANCE`): a card per theme with a preview of the app in it
-    (System half light, half dark, in the wallpaper's colors while they are on), then "Dynamic colors" with an ⓘ
-    explaining it over the sheet (`ProfileDialog.DYNAMIC_COLORS_INFO`, "Got it" back to the sheet); a bottom sheet
+    (System half light, half dark, in the Android system's colors while they are on), then "Dynamic colors" with an
+    ⓘ explaining it over the sheet (`ProfileDialog.DYNAMIC_COLORS_INFO`, "Got it" back to the sheet); a bottom sheet
     on a phone, a 560 dp dialog anywhere wider, a book's right half. The Apple apps and the web keep their own picker.
   - Profile › Preferences › "Language", as Bible Planner's (Pierre's call): "System" first, the default, which follows
     the device's language (English for one the app doesn't have), then each language in its own name, the way its
@@ -229,12 +235,14 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     launch. The web picks it in the Appearance card's segments and
     reloads the page in it, back on the profile. Neither has the search: the Apple menu is the system's, scrolling
     where it doesn't fit, and the web's segments sit in the page, never over it.
-  - "Dynamic colors" (Material You) shows in Appearance only where the platform draws a scheme from the wallpaper,
+  - "Dynamic colors" (Material You) shows in Appearance only where the platform hands the app its system colors,
     Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off by default, it swaps the
-    brand's Material scheme for the wallpaper's in light and dark alike, while the groups', avatars' and categories'
-    own colors stay the brand's. Kept per device and never synced (`usesDynamicColors` in `device_settings`, so it
-    outlives a sign out); a choice restored onto a device that can't draw it reads as off. The Apple apps and the web
-    have no such scheme and show nothing.
+    brand's Material scheme for the Android system's in light and dark alike, while the groups', avatars' and
+    categories' own colors stay the brand's. Its subtitle ("Use your Android system colors in the app") and its ⓘ
+    say the colors are the Android system's, which come from the wallpaper or from a palette picked in Android's
+    settings, never that they always come from the wallpaper (Pierre's call, beta feedback, November 2026). Kept per
+    device and never synced (`usesDynamicColors` in `device_settings`, so it outlives a sign out); a choice restored
+    onto a device that can't draw it reads as off. The Apple apps and the web have no such scheme and show nothing.
   - "Edit profile": the avatar's pencil opens the photo menu (take a photo where there is a camera, choose from the
     gallery, use the Google or Apple account's photo while it isn't the one shown, remove the photo), and the avatar
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).

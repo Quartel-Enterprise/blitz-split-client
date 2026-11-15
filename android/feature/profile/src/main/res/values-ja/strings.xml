@@ -71,10 +71,10 @@
     <string name="profile_theme_light">ライト</string>
     <string name="profile_theme_dark">ダーク</string>
     <string name="profile_dynamic_colors">ダイナミックカラー</string>
-    <string name="profile_dynamic_colors_detail">壁紙の色をアプリで使用</string>
+    <string name="profile_dynamic_colors_detail">Androidのシステムカラーをアプリで使用</string>
     <string name="profile_appearance_dynamic_summary">%1$s · ダイナミックカラー</string>
     <string name="profile_dynamic_colors_info">ダイナミックカラーについて</string>
-    <string name="profile_dynamic_colors_info_body">ダイナミックカラーは、アプリを壁紙に合わせます。ボタン、背景、ハイライトにAndroidが壁紙から選んだ色が使われ、壁紙を変えると変わります。</string>
+    <string name="profile_dynamic_colors_info_body">ダイナミックカラーは、アプリをAndroidのシステムカラーに合わせます。ボタン、背景、ハイライトには、壁紙またはAndroidの設定で選んだパレットから決まるAndroidの色が使われ、それが変わるとアプリの色も変わります。</string>
     <string name="profile_dynamic_colors_info_note">グループ、アバター、カテゴリは独自の色のままなので、引き続き見分けられます。この設定はこのデバイスにのみ適用されます。</string>
     <string name="profile_info_ok">OK</string>
     <string name="profile_section_support">サポートとフィードバック</string>

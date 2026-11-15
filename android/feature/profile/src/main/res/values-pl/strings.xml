@@ -77,10 +77,10 @@
     <string name="profile_theme_light">Jasny</string>
     <string name="profile_theme_dark">Ciemny</string>
     <string name="profile_dynamic_colors">Kolory dynamiczne</string>
-    <string name="profile_dynamic_colors_detail">Użyj w aplikacji kolorów z tapety</string>
+    <string name="profile_dynamic_colors_detail">Użyj w aplikacji kolorów systemu Android</string>
     <string name="profile_appearance_dynamic_summary">%1$s · kolory dynamiczne</string>
     <string name="profile_dynamic_colors_info">O kolorach dynamicznych</string>
-    <string name="profile_dynamic_colors_info_body">Kolory dynamiczne dopasowują aplikację do tapety: przyciski, tła i wyróżnienia przyjmują kolory, które Android z niej wybiera, i zmieniają się razem z tapetą.</string>
+    <string name="profile_dynamic_colors_info_body">Kolory dynamiczne dopasowują aplikację do kolorów systemu Android: przyciski, tła i wyróżnienia przyjmują kolory Androida, które pochodzą z tapety albo z palety wybranej w ustawieniach Androida, i zmieniają się razem z nimi.</string>
     <string name="profile_dynamic_colors_info_note">Grupy, awatary i kategorie zachowują własne kolory, więc nadal łatwo je rozróżnić. Dotyczy to tylko tego urządzenia.</string>
     <string name="profile_info_ok">Rozumiem</string>
     <string name="profile_section_support">Pomoc i opinie</string>

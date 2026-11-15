@@ -15,6 +15,11 @@ final class ReleaseNotesModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
+        // A version's GitHub release, or all of them, in the browser
+        watches.add(viewModel.actionWatcher.observe { action in
+            guard let open = action as? ReleaseNotesUiActionOpenUrl else { return }
+            ExternalURL.open(open.url)
+        })
     }
 
     func send(_ event: any ReleaseNotesUiEvent) {
@@ -45,6 +50,11 @@ struct ReleaseNotesView: View {
         #if os(iOS)
         .navigationTitle("Release notes")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                GitHubButton { model?.send(ReleaseNotesUiEventOnAllReleasesClicked.shared) }
+            }
+        }
         #else
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -70,14 +80,18 @@ private struct ReleaseNotesScreen: View {
     var body: some View {
         VStack(spacing: 0) {
             #if os(macOS)
-            // A sheet has no bar to name the page in, whichever state it shows
-            Text("Release notes")
-                .font(.title2.bold())
-                .accessibilityAddTraits(.isHeader)
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .frame(maxWidth: 640, alignment: .leading)
-                .frame(maxWidth: .infinity)
+            // A sheet has no bar to name the page in, whichever state it shows, nor to hold the GitHub button
+            HStack(alignment: .center) {
+                Text("Release notes")
+                    .font(.title2.bold())
+                    .accessibilityAddTraits(.isHeader)
+                Spacer()
+                GitHubButton { model.send(ReleaseNotesUiEventOnAllReleasesClicked.shared) }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .frame(maxWidth: 640, alignment: .leading)
+            .frame(maxWidth: .infinity)
             #endif
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -150,7 +164,13 @@ private struct ReleaseNotesList: View {
                     .padding(.vertical, 32)
                 }
                 ForEach(state.visibleReleases, id: \.version.fullName) { release in
-                    ReleaseCard(release: release)
+                    Button {
+                        model.send(ReleaseNotesUiEventOnReleaseClicked(version: release.version))
+                    } label: {
+                        ReleaseCard(release: release)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Open on GitHub")
                 }
             }
             .releaseNotesColumn()
@@ -159,7 +179,7 @@ private struct ReleaseNotesList: View {
 }
 
 /// A version: its name, "Beta 2" for a beta and "This version" for the installed one, the day it came out and its
-/// notes, one bullet each.
+/// notes, one bullet each. A tap opens its release on GitHub.
 private struct ReleaseCard: View {
     let release: ReleaseNotes
 
@@ -185,18 +205,17 @@ private struct ReleaseCard: View {
                     }
                 }
             }
-            .textSelection(.enabled)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Palette.card, in: .rect(cornerRadius: 16))
+        .contentShape(.rect(cornerRadius: 16))
     }
 
     @ViewBuilder
     private var heading: some View {
         Text(verbatim: release.version.name)
             .font(.title3.bold())
-            .accessibilityAddTraits(.isHeader)
         if let beta = release.version.beta {
             // Int, not KotlinInt's Int32, so the key is the catalog's "%lld"
             ReleaseBadge(text: Text("Beta \(Int(truncating: beta))"), isProminent: false)
@@ -210,6 +229,22 @@ private struct ReleaseCard: View {
     private var date: String {
         let day = release.date
         return longSiteDate(year: day.year, month: day.month, day: day.day)
+    }
+}
+
+/// GitHub's mark, opening every release on GitHub: the bar's on iPhone and iPad, the header's on the Mac's sheet.
+private struct GitHubButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image("GitHubLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 22, height: 22)
+        }
+        .accessibilityLabel("Open on GitHub")
+        .help("Open on GitHub")
     }
 }
 

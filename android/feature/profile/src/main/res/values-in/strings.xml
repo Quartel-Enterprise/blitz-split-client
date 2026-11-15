@@ -71,10 +71,10 @@
     <string name="profile_theme_light">Terang</string>
     <string name="profile_theme_dark">Gelap</string>
     <string name="profile_dynamic_colors">Warna dinamis</string>
-    <string name="profile_dynamic_colors_detail">Pakai warna wallpaper-mu di aplikasi</string>
+    <string name="profile_dynamic_colors_detail">Pakai warna sistem Android di aplikasi</string>
     <string name="profile_appearance_dynamic_summary">%1$s · warna dinamis</string>
     <string name="profile_dynamic_colors_info">Tentang warna dinamis</string>
-    <string name="profile_dynamic_colors_info_body">Warna dinamis menyesuaikan aplikasi dengan wallpaper-mu: tombol, latar, dan sorotan memakai warna yang dipilih Android dari wallpaper, dan berubah saat wallpaper-mu berganti.</string>
+    <string name="profile_dynamic_colors_info_body">Warna dinamis menyesuaikan aplikasi dengan warna sistem Android: tombol, latar, dan sorotan memakai warna Android, yang berasal dari wallpaper-mu atau dari palet yang kamu pilih di setelan Android, dan ikut berubah saat warna itu berganti.</string>
     <string name="profile_dynamic_colors_info_note">Grup, avatar, dan kategori tetap memakai warnanya sendiri, jadi kamu tetap bisa membedakannya. Ini hanya berlaku di perangkat ini.</string>
     <string name="profile_info_ok">Mengerti</string>
     <string name="profile_section_support">Dukungan dan masukan</string>
