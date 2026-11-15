@@ -53,7 +53,8 @@ A task comes from that cache while its inputs and the classpath of the build scr
 A new module leaves both alone for every other module, since modules name each other by path
 (`project(":core:model")`): with Gradle's typesafe project accessors, generated from the list of modules onto that
 classpath, each `include()` changed the key of every task, and the pull request that added a module, `main` after it
-and the pull requests that ran before `main` saved its caches recompiled everything. A change to
+and the pull requests that ran before `main` saved its caches recompiled everything. Nothing else shows that, so the
+root `build.gradle.kts` fails the build when the feature preview is on. A change to
 `gradle/libs.versions.toml` still does that, an entry no module uses included, since the `libs` accessors are generated
 the same way. A change to a convention plugin of `build-logic/` doesn't: only the tasks it configures differently get a
 new key. To see why a task missed, run it with `-Dorg.gradle.caching.debug=true` before and after the change and

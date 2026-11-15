@@ -1,9 +1,7 @@
 rootProject.name = "BlitzSplit"
 
-// Modules name each other by path, project(":core:model"), and TYPESAFE_PROJECT_ACCESSORS stays off: the
-// `projects.core.model` accessors it generates sit on the classpath of every build script, so each new include()
-// below changed the build cache key of every task, and that pull request, main after it and the pull requests
-// behind them rebuilt every module.
+// Modules name each other by path, project(":core:model"). TYPESAFE_PROJECT_ACCESSORS stays off, and the root
+// build.gradle.kts fails the build if it comes back: docs/ci.md, "Speed and timeouts", has what it cost.
 
 pluginManagement {
     includeBuild("build-logic")
