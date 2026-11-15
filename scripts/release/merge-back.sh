@@ -4,7 +4,8 @@
 #
 # Usage: scripts/release/merge-back.sh <version> <versionCode> <displayVersion> [<tag>]
 #   version         X.Y.Z, the version the release used
-#   versionCode     the build number it consumed
+#   versionCode     the build number it consumed, or 0 for a release that consumed none (a stable version that only
+#                   deployed the web): main's is then left as it is
 #   displayVersion  the release's name: X.Y.Z-beta_N for a beta, X.Y.Z for a stable version
 #   tag             a stable version only: its tag, whose commit's fragments leave release-notes/unreleased/
 #
@@ -70,8 +71,14 @@ if git diff --quiet HEAD; then
   exit 0
 fi
 
-git commit --quiet -am "chore: bump the version to $new_version (versionCode $new_code) for $display_version"
-body="Merges the version $new_version and the versionCode $new_code that $display_version used back into main."
+# A release that consumed no versionCode names none: main's, left as it is, is not one it used.
+if [ "$version_code" -gt 0 ]; then
+  git commit --quiet -am "chore: bump the version to $new_version (versionCode $new_code) for $display_version"
+  body="Merges the version $new_version and the versionCode $new_code that $display_version used back into main."
+else
+  git commit --quiet -am "chore: bump the version to $new_version for $display_version"
+  body="Merges the version $new_version that $display_version used back into main. It consumed no versionCode."
+fi
 if [ -n "$tag" ]; then
   body="$body Removes the $removed release notes' fragment(s) it told from \`$FRAGMENTS_DIR/\`."
 fi
