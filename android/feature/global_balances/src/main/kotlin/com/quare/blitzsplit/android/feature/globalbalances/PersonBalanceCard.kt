@@ -121,7 +121,7 @@ private fun PersonSummaryRow(
                 .weight(1f)
                 .clip(MaterialTheme.shapes.medium)
                 .clickableWhen(onPersonClick != null && row.opensProfile) {
-                    onPersonClick?.let(flight::toFlyingClick)?.invoke()
+                    flight.toFlyingClickOrNull(onPersonClick)?.invoke()
                 },
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
