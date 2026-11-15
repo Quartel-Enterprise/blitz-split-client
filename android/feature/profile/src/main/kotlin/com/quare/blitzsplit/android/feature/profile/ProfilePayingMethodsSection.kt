@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 import software.quare.loadable.valueOrNull
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: how the person pays, apart from the keys they receive with: one connected row per method, then the one adding.
 @Composable
@@ -62,7 +63,7 @@ internal fun PayingMethodsSection(
                 )
             }
             AddKeySurface(
-                label = stringResource(R.string.profile_paying_methods_add),
+                label = stringResource(DesignR.string.designsystem_paid_with_add),
                 shape = segmentShapeOf(
                     index = count - 1,
                     count = count,

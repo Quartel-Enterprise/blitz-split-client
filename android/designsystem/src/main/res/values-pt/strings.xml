@@ -313,4 +313,5 @@
     <string name="designsystem_paid_with">Pago com</string>
     <string name="designsystem_paid_with_none">Nenhuma</string>
     <string name="designsystem_paid_with_private">Só você vê isso.</string>
+    <string name="designsystem_paid_with_add">Adicionar forma de pagamento</string>
 </resources>

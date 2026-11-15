@@ -428,8 +428,13 @@ sealed interface Route {
         val keyId: String?,
     ) : Route
 
-    // Why: Profile's "Payment methods": a new method when methodId is null, otherwise that method, to edit or delete.
+    /*
+     * Why: Profile's "Payment methods": a new method when methodId is null, otherwise that method, to edit or delete.
+     * isOverBill when Split a bill's "Add a payment method" opened it, which the Mac draws over the bill rather than in
+     * Ajustes, as Profile's does.
+     */
     data class PayingMethod(
         val methodId: String?,
+        val isOverBill: Boolean,
     ) : Route
 }

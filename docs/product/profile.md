@@ -266,14 +266,22 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     one you paid a bill with." Nobody else ever sees them, not even the people they share a group with; they sync only
     to the person's own devices (`payment_methods` and `bill_payment_methods`, owner-only RLS). Each row has its tile,
     its name (or its type's name) with the type under a name, and "Default" on the default one; "Add a payment method"
-    ends the list, and a row or the add opens "New payment method" / "Edit payment method" (`Route.PayingMethod`,
-    presented as a key's form on each platform). Types: Credit card, Debit card, Cash, Pix, Bank transfer, Bitcoin,
+    ends the list, and a row or the add opens "New payment method" / "Edit payment method" (`Route.PayingMethod`).
+    The form is too short for a screen of its own (Pierre's call, feedback of November 15, 2026), so it opens as Edit
+    profile does, and no longer as a key's form: on Android a bottom sheet on a phone, Save beside its title (dragging
+    it down with unsaved input asks "Discard changes?"), a 560dp dialog wider (a book's right half) and full screen on
+    a tabletop (`rememberFormPresentation`); on Apple a sheet on every device, the iPhone's at its full height for the
+    seven types, the iPad's a form sheet, with Cancel and Save; on the web a dialog, a drawer on a phone. The keys
+    ("Keys to receive payments", `Route.PaymentKey`) keep their own presentation. Split a bill's "Add a payment method"
+    opens the same form ([split-bill.md](split-bill.md)). Types: Credit card, Debit card, Cash, Pix, Bank transfer, Bitcoin,
     Other (on Android a row of chips that scrolls sideways out into the form's side margins, as Dividir's modes do in
     [split-bill.md](split-bill.md)). Pix follows [the Pix rule](general.md) (a Pix method being edited keeps it); Cash is one per person; Other
     needs a name, the rest take an optional one (up to 30 characters). Once the form is filled, a sync never changes
     the type picked (a Cash added on another device meanwhile makes saving a second one fail instead). A card picks one of eight brand-neutral colors
-    (purple, blue, green, orange, red, pink, gold, graphite) that fill its tile with a white card glyph: never a bank's
-    or a card brand's logo. "Default method" is optional (the first method starts on, any can be turned off) and is
+    (purple, blue, green, orange, red, pink, gold, graphite) that fill its tile with a white glyph, a card for a credit
+    card and a wallet for a debit card so the two tell apart at a glance (Pierre asked on November 15, 2026 to tell
+    them apart; the wallet was settled while he was away, see PR #376): never a
+    bank's or a card brand's logo. "Default method" is optional (the first method starts on, any can be turned off) and is
     what a new bill the person pays opens on in [Split a bill](split-bill.md). Deleting asks "Delete this payment
     method?"; bills marked with it stop showing it.
   - "Keys to receive payments" follows [the Pix rule](general.md): with no Pix signal it shows the Bitcoin keys and two

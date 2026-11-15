@@ -13,6 +13,8 @@ data class PaidWith(
     val methodId: String?,
     // Why: the mark as the form opened (a new bill's default, a saved bill's own), what a change is compared with.
     val openedMethodId: String?,
+    // Why: the methods were read once, so "Add a payment method" never flashes before a list that has some.
+    val isLoaded: Boolean,
 ) {
     // Why: null for none, also once the method picked was deleted meanwhile.
     val method: PayingMethod?

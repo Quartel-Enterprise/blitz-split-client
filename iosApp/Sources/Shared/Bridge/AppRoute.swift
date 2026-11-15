@@ -157,7 +157,8 @@ enum AppRoute: Hashable, Identifiable {
     /// With an iPad's room (`isLargeWindow`, the window's `ScreenLayout.isLarge`: an iPad, an iPhone Duo open) a key
     /// and a bill open as a form sheet and on the Mac a key as a sheet (on Ajustes' window, `opensInSettings`; the Mac
     /// shows a bill in the window's inspector), as the canvas draws them; an iPhone, lying down too, pushes them. Edit
-    /// profile (too little for a screen, Pierre's call; the Mac edits the profile inline, so never opens it), deleting the account, a new group, editing a group, a new or edited bill,
+    /// profile (too little for a screen, Pierre's call; the Mac edits the profile inline, so never opens it), a payment
+    /// method (Pierre's call too; over Split a bill it stacks on the bill's sheet), deleting the account, a new group, editing a group, a new or edited bill,
     /// recording a payment (settling up across groups and Início's "Who paid whom?" included), Request, Contacts' invite and
     /// sharing a bill are sheets everywhere (sharing stacks over the bill's own sheet with an iPad's room, and over the
     /// Mac's inspector). The invite is a sheet on an iPhone and is pushed full screen with an iPad's room (decision 1);
@@ -182,8 +183,8 @@ enum AppRoute: Hashable, Identifiable {
             #else
             return false
             #endif
-        // A payment method opens as a key does
-        case .paymentKey, .payingMethod:
+        // A key is pushed on an iPhone (a payment method, unlike it, is a sheet everywhere: `isSheetEverywhere`)
+        case .paymentKey:
             #if os(macOS)
             return true
             #else
@@ -205,7 +206,7 @@ enum AppRoute: Hashable, Identifiable {
     private var isSheetEverywhere: Bool {
         switch self {
         case .deleteAccount, .contactSupport, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
-             .contactInvite, .shareBill, .inAppUpdate, .appDownload, .editProfile: true
+             .contactInvite, .shareBill, .inAppUpdate, .appDownload, .editProfile, .payingMethod: true
         default: false
         }
     }
@@ -247,7 +248,9 @@ enum AppRoute: Hashable, Identifiable {
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
-        case .paymentKey, .payingMethod, .profilePhoto, .deleteAccount, .contactSupport, .legalDocument, .releaseNotes: true
+        case .paymentKey, .profilePhoto, .deleteAccount, .contactSupport, .legalDocument, .releaseNotes: true
+        // Profile's opens there; Split a bill's "Add a payment method" over the bill, in the main window
+        case let .payingMethod(route): !route.isOverBill
         // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
         case let .inAppUpdate(route): route.source == .manual
         // Settings' iPhone row opens it there; Home's card over the main window
@@ -264,7 +267,7 @@ enum AppRoute: Hashable, Identifiable {
     var usesFormSheet: Bool {
         switch self {
         case .createGroup, .contactInvite, .shareBill, .editProfile, .editGroup, .registerPayment, .settleUp,
-             .charge, .pickPayment, .inAppUpdate, .contactSupport: true
+             .charge, .pickPayment, .inAppUpdate, .contactSupport, .payingMethod: true
         default: false
         }
     }

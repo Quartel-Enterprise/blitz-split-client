@@ -384,7 +384,6 @@ function BillForm({
         <div className="flex min-w-0 flex-col gap-4">
           <fieldset disabled={state.isFormLocked} className="flex min-w-0 flex-col gap-4">
             <PayerField presenter={presenter} state={state} money={money} />
-            {state.paidWith && <PaidWithField presenter={presenter} paidWith={state.paidWith} />}
             <BillWhenField
               id={whenId}
               label={t('splitBill_when')}
@@ -409,6 +408,7 @@ function BillForm({
                 money={money}
               />
             </div>
+            <PaidWithField presenter={presenter} paidWith={state.paidWith} showsAdd={state.showsAddPayingMethod} />
           </fieldset>
           <ReceiptField presenter={presenter} state={state} />
         </div>

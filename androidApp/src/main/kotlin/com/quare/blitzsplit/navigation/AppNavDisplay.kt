@@ -172,9 +172,9 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         opensBillOverGroup && !(formFactor == FormFactor.Tabletop && route.expenseId == null)
     }
     /*
-     * Why: Registrar pagamento, Convidar of Contatos and Edit profile open the same way: a sheet on a phone, a dialog
-     * wider (a book's right half) and full screen on a tabletop, the first two with their content split on its hinge
-     * and Edit profile in the screen it always drew there.
+     * Why: Registrar pagamento, Convidar of Contatos, Edit profile and a payment method open the same way: a sheet on
+     * a phone, a dialog wider (a book's right half) and full screen on a tabletop, the first two with their content
+     * split on its hinge and the last two in the screen they always drew there.
      */
     val formPresentation = rememberFormPresentation()
     val formPresentationMetadata = when (formPresentation) {
@@ -342,11 +342,16 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                     isDialog = usesFormDialog,
                 )
             }
-            // Why: a payment method opens as a key does: a dialog over the profile on a tablet, full screen elsewhere.
-            entry<Route.PayingMethod>(metadata = formDialogMetadata) { route ->
+            /*
+             * Why: a payment method opens as Edit profile does, over the profile or Split a bill: a sheet on a phone, a
+             * dialog wider (a book's right half), full screen on a tabletop. Payment keys stay as they are.
+             */
+            entry<Route.PayingMethod>(metadata = formPresentationMetadata) { route ->
+                // Why: an open scene keeps the way it opened when the fold changes under it, so its content does too.
+                val presentation = remember { formPresentation }
                 PayingMethodScreen(
                     route = route,
-                    isDialog = usesFormDialog,
+                    presentation = presentation,
                 )
             }
             entry<Route.DeleteAccount>(metadata = deleteAccountMetadata) {

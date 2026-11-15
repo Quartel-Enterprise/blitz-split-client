@@ -41,7 +41,12 @@ internal class ProfilePayingMethodRows(
         when (event) {
             ProfileUiEvent.PayingMethods.OnAddClicked -> {
                 trackEvent("paying_method_add_clicked", emptyMap())
-                navigator.navigate(Route.PayingMethod(methodId = null))
+                navigator.navigate(
+                    Route.PayingMethod(
+                        methodId = null,
+                        isOverBill = false,
+                    ),
+                )
             }
 
             is ProfileUiEvent.PayingMethods.OnClicked -> {
@@ -49,7 +54,12 @@ internal class ProfilePayingMethodRows(
                     .valueOrNull()
                     ?.find { it.id == event.methodId } ?: return
                 trackEvent("paying_method_clicked", mapOf("type" to method.type.code))
-                navigator.navigate(Route.PayingMethod(method.id))
+                navigator.navigate(
+                    Route.PayingMethod(
+                        methodId = method.id,
+                        isOverBill = false,
+                    ),
+                )
             }
         }
     }

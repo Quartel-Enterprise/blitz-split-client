@@ -978,6 +978,103 @@ class SplitBillUiStateTest {
     }
 
     @Test
+    fun `GIVEN this device user pays and has no method WHEN reading Add a payment method THEN it shows`() {
+        // Given
+        val state = state(paidWith = noMethods)
+
+        // When
+        val showsAddPayingMethod = state.showsAddPayingMethod
+
+        // Then
+        assertTrue(showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN the methods not read yet WHEN reading Add a payment method THEN it is hidden`() {
+        // Given
+        val state = state(paidWith = noMethods.copy(isLoaded = false))
+
+        // When
+        val showsAddPayingMethod = state.showsAddPayingMethod
+
+        // Then
+        assertFalse(showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN this device user pays and has methods WHEN reading Add a payment method THEN it is hidden`() {
+        // Given
+        val state = state(paidWith = cashPicked)
+
+        // When
+        val showsAddPayingMethod = state.showsAddPayingMethod
+
+        // Then
+        assertFalse(showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN someone else pays and no method saved WHEN reading Add a payment method THEN it is hidden`() {
+        // Given
+        val state = state(
+            payerId = ANA,
+            paidWith = noMethods,
+        )
+
+        // When
+        val showsAddPayingMethod = state.showsAddPayingMethod
+
+        // Then
+        assertFalse(showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN nobody on the device in the group WHEN reading Add a payment method THEN it is hidden`() {
+        // Given
+        val state = state(
+            people = listOf(person(ANA, isMe = false), person(PIERRE, isMe = false)),
+            paidWith = noMethods,
+        )
+
+        // When
+        val showsAddPayingMethod = state.showsAddPayingMethod
+
+        // Then
+        assertFalse(showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN this device user among several payers with no method WHEN reading Add a payment method THEN it shows`() {
+        // Given
+        val state = state(
+            severalPayers = several(ANA to "60,00", PIERRE to "40,00"),
+            paidWith = noMethods,
+        )
+
+        // When
+        val showsAddPayingMethod = state.showsAddPayingMethod
+
+        // Then
+        assertTrue(showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN several others pay without this device user WHEN reading Add a payment method THEN it is hidden`() {
+        // Given
+        val state = state(
+            people = listOf(person(ANA, isMe = false), person(PIERRE, isMe = true), person(BRUNO, isMe = false)),
+            severalPayers = several(ANA to "60,00", BRUNO to "40,00"),
+            paidWith = noMethods,
+        )
+
+        // When
+        val showsAddPayingMethod = state.showsAddPayingMethod
+
+        // Then
+        assertFalse(showsAddPayingMethod)
+    }
+
+    @Test
     fun `GIVEN another method picked while someone else pays WHEN reading the unsaved input THEN there is none`() {
         // Given
         val state = state(
@@ -1118,6 +1215,15 @@ class SplitBillUiStateTest {
         methods = listOf(nubank, cash),
         methodId = CASH,
         openedMethodId = NUBANK,
+        isLoaded = true,
+    )
+
+    // Why: the methods read, and the person has none.
+    private val noMethods = PaidWith(
+        methods = emptyList(),
+        methodId = null,
+        openedMethodId = null,
+        isLoaded = true,
     )
 
     private fun person(
@@ -1176,6 +1282,7 @@ class SplitBillUiStateTest {
             methods = emptyList(),
             methodId = null,
             openedMethodId = null,
+            isLoaded = true,
         ),
     ): SplitBillUiState = SplitBillUiState(
         isEditing = isEditing,

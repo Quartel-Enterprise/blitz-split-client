@@ -423,6 +423,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_payer_clicked` | none | "Who paid" | `:feature:split_bill` |
 | `split_bill_payer_picked` | none | A person picked in "Who paid", while it is open | `:feature:split_bill` |
 | `split_bill_paid_with_picked` | `has_method` | Another method (or None) picked in "Paid with", while it shows | `:feature:split_bill` |
+| `split_bill_add_paying_method_clicked` | none | "Add a payment method" tapped in Paid with's place, opening "New payment method" over the bill | `:feature:split_bill` |
 | `split_bill_payer_confirmed` | none | "Done" on "Who paid", while it is open | `:feature:split_bill` |
 | `split_bill_several_payers_clicked` | none | "Several people" | `:feature:split_bill` |
 | `split_bill_several_payers_confirmed` | `payers` (how many paid) | "Done" on "Several people paid", once the amounts add up | `:feature:split_bill` |

@@ -15,4 +15,5 @@
     <string name="designsystem_custom_color_save">Añadir</string>
     <string name="designsystem_custom_color_full">Tu paleta está llena: mantén pulsado uno de tus colores para eliminarlo.</string>
     <string name="designsystem_custom_color_hint">Mantén pulsado uno de tus colores para eliminarlo.</string>
+    <string name="designsystem_paid_with_add">Añadir método de pago</string>
 </resources>

@@ -77,6 +77,9 @@ sealed interface SplitBillUiEvent : UiEvent {
         val methodId: String?,
     ) : Payers
 
+    // Why: "Add a payment method" where Paid with goes while the person has none: "New payment method" over the form.
+    data object OnAddPayingMethodClicked : Payers
+
     // Why: what "Quando" sends, its date and its time, which SpentAtPicking handles.
     sealed interface SpentAt : SplitBillUiEvent
 
