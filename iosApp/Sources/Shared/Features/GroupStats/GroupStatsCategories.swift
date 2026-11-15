@@ -5,12 +5,15 @@ import SwiftUI
 /// "By category" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
 /// legend with the percentages, then each main category with its bar. The slice the pointer is over (or its legend
 /// line) pops out, the others fade, and the center names it with its share; a tap or a click on a slice, a legend line
-/// or a row opens the category's bills ("Expenses by category"). The ring sweeps in when the period changes.
+/// or a row opens the category's bills ("Expenses by category"). The ring sweeps in when the period changes, and shows
+/// whole at once with Reduce Motion on.
 struct StatsCategoriesSection: View {
     let state: GroupStatsUiState
     var pieSize: CGFloat = 132
     /// The main category tapped and what of the card it was.
     let open: (String, StatsCategoryTarget) -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var selected: Int?
     /// 0 to 1 as the ring sweeps in, clockwise from the top.
@@ -121,6 +124,11 @@ struct StatsCategoriesSection: View {
                 .animation(.smooth(duration: 0.25), value: selected)
                 .onChange(of: ringKey) { selected = nil }
                 .task(id: ringKey) {
+                    // Reduce Motion shows the ring whole, with no sweep
+                    if reduceMotion {
+                        sweep = 1
+                        return
+                    }
                     sweep = 0
                     try? await Task.sleep(for: .milliseconds(20))
                     withAnimation(.easeOut(duration: 0.6)) { sweep = 1 }
